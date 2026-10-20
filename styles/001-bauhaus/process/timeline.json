@@ -1,0 +1,15 @@
+{"fps": 60, "bpm": 120, "frames": 900, "title": "001 · 时间轴：每个剪辑点都在拍子上",
+ "segments": [
+  {"label": "开场", "start": 0, "dur": 120, "color": "#F0E9DA"},
+  {"label": "01 色彩", "start": 120, "dur": 60, "color": "#F0E9DA"},
+  {"label": "02 形与色", "start": 180, "dur": 60, "color": "#2A2826"},
+  {"label": "03 字体", "start": 240, "dur": 90, "color": "#F0E9DA"},
+  {"label": "04 海报", "start": 330, "dur": 90, "color": "#1F4FA3"},
+  {"label": "05 建筑", "start": 420, "dur": 60, "color": "#F0E9DA"},
+  {"label": "06 家具", "start": 480, "dur": 60, "color": "#DB3A26"},
+  {"label": "07 灯具", "start": 540, "dur": 60, "color": "#2A2826"},
+  {"label": "08 纺织", "start": 600, "dur": 60, "color": "#F0E9DA"},
+  {"label": "09 舞台", "start": 660, "dur": 60, "color": "#2A2826"},
+  {"label": "回顾", "start": 720, "dur": 60, "color": "#F0E9DA"},
+  {"label": "片尾", "start": 780, "dur": 120, "color": "#F2B419"}
+ ]}
