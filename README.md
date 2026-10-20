@@ -59,7 +59,7 @@ motion-style/
 │  └─ 001-bauhaus/
 │     ├─ README.md         # 风格指南
 │     ├─ tokens.{ts,css,json}
-│     ├─ video/Bauhaus.tsx # 15 秒短片（6 个段落，全部参数化）
+│     ├─ video/            # 15 秒短片：开场 + 9 个章节 + 九宫格回顾 + 片尾
 │     ├─ audio/make_music.py
 │     └─ images/           # poster / cheatsheet / app-ui / pattern(.py)
 │        └─ preview/       # 内嵌字体、可直接分享的 SVG

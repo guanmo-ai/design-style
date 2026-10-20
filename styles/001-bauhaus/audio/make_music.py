@@ -2,7 +2,7 @@
 Motion Style · 001 · 包豪斯 —— 配乐与音效（纯代码合成，无外部音源）
 
 120 BPM · A 小调 → C 大调收尾 · 15 秒
-所有音效时间点都与 Bauhaus.tsx 的关键帧对齐（帧 / 60 = 秒）。
+所有音效时间点都与 Bauhaus.tsx / chapters.tsx 的关键帧对齐（帧 / 60 = 秒）。
 
 用法：python3 styles/001-bauhaus/audio/make_music.py
 输出：public/001-bauhaus/music.wav（并用 ffmpeg 响度标准化到 -14 LUFS）
@@ -232,99 +232,157 @@ def root_at(beat):
     return cur
 
 
+# 结构（拍 = 30 帧）：
+#   拍 0–4    开场：三次砸下 + 标题，只有 Pad，不上鼓
+#   拍 4–24   九个章节：鼓组 / 贝斯 / 拨弦全开，每个剪辑点一记重拍
+#   拍 24–26  回顾：半拍感，留白给九宫格
+#   拍 26–    片尾：C 大调收束
+
+DROP = 4
+RECAP_B = 24
+
 # Pad：从标题开始铺底
 for i, (b, notes) in enumerate(CHORDS):
     nb = CHORDS[i + 1][0] if i + 1 < len(CHORDS) else 30
-    if b < 3:
+    start = max(b, 2)
+    if nb <= start:
         continue
-    d = (nb - b) * BEAT
-    lvl = 0.10 if b < 22 else 0.08
+    d = (nb - start) * BEAT
+    lvl = 0.10 if b < 22 else 0.085
     if b == 26:
         d = 1.9
-    place(pad([midi(n + 12) for n in notes], d, lvl, cutoff=1700 if b >= 13 else 1100), b * BEAT, 1.0, 0, 0.35)
+    place(pad([midi(n + 12) for n in notes], d, lvl, cutoff=1700 if b >= DROP else 1000), start * BEAT, 1.0, 0, 0.35)
 
 # 鼓
-for b in range(3, 22):
+for b in range(DROP, RECAP_B):
     t = b * BEAT
-    full = b >= 13
-    if full or b % 2 == 1:
-        place(kick(0.85 if full else 0.6), t)
-    if b >= 8:
-        place(hat(0.16 if full else 0.11), t + BEAT / 2, 1, 0.25)
-    if full:
-        place(hat(0.07, 0.015), t + BEAT / 4, 1, -0.3)
-        place(hat(0.07, 0.015), t + 3 * BEAT / 4, 1, -0.3)
-        if b % 2 == 0:
-            place(clap(0.42), t, 1, 0.05, 0.25)
+    place(kick(0.85), t)
+    place(hat(0.16), t + BEAT / 2, 1, 0.25)
+    place(hat(0.07, 0.015), t + BEAT / 4, 1, -0.3)
+    place(hat(0.07, 0.015), t + 3 * BEAT / 4, 1, -0.3)
+    if b % 2 == 1:
+        place(clap(0.42), t, 1, 0.05, 0.25)
+# 回顾段：只留一记底鼓和反拍镲
+place(kick(0.9), RECAP_B * BEAT)
+place(hat(0.12), RECAP_B * BEAT + BEAT / 2, 1, 0.25)
+place(hat(0.12), (RECAP_B + 1) * BEAT + BEAT / 2, 1, -0.25)
+# 进 drop 之前的 16 分音符镲片加速
+for s in range(8):
+    place(hat(0.04 + 0.012 * s, 0.012), (DROP - 1) * BEAT + s * BEAT / 8, 1, 0.3 if s % 2 else -0.3)
 
 # 贝斯
-for b in range(3, 22):
+for b in range(DROP, RECAP_B):
     t = b * BEAT
     r = midi(root_at(b))
-    if b < 13:
-        if b % 2 == 1:
-            place(bass(r, 0.42, 0.42), t)
-    else:
-        place(bass(r, 0.2, 0.5), t)
-        place(bass(r * 2 if b % 2 else r, 0.18, 0.38), t + BEAT / 2)
+    place(bass(r, 0.2, 0.5), t)
+    place(bass(r * 2 if b % 2 else r, 0.18, 0.38), t + BEAT / 2)
+place(bass(midi(root_at(RECAP_B)), 0.9, 0.45), RECAP_B * BEAT)
 
-# 拨弦琶音（海报段落 16 分音符）
+# 拨弦琶音：前两章 8 分音符，之后 16 分音符
 pattern = [0, 1, 2, 1, 2, 3, 2, 1]
-for b in range(13, 22):
+for b in range(DROP, RECAP_B):
     notes = chord_at(b)
-    for s in range(4):
-        idx = pattern[(b * 4 + s) % len(pattern)]
+    steps = 2 if b < 8 else 4
+    for s in range(steps):
+        idx = pattern[(b * 4 + s * (4 // steps)) % len(pattern)]
         n = notes[idx % len(notes)] + 24 + (12 if idx >= len(notes) else 0)
-        place(pluck(midi(n), 0.11 if s % 2 == 0 else 0.075), b * BEAT + s * BEAT / 4, 1, 0.35 if s % 2 else -0.35, 0.3)
+        place(pluck(midi(n), 0.11 if s % 2 == 0 else 0.075), b * BEAT + s * BEAT / steps, 1, 0.35 if s % 2 else -0.35, 0.3)
 
-# ---------------- 音效（与画面关键帧对齐） ----------------
+# ---------------- 音效（与 Bauhaus.tsx / chapters.tsx 的关键帧对齐） ----------------
+# 章节起点（帧）：与 chapters.tsx 的 CHAPTERS 一致
+STARTS = [120, 180, 240, 330, 420, 480, 540, 600, 660]
 
-# A 开场：三次砸下
+# 开场：三次砸下 → 飞向台标 → 标题
 place(boom(0.95, 40, 0.5), fr(0), 1, -0.25, 0.25)
 place(boom(0.85, 46, 0.4), fr(15), 1, 0.3, 0.25)
 place(boom(1.0, 34, 0.6), fr(31), 1, 0.15, 0.3)
 place(marimba(midi(81), 0.25), fr(31), 1, 0.2, 0.4)
-place(whoosh(0.5, 400, 6000, 0.32), fr(56))
+place(whoosh(0.5, 400, 6000, 0.3), fr(44))
+for m, pan in [(69, -0.3), (72, 0.0), (76, 0.3)]:
+    place(marimba(midi(m), 0.16, 0.6), fr(60), 1, pan, 0.45)
+place(pop(midi(84), 0.22), fr(66), 1, 0, 0.3)
+place(riser(0.36, 0.38), fr(98))
 
-# B 标题：每个字母一声木琴（五声音阶上行）
+# 每个剪辑点：转场呼啸 + 重拍
+for i, s in enumerate(STARTS):
+    place(whoosh(0.17, 900, 9000, 0.13, 0.9), fr(s - 10), 1, [-0.5, 0.5][i % 2])
+    place(boom(0.75 if i == 0 else 0.5, 44 + (i % 3) * 4, 0.32), fr(s), 1, 0, 0.2)
+
+# 01 色彩：十二色相依次弹出 —— 马林巴琶音上行
+penta = [69, 72, 74, 76, 79, 81, 84, 86, 88, 91, 93, 96]
+for i in range(12):
+    place(marimba(midi(penta[i]), 0.13, 0.28), fr(132 + 2 * i), 1, -0.7 + i * 0.13, 0.35)
+for i in range(3):
+    place(pop(midi(76 + i * 3), 0.12), fr(120 + i * 2), 1, -0.3 + i * 0.3)
+
+# 02 形与色：三次揭晓
+for frm, m, pan in [(192, 76, -0.45), (201, 79, 0.0), (210, 84, 0.45)]:
+    place(marimba(midi(m), 0.3), fr(frm), 1, pan, 0.45)
+    place(marimba(midi(m + 12), 0.1), fr(frm) + 0.02, 1, pan, 0.45)
+    place(pop(midi(m), 0.16), fr(frm), 1, pan)
+
+# 03 字体：每个字母一声木琴 + 三个圆点 + 打字声
 scale = [69, 72, 74, 76, 79, 81, 84]
 for i in range(7):
-    place(marimba(midi(scale[i]), 0.2, 0.3), fr(92 + i * 7), 1, -0.6 + i * 0.2, 0.3)
-for frm, m, pan in [(150, 81, -0.6), (165, 84, -0.35), (180, 88, 0.2)]:
-    place(pop(midi(m), 0.3), fr(frm), 1, pan, 0.3)
-place(whoosh(0.45, 500, 7000, 0.3), fr(214))
+    place(marimba(midi(scale[i]), 0.17, 0.26), fr(246 + i * 3), 1, -0.6 + i * 0.2, 0.3)
+for frm, m, pan in [(262, 81, -0.6), (265, 84, -0.35), (274, 88, 0.2)]:
+    place(pop(midi(m), 0.26), fr(frm), 1, pan, 0.3)
+for k in range(14):
+    place(tick(3200 + (k % 3) * 400, 0.1), fr(284 + 2 * k), 1, -0.5 + k / 13, 0.1)
 
-# C 康定斯基：褪色 → 三次揭晓
-place(deflate(0.22), fr(232), 1, 0, 0.2)
-for frm, m, pan in [(285, 76, -0.45), (315, 79, 0.0), (345, 84, 0.45)]:
-    place(marimba(midi(m), 0.34), frm / 60, 1, pan, 0.45)
-    place(marimba(midi(m + 12), 0.12), frm / 60 + 0.02, 1, pan, 0.45)
-    place(pop(midi(m), 0.18), frm / 60, 1, pan)
-place(riser(0.4, 0.3), fr(366))
+# 04 海报：三张海报依次落下
+for frm, pan in [(336, -0.6), (346, 0.0), (356, 0.6)]:
+    place(boom(0.6, 52, 0.26), fr(frm), 1, pan, 0.2)
+    place(whoosh(0.12, 1200, 8000, 0.1, 0.9), fr(frm) - 0.1, 1, pan)
+for frm, pan in [(344, -0.6), (350, -0.6), (354, 0.0), (362, 0.0), (366, 0.6), (372, 0.6)]:
+    place(pop(midi(79 if pan < 0 else 84 if pan == 0 else 88), 0.1), fr(frm), 1, pan)
 
-# D 海报
-place(boom(1.0, 36, 0.55), fr(390), 1, -0.1, 0.3)
-place(boom(0.55, 50, 0.3), fr(405), 1, 0.2, 0.2)
-place(boom(0.55, 54, 0.3), fr(420), 1, 0.5, 0.2)
-for frm, pan in [(450, -0.8), (480, -0.2), (510, 0.25), (518, 0.6), (540, 0.6), (570, -0.8), (616, 0.0)]:
-    place(tick(2600, 0.22), fr(frm), 1, pan, 0.15)
-place(whoosh(0.35, 800, 8000, 0.28), fr(530), 1, 0.6)
-place(boom(0.45, 60, 0.22), fr(546), 1, 0.5)
-place(whoosh(0.35, 600, 7000, 0.24), fr(560), 1, -0.7)
-place(boom(0.45, 58, 0.22), fr(576), 1, -0.7)
-place(boom(0.7, 44, 0.35), fr(600), 1, 0.6, 0.25)
-place(reverse_shimmer(0.42, 0.22), fr(636) - 0.42 + 0.05, 1, 0, 0.5)
-place(marimba(midi(88), 0.18, 0.8), fr(638), 1, 0, 0.6)
+# 05 建筑：楼体升起，玻璃反光
+place(whoosh(0.4, 200, 2500, 0.18, 0.4), fr(421), 1, -0.3)
+for i in range(7):
+    place(tick(2400, 0.12), fr(436 + 2 * i), 1, -0.7, 0.15)
+place(reverse_shimmer(0.42, 0.18), fr(446), 1, 0.4, 0.5)
+for frm in [446, 452]:
+    place(tick(2600, 0.16), fr(frm), 1, 0.3, 0.15)
 
-# E 一百年后
-place(whoosh(0.55, 300, 4000, 0.3), fr(658))
-place(pop(midi(72), 0.25), fr(678), 1, 0, 0.3)
-for i, frm in enumerate([704, 708, 712]):
-    place(marimba(midi([79, 76, 72][i]), 0.12, 0.3), fr(frm), 1, -0.4 + i * 0.4, 0.4)
-place(mouse_click(0.5), fr(753), 1, -0.15)
-place(riser(0.42, 0.42), fr(758))
+# 06 家具：钢管弯出来，铁纱布一条条绷上
+place(whoosh(0.42, 500, 5000, 0.2, 0.7), fr(480), 1, -0.4)
+for i, frm in enumerate([498, 502, 506]):
+    place(clap(0.16), fr(frm), 1, -0.3 + 0.3 * i, 0.1)
+    place(pop(midi(64 + i * 5), 0.12), fr(frm), 1, -0.3 + 0.3 * i)
+for frm in [510, 516]:
+    place(tick(2600, 0.16), fr(frm), 1, 0.4, 0.15)
 
-# F 片尾：收束重击 + C 大和弦
+# 07 灯具：灯罩落下，拉绳“咔哒”，灯亮
+place(pop(midi(67), 0.18), fr(548), 1, 0, 0.2)
+place(mouse_click(0.55), fr(562), 1, 0.35)
+place(reverse_shimmer(0.3, 0.2), fr(572) - 0.3 + 0.02, 1, 0, 0.5)
+for m in [72, 76, 79, 84]:
+    place(marimba(midi(m), 0.1, 0.9), fr(572), 1, 0, 0.6)
+for frm in [580, 586]:
+    place(tick(2600, 0.14), fr(frm), 1, 0.4, 0.15)
+
+# 08 纺织：梭子左右来回
+for k in range(9):
+    place(whoosh(0.07, 2500, 9000, 0.07, 0.5), fr(604 + 5 * k), 1, -0.6 if k % 2 == 0 else 0.6)
+for frm in [644, 650]:
+    place(tick(2600, 0.14), fr(frm), 1, 0.4, 0.15)
+
+# 09 舞台：三盏追光依次打开
+for i, frm in enumerate([660, 666, 672]):
+    place(boom(0.4, 70, 0.14), fr(frm), 1, -0.6 + 0.6 * i)
+    place(tick(900, 0.22), fr(frm), 1, -0.6 + 0.6 * i, 0.3)
+
+# 回顾：九宫格收拢
+place(boom(0.95, 36, 0.6), fr(720), 1, 0, 0.3)
+place(clap(0.3), fr(720), 1, 0, 0.4)
+for k, frm in enumerate([727, 730, 733, 736]):
+    place(marimba(midi([76, 79, 81, 84][k]), 0.12, 0.35), fr(frm), 1, 0.5 - k * 0.3, 0.4)
+place(whoosh(0.3, 600, 6000, 0.16), fr(742))
+place(pop(midi(88), 0.16), fr(748), 1, 0, 0.3)
+place(riser(0.4, 0.4), fr(756))
+
+# 片尾：收束重击 + C 大和弦
 place(boom(1.0, 33, 0.8), fr(782), 1, 0, 0.35)
 place(clap(0.35), fr(782), 1, 0, 0.5)
 for m in [48, 55, 60, 64, 67, 72, 76]:
