@@ -4,7 +4,7 @@
 
 # 每天一个设计风格 · Motion Style
 
-**每天拆解一个设计风格：一支 15 秒动效短片 + 一组风格图 + 全部源码。**
+**每天拆解一个设计风格：一支 15 秒动效短片 + 一组风格图 + 完整制作过程 + 全部源码。**
 设计师拿去就能用，普通人看完就能认出来。
 
 by 观默 [@guanmo_ai](https://x.com/guanmo_ai)
@@ -17,8 +17,9 @@ by 观默 [@guanmo_ai](https://x.com/guanmo_ai)
 
 | | 内容 | 规格 | 源码 |
 |---|---|---|---|
-| 🎬 | **15 秒动效短片** | 1920×1080 · 60fps · 配乐与音效全部由代码合成 | `video/*.tsx`（[Remotion](https://www.remotion.dev)）· `audio/make_music.py` |
+| 🎬 | **15 秒动效短片** | 1920×1080 · 60fps · 配乐与音效全部由代码合成 · 成片在 [Releases](https://github.com/guanmo-ai/motion-style/releases) | `video/*.tsx`（[Remotion](https://www.remotion.dev)）· `audio/make_music.py` |
 | 🖼 | **4 张风格图** | 1080×1350（X / 小红书竖图比例） | `images/*.svg`，手写 SVG，可直接改 |
+| 🛠 | **制作过程** | 研究 → 令牌 → 风格图 → 分镜 → 改版 → 质检 → 发布，每一步怎么想、怎么做、踩了什么坑 | `PROCESS.md` · `process/`（联系表、时间轴等过程图） |
 | 📐 | **风格指南** | 历史 · 规则 · 色板 · 字体 · 版式 · 常见误区 · AI 提示词 | `README.md` |
 | 🎨 | **设计令牌** | 同一份颜色 / 字体 / 线宽，视频、图片、网页共用 | `tokens.ts` · `tokens.css` · `tokens.json` |
 
@@ -28,7 +29,7 @@ by 观默 [@guanmo_ai](https://x.com/guanmo_ai)
 
 | 期 | 风格 | 年代 | 一句话 | |
 |:-:|---|---|---|---|
-| **001** | [**包豪斯 Bauhaus**](styles/001-bauhaus) | 1919—1933 | 圆、方、三角 + 红黄蓝，把“好看”变成可以教的规则 | ✅ |
+| **001** | [**包豪斯 Bauhaus**](styles/001-bauhaus) | 1919—1933 | 圆、方、三角 + 红黄蓝，把“好看”变成可以教的规则 | [🎬 视频](https://github.com/guanmo-ai/motion-style/releases/tag/day-01) · [🛠 过程](styles/001-bauhaus/PROCESS.md) |
 | 002 | 瑞士国际主义 Swiss Style | 1950s— | 网格、无衬线、客观 | 明天见 → |
 
 计划中（顺序可能调整）：构成主义 · 装饰艺术 Art Deco · 孟菲斯 Memphis · 新粗野主义网页 Neo-Brutalism · Y2K · 日式极简 …… 想看哪个，来 X 上告诉我。
@@ -47,6 +48,12 @@ npm run studio                 # 在浏览器里逐帧预览、改参数
 npm run render:001             # 生成配乐 → 渲染 out/001-bauhaus.mp4
 npx playwright install chromium
 npm run images:001             # 生成图案 → 内嵌字体的 preview SVG + 2x PNG
+
+# 制作过程里的过程图
+npx remotion bundle src/index.ts --out-dir out/bundle
+node scripts/stills.mjs out/bundle out/check 164 224 314   # 只导出想检查的帧
+python3 scripts/contact_sheet.py out/sheet.jpg --video out/001-bauhaus.mp4 "164|01 色彩" "224|02 形与色"
+python3 scripts/timeline_chart.py styles/001-bauhaus/process/timeline.json public/001-bauhaus/music.wav out/timeline.png
 ```
 
 ## 目录结构
@@ -58,19 +65,22 @@ motion-style/
 ├─ styles/
 │  └─ 001-bauhaus/
 │     ├─ README.md         # 风格指南
+│     ├─ PROCESS.md        # 制作过程（process/ 里是过程图）
 │     ├─ tokens.{ts,css,json}
 │     ├─ video/            # 15 秒短片：开场 + 9 个章节 + 九宫格回顾 + 片尾
 │     ├─ audio/make_music.py
 │     └─ images/           # poster / cheatsheet / app-ui / pattern(.py)
 │        └─ preview/       # 内嵌字体、可直接分享的 SVG
-├─ scripts/                # 字体下载、SVG → PNG
+├─ scripts/                # 字体下载 · SVG → PNG · 关键帧截图 · 联系表 · 节拍时间轴
+├─ docs/PROCESS_TEMPLATE.md # 每期制作过程的模板
 └─ public/                 # 字体与生成的音频（不入库）
 ```
 
 ## 统一规格
 
 - **时长** 15 秒 = 900 帧 @ 60fps；配乐 120 BPM，1 拍 = 30 帧，所有转场都落在拍点上
-- **结构** 钩子（0–1.5s）→ 认识它 → 拆解规则 → 现场搭一张作品 → 它在今天的哪里 → 片尾
+- **结构** 钩子（0–2s）→ 6–9 个侧面章节（每章 1–1.5s：一个主角 + 一个动作 + 一行标签）→ 回顾 → 片尾
+- **每期四件套** 视频 · 风格图 · 制作过程 · 源代码
 - **风格图** 海报 · 速查卡 · 今天的应用 · 图案/纹理，四张一组
 - **字体** 只用可免费商用的开源字体（SIL OFL）
 
