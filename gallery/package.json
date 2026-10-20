@@ -1,0 +1,10 @@
+{
+  "name": "motion-style-gallery",
+  "private": true,
+  "type": "module",
+  "engines": {"node": ">=22.12.0"},
+  "dependencies": {
+    "marked": "18.1.1",
+    "sanitize-html": "2.18.1"
+  }
+}
