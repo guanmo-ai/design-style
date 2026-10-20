@@ -1,5 +1,5 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1080" height="1350" viewBox="0 0 1080 1350">
-  <!-- Motion Style · 001 · 包豪斯 —— 海报 / 1080×1350
+  <!-- Design Style · 001 · 包豪斯 —— 海报 / 1080×1350
        构成：一条构造线把画面切成左右两半，蓝圆与红方在线上相切，
        黄色半圆坐在粗线上；文字全部小写、左对齐，竖排小字放在右侧页边。 -->
   <defs>
@@ -13,7 +13,7 @@
   <rect width="1080" height="1350" fill="#F0E9DA"/>
 
   <!-- 页眉 -->
-  <text class="mono" x="72" y="62" font-size="19" font-weight="500" fill="#161514" letter-spacing="1">motion style</text>
+  <text class="mono" x="72" y="62" font-size="19" font-weight="500" fill="#161514" letter-spacing="1">design style</text>
   <text class="cjk" x="234" y="62" font-size="19" font-weight="500" fill="#6E675E">每天一个设计风格</text>
 
   <!-- 构造线 -->

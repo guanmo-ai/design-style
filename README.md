@@ -2,14 +2,14 @@
 
 <img src="styles/001-bauhaus/images/preview/poster.svg" width="360" alt="001 包豪斯海报" />
 
-# 每天一个设计风格 · Motion Style
+# 每天一个设计风格 · Design Style
 
 **每天拆解一个设计风格：一支 15 秒动效短片 + 一组风格图 + 完整制作过程 + 全部源码。**
 设计师拿去就能用，普通人看完就能认出来。
 
 by 观默 [@guanmo_ai](https://x.com/guanmo_ai)
 
-[**打开网页画廊 →**](https://guanmo-ai.github.io/motion-style/)
+[**打开网页画廊 →**](https://guanmo-ai.github.io/design-style/)
 
 </div>
 
@@ -19,7 +19,7 @@ by 观默 [@guanmo_ai](https://x.com/guanmo_ai)
 
 | | 内容 | 规格 | 源码 |
 |---|---|---|---|
-| 🎬 | **15 秒动效短片** | 1920×1080 · 60fps · 配乐与音效全部由代码合成 · 成片在 [Releases](https://github.com/guanmo-ai/motion-style/releases) | `video/*.tsx`（[Remotion](https://www.remotion.dev)）· `audio/make_music.py` |
+| 🎬 | **15 秒动效短片** | 1920×1080 · 60fps · 配乐与音效全部由代码合成 · 成片在 [Releases](https://github.com/guanmo-ai/design-style/releases) | `video/*.tsx`（[Remotion](https://www.remotion.dev)）· `audio/make_music.py` |
 | 🖼 | **4 张风格图** | 1080×1350（X / 小红书竖图比例） | `images/*.svg`，手写 SVG，可直接改 |
 | 🛠 | **制作过程** | 研究 → 令牌 → 风格图 → 分镜 → 改版 → 质检 → 发布，每一步怎么想、怎么做、踩了什么坑 | `PROCESS.md` · `process/`（联系表、时间轴等过程图） |
 | 📐 | **风格指南** | 历史 · 规则 · 色板 · 字体 · 版式 · 常见误区 · AI 提示词 | `README.md` |
@@ -31,7 +31,7 @@ by 观默 [@guanmo_ai](https://x.com/guanmo_ai)
 
 | 期 | 风格 | 年代 | 一句话 | |
 |:-:|---|---|---|---|
-| **001** | [**包豪斯 Bauhaus**](styles/001-bauhaus) | 1919—1933 | 圆、方、三角 + 红黄蓝，把“好看”变成可以教的规则 | [🎬 视频](https://github.com/guanmo-ai/motion-style/releases/tag/day-01) · [🛠 过程](styles/001-bauhaus/PROCESS.md) |
+| **001** | [**包豪斯 Bauhaus**](styles/001-bauhaus) | 1919—1933 | 圆、方、三角 + 红黄蓝，把“好看”变成可以教的规则 | [🎬 视频](https://github.com/guanmo-ai/design-style/releases/tag/day-01) · [🛠 过程](styles/001-bauhaus/PROCESS.md) |
 | 002 | 瑞士国际主义 Swiss Style | 1950s— | 网格、无衬线、客观 | 明天见 → |
 
 计划中（顺序可能调整）：构成主义 · 装饰艺术 Art Deco · 孟菲斯 Memphis · 新粗野主义网页 Neo-Brutalism · Y2K · 日式极简 …… 想看哪个，来 X 上告诉我。
@@ -56,7 +56,7 @@ npm run gallery:serve
 需要 Node 18+、Python 3.10+、ffmpeg。
 
 ```bash
-git clone https://github.com/guanmo-ai/motion-style.git && cd motion-style
+git clone https://github.com/guanmo-ai/design-style.git && cd design-style
 npm install
 npm run fonts                  # 下载开源字体到 public/fonts（Jost / JetBrains Mono / Noto Sans SC）
 pip install numpy fonttools
@@ -76,7 +76,7 @@ python3 scripts/timeline_chart.py styles/001-bauhaus/process/timeline.json publi
 ## 目录结构
 
 ```
-motion-style/
+design-style/
 ├─ src/                    # Remotion 入口，每期注册一个 Composition：S001-Bauhaus …
 │  └─ lib/                 # 通用动画工具（缓动 / 弹簧 / 关键帧轨道）与胶片颗粒
 ├─ styles/

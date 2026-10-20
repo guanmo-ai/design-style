@@ -17,8 +17,8 @@ test('作品来自本仓库，规格和章节来自现有源文件', async () =>
   assert.equal(work.fps, 60);
   assert.equal(work.chapters.find(chapter => chapter.label === '04 海报').start, 5.5);
   assert.equal(work.images.length, 4);
-  assert.equal(sourceUrl(work, 'video'), 'https://github.com/guanmo-ai/motion-style/tree/main/styles/001-bauhaus/video');
-  assert.equal(sourceUrl(work, 'README.md'), 'https://github.com/guanmo-ai/motion-style/blob/main/styles/001-bauhaus/README.md');
+  assert.equal(sourceUrl(work, 'video'), 'https://github.com/guanmo-ai/design-style/tree/main/styles/001-bauhaus/video');
+  assert.equal(sourceUrl(work, 'README.md'), 'https://github.com/guanmo-ai/design-style/blob/main/styles/001-bauhaus/README.md');
   assert.equal(videoUrl(work), './media/001-bauhaus.mp4');
 });
 
@@ -39,11 +39,11 @@ test('搜索支持多关键词和英文，分类、空结果和排序组合生�
   assert.equal(selectWorks(two)[0].id, '002-test');
   assert.equal(selectWorks(two, {sort: 'oldest'})[0].id, '001-bauhaus');
   assert.equal(works[0].id, '001-bauhaus');
-  assert.deepEqual(readState('https://site.test/motion-style/?q=几何&sort=unknown'), {query: '几何', sort: 'latest', category: 'all'});
+  assert.deepEqual(readState('https://site.test/design-style/?q=几何&sort=unknown'), {query: '几何', sort: 'latest', category: 'all'});
 });
 
 test('静态预览支持视频范围请求、HEAD，并阻止站点外文件', async t => {
-  const directory = await mkdtemp(path.join(os.tmpdir(), 'motion-style-gallery-'));
+  const directory = await mkdtemp(path.join(os.tmpdir(), 'design-style-gallery-'));
   await writeFile(path.join(directory, 'sample.mp4'), '0123456789');
   await writeFile(path.join(directory, '.secret'), 'private');
   await symlink(path.join(directory, '.secret'), path.join(directory, 'link.txt'));

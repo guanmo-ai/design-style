@@ -12,7 +12,7 @@ for (const work of await loadCatalog()) {
   const temporary = await import('node:fs/promises').then(fs => fs.mkdtemp(path.join(cache, '.download-')));
   try {
     console.log(`正在同步本仓库视频：${work.asset}`);
-    execFileSync('gh', ['release', 'download', work.release, '--repo', 'guanmo-ai/motion-style', '--pattern', work.asset, '--dir', temporary], {stdio: 'inherit'});
+    execFileSync('gh', ['release', 'download', work.release, '--repo', 'guanmo-ai/design-style', '--pattern', work.asset, '--dir', temporary], {stdio: 'inherit'});
     const downloaded = path.join(temporary, work.asset);
     if (await sha256(downloaded) !== work.sha256) throw new Error(`${work.asset} 校验失败；请核实 Release 是否更新`);
     await rename(downloaded, file);

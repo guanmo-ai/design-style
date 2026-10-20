@@ -68,9 +68,9 @@ export function renderDocument(markdown, work, kind) {
   const tabs = Object.entries(documents).map(([key, doc]) => `<a href="${key}.html"${kind === key ? ' aria-current="page"' : ''}>${doc.title}</a>`).join('');
   const contents = headings.map(heading => `<a href="#${h(heading.id)}">${heading.label}</a>`).join('');
   const html = `<!doctype html>
-<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${h(work.title)} · ${label} — Motion Style</title><meta name="description" content="${h(work.title)}的${label}，来自 Motion Style 仓库原文。"><link rel="icon" href="../../assets/mark.svg"><link rel="stylesheet" href="../../assets/gallery.css"><link rel="stylesheet" href="../../assets/reader.css"></head>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${h(work.title)} · ${label} — Design Style</title><meta name="description" content="${h(work.title)}的${label}，来自 Design Style 仓库原文。"><link rel="icon" href="../../assets/mark.svg"><link rel="stylesheet" href="../../assets/gallery.css"><link rel="stylesheet" href="../../assets/reader.css"></head>
 <body class="reader-page"><a class="skip-link" href="#article">跳到正文</a><div class="reader-shell">
-  <header class="reader-header"><a class="brand" href="../../" aria-label="Motion Style 首页"><img src="../../assets/mark.svg" width="28" height="28" alt=""><span>Motion<span class="brand-dot">.</span>style</span></a><a class="return-work" href="../../#work-${h(work.id)}">← 返回作品</a></header>
+  <header class="reader-header"><a class="brand" href="../../" aria-label="Design Style 首页"><img src="../../assets/mark.svg" width="28" height="28" alt=""><span>Design<span class="brand-dot">.</span>style</span></a><a class="return-work" href="../../#work-${h(work.id)}">← 返回作品</a></header>
   <div class="reader-bar"><p>NO. ${h(work.number)} / ${h(work.title)} · ${h(work.titleEn)}</p><nav aria-label="作品文档">${tabs}</nav></div>
   <details class="mobile-contents"><summary>本页目录</summary><nav aria-label="本页目录">${contents}</nav></details>
   <div class="reading-layout"><aside class="reader-contents"><p>本页目录</p><nav aria-label="章节目录">${contents}</nav></aside><main id="article" class="prose">${body}</main></div>

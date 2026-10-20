@@ -3,9 +3,11 @@
 > 这一期是怎么从一个想法变成 15 秒短片和 4 张图的：怎么想的、怎么做的、哪里推翻重来、下次怎么做得更好。
 > 过程图都在 [`process/`](process)，可以复现的代码在 `video/` `audio/` `images/` 和根目录的 `scripts/`。
 
-🎬 [看成片（Releases · day-01）](https://github.com/guanmo-ai/motion-style/releases/tag/day-01) · 📐 [风格指南](README.md)
+🎬 [看成片（Releases · day-01）](https://github.com/guanmo-ai/design-style/releases/tag/day-01) · 📐 [风格指南](README.md)
 
 ---
+
+> 2026-10-20：项目统一更名为 **Design Style**，当前成片、封面与风格图已同步更新；下文过程截图保留制作时的历史版本。
 
 ## 0 · 一览
 
@@ -165,7 +167,7 @@ ffmpeg -i out/001-bauhaus.mp4 -c:v libx264 -preset slow -crf 21 -profile:v high 
 ```
 
 - 母版约 116MB，分享版约 36MB（X 上传友好）。
-- 视频不进 git 仓库，放在 [Releases · day-01](https://github.com/guanmo-ai/motion-style/releases/tag/day-01)：每天一支视频，进仓库一年后会超过 GitHub 的容量上限。
+- 视频不进 git 仓库，放在 [Releases · day-01](https://github.com/guanmo-ai/design-style/releases/tag/day-01)：每天一支视频，进仓库一年后会超过 GitHub 的容量上限。
 - 封面：回顾段第 12.75 秒的九宫格帧 → `video/cover.jpg`。
 
 ## 12 · 踩坑记录

@@ -99,7 +99,7 @@ def build():
 
 
 svg = f'''<svg xmlns="http://www.w3.org/2000/svg" width="{W}" height="{H}" viewBox="0 0 {W} {H}">
-  <!-- Motion Style · 001 · 包豪斯 —— 图案 / 由 pattern.py 生成（seed {SEED}），请勿手改 -->
+  <!-- Design Style · 001 · 包豪斯 —— 图案 / 由 pattern.py 生成（seed {SEED}），请勿手改 -->
   <defs>
     <style>
       .cjk {{ font-family: 'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif; }}

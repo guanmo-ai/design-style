@@ -1,5 +1,5 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1080" height="1350" viewBox="0 0 1080 1350">
-  <!-- Motion Style · 001 · 包豪斯 —— 如果包豪斯来做 app / 1080×1350
+  <!-- Design Style · 001 · 包豪斯 —— 如果包豪斯来做 app / 1080×1350
        规则：控件只用圆、方、三角；直角 + 粗线；三原色只做强调和封面。 -->
   <defs>
     <style>
@@ -205,6 +205,6 @@
   <text x="568" y="1246" class="cjk gray" font-size="17" font-weight="500">每张封面只用 2–3 个基本形，缩到 40px 也认得出</text>
 
   <rect x="72" y="1276" width="936" height="2" fill="#161514"/>
-  <text x="72" y="1322" class="mono gray" font-size="15" font-weight="500">github.com/guanmo-ai/motion-style</text>
+  <text x="72" y="1322" class="mono gray" font-size="15" font-weight="500">github.com/guanmo-ai/design-style</text>
   <text x="1008" y="1322" text-anchor="end" class="gray"><tspan class="mono" font-size="15" font-weight="500">@guanmo_ai · </tspan><tspan class="cjk" font-size="15" font-weight="500">每天一个设计风格</tspan></text>
 </svg>

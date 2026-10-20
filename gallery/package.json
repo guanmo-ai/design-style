@@ -1,5 +1,5 @@
 {
-  "name": "motion-style-gallery",
+  "name": "design-style-gallery",
   "private": true,
   "type": "module",
   "engines": {"node": ">=22.12.0"},

@@ -2,7 +2,7 @@
 
 > **一句话：** 只用圆、方、三角和红黄蓝，把“好看”变成一套可以教、可以量产的规则。
 
-🎬 [看视频](https://github.com/guanmo-ai/motion-style/releases/tag/day-01) · 🛠 [制作过程](PROCESS.md) · 🖼 [图片源文件](images)
+🎬 [看视频](https://github.com/guanmo-ai/design-style/releases/tag/day-01) · 🛠 [制作过程](PROCESS.md) · 🖼 [图片源文件](images)
 
 | 海报 | 速查卡 |
 |:-:|:-:|
@@ -109,7 +109,7 @@ snappy spring easing, subtle film grain, 120 bpm rhythm, no 3D, no gradients.
 
 包豪斯远不止红黄蓝——它是一所什么都教的学校。短片用 9 个章节、每章 1—1.5 秒，把它的 9 个侧面依次拍出来；圆 / 方 / 三角三种形状轮流做转场（黄色描边），所有剪辑点都落在 120 BPM 的拍子上。
 
-<a href="https://github.com/guanmo-ai/motion-style/releases/tag/day-01"><img src="video/cover.jpg" width="800" alt="短片结尾的九宫格回顾（点击看视频）" /></a>
+<a href="https://github.com/guanmo-ai/design-style/releases/tag/day-01"><img src="video/cover.jpg" width="800" alt="短片结尾的九宫格回顾（点击看视频）" /></a>
 
 | 时间 | 帧 | 章节 | 画面 | 致敬 |
 |---|---|---|---|---|

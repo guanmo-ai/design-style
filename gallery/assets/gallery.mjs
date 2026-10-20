@@ -63,7 +63,7 @@ function showDialog(trigger) {
 }
 
 function showWork(work, trigger) {
-  $('#viewer-label').textContent = `NO. ${work.number} / MOTION STYLE`;
+  $('#viewer-label').textContent = `NO. ${work.number} / DESIGN STYLE`;
   $('#viewer-content').innerHTML = `
     <video class="player" controls playsinline preload="metadata" poster="./styles/${h(work.id)}/video/cover.jpg" src="${videoUrl(work)}"></video>
     <p class="player-error" hidden>暂时无法加载视频。可以${external(releaseUrl(work), '前往本仓库 Release 观看或下载 ↗')}。</p>

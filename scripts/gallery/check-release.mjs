@@ -42,7 +42,7 @@ export async function checkRelease(base = output) {
   for (const work of works) assert.equal(await sha256(path.join(base, 'media', work.asset)), work.sha256, `视频校验失败：${work.id}`);
 
   // Model the real project-site prefix, rather than testing only at localhost /.
-  const prefix = 'https://guanmo-ai.github.io/motion-style/';
+  const prefix = 'https://guanmo-ai.github.io/design-style/';
   const htmlPages = new Map();
   for (const file of files) if (file.endsWith('.html')) htmlPages.set(file, await readFile(path.join(base, file), 'utf8'));
   let checkedLinks = 0;

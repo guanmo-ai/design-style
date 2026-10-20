@@ -7,16 +7,38 @@
     "years": "1919—1933",
     "category": "现代主义",
     "description": "远不止红黄蓝。一支 15 秒短片，从色彩、字体到建筑与舞台，认识包豪斯的九种样子。",
-    "tags": ["几何", "三原色", "网格", "字体", "建筑"],
+    "tags": [
+      "几何",
+      "三原色",
+      "网格",
+      "字体",
+      "建筑"
+    ],
     "publishedAt": "2026-10-20T07:14:44Z",
     "release": "day-01",
     "asset": "001-bauhaus.mp4",
-    "sha256": "da1b1151e5fa599829d27e2f3c47bc7c2552358ec86a477476970d9826ab83b7",
+    "sha256": "3390870b42acdf9c75c5bd9dfcc3dc09ce2603405b80b34e409f8c445a67be7a",
     "images": [
-      {"file": "poster", "title": "一张海报，认识包豪斯", "kind": "风格海报"},
-      {"file": "cheatsheet", "title": "颜色、字体与五条规则", "kind": "风格速查"},
-      {"file": "app-ui", "title": "如果包豪斯来做 App", "kind": "界面应用"},
-      {"file": "pattern", "title": "基本形的无限组合", "kind": "几何图案"}
+      {
+        "file": "poster",
+        "title": "一张海报，认识包豪斯",
+        "kind": "风格海报"
+      },
+      {
+        "file": "cheatsheet",
+        "title": "颜色、字体与五条规则",
+        "kind": "风格速查"
+      },
+      {
+        "file": "app-ui",
+        "title": "如果包豪斯来做 App",
+        "kind": "界面应用"
+      },
+      {
+        "file": "pattern",
+        "title": "基本形的无限组合",
+        "kind": "几何图案"
+      }
     ]
   }
 ]
