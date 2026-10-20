@@ -4,6 +4,12 @@
   "private": true,
   "description": "每天一个设计风格 · Motion Style — 每期一支 15 秒动效短片 + 一组风格图 + 全部源码",
   "scripts": {
+    "gallery:setup": "npm ci --prefix gallery --ignore-scripts",
+    "gallery:sync": "node scripts/gallery/sync.mjs",
+    "gallery:build": "node scripts/gallery/build.mjs",
+    "gallery:serve": "node scripts/gallery/serve.mjs",
+    "gallery:test": "node --test tests/gallery/*.test.mjs",
+    "gallery:check": "node scripts/gallery/check-release.mjs",
     "fonts": "bash scripts/fetch_fonts.sh",
     "studio": "remotion studio src/index.ts",
     "music:001": "python3 styles/001-bauhaus/audio/make_music.py",

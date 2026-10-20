@@ -9,6 +9,8 @@
 
 by 观默 [@guanmo_ai](https://x.com/guanmo_ai)
 
+[**打开网页画廊 →**](https://guanmo-ai.github.io/motion-style/)
+
 </div>
 
 ---
@@ -35,6 +37,21 @@ by 观默 [@guanmo_ai](https://x.com/guanmo_ai)
 计划中（顺序可能调整）：构成主义 · 装饰艺术 Art Deco · 孟菲斯 Memphis · 新粗野主义网页 Neo-Brutalism · Y2K · 日式极简 …… 想看哪个，来 X 上告诉我。
 
 ## 本地运行
+
+### 浏览网页画廊
+
+网页画廊只展示本仓库已发布视频，支持搜索、视频播放、风格图预览，以及站内阅读风格指南和制作过程。需要 Node.js 22.12+ 与已登录的 GitHub CLI；无需安装渲染依赖。
+
+```bash
+npm run gallery:setup
+npm run gallery:sync
+npm run gallery:build
+npm run gallery:serve
+```
+
+打开 `http://127.0.0.1:4186`。添加下一期、检查与静态托管说明见 [网页画廊维护文档](docs/GALLERY.md)。
+
+### 制作与渲染
 
 需要 Node 18+、Python 3.10+、ffmpeg。
 
