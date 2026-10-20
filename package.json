@@ -1,0 +1,25 @@
+{
+  "name": "motion-style",
+  "version": "0.1.0",
+  "private": true,
+  "description": "每天一个设计风格 · Motion Style — 每期一支 15 秒动效短片 + 一组风格图 + 全部源码",
+  "scripts": {
+    "fonts": "bash scripts/fetch_fonts.sh",
+    "studio": "remotion studio src/index.ts",
+    "music:001": "python3 styles/001-bauhaus/audio/make_music.py",
+    "render:001": "npm run music:001 && remotion render src/index.ts S001-Bauhaus out/001-bauhaus.mp4 --codec=h264 --crf=16",
+    "images:001": "python3 styles/001-bauhaus/images/pattern.py && python3 scripts/build_images.py styles/001-bauhaus/images"
+  },
+  "dependencies": {
+    "@remotion/cli": "4.0.454",
+    "@remotion/fonts": "4.0.454",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "remotion": "4.0.454"
+  },
+  "devDependencies": {
+    "@types/react": "^19.0.0",
+    "playwright": "^1.48.0",
+    "typescript": "^5.6.0"
+  }
+}

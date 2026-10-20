@@ -1,0 +1,37 @@
+/* 001 · 包豪斯 Bauhaus — CSS 设计令牌（与 tokens.ts / tokens.json 同源） */
+:root {
+  /* 色板：纸色打底 55% · 黑 15% · 蓝 15% · 红 10% · 黄 5% */
+  --bh-paper: #F0E9DA;   /* 未漂白纸 */
+  --bh-ink: #161514;     /* 印刷黑 */
+  --bh-red: #DB3A26;     /* 包豪斯红 */
+  --bh-yellow: #F2B419;  /* 铬黄 */
+  --bh-blue: #1F4FA3;    /* 钴蓝 */
+  --bh-gray: #6E675E;    /* 辅助文字 */
+
+  /* 字体 */
+  --bh-font-latin: 'Jost', 'Futura', 'Century Gothic', sans-serif;
+  --bh-font-cjk: 'Noto Sans SC', 'Source Han Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  --bh-font-mono: 'JetBrains Mono', 'SFMono-Regular', Menlo, monospace;
+
+  /* 形状与线：直角、粗线 */
+  --bh-radius: 0;            /* 只有圆形本身是圆的 */
+  --bh-rule: 6px;            /* 分隔粗线 */
+  --bh-rule-heavy: 22px;     /* 海报主粗线 */
+  --bh-tracking-display: -0.025em; /* 大字收紧 */
+  --bh-margin: 72px;         /* 1080 宽画布的外边距 */
+}
+
+/* 示例：一个包豪斯按钮 —— 蓝圆底 + 黄三角 */
+.bh-play {
+  width: 96px; height: 96px; border: 0; border-radius: 50%;
+  background: var(--bh-blue); display: grid; place-items: center; cursor: pointer;
+}
+.bh-play::before {
+  content: ''; width: 0; height: 0; margin-left: 8px;
+  border-left: 38px solid var(--bh-yellow);
+  border-top: 24px solid transparent; border-bottom: 24px solid transparent;
+}
+.bh-tag { /* 直角编号标签：01 02 03 */
+  font: 700 15px/1 var(--bh-font-mono); color: var(--bh-paper);
+  background: var(--bh-red); padding: 6px 10px; border-radius: var(--bh-radius);
+}

@@ -1,0 +1,210 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1080" height="1350" viewBox="0 0 1080 1350">
+  <!-- Motion Style · 001 · 包豪斯 —— 如果包豪斯来做 app / 1080×1350
+       规则：控件只用圆、方、三角；直角 + 粗线；三原色只做强调和封面。 -->
+  <defs>
+    <style>
+      .latin { font-family: 'Jost', 'Futura', 'Century Gothic', sans-serif; }
+      .cjk { font-family: 'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif; }
+      .mono { font-family: 'JetBrains Mono', 'SFMono-Regular', Menlo, monospace; }
+      .ink { fill: #161514; } .gray { fill: #6E675E; } .paper { fill: #F0E9DA; }
+    </style>
+    <clipPath id="screenL"><rect x="86" y="262" width="412" height="872" rx="46"/></clipPath>
+    <clipPath id="screenR"><rect x="582" y="262" width="412" height="872" rx="46"/></clipPath>
+    <clipPath id="art"><rect width="356" height="356"/></clipPath>
+    <clipPath id="thumb"><rect width="80" height="80"/></clipPath>
+    <clipPath id="mini"><rect width="44" height="44"/></clipPath>
+    <!-- 状态栏（两块屏共用） -->
+    <g id="status">
+      <text x="32" y="40" class="mono ink" font-size="17" font-weight="700">9:41</text>
+      <rect x="156" y="16" width="100" height="30" rx="15" class="ink"/>
+      <circle cx="334" cy="34" r="5" class="ink"/>
+      <rect x="346" y="29" width="10" height="10" class="ink"/>
+      <rect x="364" y="28" width="24" height="12" fill="none" stroke="#161514" stroke-width="2"/>
+      <rect x="367" y="31" width="14" height="6" class="ink"/>
+      <rect x="389" y="31" width="2" height="6" class="ink"/>
+    </g>
+  </defs>
+
+  <rect width="1080" height="1350" fill="#F0E9DA"/>
+
+  <!-- 页眉 -->
+  <text x="72" y="128" class="ink"><tspan class="cjk" font-size="60" font-weight="900">如果包豪斯来做</tspan><tspan class="latin" dx="16" font-size="64" font-weight="700">app</tspan></text>
+  <circle cx="868" cy="104" r="22" fill="#1F4FA3"/>
+  <rect x="902" y="82" width="44" height="44" fill="#DB3A26"/>
+  <polygon points="983,80 1008,125 958,125" fill="#F2B419"/>
+  <text x="72" y="178" class="cjk gray" font-size="24" font-weight="500">百年前的规则，今天的界面 · 一个音乐 app 的概念稿</text>
+  <text x="1008" y="178" text-anchor="end" class="mono gray" font-size="18" font-weight="500">ui concept no.01</text>
+  <rect x="72" y="208" width="936" height="6" fill="#161514"/>
+
+  <!-- ============ 手机 1：正在播放 ============ -->
+  <rect x="72" y="248" width="440" height="900" rx="60" fill="#161514"/>
+  <g clip-path="url(#screenL)">
+    <rect x="86" y="262" width="412" height="872" fill="#F0E9DA"/>
+    <use href="#status" x="86" y="262"/>
+
+    <!-- 导航 -->
+    <polyline points="116,343 127,354 138,343" fill="none" stroke="#161514" stroke-width="3.5"/>
+    <text x="292" y="357" text-anchor="middle" class="cjk ink" font-size="20" font-weight="700">正在播放</text>
+    <rect x="446" y="345" width="6" height="6" class="ink"/>
+    <rect x="456" y="345" width="6" height="6" class="ink"/>
+    <rect x="466" y="345" width="6" height="6" class="ink"/>
+
+    <!-- 封面：蓝底、黄圆、红方、黑柱 -->
+    <g transform="translate(114 386)">
+      <g clip-path="url(#art)">
+        <rect width="356" height="356" fill="#1F4FA3"/>
+        <circle cx="128" cy="228" r="128" fill="#F2B419"/>
+        <rect x="228" y="0" width="128" height="128" fill="#DB3A26"/>
+        <rect x="256" y="128" width="18" height="228" fill="#161514"/>
+        <circle cx="315" cy="300" r="22" fill="#F0E9DA"/>
+        <text x="22" y="48" class="latin paper" font-size="26" font-weight="700">vol.01</text>
+        <text x="22" y="78" class="mono paper" font-size="15" font-weight="500">weimar 1923</text>
+      </g>
+    </g>
+
+    <!-- 曲目 -->
+    <text x="114" y="796" class="latin ink" font-size="34" font-weight="700" letter-spacing="-0.5">kunst und technik</text>
+    <text x="114" y="830" class="cjk gray" font-size="19" font-weight="500">包豪斯乐团 · 魏玛 1923</text>
+
+    <!-- 进度：粗黑线 + 红方块把手 -->
+    <rect x="114" y="874" width="136" height="8" fill="#161514"/>
+    <rect x="250" y="877" width="220" height="2" fill="#6E675E"/>
+    <rect x="238" y="866" width="24" height="24" fill="#DB3A26"/>
+    <text x="114" y="914" class="mono gray" font-size="16" font-weight="500">1:19</text>
+    <text x="470" y="914" text-anchor="end" class="mono gray" font-size="16" font-weight="500">3:33</text>
+
+    <!-- 控制：上一首 / 播放（蓝圆 + 黄三角）/ 下一首 -->
+    <rect x="156" y="976" width="8" height="32" class="ink"/>
+    <polygon points="196,976 196,1008 166,992" class="ink"/>
+    <circle cx="292" cy="992" r="54" fill="#1F4FA3"/>
+    <polygon points="279,963 279,1021 326,992" fill="#F2B419"/>
+    <polygon points="388,976 388,1008 418,992" class="ink"/>
+    <rect x="420" y="976" width="8" height="32" class="ink"/>
+
+    <!-- 下一首 -->
+    <rect x="114" y="1068" width="356" height="2" fill="#161514"/>
+    <text x="114" y="1100" class="mono gray" font-size="15" font-weight="500">next</text>
+    <text x="164" y="1100" class="latin ink" font-size="20" font-weight="700">dessau 1925</text>
+    <rect x="452" y="1084" width="18" height="18" fill="#DB3A26"/>
+    <rect x="232" y="1119" width="120" height="5" rx="2.5" class="ink"/>
+  </g>
+
+  <!-- ============ 手机 2：资料库 ============ -->
+  <rect x="568" y="248" width="440" height="900" rx="60" fill="#161514"/>
+  <g clip-path="url(#screenR)">
+    <rect x="582" y="262" width="412" height="872" fill="#F0E9DA"/>
+    <use href="#status" x="582" y="262"/>
+
+    <text x="610" y="390" class="cjk ink" font-size="44" font-weight="900">资料库</text>
+    <text x="966" y="388" text-anchor="end" class="mono gray" font-size="17" font-weight="500">library</text>
+    <rect x="610" y="408" width="356" height="6" fill="#161514"/>
+
+    <!-- 筛选：直角标签 -->
+    <rect x="610" y="432" width="76" height="40" fill="#161514"/>
+    <text x="648" y="459" text-anchor="middle" class="cjk paper" font-size="18" font-weight="700">全部</text>
+    <rect x="699" y="433" width="74" height="38" fill="none" stroke="#161514" stroke-width="2"/>
+    <text x="736" y="459" text-anchor="middle" class="cjk ink" font-size="18" font-weight="700">专辑</text>
+    <rect x="786" y="433" width="74" height="38" fill="none" stroke="#161514" stroke-width="2"/>
+    <text x="823" y="459" text-anchor="middle" class="cjk ink" font-size="18" font-weight="700">歌单</text>
+    <rect x="873" y="433" width="92" height="38" fill="none" stroke="#161514" stroke-width="2"/>
+    <text x="919" y="459" text-anchor="middle" class="cjk ink" font-size="18" font-weight="700">艺术家</text>
+
+    <!-- 列表：每张封面 2–3 个基本形 -->
+    <!-- weimar（正在播放） -->
+    <g transform="translate(610 500) scale(0.9)"><g clip-path="url(#thumb)">
+      <rect width="80" height="80" fill="#1F4FA3"/>
+      <circle cx="29" cy="51" r="29" fill="#F2B419"/>
+      <rect x="51" y="0" width="29" height="29" fill="#DB3A26"/>
+    </g></g>
+    <text x="702" y="532" class="latin" font-size="26" font-weight="700" fill="#DB3A26">weimar</text>
+    <text x="702" y="562" class="cjk gray" font-size="17" font-weight="500">1919 · 创立 · 12 首</text>
+    <rect x="938" y="514" width="6" height="22" fill="#DB3A26"/>
+    <rect x="949" y="506" width="6" height="30" fill="#DB3A26"/>
+    <rect x="960" y="520" width="6" height="16" fill="#DB3A26"/>
+    <rect x="610" y="584" width="356" height="1.5" fill="#6E675E" opacity="0.4"/>
+
+    <!-- dessau：校舍的玻璃幕墙 -->
+    <g transform="translate(610 596) scale(0.9)"><g clip-path="url(#thumb)">
+      <rect width="80" height="80" fill="#161514"/>
+      <rect x="10" y="10" width="18" height="18" fill="#F0E9DA"/>
+      <rect x="31" y="10" width="18" height="18" fill="#F0E9DA"/>
+      <rect x="52" y="10" width="18" height="18" fill="#F0E9DA"/>
+      <rect x="10" y="31" width="18" height="18" fill="#F0E9DA"/>
+      <rect x="31" y="31" width="18" height="18" fill="#DB3A26"/>
+      <rect x="52" y="31" width="18" height="18" fill="#F0E9DA"/>
+      <rect x="10" y="52" width="18" height="18" fill="#F0E9DA"/>
+      <rect x="31" y="52" width="18" height="18" fill="#F0E9DA"/>
+      <rect x="52" y="52" width="18" height="18" fill="#F0E9DA"/>
+    </g></g>
+    <text x="702" y="628" class="latin ink" font-size="26" font-weight="700">dessau</text>
+    <text x="702" y="658" class="cjk gray" font-size="17" font-weight="500">1925 · 新校舍 · 9 首</text>
+    <text x="966" y="628" text-anchor="end" class="mono gray" font-size="16" font-weight="500">02</text>
+    <rect x="610" y="680" width="356" height="1.5" fill="#6E675E" opacity="0.4"/>
+
+    <!-- berlin -->
+    <g transform="translate(610 692) scale(0.9)"><g clip-path="url(#thumb)">
+      <rect width="80" height="80" fill="#DB3A26"/>
+      <polygon points="0,80 80,80 80,0" fill="#161514"/>
+      <circle cx="27" cy="27" r="15" fill="#F2B419"/>
+    </g></g>
+    <text x="702" y="724" class="latin ink" font-size="26" font-weight="700">berlin</text>
+    <text x="702" y="754" class="cjk gray" font-size="17" font-weight="500">1932 · 最后一站 · 6 首</text>
+    <text x="966" y="724" text-anchor="end" class="mono gray" font-size="16" font-weight="500">03</text>
+    <rect x="610" y="776" width="356" height="1.5" fill="#6E675E" opacity="0.4"/>
+
+    <!-- kandinsky：黄三角 / 红方 / 蓝圆 -->
+    <g transform="translate(610 788) scale(0.9)"><g clip-path="url(#thumb)">
+      <rect width="80" height="80" fill="#F0E9DA"/>
+      <rect x="1.5" y="1.5" width="77" height="77" fill="none" stroke="#161514" stroke-width="3"/>
+      <polygon points="8,52 30,52 19,32" fill="#F2B419"/>
+      <rect x="33" y="32" width="20" height="20" fill="#DB3A26"/>
+      <circle cx="65" cy="42" r="10" fill="#1F4FA3"/>
+    </g></g>
+    <text x="702" y="820" class="latin ink" font-size="26" font-weight="700">kandinsky</text>
+    <text x="702" y="850" class="cjk gray" font-size="17" font-weight="500">1923 · 形与色 · 3 首</text>
+    <text x="966" y="820" text-anchor="end" class="mono gray" font-size="16" font-weight="500">04</text>
+    <rect x="610" y="872" width="356" height="1.5" fill="#6E675E" opacity="0.4"/>
+
+    <!-- bayer：通用字体 -->
+    <g transform="translate(610 884) scale(0.9)"><g clip-path="url(#thumb)">
+      <rect width="80" height="80" fill="#F2B419"/>
+      <text x="9" y="58" class="latin ink" font-size="50" font-weight="700" letter-spacing="-2">ab</text>
+    </g></g>
+    <text x="702" y="916" class="latin ink" font-size="26" font-weight="700">bayer</text>
+    <text x="702" y="946" class="cjk gray" font-size="17" font-weight="500">1925 · 通用字体 · 26 首</text>
+    <text x="966" y="916" text-anchor="end" class="mono gray" font-size="16" font-weight="500">05</text>
+
+    <!-- 迷你播放条 -->
+    <rect x="610" y="986" width="356" height="64" fill="#161514"/>
+    <rect x="610" y="986" width="136" height="4" fill="#DB3A26"/>
+    <g transform="translate(620 997)"><g clip-path="url(#mini)">
+      <rect width="44" height="44" fill="#1F4FA3"/>
+      <circle cx="16" cy="28" r="16" fill="#F2B419"/>
+      <rect x="28" y="0" width="16" height="16" fill="#DB3A26"/>
+    </g></g>
+    <text x="676" y="1016" class="latin paper" font-size="18" font-weight="700">kunst und technik</text>
+    <text x="676" y="1038" class="cjk paper" font-size="14" font-weight="500" opacity="0.6">包豪斯乐团</text>
+    <polygon points="934,1004 934,1032 958,1018" fill="#F2B419"/>
+
+    <!-- 标签栏：圆 / 方（当前）/ 三角 -->
+    <circle cx="660" cy="1082" r="11" fill="none" stroke="#161514" stroke-width="3"/>
+    <rect x="777" y="1071" width="22" height="22" fill="#DB3A26"/>
+    <polygon points="916,1070 929,1093 903,1093" fill="none" stroke="#161514" stroke-width="3" stroke-linejoin="miter"/>
+    <rect x="728" y="1119" width="120" height="5" rx="2.5" class="ink"/>
+  </g>
+
+  <!-- 说明 -->
+  <rect x="72" y="1180" width="44" height="30" fill="#DB3A26"/>
+  <text x="94" y="1201" text-anchor="middle" class="mono paper" font-size="17" font-weight="700">01</text>
+  <text x="130" y="1205" class="ink"><tspan class="cjk" font-size="26" font-weight="900">正在播放</tspan><tspan class="cjk gray" dx="14" font-size="20" font-weight="500">基本形做控件</tspan></text>
+  <text x="72" y="1246" class="cjk gray" font-size="17" font-weight="500">蓝圆 + 黄三角 = 播放键，红方块当进度把手</text>
+
+  <rect x="568" y="1180" width="44" height="30" fill="#DB3A26"/>
+  <text x="590" y="1201" text-anchor="middle" class="mono paper" font-size="17" font-weight="700">02</text>
+  <text x="626" y="1205" class="ink"><tspan class="cjk" font-size="26" font-weight="900">资料库</tspan><tspan class="cjk gray" dx="14" font-size="20" font-weight="500">色块做封面</tspan></text>
+  <text x="568" y="1246" class="cjk gray" font-size="17" font-weight="500">每张封面只用 2–3 个基本形，缩到 40px 也认得出</text>
+
+  <rect x="72" y="1276" width="936" height="2" fill="#161514"/>
+  <text x="72" y="1322" class="mono gray" font-size="15" font-weight="500">github.com/guanmo-ai/motion-style</text>
+  <text x="1008" y="1322" text-anchor="end" class="gray"><tspan class="mono" font-size="15" font-weight="500">@guanmo_ai · </tspan><tspan class="cjk" font-size="15" font-weight="500">每天一个设计风格</tspan></text>
+</svg>

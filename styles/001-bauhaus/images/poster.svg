@@ -1,0 +1,44 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1080" height="1350" viewBox="0 0 1080 1350">
+  <!-- Motion Style · 001 · 包豪斯 —— 海报 / 1080×1350
+       构成：一条构造线把画面切成左右两半，蓝圆与红方在线上相切，
+       黄色半圆坐在粗线上；文字全部小写、左对齐，竖排小字放在右侧页边。 -->
+  <defs>
+    <style>
+      .latin { font-family: 'Jost', 'Futura', 'Century Gothic', sans-serif; }
+      .cjk { font-family: 'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif; }
+      .mono { font-family: 'JetBrains Mono', 'SFMono-Regular', Menlo, monospace; }
+    </style>
+  </defs>
+
+  <rect width="1080" height="1350" fill="#F0E9DA"/>
+
+  <!-- 页眉 -->
+  <text class="mono" x="72" y="62" font-size="19" font-weight="500" fill="#161514" letter-spacing="1">motion style</text>
+  <text class="cjk" x="234" y="62" font-size="19" font-weight="500" fill="#6E675E">每天一个设计风格</text>
+
+  <!-- 构造线 -->
+  <line x1="630" y1="96" x2="630" y2="1010" stroke="#161514" stroke-width="3"/>
+
+  <!-- 基本形：圆与方在构造线上相切 -->
+  <circle cx="351" cy="420" r="279" fill="#1F4FA3"/>
+  <rect x="630" y="270" width="300" height="300" fill="#DB3A26"/>
+  <circle cx="630" cy="420" r="9" fill="#F0E9DA" stroke="#161514" stroke-width="3"/>
+
+  <!-- 期号 -->
+  <text class="latin" x="1008" y="196" text-anchor="end" font-size="108" font-weight="700" fill="#161514" letter-spacing="-2">no.01</text>
+
+  <!-- 半圆坐在粗线上 -->
+  <path d="M630 1010 A189 189 0 0 1 1008 1010 Z" fill="#F2B419"/>
+  <rect x="72" y="1010" width="936" height="22" fill="#161514"/>
+
+  <!-- 中文信息 -->
+  <text class="cjk" x="68" y="858" font-size="104" font-weight="900" fill="#161514">包豪斯</text>
+  <text class="latin" x="72" y="920" font-size="42" font-weight="600" fill="#161514">1919 — 1933</text>
+  <text class="cjk" x="72" y="968" font-size="28" font-weight="500" fill="#6E675E">魏玛 · 德绍 · 柏林</text>
+
+  <!-- 右侧页边竖排：格罗皮乌斯 1923 年的口号 -->
+  <text class="latin" transform="translate(1046 270) rotate(90)" font-size="21" font-weight="500" fill="#161514" letter-spacing="3">kunst und technik — eine neue einheit · 1923</text>
+
+  <!-- 主字 -->
+  <text class="latin" x="58" y="1284" font-size="257" font-weight="700" fill="#161514" letter-spacing="-6">bauhaus</text>
+</svg>

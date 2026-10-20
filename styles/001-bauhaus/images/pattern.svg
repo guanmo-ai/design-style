@@ -1,0 +1,90 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1080" height="1350" viewBox="0 0 1080 1350">
+  <!-- Motion Style · 001 · 包豪斯 —— 图案 / 由 pattern.py 生成（seed 1919），请勿手改 -->
+  <defs>
+    <style>
+      .cjk { font-family: 'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif; }
+      .mono { font-family: 'JetBrains Mono', 'SFMono-Regular', Menlo, monospace; }
+    </style>
+  </defs>
+  <rect width="1080" height="1350" fill="#F0E9DA"/>
+  <rect x="180" y="180" width="360" height="360" fill="#F0E9DA"/>
+  <path d="M180 540 V180 A360 360 0 0 1 540 540 Z" fill="#F2B419"/>
+  <rect x="540" y="720" width="360" height="360" fill="#161514"/>
+  <circle cx="720" cy="900" r="136.8" fill="#F0E9DA"/><circle cx="720" cy="900" r="61.2" fill="#161514"/>
+  <rect x="0" y="0" width="180" height="180" fill="#161514"/>
+  <circle cx="90" cy="90" r="64.8" fill="#DB3A26"/>
+  <circle cx="151.2" cy="28.8" r="10.8" fill="#1F4FA3"/>
+  <rect x="180" y="0" width="180" height="180" fill="#1F4FA3"/>
+  <rect x="219.6" y="39.6" width="100.8" height="100.8" fill="#F0E9DA" transform="rotate(180 270 90)"/>
+  <rect x="360" y="0" width="180" height="180" fill="#DB3A26"/>
+  <path d="M360 180 A90 90 0 0 1 540 180 Z" fill="#161514" transform="rotate(180 450 90)"/>
+  <rect x="540" y="0" width="180" height="180" fill="#F0E9DA"/>
+  <circle cx="630" cy="90" r="64.8" fill="#1F4FA3"/>
+  <circle cx="691.2" cy="28.8" r="10.8" fill="#F2B419"/>
+  <rect x="720" y="0" width="180" height="180" fill="#F2B419"/>
+  <path d="M720 180 A90 90 0 0 1 900 180 Z" fill="#DB3A26" transform="rotate(270 810 90)"/>
+  <rect x="900" y="0" width="180" height="180" fill="#161514"/>
+  <path d="M900 180 A90 90 0 0 1 1080 180 Z" fill="#F0E9DA" transform="rotate(180 990 90)"/>
+  <rect x="0" y="180" width="180" height="180" fill="#1F4FA3"/>
+  <circle cx="90" cy="270" r="64.8" fill="#161514"/>
+  <rect x="540" y="180" width="180" height="180" fill="#161514"/>
+  <path d="M540 360 V180 A180 180 0 0 1 720 360 Z" fill="#DB3A26" transform="rotate(180 630 270)"/>
+  <rect x="720" y="180" width="180" height="180" fill="#F0E9DA"/>
+  <rect x="759.6" y="219.6" width="100.8" height="100.8" fill="#1F4FA3" transform="rotate(180 810 270)"/>
+  <circle cx="871.2" cy="208.8" r="10.8" fill="#DB3A26"/>
+  <rect x="900" y="180" width="180" height="180" fill="#DB3A26"/>
+  <rect x="925.714" y="180" width="25.7143" height="180" fill="#F2B419" transform="rotate(180 990 270)"/><rect x="977.143" y="180" width="25.7143" height="180" fill="#F2B419" transform="rotate(180 990 270)"/><rect x="1028.57" y="180" width="25.7143" height="180" fill="#F2B419" transform="rotate(180 990 270)"/>
+  <rect x="0" y="360" width="180" height="180" fill="#DB3A26"/>
+  <path d="M0 540 V360 A180 180 0 0 1 180 540 Z" fill="#F0E9DA"/>
+  <rect x="540" y="360" width="180" height="180" fill="#1F4FA3"/>
+  <path d="M540 540 V360 A180 180 0 0 1 720 540 Z" fill="#F2B419" transform="rotate(180 630 450)"/>
+  <rect x="720" y="360" width="180" height="180" fill="#DB3A26"/>
+  <circle cx="810" cy="450" r="64.8" fill="#161514"/>
+  <circle cx="871.2" cy="388.8" r="10.8" fill="#F2B419"/>
+  <rect x="900" y="360" width="180" height="180" fill="#F0E9DA"/>
+  <circle cx="990" cy="450" r="64.8" fill="#1F4FA3"/>
+  <rect x="0" y="540" width="180" height="180" fill="#1F4FA3"/>
+  <path d="M0 720 A90 90 0 0 1 180 720 Z" fill="#F2B419" transform="rotate(270 90 630)"/>
+  <rect x="180" y="540" width="180" height="180" fill="#161514"/>
+  <path d="M180 720 A90 90 0 0 1 360 720 Z" fill="#DB3A26" transform="rotate(270 270 630)"/>
+  <rect x="360" y="540" width="180" height="180" fill="#1F4FA3"/>
+  <polygon points="360,540 540,720 360,720" fill="#F0E9DA"/>
+  <rect x="540" y="540" width="180" height="180" fill="#DB3A26"/>
+  <polygon points="540,540 720,720 540,720" fill="#1F4FA3" transform="rotate(180 630 630)"/>
+  <rect x="720" y="540" width="180" height="180" fill="#F2B419"/>
+  <polygon points="720,540 900,720 720,720" fill="#161514" transform="rotate(180 810 630)"/>
+  <rect x="900" y="540" width="180" height="180" fill="#DB3A26"/>
+  <path d="M900 720 A90 90 0 0 1 1080 720 Z" fill="#F0E9DA" transform="rotate(90 990 630)"/>
+  <rect x="0" y="720" width="180" height="180" fill="#F0E9DA"/>
+  <polygon points="0,720 180,900 0,900" fill="#DB3A26"/>
+  <rect x="180" y="720" width="180" height="180" fill="#F2B419"/>
+  <rect x="205.714" y="720" width="25.7143" height="180" fill="#1F4FA3" transform="rotate(270 270 810)"/><rect x="257.143" y="720" width="25.7143" height="180" fill="#1F4FA3" transform="rotate(270 270 810)"/><rect x="308.571" y="720" width="25.7143" height="180" fill="#1F4FA3" transform="rotate(270 270 810)"/>
+  <rect x="360" y="720" width="180" height="180" fill="#DB3A26"/>
+  <path d="M360 900 A90 90 0 0 1 540 900 Z" fill="#F0E9DA" transform="rotate(90 450 810)"/>
+  <rect x="900" y="720" width="180" height="180" fill="#F2B419"/>
+  <rect x="925.714" y="720" width="25.7143" height="180" fill="#1F4FA3" transform="rotate(180 990 810)"/><rect x="977.143" y="720" width="25.7143" height="180" fill="#1F4FA3" transform="rotate(180 990 810)"/><rect x="1028.57" y="720" width="25.7143" height="180" fill="#1F4FA3" transform="rotate(180 990 810)"/>
+  <rect x="0" y="900" width="180" height="180" fill="#F2B419"/>
+  <path d="M0 1080 V900 A180 180 0 0 1 180 1080 Z" fill="#1F4FA3"/>
+  <rect x="180" y="900" width="180" height="180" fill="#F0E9DA"/>
+  <path d="M180 1080 V900 A180 180 0 0 1 360 1080 Z" fill="#DB3A26" transform="rotate(180 270 990)"/>
+  <rect x="360" y="900" width="180" height="180" fill="#F2B419"/>
+  <path d="M360 1080 V900 A180 180 0 0 1 540 1080 Z" fill="#1F4FA3" transform="rotate(180 450 990)"/>
+  <rect x="900" y="900" width="180" height="180" fill="#DB3A26"/>
+  <rect x="925.714" y="900" width="25.7143" height="180" fill="#F0E9DA" transform="rotate(270 990 990)"/><rect x="977.143" y="900" width="25.7143" height="180" fill="#F0E9DA" transform="rotate(270 990 990)"/><rect x="1028.57" y="900" width="25.7143" height="180" fill="#F0E9DA" transform="rotate(270 990 990)"/>
+  <rect x="0" y="1080" width="180" height="180" fill="#F0E9DA"/>
+  <circle cx="90" cy="1170" r="68.4" fill="#161514"/><circle cx="90" cy="1170" r="30.6" fill="#F0E9DA"/>
+  <circle cx="151.2" cy="1108.8" r="10.8" fill="#1F4FA3"/>
+  <rect x="180" y="1080" width="180" height="180" fill="#1F4FA3"/>
+  <path d="M180 1260 A90 90 0 0 1 360 1260 Z" fill="#F2B419" transform="rotate(180 270 1170)"/>
+  <rect x="360" y="1080" width="180" height="180" fill="#F0E9DA"/>
+  <rect x="385.714" y="1080" width="25.7143" height="180" fill="#DB3A26" transform="rotate(180 450 1170)"/><rect x="437.143" y="1080" width="25.7143" height="180" fill="#DB3A26" transform="rotate(180 450 1170)"/><rect x="488.571" y="1080" width="25.7143" height="180" fill="#DB3A26" transform="rotate(180 450 1170)"/>
+  <rect x="540" y="1080" width="180" height="180" fill="#1F4FA3"/>
+  <path d="M540 1260 V1080 A180 180 0 0 1 720 1260 Z" fill="#F2B419" transform="rotate(90 630 1170)"/>
+  <rect x="720" y="1080" width="180" height="180" fill="#DB3A26"/>
+  <path d="M720 1260 V1080 A180 180 0 0 1 900 1260 Z" fill="#F0E9DA" transform="rotate(270 810 1170)"/>
+  <rect x="900" y="1080" width="180" height="180" fill="#1F4FA3"/>
+  <polygon points="900,1080 1080,1260 900,1260" fill="#F2B419" transform="rotate(270 990 1170)"/>
+  <rect y="1260" width="1080" height="90" fill="#161514"/>
+  <text x="48" y="1314" fill="#F0E9DA"><tspan class="mono" font-size="22" font-weight="700">bauhaus pattern</tspan><tspan class="cjk" dx="18" font-size="20" font-weight="500" fill-opacity="0.7">7 种基本形 × 5 种颜色</tspan></text>
+  <text x="1032" y="1314" text-anchor="end" fill="#F0E9DA"><tspan class="mono" font-size="18" font-weight="500" fill-opacity="0.7">python3 pattern.py </tspan><tspan class="mono" font-size="18" font-weight="700" fill="#F2B419">1919</tspan></text>
+</svg>

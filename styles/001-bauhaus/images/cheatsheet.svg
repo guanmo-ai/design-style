@@ -1,0 +1,130 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1080" height="1350" viewBox="0 0 1080 1350">
+  <!-- Motion Style · 001 · 包豪斯 —— 风格速查卡 / 1080×1350 -->
+  <defs>
+    <style>
+      .latin { font-family: 'Jost', 'Futura', 'Century Gothic', sans-serif; }
+      .cjk { font-family: 'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif; }
+      .mono { font-family: 'JetBrains Mono', 'SFMono-Regular', Menlo, monospace; }
+      .ink { fill: #161514; } .gray { fill: #6E675E; } .paper { fill: #F0E9DA; }
+    </style>
+  </defs>
+  <rect width="1080" height="1350" fill="#F0E9DA"/>
+
+  <!-- 页眉 -->
+  <text x="72" y="128" class="ink"><tspan class="cjk" font-size="64" font-weight="900">包豪斯</tspan><tspan class="latin" dx="20" font-size="64" font-weight="700">bauhaus</tspan></text>
+  <circle cx="868" cy="104" r="22" fill="#1F4FA3"/>
+  <rect x="902" y="82" width="44" height="44" fill="#DB3A26"/>
+  <polygon points="983,80 1008,125 958,125" fill="#F2B419"/>
+  <text x="72" y="178" class="cjk gray" font-size="24" font-weight="500">风格速查卡 · 1919—1933 · 魏玛 / 德绍 / 柏林</text>
+  <text x="1008" y="178" text-anchor="end" class="mono gray" font-size="18" font-weight="500">motion style no.01</text>
+  <rect x="72" y="208" width="936" height="6" fill="#161514"/>
+
+  <!-- 01 色板 -->
+  <rect x="72" y="244" width="44" height="30" fill="#DB3A26"/>
+  <text x="94" y="265" text-anchor="middle" class="mono paper" font-size="17" font-weight="700">01</text>
+  <text x="130" y="269" class="cjk ink" font-size="26" font-weight="900">色板</text>
+  <text x="192" y="268" class="mono gray" font-size="17" font-weight="500">palette</text>
+
+  <rect x="72" y="292" width="172" height="136" fill="#DB3A26"/>
+  <rect x="263" y="292" width="172" height="136" fill="#F2B419"/>
+  <rect x="454" y="292" width="172" height="136" fill="#1F4FA3"/>
+  <rect x="645" y="292" width="172" height="136" fill="#161514"/>
+  <rect x="837" y="293" width="170" height="134" fill="#F0E9DA" stroke="#161514" stroke-width="2"/>
+
+  <g class="cjk ink" font-size="21" font-weight="700">
+    <text x="72" y="462">包豪斯红</text><text x="263" y="462">铬黄</text><text x="454" y="462">钴蓝</text><text x="645" y="462">印刷黑</text><text x="836" y="462">未漂白纸</text>
+  </g>
+  <g class="mono ink" font-size="18" font-weight="600">
+    <text x="72" y="490">#DB3A26</text><text x="263" y="490">#F2B419</text><text x="454" y="490">#1F4FA3</text><text x="645" y="490">#161514</text><text x="836" y="490">#F0E9DA</text>
+  </g>
+  <g class="mono gray" font-size="15" font-weight="500">
+    <text x="72" y="514">219 58 38</text><text x="263" y="514">242 180 25</text><text x="454" y="514">31 79 163</text><text x="645" y="514">22 21 20</text><text x="836" y="514">240 233 218</text>
+  </g>
+
+  <!-- 建议面积比 -->
+  <rect x="72" y="548" width="515" height="28" fill="#F0E9DA" stroke="#161514" stroke-width="2"/>
+  <rect x="587" y="547" width="140" height="30" fill="#161514"/>
+  <rect x="727" y="547" width="140" height="30" fill="#1F4FA3"/>
+  <rect x="867" y="547" width="94" height="30" fill="#DB3A26"/>
+  <rect x="961" y="547" width="47" height="30" fill="#F2B419"/>
+  <g class="mono" font-size="15" font-weight="600">
+    <text x="86" y="567" class="ink">55%</text><text x="601" y="567" class="paper">15%</text><text x="741" y="567" class="paper">15%</text><text x="879" y="567" class="paper">10%</text><text x="968" y="567" class="ink">5%</text>
+  </g>
+  <text x="72" y="608" class="cjk gray" font-size="18" font-weight="500">建议面积比：纸色打底，黑色定结构，三原色里只让一种当主角。</text>
+
+  <!-- 02 字体 -->
+  <rect x="72" y="652" width="44" height="30" fill="#DB3A26"/>
+  <text x="94" y="673" text-anchor="middle" class="mono paper" font-size="17" font-weight="700">02</text>
+  <text x="130" y="677" class="cjk ink" font-size="26" font-weight="900">字体</text>
+  <text x="192" y="676" class="mono gray" font-size="17" font-weight="500">type</text>
+
+  <text x="66" y="800" class="latin ink" font-size="112" font-weight="700" letter-spacing="-3">bauhaus</text>
+  <text x="72" y="842" class="mono gray" font-size="16" font-weight="500">jost 700 · futura 的开源替代</text>
+  <text x="72" y="868" class="cjk gray" font-size="17" font-weight="500">几何无衬线 · 全小写 · 字距收紧</text>
+
+  <text x="556" y="800" class="cjk ink" font-size="112" font-weight="900">包豪斯</text>
+  <text x="560" y="842" class="mono gray" font-size="16" font-weight="500">noto sans sc black</text>
+  <text x="560" y="868" class="cjk gray" font-size="17" font-weight="500">思源黑体 heavy · 粗笔画、零装饰</text>
+
+  <!-- 03 五条法则 -->
+  <rect x="72" y="914" width="44" height="30" fill="#DB3A26"/>
+  <text x="94" y="935" text-anchor="middle" class="mono paper" font-size="17" font-weight="700">03</text>
+  <text x="130" y="939" class="cjk ink" font-size="26" font-weight="900">五条法则</text>
+  <text x="244" y="938" class="mono gray" font-size="17" font-weight="500">rules</text>
+
+  <g fill="none" stroke="#161514" stroke-width="2">
+    <rect x="73" y="963" width="170" height="118"/>
+    <rect x="264" y="963" width="170" height="118"/>
+    <rect x="455" y="963" width="170" height="118"/>
+    <rect x="646" y="963" width="170" height="118"/>
+    <rect x="838" y="963" width="170" height="118"/>
+  </g>
+  <!-- 1 基本形 -->
+  <circle cx="114" cy="1022" r="22" fill="#1F4FA3"/>
+  <rect x="140" y="1000" width="42" height="42" fill="#DB3A26"/>
+  <polygon points="214,998 238,1042 190,1042" fill="#F2B419" transform="translate(-10 2)"/>
+  <!-- 2 三原色 -->
+  <rect x="296" y="983" width="24" height="78" fill="#DB3A26"/>
+  <rect x="324" y="983" width="24" height="78" fill="#F2B419"/>
+  <rect x="352" y="983" width="24" height="78" fill="#1F4FA3"/>
+  <rect x="380" y="983" width="24" height="78" fill="#161514"/>
+  <!-- 3 全小写 -->
+  <text x="500" y="1046" text-anchor="middle" class="latin gray" font-size="44" font-weight="500">A</text>
+  <line x1="480" y1="1050" x2="520" y2="1006" stroke="#DB3A26" stroke-width="4"/>
+  <text x="578" y="1050" text-anchor="middle" class="latin ink" font-size="78" font-weight="700">a</text>
+  <!-- 4 不对称平衡 -->
+  <line x1="666" y1="1052" x2="796" y2="1052" stroke="#161514" stroke-width="5"/>
+  <polygon points="716,1056 730,1074 702,1074" fill="#161514"/>
+  <circle cx="694" cy="1025" r="24" fill="#1F4FA3"/>
+  <rect x="772" y="1036" width="14" height="14" fill="#DB3A26"/>
+  <!-- 5 网格粗线 -->
+  <g stroke="#161514" stroke-opacity="0.28" stroke-width="1.5">
+    <line x1="868" y1="975" x2="868" y2="1069"/><line x1="904" y1="975" x2="904" y2="1069"/>
+    <line x1="940" y1="975" x2="940" y2="1069"/><line x1="976" y1="975" x2="976" y2="1069"/>
+  </g>
+  <rect x="904" y="984" width="36" height="36" fill="#1F4FA3"/>
+  <rect x="858" y="1034" width="128" height="10" fill="#161514"/>
+
+  <g class="cjk ink" font-size="24" font-weight="900">
+    <text x="72" y="1118">基本形</text><text x="263" y="1118">三原色</text><text x="454" y="1118">全小写</text><text x="645" y="1118">不对称</text><text x="837" y="1118">网格粗线</text>
+  </g>
+  <g class="cjk gray" font-size="17" font-weight="500">
+    <text x="72" y="1146">只用圆、方、三角</text><text x="72" y="1170">不画具象图形</text>
+    <text x="263" y="1146">红黄蓝 + 黑白</text><text x="263" y="1170">纯色，不用渐变</text>
+    <text x="454" y="1146">几何无衬线</text><text x="454" y="1170">不用大写字母</text>
+    <text x="645" y="1146">重心偏离中心</text><text x="645" y="1170">靠大小求平衡</text>
+    <text x="837" y="1146">元素吸附网格</text><text x="837" y="1170">粗线划分区域</text>
+  </g>
+
+  <!-- 04 do / don't -->
+  <rect x="72" y="1204" width="459" height="82" fill="#161514"/>
+  <text x="96" y="1238" class="paper"><tspan class="latin" font-size="24" font-weight="700">do</tspan><tspan class="cjk" dx="12" font-size="20" font-weight="900">这样做</tspan></text>
+  <text x="96" y="1268" class="cjk paper" font-size="18" font-weight="500">大面积纯色 · 几何切分 · 大胆留白</text>
+  <rect x="550" y="1205" width="457" height="80" fill="none" stroke="#161514" stroke-width="2"/>
+  <text x="574" y="1238" fill="#DB3A26"><tspan class="latin" font-size="24" font-weight="700">don't</tspan><tspan class="cjk" dx="12" font-size="20" font-weight="900">别这样</tspan></text>
+  <text x="574" y="1268" class="cjk ink" font-size="18" font-weight="500">渐变 · 投影 · 装饰花纹 · 衬线体</text>
+
+  <!-- 页脚 -->
+  <text x="72" y="1322" class="mono gray" font-size="15" font-weight="500">github.com/guanmo-ai/motion-style</text>
+  <text x="1008" y="1322" text-anchor="end" class="gray"><tspan class="mono" font-size="15" font-weight="500">@guanmo_ai · </tspan><tspan class="cjk" font-size="15" font-weight="500">每天一个设计风格</tspan></text>
+</svg>
