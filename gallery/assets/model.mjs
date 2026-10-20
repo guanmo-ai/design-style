@@ -1,4 +1,4 @@
-export const REPO = 'https://github.com/guanmo-ai/motion-style';
+export const REPO = 'https://github.com/guanmo-ai/design-style';
 export const sourceUrl = (work, file = '') => `${REPO}/${/\.[a-z0-9]+$/i.test(file) ? 'blob' : 'tree'}/main/styles/${work.id}/${file}`;
 export const releaseUrl = work => `${REPO}/releases/tag/${work.release}`;
 export const videoUrl = work => `./media/${work.asset}`;

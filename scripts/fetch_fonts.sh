@@ -11,4 +11,4 @@ for w in Regular Medium Bold Black; do                                        # 
   curl -fsSL -o "NotoSansSC-$w.otf" "$NOTO/NotoSansSC-$w.otf"
 done
 ls -lh
-echo "✓ 字体就绪。视频渲染时 Jost / JetBrains Mono 自动加载；中文字体请同时安装到系统（双击 .otf 安装）。"
+echo "✓ 字体就绪。视频渲染时 Jost / JetBrains Mono / Noto Sans SC 自动加载，无需安装到系统。"

@@ -2,7 +2,7 @@
 
 > 复制到 `styles/NNN-name/PROCESS.md`，边做边写。过程图放在同目录的 `process/`。
 
-🎬 [看成片（Releases · day-NN）](https://github.com/guanmo-ai/motion-style/releases/tag/day-NN) · 📐 [风格指南](README.md)
+🎬 [看成片（Releases · day-NN）](https://github.com/guanmo-ai/design-style/releases/tag/day-NN) · 📐 [风格指南](README.md)
 
 ## 0 · 一览
 | # | 步骤 | 产出 | 工具 / 文件 |

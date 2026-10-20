@@ -1,5 +1,5 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1080" height="1350" viewBox="0 0 1080 1350">
-  <!-- Motion Style · 001 · 包豪斯 —— 风格速查卡 / 1080×1350 -->
+  <!-- Design Style · 001 · 包豪斯 —— 风格速查卡 / 1080×1350 -->
   <defs>
     <style>
       .latin { font-family: 'Jost', 'Futura', 'Century Gothic', sans-serif; }
@@ -16,7 +16,7 @@
   <rect x="902" y="82" width="44" height="44" fill="#DB3A26"/>
   <polygon points="983,80 1008,125 958,125" fill="#F2B419"/>
   <text x="72" y="178" class="cjk gray" font-size="24" font-weight="500">风格速查卡 · 1919—1933 · 魏玛 / 德绍 / 柏林</text>
-  <text x="1008" y="178" text-anchor="end" class="mono gray" font-size="18" font-weight="500">motion style no.01</text>
+  <text x="1008" y="178" text-anchor="end" class="mono gray" font-size="18" font-weight="500">design style no.01</text>
   <rect x="72" y="208" width="936" height="6" fill="#161514"/>
 
   <!-- 01 色板 -->
@@ -125,6 +125,6 @@
   <text x="574" y="1268" class="cjk ink" font-size="18" font-weight="500">渐变 · 投影 · 装饰花纹 · 衬线体</text>
 
   <!-- 页脚 -->
-  <text x="72" y="1322" class="mono gray" font-size="15" font-weight="500">github.com/guanmo-ai/motion-style</text>
+  <text x="72" y="1322" class="mono gray" font-size="15" font-weight="500">github.com/guanmo-ai/design-style</text>
   <text x="1008" y="1322" text-anchor="end" class="gray"><tspan class="mono" font-size="15" font-weight="500">@guanmo_ai · </tspan><tspan class="cjk" font-size="15" font-weight="500">每天一个设计风格</tspan></text>
 </svg>

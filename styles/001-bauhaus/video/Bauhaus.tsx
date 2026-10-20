@@ -1,5 +1,5 @@
 /**
- * Motion Style · 001 · 包豪斯 Bauhaus（1919—1933）
+ * Design Style · 001 · 包豪斯 Bauhaus（1919—1933）
  * 15s · 1920×1080 · 60fps · 120 BPM（1 拍 = 30 帧，所有剪辑点都落在拍子上）
  *
  * 包豪斯远不止红黄蓝 —— 一所学校，九种样子：
@@ -22,6 +22,9 @@ import {cjk, H, latin, mixed, mono, Rise, triPoints, W} from './ui';
 
 loadFont({family: 'Jost', url: staticFile('fonts/Jost.ttf'), weight: '100 900', format: 'truetype'});
 loadFont({family: 'JetBrains Mono', url: staticFile('fonts/JetBrainsMono.ttf'), weight: '100 800', format: 'truetype'});
+for (const [weight, name] of [[500, 'Medium'], [700, 'Bold'], [900, 'Black']] as const) {
+  loadFont({family: 'Noto Sans SC', url: staticFile(`fonts/NotoSansSC-${name}.otf`), weight: String(weight), format: 'opentype'});
+}
 
 export const BAUHAUS_DURATION = 900;
 const RECAP = 720;
@@ -89,7 +92,7 @@ const Hook: React.FC<{f: number}> = ({f}) => (
     <g transform={`translate(${96 + tween(f, FLY, 30, 0, 194, E.inOut)} 0)`}>
       <Rise f={f} at={14} dy={20}>
         <text x={0} y={112} fill={C.ink}>
-          <tspan style={{...latin(30, 600), letterSpacing: 1}}>motion style</tspan>
+          <tspan style={{...latin(30, 600), letterSpacing: 1}}>design style</tspan>
           <tspan dx={14} style={cjk(28, 700)} fillOpacity={0.55}>
             包豪斯
           </tspan>
@@ -147,7 +150,7 @@ const Chrome: React.FC<{ch: Chapter; i: number; t: number}> = ({ch, i, t}) => {
       <rect x={160} y={80} width={40} height={40} fill={ch.bg === C.red ? C.paper : C.red} />
       <polygon points={triPoints(52)} transform="translate(240 104)" fill={C.yellow} />
       <text x={290} y={112} fill={fg}>
-        <tspan style={{...latin(30, 600), letterSpacing: 1}}>motion style</tspan>
+        <tspan style={{...latin(30, 600), letterSpacing: 1}}>design style</tspan>
         <tspan dx={14} style={cjk(28, 700)} fillOpacity={0.55}>
           包豪斯
         </tspan>
@@ -327,7 +330,7 @@ const EndCard: React.FC<{f: number}> = ({f}) => {
           <polygon points={`${96},${-20} ${117},${17} ${75},${17}`} fill={C.ink} />
         </g>
         <text x={262} y={115} fill={C.ink} style={{...latin(30, 600), letterSpacing: 1}}>
-          motion style
+          design style
         </text>
       </Rise>
       <Rise f={f} at={788} dy={60}>
@@ -364,7 +367,7 @@ const EndCard: React.FC<{f: number}> = ({f}) => {
           @guanmo_ai
         </text>
         <text x={1824} y={990} textAnchor="end" fill={C.ink} style={mono(24, 500)}>
-          github.com/guanmo-ai/motion-style
+          github.com/guanmo-ai/design-style
         </text>
       </Rise>
     </g>

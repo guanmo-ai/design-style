@@ -1,4 +1,4 @@
-name: Deploy Motion Style
+name: Deploy Design Style
 
 on:
   push:

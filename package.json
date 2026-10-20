@@ -1,8 +1,8 @@
 {
-  "name": "motion-style",
+  "name": "design-style",
   "version": "0.1.0",
   "private": true,
-  "description": "每天一个设计风格 · Motion Style — 每期一支 15 秒动效短片 + 一组风格图 + 全部源码",
+  "description": "每天一个设计风格 · Design Style — 每期一支 15 秒动效短片 + 一组风格图 + 全部源码",
   "scripts": {
     "gallery:setup": "npm ci --prefix gallery --ignore-scripts",
     "gallery:sync": "node scripts/gallery/sync.mjs",

@@ -44,5 +44,5 @@ if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.me
   const port = Number(process.env.PORT || 4186);
   const server = createGalleryServer();
   server.on('error', error => {console.error(`预览启动失败：${error.message}`);process.exitCode = 1;});
-  server.listen(port, '127.0.0.1', () => console.log(`Motion Style 画廊：http://127.0.0.1:${port}`));
+  server.listen(port, '127.0.0.1', () => console.log(`Design Style 画廊：http://127.0.0.1:${port}`));
 }
