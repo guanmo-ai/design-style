@@ -1,6 +1,6 @@
 # Design Style 网页画廊
 
-静态画廊只展示本仓库的已发布短片。首页仅展示作品卡片，以及搜索、分类和排序。点击卡片进入作品详情后，展示视频、风格图片，以及指南、过程与源码入口；图片可继续放大或下载 SVG，关闭图片后返回原作品详情。风格指南和制作过程在站内独立阅读页打开，支持章节目录、文档切换、表格横向滚动与返回作品；源代码入口链接 GitHub。
+静态画廊只展示本仓库的已发布短片。作品分两类：**风格**（`styles/`，风格是皮）与**布局**（`layouts/`，布局是骨）。首页仅展示作品卡片，以及搜索、类型（全部 / 风格 / 布局）、分类和排序。点击卡片进入作品详情后，展示视频、风格图片或布局图片，以及指南、过程与源码入口；图片可继续放大或下载 SVG，关闭图片后返回原作品详情。风格指南（布局为「布局指南」）和制作过程在站内独立阅读页打开，支持章节目录、文档切换、表格横向滚动与返回作品；源代码入口链接 GitHub。
 
 ## 本地预览
 
@@ -31,12 +31,12 @@ npm run gallery:check   # 构建后检查发布文件、Pages 子路径链接、
 
 ## 添加下一期
 
-1. 完成 `styles/NNN-name/`：封面 `video/cover.jpg`、风格图 `images/preview/*.svg` 及对应源文件、`README.md`、`PROCESS.md`、`tokens.json`、`process/timeline.json`。
-2. 在本仓库 Release 发布成片。视频名使用 `NNN-name.mp4`。
-3. 向 `gallery/data/works.json` 添加条目，填写期号、标题、分类、简介、标签、发布日期、Release tag、视频文件名、SHA-256 与四张风格图的信息。SHA-256 可由 `gh release view <tag> --repo guanmo-ai/design-style --json assets` 返回的 digest 核对。
+1. 完成本期目录：风格为 `styles/NNN-name/`（三位期号），布局为 `layouts/NN-name/`（两位期号）。内含封面 `video/cover.jpg`、风格图或布局图 `images/preview/*.svg` 及对应源文件、`README.md`、`PROCESS.md`、`tokens.json`、`process/timeline.json`。
+2. 在本仓库 Release 发布成片。视频名与目录名一致：风格 `NNN-name.mp4`，布局 `NN-name.mp4`；Release tag 现有 `day-01`（风格 001）与 `layout-01`（布局 01）。
+3. 向 `gallery/data/works.json` 添加条目，填写类型 `type`（`style` 或 `layout`，缺省按 `style`）、期号、标题、分类、简介、标签、发布日期、Release tag、视频文件名、SHA-256 与四张图的信息。SHA-256 可由 `gh release view <tag> --repo guanmo-ai/design-style --json assets` 返回的 digest 核对。
 4. 运行同步、测试、构建并进行浏览器检查。视频规格与章节自动读取本期 tokens 和 timeline，不重复手填。
 
-作品直达链接格式：`?q=包豪斯#work-001-bauhaus`。没有匹配时显示空状态，不展示尚未发布的预告作品。每一期的风格图只在对应作品详情中展示，首页不展示具体风格图或制作资料。
+作品直达链接格式：`?q=包豪斯#work-001-bauhaus`；只看布局：`?type=layout`（只看风格：`?type=style`），可与 `q`、`category`、`sort` 组合。没有匹配时显示空状态，不展示尚未发布的预告作品。每一期的风格图或布局图只在对应作品详情中展示，首页不展示具体图片或制作资料。
 
 ## 复用范围
 

@@ -1,0 +1,50 @@
+/* 布局 01 · Bento Grid 便当盒布局 — 设计令牌 */
+:root {
+  --bento-bg: #000000;
+  --bento-card: linear-gradient(180deg, #161618 0%, #0F0F11 100%);
+  --bento-line: rgba(255, 255, 255, 0.07);
+  --bento-t1: #F5F5F7;
+  --bento-t2: #86868B;
+  --bento-accent: linear-gradient(120deg, #FF8A1F 0%, #FF2D6F 48%, #A63DFF 100%);
+
+  --bento-gap: 20px;      /* 规则 03：所有缝隙一样宽（16–24px） */
+  --bento-radius: 32px;   /* 规则 04：统一圆角 */
+  --bento-pad: 40px;
+  --bento-inner-radius: calc(var(--bento-radius) - 12px); /* 嵌套：内圆角 = 外圆角 − 内边距 */
+
+  --font-display: 'Inter Display', 'Noto Sans SC', sans-serif;
+  --font-sc: 'Noto Sans SC', 'PingFang SC', sans-serif;
+  --font-mono: 'Geist Mono', ui-monospace, monospace;
+}
+
+/* 一个最小可用的 Bento Grid */
+.bento {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  grid-auto-rows: 300px;
+  gap: var(--bento-gap);
+}
+.bento > * {
+  border-radius: var(--bento-radius);
+  padding: var(--bento-pad);
+  background: var(--bento-card);
+  box-shadow: inset 0 0 0 1px var(--bento-line);
+}
+.bento .hero { grid-column: span 2; grid-row: span 2; } /* 2×2 主角 */
+.bento .wide { grid-column: span 2; }                   /* 2×1 */
+.bento .tall { grid-row: span 2; }                      /* 1×2 */
+
+/* 嵌套卡片：内圆角 = 外圆角 − 内边距 */
+.bento .inner {
+  margin: 12px;
+  border-radius: var(--bento-inner-radius);
+}
+
+/* 响应式：桌面 4 列 → 平板 3 列 → 手机 2 列，主角始终最宽 */
+@media (max-width: 1024px) {
+  .bento { grid-template-columns: repeat(3, 1fr); grid-auto-rows: 240px; }
+}
+@media (max-width: 640px) {
+  .bento { grid-template-columns: repeat(2, 1fr); grid-auto-rows: 180px; gap: 16px; }
+  .bento > * { border-radius: 24px; padding: 24px; }
+}

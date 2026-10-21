@@ -4,6 +4,7 @@ import {fileURLToPath} from 'node:url';
 import assert from 'node:assert/strict';
 import {loadCatalog, output, root, sha256} from './catalog.mjs';
 import {renderDocument} from '../../gallery/render-documents.mjs';
+import {workDir} from '../../gallery/assets/model.mjs';
 
 export async function checkRelease(base = output) {
   const works = await loadCatalog();
@@ -13,12 +14,12 @@ export async function checkRelease(base = output) {
     'assets/fonts/OFL-DMSans.txt', 'assets/fonts/OFL-Newsreader.txt']);
   for (const work of works) {
     expected.add(`media/${work.asset}`);
-    expected.add(`styles/${work.id}/video/cover.jpg`);
-    for (const image of work.images) expected.add(`styles/${work.id}/images/preview/${image.file}.svg`);
+    expected.add(`${workDir(work)}/video/cover.jpg`);
+    for (const image of work.images) expected.add(`${workDir(work)}/images/preview/${image.file}.svg`);
     for (const [kind, file] of [['guide', 'README.md'], ['process', 'PROCESS.md']]) {
       expected.add(`read/${work.id}/${kind}.html`);
-      const markdown = await readFile(path.join(root, 'styles', work.id, file), 'utf8');
-      for (const asset of renderDocument(markdown, work, kind).assets) expected.add(`styles/${work.id}/${asset}`);
+      const markdown = await readFile(path.join(root, workDir(work), file), 'utf8');
+      for (const asset of renderDocument(markdown, work, kind).assets) expected.add(`${workDir(work)}/${asset}`);
     }
   }
   let bytes = 0;

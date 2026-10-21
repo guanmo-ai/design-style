@@ -1,8 +1,9 @@
 import React from 'react';
 import {Composition} from 'remotion';
 import {Bauhaus, BAUHAUS_DURATION} from '../styles/001-bauhaus/video/Bauhaus';
+import {BentoGrid, BENTO_DURATION} from '../layouts/01-bento-grid/video/BentoGrid';
 
-// 每期风格注册为一个 Composition：S{期号}-{风格名}
+// 每期注册为一个 Composition：风格 S{期号}-{名字}，布局 L{期号}-{名字}
 // 统一规格：1920×1080 · 60fps · 15s
 export const Root: React.FC = () => (
   <>
@@ -13,6 +14,15 @@ export const Root: React.FC = () => (
       fps={60}
       width={1920}
       height={1080}
+    />
+    <Composition
+      id="L01-BentoGrid"
+      component={BentoGrid}
+      durationInFrames={BENTO_DURATION}
+      fps={60}
+      width={1920}
+      height={1080}
+      defaultProps={{music: true}}
     />
   </>
 );

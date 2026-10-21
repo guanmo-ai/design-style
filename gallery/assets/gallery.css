@@ -13,3 +13,10 @@ dialog{width:1040px;max-width:calc(100% - 48px);max-height:90dvh;padding:0 26px 
 @media(max-width:600px){.shell{padding:0 22px}.site-header{height:88px;gap:14px}.brand{font-size:27px;gap:8px}.brand>img{width:27px;height:27px}.brand small{font-size:8px;letter-spacing:2px}.site-header nav{gap:14px;font-size:11px}.creator{padding:8px 11px}.creator span{display:none}main{padding-top:24px;min-height:calc(100dvh - 204px)}#collection-title{font-size:21px}.section-heading{align-items:start;flex-wrap:wrap;gap:16px}.search{width:100%}.heading-with-count{width:100%}h2{font-size:18px}.toolbar{margin:15px 0}.category{font-size:11px;padding:8px 11px}.sort select{max-width:122px;font-size:10px}#works{grid-template-columns:1fr;gap:28px}.card-title{font-size:15px}.resources{padding-top:28px}.section-note{font-size:10px}.image-grid{gap:24px 14px;margin-top:20px}.image-title{font-size:12px}.image-bottom{font-size:9px}footer{flex-wrap:wrap;gap:12px}footer p{width:100%;order:3}footer>a:last-child{font-size:9px}dialog{max-width:calc(100% - 20px);padding:0 14px 20px;max-height:94dvh}.viewer-details{gap:16px}.viewer-actions{gap:10px;flex-shrink:1}.viewer-details h2{font-size:20px}.viewer-header{font-size:10px}.art-preview{max-height:60dvh}}
 @media(max-width:360px){.shell{padding:0 16px}.brand{font-size:24px}.site-header nav{gap:10px}.creator{display:none}.image-title{font-size:11px}}
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto}*,*::before,*::after{transition:none!important;animation:none!important}}
+/* 风格 / 布局：两组筛选 + 布局卡片角标 */
+.collection-intro{margin:10px 0 0;font-size:12px;line-height:1.7;color:var(--muted)}
+.filters{display:flex;flex-wrap:wrap;align-items:center;gap:8px}
+#types{display:flex;flex-wrap:wrap;gap:8px}
+#categories:not([hidden]){padding-left:12px;border-left:1px solid var(--border)}
+#categories[hidden]{display:none}
+.card-type{position:absolute;left:10px;top:10px;border-radius:6px;background:#fffdf8e6;color:var(--accent);border:1px solid #dfbaac;padding:3px 8px;font-size:10px;letter-spacing:1px}

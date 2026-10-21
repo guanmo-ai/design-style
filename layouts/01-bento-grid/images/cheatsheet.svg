@@ -1,0 +1,125 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1080" height="1350" viewBox="0 0 1080 1350">
+  <!-- Design Style · 布局 01 · 便当盒布局 Bento Grid —— 速查卡 / 1080×1350（由 make_svgs.py 生成） -->
+  <defs>
+    <style>
+      .d { font-family: 'Inter Display', 'Noto Sans SC', sans-serif; }
+      .t { font-family: 'Inter', 'Noto Sans SC', sans-serif; }
+      .m { font-family: 'Geist Mono', 'SFMono-Regular', Menlo, monospace; }
+      .c { font-family: 'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif; }
+      .s { font-family: 'Selawik', 'Segoe UI', 'Noto Sans SC', sans-serif; }
+      .j { font-family: 'Jost', 'Futura', sans-serif; }
+    </style>
+    <linearGradient id="acc" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#FF8A1F"/><stop offset=".5" stop-color="#FF2D6F"/><stop offset="1" stop-color="#A63DFF"/>
+    </linearGradient>
+    <linearGradient id="accH" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#FF8A1F"/><stop offset=".5" stop-color="#FF2D6F"/><stop offset="1" stop-color="#A63DFF"/>
+    </linearGradient>
+    <linearGradient id="card" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#161618"/><stop offset="1" stop-color="#0F0F11"/>
+    </linearGradient>
+    <radialGradient id="glowV"><stop offset="0" stop-color="#A63DFF" stop-opacity=".85"/><stop offset="1" stop-color="#A63DFF" stop-opacity="0"/></radialGradient>
+    <radialGradient id="glowP"><stop offset="0" stop-color="#FF2D6F" stop-opacity=".8"/><stop offset="1" stop-color="#FF2D6F" stop-opacity="0"/></radialGradient>
+    <radialGradient id="glowO"><stop offset="0" stop-color="#FF8A1F" stop-opacity=".9"/><stop offset="1" stop-color="#FF8A1F" stop-opacity="0"/></radialGradient>
+    <filter id="soft" x="-10%" y="-10%" width="120%" height="130%"><feDropShadow dx="0" dy="6" stdDeviation="10" flood-color="#000" flood-opacity=".07"/></filter>
+  </defs>
+  <rect width="1080" height="1350" fill="#F2F2F4"/>
+  <!-- 页眉 -->
+  <text x="72" y="124"><tspan class="c" font-size="58" font-weight="900" fill="#1D1D1F">便当盒布局</tspan><tspan class="d" font-size="58" font-weight="600" fill="#1D1D1F" dx="18">Bento Grid</tspan></text>
+  <text x="72" y="172" class="c" font-size="22" font-weight="500" fill="#6E6E73" >布局速查 · 4 列 · 间距 20 · 圆角 32 · 2020s —</text>
+  <text x="1008" y="124" class="c" font-size="22" font-weight="700" fill="#1D1D1F" text-anchor="end" >布局 01</text>
+  <!-- 01 网格与尺寸 -->
+  <rect x="72" y="214" width="936" height="318" rx="28" fill="#FFFFFF" filter="url(#soft)"/><text x="102" y="264"><tspan class="m" font-size="17" font-weight="500" fill="#FF2D6F">01</tspan><tspan class="c" font-size="22" font-weight="700" fill="#1D1D1F" dx="12">网格与尺寸</tspan></text>
+  <rect x="102" y="284" width="64" height="232" fill="#FF2D6F" opacity=".06"/>
+  <rect x="176" y="284" width="64" height="232" fill="#FF2D6F" opacity=".06"/>
+  <rect x="250" y="284" width="64" height="232" fill="#FF2D6F" opacity=".06"/>
+  <rect x="324" y="284" width="64" height="232" fill="#FF2D6F" opacity=".06"/>
+  <rect x="102" y="294" width="138" height="138" rx="14" fill="url(#acc)" stroke="none"/>
+  <text x="171" y="363" class="m" font-size="20" font-weight="500" fill="#FFFFFF" text-anchor="middle" >2×2</text>
+  <text x="171" y="391" class="c" font-size="17" font-weight="700" fill="#FFFFFF" text-anchor="middle" >主角</text>
+  <rect x="250" y="294" width="64" height="64" rx="14" fill="#F2F2F4" stroke="#E3E3E8"/>
+  <text x="282" y="333" class="m" font-size="16" font-weight="500" fill="#1D1D1F" text-anchor="middle" >1×1</text>
+  <rect x="250" y="368" width="64" height="64" rx="14" fill="#F2F2F4" stroke="#E3E3E8"/>
+  <text x="282" y="407" class="m" font-size="16" font-weight="500" fill="#1D1D1F" text-anchor="middle" >1×1</text>
+  <rect x="324" y="294" width="64" height="138" rx="14" fill="#F2F2F4" stroke="#E3E3E8"/>
+  <text x="356" y="370" class="m" font-size="16" font-weight="500" fill="#1D1D1F" text-anchor="middle" >1×2</text>
+  <rect x="102" y="442" width="138" height="64" rx="14" fill="#F2F2F4" stroke="#E3E3E8"/>
+  <text x="171" y="481" class="m" font-size="16" font-weight="500" fill="#1D1D1F" text-anchor="middle" >2×1</text>
+  <rect x="250" y="442" width="64" height="64" rx="14" fill="#F2F2F4" stroke="#E3E3E8"/>
+  <text x="282" y="481" class="m" font-size="16" font-weight="500" fill="#1D1D1F" text-anchor="middle" >1×1</text>
+  <rect x="324" y="442" width="64" height="64" rx="14" fill="#F2F2F4" stroke="#E3E3E8"/>
+  <text x="356" y="481" class="m" font-size="16" font-weight="500" fill="#1D1D1F" text-anchor="middle" >1×1</text>
+  <text x="472" y="318" class="c" font-size="18" font-weight="700" fill="#1D1D1F" >列</text>
+  <text x="536" y="318" class="c" font-size="18" font-weight="400" fill="#6E6E73" >桌面 4 列 · 平板 3 列 · 手机 2 列</text>
+  <text x="472" y="362" class="c" font-size="18" font-weight="700" fill="#1D1D1F" >单元</text>
+  <text x="536" y="362" class="c" font-size="18" font-weight="400" fill="#6E6E73" >行高 = 列宽，最好是正方形</text>
+  <text x="472" y="406" class="c" font-size="18" font-weight="700" fill="#1D1D1F" >尺寸</text>
+  <text x="536" y="406" class="c" font-size="18" font-weight="400" fill="#6E6E73" >只用 1×1 · 2×1 · 1×2 · 2×2</text>
+  <text x="472" y="450" class="c" font-size="18" font-weight="700" fill="#1D1D1F" >主角</text>
+  <text x="536" y="450" class="c" font-size="18" font-weight="400" fill="#6E6E73" >一屏只有一张 2×2</text>
+  <text x="472" y="494" class="c" font-size="18" font-weight="700" fill="#1D1D1F" >边界</text>
+  <text x="536" y="494" class="c" font-size="18" font-weight="400" fill="#6E6E73" >所有卡片的边都落在列线上</text>
+  <!-- 02 间距与圆角 -->
+  <rect x="72" y="552" width="458" height="290" rx="28" fill="#FFFFFF" filter="url(#soft)"/><text x="102" y="602"><tspan class="m" font-size="17" font-weight="500" fill="#FF2D6F">02</tspan><tspan class="c" font-size="22" font-weight="700" fill="#1D1D1F" dx="12">间距与圆角</tspan></text>
+  <rect x="102" y="636" width="176" height="150" rx="32" fill="#F2F2F4" stroke="#1D1D1F" stroke-width="2"/>
+  <rect x="114" y="648" width="152" height="126" rx="20" fill="#FFFFFF" stroke="#FF2D6F" stroke-width="2"/>
+  <line x1="102" y1="711" x2="114" y2="711" stroke="#FF2D6F" stroke-width="2"/>
+  <text x="190" y="706" class="m" font-size="16" font-weight="500" fill="#FF2D6F" text-anchor="middle" >内 20</text>
+  <text x="190" y="732" class="m" font-size="16" font-weight="500" fill="#1D1D1F" text-anchor="middle" >外 32</text>
+  <text x="190" y="822" class="m" font-size="15" font-weight="500" fill="#6E6E73" text-anchor="middle" >32 − 12 = 20</text>
+  <text x="308" y="648" class="c" font-size="17" font-weight="700" fill="#1D1D1F" >间距</text>
+  <text x="308" y="672" class="c" font-size="15" font-weight="400" fill="#6E6E73" >16–24 · 全站同一个值</text>
+  <text x="308" y="698" class="c" font-size="17" font-weight="700" fill="#1D1D1F" >内边距</text>
+  <text x="308" y="722" class="c" font-size="15" font-weight="400" fill="#6E6E73" >24–40</text>
+  <text x="308" y="748" class="c" font-size="17" font-weight="700" fill="#1D1D1F" >圆角</text>
+  <text x="308" y="772" class="c" font-size="15" font-weight="400" fill="#6E6E73" >24–32 · 全站同一个值</text>
+  <text x="308" y="798" class="c" font-size="17" font-weight="700" fill="#1D1D1F" >嵌套</text>
+  <text x="308" y="822" class="c" font-size="15" font-weight="400" fill="#6E6E73" >内圆角 = 外 − 内边距</text>
+  <!-- 03 色板 -->
+  <rect x="550" y="552" width="458" height="290" rx="28" fill="#FFFFFF" filter="url(#soft)"/><text x="580" y="602"><tspan class="m" font-size="17" font-weight="500" fill="#FF2D6F">03</tspan><tspan class="c" font-size="22" font-weight="700" fill="#1D1D1F" dx="12">色板</tspan></text>
+  <rect x="580.0" y="630" width="86" height="56" rx="12" fill="#000000" stroke="#E3E3E8"/>
+  <text x="580" y="708"><tspan class="c" font-size="14" font-weight="700" fill="#1D1D1F">底</tspan><tspan class="m" font-size="11" font-weight="400" fill="#6E6E73" dx="4">#000000</tspan></text>
+  <rect x="678.0" y="630" width="86" height="56" rx="12" fill="#161618" stroke="#E3E3E8"/>
+  <text x="678" y="708"><tspan class="c" font-size="14" font-weight="700" fill="#1D1D1F">卡片</tspan><tspan class="m" font-size="11" font-weight="400" fill="#6E6E73" dx="4">#161618</tspan></text>
+  <rect x="776.0" y="630" width="86" height="56" rx="12" fill="#F5F5F7" stroke="#E3E3E8"/>
+  <text x="776" y="708"><tspan class="c" font-size="14" font-weight="700" fill="#1D1D1F">文字</tspan><tspan class="m" font-size="11" font-weight="400" fill="#6E6E73" dx="4">#F5F5F7</tspan></text>
+  <rect x="874.0" y="630" width="86" height="56" rx="12" fill="#86868B" stroke="#E3E3E8"/>
+  <text x="874" y="708"><tspan class="c" font-size="14" font-weight="700" fill="#1D1D1F">次要</tspan><tspan class="m" font-size="11" font-weight="400" fill="#6E6E73" dx="4">#86868B</tspan></text>
+  <rect x="580.0" y="728" width="86" height="40" rx="10" fill="#F2F2F4" stroke="#E3E3E8"/>
+  <text x="580" y="786" class="c" font-size="14" font-weight="700" fill="#1D1D1F" >浅底</text>
+  <rect x="678.0" y="728" width="86" height="40" rx="10" fill="#FFFFFF" stroke="#E3E3E8"/>
+  <text x="678" y="786" class="c" font-size="14" font-weight="700" fill="#1D1D1F" >浅卡</text>
+  <rect x="776.0" y="728" width="86" height="40" rx="10" fill="#1D1D1F" stroke="#E3E3E8"/>
+  <text x="776" y="786" class="c" font-size="14" font-weight="700" fill="#1D1D1F" >浅字</text>
+  <rect x="874.0" y="728" width="98" height="40" rx="10" fill="url(#accH)"/>
+  <text x="874" y="786" class="c" font-size="14" font-weight="700" fill="#1D1D1F" >强调 · 只给主角</text>
+  <text x="580" y="818" class="m" font-size="13" font-weight="400" fill="#6E6E73" >#FF8A1F → #FF2D6F → #A63DFF</text>
+  <!-- 04 五条规则 -->
+  <rect x="72" y="862" width="458" height="262" rx="28" fill="#FFFFFF" filter="url(#soft)"/><text x="102" y="912"><tspan class="m" font-size="17" font-weight="500" fill="#FF2D6F">04</tspan><tspan class="c" font-size="22" font-weight="700" fill="#1D1D1F" dx="12">五条规则</tspan></text>
+  <text x="102" y="956" class="m" font-size="15" font-weight="500" fill="#FF2D6F" >01</text>
+  <text x="134" y="956"><tspan class="c" font-size="18" font-weight="700" fill="#1D1D1F">一格一事</tspan><tspan class="c" font-size="15" font-weight="400" fill="#6E6E73" dx="12">每张卡只讲一个信息</tspan></text>
+  <text x="102" y="992" class="m" font-size="15" font-weight="500" fill="#FF2D6F" >02</text>
+  <text x="134" y="992"><tspan class="c" font-size="18" font-weight="700" fill="#1D1D1F">大小分级</tspan><tspan class="c" font-size="15" font-weight="400" fill="#6E6E73" dx="12">面积就是优先级</tspan></text>
+  <text x="102" y="1028" class="m" font-size="15" font-weight="500" fill="#FF2D6F" >03</text>
+  <text x="134" y="1028"><tspan class="c" font-size="18" font-weight="700" fill="#1D1D1F">统一间距</tspan><tspan class="c" font-size="15" font-weight="400" fill="#6E6E73" dx="12">所有缝一样宽</tspan></text>
+  <text x="102" y="1064" class="m" font-size="15" font-weight="500" fill="#FF2D6F" >04</text>
+  <text x="134" y="1064"><tspan class="c" font-size="18" font-weight="700" fill="#1D1D1F">统一圆角</tspan><tspan class="c" font-size="15" font-weight="400" fill="#6E6E73" dx="12">嵌套时内 = 外 − 边距</tspan></text>
+  <text x="102" y="1100" class="m" font-size="15" font-weight="500" fill="#FF2D6F" >05</text>
+  <text x="134" y="1100"><tspan class="c" font-size="18" font-weight="700" fill="#1D1D1F">对齐网格</tspan><tspan class="c" font-size="15" font-weight="400" fill="#6E6E73" dx="12">所有边落在同一套列上</tspan></text>
+  <!-- 05 字体 -->
+  <rect x="550" y="862" width="458" height="262" rx="28" fill="#FFFFFF" filter="url(#soft)"/><text x="580" y="912"><tspan class="m" font-size="17" font-weight="500" fill="#FF2D6F">05</tspan><tspan class="c" font-size="22" font-weight="700" fill="#1D1D1F" dx="12">字体</tspan></text>
+  <text x="580" y="974" class="d" font-size="34" font-weight="600" fill="#1D1D1F" >Aa 128</text>
+  <text x="726" y="970" class="c" font-size="14" font-weight="400" fill="#6E6E73" >Inter Display 600 · 大数字 / 标题</text>
+  <text x="580" y="1030" class="t" font-size="24" font-weight="400" fill="#1D1D1F" >Aa 正文</text>
+  <text x="726" y="1026" class="c" font-size="14" font-weight="400" fill="#6E6E73" >Inter 400 + 思源黑体 · 正文</text>
+  <text x="580" y="1086" class="m" font-size="22" font-weight="500" fill="#1D1D1F" >01 / 07</text>
+  <text x="726" y="1082" class="c" font-size="14" font-weight="400" fill="#6E6E73" >Geist Mono · 编号 / 标注</text>
+  <!-- 06 常见误区 -->
+  <rect x="72" y="1144" width="936" height="148" rx="28" fill="#FFFFFF" filter="url(#soft)"/><text x="102" y="1194"><tspan class="m" font-size="17" font-weight="500" fill="#FF2D6F">06</tspan><tspan class="c" font-size="22" font-weight="700" fill="#1D1D1F" dx="12">常见误区</tspan></text>
+  <text x="102" y="1232"><tspan class="t" font-size="22" font-weight="600" fill="#FF2D6F">×</tspan><tspan class="c" font-size="17" font-weight="700" fill="#1D1D1F" dx="10">格子全一样大</tspan><tspan class="c" font-size="15" font-weight="400" fill="#6E6E73" dx="10">→ 没有主角</tspan></text>
+  <text x="562" y="1232"><tspan class="t" font-size="22" font-weight="600" fill="#FF2D6F">×</tspan><tspan class="c" font-size="17" font-weight="700" fill="#1D1D1F" dx="10">每格塞一段长文</tspan><tspan class="c" font-size="15" font-weight="400" fill="#6E6E73" dx="10">→ 变成表格</tspan></text>
+  <text x="102" y="1268"><tspan class="t" font-size="22" font-weight="600" fill="#FF2D6F">×</tspan><tspan class="c" font-size="17" font-weight="700" fill="#1D1D1F" dx="10">间距忽大忽小</tspan><tspan class="c" font-size="15" font-weight="400" fill="#6E6E73" dx="10">→ 网格就散了</tspan></text>
+  <text x="562" y="1268"><tspan class="t" font-size="22" font-weight="600" fill="#FF2D6F">×</tspan><tspan class="c" font-size="17" font-weight="700" fill="#1D1D1F" dx="10">每格都上渐变</tspan><tspan class="c" font-size="15" font-weight="400" fill="#6E6E73" dx="10">→ 主角被淹没</tspan></text>
+  <text x="72" y="1324" class="c" font-size="15" font-weight="500" fill="#6E6E73" >Design Style · 布局 01</text>
+  <text x="1008" y="1324" class="m" font-size="14" font-weight="400" fill="#6E6E73" text-anchor="end" >github.com/guanmo-ai/design-style</text>
+</svg>

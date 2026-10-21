@@ -3,7 +3,7 @@
   1) preview/*.svg —— 内嵌字体子集（base64 WOFF）的自包含 SVG，GitHub 上可直接预览
   2) png/*.png     —— 2x 位图（2160×2700），用于发帖
 
-用法：python3 scripts/build_images.py styles/001-bauhaus/images
+用法：python3 scripts/build_images.py styles/001-bauhaus/images（布局：layouts/01-bento-grid/images）
 依赖：fontTools（pip install fonttools）、Node + playwright、Chromium
 字体：先运行 npm run fonts（下载到 public/fonts/）
 """
@@ -24,6 +24,16 @@ FONTS = os.path.join(ROOT, 'public', 'fonts')
 FACES = [  # (family, file, weight)
     ('Jost', 'Jost.ttf', '100 900'),
     ('JetBrains Mono', 'JetBrainsMono.ttf', '100 800'),
+    ('Inter Display', 'InterDisplay-Medium.ttf', '500'),
+    ('Inter Display', 'InterDisplay-SemiBold.ttf', '600'),
+    ('Inter Display', 'InterDisplay-Bold.ttf', '700'),
+    ('Inter', 'Inter-Regular.ttf', '400'),
+    ('Inter', 'Inter-Medium.ttf', '500'),
+    ('Geist Mono', 'GeistMono-Regular.ttf', '400'),
+    ('Geist Mono', 'GeistMono-Medium.ttf', '500'),
+    ('Selawik', 'Selawik-Light.ttf', '300'),
+    ('Selawik', 'Selawik.ttf', '400'),
+    ('Noto Sans SC', 'NotoSansSC-Regular.otf', '400'),
     ('Noto Sans SC', 'NotoSansSC-Medium.otf', '500'),
     ('Noto Sans SC', 'NotoSansSC-Bold.otf', '700'),
     ('Noto Sans SC', 'NotoSansSC-Black.otf', '900'),
@@ -57,6 +67,8 @@ def embed(svg: str) -> str:
     chars = text_chars(svg)
     rules = []
     for family, file, weight in FACES:
+        if family not in svg:  # 只嵌入这张图实际用到的字体
+            continue
         path = os.path.join(FONTS, file)
         if not os.path.exists(path):
             print(f'  ! 缺少字体 {file}，跳过')

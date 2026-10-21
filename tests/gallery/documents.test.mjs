@@ -24,6 +24,18 @@ test('站内文档保留表格、代码与所有图片，并转换文档交叉�
   assert.doesNotMatch(guide.html, /href="(?:README|PROCESS)\.md/);
 });
 
+test('布局作品的文档从 layouts/ 读取素材', async () => {
+  const work = (await loadCatalog()).find(item => item.id === '01-bento-grid');
+  const guide = renderDocument(await readFile(path.join(root, 'layouts', work.id, 'README.md'), 'utf8'), work, 'guide');
+  const process = renderDocument(await readFile(path.join(root, 'layouts', work.id, 'PROCESS.md'), 'utf8'), work, 'process');
+  assert.equal(guide.assets.length, 5);
+  assert.equal(process.assets.length, 4);
+  assert.match(guide.html, /src="..\/..\/layouts\/01-bento-grid\/images\/preview\/skins.svg"/);
+  assert.match(process.html, /src="..\/..\/layouts\/01-bento-grid\/process\/03-morph.jpg"/);
+  assert.match(process.html, /href="guide.html#doc-9--15-秒分镜"/);
+  assert.match(guide.html, /href="..\/..\/#work-01-bento-grid"/);
+});
+
 test('文档渲染移除脚本与危险 URL，同时保留安全链接', () => {
   const work = {id:'001-bauhaus', number:'001', title:'包豪斯', titleEn:'Bauhaus', release:'day-01'};
   const result = renderDocument('# 标题\n\n<script>alert(1)</script>\n\n<a href="javascript:alert(1)" onclick="alert(1)">危险链接</a>\n\n[官方](https://example.com/)\n\n## 相同标题\n\n## 相同标题', work, 'guide');

@@ -1,6 +1,7 @@
 [
   {
     "id": "001-bauhaus",
+    "type": "style",
     "number": "001",
     "title": "包豪斯",
     "titleEn": "Bauhaus",
@@ -38,6 +39,52 @@
         "file": "pattern",
         "title": "基本形的无限组合",
         "kind": "几何图案"
+      }
+    ]
+  },
+  {
+    "id": "01-bento-grid",
+    "type": "layout",
+    "number": "01",
+    "title": "便当盒布局",
+    "titleEn": "Bento Grid",
+    "years": "2020s—",
+    "category": "当代界面",
+    "description": "风格是皮，布局是骨。一支 15 秒短片，同一套卡片从便当盒、Windows Phone 磁贴、iOS 小组件一路变到个人主页和产品后台。",
+    "tags": [
+      "网格",
+      "卡片",
+      "圆角",
+      "发布会",
+      "个人主页",
+      "数据看板",
+      "Metro",
+      "iOS"
+    ],
+    "publishedAt": "2026-10-21T04:40:00Z",
+    "release": "layout-01",
+    "asset": "01-bento-grid.mp4",
+    "sha256": "21d2cc8da440437c7a33deda14ccb04ed5f8f5c1f7be82bf3e621780db2bba4a",
+    "images": [
+      {
+        "file": "poster",
+        "title": "一张海报，认识便当盒布局",
+        "kind": "布局海报"
+      },
+      {
+        "file": "cheatsheet",
+        "title": "网格、间距、圆角与五条规则",
+        "kind": "布局速查"
+      },
+      {
+        "file": "skins",
+        "title": "同一套格子，换六种风格",
+        "kind": "布局 × 风格"
+      },
+      {
+        "file": "templates",
+        "title": "拿来就用：三套排法",
+        "kind": "布局模板"
       }
     ]
   }

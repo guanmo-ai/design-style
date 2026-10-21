@@ -1,0 +1,101 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1080" height="1350" viewBox="0 0 1080 1350">
+  <!-- Design Style · 布局 01 · 便当盒布局 Bento Grid —— 海报 / 1080×1350（由 make_svgs.py 生成） -->
+  <defs>
+    <style>
+      .d { font-family: 'Inter Display', 'Noto Sans SC', sans-serif; }
+      .t { font-family: 'Inter', 'Noto Sans SC', sans-serif; }
+      .m { font-family: 'Geist Mono', 'SFMono-Regular', Menlo, monospace; }
+      .c { font-family: 'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif; }
+      .s { font-family: 'Selawik', 'Segoe UI', 'Noto Sans SC', sans-serif; }
+      .j { font-family: 'Jost', 'Futura', sans-serif; }
+    </style>
+    <linearGradient id="acc" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#FF8A1F"/><stop offset=".5" stop-color="#FF2D6F"/><stop offset="1" stop-color="#A63DFF"/>
+    </linearGradient>
+    <linearGradient id="accH" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#FF8A1F"/><stop offset=".5" stop-color="#FF2D6F"/><stop offset="1" stop-color="#A63DFF"/>
+    </linearGradient>
+    <linearGradient id="card" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#161618"/><stop offset="1" stop-color="#0F0F11"/>
+    </linearGradient>
+    <radialGradient id="glowV"><stop offset="0" stop-color="#A63DFF" stop-opacity=".85"/><stop offset="1" stop-color="#A63DFF" stop-opacity="0"/></radialGradient>
+    <radialGradient id="glowP"><stop offset="0" stop-color="#FF2D6F" stop-opacity=".8"/><stop offset="1" stop-color="#FF2D6F" stop-opacity="0"/></radialGradient>
+    <radialGradient id="glowO"><stop offset="0" stop-color="#FF8A1F" stop-opacity=".9"/><stop offset="1" stop-color="#FF8A1F" stop-opacity="0"/></radialGradient>
+    <filter id="soft" x="-10%" y="-10%" width="120%" height="130%"><feDropShadow dx="0" dy="6" stdDeviation="10" flood-color="#000" flood-opacity=".07"/></filter>
+    <linearGradient id="iosA" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#5FB0FF"/><stop offset="1" stop-color="#1E6FFF"/></linearGradient>
+    <linearGradient id="iosB" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#FFB15C"/><stop offset="1" stop-color="#FF5E7E"/></linearGradient>
+  </defs>
+  <rect width="1080" height="1350" fill="#000"/>
+  <!-- 页眉 -->
+  <text x="72" y="112"><tspan class="d" font-size="24" font-weight="500" fill="#86868B">Design Style</tspan><tspan class="c" font-size="24" font-weight="500" fill="#F5F5F7" dx="14">布局 01</tspan></text>
+  <text x="1008" y="112" class="m" font-size="22" font-weight="400" fill="#86868B" text-anchor="end" >2020s —</text>
+  <!-- 主角卡 3×2：全图唯一一张上渐变的卡 -->
+  <clipPath id="heroClip"><rect x="72" y="160" width="697" height="458" rx="32"/></clipPath>
+  <rect x="72" y="160" width="697" height="458" rx="32" fill="url(#card)" /><rect x="72.5" y="160.5" width="696" height="457" rx="31.5" fill="none" stroke="rgba(255,255,255,0.07)"/>
+  <g clip-path="url(#heroClip)"><circle cx="729" cy="220" r="300" fill="url(#glowV)" opacity=".75"/><circle cx="504.1" cy="517.2" r="260" fill="url(#glowP)" opacity=".8"/><circle cx="350.8" cy="678" r="260" fill="url(#glowO)" opacity=".85"/></g>
+  <text x="112" y="222" class="c" font-size="22" font-weight="500" fill="rgba(245,245,247,.62)" >一格一件事的排版</text>
+  <text x="106" y="382" class="d" font-size="156" font-weight="600" fill="#F5F5F7" letter-spacing="-7" >Bento</text>
+  <text x="106" y="512" class="d" font-size="156" font-weight="600" fill="#F5F5F7" letter-spacing="-7" >Grid</text>
+  <text x="112" y="580" class="c" font-size="46" font-weight="700" fill="#F5F5F7" letter-spacing="2" >便当盒布局</text>
+  <!-- 名字的由来 -->
+  <rect x="789" y="160" width="219" height="219" rx="32" fill="url(#card)" /><rect x="789.5" y="160.5" width="218" height="218" rx="31.5" fill="none" stroke="rgba(255,255,255,0.07)"/><text x="817" y="206" class="c" font-size="20" font-weight="500" fill="#86868B" >名字的由来</text>
+  <g transform="translate(936 180) scale(.75) translate(-936 -180)"><rect x="936" y="180" width="64" height="44" rx="8" fill="#8E211B"/><rect x="941" y="185" width="30" height="34" rx="4" fill="#F4F1EA"/><circle cx="956" cy="202" r="5" fill="#C8102E"/><rect x="975" y="185" width="20" height="15" rx="3" fill="#F6C945"/><rect x="975" y="204" width="20" height="15" rx="3" fill="#4E9A3A"/></g>
+  <text x="815" y="310" class="c" font-size="70" font-weight="900" fill="#F5F5F7" >弁当</text>
+  <text x="817" y="350" class="c" font-size="19" font-weight="400" fill="#86868B" >一格只装一样菜</text>
+  <!-- 大小分级 -->
+  <rect x="789" y="399" width="219" height="219" rx="32" fill="url(#card)" /><rect x="789.5" y="399.5" width="218" height="218" rx="31.5" fill="none" stroke="rgba(255,255,255,0.07)"/><text x="817" y="445" class="c" font-size="20" font-weight="500" fill="#86868B" >大小分级</text>
+  <rect x="817" y="536" width="28" height="28" rx="8" fill="#F5F5F7" opacity="0.35"/>
+  <text x="831" y="594" class="c" font-size="17" font-weight="500" fill="#86868B" text-anchor="middle" >小</text>
+  <rect x="857" y="536" width="56" height="28" rx="8" fill="#F5F5F7" opacity="0.6"/>
+  <text x="885" y="594" class="c" font-size="17" font-weight="500" fill="#86868B" text-anchor="middle" >中</text>
+  <rect x="925" y="508" width="56" height="56" rx="8" fill="#F5F5F7" opacity="1"/>
+  <text x="953" y="594" class="c" font-size="17" font-weight="500" fill="#86868B" text-anchor="middle" >大</text>
+  <!-- 前身：2010 Metro 磁贴 / 2020 iOS 小组件 -->
+  <rect x="72" y="638" width="219" height="458" rx="32" fill="url(#card)" /><rect x="72.5" y="638.5" width="218" height="457" rx="31.5" fill="none" stroke="rgba(255,255,255,0.07)"/><text x="100" y="684" class="c" font-size="20" font-weight="500" fill="#86868B" >前身</text>
+  <text x="98" y="750" class="d" font-size="58" font-weight="600" fill="#F5F5F7" letter-spacing="-2" >2010</text>
+  <text x="100" y="780" class="t" font-size="16" font-weight="400" fill="#86868B" >Windows Phone 磁贴</text>
+  <rect x="100" y="800" width="104" height="36" fill="#F09609"/>
+  <rect x="208" y="800" width="50" height="36" fill="#A200FF"/>
+  <rect x="100" y="840" width="50" height="36" fill="#1BA1E2"/>
+  <rect x="154" y="840" width="50" height="36" fill="#00ABA9"/>
+  <rect x="208" y="840" width="50" height="36" fill="#E51400"/>
+  <text x="98" y="964" class="d" font-size="58" font-weight="600" fill="#F5F5F7" letter-spacing="-2" >2020</text>
+  <text x="100" y="994" class="t" font-size="16" font-weight="400" fill="#86868B" >iOS 14 小组件</text>
+  <rect x="100" y="1016" width="50" height="50" rx="13" fill="url(#iosA)"/>
+  <rect x="156" y="1016" width="50" height="50" rx="13" fill="#F5F5F7"/>
+  <rect x="212" y="1016" width="50" height="50" rx="13" fill="url(#iosB)"/>
+  <!-- 统一间距 -->
+  <rect x="311" y="638" width="458" height="219" rx="32" fill="url(#card)" /><rect x="311.5" y="638.5" width="457" height="218" rx="31.5" fill="none" stroke="rgba(255,255,255,0.07)"/><text x="339" y="684" class="c" font-size="20" font-weight="500" fill="#86868B" >统一间距</text>
+  <text x="335" y="814"><tspan class="d" font-size="120" font-weight="600" fill="#F5F5F7">20</tspan><tspan class="d" font-size="34" font-weight="600" fill="#86868B" dx="6">px</tspan></text>
+  <rect x="559" y="708" width="42" height="112" rx="10" fill="#2A2A2E"/>
+  <rect x="621" y="708" width="42" height="112" rx="10" fill="#2A2A2E"/>
+  <rect x="683" y="708" width="42" height="112" rx="10" fill="#2A2A2E"/>
+  <rect x="601" y="708" width="20" height="112" fill="#FF2D6F" opacity=".85"/>
+  <rect x="663" y="708" width="20" height="112" fill="#FF2D6F" opacity=".85"/>
+  <text x="611" y="694" class="m" font-size="15" font-weight="500" fill="#FF2D6F" text-anchor="middle" >20</text>
+  <text x="673" y="694" class="m" font-size="15" font-weight="500" fill="#FF2D6F" text-anchor="middle" >20</text>
+  <!-- 统一圆角 -->
+  <rect x="789" y="638" width="219" height="219" rx="32" fill="url(#card)" /><rect x="789.5" y="638.5" width="218" height="218" rx="31.5" fill="none" stroke="rgba(255,255,255,0.07)"/><text x="817" y="684" class="c" font-size="20" font-weight="500" fill="#86868B" >统一圆角</text>
+  <path d="M829 802 V774 A64 64 0 0 1 893 710 H979" fill="none" stroke="#F5F5F7" stroke-opacity=".35" stroke-width="3"/>
+  <path d="M829 774 A64 64 0 0 1 893 710" fill="none" stroke="#FF2D6F" stroke-width="5" stroke-linecap="round"/>
+  <line x1="893" y1="774" x2="848" y2="729" stroke="#FF2D6F" stroke-width="2" stroke-dasharray="4 4"/>
+  <text x="907" y="794" class="m" font-size="22" font-weight="500" fill="#F5F5F7" >r 32</text>
+  <text x="817" y="829" class="c" font-size="17" font-weight="400" fill="#86868B" >处处同一个半径</text>
+  <!-- 一格一事 -->
+  <rect x="311" y="877" width="219" height="219" rx="32" fill="url(#card)" /><rect x="311.5" y="877.5" width="218" height="218" rx="31.5" fill="none" stroke="rgba(255,255,255,0.07)"/><text x="339" y="923" class="c" font-size="20" font-weight="500" fill="#86868B" >一格一事</text>
+  <text x="333" y="1061"><tspan class="d" font-size="140" font-weight="600" fill="url(#acc)">1</tspan><tspan class="c" font-size="26" font-weight="700" fill="#F5F5F7" dx="8">件事</tspan></text>
+  <!-- 谁在用 -->
+  <rect x="550" y="877" width="458" height="219" rx="32" fill="url(#card)" /><rect x="550.5" y="877.5" width="457" height="218" rx="31.5" fill="none" stroke="rgba(255,255,255,0.07)"/><text x="578" y="923" class="c" font-size="20" font-weight="500" fill="#86868B" >谁在用</text>
+  <circle cx="584" cy="968" r="4" fill="url(#acc)"/>
+  <text x="600" y="975"><tspan class="t" font-size="21" font-weight="500" fill="#F5F5F7">Apple</tspan><tspan class="c" font-size="19" font-weight="400" fill="#86868B" dx="12">发布会与官网的总结页</tspan></text>
+  <circle cx="584" cy="1008" r="4" fill="url(#acc)"/>
+  <text x="600" y="1015"><tspan class="t" font-size="21" font-weight="500" fill="#F5F5F7">bento.me</tspan><tspan class="c" font-size="19" font-weight="400" fill="#86868B" dx="12">一页式个人主页</tspan></text>
+  <circle cx="584" cy="1048" r="4" fill="url(#acc)"/>
+  <text x="600" y="1055"><tspan class="t" font-size="21" font-weight="500" fill="#F5F5F7">Linear · Vercel</tspan><tspan class="c" font-size="19" font-weight="400" fill="#86868B" dx="12">产品官网与后台</tspan></text>
+  <!-- 页脚 -->
+  <text x="72" y="1196" class="c" font-size="40" font-weight="700" fill="#F5F5F7" letter-spacing="2" >风格是皮，布局是骨。</text>
+  <text x="72" y="1240" class="c" font-size="20" font-weight="400" fill="#86868B" letter-spacing="1" >一格一事 · 大小分级 · 统一间距 · 统一圆角 · 对齐网格</text>
+  <rect x="72" y="1268" width="936" height="1" fill="#2A2A2E"/>
+  <text x="72" y="1306" class="t" font-size="18" font-weight="500" fill="#86868B" >@guanmo_ai</text>
+  <text x="1008" y="1306" class="m" font-size="17" font-weight="400" fill="#86868B" text-anchor="end" >github.com/guanmo-ai/design-style</text>
+</svg>
