@@ -24,16 +24,10 @@ function updateUrl() {
 }
 
 function render() {
-  // 第一组：类型（全部 / 风格 / 布局）；第二组：当前类型下的分类，再点一次取消
+  // 单一作品列表，使用标签筛选两个系列。
   const types = ['all', ...Object.keys(TYPES).filter(type => works.some(work => typeOf(work) === type))];
   $('#types').innerHTML = types.map(type =>
     `<button type="button" class="category" data-type="${h(type)}" aria-pressed="${state.type === type}">${type === 'all' ? '全部' : TYPES[type].name}<span>${type === 'all' ? works.length : works.filter(work => typeOf(work) === type).length}</span></button>`
-  ).join('');
-  const pool = works.filter(work => state.type === 'all' || typeOf(work) === state.type);
-  const categories = [...new Set(pool.map(work => work.category))];
-  $('#categories').hidden = categories.length < 2 && state.category === 'all';
-  $('#categories').innerHTML = categories.map(category =>
-    `<button type="button" class="category" data-category="${h(category)}" aria-pressed="${state.category === category}">${h(category)}<span>${pool.filter(work => work.category === category).length}</span></button>`
   ).join('');
   const selected = selectWorks(works, state);
   $('#total-count').textContent = String(works.length).padStart(2, '0');
@@ -44,7 +38,7 @@ function render() {
       <button type="button" class="card-open" data-play="${h(work.id)}" aria-label="查看 ${h(work.title)} ${h(work.titleEn)}">
         <span class="cover-button">
           <img src="${h(coverPath(work))}" alt="${h(work.title)}短片封面" width="${work.width}" height="${work.height}">
-          ${typeOf(work) === 'style' ? '' : `<span class="card-type">${typeInfo(work).name}</span>`}<span class="card-play" aria-hidden="true">▶</span><span class="duration">${formatTime(work.duration)}</span>
+          <span class="card-type">${typeInfo(work).name}</span><span class="card-play" aria-hidden="true">▶</span><span class="duration">${formatTime(work.duration)}</span>
         </span>
         <span class="card-title">${h(work.title)} <span>${h(work.titleEn)}</span></span>
         <span class="card-meta">${h(workLabel(work))} · ${h(work.category)} · ${h(work.years)}</span>
@@ -91,7 +85,7 @@ function showWork(work, trigger) {
 function showImage(work, index) {
   const image = work.images[index];
   $('.player')?.pause();
-  $('#image-viewer-label').textContent = `${typeInfo(work).name}图预览`;
+  $('#image-viewer-label').textContent = `${typeInfo(work).images}预览`;
   $('#image-viewer-content').innerHTML = `<img class="art-preview" src="${imagePath(work, image)}" alt="${h(image.title)}">
     <div class="viewer-details"><div><h2 id="image-viewer-title">${h(image.title)}</h2><p>${h(work.title)} · 1080 × 1350 · 可编辑 SVG</p></div><div class="viewer-actions"><a class="button" href="${imagePath(work, image)}" download="${work.id}-${image.file}.svg">下载 SVG ↓</a>${external(sourceUrl(work, `images/${image.file}.svg`), '查看源文件 ↗')}</div></div>`;
   imageViewer.showModal();
@@ -120,22 +114,13 @@ $('#types').addEventListener('click', event => {
   const button = event.target.closest('[data-type]');
   if (!button) return;
   state.type = button.dataset.type;
-  if (!works.some(work => (state.type === 'all' || typeOf(work) === state.type) && work.category === state.category)) state.category = 'all';
   updateUrl(); render();
   [...document.querySelectorAll('[data-type]')].find(item => item.dataset.type === state.type)?.focus();
 });
-$('#categories').addEventListener('click', event => {
-  const button = event.target.closest('[data-category]');
-  if (!button) return;
-  const category = button.dataset.category;
-  state.category = state.category === category ? 'all' : category; updateUrl(); render();
-  [...document.querySelectorAll('[data-category]')].find(item => item.dataset.category === category)?.focus();
-});
 $('#search').addEventListener('input', event => { state.query = event.target.value; updateUrl(); render(); });
-$('#sort').addEventListener('change', event => { state.sort = event.target.value; updateUrl(); render(); });
 $('#reset').addEventListener('click', () => {
   state = {query: '', type: 'all', category: 'all', sort: 'latest'};
-  $('#search').value = ''; $('#sort').value = 'latest'; updateUrl(); render(); $('#search').focus();
+  $('#search').value = ''; updateUrl(); render(); $('#search').focus();
 });
 $('#works').addEventListener('click', event => {
   const button = event.target.closest('[data-play]');
@@ -151,10 +136,9 @@ document.addEventListener('keydown', event => {
   }
 });
 function restoreNavigation() {
-  state = readState(location.href);
+  state = {...readState(location.href), category: 'all', sort: 'latest'};
   if (state.type !== 'all' && !works.some(work => typeOf(work) === state.type)) state.type = 'all';
-  if (!works.some(work => (state.type === 'all' || typeOf(work) === state.type) && work.category === state.category)) state.category = 'all';
-  $('#search').value = state.query; $('#sort').value = state.sort;
+  $('#search').value = state.query;
   render();
   const work = works.find(item => location.hash === `#work-${item.id}`);
   if (work) showWork(work);

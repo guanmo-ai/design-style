@@ -3,9 +3,9 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1">
-  <meta name="description" content="每天一个设计风格。观看 Design Style 原创动效短片：设计风格与布局，配风格图、设计令牌、制作过程与完整源码。">
+  <meta name="description" content="看懂设计，用进创作。用 15 秒短片认识设计风格与布局方式，探索图解、设计规则、AI 提示词与完整源码。">
   <meta name="theme-color" content="#f7f4ed">
-  <title>Design Style · 每天一个设计风格</title>
+  <title>Design Style · 设计参考库</title>
   <link rel="icon" type="image/svg+xml" href="./assets/mark.svg">
   <link rel="stylesheet" href="./assets/gallery.css">
   <script type="module" src="./assets/gallery.mjs"></script>
@@ -14,14 +14,18 @@
   <a class="skip-link" href="#collection">跳到作品</a>
   <div class="shell">
     <header class="site-header">
-      <a class="brand" href="./" aria-label="Design Style 首页"><img src="./assets/mark.svg" width="32" height="32" alt=""><span>Design<span class="brand-dot">.</span>style<small>每天一个设计风格</small></span></a>
+      <a class="brand" href="./" aria-label="Design Style 首页"><img src="./assets/mark.svg" width="32" height="32" alt=""><span>Design<span class="brand-dot">.</span>style<small>设计参考库</small></span></a>
       <nav aria-label="网站导航"><a class="creator" href="https://x.com/guanmo_ai" target="_blank" rel="noopener noreferrer">观默 <span>↗</span></a><a class="repo-link" href="https://github.com/guanmo-ai/design-style" target="_blank" rel="noopener noreferrer">GitHub ↗</a></nav>
     </header>
     <main>
+      <section class="intro" aria-labelledby="intro-title">
+        <p class="eyebrow">DESIGN REFERENCES</p>
+        <h1 id="intro-title">看懂设计，用进创作。</h1>
+        <p>每期一支 15 秒短片，认识一种设计风格或布局方式。<br class="desktop-break">配套图解、设计规则、AI 提示词与完整源码。</p>
+      </section>
       <section id="collection" aria-labelledby="collection-title">
-        <div class="section-heading"><div class="heading-with-count"><h1 id="collection-title">风格与布局</h1><span id="total-count" class="count"></span></div><label class="search"><span aria-hidden="true">⌕</span><span class="sr-only">搜索风格、布局、关键词</span><input id="search" type="search" placeholder="搜索风格、布局、关键词…" autocomplete="off"><kbd aria-hidden="true">/</kbd></label></div>
-        <p class="collection-intro">风格是皮，布局是骨。每期一支 15 秒短片，拆解一种设计风格，或一种布局。</p>
-        <div class="toolbar"><div class="filters"><nav id="types" aria-label="作品类型"></nav><nav id="categories" aria-label="分类"></nav></div><label class="sort"><span class="sr-only">作品排序</span><select id="sort"><option value="latest">最新发布</option><option value="oldest">从第一期开始</option></select></label></div>
+        <div class="section-heading"><div class="heading-with-count"><h2 id="collection-title">全部作品</h2><span id="total-count" class="count"></span></div><label class="search"><span aria-hidden="true">⌕</span><span class="sr-only">搜索风格、布局、关键词</span><input id="search" type="search" placeholder="搜索作品或关键词" autocomplete="off"><kbd aria-hidden="true">/</kbd></label></div>
+        <div class="toolbar"><nav id="types" aria-label="作品标签筛选"></nav></div>
         <p id="result-count" class="sr-only" role="status"></p>
         <div id="works"></div>
         <div id="empty" class="empty" hidden><span aria-hidden="true">⌕</span><h3>还没有找到相关作品</h3><p>试试「包豪斯」「便当盒」或其他关键词。</p><button id="reset" class="button secondary" type="button">查看全部作品</button></div>
@@ -32,6 +36,6 @@
     <footer><a class="footer-brand" href="./">Design.style</a><p>由 <a href="https://x.com/guanmo_ai" target="_blank" rel="noopener noreferrer">观默 @guanmo_ai</a> 创作 · 视频与图片转载请注明出处</p><a href="https://github.com/guanmo-ai/design-style" target="_blank" rel="noopener noreferrer">源码开放，灵感流动 ↗</a></footer>
   </div>
   <dialog id="viewer" aria-labelledby="viewer-title"><header class="viewer-header"><span id="viewer-label"></span><button id="close" type="button" aria-label="关闭预览" autofocus>×</button></header><div id="viewer-content"></div></dialog>
-  <dialog id="image-viewer" aria-labelledby="image-viewer-title"><header class="viewer-header"><span id="image-viewer-label">图片预览</span><button id="image-close" class="close-button" type="button" aria-label="关闭风格图" autofocus>×</button></header><div id="image-viewer-content"></div></dialog>
+  <dialog id="image-viewer" aria-labelledby="image-viewer-title"><header class="viewer-header"><span id="image-viewer-label">图片预览</span><button id="image-close" class="close-button" type="button" aria-label="关闭图片预览" autofocus>×</button></header><div id="image-viewer-content"></div></dialog>
 </body>
 </html>

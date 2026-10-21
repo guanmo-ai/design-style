@@ -164,7 +164,7 @@ export const EndTitle: React.FC<P> = ({f}) => {
         <div style={{...sc(46, 700, 0.12), color: 'rgba(245,245,247,.92)'}}>便当盒布局</div>
       </Show>
       <Show f={f} at={at + 14} out={o} style={{...center, top: 730}}>
-        <div style={{...sc(30, 500, 0.12), color: C.t1}}>风格是皮，布局是骨。</div>
+        <div style={{...sc(30, 500, 0.12), color: C.t1}}>风格塑造视觉，布局组织信息。</div>
       </Show>
       <Show f={f} at={at + 18} out={o} style={{...center, top: 792}}>
         <div style={{...sc(22, 400, 0.08), color: C.t2}}>一格一事 · 大小分级 · 统一间距 · 统一圆角 · 对齐网格</div>

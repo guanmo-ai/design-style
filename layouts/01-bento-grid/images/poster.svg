@@ -93,7 +93,7 @@
   <circle cx="584" cy="1048" r="4" fill="url(#acc)"/>
   <text x="600" y="1055"><tspan class="t" font-size="21" font-weight="500" fill="#F5F5F7">Linear · Vercel</tspan><tspan class="c" font-size="19" font-weight="400" fill="#86868B" dx="12">产品官网与后台</tspan></text>
   <!-- 页脚 -->
-  <text x="72" y="1196" class="c" font-size="40" font-weight="700" fill="#F5F5F7" letter-spacing="2" >风格是皮，布局是骨。</text>
+  <text x="72" y="1196" class="c" font-size="40" font-weight="700" fill="#F5F5F7" letter-spacing="2" >风格塑造视觉，布局组织信息。</text>
   <text x="72" y="1240" class="c" font-size="20" font-weight="400" fill="#86868B" letter-spacing="1" >一格一事 · 大小分级 · 统一间距 · 统一圆角 · 对齐网格</text>
   <rect x="72" y="1268" width="936" height="1" fill="#2A2A2E"/>
   <text x="72" y="1306" class="t" font-size="18" font-weight="500" fill="#86868B" >@guanmo_ai</text>

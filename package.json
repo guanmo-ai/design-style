@@ -7,6 +7,7 @@
     "gallery:setup": "npm ci --prefix gallery --ignore-scripts",
     "gallery:sync": "node scripts/gallery/sync.mjs",
     "gallery:build": "node scripts/gallery/build.mjs",
+    "gallery:preview": "node scripts/gallery/preview.mjs",
     "gallery:serve": "node scripts/gallery/serve.mjs",
     "gallery:test": "node --test tests/gallery/*.test.mjs",
     "gallery:check": "node scripts/gallery/check-release.mjs",

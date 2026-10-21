@@ -6,7 +6,7 @@
 
   poster.svg     一张海报，认识便当盒布局（海报本身就是一个便当盒）
   cheatsheet.svg 尺寸、间距、色板与五条规则（速查卡本身也是一个便当盒，浅色）
-  skins.svg      同一套格子，换六种皮（便当 / Metro / iOS / 包豪斯 / 浅色主页 / 深色后台）
+  skins.svg      同一布局，六种风格（便当 / Metro / iOS / 包豪斯 / 浅色主页 / 深色后台）
   templates.svg  拿来就用的三套排法（发布会 / 个人主页 / 数据看板）
 
 用法：python3 layouts/01-bento-grid/images/make_svgs.py
@@ -197,7 +197,7 @@ def poster():
         o.append('  ' + spans(x + 50, yy, [(a, 't', 21, 500, T1, 0), (b, 'c', 19, 400, T2, 12)]))
 
     o.append('  <!-- 页脚 -->')
-    o.append('  ' + text(M, 1196, '风格是皮，布局是骨。', 'c', 40, 700, T1, ls=2))
+    o.append('  ' + text(M, 1196, '风格塑造视觉，布局组织信息。', 'c', 40, 700, T1, ls=2))
     o.append('  ' + text(M, 1240, '一格一事 · 大小分级 · 统一间距 · 统一圆角 · 对齐网格', 'c', 20, 400, T2, ls=1))
     o.append(f'  <rect x="{M}" y="1268" width="{W - 2 * M}" height="1" fill="#2A2A2E"/>')
     o.append('  ' + text(M, 1306, '@guanmo_ai', 't', 18, 500, T2))
@@ -313,7 +313,7 @@ def cheatsheet():
 
 
 # ======================================================================
-# 3. 同一套格子，换六种皮
+# 3. 同一布局，六种风格
 # ======================================================================
 LAY7 = [(0, 0, 2, 2), (2, 0, 1, 1), (2, 1, 1, 1), (3, 0, 1, 2), (0, 2, 2, 1), (2, 2, 1, 1), (3, 2, 1, 1)]
 
@@ -504,8 +504,8 @@ def skin_dash(x, y, w, h):
 
 def skins():
     o = ['  <rect width="1080" height="1350" fill="#0B0B0C"/>']
-    o.append('  ' + text(M, 124, '同一套格子，换六种皮', 'c', 56, 900, T1, ls=2))
-    o.append('  ' + text(M, 172, '风格是皮，布局是骨。格子不变：4 列 · 7 张卡 · 主角占 2×2', 'c', 22, 400, T2))
+    o.append('  ' + text(M, 124, '同一布局，六种风格', 'c', 56, 900, T1, ls=2))
+    o.append('  ' + text(M, 172, '4 列 · 7 张卡 · 主角占 2×2，保持网格，切换风格。', 'c', 22, 400, T2))
     pw, ph = (W - 2 * M - GAP * 1.5) / 2, 270
     items = [(skin_bento, '01', '便当漆盒', '名字的由来'), (skin_metro, '02', 'Metro 磁贴', '前身 · 2010'), (skin_ios, '03', 'iOS 小组件', '前身 · 2020'),
              (skin_bauhaus, '04', '包豪斯', '风格 · NO. 001'), (skin_home, '05', '浅色主页', 'bento.me 式'), (skin_dash, '06', '深色后台', 'Linear 式')]
@@ -523,7 +523,7 @@ def skins():
     <linearGradient id="wall" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#1D2B64"/><stop offset=".55" stop-color="#6B3FA0"/><stop offset="1" stop-color="#F08A5D"/></linearGradient>
     <linearGradient id="sunset" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3A2A8C"/><stop offset=".45" stop-color="#C2508E"/><stop offset=".7" stop-color="#FF9A62"/><stop offset="1" stop-color="#FFC27A"/></linearGradient>
     <linearGradient id="iosA" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#5FB0FF"/><stop offset="1" stop-color="#1E6FFF"/></linearGradient>"""
-    return svg('同一套格子，换六种皮', '\n'.join(o) + '\n', extra)
+    return svg('同一布局，六种风格', '\n'.join(o) + '\n', extra)
 
 
 # ======================================================================
@@ -532,7 +532,7 @@ def skins():
 def templates():
     o = ['  <rect width="1080" height="1350" fill="#0B0B0C"/>']
     o.append('  ' + text(M, 124, '拿来就用：三套排法', 'c', 56, 900, T1, ls=2))
-    o.append('  ' + text(M, 172, '同一张 4 列网格 · 间距 20 · 圆角 32 —— 换内容，不换骨架', 'c', 22, 400, T2))
+    o.append('  ' + text(M, 172, '同一张 4 列网格 · 间距 20 · 圆角 32 —— 换内容，保留网格结构', 'c', 22, 400, T2))
     rowh = 78
     sets = [
         ('A', '产品卖点', '发布会式', [(0, 0, 2, 2, '主角 · 产品图', '2×2'), (2, 0, 1, 1, '续航', '大数字'), (2, 1, 1, 1, '性能', '大数字'), (3, 0, 1, 2, '配色', '1×2'),
