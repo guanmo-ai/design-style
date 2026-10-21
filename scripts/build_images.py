@@ -33,6 +33,8 @@ FACES = [  # (family, file, weight)
     ('Geist Mono', 'GeistMono-Medium.ttf', '500'),
     ('Selawik', 'Selawik-Light.ttf', '300'),
     ('Selawik', 'Selawik.ttf', '400'),
+    ('TeX Gyre Heros', 'TeXGyreHeros-Regular.otf', '400'),
+    ('TeX Gyre Heros', 'TeXGyreHeros-Bold.otf', '700'),
     ('Noto Sans SC', 'NotoSansSC-Regular.otf', '400'),
     ('Noto Sans SC', 'NotoSansSC-Medium.otf', '500'),
     ('Noto Sans SC', 'NotoSansSC-Bold.otf', '700'),

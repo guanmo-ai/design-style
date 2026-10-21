@@ -40,7 +40,7 @@ by 观默 [@guanmo_ai](https://x.com/guanmo_ai)
 | 期 | 风格 | 年代 | 一句话 | |
 |:-:|---|---|---|---|
 | **001** | [**包豪斯 Bauhaus**](styles/001-bauhaus) | 1919—1933 | 圆、方、三角 + 红黄蓝，把“好看”变成可以教的规则 | [🎬 视频](https://github.com/guanmo-ai/design-style/releases/tag/day-01) · [🛠 过程](styles/001-bauhaus/PROCESS.md) |
-| 002 | 瑞士国际主义 Swiss Style | 1950s— | 网格、无衬线、客观 | 明天见 → |
+| **002** | [**瑞士国际主义 Swiss Style**](styles/002-swiss-style) | 1950—1970 | 一张网格、一种无衬线、一种红，把版面变成一道可以计算的题 | [🎬 视频](https://github.com/guanmo-ai/design-style/releases/tag/day-02) · [🛠 过程](styles/002-swiss-style/PROCESS.md) |
 
 ### 布局方式 · Layout
 
@@ -72,13 +72,15 @@ npm run gallery:serve
 ```bash
 git clone https://github.com/guanmo-ai/design-style.git && cd design-style
 npm install
-npm run fonts                  # 下载开源字体到 public/fonts（Jost / JetBrains Mono / Inter / Geist Mono / Selawik / Noto Sans SC）
+npm run fonts                  # 下载开源字体到 public/fonts（Jost / JetBrains Mono / TeX Gyre Heros / Inter / Geist Mono / Selawik / Noto Sans SC）
 pip install numpy fonttools
 
 npm run studio                 # 在浏览器里逐帧预览、改参数
 npm run render:001             # 生成配乐 → 渲染 out/001-bauhaus.mp4
 npx playwright install chromium
 npm run images:001             # 生成图案 → 内嵌字体的 preview SVG + 2x PNG
+npm run render:002             # 风格 002：生成配乐 → 渲染 out/002-swiss-style-master.mp4（带运动模糊，较慢）
+npm run images:002             # 风格 002：生成 4 张风格图 → preview SVG + 2x PNG
 npm run render:L01             # 布局 01：生成配乐 → 渲染 out/01-bento-grid-master.mp4
 npm run images:L01             # 布局 01：生成 4 张布局图 → preview SVG + 2x PNG
 
@@ -104,6 +106,7 @@ design-style/
 │     ├─ audio/make_music.py
 │     └─ images/           # poster / cheatsheet / app-ui / pattern(.py)
 │        └─ preview/       # 内嵌字体、可直接分享的 SVG
+│  └─ 002-swiss-style/     # 同上；短片：一张 12 × 6 网格贯穿全片，红色接力换幕
 ├─ layouts/                # 布局：结构同 styles/，期号两位
 │  └─ 01-bento-grid/
 │     ├─ README.md         # 布局指南
@@ -120,14 +123,14 @@ design-style/
 
 ## 统一规格
 
-- **时长** 15 秒 = 900 帧 @ 60fps；所有转场都落在拍点上（包豪斯 120 BPM，1 拍 = 30 帧；便当盒 150 BPM，1 拍 = 24 帧）
+- **时长** 15 秒 = 900 帧 @ 60fps；所有转场都落在拍点上（包豪斯、瑞士风格 120 BPM，1 拍 = 30 帧；便当盒 150 BPM，1 拍 = 24 帧）
 - **结构** 钩子（0–2s）→ 6–9 个侧面章节（每章 1–1.5s：一个主角 + 一个动作 + 一行标签）→ 回顾 → 片尾
 - **每期四件套** 视频 · 风格图 · 制作过程 · 源代码
 - **风格图** 海报 · 速查卡 · 今天的应用 · 图案/纹理，四张一组
 - **布局图** 海报 · 速查卡 · 布局 × 风格 · 拿来就用的模板，四张一组
-- **字体** 只用可免费商用的开源字体（SIL OFL）
+- **字体** 只用可免费商用的开源字体（SIL OFL / GUST Font License）
 
 ## 授权
 
 代码欢迎学习和改造；转发视频和图片请注明出处 **观默 @guanmo_ai**。
-字体 Jost、JetBrains Mono、Inter、Geist Mono、Selawik、Noto Sans SC 均为 SIL Open Font License 1.1。
+字体 Jost、JetBrains Mono、Inter、Geist Mono、Selawik、Noto Sans SC 均为 SIL Open Font License 1.1；TeX Gyre Heros 为 GUST Font License。

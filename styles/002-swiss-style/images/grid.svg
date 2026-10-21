@@ -1,0 +1,235 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1080" height="1350" viewBox="0 0 1080 1350">
+  <!-- Design Style · 风格 002 · 瑞士国际主义 Swiss Style —— 一张网格，四种排法 / 1080×1350（由 make_svgs.py 生成） -->
+  <defs>
+  </defs>
+  <rect width="1080" height="1350" fill="#F5F4F0"/>
+  <text x="87.0" y="116.0" font-family="'TeX Gyre Heros', 'Helvetica Neue', Helvetica, Arial, 'Noto Sans SC', sans-serif" font-weight="900" font-size="52" fill="#111111">一张网格，四种排法</text>
+  <text x="90.0" y="168.0" font-family="'TeX Gyre Heros', 'Helvetica Neue', Helvetica, Arial, 'Noto Sans SC', sans-serif" font-weight="400" font-size="20" fill="#7A7A78">同一组内容，6 栏分成 1 / 2 / 3 / 6 组 —— 换的是分组，不是网格</text>
+  <rect x="945.0" y="72.0" width="45.0" height="45.0" fill="#E30613"/>
+  <text x="990.0" y="168.0" font-family="'TeX Gyre Heros', 'Helvetica Neue', Helvetica, Arial, 'Noto Sans SC', sans-serif" font-weight="400" font-size="16" text-anchor="end" fill="#7A7A78">grid systems no.02</text>
+  <rect x="90.0" y="192.0" width="900.0" height="3.0" fill="#111111"/>
+  <rect x="90.0" y="226.0" width="441.0" height="441.0" fill="#E30613"/>
+  <rect x="117.5" y="253.5" width="56.0" height="56.0" fill="none" stroke="rgba(255,255,255,0.35)" stroke-width="0.75" stroke-dasharray="2 3"/>
+  <rect x="117.5" y="319.5" width="56.0" height="56.0" fill="none" stroke="rgba(255,255,255,0.35)" stroke-width="0.75" stroke-dasharray="2 3"/>
+  <rect x="117.5" y="385.5" width="56.0" height="56.0" fill="none" stroke="rgba(255,255,255,0.35)" stroke-width="0.75" stroke-dasharray="2 3"/>
+  <rect x="117.5" y="451.5" width="56.0" height="56.0" fill="none" stroke="rgba(255,255,255,0.35)" stroke-width="0.75" stroke-dasharray="2 3"/>
+  <rect x="117.5" y="517.5" width="56.0" height="56.0" fill="none" stroke="rgba(255,255,255,0.35)" stroke-width="0.75" stroke-dasharray="2 3"/>
+  <rect x="117.5" y="583.5" width="56.0" height="56.0" fill="none" stroke="rgba(255,255,255,0.35)" stroke-width="0.75" stroke-dasharray="2 3"/>
+  <rect x="183.5" y="253.5" width="56.0" height="56.0" fill="none" stroke="rgba(255,255,255,0.35)" stroke-width="0.75" stroke-dasharray="2 3"/>
+  <rect x="183.5" y="319.5" width="56.0" height="56.0" fill="none" stroke="rgba(255,255,255,0.35)" stroke-width="0.75" stroke-dasharray="2 3"/>
+  <rect x="183.5" y="385.5" width="56.0" height="56.0" fill="none" stroke="rgba(255,255,255,0.35)" stroke-width="0.75" stroke-dasharray="2 3"/>
+  <rect x="183.5" y="451.5" width="56.0" height="56.0" fill="none" stroke="rgba(255,255,255,0.35)" stroke-width="0.75" stroke-dasharray="2 3"/>
+  <rect x="183.5" y="517.5" width="56.0" height="56.0" fill="none" stroke="rgba(255,255,255,0.35)" stroke-width="0.75" stroke-dasharray="2 3"/>
+  <rect x="183.5" y="583.5" width="56.0" height="56.0" fill="none" stroke="rgba(255,255,255,0.35)" stroke-width="0.75" stroke-dasharray="2 3"/>
+  <rect x="249.5" y="253.5" width="56.0" height="56.0" fill="none" stroke="rgba(255,255,255,0.35)" stroke-width="0.75" stroke-dasharray="2 3"/>
+  <rect x="249.5" y="319.5" width="56.0" height="56.0" fill="none" stroke="rgba(255,255,255,0.35)" stroke-width="0.75" stroke-dasharray="2 3"/>
+  <rect x="249.5" y="385.5" width="56.0" height="56.0" fill="none" stroke="rgba(255,255,255,0.35)" stroke-width="0.75" stroke-dasharray="2 3"/>
+  <rect x="249.5" y="451.5" width="56.0" height="56.0" fill="none" stroke="rgba(255,255,255,0.35)" stroke-width="0.75" stroke-dasharray="2 3"/>
+  <rect x="249.5" y="517.5" width="56.0" height="56.0" fill="none" stroke="rgba(255,255,255,0.35)" stroke-width="0.75" stroke-dasharray="2 3"/>
+  <rect x="249.5" y="583.5" width="56.0" height="56.0" fill="none" stroke="rgba(255,255,255,0.35)" stroke-width="0.75" stroke-dasharray="2 3"/>
+  <rect x="315.5" y="253.5" width="56.0" height="56.0" fill="none" stroke="rgba(255,255,255,0.35)" stroke-width="0.75" stroke-dasharray="2 3"/>
+  <rect x="315.5" y="319.5" width="56.0" height="56.0" fill="none" stroke="rgba(255,255,255,0.35)" stroke-width="0.75" stroke-dasharray="2 3"/>
+  <rect x="315.5" y="385.5" width="56.0" height="56.0" fill="none" stroke="rgba(255,255,255,0.35)" stroke-width="0.75" stroke-dasharray="2 3"/>
+  <rect x="315.5" y="451.5" width="56.0" height="56.0" fill="none" stroke="rgba(255,255,255,0.35)" stroke-width="0.75" stroke-dasharray="2 3"/>
+  <rect x="315.5" y="517.5" width="56.0" height="56.0" fill="none" stroke="rgba(255,255,255,0.35)" stroke-width="0.75" stroke-dasharray="2 3"/>
+  <rect x="315.5" y="583.5" width="56.0" height="56.0" fill="none" stroke="rgba(255,255,255,0.35)" stroke-width="0.75" stroke-dasharray="2 3"/>
+  <rect x="381.5" y="253.5" width="56.0" height="56.0" fill="none" stroke="rgba(255,255,255,0.35)" stroke-width="0.75" stroke-dasharray="2 3"/>
+  <rect x="381.5" y="319.5" width="56.0" height="56.0" fill="none" stroke="rgba(255,255,255,0.35)" stroke-width="0.75" stroke-dasharray="2 3"/>
+  <rect x="381.5" y="385.5" width="56.0" height="56.0" fill="none" stroke="rgba(255,255,255,0.35)" stroke-width="0.75" stroke-dasharray="2 3"/>
+  <rect x="381.5" y="451.5" width="56.0" height="56.0" fill="none" stroke="rgba(255,255,255,0.35)" stroke-width="0.75" stroke-dasharray="2 3"/>
+  <rect x="381.5" y="517.5" width="56.0" height="56.0" fill="none" stroke="rgba(255,255,255,0.35)" stroke-width="0.75" stroke-dasharray="2 3"/>
+  <rect x="381.5" y="583.5" width="56.0" height="56.0" fill="none" stroke="rgba(255,255,255,0.35)" stroke-width="0.75" stroke-dasharray="2 3"/>
+  <rect x="447.5" y="253.5" width="56.0" height="56.0" fill="none" stroke="rgba(255,255,255,0.35)" stroke-width="0.75" stroke-dasharray="2 3"/>
+  <rect x="447.5" y="319.5" width="56.0" height="56.0" fill="none" stroke="rgba(255,255,255,0.35)" stroke-width="0.75" stroke-dasharray="2 3"/>
+  <rect x="447.5" y="385.5" width="56.0" height="56.0" fill="none" stroke="rgba(255,255,255,0.35)" stroke-width="0.75" stroke-dasharray="2 3"/>
+  <rect x="447.5" y="451.5" width="56.0" height="56.0" fill="none" stroke="rgba(255,255,255,0.35)" stroke-width="0.75" stroke-dasharray="2 3"/>
+  <rect x="447.5" y="517.5" width="56.0" height="56.0" fill="none" stroke="rgba(255,255,255,0.35)" stroke-width="0.75" stroke-dasharray="2 3"/>
+  <rect x="447.5" y="583.5" width="56.0" height="56.0" fill="none" stroke="rgba(255,255,255,0.35)" stroke-width="0.75" stroke-dasharray="2 3"/>
+  <rect x="117.0" y="245.0" width="387.0" height="3" fill="rgba(255,255,255,0.35)"/>
+  <text x="108.6" y="343.0" font-family="'TeX Gyre Heros', 'Helvetica Neue', Helvetica, Arial, 'Noto Sans SC', sans-serif" font-weight="700" font-size="124" letter-spacing="-3.72" fill="#FFFFFF">Neue</text>
+  <text x="111.8" y="449.0" font-family="'TeX Gyre Heros', 'Helvetica Neue', Helvetica, Arial, 'Noto Sans SC', sans-serif" font-weight="700" font-size="124" letter-spacing="-3.72" fill="#FFFFFF">Grafik</text>
+  <text x="117.0" y="545.0" font-family="'TeX Gyre Heros', 'Helvetica Neue', Helvetica, Arial, 'Noto Sans SC', sans-serif" font-weight="900" font-size="30" fill="#FFFFFF">新平面设计</text>
+  <text x="117.0" y="597.0" font-family="'TeX Gyre Heros', 'Helvetica Neue', Helvetica, Arial, 'Noto Sans SC', sans-serif" font-weight="700" font-size="13" fill="#FFFFFF">Zeitschrift für Grafik</text>
+  <text x="117.0" y="613.0" font-family="'TeX Gyre Heros', 'Helvetica Neue', Helvetica, Arial, 'Noto Sans SC', sans-serif" font-weight="400" font-size="13" fill="#FFFFFF">Zürich 1958—1965</text>
+  <text x="117.0" y="629.0" font-family="'TeX Gyre Heros', 'Helvetica Neue', Helvetica, Arial, 'Noto Sans SC', sans-serif" font-weight="400" font-size="13" fill="#FFFFFF">Nr. 1—18</text>
+  <rect x="381.0" y="517.0" width="123.0" height="123.0" fill="#FFFFFF"/>
+  <text x="389.0" y="537.0" font-family="'TeX Gyre Heros', 'Helvetica Neue', Helvetica, Arial, 'Noto Sans SC', sans-serif" font-weight="700" font-size="16" fill="#E30613">1958</text>
+  <text x="90.0" y="701.0" font-family="'TeX Gyre Heros', 'Helvetica Neue', Helvetica, Arial, 'Noto Sans SC', sans-serif" font-weight="700" font-size="20" fill="#111111">6 = 1 × 6</text>
+  <text x="202.0" y="701.0" font-family="'TeX Gyre Heros', 'Helvetica Neue', Helvetica, Arial, 'Noto Sans SC', sans-serif" font-weight="400" font-size="16" fill="#7A7A78">整版一组：标题就是画面</text>
+  <rect x="549.0" y="226.0" width="441.0" height="441.0" fill="#FFFFFF" stroke="rgba(17,17,17,0.09)" stroke-width="1"/>
+  <rect x="576.5" y="253.5" width="56.0" height="56.0" fill="none" stroke="rgba(227,6,19,0.4)" stroke-width="0.75" stroke-dasharray="2 3"/>
+  <rect x="576.5" y="319.5" width="56.0" height="56.0" fill="none" stroke="rgba(227,6,19,0.4)" stroke-width="0.75" stroke-dasharray="2 3"/>
+  <rect x="576.5" y="385.5" width="56.0" height="56.0" fill="none" stroke="rgba(227,6,19,0.4)" stroke-width="0.75" stroke-dasharray="2 3"/>
+  <rect x="576.5" y="451.5" width="56.0" height="56.0" fill="none" stroke="rgba(227,6,19,0.4)" stroke-width="0.75" stroke-dasharray="2 3"/>
+  <rect x="576.5" y="517.5" width="56.0" height="56.0" fill="none" stroke="rgba(227,6,19,0.4)" stroke-width="0.75" stroke-dasharray="2 3"/>
+  <rect x="576.5" y="583.5" width="56.0" height="56.0" fill="none" stroke="rgba(227,6,19,0.4)" stroke-width="0.75" stroke-dasharray="2 3"/>
+  <rect x="642.5" y="253.5" width="56.0" height="56.0" fill="none" stroke="rgba(227,6,19,0.4)" stroke-width="0.75" stroke-dasharray="2 3"/>
+  <rect x="642.5" y="319.5" width="56.0" height="56.0" fill="none" stroke="rgba(227,6,19,0.4)" stroke-width="0.75" stroke-dasharray="2 3"/>
+  <rect x="642.5" y="385.5" width="56.0" height="56.0" fill="none" stroke="rgba(227,6,19,0.4)" stroke-width="0.75" stroke-dasharray="2 3"/>
+  <rect x="642.5" y="451.5" width="56.0" height="56.0" fill="none" stroke="rgba(227,6,19,0.4)" stroke-width="0.75" stroke-dasharray="2 3"/>
+  <rect x="642.5" y="517.5" width="56.0" height="56.0" fill="none" stroke="rgba(227,6,19,0.4)" stroke-width="0.75" stroke-dasharray="2 3"/>
+  <rect x="642.5" y="583.5" width="56.0" height="56.0" fill="none" stroke="rgba(227,6,19,0.4)" stroke-width="0.75" stroke-dasharray="2 3"/>
+  <rect x="708.5" y="253.5" width="56.0" height="56.0" fill="none" stroke="rgba(227,6,19,0.4)" stroke-width="0.75" stroke-dasharray="2 3"/>
+  <rect x="708.5" y="319.5" width="56.0" height="56.0" fill="none" stroke="rgba(227,6,19,0.4)" stroke-width="0.75" stroke-dasharray="2 3"/>
+  <rect x="708.5" y="385.5" width="56.0" height="56.0" fill="none" stroke="rgba(227,6,19,0.4)" stroke-width="0.75" stroke-dasharray="2 3"/>
+  <rect x="708.5" y="451.5" width="56.0" height="56.0" fill="none" stroke="rgba(227,6,19,0.4)" stroke-width="0.75" stroke-dasharray="2 3"/>
+  <rect x="708.5" y="517.5" width="56.0" height="56.0" fill="none" stroke="rgba(227,6,19,0.4)" stroke-width="0.75" stroke-dasharray="2 3"/>
+  <rect x="708.5" y="583.5" width="56.0" height="56.0" fill="none" stroke="rgba(227,6,19,0.4)" stroke-width="0.75" stroke-dasharray="2 3"/>
+  <rect x="774.5" y="253.5" width="56.0" height="56.0" fill="none" stroke="rgba(227,6,19,0.4)" stroke-width="0.75" stroke-dasharray="2 3"/>
+  <rect x="774.5" y="319.5" width="56.0" height="56.0" fill="none" stroke="rgba(227,6,19,0.4)" stroke-width="0.75" stroke-dasharray="2 3"/>
+  <rect x="774.5" y="385.5" width="56.0" height="56.0" fill="none" stroke="rgba(227,6,19,0.4)" stroke-width="0.75" stroke-dasharray="2 3"/>
+  <rect x="774.5" y="451.5" width="56.0" height="56.0" fill="none" stroke="rgba(227,6,19,0.4)" stroke-width="0.75" stroke-dasharray="2 3"/>
+  <rect x="774.5" y="517.5" width="56.0" height="56.0" fill="none" stroke="rgba(227,6,19,0.4)" stroke-width="0.75" stroke-dasharray="2 3"/>
+  <rect x="774.5" y="583.5" width="56.0" height="56.0" fill="none" stroke="rgba(227,6,19,0.4)" stroke-width="0.75" stroke-dasharray="2 3"/>
+  <rect x="840.5" y="253.5" width="56.0" height="56.0" fill="none" stroke="rgba(227,6,19,0.4)" stroke-width="0.75" stroke-dasharray="2 3"/>
+  <rect x="840.5" y="319.5" width="56.0" height="56.0" fill="none" stroke="rgba(227,6,19,0.4)" stroke-width="0.75" stroke-dasharray="2 3"/>
+  <rect x="840.5" y="385.5" width="56.0" height="56.0" fill="none" stroke="rgba(227,6,19,0.4)" stroke-width="0.75" stroke-dasharray="2 3"/>
+  <rect x="840.5" y="451.5" width="56.0" height="56.0" fill="none" stroke="rgba(227,6,19,0.4)" stroke-width="0.75" stroke-dasharray="2 3"/>
+  <rect x="840.5" y="517.5" width="56.0" height="56.0" fill="none" stroke="rgba(227,6,19,0.4)" stroke-width="0.75" stroke-dasharray="2 3"/>
+  <rect x="840.5" y="583.5" width="56.0" height="56.0" fill="none" stroke="rgba(227,6,19,0.4)" stroke-width="0.75" stroke-dasharray="2 3"/>
+  <rect x="906.5" y="253.5" width="56.0" height="56.0" fill="none" stroke="rgba(227,6,19,0.4)" stroke-width="0.75" stroke-dasharray="2 3"/>
+  <rect x="906.5" y="319.5" width="56.0" height="56.0" fill="none" stroke="rgba(227,6,19,0.4)" stroke-width="0.75" stroke-dasharray="2 3"/>
+  <rect x="906.5" y="385.5" width="56.0" height="56.0" fill="none" stroke="rgba(227,6,19,0.4)" stroke-width="0.75" stroke-dasharray="2 3"/>
+  <rect x="906.5" y="451.5" width="56.0" height="56.0" fill="none" stroke="rgba(227,6,19,0.4)" stroke-width="0.75" stroke-dasharray="2 3"/>
+  <rect x="906.5" y="517.5" width="56.0" height="56.0" fill="none" stroke="rgba(227,6,19,0.4)" stroke-width="0.75" stroke-dasharray="2 3"/>
+  <rect x="906.5" y="583.5" width="56.0" height="56.0" fill="none" stroke="rgba(227,6,19,0.4)" stroke-width="0.75" stroke-dasharray="2 3"/>
+  <rect x="576.0" y="245.0" width="189.0" height="3" fill="rgba(227,6,19,0.4)"/>
+  <rect x="774.0" y="245.0" width="189.0" height="3" fill="rgba(227,6,19,0.4)"/>
+  <rect x="576.0" y="253.0" width="189.0" height="387.0" fill="#E30613"/>
+  <text x="586.0" y="630.0" font-family="'TeX Gyre Heros', 'Helvetica Neue', Helvetica, Arial, 'Noto Sans SC', sans-serif" font-weight="700" font-size="40" fill="#FFFFFF">1958</text>
+  <text x="770.6" y="289.0" font-family="'TeX Gyre Heros', 'Helvetica Neue', Helvetica, Arial, 'Noto Sans SC', sans-serif" font-weight="700" font-size="50" letter-spacing="-1.00" fill="#111111">Neue</text>
+  <text x="771.9" y="343.0" font-family="'TeX Gyre Heros', 'Helvetica Neue', Helvetica, Arial, 'Noto Sans SC', sans-serif" font-weight="700" font-size="50" letter-spacing="-1.00" fill="#111111">Grafik</text>
+  <text x="774.0" y="411.0" font-family="'TeX Gyre Heros', 'Helvetica Neue', Helvetica, Arial, 'Noto Sans SC', sans-serif" font-weight="900" font-size="20" fill="#111111">新平面设计</text>
+  <text x="774.0" y="465.0" font-family="'TeX Gyre Heros', 'Helvetica Neue', Helvetica, Arial, 'Noto Sans SC', sans-serif" font-weight="400" font-size="12" fill="#111111">Die Neue Grafik ist</text>
+  <text x="774.0" y="481.0" font-family="'TeX Gyre Heros', 'Helvetica Neue', Helvetica, Arial, 'Noto Sans SC', sans-serif" font-weight="400" font-size="12" fill="#111111">sachlich, klar und</text>
+  <text x="774.0" y="497.0" font-family="'TeX Gyre Heros', 'Helvetica Neue', Helvetica, Arial, 'Noto Sans SC', sans-serif" font-weight="400" font-size="12" fill="#111111">ohne Ornament. Sie</text>
+  <text x="774.0" y="513.0" font-family="'TeX Gyre Heros', 'Helvetica Neue', Helvetica, Arial, 'Noto Sans SC', sans-serif" font-weight="400" font-size="12" fill="#111111">ordnet die Fläche</text>
+  <text x="774.0" y="529.0" font-family="'TeX Gyre Heros', 'Helvetica Neue', Helvetica, Arial, 'Noto Sans SC', sans-serif" font-weight="400" font-size="12" fill="#111111">mit dem Raster.</text>
+  <text x="774.0" y="597.0" font-family="'TeX Gyre Heros', 'Helvetica Neue', Helvetica, Arial, 'Noto Sans SC', sans-serif" font-weight="700" font-size="12" fill="#111111">Zeitschrift für Grafik</text>
+  <text x="774.0" y="613.0" font-family="'TeX Gyre Heros', 'Helvetica Neue', Helvetica, Arial, 'Noto Sans SC', sans-serif" font-weight="400" font-size="12" fill="#7A7A78">Zürich 1958—1965</text>
+  <text x="774.0" y="629.0" font-family="'TeX Gyre Heros', 'Helvetica Neue', Helvetica, Arial, 'Noto Sans SC', sans-serif" font-weight="400" font-size="12" fill="#7A7A78">Nr. 1—18</text>
+  <text x="549.0" y="701.0" font-family="'TeX Gyre Heros', 'Helvetica Neue', Helvetica, Arial, 'Noto Sans SC', sans-serif" font-weight="700" font-size="20" fill="#111111">6 = 2 × 3</text>
+  <text x="661.0" y="701.0" font-family="'TeX Gyre Heros', 'Helvetica Neue', Helvetica, Arial, 'Noto Sans SC', sans-serif" font-weight="400" font-size="16" fill="#7A7A78">两组：一半给颜色，一半给字</text>
+  <rect x="90.0" y="733.0" width="441.0" height="441.0" fill="#0F0F0F"/>
+  <rect x="117.5" y="760.5" width="56.0" height="56.0" fill="none" stroke="rgba(255,255,255,0.35)" stroke-width="0.75" stroke-dasharray="2 3"/>
+  <rect x="117.5" y="826.5" width="56.0" height="56.0" fill="none" stroke="rgba(255,255,255,0.35)" stroke-width="0.75" stroke-dasharray="2 3"/>
+  <rect x="117.5" y="892.5" width="56.0" height="56.0" fill="none" stroke="rgba(255,255,255,0.35)" stroke-width="0.75" stroke-dasharray="2 3"/>
+  <rect x="117.5" y="958.5" width="56.0" height="56.0" fill="none" stroke="rgba(255,255,255,0.35)" stroke-width="0.75" stroke-dasharray="2 3"/>
+  <rect x="117.5" y="1024.5" width="56.0" height="56.0" fill="none" stroke="rgba(255,255,255,0.35)" stroke-width="0.75" stroke-dasharray="2 3"/>
+  <rect x="117.5" y="1090.5" width="56.0" height="56.0" fill="none" stroke="rgba(255,255,255,0.35)" stroke-width="0.75" stroke-dasharray="2 3"/>
+  <rect x="183.5" y="760.5" width="56.0" height="56.0" fill="none" stroke="rgba(255,255,255,0.35)" stroke-width="0.75" stroke-dasharray="2 3"/>
+  <rect x="183.5" y="826.5" width="56.0" height="56.0" fill="none" stroke="rgba(255,255,255,0.35)" stroke-width="0.75" stroke-dasharray="2 3"/>
+  <rect x="183.5" y="892.5" width="56.0" height="56.0" fill="none" stroke="rgba(255,255,255,0.35)" stroke-width="0.75" stroke-dasharray="2 3"/>
+  <rect x="183.5" y="958.5" width="56.0" height="56.0" fill="none" stroke="rgba(255,255,255,0.35)" stroke-width="0.75" stroke-dasharray="2 3"/>
+  <rect x="183.5" y="1024.5" width="56.0" height="56.0" fill="none" stroke="rgba(255,255,255,0.35)" stroke-width="0.75" stroke-dasharray="2 3"/>
+  <rect x="183.5" y="1090.5" width="56.0" height="56.0" fill="none" stroke="rgba(255,255,255,0.35)" stroke-width="0.75" stroke-dasharray="2 3"/>
+  <rect x="249.5" y="760.5" width="56.0" height="56.0" fill="none" stroke="rgba(255,255,255,0.35)" stroke-width="0.75" stroke-dasharray="2 3"/>
+  <rect x="249.5" y="826.5" width="56.0" height="56.0" fill="none" stroke="rgba(255,255,255,0.35)" stroke-width="0.75" stroke-dasharray="2 3"/>
+  <rect x="249.5" y="892.5" width="56.0" height="56.0" fill="none" stroke="rgba(255,255,255,0.35)" stroke-width="0.75" stroke-dasharray="2 3"/>
+  <rect x="249.5" y="958.5" width="56.0" height="56.0" fill="none" stroke="rgba(255,255,255,0.35)" stroke-width="0.75" stroke-dasharray="2 3"/>
+  <rect x="249.5" y="1024.5" width="56.0" height="56.0" fill="none" stroke="rgba(255,255,255,0.35)" stroke-width="0.75" stroke-dasharray="2 3"/>
+  <rect x="249.5" y="1090.5" width="56.0" height="56.0" fill="none" stroke="rgba(255,255,255,0.35)" stroke-width="0.75" stroke-dasharray="2 3"/>
+  <rect x="315.5" y="760.5" width="56.0" height="56.0" fill="none" stroke="rgba(255,255,255,0.35)" stroke-width="0.75" stroke-dasharray="2 3"/>
+  <rect x="315.5" y="826.5" width="56.0" height="56.0" fill="none" stroke="rgba(255,255,255,0.35)" stroke-width="0.75" stroke-dasharray="2 3"/>
+  <rect x="315.5" y="892.5" width="56.0" height="56.0" fill="none" stroke="rgba(255,255,255,0.35)" stroke-width="0.75" stroke-dasharray="2 3"/>
+  <rect x="315.5" y="958.5" width="56.0" height="56.0" fill="none" stroke="rgba(255,255,255,0.35)" stroke-width="0.75" stroke-dasharray="2 3"/>
+  <rect x="315.5" y="1024.5" width="56.0" height="56.0" fill="none" stroke="rgba(255,255,255,0.35)" stroke-width="0.75" stroke-dasharray="2 3"/>
+  <rect x="315.5" y="1090.5" width="56.0" height="56.0" fill="none" stroke="rgba(255,255,255,0.35)" stroke-width="0.75" stroke-dasharray="2 3"/>
+  <rect x="381.5" y="760.5" width="56.0" height="56.0" fill="none" stroke="rgba(255,255,255,0.35)" stroke-width="0.75" stroke-dasharray="2 3"/>
+  <rect x="381.5" y="826.5" width="56.0" height="56.0" fill="none" stroke="rgba(255,255,255,0.35)" stroke-width="0.75" stroke-dasharray="2 3"/>
+  <rect x="381.5" y="892.5" width="56.0" height="56.0" fill="none" stroke="rgba(255,255,255,0.35)" stroke-width="0.75" stroke-dasharray="2 3"/>
+  <rect x="381.5" y="958.5" width="56.0" height="56.0" fill="none" stroke="rgba(255,255,255,0.35)" stroke-width="0.75" stroke-dasharray="2 3"/>
+  <rect x="381.5" y="1024.5" width="56.0" height="56.0" fill="none" stroke="rgba(255,255,255,0.35)" stroke-width="0.75" stroke-dasharray="2 3"/>
+  <rect x="381.5" y="1090.5" width="56.0" height="56.0" fill="none" stroke="rgba(255,255,255,0.35)" stroke-width="0.75" stroke-dasharray="2 3"/>
+  <rect x="447.5" y="760.5" width="56.0" height="56.0" fill="none" stroke="rgba(255,255,255,0.35)" stroke-width="0.75" stroke-dasharray="2 3"/>
+  <rect x="447.5" y="826.5" width="56.0" height="56.0" fill="none" stroke="rgba(255,255,255,0.35)" stroke-width="0.75" stroke-dasharray="2 3"/>
+  <rect x="447.5" y="892.5" width="56.0" height="56.0" fill="none" stroke="rgba(255,255,255,0.35)" stroke-width="0.75" stroke-dasharray="2 3"/>
+  <rect x="447.5" y="958.5" width="56.0" height="56.0" fill="none" stroke="rgba(255,255,255,0.35)" stroke-width="0.75" stroke-dasharray="2 3"/>
+  <rect x="447.5" y="1024.5" width="56.0" height="56.0" fill="none" stroke="rgba(255,255,255,0.35)" stroke-width="0.75" stroke-dasharray="2 3"/>
+  <rect x="447.5" y="1090.5" width="56.0" height="56.0" fill="none" stroke="rgba(255,255,255,0.35)" stroke-width="0.75" stroke-dasharray="2 3"/>
+  <rect x="117.0" y="752.0" width="123.0" height="3" fill="rgba(255,255,255,0.35)"/>
+  <rect x="249.0" y="752.0" width="123.0" height="3" fill="rgba(255,255,255,0.35)"/>
+  <rect x="381.0" y="752.0" width="123.0" height="3" fill="rgba(255,255,255,0.35)"/>
+  <text x="114.3" y="789.0" font-family="'TeX Gyre Heros', 'Helvetica Neue', Helvetica, Arial, 'Noto Sans SC', sans-serif" font-weight="700" font-size="40" letter-spacing="-0.80" fill="#F5F4F0">Neue</text>
+  <text x="115.3" y="833.0" font-family="'TeX Gyre Heros', 'Helvetica Neue', Helvetica, Arial, 'Noto Sans SC', sans-serif" font-weight="700" font-size="40" letter-spacing="-0.80" fill="#F5F4F0">Grafik</text>
+  <text x="117.0" y="870.0" font-family="'TeX Gyre Heros', 'Helvetica Neue', Helvetica, Arial, 'Noto Sans SC', sans-serif" font-weight="900" font-size="16" fill="#F5F4F0">新平面设计</text>
+  <text x="249.0" y="772.0" font-family="'TeX Gyre Heros', 'Helvetica Neue', Helvetica, Arial, 'Noto Sans SC', sans-serif" font-weight="400" font-size="12" fill="#F5F4F0">Die Neue Grafik ist</text>
+  <text x="249.0" y="788.0" font-family="'TeX Gyre Heros', 'Helvetica Neue', Helvetica, Arial, 'Noto Sans SC', sans-serif" font-weight="400" font-size="12" fill="#F5F4F0">sachlich, klar und</text>
+  <text x="249.0" y="804.0" font-family="'TeX Gyre Heros', 'Helvetica Neue', Helvetica, Arial, 'Noto Sans SC', sans-serif" font-weight="400" font-size="12" fill="#F5F4F0">ohne Ornament. Sie</text>
+  <text x="249.0" y="820.0" font-family="'TeX Gyre Heros', 'Helvetica Neue', Helvetica, Arial, 'Noto Sans SC', sans-serif" font-weight="400" font-size="12" fill="#F5F4F0">ordnet die Fläche</text>
+  <text x="249.0" y="836.0" font-family="'TeX Gyre Heros', 'Helvetica Neue', Helvetica, Arial, 'Noto Sans SC', sans-serif" font-weight="400" font-size="12" fill="#F5F4F0">mit dem Raster.</text>
+  <text x="381.0" y="772.0" font-family="'TeX Gyre Heros', 'Helvetica Neue', Helvetica, Arial, 'Noto Sans SC', sans-serif" font-weight="700" font-size="12" fill="#F5F4F0">Zeitschrift für Grafik</text>
+  <text x="381.0" y="788.0" font-family="'TeX Gyre Heros', 'Helvetica Neue', Helvetica, Arial, 'Noto Sans SC', sans-serif" font-weight="400" font-size="12" fill="rgba(245,244,240,0.6)">Zürich 1958—1965</text>
+  <text x="381.0" y="804.0" font-family="'TeX Gyre Heros', 'Helvetica Neue', Helvetica, Arial, 'Noto Sans SC', sans-serif" font-weight="400" font-size="12" fill="rgba(245,244,240,0.6)">Nr. 1—18</text>
+  <circle cx="376.5" cy="1052.5" r="94.5" fill="none" stroke="#F5F4F0" stroke-width="2"/>
+  <circle cx="376.5" cy="1052.5" r="76.5" fill="none" stroke="#E30613" stroke-width="7"/>
+  <circle cx="376.5" cy="1052.5" r="58.5" fill="none" stroke="#F5F4F0" stroke-width="2"/>
+  <circle cx="376.5" cy="1052.5" r="40.5" fill="none" stroke="#F5F4F0" stroke-width="2"/>
+  <circle cx="376.5" cy="1052.5" r="22.5" fill="none" stroke="#F5F4F0" stroke-width="2"/>
+  <text x="117.0" y="1141.0" font-family="'TeX Gyre Heros', 'Helvetica Neue', Helvetica, Arial, 'Noto Sans SC', sans-serif" font-weight="700" font-size="30" fill="#E30613">1958</text>
+  <text x="90.0" y="1208.0" font-family="'TeX Gyre Heros', 'Helvetica Neue', Helvetica, Arial, 'Noto Sans SC', sans-serif" font-weight="700" font-size="20" fill="#111111">6 = 3 × 2</text>
+  <text x="202.0" y="1208.0" font-family="'TeX Gyre Heros', 'Helvetica Neue', Helvetica, Arial, 'Noto Sans SC', sans-serif" font-weight="400" font-size="16" fill="#7A7A78">三组：标题、正文、信息各占一栏</text>
+  <rect x="549.0" y="733.0" width="441.0" height="441.0" fill="#FFFFFF" stroke="rgba(17,17,17,0.09)" stroke-width="1"/>
+  <rect x="576.5" y="760.5" width="56.0" height="56.0" fill="none" stroke="rgba(227,6,19,0.4)" stroke-width="0.75" stroke-dasharray="2 3"/>
+  <rect x="576.5" y="826.5" width="56.0" height="56.0" fill="none" stroke="rgba(227,6,19,0.4)" stroke-width="0.75" stroke-dasharray="2 3"/>
+  <rect x="576.5" y="892.5" width="56.0" height="56.0" fill="none" stroke="rgba(227,6,19,0.4)" stroke-width="0.75" stroke-dasharray="2 3"/>
+  <rect x="576.5" y="958.5" width="56.0" height="56.0" fill="none" stroke="rgba(227,6,19,0.4)" stroke-width="0.75" stroke-dasharray="2 3"/>
+  <rect x="576.5" y="1024.5" width="56.0" height="56.0" fill="none" stroke="rgba(227,6,19,0.4)" stroke-width="0.75" stroke-dasharray="2 3"/>
+  <rect x="576.5" y="1090.5" width="56.0" height="56.0" fill="none" stroke="rgba(227,6,19,0.4)" stroke-width="0.75" stroke-dasharray="2 3"/>
+  <rect x="642.5" y="760.5" width="56.0" height="56.0" fill="none" stroke="rgba(227,6,19,0.4)" stroke-width="0.75" stroke-dasharray="2 3"/>
+  <rect x="642.5" y="826.5" width="56.0" height="56.0" fill="none" stroke="rgba(227,6,19,0.4)" stroke-width="0.75" stroke-dasharray="2 3"/>
+  <rect x="642.5" y="892.5" width="56.0" height="56.0" fill="none" stroke="rgba(227,6,19,0.4)" stroke-width="0.75" stroke-dasharray="2 3"/>
+  <rect x="642.5" y="958.5" width="56.0" height="56.0" fill="none" stroke="rgba(227,6,19,0.4)" stroke-width="0.75" stroke-dasharray="2 3"/>
+  <rect x="642.5" y="1024.5" width="56.0" height="56.0" fill="none" stroke="rgba(227,6,19,0.4)" stroke-width="0.75" stroke-dasharray="2 3"/>
+  <rect x="642.5" y="1090.5" width="56.0" height="56.0" fill="none" stroke="rgba(227,6,19,0.4)" stroke-width="0.75" stroke-dasharray="2 3"/>
+  <rect x="708.5" y="760.5" width="56.0" height="56.0" fill="none" stroke="rgba(227,6,19,0.4)" stroke-width="0.75" stroke-dasharray="2 3"/>
+  <rect x="708.5" y="826.5" width="56.0" height="56.0" fill="none" stroke="rgba(227,6,19,0.4)" stroke-width="0.75" stroke-dasharray="2 3"/>
+  <rect x="708.5" y="892.5" width="56.0" height="56.0" fill="none" stroke="rgba(227,6,19,0.4)" stroke-width="0.75" stroke-dasharray="2 3"/>
+  <rect x="708.5" y="958.5" width="56.0" height="56.0" fill="none" stroke="rgba(227,6,19,0.4)" stroke-width="0.75" stroke-dasharray="2 3"/>
+  <rect x="708.5" y="1024.5" width="56.0" height="56.0" fill="none" stroke="rgba(227,6,19,0.4)" stroke-width="0.75" stroke-dasharray="2 3"/>
+  <rect x="708.5" y="1090.5" width="56.0" height="56.0" fill="none" stroke="rgba(227,6,19,0.4)" stroke-width="0.75" stroke-dasharray="2 3"/>
+  <rect x="774.5" y="760.5" width="56.0" height="56.0" fill="none" stroke="rgba(227,6,19,0.4)" stroke-width="0.75" stroke-dasharray="2 3"/>
+  <rect x="774.5" y="826.5" width="56.0" height="56.0" fill="none" stroke="rgba(227,6,19,0.4)" stroke-width="0.75" stroke-dasharray="2 3"/>
+  <rect x="774.5" y="892.5" width="56.0" height="56.0" fill="none" stroke="rgba(227,6,19,0.4)" stroke-width="0.75" stroke-dasharray="2 3"/>
+  <rect x="774.5" y="958.5" width="56.0" height="56.0" fill="none" stroke="rgba(227,6,19,0.4)" stroke-width="0.75" stroke-dasharray="2 3"/>
+  <rect x="774.5" y="1024.5" width="56.0" height="56.0" fill="none" stroke="rgba(227,6,19,0.4)" stroke-width="0.75" stroke-dasharray="2 3"/>
+  <rect x="774.5" y="1090.5" width="56.0" height="56.0" fill="none" stroke="rgba(227,6,19,0.4)" stroke-width="0.75" stroke-dasharray="2 3"/>
+  <rect x="840.5" y="760.5" width="56.0" height="56.0" fill="none" stroke="rgba(227,6,19,0.4)" stroke-width="0.75" stroke-dasharray="2 3"/>
+  <rect x="840.5" y="826.5" width="56.0" height="56.0" fill="none" stroke="rgba(227,6,19,0.4)" stroke-width="0.75" stroke-dasharray="2 3"/>
+  <rect x="840.5" y="892.5" width="56.0" height="56.0" fill="none" stroke="rgba(227,6,19,0.4)" stroke-width="0.75" stroke-dasharray="2 3"/>
+  <rect x="840.5" y="958.5" width="56.0" height="56.0" fill="none" stroke="rgba(227,6,19,0.4)" stroke-width="0.75" stroke-dasharray="2 3"/>
+  <rect x="840.5" y="1024.5" width="56.0" height="56.0" fill="none" stroke="rgba(227,6,19,0.4)" stroke-width="0.75" stroke-dasharray="2 3"/>
+  <rect x="840.5" y="1090.5" width="56.0" height="56.0" fill="none" stroke="rgba(227,6,19,0.4)" stroke-width="0.75" stroke-dasharray="2 3"/>
+  <rect x="906.5" y="760.5" width="56.0" height="56.0" fill="none" stroke="rgba(227,6,19,0.4)" stroke-width="0.75" stroke-dasharray="2 3"/>
+  <rect x="906.5" y="826.5" width="56.0" height="56.0" fill="none" stroke="rgba(227,6,19,0.4)" stroke-width="0.75" stroke-dasharray="2 3"/>
+  <rect x="906.5" y="892.5" width="56.0" height="56.0" fill="none" stroke="rgba(227,6,19,0.4)" stroke-width="0.75" stroke-dasharray="2 3"/>
+  <rect x="906.5" y="958.5" width="56.0" height="56.0" fill="none" stroke="rgba(227,6,19,0.4)" stroke-width="0.75" stroke-dasharray="2 3"/>
+  <rect x="906.5" y="1024.5" width="56.0" height="56.0" fill="none" stroke="rgba(227,6,19,0.4)" stroke-width="0.75" stroke-dasharray="2 3"/>
+  <rect x="906.5" y="1090.5" width="56.0" height="56.0" fill="none" stroke="rgba(227,6,19,0.4)" stroke-width="0.75" stroke-dasharray="2 3"/>
+  <rect x="576.0" y="752.0" width="57.0" height="3" fill="rgba(227,6,19,0.4)"/>
+  <rect x="642.0" y="752.0" width="57.0" height="3" fill="rgba(227,6,19,0.4)"/>
+  <rect x="708.0" y="752.0" width="57.0" height="3" fill="rgba(227,6,19,0.4)"/>
+  <rect x="774.0" y="752.0" width="57.0" height="3" fill="rgba(227,6,19,0.4)"/>
+  <rect x="840.0" y="752.0" width="57.0" height="3" fill="rgba(227,6,19,0.4)"/>
+  <rect x="906.0" y="752.0" width="57.0" height="3" fill="rgba(227,6,19,0.4)"/>
+  <text x="576.0" y="776.0" font-family="'TeX Gyre Heros', 'Helvetica Neue', Helvetica, Arial, 'Noto Sans SC', sans-serif" font-weight="700" font-size="15" fill="#111111">Neue</text>
+  <rect x="576.0" y="786.0" width="57.0" height="2.0" fill="#111111"/>
+  <text x="642.0" y="842.0" font-family="'TeX Gyre Heros', 'Helvetica Neue', Helvetica, Arial, 'Noto Sans SC', sans-serif" font-weight="700" font-size="15" fill="#111111">Grafik</text>
+  <rect x="642.0" y="852.0" width="57.0" height="2.0" fill="#111111"/>
+  <text x="708.0" y="908.0" font-family="'TeX Gyre Heros', 'Helvetica Neue', Helvetica, Arial, 'Noto Sans SC', sans-serif" font-weight="700" font-size="15" fill="#111111">Zürich</text>
+  <rect x="708.0" y="918.0" width="57.0" height="2.0" fill="#111111"/>
+  <text x="774.0" y="974.0" font-family="'TeX Gyre Heros', 'Helvetica Neue', Helvetica, Arial, 'Noto Sans SC', sans-serif" font-weight="700" font-size="15" fill="#111111">1958</text>
+  <rect x="774.0" y="984.0" width="57.0" height="2.0" fill="#111111"/>
+  <text x="840.0" y="1040.0" font-family="'TeX Gyre Heros', 'Helvetica Neue', Helvetica, Arial, 'Noto Sans SC', sans-serif" font-weight="700" font-size="15" fill="#111111">Nr. 1</text>
+  <rect x="840.0" y="1050.0" width="57.0" height="2.0" fill="#111111"/>
+  <text x="906.0" y="1106.0" font-family="'TeX Gyre Heros', 'Helvetica Neue', Helvetica, Arial, 'Noto Sans SC', sans-serif" font-weight="700" font-size="15" fill="#111111">—18</text>
+  <rect x="906.0" y="1116.0" width="57.0" height="2.0" fill="#111111"/>
+  <rect x="774.0" y="998.0" width="57.0" height="83.0" fill="#E30613"/>
+  <text x="576.0" y="1048.0" font-family="'TeX Gyre Heros', 'Helvetica Neue', Helvetica, Arial, 'Noto Sans SC', sans-serif" font-weight="900" font-size="18" fill="#111111">新平面</text>
+  <text x="576.0" y="1072.0" font-family="'TeX Gyre Heros', 'Helvetica Neue', Helvetica, Arial, 'Noto Sans SC', sans-serif" font-weight="900" font-size="18" fill="#111111">设计</text>
+  <text x="549.0" y="1208.0" font-family="'TeX Gyre Heros', 'Helvetica Neue', Helvetica, Arial, 'Noto Sans SC', sans-serif" font-weight="700" font-size="20" fill="#111111">6 = 6 × 1</text>
+  <text x="661.0" y="1208.0" font-family="'TeX Gyre Heros', 'Helvetica Neue', Helvetica, Arial, 'Noto Sans SC', sans-serif" font-weight="400" font-size="16" fill="#7A7A78">六组：每栏一个词，排成台阶</text>
+  <text x="90.0" y="1250.0" font-family="'TeX Gyre Heros', 'Helvetica Neue', Helvetica, Arial, 'Noto Sans SC', sans-serif" font-weight="400" font-size="15" fill="#111111">虚线是每张小样自己的 6 × 6 网格，顶上的粗线标出这一种分组。字号跟着分组走：组越宽，字越大。</text>
+  <text x="90.0" y="1302.0" font-family="'TeX Gyre Heros', 'Helvetica Neue', Helvetica, Arial, 'Noto Sans SC', sans-serif" font-weight="400" font-size="16" fill="#7A7A78">github.com/guanmo-ai/design-style</text>
+  <text x="990.0" y="1302.0" font-family="'TeX Gyre Heros', 'Helvetica Neue', Helvetica, Arial, 'Noto Sans SC', sans-serif" font-weight="400" font-size="16" text-anchor="end" fill="#7A7A78">@guanmo_ai · 每天一个设计风格</text>
+</svg>

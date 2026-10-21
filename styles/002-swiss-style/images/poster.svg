@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1080" height="1350" viewBox="0 0 1080 1350">
+  <!-- Design Style · 风格 002 · 瑞士国际主义 Swiss Style —— 海报 / 1080×1350（由 make_svgs.py 生成） -->
+  <defs>
+    <clipPath id="red"><rect x="396" y="72" width="594" height="594"/></clipPath>
+  </defs>
+  <rect width="1080" height="1350" fill="#F5F4F0"/>
+  <rect x="396.0" y="72.0" width="594.0" height="594.0" fill="#E30613"/>
+  <text x="86.0" y="146.0" font-family="'TeX Gyre Heros', 'Helvetica Neue', Helvetica, Arial, 'Noto Sans SC', sans-serif" font-weight="900" font-size="88" fill="#111111">瑞士</text>
+  <text x="86.0" y="245.0" font-family="'TeX Gyre Heros', 'Helvetica Neue', Helvetica, Arial, 'Noto Sans SC', sans-serif" font-weight="900" font-size="88" fill="#111111">国际</text>
+  <text x="86.0" y="344.0" font-family="'TeX Gyre Heros', 'Helvetica Neue', Helvetica, Arial, 'Noto Sans SC', sans-serif" font-weight="900" font-size="88" fill="#111111">主义</text>
+  <text x="79.2" y="666.0" font-family="'TeX Gyre Heros', 'Helvetica Neue', Helvetica, Arial, 'Noto Sans SC', sans-serif" font-weight="700" font-size="339" letter-spacing="-10.17" fill="#111111">Swiss</text>
+  <g clip-path="url(#red)"><text x="79.2" y="666.0" font-family="'TeX Gyre Heros', 'Helvetica Neue', Helvetica, Arial, 'Noto Sans SC', sans-serif" font-weight="700" font-size="339" letter-spacing="-10.17" fill="#FFFFFF">Swiss</text></g>
+  <text x="79.2" y="972.0" font-family="'TeX Gyre Heros', 'Helvetica Neue', Helvetica, Arial, 'Noto Sans SC', sans-serif" font-weight="700" font-size="339" letter-spacing="-10.17" fill="#111111">Style</text>
+  <text x="414.0" y="107.0" font-family="'TeX Gyre Heros', 'Helvetica Neue', Helvetica, Arial, 'Noto Sans SC', sans-serif" font-weight="700" font-size="24" fill="#FFFFFF">Raster</text>
+  <text x="567.0" y="107.0" font-family="'TeX Gyre Heros', 'Helvetica Neue', Helvetica, Arial, 'Noto Sans SC', sans-serif" font-weight="500" font-size="22" fill="#FFFFFF">网格</text>
+  <text x="414.0" y="134.0" font-family="'TeX Gyre Heros', 'Helvetica Neue', Helvetica, Arial, 'Noto Sans SC', sans-serif" font-weight="700" font-size="24" fill="#FFFFFF">Grotesk</text>
+  <text x="567.0" y="134.0" font-family="'TeX Gyre Heros', 'Helvetica Neue', Helvetica, Arial, 'Noto Sans SC', sans-serif" font-weight="500" font-size="22" fill="#FFFFFF">无衬线</text>
+  <text x="414.0" y="161.0" font-family="'TeX Gyre Heros', 'Helvetica Neue', Helvetica, Arial, 'Noto Sans SC', sans-serif" font-weight="700" font-size="24" fill="#FFFFFF">Rot</text>
+  <text x="567.0" y="161.0" font-family="'TeX Gyre Heros', 'Helvetica Neue', Helvetica, Arial, 'Noto Sans SC', sans-serif" font-weight="500" font-size="22" fill="#FFFFFF">红</text>
+  <text x="972.0" y="107.0" font-family="'TeX Gyre Heros', 'Helvetica Neue', Helvetica, Arial, 'Noto Sans SC', sans-serif" font-weight="700" font-size="24" text-anchor="end" fill="#FFFFFF">002</text>
+  <rect x="90.0" y="1143.0" width="900.0" height="3.0" fill="#111111"/>
+  <text x="90.0" y="1188.0" font-family="'TeX Gyre Heros', 'Helvetica Neue', Helvetica, Arial, 'Noto Sans SC', sans-serif" font-weight="700" font-size="20" fill="#111111">Swiss Style</text>
+  <text x="90.0" y="1215.0" font-family="'TeX Gyre Heros', 'Helvetica Neue', Helvetica, Arial, 'Noto Sans SC', sans-serif" font-weight="400" font-size="20" fill="#111111">Schweizer Grafik</text>
+  <text x="90.0" y="1242.0" font-family="'TeX Gyre Heros', 'Helvetica Neue', Helvetica, Arial, 'Noto Sans SC', sans-serif" font-weight="400" font-size="20" fill="#7A7A78">1950—1970</text>
+  <text x="396.0" y="1188.0" font-family="'TeX Gyre Heros', 'Helvetica Neue', Helvetica, Arial, 'Noto Sans SC', sans-serif" font-weight="700" font-size="20" fill="#111111">一张网格，</text>
+  <text x="396.0" y="1215.0" font-family="'TeX Gyre Heros', 'Helvetica Neue', Helvetica, Arial, 'Noto Sans SC', sans-serif" font-weight="700" font-size="20" fill="#111111">一种字体，</text>
+  <text x="396.0" y="1242.0" font-family="'TeX Gyre Heros', 'Helvetica Neue', Helvetica, Arial, 'Noto Sans SC', sans-serif" font-weight="700" font-size="20" fill="#E30613">一种红。</text>
+  <text x="702.0" y="1188.0" font-family="'TeX Gyre Heros', 'Helvetica Neue', Helvetica, Arial, 'Noto Sans SC', sans-serif" font-weight="700" font-size="20" fill="#111111">Design Style 风格 002</text>
+  <text x="702.0" y="1215.0" font-family="'TeX Gyre Heros', 'Helvetica Neue', Helvetica, Arial, 'Noto Sans SC', sans-serif" font-weight="400" font-size="20" fill="#111111">每天一个设计风格</text>
+  <text x="702.0" y="1242.0" font-family="'TeX Gyre Heros', 'Helvetica Neue', Helvetica, Arial, 'Noto Sans SC', sans-serif" font-weight="400" font-size="20" fill="#7A7A78">@guanmo_ai</text>
+</svg>
