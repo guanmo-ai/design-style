@@ -1,0 +1,114 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1080" height="1350" viewBox="0 0 1080 1350">
+  <!-- Design Style · 布局 01 · 便当盒布局 Bento Grid —— 三套排法 / 1080×1350（由 make_svgs.py 生成） -->
+  <defs>
+    <style>
+      .d { font-family: 'Inter Display', 'Noto Sans SC', sans-serif; }
+      .t { font-family: 'Inter', 'Noto Sans SC', sans-serif; }
+      .m { font-family: 'Geist Mono', 'SFMono-Regular', Menlo, monospace; }
+      .c { font-family: 'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif; }
+      .s { font-family: 'Selawik', 'Segoe UI', 'Noto Sans SC', sans-serif; }
+      .j { font-family: 'Jost', 'Futura', sans-serif; }
+    </style>
+    <linearGradient id="acc" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#FF8A1F"/><stop offset=".5" stop-color="#FF2D6F"/><stop offset="1" stop-color="#A63DFF"/>
+    </linearGradient>
+    <linearGradient id="accH" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stop-color="#FF8A1F"/><stop offset=".5" stop-color="#FF2D6F"/><stop offset="1" stop-color="#A63DFF"/>
+    </linearGradient>
+    <linearGradient id="card" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#161618"/><stop offset="1" stop-color="#0F0F11"/>
+    </linearGradient>
+    <radialGradient id="glowV"><stop offset="0" stop-color="#A63DFF" stop-opacity=".85"/><stop offset="1" stop-color="#A63DFF" stop-opacity="0"/></radialGradient>
+    <radialGradient id="glowP"><stop offset="0" stop-color="#FF2D6F" stop-opacity=".8"/><stop offset="1" stop-color="#FF2D6F" stop-opacity="0"/></radialGradient>
+    <radialGradient id="glowO"><stop offset="0" stop-color="#FF8A1F" stop-opacity=".9"/><stop offset="1" stop-color="#FF8A1F" stop-opacity="0"/></radialGradient>
+    <filter id="soft" x="-10%" y="-10%" width="120%" height="130%"><feDropShadow dx="0" dy="6" stdDeviation="10" flood-color="#000" flood-opacity=".07"/></filter>
+  </defs>
+  <rect width="1080" height="1350" fill="#0B0B0C"/>
+  <text x="72" y="124" class="c" font-size="56" font-weight="900" fill="#F5F5F7" letter-spacing="2" >拿来就用：三套排法</text>
+  <text x="72" y="172" class="c" font-size="22" font-weight="400" fill="#86868B" >同一张 4 列网格 · 间距 20 · 圆角 32 —— 换内容，不换骨架</text>
+  <!-- A 产品卖点 -->
+  <text x="72" y="228"><tspan class="m" font-size="20" font-weight="500" fill="#FF2D6F">A</tspan><tspan class="c" font-size="26" font-weight="700" fill="#F5F5F7" dx="12">产品卖点</tspan><tspan class="c" font-size="20" font-weight="400" fill="#86868B" dx="12">发布会式</tspan></text>
+  <rect x="72" y="248" width="219" height="286" fill="#FF2D6F" opacity=".05"/>
+  <rect x="311" y="248" width="219" height="286" fill="#FF2D6F" opacity=".05"/>
+  <rect x="550" y="248" width="219" height="286" fill="#FF2D6F" opacity=".05"/>
+  <rect x="789" y="248" width="219" height="286" fill="#FF2D6F" opacity=".05"/>
+  <rect x="72" y="254" width="458" height="176" rx="32" fill="url(#card)" stroke="#FF2D6F" stroke-width="1.5"/>
+  <text x="92" y="288" class="c" font-size="18" font-weight="700" fill="#F5F5F7" >主角 · 产品图</text>
+  <text x="92" y="312" class="m" font-size="14" font-weight="400" fill="#FF2D6F" >2×2</text>
+  <rect x="550" y="254" width="219" height="78" rx="24" fill="url(#card)" stroke="rgba(255,255,255,0.14)" stroke-width="1"/>
+  <text x="570" y="288" class="c" font-size="18" font-weight="700" fill="#F5F5F7" >续航</text>
+  <text x="570" y="312" class="c" font-size="14" font-weight="400" fill="#86868B" >大数字</text>
+  <rect x="550" y="352" width="219" height="78" rx="24" fill="url(#card)" stroke="rgba(255,255,255,0.14)" stroke-width="1"/>
+  <text x="570" y="386" class="c" font-size="18" font-weight="700" fill="#F5F5F7" >性能</text>
+  <text x="570" y="410" class="c" font-size="14" font-weight="400" fill="#86868B" >大数字</text>
+  <rect x="789" y="254" width="219" height="176" rx="32" fill="url(#card)" stroke="rgba(255,255,255,0.14)" stroke-width="1"/>
+  <text x="809" y="288" class="c" font-size="18" font-weight="700" fill="#F5F5F7" >配色</text>
+  <text x="809" y="312" class="m" font-size="14" font-weight="400" fill="#86868B" >1×2</text>
+  <rect x="72" y="450" width="458" height="78" rx="24" fill="url(#card)" stroke="rgba(255,255,255,0.14)" stroke-width="1"/>
+  <text x="92" y="484" class="c" font-size="18" font-weight="700" fill="#F5F5F7" >一句话卖点</text>
+  <text x="92" y="508" class="m" font-size="14" font-weight="400" fill="#86868B" >2×1</text>
+  <rect x="550" y="450" width="219" height="78" rx="24" fill="url(#card)" stroke="rgba(255,255,255,0.14)" stroke-width="1"/>
+  <text x="570" y="484" class="c" font-size="18" font-weight="700" fill="#F5F5F7" >开关</text>
+  <text x="570" y="508" class="c" font-size="14" font-weight="400" fill="#86868B" >功能</text>
+  <rect x="789" y="450" width="219" height="78" rx="24" fill="url(#card)" stroke="rgba(255,255,255,0.14)" stroke-width="1"/>
+  <text x="809" y="484" class="c" font-size="18" font-weight="700" fill="#F5F5F7" >价格</text>
+  <text x="809" y="508" class="c" font-size="14" font-weight="400" fill="#86868B" >收尾</text>
+  <rect x="530" y="334" width="20" height="74" fill="#FF2D6F" opacity=".7"/>
+  <text x="540" y="377" class="m" font-size="13" font-weight="500" fill="#FFFFFF" text-anchor="middle" transform="rotate(-90 540 371)">20</text>
+  <!-- B 个人主页 -->
+  <text x="72" y="578"><tspan class="m" font-size="20" font-weight="500" fill="#FF2D6F">B</tspan><tspan class="c" font-size="26" font-weight="700" fill="#F5F5F7" dx="12">个人主页</tspan><tspan class="c" font-size="20" font-weight="400" fill="#86868B" dx="12">bento.me 式</tspan></text>
+  <rect x="72" y="598" width="219" height="286" fill="#FF2D6F" opacity=".05"/>
+  <rect x="311" y="598" width="219" height="286" fill="#FF2D6F" opacity=".05"/>
+  <rect x="550" y="598" width="219" height="286" fill="#FF2D6F" opacity=".05"/>
+  <rect x="789" y="598" width="219" height="286" fill="#FF2D6F" opacity=".05"/>
+  <rect x="73" y="605" width="217" height="272" rx="32" fill="none" stroke="#86868B" stroke-opacity=".5" stroke-dasharray="6 6"/>
+  <circle cx="116" cy="652" r="24" fill="url(#acc)"/>
+  <rect x="92" y="700" width="120" height="8" rx="4" fill="#86868B" opacity="0.9"/>
+  <rect x="92" y="722" width="160" height="8" rx="4" fill="#86868B" opacity="0.5"/>
+  <rect x="92" y="744" width="140" height="8" rx="4" fill="#86868B" opacity="0.5"/>
+  <text x="92" y="856" class="c" font-size="16" font-weight="500" fill="#86868B" >头像 · 名字 · 简介</text>
+  <rect x="311" y="604" width="458" height="78" rx="24" fill="url(#card)" stroke="rgba(255,255,255,0.14)" stroke-width="1"/>
+  <text x="331" y="638" class="c" font-size="18" font-weight="700" fill="#F5F5F7" >GitHub</text>
+  <text x="331" y="662" class="m" font-size="14" font-weight="400" fill="#86868B" >2×1</text>
+  <rect x="789" y="604" width="219" height="78" rx="24" fill="url(#card)" stroke="rgba(255,255,255,0.14)" stroke-width="1"/>
+  <text x="809" y="638" class="c" font-size="18" font-weight="700" fill="#F5F5F7" >X</text>
+  <text x="809" y="662" class="m" font-size="14" font-weight="400" fill="#86868B" >1×1</text>
+  <rect x="311" y="702" width="458" height="176" rx="32" fill="url(#card)" stroke="#FF2D6F" stroke-width="1.5"/>
+  <text x="331" y="736" class="c" font-size="18" font-weight="700" fill="#F5F5F7" >代表作品</text>
+  <text x="331" y="760" class="m" font-size="14" font-weight="400" fill="#FF2D6F" >2×2</text>
+  <rect x="789" y="702" width="219" height="78" rx="24" fill="url(#card)" stroke="rgba(255,255,255,0.14)" stroke-width="1"/>
+  <text x="809" y="736" class="c" font-size="18" font-weight="700" fill="#F5F5F7" >数字</text>
+  <text x="809" y="760" class="m" font-size="14" font-weight="400" fill="#86868B" >1×1</text>
+  <rect x="789" y="800" width="219" height="78" rx="24" fill="url(#card)" stroke="rgba(255,255,255,0.14)" stroke-width="1"/>
+  <text x="809" y="834" class="c" font-size="18" font-weight="700" fill="#F5F5F7" >订阅</text>
+  <text x="809" y="858" class="m" font-size="14" font-weight="400" fill="#86868B" >1×1</text>
+  <!-- C 数据看板 -->
+  <text x="72" y="928"><tspan class="m" font-size="20" font-weight="500" fill="#FF2D6F">C</tspan><tspan class="c" font-size="26" font-weight="700" fill="#F5F5F7" dx="12">数据看板</tspan><tspan class="c" font-size="20" font-weight="400" fill="#86868B" dx="12">Linear 式</tspan></text>
+  <rect x="72" y="948" width="219" height="286" fill="#FF2D6F" opacity=".05"/>
+  <rect x="311" y="948" width="219" height="286" fill="#FF2D6F" opacity=".05"/>
+  <rect x="550" y="948" width="219" height="286" fill="#FF2D6F" opacity=".05"/>
+  <rect x="789" y="948" width="219" height="286" fill="#FF2D6F" opacity=".05"/>
+  <rect x="72" y="954" width="219" height="78" rx="24" fill="url(#card)" stroke="rgba(255,255,255,0.14)" stroke-width="1"/>
+  <text x="92" y="988" class="c" font-size="18" font-weight="700" fill="#F5F5F7" >指标</text>
+  <text x="92" y="1012" class="m" font-size="14" font-weight="400" fill="#86868B" >1×1</text>
+  <rect x="311" y="954" width="219" height="78" rx="24" fill="url(#card)" stroke="rgba(255,255,255,0.14)" stroke-width="1"/>
+  <text x="331" y="988" class="c" font-size="18" font-weight="700" fill="#F5F5F7" >指标</text>
+  <text x="331" y="1012" class="m" font-size="14" font-weight="400" fill="#86868B" >1×1</text>
+  <rect x="550" y="954" width="458" height="176" rx="32" fill="url(#card)" stroke="#FF2D6F" stroke-width="1.5"/>
+  <text x="570" y="988" class="c" font-size="18" font-weight="700" fill="#F5F5F7" >主图表</text>
+  <text x="570" y="1012" class="m" font-size="14" font-weight="400" fill="#FF2D6F" >2×2</text>
+  <rect x="72" y="1052" width="219" height="78" rx="24" fill="url(#card)" stroke="rgba(255,255,255,0.14)" stroke-width="1"/>
+  <text x="92" y="1086" class="c" font-size="18" font-weight="700" fill="#F5F5F7" >指标</text>
+  <text x="92" y="1110" class="m" font-size="14" font-weight="400" fill="#86868B" >1×1</text>
+  <rect x="311" y="1052" width="219" height="78" rx="24" fill="url(#card)" stroke="rgba(255,255,255,0.14)" stroke-width="1"/>
+  <text x="331" y="1086" class="c" font-size="18" font-weight="700" fill="#F5F5F7" >指标</text>
+  <text x="331" y="1110" class="m" font-size="14" font-weight="400" fill="#86868B" >1×1</text>
+  <rect x="72" y="1150" width="458" height="78" rx="24" fill="url(#card)" stroke="rgba(255,255,255,0.14)" stroke-width="1"/>
+  <text x="92" y="1184" class="c" font-size="18" font-weight="700" fill="#F5F5F7" >占比</text>
+  <text x="92" y="1208" class="m" font-size="14" font-weight="400" fill="#86868B" >2×1</text>
+  <rect x="550" y="1150" width="458" height="78" rx="24" fill="url(#card)" stroke="rgba(255,255,255,0.14)" stroke-width="1"/>
+  <text x="570" y="1184" class="c" font-size="18" font-weight="700" fill="#F5F5F7" >列表 / 柱状</text>
+  <text x="570" y="1208" class="m" font-size="14" font-weight="400" fill="#86868B" >2×1</text>
+  <rect x="72" y="1264" width="936" height="1" fill="#2A2A2E"/>
+  <text x="72" y="1306"><tspan class="c" font-size="18" font-weight="700" fill="#F5F5F7">手机上：</tspan><tspan class="c" font-size="18" font-weight="400" fill="#86868B" dx="4">4 列 → 2 列，从左到右、从上到下排成一列；主角始终最宽。</tspan></text>
+</svg>

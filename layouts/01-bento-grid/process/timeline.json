@@ -1,0 +1,12 @@
+{"fps": 60, "bpm": 150, "frames": 900, "title": "布局 01 · 时间轴：每次重排最快的一刻都落在拍点上",
+ "segments": [
+  {"label": "开场", "start": 0, "dur": 48, "color": "#000000"},
+  {"label": "01 发布会", "start": 48, "dur": 108, "color": "#161618"},
+  {"label": "02 名字的由来", "start": 156, "dur": 96, "color": "#8E211B"},
+  {"label": "03 Windows Phone", "start": 252, "dur": 96, "color": "#0050EF"},
+  {"label": "04 iOS 14", "start": 348, "dur": 96, "color": "#5E5CE6"},
+  {"label": "05 五条规则", "start": 444, "dur": 144, "color": "#0F0F11"},
+  {"label": "06 个人主页", "start": 588, "dur": 96, "color": "#F2F2F4"},
+  {"label": "07 产品后台", "start": 684, "dur": 96, "color": "#161618"},
+  {"label": "片尾", "start": 780, "dur": 120, "color": "#000000"}
+ ]}

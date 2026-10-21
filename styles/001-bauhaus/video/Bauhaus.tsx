@@ -20,11 +20,17 @@ import {C} from '../tokens';
 import {Chapter, CHAPTERS} from './chapters';
 import {cjk, H, latin, mixed, mono, Rise, triPoints, W} from './ui';
 
-loadFont({family: 'Jost', url: staticFile('fonts/Jost.ttf'), weight: '100 900', format: 'truetype'});
-loadFont({family: 'JetBrains Mono', url: staticFile('fonts/JetBrainsMono.ttf'), weight: '100 800', format: 'truetype'});
-for (const [weight, name] of [[500, 'Medium'], [700, 'Bold'], [900, 'Black']] as const) {
-  loadFont({family: 'Noto Sans SC', url: staticFile(`fonts/NotoSansSC-${name}.otf`), weight: String(weight), format: 'opentype'});
-}
+// 字体只在本合成真正挂载时加载：Root 里注册了多期合成，模块顶层加载会让每个渲染页都去下载所有期的字体
+let fontsLoaded = false;
+const loadFonts = () => {
+  if (fontsLoaded) return;
+  fontsLoaded = true;
+  loadFont({family: 'Jost', url: staticFile('fonts/Jost.ttf'), weight: '100 900', format: 'truetype'});
+  loadFont({family: 'JetBrains Mono', url: staticFile('fonts/JetBrainsMono.ttf'), weight: '100 800', format: 'truetype'});
+  for (const [weight, name] of [[500, 'Medium'], [700, 'Bold'], [900, 'Black']] as const) {
+    loadFont({family: 'Noto Sans SC', url: staticFile(`fonts/NotoSansSC-${name}.otf`), weight: String(weight), format: 'opentype'});
+  }
+};
 
 export const BAUHAUS_DURATION = 900;
 const RECAP = 720;
@@ -391,6 +397,7 @@ const HITS: [number, number][] = [
 ];
 
 export const Bauhaus: React.FC = () => {
+  React.useState(loadFonts);
   const f = useCurrentFrame();
   const cam = shake(f, HITS);
   const endP = tween(f, END - 8, 8, 0, 1, E.in);

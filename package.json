@@ -2,7 +2,7 @@
   "name": "design-style",
   "version": "0.1.0",
   "private": true,
-  "description": "每天一个设计风格 · Design Style — 每期一支 15 秒动效短片 + 一组风格图 + 全部源码",
+  "description": "每天一个设计风格 · Design Style — 每期一支 15 秒动效短片 + 一组风格图（或布局图）+ 全部源码",
   "scripts": {
     "gallery:setup": "npm ci --prefix gallery --ignore-scripts",
     "gallery:sync": "node scripts/gallery/sync.mjs",
@@ -14,7 +14,10 @@
     "studio": "remotion studio src/index.ts",
     "music:001": "python3 styles/001-bauhaus/audio/make_music.py",
     "render:001": "npm run music:001 && remotion render src/index.ts S001-Bauhaus out/001-bauhaus.mp4 --codec=h264 --crf=16",
-    "images:001": "python3 styles/001-bauhaus/images/pattern.py && python3 scripts/build_images.py styles/001-bauhaus/images"
+    "images:001": "python3 styles/001-bauhaus/images/pattern.py && python3 scripts/build_images.py styles/001-bauhaus/images",
+    "music:L01": "python3 layouts/01-bento-grid/audio/make_music.py",
+    "render:L01": "npm run music:L01 && remotion render src/index.ts L01-BentoGrid out/01-bento-grid-master.mp4 --codec=h264 --crf=16",
+    "images:L01": "python3 layouts/01-bento-grid/images/make_svgs.py && python3 scripts/build_images.py layouts/01-bento-grid/images"
   },
   "dependencies": {
     "@remotion/cli": "4.0.454",

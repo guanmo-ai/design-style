@@ -1,10 +1,12 @@
 import {Marked} from 'marked';
 import sanitizeHtml from 'sanitize-html';
-import {escapeHtml as h, REPO, sourceUrl} from './assets/model.mjs';
+import {escapeHtml as h, REPO, sourceUrl, typeInfo, workDir, workLabel} from './assets/model.mjs';
 
-const documents = {guide: {file: 'README.md', title: '风格指南'}, process: {file: 'PROCESS.md', title: '制作过程'}};
+const DOCUMENTS = {guide: {file: 'README.md'}, process: {file: 'PROCESS.md', title: '制作过程'}};
 export function renderDocument(markdown, work, kind) {
-  if (!documents[kind]) throw new Error('未知文档类型');
+  if (!DOCUMENTS[kind]) throw new Error('未知文档类型');
+  // 风格叫「风格指南」，布局叫「布局指南」
+  const documents = {guide: {...DOCUMENTS.guide, title: typeInfo(work).guide}, process: DOCUMENTS.process};
   const assets = new Set();
   const headings = [];
   const ids = new Map();
@@ -22,7 +24,7 @@ export function renderDocument(markdown, work, kind) {
   }});
   function rewrite(value, image = false) {
     if (!value) return '';
-    const base = `${REPO}/blob/main/styles/${work.id}/`;
+    const base = `${REPO}/blob/main/${workDir(work)}/`;
     let url;
     try {url = new URL(value, base);} catch {return '';}
     if (!['https:', 'http:'].includes(url.protocol)) return '';
@@ -39,7 +41,7 @@ export function renderDocument(markdown, work, kind) {
       if (image) {
         if (!/^(?:images\/preview\/[\w-]+\.svg|video\/cover\.jpg|process\/[\w.-]+\.(?:jpg|png|webp))$/.test(relative)) throw new Error(`文档图片不在允许的本期目录中：${value}`);
         assets.add(relative);
-        return `../../styles/${work.id}/${relative}`;
+        return `../../${workDir(work)}/${relative}`;
       }
       return sourceUrl(work, relative) + url.hash;
     }
@@ -71,7 +73,7 @@ export function renderDocument(markdown, work, kind) {
 <html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${h(work.title)} · ${label} — Design Style</title><meta name="description" content="${h(work.title)}的${label}，来自 Design Style 仓库原文。"><link rel="icon" href="../../assets/mark.svg"><link rel="stylesheet" href="../../assets/gallery.css"><link rel="stylesheet" href="../../assets/reader.css"></head>
 <body class="reader-page"><a class="skip-link" href="#article">跳到正文</a><div class="reader-shell">
   <header class="reader-header"><a class="brand" href="../../" aria-label="Design Style 首页"><img src="../../assets/mark.svg" width="28" height="28" alt=""><span>Design<span class="brand-dot">.</span>style</span></a><a class="return-work" href="../../#work-${h(work.id)}">← 返回作品</a></header>
-  <div class="reader-bar"><p>NO. ${h(work.number)} / ${h(work.title)} · ${h(work.titleEn)}</p><nav aria-label="作品文档">${tabs}</nav></div>
+  <div class="reader-bar"><p>${h(workLabel(work))} / ${h(work.title)} · ${h(work.titleEn)}</p><nav aria-label="作品文档">${tabs}</nav></div>
   <details class="mobile-contents"><summary>本页目录</summary><nav aria-label="本页目录">${contents}</nav></details>
   <div class="reading-layout"><aside class="reader-contents"><p>本页目录</p><nav aria-label="章节目录">${contents}</nav></aside><main id="article" class="prose">${body}</main></div>
   <footer><a href="../../#work-${h(work.id)}">← 返回${h(work.title)}作品</a><a href="${sourceUrl(work, documents[kind].file)}" target="_blank" rel="noopener noreferrer">查看仓库原文 ↗</a></footer>
