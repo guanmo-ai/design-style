@@ -28,7 +28,7 @@ test('布局作品放在 layouts/，编号独立，标签和源码路径随类�
   const bento = works.find(item => item.id === '01-bento-grid');
   assert.equal(bento.type, 'layout');
   assert.equal(workLabel(bento), '布局 01');
-  assert.equal(workLabel(works.find(item => item.id === '001-bauhaus')), 'NO. 001');
+  assert.equal(workLabel(works.find(item => item.id === '001-bauhaus')), '风格 001');
   assert.equal(bento.duration, 15);
   assert.equal(bento.chapters.find(chapter => chapter.label === '05 五条规则').start, 7.4);
   assert.equal(sourceUrl(bento, 'video'), 'https://github.com/guanmo-ai/design-style/tree/main/layouts/01-bento-grid/video');
