@@ -28,6 +28,7 @@ export function renderDocument(markdown, work, kind) {
     let url;
     try {url = new URL(value, base);} catch {return '';}
     if (!['https:', 'http:'].includes(url.protocol)) return '';
+    if (!image && kind === 'guide' && url.href === `${REPO}/releases/tag/${work.release}`) return `../../#work-${h(work.id)}`;
     if (value.startsWith('#')) return `#doc-${value.slice(1)}`;
     if (url.href.startsWith(base)) {
       let relative;

@@ -25,7 +25,7 @@
   </defs>
   <rect width="1080" height="1350" fill="#0B0B0C"/>
   <text x="72" y="124" class="c" font-size="56" font-weight="900" fill="#F5F5F7" letter-spacing="2" >拿来就用：三套排法</text>
-  <text x="72" y="172" class="c" font-size="22" font-weight="400" fill="#86868B" >同一张 4 列网格 · 间距 20 · 圆角 32 —— 换内容，不换骨架</text>
+  <text x="72" y="172" class="c" font-size="22" font-weight="400" fill="#86868B" >同一张 4 列网格 · 间距 20 · 圆角 32 —— 换内容，保留网格结构</text>
   <!-- A 产品卖点 -->
   <text x="72" y="228"><tspan class="m" font-size="20" font-weight="500" fill="#FF2D6F">A</tspan><tspan class="c" font-size="26" font-weight="700" fill="#F5F5F7" dx="12">产品卖点</tspan><tspan class="c" font-size="20" font-weight="400" fill="#86868B" dx="12">发布会式</tspan></text>
   <rect x="72" y="248" width="219" height="286" fill="#FF2D6F" opacity=".05"/>

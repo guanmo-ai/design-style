@@ -34,6 +34,7 @@ test('布局作品的文档从 layouts/ 读取素材', async () => {
   assert.match(process.html, /src="..\/..\/layouts\/01-bento-grid\/process\/03-morph.jpg"/);
   assert.match(process.html, /href="guide.html#doc-9--15-秒分镜"/);
   assert.match(guide.html, /href="..\/..\/#work-01-bento-grid"/);
+  assert.match(guide.html, /href="..\/..\/#work-01-bento-grid">看视频<\/a>/);
 });
 
 test('文档渲染移除脚本与危险 URL，同时保留安全链接', () => {
