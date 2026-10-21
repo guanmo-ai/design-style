@@ -1,0 +1,147 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1080" height="1350" viewBox="0 0 1080 1350">
+  <!-- Design Style · 风格 002 · 瑞士国际主义 Swiss Style —— 如果瑞士风格来做 app / 1080×1350（由 make_svgs.py 生成） -->
+  <defs>
+  </defs>
+  <rect width="1080" height="1350" fill="#F5F4F0"/>
+  <text x="87.0" y="116.0" font-family="'TeX Gyre Heros', 'Helvetica Neue', Helvetica, Arial, 'Noto Sans SC', sans-serif" font-weight="900" font-size="52" fill="#111111">如果瑞士风格来做</text>
+  <text x="520.0" y="116.0" font-family="'TeX Gyre Heros', 'Helvetica Neue', Helvetica, Arial, 'Noto Sans SC', sans-serif" font-weight="700" font-size="52" letter-spacing="-1.04" fill="#111111">app</text>
+  <text x="90.0" y="168.0" font-family="'TeX Gyre Heros', 'Helvetica Neue', Helvetica, Arial, 'Noto Sans SC', sans-serif" font-weight="400" font-size="20" fill="#7A7A78">七十年前的规则，今天的界面 · 一个火车时刻表 app 的概念稿</text>
+  <rect x="945.0" y="72.0" width="45.0" height="45.0" fill="#E30613"/>
+  <text x="990.0" y="168.0" font-family="'TeX Gyre Heros', 'Helvetica Neue', Helvetica, Arial, 'Noto Sans SC', sans-serif" font-weight="400" font-size="16" text-anchor="end" fill="#7A7A78">ui concept no.02</text>
+  <rect x="90.0" y="192.0" width="900.0" height="3.0" fill="#111111"/>
+  <rect x="90" y="236" width="423" height="882" rx="56" fill="#111111"/>
+  <rect x="101" y="247" width="401" height="860" rx="46" fill="#FFFFFF"/>
+  <rect x="249.5" y="260" width="104" height="30" rx="15" fill="#111111"/>
+  <text x="134.0" y="283.0" font-family="'TeX Gyre Heros', 'Helvetica Neue', Helvetica, Arial, 'Noto Sans SC', sans-serif" font-weight="700" font-size="16" fill="#111111">9:41</text>
+  <rect x="445.0" y="272.0" width="22.0" height="11.0" fill="none" stroke="#111111" stroke-width="1.5" rx="3"/>
+  <rect x="447.0" y="274.0" width="15.0" height="7.0" fill="#111111" rx="1.5"/>
+  <rect x="413.0" y="279.0" width="4.0" height="4.0" fill="#111111"/>
+  <rect x="419.0" y="276.5" width="4.0" height="6.5" fill="#111111"/>
+  <rect x="425.0" y="274.0" width="4.0" height="9.0" fill="#111111"/>
+  <rect x="431.0" y="271.5" width="4.0" height="11.5" fill="#111111"/>
+  <text x="126.0" y="344.0" font-family="'TeX Gyre Heros', 'Helvetica Neue', Helvetica, Arial, 'Noto Sans SC', sans-serif" font-weight="700" font-size="14" fill="#7A7A78">Abfahrt</text>
+  <text x="190.0" y="344.0" font-family="'TeX Gyre Heros', 'Helvetica Neue', Helvetica, Arial, 'Noto Sans SC', sans-serif" font-weight="400" font-size="14" fill="#7A7A78">出发</text>
+  <text x="124.6" y="398.0" font-family="'TeX Gyre Heros', 'Helvetica Neue', Helvetica, Arial, 'Noto Sans SC', sans-serif" font-weight="700" font-size="46" letter-spacing="-0.92" fill="#111111">Zürich HB</text>
+  <text x="126.0" y="426.0" font-family="'TeX Gyre Heros', 'Helvetica Neue', Helvetica, Arial, 'Noto Sans SC', sans-serif" font-weight="400" font-size="14" fill="#7A7A78">苏黎世中央车站 · 现在 08:27</text>
+  <rect x="126.0" y="474.0" width="351.0" height="3.0" fill="#111111"/>
+  <text x="126.0" y="500.0" font-family="'TeX Gyre Heros', 'Helvetica Neue', Helvetica, Arial, 'Noto Sans SC', sans-serif" font-weight="700" font-size="13" fill="#111111">下一班</text>
+  <text x="477.0" y="500.0" font-family="'TeX Gyre Heros', 'Helvetica Neue', Helvetica, Arial, 'Noto Sans SC', sans-serif" font-weight="700" font-size="13" text-anchor="end" fill="#111111">5 分钟后</text>
+  <text x="123.3" y="583.0" font-family="'TeX Gyre Heros', 'Helvetica Neue', Helvetica, Arial, 'Noto Sans SC', sans-serif" font-weight="700" font-size="92" letter-spacing="-2.76" fill="#111111">08:32</text>
+  <text x="126.0" y="617.0" font-family="'TeX Gyre Heros', 'Helvetica Neue', Helvetica, Arial, 'Noto Sans SC', sans-serif" font-weight="700" font-size="24" fill="#111111">Basel SBB</text>
+  <text x="126.0" y="641.0" font-family="'TeX Gyre Heros', 'Helvetica Neue', Helvetica, Arial, 'Noto Sans SC', sans-serif" font-weight="400" font-size="14" fill="#7A7A78">IC · 直达 · 56 分钟</text>
+  <text x="477.0" y="617.0" font-family="'TeX Gyre Heros', 'Helvetica Neue', Helvetica, Arial, 'Noto Sans SC', sans-serif" font-weight="700" font-size="24" text-anchor="end" fill="#111111">7</text>
+  <text x="477.0" y="641.0" font-family="'TeX Gyre Heros', 'Helvetica Neue', Helvetica, Arial, 'Noto Sans SC', sans-serif" font-weight="400" font-size="14" text-anchor="end" fill="#7A7A78">站台</text>
+  <text x="126.0" y="675.0" font-family="'TeX Gyre Heros', 'Helvetica Neue', Helvetica, Arial, 'Noto Sans SC', sans-serif" font-weight="400" font-size="12" fill="#7A7A78">时间</text>
+  <text x="196.0" y="675.0" font-family="'TeX Gyre Heros', 'Helvetica Neue', Helvetica, Arial, 'Noto Sans SC', sans-serif" font-weight="400" font-size="12" fill="#7A7A78">车次</text>
+  <text x="250.0" y="675.0" font-family="'TeX Gyre Heros', 'Helvetica Neue', Helvetica, Arial, 'Noto Sans SC', sans-serif" font-weight="400" font-size="12" fill="#7A7A78">开往</text>
+  <text x="477.0" y="675.0" font-family="'TeX Gyre Heros', 'Helvetica Neue', Helvetica, Arial, 'Noto Sans SC', sans-serif" font-weight="400" font-size="12" text-anchor="end" fill="#7A7A78">站台</text>
+  <rect x="126.0" y="689.0" width="351.0" height="1.0" fill="rgba(17,17,17,0.09)"/>
+  <text x="126.0" y="721.0" font-family="'TeX Gyre Heros', 'Helvetica Neue', Helvetica, Arial, 'Noto Sans SC', sans-serif" font-weight="700" font-size="20" fill="#111111">08:34</text>
+  <rect x="196.0" y="705.0" width="34.0" height="20.0" fill="#111111"/>
+  <text x="213.0" y="720.0" font-family="'TeX Gyre Heros', 'Helvetica Neue', Helvetica, Arial, 'Noto Sans SC', sans-serif" font-weight="700" font-size="12" text-anchor="middle" fill="#FFFFFF">S</text>
+  <text x="250.0" y="721.0" font-family="'TeX Gyre Heros', 'Helvetica Neue', Helvetica, Arial, 'Noto Sans SC', sans-serif" font-weight="400" font-size="18" fill="#111111">Winterthur</text>
+  <text x="477.0" y="721.0" font-family="'TeX Gyre Heros', 'Helvetica Neue', Helvetica, Arial, 'Noto Sans SC', sans-serif" font-weight="700" font-size="20" text-anchor="end" fill="#111111">22</text>
+  <rect x="126.0" y="739.0" width="351.0" height="1.0" fill="rgba(17,17,17,0.09)"/>
+  <text x="126.0" y="771.0" font-family="'TeX Gyre Heros', 'Helvetica Neue', Helvetica, Arial, 'Noto Sans SC', sans-serif" font-weight="700" font-size="20" fill="#111111">08:36</text>
+  <rect x="196.0" y="755.0" width="34.0" height="20.0" fill="#111111"/>
+  <text x="213.0" y="770.0" font-family="'TeX Gyre Heros', 'Helvetica Neue', Helvetica, Arial, 'Noto Sans SC', sans-serif" font-weight="700" font-size="12" text-anchor="middle" fill="#FFFFFF">IR</text>
+  <text x="250.0" y="771.0" font-family="'TeX Gyre Heros', 'Helvetica Neue', Helvetica, Arial, 'Noto Sans SC', sans-serif" font-weight="400" font-size="18" fill="#111111">Konstanz</text>
+  <text x="335.0" y="771.0" font-family="'TeX Gyre Heros', 'Helvetica Neue', Helvetica, Arial, 'Noto Sans SC', sans-serif" font-weight="700" font-size="18" fill="#E30613">+4'</text>
+  <text x="477.0" y="771.0" font-family="'TeX Gyre Heros', 'Helvetica Neue', Helvetica, Arial, 'Noto Sans SC', sans-serif" font-weight="700" font-size="20" text-anchor="end" fill="#111111">13</text>
+  <rect x="126.0" y="789.0" width="351.0" height="1.0" fill="rgba(17,17,17,0.09)"/>
+  <text x="126.0" y="821.0" font-family="'TeX Gyre Heros', 'Helvetica Neue', Helvetica, Arial, 'Noto Sans SC', sans-serif" font-weight="700" font-size="20" fill="#111111">08:39</text>
+  <rect x="196.0" y="805.0" width="34.0" height="20.0" fill="#111111"/>
+  <text x="213.0" y="820.0" font-family="'TeX Gyre Heros', 'Helvetica Neue', Helvetica, Arial, 'Noto Sans SC', sans-serif" font-weight="700" font-size="12" text-anchor="middle" fill="#FFFFFF">IC</text>
+  <text x="250.0" y="821.0" font-family="'TeX Gyre Heros', 'Helvetica Neue', Helvetica, Arial, 'Noto Sans SC', sans-serif" font-weight="400" font-size="18" fill="#111111">Lausanne</text>
+  <text x="477.0" y="821.0" font-family="'TeX Gyre Heros', 'Helvetica Neue', Helvetica, Arial, 'Noto Sans SC', sans-serif" font-weight="700" font-size="20" text-anchor="end" fill="#111111">16</text>
+  <rect x="126.0" y="839.0" width="351.0" height="1.0" fill="rgba(17,17,17,0.09)"/>
+  <text x="126.0" y="871.0" font-family="'TeX Gyre Heros', 'Helvetica Neue', Helvetica, Arial, 'Noto Sans SC', sans-serif" font-weight="700" font-size="20" fill="#111111">08:40</text>
+  <rect x="196.0" y="855.0" width="34.0" height="20.0" fill="#111111"/>
+  <text x="213.0" y="870.0" font-family="'TeX Gyre Heros', 'Helvetica Neue', Helvetica, Arial, 'Noto Sans SC', sans-serif" font-weight="700" font-size="12" text-anchor="middle" fill="#FFFFFF">EC</text>
+  <text x="250.0" y="871.0" font-family="'TeX Gyre Heros', 'Helvetica Neue', Helvetica, Arial, 'Noto Sans SC', sans-serif" font-weight="400" font-size="18" fill="#111111">Milano Centrale</text>
+  <text x="477.0" y="871.0" font-family="'TeX Gyre Heros', 'Helvetica Neue', Helvetica, Arial, 'Noto Sans SC', sans-serif" font-weight="700" font-size="20" text-anchor="end" fill="#111111">9</text>
+  <rect x="126.0" y="889.0" width="351.0" height="1.0" fill="rgba(17,17,17,0.09)"/>
+  <text x="126.0" y="921.0" font-family="'TeX Gyre Heros', 'Helvetica Neue', Helvetica, Arial, 'Noto Sans SC', sans-serif" font-weight="700" font-size="20" fill="#111111">08:47</text>
+  <rect x="196.0" y="905.0" width="34.0" height="20.0" fill="#111111"/>
+  <text x="213.0" y="920.0" font-family="'TeX Gyre Heros', 'Helvetica Neue', Helvetica, Arial, 'Noto Sans SC', sans-serif" font-weight="700" font-size="12" text-anchor="middle" fill="#FFFFFF">S</text>
+  <text x="250.0" y="921.0" font-family="'TeX Gyre Heros', 'Helvetica Neue', Helvetica, Arial, 'Noto Sans SC', sans-serif" font-weight="400" font-size="18" fill="#111111">Flughafen</text>
+  <text x="477.0" y="921.0" font-family="'TeX Gyre Heros', 'Helvetica Neue', Helvetica, Arial, 'Noto Sans SC', sans-serif" font-weight="700" font-size="20" text-anchor="end" fill="#111111">21</text>
+  <rect x="126.0" y="939.0" width="351.0" height="1.0" fill="rgba(17,17,17,0.09)"/>
+  <text x="126.0" y="971.0" font-family="'TeX Gyre Heros', 'Helvetica Neue', Helvetica, Arial, 'Noto Sans SC', sans-serif" font-weight="700" font-size="20" fill="#111111">08:52</text>
+  <rect x="196.0" y="955.0" width="34.0" height="20.0" fill="#111111"/>
+  <text x="213.0" y="970.0" font-family="'TeX Gyre Heros', 'Helvetica Neue', Helvetica, Arial, 'Noto Sans SC', sans-serif" font-weight="700" font-size="12" text-anchor="middle" fill="#FFFFFF">RE</text>
+  <text x="250.0" y="971.0" font-family="'TeX Gyre Heros', 'Helvetica Neue', Helvetica, Arial, 'Noto Sans SC', sans-serif" font-weight="400" font-size="18" fill="#111111">Schaffhausen</text>
+  <text x="477.0" y="971.0" font-family="'TeX Gyre Heros', 'Helvetica Neue', Helvetica, Arial, 'Noto Sans SC', sans-serif" font-weight="700" font-size="20" text-anchor="end" fill="#111111">14</text>
+  <rect x="126.0" y="1040.0" width="351.0" height="1.0" fill="rgba(17,17,17,0.09)"/>
+  <text x="126.0" y="1078.0" font-family="'TeX Gyre Heros', 'Helvetica Neue', Helvetica, Arial, 'Noto Sans SC', sans-serif" font-weight="700" font-size="16" fill="#111111">出发</text>
+  <rect x="126.0" y="1040.0" width="40.0" height="3.0" fill="#111111"/>
+  <text x="243.0" y="1078.0" font-family="'TeX Gyre Heros', 'Helvetica Neue', Helvetica, Arial, 'Noto Sans SC', sans-serif" font-weight="400" font-size="16" fill="#7A7A78">行程</text>
+  <text x="360.0" y="1078.0" font-family="'TeX Gyre Heros', 'Helvetica Neue', Helvetica, Arial, 'Noto Sans SC', sans-serif" font-weight="400" font-size="16" fill="#7A7A78">车票</text>
+  <rect x="567" y="236" width="423" height="882" rx="56" fill="#111111"/>
+  <rect x="578" y="247" width="401" height="860" rx="46" fill="#FFFFFF"/>
+  <rect x="726.5" y="260" width="104" height="30" rx="15" fill="#111111"/>
+  <text x="611.0" y="283.0" font-family="'TeX Gyre Heros', 'Helvetica Neue', Helvetica, Arial, 'Noto Sans SC', sans-serif" font-weight="700" font-size="16" fill="#111111">9:41</text>
+  <rect x="922.0" y="272.0" width="22.0" height="11.0" fill="none" stroke="#111111" stroke-width="1.5" rx="3"/>
+  <rect x="924.0" y="274.0" width="15.0" height="7.0" fill="#111111" rx="1.5"/>
+  <rect x="890.0" y="279.0" width="4.0" height="4.0" fill="#111111"/>
+  <rect x="896.0" y="276.5" width="4.0" height="6.5" fill="#111111"/>
+  <rect x="902.0" y="274.0" width="4.0" height="9.0" fill="#111111"/>
+  <rect x="908.0" y="271.5" width="4.0" height="11.5" fill="#111111"/>
+  <text x="603.0" y="344.0" font-family="'TeX Gyre Heros', 'Helvetica Neue', Helvetica, Arial, 'Noto Sans SC', sans-serif" font-weight="700" font-size="16" fill="#111111">←</text>
+  <text x="631.0" y="344.0" font-family="'TeX Gyre Heros', 'Helvetica Neue', Helvetica, Arial, 'Noto Sans SC', sans-serif" font-weight="700" font-size="14" fill="#7A7A78">Verbindung</text>
+  <text x="716.8" y="344.0" font-family="'TeX Gyre Heros', 'Helvetica Neue', Helvetica, Arial, 'Noto Sans SC', sans-serif" font-weight="400" font-size="14" fill="#7A7A78">行程</text>
+  <text x="601.7" y="398.0" font-family="'TeX Gyre Heros', 'Helvetica Neue', Helvetica, Arial, 'Noto Sans SC', sans-serif" font-weight="700" font-size="46" letter-spacing="-0.92" fill="#111111">08:32–09:28</text>
+  <text x="603.0" y="428.0" font-family="'TeX Gyre Heros', 'Helvetica Neue', Helvetica, Arial, 'Noto Sans SC', sans-serif" font-weight="700" font-size="18" fill="#111111">Zürich HB → Basel SBB</text>
+  <text x="603.0" y="452.0" font-family="'TeX Gyre Heros', 'Helvetica Neue', Helvetica, Arial, 'Noto Sans SC', sans-serif" font-weight="400" font-size="14" fill="#7A7A78">56 分钟 · 直达 · 2 等座</text>
+  <rect x="603.0" y="474.0" width="168.0" height="168.0" fill="#E30613"/>
+  <text x="617.0" y="500.0" font-family="'TeX Gyre Heros', 'Helvetica Neue', Helvetica, Arial, 'Noto Sans SC', sans-serif" font-weight="700" font-size="14" fill="#FFFFFF">站台</text>
+  <text x="617.0" y="518.0" font-family="'TeX Gyre Heros', 'Helvetica Neue', Helvetica, Arial, 'Noto Sans SC', sans-serif" font-weight="400" font-size="13" fill="#FFFFFF">Gleis</text>
+  <text x="757.0" y="628.0" font-family="'TeX Gyre Heros', 'Helvetica Neue', Helvetica, Arial, 'Noto Sans SC', sans-serif" font-weight="700" font-size="132" text-anchor="end" fill="#FFFFFF">7</text>
+  <text x="789.0" y="496.0" font-family="'TeX Gyre Heros', 'Helvetica Neue', Helvetica, Arial, 'Noto Sans SC', sans-serif" font-weight="400" font-size="12" fill="#7A7A78">车厢</text>
+  <text x="789.0" y="518.0" font-family="'TeX Gyre Heros', 'Helvetica Neue', Helvetica, Arial, 'Noto Sans SC', sans-serif" font-weight="700" font-size="17" fill="#111111">2 等 · 7—12 号</text>
+  <text x="789.0" y="548.0" font-family="'TeX Gyre Heros', 'Helvetica Neue', Helvetica, Arial, 'Noto Sans SC', sans-serif" font-weight="400" font-size="12" fill="#7A7A78">上车区</text>
+  <text x="789.0" y="570.0" font-family="'TeX Gyre Heros', 'Helvetica Neue', Helvetica, Arial, 'Noto Sans SC', sans-serif" font-weight="700" font-size="17" fill="#111111">B — D</text>
+  <text x="789.0" y="600.0" font-family="'TeX Gyre Heros', 'Helvetica Neue', Helvetica, Arial, 'Noto Sans SC', sans-serif" font-weight="400" font-size="12" fill="#7A7A78">出发</text>
+  <text x="789.0" y="622.0" font-family="'TeX Gyre Heros', 'Helvetica Neue', Helvetica, Arial, 'Noto Sans SC', sans-serif" font-weight="700" font-size="17" fill="#111111">5 分钟后</text>
+  <rect x="674.5" y="674.0" width="5.0" height="230.0" fill="#111111"/>
+  <circle cx="677" cy="674" r="9" fill="#111111" stroke="#111111" stroke-width="3"/>
+  <text x="603.0" y="680.0" font-family="'TeX Gyre Heros', 'Helvetica Neue', Helvetica, Arial, 'Noto Sans SC', sans-serif" font-weight="700" font-size="16" fill="#111111">08:32</text>
+  <text x="699.0" y="681.0" font-family="'TeX Gyre Heros', 'Helvetica Neue', Helvetica, Arial, 'Noto Sans SC', sans-serif" font-weight="700" font-size="20" fill="#111111">Zürich HB</text>
+  <text x="954.0" y="680.0" font-family="'TeX Gyre Heros', 'Helvetica Neue', Helvetica, Arial, 'Noto Sans SC', sans-serif" font-weight="400" font-size="13" text-anchor="end" fill="#7A7A78">站台 7</text>
+  <circle cx="677" cy="720" r="6" fill="#FFFFFF" stroke="#111111" stroke-width="3"/>
+  <text x="603.0" y="726.0" font-family="'TeX Gyre Heros', 'Helvetica Neue', Helvetica, Arial, 'Noto Sans SC', sans-serif" font-weight="400" font-size="16" fill="#111111">08:47</text>
+  <text x="699.0" y="727.0" font-family="'TeX Gyre Heros', 'Helvetica Neue', Helvetica, Arial, 'Noto Sans SC', sans-serif" font-weight="400" font-size="17" fill="#111111">Baden</text>
+  <circle cx="677" cy="766" r="6" fill="#FFFFFF" stroke="#111111" stroke-width="3"/>
+  <text x="603.0" y="772.0" font-family="'TeX Gyre Heros', 'Helvetica Neue', Helvetica, Arial, 'Noto Sans SC', sans-serif" font-weight="400" font-size="16" fill="#111111">08:55</text>
+  <text x="699.0" y="773.0" font-family="'TeX Gyre Heros', 'Helvetica Neue', Helvetica, Arial, 'Noto Sans SC', sans-serif" font-weight="400" font-size="17" fill="#111111">Brugg AG</text>
+  <circle cx="677" cy="812" r="6" fill="#FFFFFF" stroke="#111111" stroke-width="3"/>
+  <text x="603.0" y="818.0" font-family="'TeX Gyre Heros', 'Helvetica Neue', Helvetica, Arial, 'Noto Sans SC', sans-serif" font-weight="400" font-size="16" fill="#111111">09:07</text>
+  <text x="699.0" y="819.0" font-family="'TeX Gyre Heros', 'Helvetica Neue', Helvetica, Arial, 'Noto Sans SC', sans-serif" font-weight="400" font-size="17" fill="#111111">Frick</text>
+  <circle cx="677" cy="858" r="6" fill="#FFFFFF" stroke="#111111" stroke-width="3"/>
+  <text x="603.0" y="864.0" font-family="'TeX Gyre Heros', 'Helvetica Neue', Helvetica, Arial, 'Noto Sans SC', sans-serif" font-weight="400" font-size="16" fill="#111111">09:17</text>
+  <text x="699.0" y="865.0" font-family="'TeX Gyre Heros', 'Helvetica Neue', Helvetica, Arial, 'Noto Sans SC', sans-serif" font-weight="400" font-size="17" fill="#111111">Rheinfelden</text>
+  <circle cx="677" cy="904" r="9" fill="#111111" stroke="#111111" stroke-width="3"/>
+  <text x="603.0" y="910.0" font-family="'TeX Gyre Heros', 'Helvetica Neue', Helvetica, Arial, 'Noto Sans SC', sans-serif" font-weight="700" font-size="16" fill="#111111">09:28</text>
+  <text x="699.0" y="911.0" font-family="'TeX Gyre Heros', 'Helvetica Neue', Helvetica, Arial, 'Noto Sans SC', sans-serif" font-weight="700" font-size="20" fill="#111111">Basel SBB</text>
+  <text x="954.0" y="910.0" font-family="'TeX Gyre Heros', 'Helvetica Neue', Helvetica, Arial, 'Noto Sans SC', sans-serif" font-weight="400" font-size="13" text-anchor="end" fill="#7A7A78">站台 9</text>
+  <rect x="603.0" y="964.0" width="351.0" height="50.0" fill="#111111"/>
+  <text x="619.0" y="995.0" font-family="'TeX Gyre Heros', 'Helvetica Neue', Helvetica, Arial, 'Noto Sans SC', sans-serif" font-weight="700" font-size="16" fill="#FFFFFF">购票</text>
+  <text x="938.0" y="995.0" font-family="'TeX Gyre Heros', 'Helvetica Neue', Helvetica, Arial, 'Noto Sans SC', sans-serif" font-weight="700" font-size="18" text-anchor="end" fill="#FFFFFF">CHF 34.—</text>
+  <rect x="603.0" y="1040.0" width="351.0" height="1.0" fill="rgba(17,17,17,0.09)"/>
+  <text x="603.0" y="1078.0" font-family="'TeX Gyre Heros', 'Helvetica Neue', Helvetica, Arial, 'Noto Sans SC', sans-serif" font-weight="400" font-size="16" fill="#7A7A78">出发</text>
+  <text x="720.0" y="1078.0" font-family="'TeX Gyre Heros', 'Helvetica Neue', Helvetica, Arial, 'Noto Sans SC', sans-serif" font-weight="700" font-size="16" fill="#111111">行程</text>
+  <rect x="720.0" y="1040.0" width="40.0" height="3.0" fill="#111111"/>
+  <text x="837.0" y="1078.0" font-family="'TeX Gyre Heros', 'Helvetica Neue', Helvetica, Arial, 'Noto Sans SC', sans-serif" font-weight="400" font-size="16" fill="#7A7A78">车票</text>
+  <rect x="90.0" y="1140.0" width="34.0" height="26.0" fill="#E30613"/>
+  <text x="107.0" y="1159.0" font-family="'TeX Gyre Heros', 'Helvetica Neue', Helvetica, Arial, 'Noto Sans SC', sans-serif" font-weight="700" font-size="16" text-anchor="middle" fill="#FFFFFF">01</text>
+  <text x="136.0" y="1160.0" font-family="'TeX Gyre Heros', 'Helvetica Neue', Helvetica, Arial, 'Noto Sans SC', sans-serif" font-weight="700" font-size="20" fill="#111111">出发</text>
+  <text x="90.0" y="1192.0" font-family="'TeX Gyre Heros', 'Helvetica Neue', Helvetica, Arial, 'Noto Sans SC', sans-serif" font-weight="700" font-size="15" fill="#111111">时间就是标题：最大的字给最重要的数字</text>
+  <text x="90.0" y="1216.0" font-family="'TeX Gyre Heros', 'Helvetica Neue', Helvetica, Arial, 'Noto Sans SC', sans-serif" font-weight="400" font-size="15" fill="#7A7A78">列表四栏对齐：时间 / 车次 / 开往 / 站台</text>
+  <rect x="567.0" y="1140.0" width="34.0" height="26.0" fill="#E30613"/>
+  <text x="584.0" y="1159.0" font-family="'TeX Gyre Heros', 'Helvetica Neue', Helvetica, Arial, 'Noto Sans SC', sans-serif" font-weight="700" font-size="16" text-anchor="middle" fill="#FFFFFF">02</text>
+  <text x="613.0" y="1160.0" font-family="'TeX Gyre Heros', 'Helvetica Neue', Helvetica, Arial, 'Noto Sans SC', sans-serif" font-weight="700" font-size="20" fill="#111111">行程</text>
+  <text x="567.0" y="1192.0" font-family="'TeX Gyre Heros', 'Helvetica Neue', Helvetica, Arial, 'Noto Sans SC', sans-serif" font-weight="700" font-size="15" fill="#111111">红色只给一样东西：你要去的站台</text>
+  <text x="567.0" y="1216.0" font-family="'TeX Gyre Heros', 'Helvetica Neue', Helvetica, Arial, 'Noto Sans SC', sans-serif" font-weight="400" font-size="15" fill="#7A7A78">线路 = 一条竖线 + 站点圆点；价格写成 34.—（瑞士写法）</text>
+  <text x="90.0" y="1302.0" font-family="'TeX Gyre Heros', 'Helvetica Neue', Helvetica, Arial, 'Noto Sans SC', sans-serif" font-weight="400" font-size="16" fill="#7A7A78">github.com/guanmo-ai/design-style</text>
+  <text x="990.0" y="1302.0" font-family="'TeX Gyre Heros', 'Helvetica Neue', Helvetica, Arial, 'Noto Sans SC', sans-serif" font-weight="400" font-size="16" text-anchor="end" fill="#7A7A78">@guanmo_ai · 每天一个设计风格</text>
+</svg>

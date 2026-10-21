@@ -1,0 +1,202 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1080" height="1350" viewBox="0 0 1080 1350">
+  <!-- Design Style · 风格 002 · 瑞士国际主义 Swiss Style —— 速查卡 / 1080×1350（由 make_svgs.py 生成） -->
+  <defs>
+  </defs>
+  <rect width="1080" height="1350" fill="#F5F4F0"/>
+  <text x="87.0" y="116.0" font-family="'TeX Gyre Heros', 'Helvetica Neue', Helvetica, Arial, 'Noto Sans SC', sans-serif" font-weight="900" font-size="52" fill="#111111">瑞士国际主义</text>
+  <text x="416.0" y="116.0" font-family="'TeX Gyre Heros', 'Helvetica Neue', Helvetica, Arial, 'Noto Sans SC', sans-serif" font-weight="700" font-size="52" letter-spacing="-1.04" fill="#111111">Swiss Style</text>
+  <text x="90.0" y="168.0" font-family="'TeX Gyre Heros', 'Helvetica Neue', Helvetica, Arial, 'Noto Sans SC', sans-serif" font-weight="400" font-size="20" fill="#7A7A78">风格速查卡 · 1950—1970 · 苏黎世 / 巴塞尔</text>
+  <rect x="945.0" y="72.0" width="45.0" height="45.0" fill="#E30613"/>
+  <text x="990.0" y="168.0" font-family="'TeX Gyre Heros', 'Helvetica Neue', Helvetica, Arial, 'Noto Sans SC', sans-serif" font-weight="400" font-size="16" text-anchor="end" fill="#7A7A78">design style no.02</text>
+  <rect x="90.0" y="192.0" width="900.0" height="3.0" fill="#111111"/>
+  <rect x="90.0" y="230.0" width="34.0" height="26.0" fill="#E30613"/>
+  <text x="107.0" y="249.0" font-family="'TeX Gyre Heros', 'Helvetica Neue', Helvetica, Arial, 'Noto Sans SC', sans-serif" font-weight="700" font-size="16" text-anchor="middle" fill="#FFFFFF">01</text>
+  <text x="136.0" y="250.0" font-family="'TeX Gyre Heros', 'Helvetica Neue', Helvetica, Arial, 'Noto Sans SC', sans-serif" font-weight="700" font-size="22" fill="#111111">网格</text>
+  <text x="190.0" y="250.0" font-family="'TeX Gyre Heros', 'Helvetica Neue', Helvetica, Arial, 'Noto Sans SC', sans-serif" font-weight="400" font-size="16" fill="#7A7A78">Raster</text>
+  <rect x="90.0" y="272.0" width="441.0" height="248.1" fill="#FFFFFF" stroke="#111111" stroke-width="1.5"/>
+  <rect x="112.0" y="298.2" width="28.0" height="28.0" fill="rgba(17,17,17,0.07)"/>
+  <rect x="112.0" y="331.7" width="28.0" height="28.0" fill="rgba(17,17,17,0.07)"/>
+  <rect x="112.0" y="365.3" width="28.0" height="28.0" fill="rgba(17,17,17,0.07)"/>
+  <rect x="112.0" y="398.8" width="28.0" height="28.0" fill="rgba(17,17,17,0.07)"/>
+  <rect x="112.0" y="432.3" width="28.0" height="28.0" fill="rgba(17,17,17,0.07)"/>
+  <rect x="112.0" y="465.9" width="28.0" height="28.0" fill="rgba(17,17,17,0.07)"/>
+  <rect x="145.6" y="298.2" width="28.0" height="28.0" fill="rgba(17,17,17,0.07)"/>
+  <rect x="145.6" y="331.7" width="28.0" height="28.0" fill="rgba(17,17,17,0.07)"/>
+  <rect x="145.6" y="365.3" width="28.0" height="28.0" fill="rgba(17,17,17,0.07)"/>
+  <rect x="145.6" y="398.8" width="28.0" height="28.0" fill="rgba(17,17,17,0.07)"/>
+  <rect x="145.6" y="432.3" width="28.0" height="28.0" fill="rgba(17,17,17,0.07)"/>
+  <rect x="145.6" y="465.9" width="28.0" height="28.0" fill="rgba(17,17,17,0.07)"/>
+  <rect x="179.1" y="298.2" width="28.0" height="28.0" fill="rgba(17,17,17,0.07)"/>
+  <rect x="179.1" y="331.7" width="28.0" height="28.0" fill="rgba(17,17,17,0.07)"/>
+  <rect x="179.1" y="365.3" width="28.0" height="28.0" fill="rgba(17,17,17,0.07)"/>
+  <rect x="179.1" y="398.8" width="28.0" height="28.0" fill="rgba(17,17,17,0.07)"/>
+  <rect x="179.1" y="432.3" width="28.0" height="28.0" fill="rgba(17,17,17,0.07)"/>
+  <rect x="179.1" y="465.9" width="28.0" height="28.0" fill="rgba(17,17,17,0.07)"/>
+  <rect x="212.7" y="298.2" width="28.0" height="28.0" fill="rgba(17,17,17,0.07)"/>
+  <rect x="212.7" y="331.7" width="28.0" height="28.0" fill="rgba(17,17,17,0.07)"/>
+  <rect x="212.7" y="365.3" width="28.0" height="28.0" fill="rgba(17,17,17,0.07)"/>
+  <rect x="212.7" y="398.8" width="28.0" height="28.0" fill="rgba(17,17,17,0.07)"/>
+  <rect x="212.7" y="432.3" width="28.0" height="28.0" fill="rgba(17,17,17,0.07)"/>
+  <rect x="212.7" y="465.9" width="28.0" height="28.0" fill="rgba(17,17,17,0.07)"/>
+  <rect x="246.2" y="298.2" width="28.0" height="28.0" fill="rgba(17,17,17,0.07)"/>
+  <rect x="246.2" y="331.7" width="28.0" height="28.0" fill="rgba(17,17,17,0.07)"/>
+  <rect x="246.2" y="365.3" width="28.0" height="28.0" fill="rgba(17,17,17,0.07)"/>
+  <rect x="246.2" y="398.8" width="28.0" height="28.0" fill="rgba(17,17,17,0.07)"/>
+  <rect x="246.2" y="432.3" width="28.0" height="28.0" fill="rgba(17,17,17,0.07)"/>
+  <rect x="246.2" y="465.9" width="28.0" height="28.0" fill="rgba(17,17,17,0.07)"/>
+  <rect x="279.7" y="298.2" width="28.0" height="28.0" fill="rgba(17,17,17,0.07)"/>
+  <rect x="279.7" y="331.7" width="28.0" height="28.0" fill="rgba(17,17,17,0.07)"/>
+  <rect x="279.7" y="365.3" width="28.0" height="28.0" fill="rgba(17,17,17,0.07)"/>
+  <rect x="279.7" y="398.8" width="28.0" height="28.0" fill="rgba(17,17,17,0.07)"/>
+  <rect x="279.7" y="432.3" width="28.0" height="28.0" fill="rgba(17,17,17,0.07)"/>
+  <rect x="279.7" y="465.9" width="28.0" height="28.0" fill="rgba(17,17,17,0.07)"/>
+  <rect x="313.3" y="298.2" width="28.0" height="28.0" fill="rgba(17,17,17,0.07)"/>
+  <rect x="313.3" y="331.7" width="28.0" height="28.0" fill="rgba(17,17,17,0.07)"/>
+  <rect x="313.3" y="365.3" width="28.0" height="28.0" fill="rgba(17,17,17,0.07)"/>
+  <rect x="313.3" y="398.8" width="28.0" height="28.0" fill="rgba(17,17,17,0.07)"/>
+  <rect x="313.3" y="432.3" width="28.0" height="28.0" fill="rgba(17,17,17,0.07)"/>
+  <rect x="313.3" y="465.9" width="28.0" height="28.0" fill="rgba(17,17,17,0.07)"/>
+  <rect x="346.8" y="298.2" width="28.0" height="28.0" fill="rgba(17,17,17,0.07)"/>
+  <rect x="346.8" y="331.7" width="28.0" height="28.0" fill="rgba(17,17,17,0.07)"/>
+  <rect x="346.8" y="365.3" width="28.0" height="28.0" fill="rgba(17,17,17,0.07)"/>
+  <rect x="346.8" y="398.8" width="28.0" height="28.0" fill="rgba(17,17,17,0.07)"/>
+  <rect x="346.8" y="432.3" width="28.0" height="28.0" fill="rgba(17,17,17,0.07)"/>
+  <rect x="346.8" y="465.9" width="28.0" height="28.0" fill="rgba(17,17,17,0.07)"/>
+  <rect x="380.3" y="298.2" width="28.0" height="28.0" fill="rgba(17,17,17,0.07)"/>
+  <rect x="380.3" y="331.7" width="28.0" height="28.0" fill="rgba(17,17,17,0.07)"/>
+  <rect x="380.3" y="365.3" width="28.0" height="28.0" fill="rgba(17,17,17,0.07)"/>
+  <rect x="380.3" y="398.8" width="28.0" height="28.0" fill="rgba(17,17,17,0.07)"/>
+  <rect x="380.3" y="432.3" width="28.0" height="28.0" fill="rgba(17,17,17,0.07)"/>
+  <rect x="380.3" y="465.9" width="28.0" height="28.0" fill="rgba(17,17,17,0.07)"/>
+  <rect x="413.9" y="298.2" width="28.0" height="28.0" fill="#E30613"/>
+  <rect x="413.9" y="331.7" width="28.0" height="28.0" fill="#E30613"/>
+  <rect x="413.9" y="365.3" width="28.0" height="28.0" fill="#E30613"/>
+  <rect x="413.9" y="398.8" width="28.0" height="28.0" fill="rgba(17,17,17,0.07)"/>
+  <rect x="413.9" y="432.3" width="28.0" height="28.0" fill="rgba(17,17,17,0.07)"/>
+  <rect x="413.9" y="465.9" width="28.0" height="28.0" fill="rgba(17,17,17,0.07)"/>
+  <rect x="447.4" y="298.2" width="28.0" height="28.0" fill="#E30613"/>
+  <rect x="447.4" y="331.7" width="28.0" height="28.0" fill="#E30613"/>
+  <rect x="447.4" y="365.3" width="28.0" height="28.0" fill="#E30613"/>
+  <rect x="447.4" y="398.8" width="28.0" height="28.0" fill="rgba(17,17,17,0.07)"/>
+  <rect x="447.4" y="432.3" width="28.0" height="28.0" fill="rgba(17,17,17,0.07)"/>
+  <rect x="447.4" y="465.9" width="28.0" height="28.0" fill="rgba(17,17,17,0.07)"/>
+  <rect x="480.9" y="298.2" width="28.0" height="28.0" fill="#E30613"/>
+  <rect x="480.9" y="331.7" width="28.0" height="28.0" fill="#E30613"/>
+  <rect x="480.9" y="365.3" width="28.0" height="28.0" fill="#E30613"/>
+  <rect x="480.9" y="398.8" width="28.0" height="28.0" fill="rgba(17,17,17,0.07)"/>
+  <rect x="480.9" y="432.3" width="28.0" height="28.0" fill="rgba(17,17,17,0.07)"/>
+  <rect x="480.9" y="465.9" width="28.0" height="28.0" fill="rgba(17,17,17,0.07)"/>
+  <path d="M246.2 500.9 h28.0 M246.2 497.9 v6 M274.2 497.9 v6" stroke="#E30613" stroke-width="1.5" fill="none"/>
+  <text x="280.2" y="505.9" font-family="'TeX Gyre Heros', 'Helvetica Neue', Helvetica, Arial, 'Noto Sans SC', sans-serif" font-weight="700" font-size="12" fill="#E30613">122</text>
+  <text x="90.0" y="550.1" font-family="'TeX Gyre Heros', 'Helvetica Neue', Helvetica, Arial, 'Noto Sans SC', sans-serif" font-weight="700" font-size="16" fill="#111111">视频 1920 × 1080 · 12 栏 × 6 行</text>
+  <text x="90.0" y="572.1" font-family="'TeX Gyre Heros', 'Helvetica Neue', Helvetica, Arial, 'Noto Sans SC', sans-serif" font-weight="400" font-size="16" fill="#7A7A78">右上角 3 × 3 个模块 = 开场的红方块</text>
+  <text x="567.0" y="290.0" font-family="'TeX Gyre Heros', 'Helvetica Neue', Helvetica, Arial, 'Noto Sans SC', sans-serif" font-weight="400" font-size="16" fill="#7A7A78">栏 × 行</text>
+  <text x="702.0" y="290.0" font-family="'TeX Gyre Heros', 'Helvetica Neue', Helvetica, Arial, 'Noto Sans SC', sans-serif" font-weight="700" font-size="18" fill="#111111">12 × 6（视频）· 6 × 8（图片）</text>
+  <text x="567.0" y="332.0" font-family="'TeX Gyre Heros', 'Helvetica Neue', Helvetica, Arial, 'Noto Sans SC', sans-serif" font-weight="400" font-size="16" fill="#7A7A78">模块</text>
+  <text x="702.0" y="332.0" font-family="'TeX Gyre Heros', 'Helvetica Neue', Helvetica, Arial, 'Noto Sans SC', sans-serif" font-weight="700" font-size="18" fill="#111111">122 · 135 —— 正方形，栏宽 = 行高</text>
+  <rect x="567.0" y="304.0" width="423.0" height="1.0" fill="rgba(17,17,17,0.09)"/>
+  <text x="567.0" y="374.0" font-family="'TeX Gyre Heros', 'Helvetica Neue', Helvetica, Arial, 'Noto Sans SC', sans-serif" font-weight="400" font-size="16" fill="#7A7A78">间距</text>
+  <text x="702.0" y="374.0" font-family="'TeX Gyre Heros', 'Helvetica Neue', Helvetica, Arial, 'Noto Sans SC', sans-serif" font-weight="700" font-size="18" fill="#111111">24 · 18 —— 横竖一样</text>
+  <rect x="567.0" y="346.0" width="423.0" height="1.0" fill="rgba(17,17,17,0.09)"/>
+  <text x="567.0" y="416.0" font-family="'TeX Gyre Heros', 'Helvetica Neue', Helvetica, Arial, 'Noto Sans SC', sans-serif" font-weight="400" font-size="16" fill="#7A7A78">边距</text>
+  <text x="702.0" y="416.0" font-family="'TeX Gyre Heros', 'Helvetica Neue', Helvetica, Arial, 'Noto Sans SC', sans-serif" font-weight="700" font-size="18" fill="#111111">96 / 114 · 90 / 72（左右 / 上下）</text>
+  <rect x="567.0" y="388.0" width="423.0" height="1.0" fill="rgba(17,17,17,0.09)"/>
+  <text x="567.0" y="458.0" font-family="'TeX Gyre Heros', 'Helvetica Neue', Helvetica, Arial, 'Noto Sans SC', sans-serif" font-weight="400" font-size="16" fill="#7A7A78">基线</text>
+  <text x="702.0" y="458.0" font-family="'TeX Gyre Heros', 'Helvetica Neue', Helvetica, Arial, 'Noto Sans SC', sans-serif" font-weight="700" font-size="18" fill="#111111">9（图片）—— 模块 + 间距 = 153 = 17 条</text>
+  <rect x="567.0" y="430.0" width="423.0" height="1.0" fill="rgba(17,17,17,0.09)"/>
+  <text x="567.0" y="500.0" font-family="'TeX Gyre Heros', 'Helvetica Neue', Helvetica, Arial, 'Noto Sans SC', sans-serif" font-weight="400" font-size="16" fill="#7A7A78">换栏</text>
+  <text x="702.0" y="500.0" font-family="'TeX Gyre Heros', 'Helvetica Neue', Helvetica, Arial, 'Noto Sans SC', sans-serif" font-weight="700" font-size="18" fill="#111111">12 = 2 × 6 = 3 × 4 = 4 × 3 = 6 × 2</text>
+  <rect x="567.0" y="472.0" width="423.0" height="1.0" fill="rgba(17,17,17,0.09)"/>
+  <rect x="90.0" y="592.0" width="34.0" height="26.0" fill="#E30613"/>
+  <text x="107.0" y="611.0" font-family="'TeX Gyre Heros', 'Helvetica Neue', Helvetica, Arial, 'Noto Sans SC', sans-serif" font-weight="700" font-size="16" text-anchor="middle" fill="#FFFFFF">02</text>
+  <text x="136.0" y="612.0" font-family="'TeX Gyre Heros', 'Helvetica Neue', Helvetica, Arial, 'Noto Sans SC', sans-serif" font-weight="700" font-size="22" fill="#111111">色板</text>
+  <text x="190.0" y="612.0" font-family="'TeX Gyre Heros', 'Helvetica Neue', Helvetica, Arial, 'Noto Sans SC', sans-serif" font-weight="400" font-size="16" fill="#7A7A78">Farben</text>
+  <rect x="90.0" y="634.0" width="135.0" height="84.0" fill="#F5F4F0" stroke="#111111" stroke-width="1"/>
+  <text x="90.0" y="748.0" font-family="'TeX Gyre Heros', 'Helvetica Neue', Helvetica, Arial, 'Noto Sans SC', sans-serif" font-weight="700" font-size="18" fill="#111111">纸白</text>
+  <text x="225.0" y="748.0" font-family="'TeX Gyre Heros', 'Helvetica Neue', Helvetica, Arial, 'Noto Sans SC', sans-serif" font-weight="700" font-size="16" text-anchor="end" fill="#111111">60%</text>
+  <text x="90.0" y="770.0" font-family="'TeX Gyre Heros', 'Helvetica Neue', Helvetica, Arial, 'Noto Sans SC', sans-serif" font-weight="400" font-size="16" fill="#111111">#F5F4F0</text>
+  <text x="90.0" y="790.0" font-family="'TeX Gyre Heros', 'Helvetica Neue', Helvetica, Arial, 'Noto Sans SC', sans-serif" font-weight="400" font-size="16" fill="#7A7A78">245 244 240</text>
+  <rect x="243.0" y="634.0" width="135.0" height="84.0" fill="#111111"/>
+  <text x="243.0" y="748.0" font-family="'TeX Gyre Heros', 'Helvetica Neue', Helvetica, Arial, 'Noto Sans SC', sans-serif" font-weight="700" font-size="18" fill="#111111">黑</text>
+  <text x="378.0" y="748.0" font-family="'TeX Gyre Heros', 'Helvetica Neue', Helvetica, Arial, 'Noto Sans SC', sans-serif" font-weight="700" font-size="16" text-anchor="end" fill="#111111">25%</text>
+  <text x="243.0" y="770.0" font-family="'TeX Gyre Heros', 'Helvetica Neue', Helvetica, Arial, 'Noto Sans SC', sans-serif" font-weight="400" font-size="16" fill="#111111">#111111</text>
+  <text x="243.0" y="790.0" font-family="'TeX Gyre Heros', 'Helvetica Neue', Helvetica, Arial, 'Noto Sans SC', sans-serif" font-weight="400" font-size="16" fill="#7A7A78">17 17 17</text>
+  <rect x="396.0" y="634.0" width="135.0" height="84.0" fill="#E30613"/>
+  <text x="396.0" y="748.0" font-family="'TeX Gyre Heros', 'Helvetica Neue', Helvetica, Arial, 'Noto Sans SC', sans-serif" font-weight="700" font-size="18" fill="#111111">瑞士红</text>
+  <text x="531.0" y="748.0" font-family="'TeX Gyre Heros', 'Helvetica Neue', Helvetica, Arial, 'Noto Sans SC', sans-serif" font-weight="700" font-size="16" text-anchor="end" fill="#E30613">10%</text>
+  <text x="396.0" y="770.0" font-family="'TeX Gyre Heros', 'Helvetica Neue', Helvetica, Arial, 'Noto Sans SC', sans-serif" font-weight="400" font-size="16" fill="#111111">#E30613</text>
+  <text x="396.0" y="790.0" font-family="'TeX Gyre Heros', 'Helvetica Neue', Helvetica, Arial, 'Noto Sans SC', sans-serif" font-weight="400" font-size="16" fill="#7A7A78">227 6 19</text>
+  <rect x="549.0" y="634.0" width="135.0" height="84.0" fill="#7A7A78"/>
+  <text x="549.0" y="748.0" font-family="'TeX Gyre Heros', 'Helvetica Neue', Helvetica, Arial, 'Noto Sans SC', sans-serif" font-weight="700" font-size="18" fill="#111111">灰</text>
+  <text x="684.0" y="748.0" font-family="'TeX Gyre Heros', 'Helvetica Neue', Helvetica, Arial, 'Noto Sans SC', sans-serif" font-weight="700" font-size="16" text-anchor="end" fill="#111111">5%</text>
+  <text x="549.0" y="770.0" font-family="'TeX Gyre Heros', 'Helvetica Neue', Helvetica, Arial, 'Noto Sans SC', sans-serif" font-weight="400" font-size="16" fill="#111111">#7A7A78</text>
+  <text x="549.0" y="790.0" font-family="'TeX Gyre Heros', 'Helvetica Neue', Helvetica, Arial, 'Noto Sans SC', sans-serif" font-weight="400" font-size="16" fill="#7A7A78">122 122 120</text>
+  <rect x="702.0" y="634.0" width="172.8" height="84.0" fill="#F5F4F0" stroke="#111111" stroke-width="1"/>
+  <rect x="874.8" y="634.0" width="72.0" height="84.0" fill="#111111"/>
+  <rect x="946.8" y="634.0" width="28.8" height="84.0" fill="#E30613"/>
+  <rect x="975.6" y="634.0" width="14.4" height="84.0" fill="#7A7A78"/>
+  <text x="702.0" y="748.0" font-family="'TeX Gyre Heros', 'Helvetica Neue', Helvetica, Arial, 'Noto Sans SC', sans-serif" font-weight="700" font-size="18" fill="#111111">建议面积</text>
+  <text x="702.0" y="770.0" font-family="'TeX Gyre Heros', 'Helvetica Neue', Helvetica, Arial, 'Noto Sans SC', sans-serif" font-weight="400" font-size="16" fill="#111111">红色只给一样东西：</text>
+  <text x="702.0" y="790.0" font-family="'TeX Gyre Heros', 'Helvetica Neue', Helvetica, Arial, 'Noto Sans SC', sans-serif" font-weight="400" font-size="16" fill="#111111">最重要的那一个。</text>
+  <rect x="90.0" y="818.0" width="34.0" height="26.0" fill="#E30613"/>
+  <text x="107.0" y="837.0" font-family="'TeX Gyre Heros', 'Helvetica Neue', Helvetica, Arial, 'Noto Sans SC', sans-serif" font-weight="700" font-size="16" text-anchor="middle" fill="#FFFFFF">03</text>
+  <text x="136.0" y="838.0" font-family="'TeX Gyre Heros', 'Helvetica Neue', Helvetica, Arial, 'Noto Sans SC', sans-serif" font-weight="700" font-size="22" fill="#111111">字体</text>
+  <text x="190.0" y="838.0" font-family="'TeX Gyre Heros', 'Helvetica Neue', Helvetica, Arial, 'Noto Sans SC', sans-serif" font-weight="400" font-size="16" fill="#7A7A78">Schrift</text>
+  <text x="85.5" y="985.0" font-family="'TeX Gyre Heros', 'Helvetica Neue', Helvetica, Arial, 'Noto Sans SC', sans-serif" font-weight="700" font-size="172" letter-spacing="-5.16" fill="#111111">Aa</text>
+  <rect x="90.0" y="859.6" width="423.0" height="1.5" fill="#E30613"/>
+  <text x="531.0" y="853.6" font-family="'TeX Gyre Heros', 'Helvetica Neue', Helvetica, Arial, 'Noto Sans SC', sans-serif" font-weight="500" font-size="14" text-anchor="end" fill="#E30613">大写高度</text>
+  <rect x="90.0" y="892.1" width="423.0" height="1.5" fill="#E30613"/>
+  <text x="531.0" y="886.1" font-family="'TeX Gyre Heros', 'Helvetica Neue', Helvetica, Arial, 'Noto Sans SC', sans-serif" font-weight="500" font-size="14" text-anchor="end" fill="#E30613">x 高度</text>
+  <rect x="90.0" y="985.0" width="423.0" height="1.5" fill="#E30613"/>
+  <text x="531.0" y="979.0" font-family="'TeX Gyre Heros', 'Helvetica Neue', Helvetica, Arial, 'Noto Sans SC', sans-serif" font-weight="500" font-size="14" text-anchor="end" fill="#E30613">基线</text>
+  <text x="567.0" y="878.0" font-family="'TeX Gyre Heros', 'Helvetica Neue', Helvetica, Arial, 'Noto Sans SC', sans-serif" font-weight="700" font-size="18" fill="#111111">TeX Gyre Heros Bold 700</text>
+  <text x="567.0" y="900.0" font-family="'TeX Gyre Heros', 'Helvetica Neue', Helvetica, Arial, 'Noto Sans SC', sans-serif" font-weight="400" font-size="16" fill="#7A7A78">标题、数字、标签</text>
+  <text x="567.0" y="926.0" font-family="'TeX Gyre Heros', 'Helvetica Neue', Helvetica, Arial, 'Noto Sans SC', sans-serif" font-weight="400" font-size="18" fill="#111111">TeX Gyre Heros Regular 400</text>
+  <text x="567.0" y="948.0" font-family="'TeX Gyre Heros', 'Helvetica Neue', Helvetica, Arial, 'Noto Sans SC', sans-serif" font-weight="400" font-size="16" fill="#7A7A78">正文、说明</text>
+  <text x="567.0" y="974.0" font-family="'TeX Gyre Heros', 'Helvetica Neue', Helvetica, Arial, 'Noto Sans SC', sans-serif" font-weight="700" font-size="18" fill="#111111">思源黑体 Noto Sans SC</text>
+  <text x="567.0" y="996.0" font-family="'TeX Gyre Heros', 'Helvetica Neue', Helvetica, Arial, 'Noto Sans SC', sans-serif" font-weight="400" font-size="16" fill="#7A7A78">中文：Black 900 / Bold 700 / Regular 400</text>
+  <text x="567.0" y="1026.0" font-family="'TeX Gyre Heros', 'Helvetica Neue', Helvetica, Arial, 'Noto Sans SC', sans-serif" font-weight="700" font-size="16" fill="#111111">1957 Neue Haas Grotesk → 1960 改名 Helvetica</text>
+  <text x="567.0" y="1048.0" font-family="'TeX Gyre Heros', 'Helvetica Neue', Helvetica, Arial, 'Noto Sans SC', sans-serif" font-weight="400" font-size="16" fill="#7A7A78">Heros 是它的开源替身（GUST 许可）</text>
+  <rect x="90.0" y="1048.0" width="34.0" height="26.0" fill="#E30613"/>
+  <text x="107.0" y="1067.0" font-family="'TeX Gyre Heros', 'Helvetica Neue', Helvetica, Arial, 'Noto Sans SC', sans-serif" font-weight="700" font-size="16" text-anchor="middle" fill="#FFFFFF">04</text>
+  <text x="136.0" y="1068.0" font-family="'TeX Gyre Heros', 'Helvetica Neue', Helvetica, Arial, 'Noto Sans SC', sans-serif" font-weight="700" font-size="22" fill="#111111">五条规则</text>
+  <text x="234.0" y="1068.0" font-family="'TeX Gyre Heros', 'Helvetica Neue', Helvetica, Arial, 'Noto Sans SC', sans-serif" font-weight="400" font-size="16" fill="#7A7A78">Regeln</text>
+  <rect x="90.0" y="1086.0" width="165.6" height="2.0" fill="#111111"/>
+  <text x="90.0" y="1120.0" font-family="'TeX Gyre Heros', 'Helvetica Neue', Helvetica, Arial, 'Noto Sans SC', sans-serif" font-weight="700" font-size="26" fill="#E30613">1</text>
+  <text x="114.0" y="1120.0" font-family="'TeX Gyre Heros', 'Helvetica Neue', Helvetica, Arial, 'Noto Sans SC', sans-serif" font-weight="700" font-size="22" fill="#111111">网格</text>
+  <text x="164.0" y="1120.0" font-family="'TeX Gyre Heros', 'Helvetica Neue', Helvetica, Arial, 'Noto Sans SC', sans-serif" font-weight="400" font-size="13" fill="#7A7A78">Raster</text>
+  <text x="90.0" y="1148.0" font-family="'TeX Gyre Heros', 'Helvetica Neue', Helvetica, Arial, 'Noto Sans SC', sans-serif" font-weight="400" font-size="14" fill="#111111">先画网格，再放东西</text>
+  <text x="90.0" y="1168.0" font-family="'TeX Gyre Heros', 'Helvetica Neue', Helvetica, Arial, 'Noto Sans SC', sans-serif" font-weight="400" font-size="14" fill="#111111">边和基线都落在格上</text>
+  <rect x="273.6" y="1086.0" width="165.6" height="2.0" fill="#111111"/>
+  <text x="273.6" y="1120.0" font-family="'TeX Gyre Heros', 'Helvetica Neue', Helvetica, Arial, 'Noto Sans SC', sans-serif" font-weight="700" font-size="26" fill="#E30613">2</text>
+  <text x="297.6" y="1120.0" font-family="'TeX Gyre Heros', 'Helvetica Neue', Helvetica, Arial, 'Noto Sans SC', sans-serif" font-weight="700" font-size="22" fill="#111111">无衬线</text>
+  <text x="369.6" y="1120.0" font-family="'TeX Gyre Heros', 'Helvetica Neue', Helvetica, Arial, 'Noto Sans SC', sans-serif" font-weight="400" font-size="13" fill="#7A7A78">Grotesk</text>
+  <text x="273.6" y="1148.0" font-family="'TeX Gyre Heros', 'Helvetica Neue', Helvetica, Arial, 'Noto Sans SC', sans-serif" font-weight="400" font-size="14" fill="#111111">一种字体，层级只靠</text>
+  <text x="273.6" y="1168.0" font-family="'TeX Gyre Heros', 'Helvetica Neue', Helvetica, Arial, 'Noto Sans SC', sans-serif" font-weight="400" font-size="14" fill="#111111">字号和字重</text>
+  <rect x="457.2" y="1086.0" width="165.6" height="2.0" fill="#111111"/>
+  <text x="457.2" y="1120.0" font-family="'TeX Gyre Heros', 'Helvetica Neue', Helvetica, Arial, 'Noto Sans SC', sans-serif" font-weight="700" font-size="26" fill="#E30613">3</text>
+  <text x="481.2" y="1120.0" font-family="'TeX Gyre Heros', 'Helvetica Neue', Helvetica, Arial, 'Noto Sans SC', sans-serif" font-weight="700" font-size="22" fill="#111111">左对齐</text>
+  <text x="553.2" y="1120.0" font-family="'TeX Gyre Heros', 'Helvetica Neue', Helvetica, Arial, 'Noto Sans SC', sans-serif" font-weight="400" font-size="13" fill="#7A7A78">Flattersatz</text>
+  <text x="457.2" y="1148.0" font-family="'TeX Gyre Heros', 'Helvetica Neue', Helvetica, Arial, 'Noto Sans SC', sans-serif" font-weight="400" font-size="14" fill="#111111">左边齐、右边自然参差</text>
+  <text x="457.2" y="1168.0" font-family="'TeX Gyre Heros', 'Helvetica Neue', Helvetica, Arial, 'Noto Sans SC', sans-serif" font-weight="400" font-size="14" fill="#111111">不居中，不两端对齐</text>
+  <rect x="640.8" y="1086.0" width="165.6" height="2.0" fill="#111111"/>
+  <text x="640.8" y="1120.0" font-family="'TeX Gyre Heros', 'Helvetica Neue', Helvetica, Arial, 'Noto Sans SC', sans-serif" font-weight="700" font-size="26" fill="#E30613">4</text>
+  <text x="664.8" y="1120.0" font-family="'TeX Gyre Heros', 'Helvetica Neue', Helvetica, Arial, 'Noto Sans SC', sans-serif" font-weight="700" font-size="22" fill="#111111">不对称</text>
+  <text x="736.8" y="1120.0" font-family="'TeX Gyre Heros', 'Helvetica Neue', Helvetica, Arial, 'Noto Sans SC', sans-serif" font-weight="400" font-size="13" fill="#7A7A78">Asymmetrie</text>
+  <text x="640.8" y="1148.0" font-family="'TeX Gyre Heros', 'Helvetica Neue', Helvetica, Arial, 'Noto Sans SC', sans-serif" font-weight="400" font-size="14" fill="#111111">重心偏到一边，</text>
+  <text x="640.8" y="1168.0" font-family="'TeX Gyre Heros', 'Helvetica Neue', Helvetica, Arial, 'Noto Sans SC', sans-serif" font-weight="400" font-size="14" fill="#111111">用大块留白去平衡</text>
+  <rect x="824.4" y="1086.0" width="165.6" height="2.0" fill="#111111"/>
+  <text x="824.4" y="1120.0" font-family="'TeX Gyre Heros', 'Helvetica Neue', Helvetica, Arial, 'Noto Sans SC', sans-serif" font-weight="700" font-size="26" fill="#E30613">5</text>
+  <text x="848.4" y="1120.0" font-family="'TeX Gyre Heros', 'Helvetica Neue', Helvetica, Arial, 'Noto Sans SC', sans-serif" font-weight="700" font-size="22" fill="#111111">客观</text>
+  <text x="898.4" y="1120.0" font-family="'TeX Gyre Heros', 'Helvetica Neue', Helvetica, Arial, 'Noto Sans SC', sans-serif" font-weight="400" font-size="13" fill="#7A7A78">Sachlichkeit</text>
+  <text x="824.4" y="1148.0" font-family="'TeX Gyre Heros', 'Helvetica Neue', Helvetica, Arial, 'Noto Sans SC', sans-serif" font-weight="400" font-size="14" fill="#111111">只给事实：标题、日期、</text>
+  <text x="824.4" y="1168.0" font-family="'TeX Gyre Heros', 'Helvetica Neue', Helvetica, Arial, 'Noto Sans SC', sans-serif" font-weight="400" font-size="14" fill="#111111">地点、照片，不加修饰</text>
+  <rect x="90.0" y="1192.0" width="441.0" height="54.0" fill="#111111"/>
+  <text x="106.0" y="1226.0" font-family="'TeX Gyre Heros', 'Helvetica Neue', Helvetica, Arial, 'Noto Sans SC', sans-serif" font-weight="900" font-size="18" fill="#FFFFFF">这样做</text>
+  <text x="184.0" y="1226.0" font-family="'TeX Gyre Heros', 'Helvetica Neue', Helvetica, Arial, 'Noto Sans SC', sans-serif" font-weight="400" font-size="15" fill="#FFFFFF">先画网格 · 字号拉开 · 左齐右不齐 · 大块留白</text>
+  <rect x="549.8" y="1192.8" width="439.5" height="52.5" fill="none" stroke="#E30613" stroke-width="1.5"/>
+  <text x="565.0" y="1226.0" font-family="'TeX Gyre Heros', 'Helvetica Neue', Helvetica, Arial, 'Noto Sans SC', sans-serif" font-weight="900" font-size="18" fill="#E30613">别这样</text>
+  <text x="643.0" y="1226.0" font-family="'TeX Gyre Heros', 'Helvetica Neue', Helvetica, Arial, 'Noto Sans SC', sans-serif" font-weight="400" font-size="15" fill="#111111">居中对称 · 两端对齐 · 渐变投影 · 圆角卡片</text>
+  <text x="90.0" y="1302.0" font-family="'TeX Gyre Heros', 'Helvetica Neue', Helvetica, Arial, 'Noto Sans SC', sans-serif" font-weight="400" font-size="16" fill="#7A7A78">github.com/guanmo-ai/design-style</text>
+  <text x="990.0" y="1302.0" font-family="'TeX Gyre Heros', 'Helvetica Neue', Helvetica, Arial, 'Noto Sans SC', sans-serif" font-weight="400" font-size="16" text-anchor="end" fill="#7A7A78">@guanmo_ai · 每天一个设计风格</text>
+</svg>

@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
-# 下载本项目用到的开源字体（全部 SIL Open Font License 1.1）到 public/fonts/
+# 下载本项目用到的开源字体到 public/fonts/
+# 除 TeX Gyre Heros（GUST Font License，可免费商用、可再分发）外，全部是 SIL Open Font License 1.1
 set -euo pipefail
 cd "$(dirname "$0")/.."
 mkdir -p public/fonts && cd public/fonts
@@ -10,6 +11,10 @@ curl -fsSL -o JetBrainsMono.ttf "$GF/jetbrainsmono/JetBrainsMono%5Bwght%5D.ttf" 
 for w in Regular Medium Bold Black; do                                        # 中文：思源黑体 / Noto Sans SC
   curl -fsSL -o "NotoSansSC-$w.otf" "$NOTO/NotoSansSC-$w.otf"
 done
+# 风格 002 瑞士国际主义：TeX Gyre Heros（Helvetica 的开源替代，源自 URW Nimbus Sans；GUST Font License）
+CTAN=https://mirrors.ctan.org/fonts/tex-gyre/opentype
+curl -fsSL -o TeXGyreHeros-Regular.otf "$CTAN/texgyreheros-regular.otf"
+curl -fsSL -o TeXGyreHeros-Bold.otf    "$CTAN/texgyreheros-bold.otf"
 # 布局 01 Bento Grid：Inter Display（标题）+ Inter（正文）+ Geist Mono（数字 / 标注）
 TMP=$(mktemp -d)
 curl -fsSL -o "$TMP/inter.zip" https://github.com/rsms/inter/releases/download/v4.1/Inter-4.1.zip
@@ -24,4 +29,4 @@ mv "$TMP/sel/selawk.ttf" Selawik.ttf; mv "$TMP/sel/selawksb.ttf" Selawik-Semibol
 mv "$TMP/sel/selawkb.ttf" Selawik-Bold.ttf; mv "$TMP/sel/selawkl.ttf" Selawik-Light.ttf
 rm -rf "$TMP"
 ls -lh
-echo "✓ 字体就绪。视频渲染时 Jost / JetBrains Mono / Noto Sans SC / Inter / Geist Mono / Selawik 自动加载，无需安装到系统。"
+echo "✓ 字体就绪。视频渲染时 Jost / JetBrains Mono / Noto Sans SC / TeX Gyre Heros / Inter / Geist Mono / Selawik 自动加载，无需安装到系统。"

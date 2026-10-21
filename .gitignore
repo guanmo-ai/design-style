@@ -5,3 +5,4 @@ public/fonts/
 .DS_Store
 dist/
 .gallery-cache/
+__pycache__/
