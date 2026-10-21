@@ -87,5 +87,49 @@
         "kind": "布局模板"
       }
     ]
+  },
+  {
+    "id": "002-swiss-style",
+    "type": "style",
+    "number": "002",
+    "title": "瑞士国际主义",
+    "titleEn": "Swiss Style",
+    "years": "1950—1970",
+    "category": "现代主义",
+    "description": "一张网格、一种字体、一种红。一支 15 秒短片，同一张 12 栏网格排出标题、字体、海报、纽约地铁标识与五个关键词。",
+    "tags": [
+      "网格",
+      "无衬线",
+      "Helvetica",
+      "海报",
+      "瑞士红",
+      "纽约地铁"
+    ],
+    "publishedAt": "2026-10-21T14:32:56Z",
+    "release": "day-02",
+    "asset": "002-swiss-style.mp4",
+    "sha256": "622632578832e8cabb5e8861c7d7c16adaa9b144d290b3eafe1f45118464f07c",
+    "images": [
+      {
+        "file": "poster",
+        "title": "一张海报，认识瑞士风格",
+        "kind": "风格海报"
+      },
+      {
+        "file": "cheatsheet",
+        "title": "网格、色板、字体与五条规则",
+        "kind": "风格速查"
+      },
+      {
+        "file": "app-ui",
+        "title": "如果瑞士风格来做 App",
+        "kind": "界面应用"
+      },
+      {
+        "file": "grid",
+        "title": "一张网格，四种排法",
+        "kind": "网格系统"
+      }
+    ]
   }
 ]
