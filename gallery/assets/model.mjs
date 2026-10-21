@@ -1,8 +1,8 @@
 export const REPO = 'https://github.com/guanmo-ai/design-style';
-// 两类作品：风格是皮（styles/NNN-name），布局是骨（layouts/NN-name）
+// 两个系列统一展示，类型用于卡片标签与筛选。
 export const TYPES = {
-  style: {name: '风格', dir: 'styles', id: /^\d{3}-[a-z0-9-]+$/, guide: '风格指南', images: '风格图片', label: number => `NO. ${number}`},
-  layout: {name: '布局', dir: 'layouts', id: /^\d{2}-[a-z0-9-]+$/, guide: '布局指南', images: '布局图片', label: number => `布局 ${number}`}
+  style: {name: '设计风格', dir: 'styles', id: /^\d{3}-[a-z0-9-]+$/, guide: '风格指南', images: '风格图解', label: number => `风格 ${number}`},
+  layout: {name: '布局方式', dir: 'layouts', id: /^\d{2}-[a-z0-9-]+$/, guide: '布局指南', images: '布局图解', label: number => `布局 ${number}`}
 };
 export const typeOf = work => Object.hasOwn(TYPES, work.type ?? 'style') ? (work.type ?? 'style') : 'style';
 export const typeInfo = work => TYPES[typeOf(work)];

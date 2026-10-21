@@ -2,14 +2,14 @@
 
 > **一句话：** 把一页内容装进大小不一的圆角格子里，一格只讲一件事，用面积告诉观众谁最重要。
 
-> **风格是皮，布局是骨。** 这一期讲的不是一种“风格”，而是一种“布局”。风格决定颜色、字体和质感；布局决定东西放在哪、占多大。同一套格子，可以套上包豪斯、Metro、iOS 任何一种风格。
+> **风格塑造视觉，布局组织信息。** 这一期讲的不是一种“风格”，而是一种“布局”。风格决定颜色、字体和质感；布局决定东西放在哪、占多大。同一套格子，可以套上包豪斯、Metro、iOS 任何一种风格。
 
 🎬 [看视频](https://github.com/guanmo-ai/design-style/releases/tag/layout-01) · 🛠 [制作过程](PROCESS.md) · 🖼 [图片源文件](images)
 
 | 布局海报 | 布局速查 |
 |:-:|:-:|
 | <img src="images/preview/poster.svg" width="400" alt="布局海报" /> | <img src="images/preview/cheatsheet.svg" width="400" alt="布局速查" /> |
-| **同一套格子，换六种风格** | **拿来就用：三套排法** |
+| **同一布局，六种风格** | **拿来就用：三套排法** |
 | <img src="images/preview/skins.svg" width="400" alt="布局 × 风格" /> | <img src="images/preview/templates.svg" width="400" alt="布局模板" /> |
 
 ## 1 · 它从哪来
@@ -40,7 +40,7 @@
 
 ## 3 · 色板
 
-便当盒是布局，**没有“正宗配色”**。下面是视频里用的苹果发布会式配色；换成包豪斯或 Metro 的颜色，格子照样成立（见「同一套格子，换六种风格」）。
+便当盒是布局，**没有“正宗配色”**。下面是视频里用的苹果发布会式配色；换成包豪斯或 Metro 的颜色，格子照样成立（见「同一布局，六种风格」）。
 
 | 名称 | HEX | 用途 |
 |---|---|---|
@@ -118,7 +118,7 @@ easing, the hero card grows to 2x2, numbers count up inside the cards. Clean App
 
 ## 9 · 15 秒分镜
 
-全片只有 **7 张卡片**，从头到尾不换，只换排法和皮。它们在 9 种排法之间重排：讲出它从哪来、有哪些规则、能用在哪。所有重排都落在 150 BPM 的拍子上：卡片移动最快的那一刻，正好是鼓点。
+全片只有 **7 张卡片**，从头到尾不换，调整布局与视觉风格。它们在 9 种排法之间重排：讲出它从哪来、有哪些规则、能用在哪。所有重排都落在 150 BPM 的拍子上：卡片移动最快的那一刻，正好是鼓点。
 
 | 时间 | 帧 | 章节 | 画面 | 致敬 |
 |---|---|---|---|---|
@@ -130,7 +130,7 @@ easing, the hero card grows to 2x2, numbers count up inside the cards. Clean App
 | 7.4—9.8 | 444—588 | 05 五条规则 | 卡片变成线框，打上间距、圆角标注，五条规则逐条出现；鼓声停下，音乐变闷，每条规则响一声“叮” | — |
 | 9.8—11.4 | 588—684 | 06 个人主页 | 浅色、bento.me 式，一张卡片只放一样东西，每张卡片同一套排版（左上灰色小标题 + 一个大主角 + 最多一行说明）：头像栏、GitHub（贡献格子沿品牌渐变着色）、X、已发布 2 期、最新作品（包豪斯海报整张铺满）、每期短片 15 秒、每天一个设计风格、正在播放（就是本片的配乐） | bento.me |
 | 11.4—13.0 | 684—780 | 07 产品后台 | 深色、Linear 式数据看板：收入曲线、活跃用户、转化率、流量来源 | Linear · Vercel |
-| 13.0—15.0 | 780—900 | 片尾 | 7 张卡片缩回一个小图标 →「风格是皮，布局是骨。」 | — |
+| 13.0—15.0 | 780—900 | 片尾 | 7 张卡片缩回一个小图标 →「风格塑造视觉，布局组织信息。」 | — |
 
 <a href="https://github.com/guanmo-ai/design-style/releases/tag/layout-01"><img src="video/cover.jpg" width="800" alt="短片里的发布会式便当盒（点击看视频）" /></a>
 
@@ -156,7 +156,7 @@ easing, the hero card grows to 2x2, numbers count up inside the cards. Clean App
    ├─ make_svgs.py    # 生成下面四张图：python3 make_svgs.py
    ├─ poster.svg      # 布局海报（海报本身也按便当盒排）
    ├─ cheatsheet.svg  # 布局速查
-   ├─ skins.svg       # 同一套格子，换六种风格
+   ├─ skins.svg       # 同一布局，六种风格
    ├─ templates.svg   # 三套排法：产品卖点 / 个人主页 / 数据看板
    └─ preview/        # 内嵌字体的自包含 SVG
 ```

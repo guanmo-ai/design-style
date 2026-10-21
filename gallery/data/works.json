@@ -50,7 +50,7 @@
     "titleEn": "Bento Grid",
     "years": "2020s—",
     "category": "当代界面",
-    "description": "风格是皮，布局是骨。一支 15 秒短片，同一套卡片从便当盒、Windows Phone 磁贴、iOS 小组件一路变到个人主页和产品后台。",
+    "description": "同一套卡片，多种信息排法。从便当盒、动态磁贴到个人主页，用 15 秒看懂网格、比例与信息层级。",
     "tags": [
       "网格",
       "卡片",
@@ -64,7 +64,7 @@
     "publishedAt": "2026-10-21T07:18:19Z",
     "release": "layout-01",
     "asset": "01-bento-grid.mp4",
-    "sha256": "21d2cc8da440437c7a33deda14ccb04ed5f8f5c1f7be82bf3e621780db2bba4a",
+    "sha256": "51c830105b83320e43290b62b86f4ee88d8d803667ccf3cbe63453a648d4d51c",
     "images": [
       {
         "file": "poster",
@@ -78,7 +78,7 @@
       },
       {
         "file": "skins",
-        "title": "同一套格子，换六种风格",
+        "title": "同一布局，六种风格",
         "kind": "布局 × 风格"
       },
       {
