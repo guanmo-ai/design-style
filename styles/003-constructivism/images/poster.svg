@@ -1,0 +1,32 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1080" height="1350" viewBox="0 0 1080 1350">
+  <!-- Design Style · 风格 003 · 构成主义 Constructivism —— 海报 / 1080×1350（由 make_svgs.py 生成） -->
+  <defs>
+  </defs>
+  <rect width="1080" height="1350" fill="#ECE4D2"/>
+  <circle cx="340.0" cy="382.9" r="250.0" fill="#161412"/>
+  <text x="340.0" y="436.4" font-family="'Oswald', 'Noto Sans SC', 'Arial Narrow', sans-serif" font-weight="700" font-size="132" letter-spacing="2.64" text-anchor="middle" fill="#ECE4D2">003</text>
+  <path d="M261.3 776.0 A268 268 0 0 1 366.0 957.3" fill="none" stroke="#161412" stroke-width="5"/>
+  <path d="M352.8 654.6 A420 420 0 0 1 516.9 938.8" fill="none" stroke="#161412" stroke-width="5"/>
+  <path d="M494.2 466.9 A655 655 0 0 1 750.1 910.2" fill="none" stroke="#161412" stroke-width="5"/>
+  <polygon points="493.3,1011.2 1506.5,426.2 1552.5,505.9 539.3,1090.9" fill="#161412"/>
+  <text x="551.8" y="1060.5" font-family="'Oswald', 'Noto Sans SC', 'Arial Narrow', sans-serif" font-weight="700" font-size="64" letter-spacing="5.12" transform="rotate(-30 551.8 1060.5)" fill="#ECE4D2">КОНСТРУКТИВИЗМ</text>
+  <polygon points="453.8,1002.8 474.6,990.8 548.6,1119.0 527.8,1131.0" fill="#D3261C"/>
+  <polygon points="100.0,990.0 1179.0,-52.0 1541.9,576.5" fill="#D3261C"/>
+  <circle cx="100.0" cy="990.0" r="58.0" fill="#161412"/>
+  <text x="281.9" y="885.0" font-family="'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif" font-weight="900" font-size="76" text-anchor="middle" transform="rotate(-30 281.9 885.0)" fill="#161412" dominant-baseline="central">构</text>
+  <text x="383.7" y="826.2" font-family="'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif" font-weight="900" font-size="118" text-anchor="middle" transform="rotate(-30 383.7 826.2)" fill="#161412" dominant-baseline="central">成</text>
+  <text x="542.6" y="734.5" font-family="'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif" font-weight="900" font-size="184" text-anchor="middle" transform="rotate(-30 542.6 734.5)" fill="#161412" dominant-baseline="central">主</text>
+  <text x="790.4" y="591.4" font-family="'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif" font-weight="900" font-size="287" text-anchor="middle" transform="rotate(-30 790.4 591.4)" fill="#161412" dominant-baseline="central">义</text>
+  <text x="990.0" y="89.8" font-family="'Oswald', 'Noto Sans SC', 'Arial Narrow', sans-serif" font-weight="600" font-size="22" letter-spacing="2.64" text-anchor="end" fill="#161412">DESIGN STYLE · NO.003</text>
+  <text x="990.0" y="124.0" font-family="'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif" font-weight="400" font-size="16" text-anchor="end" fill="#8F897D">致敬：罗德琴科《书》海报，1924</text>
+  <rect x="90.0" y="1150.0" width="900.0" height="6.0" fill="#161412"/>
+  <text x="90.0" y="1198.0" font-family="'Oswald', 'Noto Sans SC', 'Arial Narrow', sans-serif" font-weight="700" font-size="24" letter-spacing="0.96" fill="#161412">Constructivism</text>
+  <text x="90.0" y="1228.0" font-family="'Oswald', 'Noto Sans SC', 'Arial Narrow', sans-serif" font-weight="400" font-size="24" letter-spacing="0.96" fill="#161412">Конструктивизм</text>
+  <text x="90.0" y="1258.0" font-family="'Oswald', 'Noto Sans SC', 'Arial Narrow', sans-serif" font-weight="400" font-size="24" letter-spacing="0.96" fill="#8F897D">1917—1932</text>
+  <text x="396.0" y="1198.0" font-family="'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif" font-weight="700" font-size="20" fill="#161412">一条斜线，</text>
+  <text x="396.0" y="1228.0" font-family="'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif" font-weight="700" font-size="20" fill="#161412">一块红，</text>
+  <text x="396.0" y="1258.0" font-family="'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif" font-weight="700" font-size="20" fill="#D3261C">一个大声的字。</text>
+  <text x="702.0" y="1198.0" font-family="'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif" font-weight="700" font-size="20" fill="#161412">Design Style 风格 003</text>
+  <text x="702.0" y="1228.0" font-family="'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif" font-weight="400" font-size="20" fill="#161412">每天一个设计风格</text>
+  <text x="702.0" y="1258.0" font-family="'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif" font-weight="400" font-size="20" fill="#8F897D">@guanmo_ai</text>
+</svg>

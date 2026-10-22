@@ -1,0 +1,137 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1080" height="1350" viewBox="0 0 1080 1350">
+  <!-- Design Style · 风格 003 · 构成主义 Constructivism —— 如果构成主义来做 app / 1080×1350（由 make_svgs.py 生成） -->
+  <defs>
+    <clipPath id="hero"><rect x="101" y="406" width="401" height="230"/></clipPath>
+  </defs>
+  <rect width="1080" height="1350" fill="#ECE4D2"/>
+  <text x="87.0" y="116.0" font-family="'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif" font-weight="900" font-size="52" fill="#161412">如果构成主义来做</text>
+  <text x="522.0" y="116.0" font-family="'Oswald', 'Noto Sans SC', 'Arial Narrow', sans-serif" font-weight="700" font-size="52" letter-spacing="0.52" fill="#161412">app</text>
+  <text x="90.0" y="168.0" font-family="'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif" font-weight="400" font-size="20" fill="#8F897D">一百年前的规则，今天的界面 · 一个跑步训练 app 的概念稿</text>
+  <circle cx="968.0" cy="94.0" r="22.0" fill="#161412"/>
+  <polygon points="971.8,91.8 915.8,139.9 902.1,116.3" fill="#D3261C"/>
+  <text x="990.0" y="168.0" font-family="'Oswald', 'Noto Sans SC', 'Arial Narrow', sans-serif" font-weight="500" font-size="16" letter-spacing="1.28" text-anchor="end" fill="#8F897D">ui concept no.03</text>
+  <rect x="90.0" y="190.0" width="900.0" height="4.0" fill="#161412"/>
+  <rect x="90" y="236" width="423" height="882" rx="56" fill="#161412"/>
+  <rect x="101" y="247" width="401" height="860" rx="46" fill="#F6F1E6"/>
+  <rect x="249.5" y="260" width="104" height="30" rx="15" fill="#161412"/>
+  <text x="134.0" y="283.0" font-family="'Oswald', 'Noto Sans SC', 'Arial Narrow', sans-serif" font-weight="600" font-size="16" fill="#161412">9:41</text>
+  <rect x="445.0" y="272.0" width="22.0" height="11.0" fill="none" stroke="#161412" stroke-width="1.5" rx="3"/>
+  <rect x="447.0" y="274.0" width="15.0" height="7.0" fill="#161412" rx="1.5"/>
+  <rect x="413.0" y="279.0" width="4.0" height="4.0" fill="#161412"/>
+  <rect x="419.0" y="276.5" width="4.0" height="6.5" fill="#161412"/>
+  <rect x="425.0" y="274.0" width="4.0" height="9.0" fill="#161412"/>
+  <rect x="431.0" y="271.5" width="4.0" height="11.5" fill="#161412"/>
+  <text x="126.0" y="338.0" font-family="'Oswald', 'Noto Sans SC', 'Arial Narrow', sans-serif" font-weight="600" font-size="13" letter-spacing="1.56" fill="#8F897D">СЕГОДНЯ</text>
+  <text x="193.9" y="338.0" font-family="'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif" font-weight="400" font-size="13" fill="#8F897D">今日 · 周四 10 月 24 日</text>
+  <text x="124.0" y="386.0" font-family="'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif" font-weight="900" font-size="40" fill="#161412">间歇跑</text>
+  <rect x="101.0" y="406.0" width="401.0" height="230.0" fill="#161412"/>
+  <g clip-path="url(#hero)"><polygon points="52.9,706.6 572.5,406.6 599.5,453.4 79.9,753.4" fill="#D3261C"/><text x="234.4" y="641.1" font-family="'Oswald', 'Noto Sans SC', 'Arial Narrow', sans-serif" font-weight="600" font-size="17" letter-spacing="2.38" transform="rotate(-30 234.4 641.1)" fill="#161412">ИНТЕРВАЛЫ · INTERVALS · 8 × 400</text></g>
+  <text x="122.8" y="502.0" font-family="'Oswald', 'Noto Sans SC', 'Arial Narrow', sans-serif" font-weight="700" font-size="84" fill="#F6F1E6">8 × 400</text>
+  <text x="126.0" y="536.0" font-family="'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif" font-weight="400" font-size="14" fill="#F6F1E6">米 · 组间慢跑 200 米</text>
+  <text x="126.0" y="562.0" font-family="'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif" font-weight="400" font-size="13" fill="#8F897D">目标配速</text>
+  <text x="184.0" y="562.0" font-family="'Oswald', 'Noto Sans SC', 'Arial Narrow', sans-serif" font-weight="600" font-size="15" letter-spacing="0.60" fill="#F6F1E6">4'05" / KM</text>
+  <polygon points="126.0,660.0 477.0,660.0 440.0,724.0 126.0,724.0" fill="#D3261C"/>
+  <text x="146.0" y="701.0" font-family="'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif" font-weight="900" font-size="22" fill="#F6F1E6">开始</text>
+  <text x="202.0" y="700.0" font-family="'Oswald', 'Noto Sans SC', 'Arial Narrow', sans-serif" font-weight="600" font-size="17" letter-spacing="2.38" fill="#F6F1E6">СТАРТ</text>
+  <polygon points="413.0,692.0 373.0,678.0 373.0,706.0" fill="#161412"/>
+  <text x="126.0" y="760.0" font-family="'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif" font-weight="700" font-size="15" fill="#161412">本周</text>
+  <text x="477.0" y="760.0" font-family="'Oswald', 'Noto Sans SC', 'Arial Narrow', sans-serif" font-weight="600" font-size="15" letter-spacing="0.60" text-anchor="end" fill="#161412">32.4 / 40 KM</text>
+  <rect x="126.0" y="770.0" width="351.0" height="4.0" fill="rgba(22,20,18,0.10)"/>
+  <rect x="126.0" y="770.0" width="284.3" height="4.0" fill="#161412"/>
+  <text x="126.0" y="810.0" font-family="'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif" font-weight="400" font-size="14" fill="#161412">周一</text>
+  <text x="178.0" y="810.0" font-family="'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif" font-weight="400" font-size="15" fill="#161412">轻松跑</text>
+  <text x="441.0" y="810.0" font-family="'Oswald', 'Noto Sans SC', 'Arial Narrow', sans-serif" font-weight="600" font-size="17" letter-spacing="0.34" text-anchor="end" fill="#161412">6.0</text>
+  <polygon points="455.0,812.0 465.4,794.0 472.4,794.0 462.0,812.0" fill="#D3261C"/>
+  <rect x="126.0" y="823.0" width="351.0" height="1.0" fill="rgba(22,20,18,0.10)"/>
+  <text x="126.0" y="848.0" font-family="'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif" font-weight="400" font-size="14" fill="#8F897D">周二</text>
+  <text x="178.0" y="848.0" font-family="'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif" font-weight="400" font-size="15" fill="#8F897D">休息</text>
+  <text x="441.0" y="848.0" font-family="'Oswald', 'Noto Sans SC', 'Arial Narrow', sans-serif" font-weight="600" font-size="17" letter-spacing="0.34" text-anchor="end" fill="#8F897D">—</text>
+  <rect x="126.0" y="861.0" width="351.0" height="1.0" fill="rgba(22,20,18,0.10)"/>
+  <text x="126.0" y="886.0" font-family="'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif" font-weight="400" font-size="14" fill="#161412">周三</text>
+  <text x="178.0" y="886.0" font-family="'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif" font-weight="400" font-size="15" fill="#161412">节奏跑</text>
+  <text x="441.0" y="886.0" font-family="'Oswald', 'Noto Sans SC', 'Arial Narrow', sans-serif" font-weight="600" font-size="17" letter-spacing="0.34" text-anchor="end" fill="#161412">8.0</text>
+  <polygon points="455.0,888.0 465.4,870.0 472.4,870.0 462.0,888.0" fill="#D3261C"/>
+  <rect x="126.0" y="899.0" width="351.0" height="1.0" fill="rgba(22,20,18,0.10)"/>
+  <rect x="101.0" y="900.0" width="6.0" height="34.0" fill="#D3261C"/>
+  <text x="126.0" y="924.0" font-family="'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif" font-weight="700" font-size="14" fill="#161412">周四</text>
+  <text x="178.0" y="924.0" font-family="'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif" font-weight="700" font-size="15" fill="#161412">间歇跑</text>
+  <text x="441.0" y="924.0" font-family="'Oswald', 'Noto Sans SC', 'Arial Narrow', sans-serif" font-weight="600" font-size="17" letter-spacing="0.34" text-anchor="end" fill="#161412">6.4</text>
+  <text x="477.0" y="924.0" font-family="'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif" font-weight="700" font-size="12" text-anchor="end" fill="#D3261C">今天</text>
+  <rect x="126.0" y="937.0" width="351.0" height="1.0" fill="rgba(22,20,18,0.10)"/>
+  <text x="126.0" y="962.0" font-family="'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif" font-weight="400" font-size="14" fill="#8F897D">周五</text>
+  <text x="178.0" y="962.0" font-family="'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif" font-weight="400" font-size="15" fill="#8F897D">休息</text>
+  <text x="441.0" y="962.0" font-family="'Oswald', 'Noto Sans SC', 'Arial Narrow', sans-serif" font-weight="600" font-size="17" letter-spacing="0.34" text-anchor="end" fill="#8F897D">—</text>
+  <rect x="126.0" y="975.0" width="351.0" height="1.0" fill="rgba(22,20,18,0.10)"/>
+  <text x="126.0" y="1000.0" font-family="'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif" font-weight="400" font-size="14" fill="#8F897D">周六</text>
+  <text x="178.0" y="1000.0" font-family="'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif" font-weight="400" font-size="15" fill="#8F897D">长距离</text>
+  <text x="441.0" y="1000.0" font-family="'Oswald', 'Noto Sans SC', 'Arial Narrow', sans-serif" font-weight="600" font-size="17" letter-spacing="0.34" text-anchor="end" fill="#8F897D">16.0</text>
+  <rect x="126.0" y="1013.0" width="351.0" height="1.0" fill="rgba(22,20,18,0.10)"/>
+  <rect x="126.0" y="1040.0" width="351.0" height="1.0" fill="rgba(22,20,18,0.10)"/>
+  <text x="126.0" y="1078.0" font-family="'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif" font-weight="700" font-size="15" fill="#161412">今日</text>
+  <rect x="126.0" y="1040.0" width="40.0" height="4.0" fill="#D3261C"/>
+  <text x="243.0" y="1078.0" font-family="'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif" font-weight="400" font-size="15" fill="#8F897D">计划</text>
+  <text x="360.0" y="1078.0" font-family="'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif" font-weight="400" font-size="15" fill="#8F897D">记录</text>
+  <rect x="567" y="236" width="423" height="882" rx="56" fill="#161412"/>
+  <rect x="578" y="247" width="401" height="860" rx="46" fill="#F6F1E6"/>
+  <rect x="726.5" y="260" width="104" height="30" rx="15" fill="#161412"/>
+  <text x="611.0" y="283.0" font-family="'Oswald', 'Noto Sans SC', 'Arial Narrow', sans-serif" font-weight="600" font-size="16" fill="#161412">9:41</text>
+  <rect x="922.0" y="272.0" width="22.0" height="11.0" fill="none" stroke="#161412" stroke-width="1.5" rx="3"/>
+  <rect x="924.0" y="274.0" width="15.0" height="7.0" fill="#161412" rx="1.5"/>
+  <rect x="890.0" y="279.0" width="4.0" height="4.0" fill="#161412"/>
+  <rect x="896.0" y="276.5" width="4.0" height="6.5" fill="#161412"/>
+  <rect x="902.0" y="274.0" width="4.0" height="9.0" fill="#161412"/>
+  <rect x="908.0" y="271.5" width="4.0" height="11.5" fill="#161412"/>
+  <text x="603.0" y="338.0" font-family="'Oswald', 'Noto Sans SC', 'Arial Narrow', sans-serif" font-weight="600" font-size="13" letter-spacing="1.56" fill="#8F897D">ПРОБЕГ</text>
+  <text x="659.8" y="338.0" font-family="'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif" font-weight="400" font-size="13" fill="#8F897D">已跑</text>
+  <circle cx="892.0" cy="333.0" r="5.0" fill="#D3261C"/>
+  <text x="954.0" y="338.0" font-family="'Oswald', 'Noto Sans SC', 'Arial Narrow', sans-serif" font-weight="600" font-size="15" letter-spacing="0.60" text-anchor="end" fill="#161412">30:21</text>
+  <text x="594.3" y="494.0" font-family="'Oswald', 'Noto Sans SC', 'Arial Narrow', sans-serif" font-weight="700" font-size="168" letter-spacing="-1.68" fill="#161412">6.24</text>
+  <text x="905.0" y="494.0" font-family="'Oswald', 'Noto Sans SC', 'Arial Narrow', sans-serif" font-weight="700" font-size="30" letter-spacing="1.20" fill="#D3261C">KM</text>
+  <text x="603.0" y="526.0" font-family="'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif" font-weight="400" font-size="14" fill="#8F897D">公里 · 目标 10.00</text>
+  <polygon points="603.0,722.0 909.2,508.3 941.2,563.7" fill="none" stroke="#161412" stroke-width="1.5"/>
+  <polygon points="603.0,722.0 794.0,588.6 814.0,623.2" fill="#D3261C"/>
+  <path d="M636.8 706.2 L640.8 713.1" stroke="#161412" stroke-width="1.5"/>
+  <path d="M670.6 690.3 L674.6 697.3" stroke="#161412" stroke-width="1.5"/>
+  <path d="M704.4 674.5 L708.4 681.4" stroke="#161412" stroke-width="1.5"/>
+  <path d="M738.3 658.7 L742.3 665.6" stroke="#161412" stroke-width="1.5"/>
+  <path d="M772.1 642.9 L776.1 649.8" stroke="#161412" stroke-width="1.5"/>
+  <path d="M805.9 627.0 L809.9 634.0" stroke="#161412" stroke-width="1.5"/>
+  <path d="M839.7 611.2 L843.7 618.1" stroke="#161412" stroke-width="1.5"/>
+  <path d="M873.5 595.4 L877.5 602.3" stroke="#161412" stroke-width="1.5"/>
+  <path d="M907.3 579.5 L911.3 586.5" stroke="#161412" stroke-width="1.5"/>
+  <text x="826.0" y="653.1" font-family="'Oswald', 'Noto Sans SC', 'Arial Narrow', sans-serif" font-weight="700" font-size="15" letter-spacing="0.60" fill="#D3261C">62%</text>
+  <rect x="603.0" y="766.0" width="159.5" height="3.0" fill="#161412"/>
+  <text x="603.0" y="790.0" font-family="'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif" font-weight="400" font-size="13" fill="#8F897D">配速</text>
+  <text x="603.0" y="838.0" font-family="'Oswald', 'Noto Sans SC', 'Arial Narrow', sans-serif" font-weight="700" font-size="44" fill="#161412">4'52"</text>
+  <text x="700.4" y="838.0" font-family="'Oswald', 'Noto Sans SC', 'Arial Narrow', sans-serif" font-weight="600" font-size="14" letter-spacing="1.12" fill="#8F897D">/KM</text>
+  <rect x="794.5" y="766.0" width="159.5" height="3.0" fill="#161412"/>
+  <text x="794.5" y="790.0" font-family="'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif" font-weight="400" font-size="13" fill="#8F897D">心率</text>
+  <text x="794.5" y="838.0" font-family="'Oswald', 'Noto Sans SC', 'Arial Narrow', sans-serif" font-weight="700" font-size="44" fill="#D3261C">156</text>
+  <text x="863.5" y="838.0" font-family="'Oswald', 'Noto Sans SC', 'Arial Narrow', sans-serif" font-weight="600" font-size="14" letter-spacing="1.12" fill="#8F897D">BPM</text>
+  <rect x="603.0" y="858.0" width="159.5" height="3.0" fill="#161412"/>
+  <text x="603.0" y="882.0" font-family="'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif" font-weight="400" font-size="13" fill="#8F897D">用时</text>
+  <text x="603.0" y="930.0" font-family="'Oswald', 'Noto Sans SC', 'Arial Narrow', sans-serif" font-weight="700" font-size="44" fill="#161412">30:21</text>
+  <rect x="794.5" y="858.0" width="159.5" height="3.0" fill="#161412"/>
+  <text x="794.5" y="882.0" font-family="'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif" font-weight="400" font-size="13" fill="#8F897D">步频</text>
+  <text x="794.5" y="930.0" font-family="'Oswald', 'Noto Sans SC', 'Arial Narrow', sans-serif" font-weight="700" font-size="44" fill="#161412">178</text>
+  <text x="859.7" y="930.0" font-family="'Oswald', 'Noto Sans SC', 'Arial Narrow', sans-serif" font-weight="600" font-size="14" letter-spacing="1.12" fill="#8F897D">SPM</text>
+  <rect x="578.0" y="964.0" width="401.0" height="56.0" fill="#161412"/>
+  <text x="603.0" y="1000.0" font-family="'Oswald', 'Noto Sans SC', 'Arial Narrow', sans-serif" font-weight="700" font-size="20" letter-spacing="1.20" fill="#D3261C">КМ 6</text>
+  <text x="663.0" y="999.0" font-family="'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif" font-weight="500" font-size="15" fill="#F6F1E6">4'48" · 比上一公里快 6 秒</text>
+  <polygon points="603.0,1032.0 790.8,1032.0 756.2,1092.0 603.0,1092.0" fill="#161412"/>
+  <polygon points="800.8,1032.0 954.0,1032.0 954.0,1092.0 766.2,1092.0" fill="#D3261C"/>
+  <text x="625.0" y="1073.0" font-family="'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif" font-weight="900" font-size="20" fill="#F6F1E6">暂停</text>
+  <text x="932.0" y="1073.0" font-family="'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif" font-weight="900" font-size="20" text-anchor="end" fill="#F6F1E6">分段</text>
+  <polygon points="90.0,1148.0 143.0,1148.0 128.0,1174.0 90.0,1174.0" fill="#D3261C"/>
+  <text x="109.0" y="1167.0" font-family="'Oswald', 'Noto Sans SC', 'Arial Narrow', sans-serif" font-weight="700" font-size="17" letter-spacing="0.68" text-anchor="middle" fill="#F6F1E6">01</text>
+  <text x="152.0" y="1168.0" font-family="'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif" font-weight="700" font-size="20" fill="#161412">今日</text>
+  <text x="90.0" y="1200.0" font-family="'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif" font-weight="700" font-size="16" fill="#161412">斜的只有一样：那条红带</text>
+  <text x="90.0" y="1224.0" font-family="'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif" font-weight="400" font-size="14" fill="#8F897D">训练内容、日期、距离全部水平，扫一眼就能读</text>
+  <polygon points="567.0,1148.0 620.0,1148.0 605.0,1174.0 567.0,1174.0" fill="#D3261C"/>
+  <text x="586.0" y="1167.0" font-family="'Oswald', 'Noto Sans SC', 'Arial Narrow', sans-serif" font-weight="700" font-size="17" letter-spacing="0.68" text-anchor="middle" fill="#F6F1E6">02</text>
+  <text x="629.0" y="1168.0" font-family="'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif" font-weight="700" font-size="20" fill="#161412">跑步中</text>
+  <text x="567.0" y="1200.0" font-family="'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif" font-weight="700" font-size="16" fill="#161412">进度是一个越跑越宽的红楔子</text>
+  <text x="567.0" y="1224.0" font-family="'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif" font-weight="400" font-size="14" fill="#8F897D">最大的字给最重要的数：已经跑了多少公里</text>
+  <text x="90.0" y="1302.0" font-family="'Oswald', 'Noto Sans SC', 'Arial Narrow', sans-serif" font-weight="400" font-size="16" letter-spacing="0.64" fill="#8F897D">github.com/guanmo-ai/design-style</text>
+  <text x="990.0" y="1302.0" font-family="'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif" font-weight="400" font-size="16" text-anchor="end" fill="#8F897D">@guanmo_ai · 每天一个设计风格</text>
+</svg>

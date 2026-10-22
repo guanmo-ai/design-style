@@ -1,0 +1,95 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1080" height="1350" viewBox="0 0 1080 1350">
+  <!-- Design Style · 风格 003 · 构成主义 Constructivism —— 四步改造 / 1080×1350（由 make_svgs.py 生成） -->
+  <defs>
+    <clipPath id="m0"><rect width="435" height="440"/></clipPath>
+    <clipPath id="m1"><rect width="435" height="440"/></clipPath>
+    <clipPath id="m2"><rect width="435" height="440"/></clipPath>
+    <clipPath id="m3"><rect width="435" height="440"/></clipPath>
+  </defs>
+  <rect width="1080" height="1350" fill="#ECE4D2"/>
+  <text x="87.0" y="116.0" font-family="'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif" font-weight="900" font-size="52" fill="#161412">四步改造</text>
+  <text x="90.0" y="168.0" font-family="'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif" font-weight="400" font-size="20" fill="#8F897D">同一张普通海报，每一步只改一件事 —— 改到第四步，它就开始“喊”了</text>
+  <circle cx="968.0" cy="94.0" r="22.0" fill="#161412"/>
+  <polygon points="971.8,91.8 915.8,139.9 902.1,116.3" fill="#D3261C"/>
+  <text x="990.0" y="168.0" font-family="'Oswald', 'Noto Sans SC', 'Arial Narrow', sans-serif" font-weight="500" font-size="16" letter-spacing="1.28" text-anchor="end" fill="#8F897D">how-to no.03</text>
+  <rect x="90.0" y="190.0" width="900.0" height="4.0" fill="#161412"/>
+  <g transform="translate(90 222)"><g clip-path="url(#m0)">
+    <rect x="0.0" y="0.0" width="435.0" height="440.0" fill="#EAF0F7"/>
+    <circle cx="54.0" cy="58.0" r="26.0" fill="#F4B6C8"/>
+    <circle cx="398.0" cy="286.0" r="30.0" fill="#F4B6C8"/>
+    <circle cx="380.0" cy="64.0" r="12.0" fill="#39B57A"/>
+    <rect x="167.5" y="62.0" width="100.0" height="78.0" fill="#F2994A" rx="14"/>
+    <rect x="215.5" y="70.0" width="4.0" height="62.0" fill="#FFFFFF" rx="2"/>
+    <text x="217.5" y="222.0" font-family="'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif" font-weight="900" font-size="56" text-anchor="middle" fill="#2F6FD0">读书夜</text>
+    <text x="217.5" y="254.0" font-family="'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif" font-weight="500" font-size="16" letter-spacing="4.00" text-anchor="middle" fill="#7A8AA0">BOOK NIGHT</text>
+    <text x="217.5" y="298.0" font-family="'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif" font-weight="500" font-size="16" text-anchor="middle" fill="#2B2F36">10 月 24 日 周六 19:00</text>
+    <text x="217.5" y="322.0" font-family="'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif" font-weight="400" font-size="15" text-anchor="middle" fill="#7A8AA0">城市图书馆 · 三楼</text>
+    <rect x="141.5" y="348.0" width="152.0" height="42.0" fill="#39B57A" rx="21"/>
+    <text x="217.5" y="375.0" font-family="'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif" font-weight="700" font-size="16" text-anchor="middle" fill="#FFFFFF">立即报名</text>
+  </g></g>
+  <rect x="90.0" y="222.0" width="435.0" height="440.0" fill="none" stroke="#161412" stroke-width="1" opacity="0.25"/>
+  <polygon points="90.0,674.0 143.0,674.0 128.0,700.0 90.0,700.0" fill="#161412"/>
+  <text x="109.0" y="693.0" font-family="'Oswald', 'Noto Sans SC', 'Arial Narrow', sans-serif" font-weight="700" font-size="17" letter-spacing="0.68" text-anchor="middle" fill="#F6F1E6">01</text>
+  <text x="152.0" y="694.0" font-family="'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif" font-weight="700" font-size="20" fill="#161412">原稿</text>
+  <text x="204.0" y="694.0" font-family="'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif" font-weight="700" font-size="14" fill="#161412">居中、水平、五种颜色、圆角</text>
+  <text x="204.0" y="716.0" font-family="'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif" font-weight="400" font-size="14" fill="#8F897D">哪儿都对，哪儿都不响</text>
+  <polygon points="549.0,442.0 533.0,433.0 533.0,451.0" fill="#D3261C"/>
+  <g transform="translate(555 222)"><g clip-path="url(#m1)">
+    <rect x="0.0" y="0.0" width="435.0" height="440.0" fill="#EAF0F7"/>
+    <circle cx="54.0" cy="58.0" r="26.0" fill="#F4B6C8"/>
+    <circle cx="398.0" cy="286.0" r="30.0" fill="#F4B6C8"/>
+    <g transform="rotate(-30 271.8 141.9)"><rect x="221.8" y="102.9" width="100.0" height="78.0" fill="#F2994A" rx="14"/><rect x="269.8" y="110.9" width="4.0" height="62.0" fill="#FFFFFF" rx="2"/></g>
+    <text x="34.0" y="330.0" font-family="'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif" font-weight="900" font-size="72" transform="rotate(-30 34.0 330.0)" fill="#2F6FD0">读书夜</text>
+    <text x="54.5" y="357.4" font-family="'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif" font-weight="500" font-size="18" letter-spacing="4.50" transform="rotate(-30 54.5 357.4)" fill="#7A8AA0">BOOK NIGHT</text>
+    <text x="24.0" y="396.0" font-family="'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif" font-weight="700" font-size="15" fill="#2B2F36">10 月 24 日 周六 19:00</text>
+    <text x="24.0" y="418.0" font-family="'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif" font-weight="400" font-size="13" fill="#7A8AA0">城市图书馆 · 三楼</text>
+    <rect x="283.0" y="384.0" width="128.0" height="38.0" fill="#39B57A" rx="19"/>
+    <text x="347.0" y="409.0" font-family="'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif" font-weight="700" font-size="15" text-anchor="middle" fill="#FFFFFF">立即报名</text>
+  </g></g>
+  <rect x="555.0" y="222.0" width="435.0" height="440.0" fill="none" stroke="#161412" stroke-width="1" opacity="0.25"/>
+  <polygon points="555.0,674.0 608.0,674.0 593.0,700.0 555.0,700.0" fill="#161412"/>
+  <text x="574.0" y="693.0" font-family="'Oswald', 'Noto Sans SC', 'Arial Narrow', sans-serif" font-weight="700" font-size="17" letter-spacing="0.68" text-anchor="middle" fill="#F6F1E6">02</text>
+  <text x="617.0" y="694.0" font-family="'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif" font-weight="700" font-size="20" fill="#161412">转轴</text>
+  <text x="669.0" y="694.0" font-family="'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif" font-weight="700" font-size="14" fill="#161412">只改一件事：标题和主图沿 −30° 放</text>
+  <text x="669.0" y="716.0" font-family="'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif" font-weight="400" font-size="14" fill="#8F897D">日期、地点照样水平，照样好读</text>
+  <g transform="translate(90 758)"><g clip-path="url(#m2)">
+    <rect x="0.0" y="0.0" width="435.0" height="440.0" fill="#ECE4D2"/>
+    <circle cx="271.8" cy="141.9" r="64.0" fill="#161412"/>
+    <polygon points="277.0,138.9 94.3,214.4 120.3,259.4" fill="#D3261C"/>
+    <text x="34.0" y="330.0" font-family="'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif" font-weight="900" font-size="72" transform="rotate(-30 34.0 330.0)" fill="#161412">读书夜</text>
+    <text x="54.5" y="357.4" font-family="'Oswald', 'Noto Sans SC', 'Arial Narrow', sans-serif" font-weight="600" font-size="18" letter-spacing="4.50" transform="rotate(-30 54.5 357.4)" fill="#161412">BOOK NIGHT</text>
+    <text x="24.0" y="396.0" font-family="'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif" font-weight="700" font-size="15" fill="#161412">10 月 24 日 周六 19:00</text>
+    <text x="24.0" y="418.0" font-family="'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif" font-weight="400" font-size="13" fill="#8F897D">城市图书馆 · 三楼</text>
+    <rect x="283.0" y="384.0" width="128.0" height="38.0" fill="#D3261C"/>
+    <text x="347.0" y="409.0" font-family="'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif" font-weight="700" font-size="15" text-anchor="middle" fill="#F6F1E6">立即报名</text>
+  </g></g>
+  <rect x="90.0" y="758.0" width="435.0" height="440.0" fill="none" stroke="#161412" stroke-width="1" opacity="0.25"/>
+  <polygon points="90.0,1210.0 143.0,1210.0 128.0,1236.0 90.0,1236.0" fill="#161412"/>
+  <text x="109.0" y="1229.0" font-family="'Oswald', 'Noto Sans SC', 'Arial Narrow', sans-serif" font-weight="700" font-size="17" letter-spacing="0.68" text-anchor="middle" fill="#F6F1E6">03</text>
+  <text x="152.0" y="1230.0" font-family="'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif" font-weight="700" font-size="20" fill="#161412">红与黑</text>
+  <text x="224.0" y="1230.0" font-family="'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif" font-weight="700" font-size="14" fill="#161412">颜色收成纸 / 黑 / 红，圆角变直角</text>
+  <text x="224.0" y="1252.0" font-family="'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif" font-weight="400" font-size="14" fill="#8F897D">书的图标换成一个圆和一个楔子</text>
+  <polygon points="549.0,978.0 533.0,969.0 533.0,987.0" fill="#D3261C"/>
+  <g transform="translate(555 758)"><g clip-path="url(#m3)">
+    <rect x="0.0" y="0.0" width="435.0" height="440.0" fill="#ECE4D2"/>
+    <circle cx="382.0" cy="56.0" r="112.0" fill="#161412"/>
+    <polygon points="390.7,51.0 -11.4,234.6 30.6,307.4" fill="#D3261C"/>
+    <text x="14.0" y="418.0" font-family="'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif" font-weight="900" font-size="134" transform="rotate(-30 14.0 418.0)" fill="#161412">读书夜</text>
+    <polygon points="195.7,340.8 542.2,140.8 562.2,175.4 215.7,375.4" fill="#161412"/>
+    <text x="225.4" y="356.1" font-family="'Oswald', 'Noto Sans SC', 'Arial Narrow', sans-serif" font-weight="600" font-size="20" letter-spacing="4.40" transform="rotate(-30 225.4 356.1)" fill="#F6F1E6">BOOK NIGHT</text>
+    <polygon points="175.6,333.9 187.7,326.9 227.7,396.2 215.6,403.2" fill="#D3261C"/>
+    <text x="24.0" y="52.0" font-family="'Oswald', 'Noto Sans SC', 'Arial Narrow', sans-serif" font-weight="700" font-size="56" fill="#D3261C">10.24</text>
+    <text x="24.0" y="82.0" font-family="'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif" font-weight="700" font-size="13" fill="#161412">周六 19:00 · 城市图书馆三楼</text>
+    <rect x="24.0" y="96.0" width="96.0" height="6.0" fill="#161412"/>
+    <rect x="283.0" y="384.0" width="128.0" height="38.0" fill="#D3261C"/>
+    <text x="347.0" y="409.0" font-family="'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif" font-weight="700" font-size="15" text-anchor="middle" fill="#F6F1E6">立即报名</text>
+  </g></g>
+  <rect x="555.0" y="758.0" width="435.0" height="440.0" fill="none" stroke="#161412" stroke-width="1" opacity="0.25"/>
+  <polygon points="555.0,1210.0 608.0,1210.0 593.0,1236.0 555.0,1236.0" fill="#D3261C"/>
+  <text x="574.0" y="1229.0" font-family="'Oswald', 'Noto Sans SC', 'Arial Narrow', sans-serif" font-weight="700" font-size="17" letter-spacing="0.68" text-anchor="middle" fill="#F6F1E6">04</text>
+  <text x="617.0" y="1230.0" font-family="'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif" font-weight="700" font-size="20" fill="#161412">大字 + 组装</text>
+  <text x="729.9" y="1230.0" font-family="'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif" font-weight="700" font-size="14" fill="#161412">最重要的三个字放到最大，出血</text>
+  <text x="729.9" y="1252.0" font-family="'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif" font-weight="400" font-size="14" fill="#8F897D">粗条和黑带把零件“铆”在一起</text>
+  <text x="90.0" y="1302.0" font-family="'Oswald', 'Noto Sans SC', 'Arial Narrow', sans-serif" font-weight="400" font-size="16" letter-spacing="0.64" fill="#8F897D">github.com/guanmo-ai/design-style</text>
+  <text x="990.0" y="1302.0" font-family="'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif" font-weight="400" font-size="16" text-anchor="end" fill="#8F897D">@guanmo_ai · 每天一个设计风格</text>
+</svg>

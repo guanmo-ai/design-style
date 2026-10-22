@@ -41,6 +41,7 @@ FACES = [  # (family, file, weight[, style])
     ('Noto Sans SC', 'NotoSansSC-Medium.otf', '500'),
     ('Noto Sans SC', 'NotoSansSC-Bold.otf', '700'),
     ('Noto Sans SC', 'NotoSansSC-Black.otf', '900'),
+    ('Oswald', 'Oswald.ttf', '200 700'),
 ]
 
 
