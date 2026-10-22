@@ -1,0 +1,74 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1080" height="1350" viewBox="0 0 1080 1350">
+  <!-- Design Style · 布局 03 · 滚动叙事 Scrollytelling —— 速查卡 / 1080×1350（由 make_svgs.py 生成） -->
+  <defs>
+    <style>
+      .sf { font-family: 'Instrument Serif', 'Noto Sans SC', serif; }
+      .d { font-family: 'Inter Display', 'Noto Sans SC', sans-serif; }
+      .t { font-family: 'Inter', 'Noto Sans SC', sans-serif; }
+      .m { font-family: 'Geist Mono', 'SFMono-Regular', Menlo, monospace; }
+      .c { font-family: 'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif; }
+    </style>
+    <linearGradient id="g" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#FF7A2F"/><stop offset=".35" stop-color="#FF2E7E"/><stop offset=".68" stop-color="#8B3DFF"/><stop offset="1" stop-color="#2997FF"/></linearGradient>
+    <linearGradient id="wall" x1="0" y1="0" x2=".6" y2="1"><stop offset="0" stop-color="#FF7A2F"/><stop offset=".38" stop-color="#FF2E7E"/><stop offset=".7" stop-color="#8B3DFF"/><stop offset="1" stop-color="#2997FF"/></linearGradient>
+    <linearGradient id="ti" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#6A6D75"/><stop offset=".4" stop-color="#3A3C43"/><stop offset=".7" stop-color="#55585F"/><stop offset="1" stop-color="#26282D"/></linearGradient>
+    <radialGradient id="glow" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#FF2E7E" stop-opacity=".45"/><stop offset=".5" stop-color="#8B3DFF" stop-opacity=".18"/><stop offset="1" stop-color="#2997FF" stop-opacity="0"/></radialGradient>
+    <filter id="soft" x="-10%" y="-10%" width="120%" height="130%"><feDropShadow dx="0" dy="8" stdDeviation="12" flood-color="#000" flood-opacity=".10"/></filter>
+    
+  </defs>
+  <rect x="0" y="0" width="1080" height="1350" rx="0" fill="#0B0B0D" />
+  <circle cx="77" cy="98" r="5" fill="#2997FF"/>
+  <text x="92" y="105" class="m" font-size="20" font-weight="500" fill="#86868B" >Design Style · 布局 03 · 速查</text>
+  <text x="1008" y="105" class="c" font-size="20" font-weight="500" fill="#86868B" text-anchor="end" letter-spacing="1" >Scrollytelling 滚动叙事</text>
+  <text x="72" y="186" class="c" font-size="36" font-weight="900" fill="#F5F5F7" >一副骨架：高 section + 钉住的舞台 + 滚过的步骤</text>
+  <rect x="72" y="232" width="320" height="490" rx="6" fill="#000" stroke="#5A5A60" stroke-width="1.5"/>
+  <rect x="216" y="388" width="166" height="178" rx="10" fill="rgba(48,209,88,.14)" stroke="#30D158" stroke-width="2"/>
+  <circle cx="299" cy="477" r="73.6" fill="url(#glow)"/><g transform="translate(299 480.7) scale(1 0.57) rotate(-38)"><rect x="-23" y="-47.6" width="46" height="95.2" rx="8.7" fill="#3A3C43" /></g><g transform="translate(299 477) scale(1 0.57) rotate(-38)"><rect x="-23" y="-47.6" width="46" height="95.2" rx="8.7" fill="#0A0A0A" stroke="#8E9199" stroke-width="1"/><rect x="-20.9" y="-45.5" width="41.9" height="91.1" rx="7.2" fill="url(#wall)"/><rect x="-7.4" y="-43.9" width="14.7" height="4.1" rx="2.1" fill="#000"/></g>
+  <rect x="84" y="343" width="121.6" height="48" rx="8" fill="#1C1C1E"  opacity=".45"/>
+  <rect x="84" y="453" width="121.6" height="48" rx="8" fill="rgba(41,151,255,.2)" stroke="#2997FF" stroke-width="1.5"/>
+  <rect x="84" y="563" width="121.6" height="48" rx="8" fill="#1C1C1E" />
+  <rect x="84" y="673" width="121.6" height="48" rx="8" fill="#1C1C1E" />
+  <rect x="68" y="382" width="328" height="190" rx="6" fill="none" stroke="#2997FF" stroke-width="2.5"/>
+  <line x1="60" y1="477" x2="400" y2="477" stroke="#2997FF" stroke-width="2" stroke-dasharray="7 5" /><path d="M50 471 L60 477 L50 483 Z" fill="#2997FF"/>
+  <line x1="414" y1="232" x2="414" y2="722" stroke="#8E8E93" stroke-width="1.5" />
+  <line x1="408" y1="232" x2="420" y2="232" stroke="#8E8E93" stroke-width="1.5" />
+  <line x1="408" y1="722" x2="420" y2="722" stroke="#8E8E93" stroke-width="1.5" />
+  <line x1="428" y1="238" x2="448" y2="238" stroke="#8E8E93" stroke-width="1.5" />
+  <text x="458" y="244" class="m" font-size="18" font-weight="500" fill="#8E8E93" >section</text>
+  <text x="458" y="272" class="c" font-size="18" font-weight="400" fill="#86868B" >高 = 步骤数 × 100vh（+ 一屏收尾）</text>
+  <line x1="428" y1="398" x2="448" y2="398" stroke="#30D158" stroke-width="1.5" />
+  <text x="458" y="404" class="m" font-size="18" font-weight="500" fill="#30D158" >.stage</text>
+  <text x="458" y="432" class="c" font-size="18" font-weight="400" fill="#86868B" >position: sticky; top: 0; height: 100vh</text>
+  <line x1="428" y1="458" x2="448" y2="458" stroke="#2997FF" stroke-width="1.5" />
+  <text x="458" y="464" class="m" font-size="18" font-weight="500" fill="#2997FF" >视口</text>
+  <text x="458" y="492" class="c" font-size="18" font-weight="400" fill="#86868B" >浏览器窗口：你此刻看见的那一屏</text>
+  <line x1="428" y1="523" x2="448" y2="523" stroke="#2997FF" stroke-width="1.5" />
+  <text x="458" y="529" class="m" font-size="18" font-weight="500" fill="#2997FF" >触发线</text>
+  <text x="458" y="557" class="c" font-size="18" font-weight="400" fill="#86868B" >视口 50%：步骤中心过线 → 舞台换状态</text>
+  <line x1="428" y1="606" x2="448" y2="606" stroke="#F5F5F7" stroke-width="1.5" />
+  <text x="458" y="612" class="m" font-size="18" font-weight="500" fill="#F5F5F7" >.step</text>
+  <text x="458" y="640" class="c" font-size="18" font-weight="400" fill="#86868B" >普通文档流，照常滚过；一步一屏左右</text>
+  <line x1="428" y1="696" x2="448" y2="696" stroke="#8E8E93" stroke-width="1.5" />
+  <text x="458" y="702" class="m" font-size="18" font-weight="500" fill="#8E8E93" >到底</text>
+  <text x="458" y="730" class="c" font-size="18" font-weight="400" fill="#86868B" >section 结束，舞台自动松开，跟着走</text>
+  <rect x="72" y="760" width="936" height="236" rx="24" fill="#1C1C1E" />
+  <text x="104" y="806" class="c" font-size="24" font-weight="900" fill="#F5F5F7" >五条规则</text>
+  <text x="104" y="856" class="m" font-size="18" font-weight="500" fill="#2997FF" >01</text>
+  <text x="144" y="856" class="c" font-size="20" font-weight="700" fill="#F5F5F7" >钉住舞台，不劫持滚动</text>
+  <text x="358" y="856" class="c" font-size="16" font-weight="400" fill="#86868B" >用 sticky，滚多快由读者定</text>
+  <text x="574" y="856" class="m" font-size="18" font-weight="500" fill="#2997FF" >02</text>
+  <text x="614" y="856" class="c" font-size="20" font-weight="700" fill="#F5F5F7" >一步只变一件事</text>
+  <text x="768" y="856" class="c" font-size="16" font-weight="400" fill="#86868B" >一张卡片 = 一个变化</text>
+  <text x="104" y="908" class="m" font-size="18" font-weight="500" fill="#2997FF" >03</text>
+  <text x="144" y="908" class="c" font-size="20" font-weight="700" fill="#F5F5F7" >触发线放在视口中间</text>
+  <text x="338" y="908" class="c" font-size="16" font-weight="400" fill="#86868B" >50%，不早不晚</text>
+  <text x="574" y="908" class="m" font-size="18" font-weight="500" fill="#2997FF" >04</text>
+  <text x="614" y="908" class="c" font-size="20" font-weight="700" fill="#F5F5F7" >能倒着滚</text>
+  <text x="708" y="908" class="c" font-size="16" font-weight="400" fill="#86868B" >状态 = f(滚动位置)</text>
+  <text x="104" y="960" class="m" font-size="18" font-weight="500" fill="#2997FF" >05</text>
+  <text x="144" y="960" class="c" font-size="20" font-weight="700" fill="#F5F5F7" >手机上叠起来</text>
+  <text x="278" y="960" class="c" font-size="16" font-weight="400" fill="#86868B" >窄屏改覆盖式；尊重减少动态</text>
+  <rect x="72" y="1022" width="936" height="176" rx="24" fill="#16161A" stroke="#26262B" stroke-width="1"/>
+  <text x="102" y="1062" class="m" font-size="16.5" font-weight="400" fill="#F5F5F7" xml:space="preserve">.scrolly</text><text x="181.2" y="1062" class="m" font-size="16.5" font-weight="400" fill="#86868B" xml:space="preserve"> { </text><text x="210.9" y="1062" class="m" font-size="16.5" font-weight="400" fill="#7CC4FF" xml:space="preserve">display</text><text x="280.2" y="1062" class="m" font-size="16.5" font-weight="400" fill="#86868B" xml:space="preserve">: </text><text x="300" y="1062" class="m" font-size="16.5" font-weight="400" fill="#FFB86B" xml:space="preserve">grid</text><text x="339.6" y="1062" class="m" font-size="16.5" font-weight="400" fill="#86868B" xml:space="preserve">; </text><text x="359.4" y="1062" class="m" font-size="16.5" font-weight="400" fill="#7CC4FF" xml:space="preserve">grid-template-columns</text><text x="567.3" y="1062" class="m" font-size="16.5" font-weight="400" fill="#86868B" xml:space="preserve">: </text><text x="587.1" y="1062" class="m" font-size="16.5" font-weight="400" fill="#FFB86B" xml:space="preserve">7fr 5fr</text><text x="656.4" y="1062" class="m" font-size="16.5" font-weight="400" fill="#86868B" xml:space="preserve">; }</text><text x="102" y="1090" class="m" font-size="16.5" font-weight="400" fill="#F5F5F7" xml:space="preserve">.stage  </text><text x="181.2" y="1090" class="m" font-size="16.5" font-weight="400" fill="#86868B" xml:space="preserve"> { </text><text x="210.9" y="1090" class="m" font-size="16.5" font-weight="400" fill="#7CC4FF" xml:space="preserve">position</text><text x="290.1" y="1090" class="m" font-size="16.5" font-weight="400" fill="#86868B" xml:space="preserve">: </text><text x="309.9" y="1090" class="m" font-size="16.5" font-weight="400" fill="#FFB86B" xml:space="preserve">sticky</text><text x="369.3" y="1090" class="m" font-size="16.5" font-weight="400" fill="#86868B" xml:space="preserve">; </text><text x="389.1" y="1090" class="m" font-size="16.5" font-weight="400" fill="#7CC4FF" xml:space="preserve">top</text><text x="418.8" y="1090" class="m" font-size="16.5" font-weight="400" fill="#86868B" xml:space="preserve">: </text><text x="438.6" y="1090" class="m" font-size="16.5" font-weight="400" fill="#FFB86B" xml:space="preserve">0</text><text x="448.5" y="1090" class="m" font-size="16.5" font-weight="400" fill="#86868B" xml:space="preserve">; </text><text x="468.3" y="1090" class="m" font-size="16.5" font-weight="400" fill="#7CC4FF" xml:space="preserve">height</text><text x="527.7" y="1090" class="m" font-size="16.5" font-weight="400" fill="#86868B" xml:space="preserve">: </text><text x="547.5" y="1090" class="m" font-size="16.5" font-weight="400" fill="#FFB86B" xml:space="preserve">100vh</text><text x="597" y="1090" class="m" font-size="16.5" font-weight="400" fill="#86868B" xml:space="preserve">; }</text><text x="102" y="1118" class="m" font-size="16.5" font-weight="400" fill="#F5F5F7" xml:space="preserve">.step   </text><text x="181.2" y="1118" class="m" font-size="16.5" font-weight="400" fill="#86868B" xml:space="preserve"> { </text><text x="210.9" y="1118" class="m" font-size="16.5" font-weight="400" fill="#7CC4FF" xml:space="preserve">min-height</text><text x="309.9" y="1118" class="m" font-size="16.5" font-weight="400" fill="#86868B" xml:space="preserve">: </text><text x="329.7" y="1118" class="m" font-size="16.5" font-weight="400" fill="#FFB86B" xml:space="preserve">100vh</text><text x="379.2" y="1118" class="m" font-size="16.5" font-weight="400" fill="#86868B" xml:space="preserve">; }  </text><text x="428.7" y="1118" class="m" font-size="16.5" font-weight="400" fill="#48484A" xml:space="preserve">/* 观察：rootMargin -50% 0px -50% 0px */</text><text x="102" y="1146" class="m" font-size="16.5" font-weight="400" fill="#FF7AB6" xml:space="preserve">@media</text><text x="161.4" y="1146" class="m" font-size="16.5" font-weight="400" fill="#86868B" xml:space="preserve"> (max-width: 768px) { </text><text x="379.2" y="1146" class="m" font-size="16.5" font-weight="400" fill="#F5F5F7" xml:space="preserve">.scrolly</text><text x="458.4" y="1146" class="m" font-size="16.5" font-weight="400" fill="#86868B" xml:space="preserve"> { </text><text x="488.1" y="1146" class="m" font-size="16.5" font-weight="400" fill="#7CC4FF" xml:space="preserve">display</text><text x="557.4" y="1146" class="m" font-size="16.5" font-weight="400" fill="#86868B" xml:space="preserve">: </text><text x="577.2" y="1146" class="m" font-size="16.5" font-weight="400" fill="#FFB86B" xml:space="preserve">block</text><text x="626.7" y="1146" class="m" font-size="16.5" font-weight="400" fill="#86868B" xml:space="preserve">; } }</text><text x="102" y="1174" class="m" font-size="16.5" font-weight="400" fill="#FF7AB6" xml:space="preserve">@media</text><text x="161.4" y="1174" class="m" font-size="16.5" font-weight="400" fill="#86868B" xml:space="preserve"> (prefers-reduced-motion: reduce) { </text><text x="517.8" y="1174" class="m" font-size="16.5" font-weight="400" fill="#48484A" xml:space="preserve">/* 直接给终态 */</text><text x="659.7" y="1174" class="m" font-size="16.5" font-weight="400" fill="#86868B" xml:space="preserve"> }</text>
+  <text x="540" y="1258" class="c" font-size="22" font-weight="700" fill="#F5F5F7" text-anchor="middle" letter-spacing="2" >舞台 7fr / 步骤 5fr · 一步 ≈ 100vh · 触发线 50% · 断点 768px</text>
+  <text x="540" y="1296" class="m" font-size="16" font-weight="400" fill="#86868B" text-anchor="middle" >@guanmo_ai   ·   github.com/guanmo-ai/design-style</text>
+</svg>

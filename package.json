@@ -28,7 +28,10 @@
     "images:L01": "python3 layouts/01-bento-grid/images/make_svgs.py && python3 scripts/build_images.py layouts/01-bento-grid/images",
     "music:L02": "python3 layouts/02-masonry/audio/make_music.py",
     "render:L02": "npm run music:L02 && remotion render src/index.ts L02-Masonry out/02-masonry-master.mp4 --codec=h264 --crf=16",
-    "images:L02": "python3 layouts/02-masonry/images/make_svgs.py && python3 scripts/build_images.py layouts/02-masonry/images"
+    "images:L02": "python3 layouts/02-masonry/images/make_svgs.py && python3 scripts/build_images.py layouts/02-masonry/images",
+    "music:L03": "python3 layouts/03-scrollytelling/audio/make_music.py",
+    "render:L03": "npm run music:L03 && remotion render src/index.ts L03-Scrollytelling out/03-scrollytelling-master.mp4 --codec=h264 --crf=16",
+    "images:L03": "python3 layouts/03-scrollytelling/images/make_svgs.py && python3 scripts/build_images.py layouts/03-scrollytelling/images"
   },
   "dependencies": {
     "@remotion/cli": "4.0.454",
