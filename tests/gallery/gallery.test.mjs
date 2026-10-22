@@ -34,7 +34,7 @@ test('布局作品放在 layouts/，编号独立，标签和源码路径随类�
   assert.equal(sourceUrl(bento, 'video'), 'https://github.com/guanmo-ai/design-style/tree/main/layouts/01-bento-grid/video');
   assert.equal(sourceUrl(bento, 'PROCESS.md'), 'https://github.com/guanmo-ai/design-style/blob/main/layouts/01-bento-grid/PROCESS.md');
   assert.equal(videoUrl(bento), './media/01-bento-grid.mp4');
-  assert.deepEqual(selectWorks(works, {type: 'layout'}).map(work => work.id), ['01-bento-grid']);
+  assert.deepEqual(selectWorks(works, {type: 'layout'}).map(work => work.id), ['02-masonry', '01-bento-grid']);
   assert.ok(selectWorks(works, {type: 'style'}).every(work => work.type === 'style'));
   assert.equal(selectWorks(works, {query: '布局 便当'}).length, 1);
   assert.equal(typeOf({}), 'style');
