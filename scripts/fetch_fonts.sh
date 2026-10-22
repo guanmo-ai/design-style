@@ -27,6 +27,9 @@ curl -fsSL -o "$TMP/selawik.zip" https://github.com/microsoft/Selawik/releases/d
 unzip -qjo "$TMP/selawik.zip" '*selawk.ttf' '*selawksb.ttf' '*selawkb.ttf' '*selawkl.ttf' -d "$TMP/sel"
 mv "$TMP/sel/selawk.ttf" Selawik.ttf; mv "$TMP/sel/selawksb.ttf" Selawik-Semibold.ttf
 mv "$TMP/sel/selawkb.ttf" Selawik-Bold.ttf; mv "$TMP/sel/selawkl.ttf" Selawik-Light.ttf
+# 布局 02 Masonry：Instrument Serif（标题衬线，正体 + 斜体）
+curl -fsSL -o InstrumentSerif-Regular.ttf "$GF/instrumentserif/InstrumentSerif-Regular.ttf"
+curl -fsSL -o InstrumentSerif-Italic.ttf  "$GF/instrumentserif/InstrumentSerif-Italic.ttf"
 rm -rf "$TMP"
 ls -lh
-echo "✓ 字体就绪。视频渲染时 Jost / JetBrains Mono / Noto Sans SC / TeX Gyre Heros / Inter / Geist Mono / Selawik 自动加载，无需安装到系统。"
+echo "✓ 字体就绪。视频渲染时 Jost / JetBrains Mono / Noto Sans SC / TeX Gyre Heros / Inter / Geist Mono / Selawik / Instrument Serif 自动加载，无需安装到系统。"
