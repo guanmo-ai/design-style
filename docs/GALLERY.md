@@ -8,7 +8,8 @@
 
 ```bash
 npm run gallery:setup   # 首次安装文档构建依赖；使用锁文件，不执行安装脚本
-npm run gallery:sync    # 读取本仓库 Releases，下载并校验视频
+npm run gallery:sync    # 读取本仓库 Releases，下载并校验视频，同步 README 预览
+npm run gallery:readme  # 仅按作品目录更新 README 预览，无需下载视频
 npm run gallery:build   # 生成独立静态站点 dist/
 npm run gallery:serve   # http://127.0.0.1:4186
 npm run gallery:test    # 目录、筛选、路径边界与视频 Range 请求测试
@@ -36,7 +37,7 @@ npm run gallery:check   # 构建后检查发布文件、Pages 子路径链接、
 1. 完成本期目录：风格为 `styles/NNN-name/`（三位期号），布局为 `layouts/NN-name/`（两位期号）。内含封面 `video/cover.jpg`、风格图或布局图 `images/preview/*.svg` 及对应源文件、`README.md`、`PROCESS.md`、`tokens.json`、`process/timeline.json`。
 2. 在本仓库 Release 发布成片。视频名与目录名一致：风格 `NNN-name.mp4`，布局 `NN-name.mp4`；Release tag 现有 `day-01`（风格 001）与 `layout-01`（布局 01）。
 3. 向 `gallery/data/works.json` 添加条目，填写类型 `type`（`style` 或 `layout`，缺省按 `style`）、期号、标题、分类、简介、标签、发布日期、Release tag、视频文件名、SHA-256 与四张图的信息。SHA-256 可由 `gh release view <tag> --repo guanmo-ai/design-style --json assets` 返回的 digest 核对。
-4. 运行同步、测试、构建并进行浏览器检查。视频规格与章节自动读取本期 tokens 和 timeline，不重复手填。
+4. 运行同步、测试、构建并进行浏览器检查。视频规格与章节自动读取本期 tokens 和 timeline，不重复手填。`gallery:sync` 同时更新仓库首页的紧凑视频预览：按最新发布排序，每行最多三张，新增作品自动换行；封面与标题均链接到对应作品的画廊详情。只更新 README 时运行 `npm run gallery:readme`，将生成的 README 改动一并提交。
 
 作品直达链接格式：`?q=包豪斯#work-001-bauhaus`；只看布局：`?type=layout`（只看风格：`?type=style`），可与 `q` 组合；首页始终按最新发布排序，旧链接中的 `category`、`sort` 不再影响首页展示。没有匹配时显示空状态，不展示尚未发布的预告作品。每一期的风格图或布局图只在对应作品详情中展示，首页不展示具体图片或制作资料。
 

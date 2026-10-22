@@ -5,7 +5,8 @@
   "description": "每天一个设计风格 · Design Style — 每期一支 15 秒动效短片 + 一组风格图（或布局图）+ 全部源码",
   "scripts": {
     "gallery:setup": "npm ci --prefix gallery --ignore-scripts",
-    "gallery:sync": "node scripts/gallery/sync.mjs",
+    "gallery:sync": "node scripts/gallery/sync.mjs && npm run gallery:readme",
+    "gallery:readme": "node scripts/gallery/readme.mjs",
     "gallery:build": "node scripts/gallery/build.mjs",
     "gallery:preview": "node scripts/gallery/preview.mjs",
     "gallery:serve": "node scripts/gallery/serve.mjs",
