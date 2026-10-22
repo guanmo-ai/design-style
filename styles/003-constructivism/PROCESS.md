@@ -3,7 +3,7 @@
 > 这一期是怎么从一个想法变成 15 秒短片和 4 张图的：怎么想的、怎么做的、哪里推翻重来、下次怎么做得更好。
 > 过程图都在 [`process/`](process)，可以复现的代码在 `video/` `audio/` `images/` 和根目录的 `scripts/`。
 
-🎬 [看成片（Releases · day-03）](https://github.com/guanmo-ai/design-style/releases/tag/day-03)· 📐 [风格指南](README.md)
+🎬 [看成片（Releases · day-03）](https://github.com/guanmo-ai/design-style/releases/tag/day-03) · 📐 [风格指南](README.md) · 🧰 [从 0 到 1：工具与流程](MAKING.md)
 
 ---
 
