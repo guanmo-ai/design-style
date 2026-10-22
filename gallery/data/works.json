@@ -176,5 +176,50 @@
         "kind": "三套模板"
       }
     ]
+  },
+  {
+    "id": "003-constructivism",
+    "type": "style",
+    "number": "003",
+    "title": "构成主义",
+    "titleEn": "Constructivism",
+    "years": "1917—1932",
+    "category": "现代主义",
+    "description": "一条斜线、一块红、一个大声的字。一支 15 秒短片，全片只有两条轴（−30° / 60°），从红楔子、《书》海报、塔特林塔、印花布、舞台一路形状接力到利西茨基的书。",
+    "tags": [
+      "斜线",
+      "红与黑",
+      "大字",
+      "蒙太奇",
+      "罗德琴科",
+      "利西茨基",
+      "西里尔字母"
+    ],
+    "publishedAt": "2026-10-22T10:56:00Z",
+    "release": "day-03",
+    "asset": "003-constructivism.mp4",
+    "sha256": "9277e96ac6c5c49125e0a7cdd518306c93d8dc9402f5ccdf8a9c8252549b26a8",
+    "images": [
+      {
+        "file": "poster",
+        "title": "一张海报，认识构成主义",
+        "kind": "风格海报"
+      },
+      {
+        "file": "cheatsheet",
+        "title": "两条轴、色板、字体与五条规则",
+        "kind": "风格速查"
+      },
+      {
+        "file": "app-ui",
+        "title": "如果构成主义来做 App",
+        "kind": "界面应用"
+      },
+      {
+        "file": "steps",
+        "title": "一张普通海报，四步改成构成主义",
+        "kind": "改造教程"
+      }
+    ]
   }
 ]

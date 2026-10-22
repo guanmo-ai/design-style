@@ -1,6 +1,7 @@
 # NNN · 风格名 · 制作过程
 
 > 复制到 `styles/NNN-name/PROCESS.md`（布局复制到 `layouts/NN-name/PROCESS.md`，Release tag 用 `layout-NN`），边做边写。过程图放在同目录的 `process/`。
+> 另写一份 `MAKING.md`（从 0 到 1 的工具、顺序与命令），模板见 [MAKING_TEMPLATE.md](MAKING_TEMPLATE.md)。
 
 🎬 [看成片（Releases · day-NN）](https://github.com/guanmo-ai/design-style/releases/tag/day-NN) · 📐 [风格指南](README.md)
 

@@ -1,0 +1,101 @@
+/* 003 · 构成主义 Constructivism — CSS 设计令牌（与 tokens.ts / tokens.json 同源） */
+:root {
+  /* 色板：旧纸 50% · 印刷黑 30% · 构成红 15% · 网点灰 5%。红是动词：推、冲、喊 */
+  --cn-paper: #ECE4D2;   /* 旧纸：略黄的新闻纸 */
+  --cn-ink: #161412;     /* 印刷黑：带一点暖 */
+  --cn-red: #D3261C;     /* 构成红：偏橙的朱红 */
+  --cn-grey: #8F897D;    /* 网点灰：照片网点、次要文字 */
+  --cn-light: #F6F1E6;   /* 亮纸：只给“白圆”这类比纸更亮的形 */
+  --cn-rule: rgba(22, 20, 18, 0.10); /* 构造线 */
+
+  /* 字体：窄体大字 + 黑体中文；拉丁全大写、加字距 */
+  --cn-font: 'Oswald', 'Bebas Neue', 'Arial Narrow', 'Noto Sans SC', sans-serif;
+  --cn-font-cjk: 'Noto Sans SC', 'Source Han Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  --cn-tracking-caps: 0.08em;
+
+  /* 轴：主轴 −30°（从左下冲向右上），副轴 60°（与主轴垂直），信息 0° */
+  --cn-axis: -30deg;
+  --cn-cross: 60deg;
+
+  /* 形状：楔、圆、粗条；直角；粗条 ≈ 字高的 1/4 */
+  --cn-radius: 0;
+  --cn-bar: 24px;
+  --cn-hair: 2px;
+  --cn-margin-x: 90px;
+  --cn-margin-y: 72px;
+
+  /* 节拍：144 BPM，1 拍 = 25 帧 @60fps ≈ 417ms */
+  --cn-beat: 417ms;
+  --cn-ease-hit: cubic-bezier(0.2, 0.9, 0.1, 1); /* 冲出去、猛地停住 */
+}
+
+/* 示例 1：主视觉 —— 只有它是斜的；溢出部分直接出血 */
+.cn-hero {
+  position: relative;
+  overflow: hidden;
+  background: var(--cn-ink);
+  color: var(--cn-light);
+}
+.cn-hero__band {
+  position: absolute;
+  left: -10%;
+  bottom: 18%;
+  width: 140%;
+  height: 54px;
+  background: var(--cn-red);
+  transform: rotate(var(--cn-axis));
+  transform-origin: left center;
+}
+
+/* 示例 2：大字 —— 窄体、全大写、加字距；中文用最粗的黑体 */
+.cn-display {
+  font: 700 clamp(64px, 12vw, 180px)/0.9 var(--cn-font);
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  margin: 0;
+}
+.cn-display--zh {
+  font-family: var(--cn-font-cjk);
+  font-weight: 900;
+  letter-spacing: 0;
+}
+.cn-display--tilt { transform: rotate(var(--cn-axis)); transform-origin: left bottom; }
+
+/* 示例 3：要读的字 —— 永远水平、左对齐 */
+.cn-text {
+  font: 400 16px/1.6 var(--cn-font-cjk);
+  color: var(--cn-ink);
+  text-align: left;
+}
+.cn-label {
+  font: 600 13px/1 var(--cn-font);
+  letter-spacing: var(--cn-tracking-caps);
+  text-transform: uppercase;
+  color: var(--cn-grey);
+}
+
+/* 示例 4：按钮 —— 红块，右边按 60° 切斜，不用圆角 */
+.cn-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  padding: 18px 48px 18px 20px;
+  background: var(--cn-red);
+  color: var(--cn-light);
+  font: 900 20px/1 var(--cn-font-cjk);
+  border: 0;
+  border-radius: var(--cn-radius);
+  clip-path: polygon(0 0, 100% 0, calc(100% - 0.577 * 56px) 100%, 0 100%);
+}
+
+/* 示例 5：粗条 / 铆钉 —— 把零件“拼”在一起 */
+.cn-bar { height: var(--cn-bar); background: var(--cn-ink); }
+.cn-rivet { width: var(--cn-bar); background: var(--cn-red); transform: rotate(var(--cn-cross)); }
+
+/* 示例 6：动效 —— 沿主轴冲进来，落在拍子上 */
+@keyframes cn-thrust {
+  from { transform: translate(-60vw, 34.6vw) rotate(var(--cn-axis)); } /* 沿 −30° 退回去：dy = dx × tan30° */
+  to   { transform: translate(0, 0) rotate(var(--cn-axis)); }
+}
+.cn-thrust { animation: cn-thrust var(--cn-beat) var(--cn-ease-hit) both; }
+@media (prefers-reduced-motion: reduce) { .cn-thrust { animation: none; } }

@@ -15,6 +15,8 @@ done
 CTAN=https://mirrors.ctan.org/fonts/tex-gyre/opentype
 curl -fsSL -o TeXGyreHeros-Regular.otf "$CTAN/texgyreheros-regular.otf"
 curl -fsSL -o TeXGyreHeros-Bold.otf    "$CTAN/texgyreheros-bold.otf"
+# 风格 003 构成主义：Oswald（可变字重 200—700，自带西里尔字母；OFL）
+curl -fsSL -o Oswald.ttf        "$GF/oswald/Oswald%5Bwght%5D.ttf"
 # 布局 01 Bento Grid：Inter Display（标题）+ Inter（正文）+ Geist Mono（数字 / 标注）
 TMP=$(mktemp -d)
 curl -fsSL -o "$TMP/inter.zip" https://github.com/rsms/inter/releases/download/v4.1/Inter-4.1.zip
@@ -32,4 +34,4 @@ curl -fsSL -o InstrumentSerif-Regular.ttf "$GF/instrumentserif/InstrumentSerif-R
 curl -fsSL -o InstrumentSerif-Italic.ttf  "$GF/instrumentserif/InstrumentSerif-Italic.ttf"
 rm -rf "$TMP"
 ls -lh
-echo "✓ 字体就绪。视频渲染时 Jost / JetBrains Mono / Noto Sans SC / TeX Gyre Heros / Inter / Geist Mono / Selawik / Instrument Serif 自动加载，无需安装到系统。"
+echo "✓ 字体就绪。视频渲染时 Jost / JetBrains Mono / Noto Sans SC / TeX Gyre Heros / Oswald / Inter / Geist Mono / Selawik / Instrument Serif 自动加载，无需安装到系统。"
