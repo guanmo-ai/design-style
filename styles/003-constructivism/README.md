@@ -2,7 +2,7 @@
 
 > **一句话：** 一条斜线，一块红，一个大声的字——把版面从“摆好”变成“冲出去”。
 
-🎬 [看视频](https://github.com/guanmo-ai/design-style/releases/tag/day-03)· 🛠 [制作过程](PROCESS.md) · 🖼 [图片源文件](images)
+🎬 [看视频](https://github.com/guanmo-ai/design-style/releases/tag/day-03) · 🛠 [制作过程](PROCESS.md) · 🧰 [从 0 到 1：工具与流程](MAKING.md) · 🖼 [图片源文件](images)
 
 | 海报 | 速查卡 |
 |:-:|:-:|
@@ -146,7 +146,8 @@ rhythm, flat colors, no 3D render, no gradients.
 ```
 003-constructivism/
 ├─ PROCESS.md                             # 制作过程
-├─ process/                               # 过程图：成片联系表 · 开场拆解 · 转场链 · 节拍时间轴
+├─ MAKING.md                              # 从 0 到 1：用了哪些工具、按什么顺序、敲什么命令
+├─ process/                               # 过程图：成片联系表 · 开场拆解 · 转场链 · 节拍时间轴 · 制作流程图
 ├─ tokens.ts / tokens.css / tokens.json   # 同一份设计令牌（颜色、字体、两条轴、节拍）
 ├─ video/Constructivism.tsx               # 短片主合成：一张 SVG 舞台按时间窗挂载各章、底栏、运动模糊、颗粒、配乐（Remotion，React）
 ├─ video/timeline.ts                      # 各章起点（帧）与总长

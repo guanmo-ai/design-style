@@ -56,6 +56,7 @@ by 观默 [@guanmo_ai](https://x.com/guanmo_ai)
 | 🎬 | **15 秒动效短片** | 1920×1080 · 60fps · 配乐与音效全部由代码合成 · 成片在 [Releases](https://github.com/guanmo-ai/design-style/releases) | `video/*.tsx`（[Remotion](https://www.remotion.dev)）· `audio/make_music.py` |
 | 🖼 | **4 张风格图 / 布局图** | 1080×1350（X / 小红书竖图比例） | `images/*.svg`，手写 SVG，可直接改 |
 | 🛠 | **制作过程** | 研究 → 令牌 → 风格图 → 分镜 → 改版 → 质检 → 发布，每一步怎么想、怎么做、踩了什么坑 | `PROCESS.md` · `process/`（联系表、时间轴等过程图） |
+| 🧰 | **从 0 到 1**（003 起） | 用了哪些工具、按什么顺序、每一步敲什么命令、做到什么程度算过关；附开工提示词，照着做能复刻一期 | `MAKING.md` · `process/05-workflow.png` |
 | 📐 | **风格指南 / 布局指南** | 历史 · 规则 · 色板 · 字体 · 版式 · 常见误区 · AI 提示词 | `README.md` |
 | 🎨 | **设计令牌** | 同一份颜色 / 字体 / 线宽，视频、图片、网页共用 | `tokens.ts` · `tokens.css` · `tokens.json` |
 
@@ -69,7 +70,7 @@ by 观默 [@guanmo_ai](https://x.com/guanmo_ai)
 |:-:|---|---|---|---|
 | **001** | [**包豪斯 Bauhaus**](styles/001-bauhaus) | 1919—1933 | 圆、方、三角 + 红黄蓝，把“好看”变成可以教的规则 | [🎬 视频](https://github.com/guanmo-ai/design-style/releases/tag/day-01) · [🛠 过程](styles/001-bauhaus/PROCESS.md) |
 | **002** | [**瑞士国际主义 Swiss Style**](styles/002-swiss-style) | 1950—1970 | 一张网格、一种无衬线、一种红，把版面变成一道可以计算的题 | [🎬 视频](https://github.com/guanmo-ai/design-style/releases/tag/day-02) · [🛠 过程](styles/002-swiss-style/PROCESS.md) |
-| **003** | [**构成主义 Constructivism**](styles/003-constructivism) | 1917—1932 | 一条斜线、一块红、一个大声的字：把轴转 30°，版面就开始往前冲 | [🎬 视频](https://github.com/guanmo-ai/design-style/releases/tag/day-03) · [🛠 过程](styles/003-constructivism/PROCESS.md) |
+| **003** | [**构成主义 Constructivism**](styles/003-constructivism) | 1917—1932 | 一条斜线、一块红、一个大声的字：把轴转 30°，版面就开始往前冲 | [🎬 视频](https://github.com/guanmo-ai/design-style/releases/tag/day-03) · [🛠 过程](styles/003-constructivism/PROCESS.md) · [🧰 从 0 到 1](styles/003-constructivism/MAKING.md) |
 
 ### 布局方式 · Layout
 
@@ -141,7 +142,7 @@ design-style/
 │     └─ images/           # poster / cheatsheet / app-ui / pattern(.py)
 │        └─ preview/       # 内嵌字体、可直接分享的 SVG
 │  └─ 002-swiss-style/     # 同上；短片：一张 12 × 6 网格贯穿全片，红色接力换幕
-│  └─ 003-constructivism/  # 同上；短片：全片只有两条轴（−30° / 60°），形状接力换幕
+│  └─ 003-constructivism/  # 同上，另有 MAKING.md（从 0 到 1 的工具与流程）；短片：全片只有两条轴（−30° / 60°），形状接力换幕
 ├─ layouts/                # 布局：结构同 styles/，期号两位
 │  └─ 01-bento-grid/
 │     ├─ README.md         # 布局指南
