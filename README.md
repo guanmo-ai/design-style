@@ -1,6 +1,27 @@
 <div align="center">
 
-<img src="styles/001-bauhaus/images/preview/poster.svg" width="360" alt="001 包豪斯海报" />
+<!-- BEGIN WORK PREVIEWS -->
+<!-- 由 npm run gallery:readme 根据 gallery/data/works.json 生成，请勿手动修改此区域。 -->
+<table>
+  <tr>
+    <td align="center" valign="top" width="33%">
+      <a href="https://guanmo-ai.github.io/design-style/#work-002-swiss-style"><img src="styles/002-swiss-style/video/cover.jpg" width="240" alt="瑞士国际主义 Swiss Style 视频封面" /></a><br />
+      <a href="https://guanmo-ai.github.io/design-style/#work-002-swiss-style"><b>瑞士国际主义</b></a><br />
+      <sub>Swiss Style · 15 秒</sub>
+    </td>
+    <td align="center" valign="top" width="33%">
+      <a href="https://guanmo-ai.github.io/design-style/#work-01-bento-grid"><img src="layouts/01-bento-grid/video/cover.jpg" width="240" alt="便当盒布局 Bento Grid 视频封面" /></a><br />
+      <a href="https://guanmo-ai.github.io/design-style/#work-01-bento-grid"><b>便当盒布局</b></a><br />
+      <sub>Bento Grid · 15 秒</sub>
+    </td>
+    <td align="center" valign="top" width="33%">
+      <a href="https://guanmo-ai.github.io/design-style/#work-001-bauhaus"><img src="styles/001-bauhaus/video/cover.jpg" width="240" alt="包豪斯 Bauhaus 视频封面" /></a><br />
+      <a href="https://guanmo-ai.github.io/design-style/#work-001-bauhaus"><b>包豪斯</b></a><br />
+      <sub>Bauhaus · 15 秒</sub>
+    </td>
+  </tr>
+</table>
+<!-- END WORK PREVIEWS -->
 
 # 每天一个设计风格 · Design Style
 
