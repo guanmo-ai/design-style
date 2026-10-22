@@ -1,0 +1,58 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1080" height="1350" viewBox="0 0 1080 1350">
+  <!-- Design Style · 布局 02 · 瀑布流布局 Masonry —— 海报 / 1080×1350（由 make_svgs.py 生成） -->
+  <defs>
+    <style>
+      .sf { font-family: 'Instrument Serif', 'Noto Sans SC', serif; }
+      .d { font-family: 'Inter Display', 'Noto Sans SC', sans-serif; }
+      .t { font-family: 'Inter', 'Noto Sans SC', sans-serif; }
+      .m { font-family: 'Geist Mono', 'SFMono-Regular', Menlo, monospace; }
+      .c { font-family: 'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif; }
+    </style>
+    <filter id="soft" x="-10%" y="-10%" width="120%" height="130%"><feDropShadow dx="0" dy="6" stdDeviation="10" flood-color="#281E14" flood-opacity=".08"/></filter>
+    <filter id="lift" x="-20%" y="-20%" width="140%" height="150%"><feDropShadow dx="0" dy="18" stdDeviation="22" flood-color="#281E14" flood-opacity=".16"/></filter>
+    <clipPath id="k1"><rect x="72" y="548" width="222" height="333" rx="16"/></clipPath>
+    <clipPath id="k2"><rect x="548" y="548" width="222" height="296" rx="16"/></clipPath>
+    <clipPath id="k3"><rect x="786" y="548" width="222" height="222" rx="16"/></clipPath>
+    <clipPath id="k4"><rect x="310" y="786" width="222" height="277.5" rx="16"/></clipPath>
+    <clipPath id="k5"><rect x="786" y="786" width="222" height="124.9" rx="16"/></clipPath>
+    <clipPath id="k6"><rect x="548" y="860" width="222" height="166.5" rx="16"/></clipPath>
+    <clipPath id="k7"><rect x="72" y="897" width="222" height="333" rx="16"/></clipPath>
+    <clipPath id="k8"><rect x="786" y="926.9" width="222" height="277.5" rx="16"/></clipPath>
+    <linearGradient id="fog" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#F2EFE9" stop-opacity="0"/><stop offset=".5" stop-color="#F2EFE9" stop-opacity=".96"/><stop offset="1" stop-color="#F2EFE9"/></linearGradient>
+  </defs>
+  <rect x="0" y="0" width="1080" height="1350" rx="0" fill="#F2EFE9" />
+  <circle cx="77" cy="98" r="5" fill="#F2462E"/>
+  <text x="92" y="105" class="m" font-size="20" font-weight="500" fill="#6F6A62" >Design Style · 布局 02</text>
+  <text x="1008" y="105" class="c" font-size="20" font-weight="500" fill="#6F6A62" text-anchor="end" letter-spacing="1" >每天一个设计风格</text>
+  <text x="66" y="300" class="sf" font-size="214" font-weight="400" fill="#141414" letter-spacing="-4" >Masonry</text>
+  <text x="72" y="384" class="c" font-size="60" font-weight="900" fill="#141414" letter-spacing="4" >瀑布流布局</text>
+  <text x="1008" y="344" class="c" font-size="22" font-weight="500" fill="#141414" text-anchor="end" >列宽固定，高度跟着内容走；</text>
+  <text x="1008" y="380" class="c" font-size="22" font-weight="500" fill="#6F6A62" text-anchor="end" >每一张，都落进最短的那一列。</text>
+  <line x1="72" y1="440" x2="1008" y2="440" stroke="rgba(20,20,20,.14)" stroke-width="1.5"/>
+  <circle cx="76" cy="440" r="5" fill="#141414"/>
+  <text x="72" y="476" class="m" font-size="17" font-weight="500" fill="#141414" >2009</text>
+  <text x="72" y="502" class="c" font-size="16" font-weight="400" fill="#6F6A62" >jQuery Masonry</text>
+  <circle cx="336" cy="440" r="5" fill="#F2462E"/>
+  <text x="332" y="476" class="m" font-size="17" font-weight="500" fill="#141414" >2010</text>
+  <text x="332" y="502" class="c" font-size="16" font-weight="400" fill="#6F6A62" >Pinterest</text>
+  <circle cx="596" cy="440" r="5" fill="#141414"/>
+  <text x="592" y="476" class="m" font-size="17" font-weight="500" fill="#141414" >2011 前后</text>
+  <text x="592" y="502" class="c" font-size="16" font-weight="400" fill="#6F6A62" >国内叫“瀑布流”</text>
+  <circle cx="856" cy="440" r="5" fill="#141414"/>
+  <text x="852" y="476" class="m" font-size="17" font-weight="500" fill="#141414" >2025</text>
+  <text x="852" y="502" class="c" font-size="16" font-weight="400" fill="#6F6A62" >CSS grid-lanes</text>
+  <g filter="url(#soft)"><image href="../../../public/02-masonry/photos/tulips.jpg" x="72" y="548" width="222" height="333" preserveAspectRatio="xMidYMid slice" clip-path="url(#k1)" /></g>
+  <g filter="url(#soft)"><rect x="310" y="548" width="222" height="222" rx="16" fill="#F2462E" /><text x="325.9" y="574.5" class="c" font-size="10.6" font-weight="500" fill="rgba(255,255,255,.8)" >布局 02</text><text x="512.5" y="578.1" class="t" font-size="21.2" font-weight="400" fill="#FFFFFF" text-anchor="middle" >↓</text><text x="325.9" y="708.1" class="sf" font-size="26.5" font-weight="400" fill="#FFFFFF" font-style="italic">Waterfall</text><text x="324.2" y="750.5" class="c" font-size="40.7" font-weight="900" fill="#FFFFFF" letter-spacing="0.9" >瀑布流</text></g>
+  <g filter="url(#soft)"><image href="../../../public/02-masonry/photos/stairs.jpg" x="548" y="548" width="222" height="296" preserveAspectRatio="xMidYMid slice" clip-path="url(#k2)" /></g>
+  <g filter="url(#soft)"><image href="../../../public/02-masonry/photos/bread.jpg" x="786" y="548" width="222" height="222" preserveAspectRatio="xMidYMid slice" clip-path="url(#k3)" /></g>
+  <g filter="url(#soft)"><image href="../../../public/02-masonry/photos/poster-swiss.jpg" x="310" y="786" width="222" height="277.5" preserveAspectRatio="xMidYMid slice" clip-path="url(#k4)" /></g>
+  <g filter="url(#soft)"><image href="../../../public/02-masonry/photos/lake.jpg" x="786" y="786" width="222" height="124.9" preserveAspectRatio="xMidYMid slice" clip-path="url(#k5)" /></g>
+  <g filter="url(#soft)"><image href="../../../public/02-masonry/photos/cat.jpg" x="548" y="860" width="222" height="166.5" preserveAspectRatio="xMidYMid slice" clip-path="url(#k6)" /></g>
+  <g filter="url(#soft)"><image href="../../../public/02-masonry/photos/tokyo.jpg" x="72" y="897" width="222" height="333" preserveAspectRatio="xMidYMid slice" clip-path="url(#k7)" /></g>
+  <g filter="url(#soft)"><image href="../../../public/02-masonry/photos/cup.jpg" x="786" y="926.9" width="222" height="277.5" preserveAspectRatio="xMidYMid slice" clip-path="url(#k8)" /></g>
+  <rect x="548" y="1042.5" width="222" height="139.5" rx="16" fill="rgba(242,70,46,.08)" stroke="#F2462E" stroke-width="2.5" stroke-dasharray="8 7"/>
+  <rect x="561.2" y="1067.5" width="195.6" height="30" rx="15" fill="#F2462E" /><text x="659" y="1087.9" class="c" font-size="15" font-weight="700" fill="#FFFFFF" text-anchor="middle" >下一张 → 最短的一列</text>
+  <rect x="0" y="1080" width="1080" height="270" rx="0" fill="url(#fog)" />
+  <text x="540" y="1258" class="c" font-size="22" font-weight="700" fill="#141414" text-anchor="middle" letter-spacing="2" >列宽固定 · 最短优先 · 统一间距 · 保持比例 · 先占位</text>
+  <text x="540" y="1296" class="m" font-size="16" font-weight="400" fill="#6F6A62" text-anchor="middle" >@guanmo_ai   ·   github.com/guanmo-ai/design-style</text>
+</svg>

@@ -2,6 +2,7 @@ import React from 'react';
 import {Composition} from 'remotion';
 import {Bauhaus, BAUHAUS_DURATION} from '../styles/001-bauhaus/video/Bauhaus';
 import {BentoGrid, BENTO_DURATION} from '../layouts/01-bento-grid/video/BentoGrid';
+import {Masonry, MASONRY_DURATION} from '../layouts/02-masonry/video/Masonry';
 import {SwissStyle, SWISS_DURATION} from '../styles/002-swiss-style/video/SwissStyle';
 
 // 每期注册为一个 Composition：风格 S{期号}-{名字}，布局 L{期号}-{名字}
@@ -29,6 +30,15 @@ export const Root: React.FC = () => (
       id="L01-BentoGrid"
       component={BentoGrid}
       durationInFrames={BENTO_DURATION}
+      fps={60}
+      width={1920}
+      height={1080}
+      defaultProps={{music: true}}
+    />
+    <Composition
+      id="L02-Masonry"
+      component={Masonry}
+      durationInFrames={MASONRY_DURATION}
       fps={60}
       width={1920}
       height={1080}

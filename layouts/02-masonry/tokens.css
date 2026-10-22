@@ -1,0 +1,54 @@
+/* 布局 02 · Masonry 瀑布流布局 — 设计令牌 + 可直接用的瀑布流 */
+:root {
+  --masonry-paper: #F2EFE9;
+  --masonry-card: #FFFFFF;
+  --masonry-ink: #141414;
+  --masonry-ink2: #6F6A62;
+  --masonry-accent: #F2462E;
+
+  --masonry-col: 240px;   /* 规则 01：列宽固定（最小列宽，剩余空间平均分） */
+  --masonry-gap: 20px;    /* 规则 03：横缝和竖缝一样宽（手机 8px） */
+  --masonry-radius: 20px;
+
+  --font-serif: 'Instrument Serif', 'Noto Sans SC', serif;
+  --font-sc: 'Noto Sans SC', 'PingFang SC', sans-serif;
+  --font-mono: 'Geist Mono', ui-monospace, monospace;
+}
+
+/* ① 原生瀑布流：CSS Grid Lanes（Safari 26.4+；Chrome / Firefox 暂需开 flag，见 README §7） */
+.masonry {
+  display: grid-lanes;
+  grid-template-columns: repeat(auto-fill, minmax(var(--masonry-col), 1fr));
+  gap: var(--masonry-gap);
+  flow-tolerance: 16px;   /* 几列高度差不到 16px 时按原顺序放，阅读顺序更稳 */
+}
+
+/* ② 不支持时的退路：普通 Grid（行会对齐、留空，但顺序正确、不会乱） */
+@supports not (display: grid-lanes) {
+  .masonry { display: grid; align-items: start; }
+}
+
+.masonry > * {
+  border-radius: var(--masonry-radius);
+  overflow: hidden;
+  background: var(--masonry-card);
+}
+
+/* 规则 04 + 05：图片保持原始宽高比，不裁切。
+   在 HTML 里写好 <img width="1200" height="1500">：浏览器会据此算出宽高比，图片没到就先占好位置，页面不跳 */
+.masonry img {
+  display: block;
+  width: 100%;
+  height: auto;
+  background: #E7E3DC;   /* 占位色：图片晚到也不闪白 */
+}
+
+/* 手机：两列、窄缝、小圆角 */
+@media (max-width: 640px) {
+  .masonry {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+    padding: 8px;
+  }
+  .masonry > * { border-radius: 10px; }
+}

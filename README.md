@@ -5,6 +5,11 @@
 <table>
   <tr>
     <td align="center" valign="top" width="33%">
+      <a href="https://guanmo-ai.github.io/design-style/#work-02-masonry"><img src="layouts/02-masonry/video/cover.jpg" width="240" alt="瀑布流布局 Masonry 视频封面" /></a><br />
+      <a href="https://guanmo-ai.github.io/design-style/#work-02-masonry"><b>瀑布流布局</b></a><br />
+      <sub>Masonry · 15 秒</sub>
+    </td>
+    <td align="center" valign="top" width="33%">
       <a href="https://guanmo-ai.github.io/design-style/#work-002-swiss-style"><img src="styles/002-swiss-style/video/cover.jpg" width="240" alt="瑞士国际主义 Swiss Style 视频封面" /></a><br />
       <a href="https://guanmo-ai.github.io/design-style/#work-002-swiss-style"><b>瑞士国际主义</b></a><br />
       <sub>Swiss Style · 15 秒</sub>
@@ -14,6 +19,8 @@
       <a href="https://guanmo-ai.github.io/design-style/#work-01-bento-grid"><b>便当盒布局</b></a><br />
       <sub>Bento Grid · 15 秒</sub>
     </td>
+  </tr>
+  <tr>
     <td align="center" valign="top" width="33%">
       <a href="https://guanmo-ai.github.io/design-style/#work-001-bauhaus"><img src="styles/001-bauhaus/video/cover.jpg" width="240" alt="包豪斯 Bauhaus 视频封面" /></a><br />
       <a href="https://guanmo-ai.github.io/design-style/#work-001-bauhaus"><b>包豪斯</b></a><br />
@@ -68,6 +75,7 @@ by 观默 [@guanmo_ai](https://x.com/guanmo_ai)
 | 期 | 布局 | 年代 | 一句话 | |
 |:-:|---|---|---|---|
 | **01** | [**便当盒布局 Bento Grid**](layouts/01-bento-grid) | 2020s— | 大小不一的圆角格子，一格一事，用面积告诉你谁最重要 | [🎬 视频](https://github.com/guanmo-ai/design-style/releases/tag/layout-01) · [🛠 过程](layouts/01-bento-grid/PROCESS.md) |
+| **02** | [**瀑布流布局 Masonry**](layouts/02-masonry) | 2009— | 列宽固定、高度跟着内容走，每一张都落进最短的那一列 | [🎬 视频](https://github.com/guanmo-ai/design-style/releases/tag/layout-02) · [🛠 过程](layouts/02-masonry/PROCESS.md) |
 
 计划中（顺序可能调整）：构成主义 · 装饰艺术 Art Deco · 孟菲斯 Memphis · 新粗野主义网页 Neo-Brutalism · Y2K · 日式极简 …… 想看哪个，来 X 上告诉我。
 
@@ -93,7 +101,7 @@ npm run gallery:serve
 ```bash
 git clone https://github.com/guanmo-ai/design-style.git && cd design-style
 npm install
-npm run fonts                  # 下载开源字体到 public/fonts（Jost / JetBrains Mono / TeX Gyre Heros / Inter / Geist Mono / Selawik / Noto Sans SC）
+npm run fonts                  # 下载开源字体到 public/fonts（Jost / JetBrains Mono / TeX Gyre Heros / Inter / Geist Mono / Selawik / Instrument Serif / Noto Sans SC）
 pip install numpy fonttools
 
 npm run studio                 # 在浏览器里逐帧预览、改参数
@@ -104,6 +112,8 @@ npm run render:002             # 风格 002：生成配乐 → 渲染 out/002-sw
 npm run images:002             # 风格 002：生成 4 张风格图 → preview SVG + 2x PNG
 npm run render:L01             # 布局 01：生成配乐 → 渲染 out/01-bento-grid-master.mp4
 npm run images:L01             # 布局 01：生成 4 张布局图 → preview SVG + 2x PNG
+npm run render:L02             # 布局 02：生成配乐 → 渲染 out/02-masonry-master.mp4
+npm run images:L02             # 布局 02：生成 4 张布局图 → preview SVG（内嵌字体和照片）+ 2x PNG
 
 # 制作过程里的过程图
 npx remotion bundle src/index.ts --out-dir out/bundle
@@ -136,22 +146,23 @@ design-style/
 │     ├─ video/            # 15 秒短片：同一套卡片一路变形（发布会 → 来历 → 规则 → 用法）
 │     ├─ audio/make_music.py
 │     └─ images/           # poster / cheatsheet / skins / templates（make_svgs.py 生成）
+  └─ 02-masonry/           # 同上；短片：26 张卡片在 13 种排法之间流动（落雨 → 砌石墙 → 算法 → Pinterest → 手机 → 规则 → 响应式）
 ├─ gallery/                # 网页画廊（静态站点源码与作品数据 works.json）
 ├─ scripts/                # 字体下载 · SVG → PNG · 关键帧截图 · 联系表 · 节拍时间轴
 ├─ docs/PROCESS_TEMPLATE.md # 每期制作过程的模板
-└─ public/                 # 字体与生成的音频（不入库）；视频里用到的静态图
+└─ public/                 # 字体与生成的音频（不入库）；视频里用到的静态图与照片
 ```
 
 ## 统一规格
 
-- **时长** 15 秒 = 900 帧 @ 60fps；所有转场都落在拍点上（包豪斯、瑞士风格 120 BPM，1 拍 = 30 帧；便当盒 150 BPM，1 拍 = 24 帧）
+- **时长** 15 秒 = 900 帧 @ 60fps；所有转场都落在拍点上（包豪斯、瑞士风格 120 BPM，1 拍 = 30 帧；便当盒 150 BPM，1 拍 = 24 帧；瀑布流约 128.6 BPM，1 拍 = 28 帧）
 - **结构** 钩子（0–2s）→ 6–9 个侧面章节（每章 1–1.5s：一个主角 + 一个动作 + 一行标签）→ 回顾 → 片尾
 - **每期四件套** 视频 · 风格图 · 制作过程 · 源代码
 - **风格图** 海报 · 速查卡 · 今天的应用 · 图案/纹理，四张一组
-- **布局图** 海报 · 速查卡 · 布局 × 风格 · 拿来就用的模板，四张一组
+- **布局图** 海报 · 速查卡 · 布局 × 风格（或易混布局对照）· 拿来就用的模板，四张一组
 - **字体** 只用可免费商用的开源字体（SIL OFL / GUST Font License）
 
 ## 授权
 
 代码欢迎学习和改造；转发视频和图片请注明出处 **观默 @guanmo_ai**。
-字体 Jost、JetBrains Mono、Inter、Geist Mono、Selawik、Noto Sans SC 均为 SIL Open Font License 1.1；TeX Gyre Heros 为 GUST Font License。
+字体 Jost、JetBrains Mono、Inter、Geist Mono、Selawik、Instrument Serif、Noto Sans SC 均为 SIL Open Font License 1.1；TeX Gyre Heros 为 GUST Font License。
