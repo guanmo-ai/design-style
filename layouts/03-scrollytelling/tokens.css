@@ -1,0 +1,100 @@
+/* 布局 03 · Scrollytelling 滚动叙事 — 设计令牌 + 可直接用的「并排」滚动叙事 */
+:root {
+  --scrolly-night: #000000;
+  --scrolly-panel: #1C1C1E;
+  --scrolly-t1: #F5F5F7;
+  --scrolly-t2: #86868B;
+  --scrolly-paper: #F5F5F7;
+  --scrolly-ink: #1D1D1F;
+  --scrolly-accent: #2997FF;   /* 唯一强调色：进度、触发线、步骤编号 */
+  --scrolly-stuck: #30D158;    /* 只在结构图里标“钉住”的舞台 */
+  --scrolly-grad: linear-gradient(90deg, #FF7A2F 0%, #FF2E7E 35%, #8B3DFF 68%, #2997FF 100%);
+
+  --scrolly-step-gap: 100vh;   /* 规则 03：一步一屏左右，别塞两步 */
+  --scrolly-trigger: 50%;      /* 规则 02：触发线在视口 50% */
+
+  --font-display: 'Inter Display', 'Noto Sans SC', sans-serif;
+  --font-text: 'Inter', 'Noto Sans SC', sans-serif;
+  --font-mono: 'Geist Mono', ui-monospace, Menlo, monospace;
+}
+
+/* 结构：<section class="scrolly">
+            <figure class="scrolly__stage">…图 / 地图 / 设备…</figure>
+            <article class="scrolly__steps"><div class="step" data-step="1">…</div>…</article>
+          </section>
+   section 的高度由步骤自然撑开（3 步 ≈ 400vh），舞台在这段距离里一直钉在视口里 */
+.scrolly {
+  display: grid;
+  grid-template-columns: 7fr 5fr;   /* 舞台 7 : 文字 5 —— 「并排」 */
+  gap: 4vw;
+  padding-inline: 4vw;
+  background: var(--scrolly-night);
+  color: var(--scrolly-t1);
+  font-family: var(--font-text);
+}
+
+/* 规则 01：舞台用原生 sticky 钉住，不劫持滚动（不改 wheel、不 preventDefault） */
+.scrolly__stage {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  margin: 0;
+  display: grid;
+  place-items: center;
+}
+
+.scrolly__steps { padding-block: 50vh; }   /* 第一步从视口中间开始，最后一步能滚过触发线 */
+
+.step {
+  min-height: 60vh;
+  margin-bottom: calc(var(--scrolly-step-gap) - 60vh);
+  display: flex;
+  align-items: center;
+}
+.step > * {
+  max-width: 28rem;
+  padding: 1.5rem 1.75rem;
+  border-radius: 18px;
+  background: var(--scrolly-panel);
+  opacity: .35;
+  transition: opacity .3s ease;
+}
+.step.is-active > * { opacity: 1; }        /* 当前步骤亮，其余暗 */
+.step .num { font-family: var(--font-mono); color: var(--scrolly-accent); }
+
+/* 规则 05：手机改成「覆盖」——舞台铺满，文字卡片从上面滚过 */
+@media (max-width: 767px) {
+  .scrolly { display: block; padding: 0; }
+  .scrolly__stage { z-index: 0; }
+  .scrolly__steps { position: relative; z-index: 1; margin-top: -100vh; padding-inline: 6vw; }
+  .step > * { background: rgb(28 28 30 / .86); backdrop-filter: blur(12px); opacity: 1; }
+}
+
+/* 规则 04：减少动态效果时不做补间，直接切到每一步的终态 */
+@media (prefers-reduced-motion: reduce) {
+  .scrolly *, .scrolly *::before, .scrolly *::after { transition: none !important; animation: none !important; }
+}
+
+/* 可选：纯 CSS 的滚动驱动动画（Chrome 115+ · Safari 26+ · Firefox 159+），不支持时元素保持静止终态 */
+@supports (animation-timeline: view()) {
+  .scrolly .reveal {
+    animation: scrolly-reveal linear both;
+    animation-timeline: view();
+    animation-range: entry 0% cover 40%;
+  }
+  @keyframes scrolly-reveal {
+    from { opacity: 0; transform: translateY(40px) scale(.96); }
+    to   { opacity: 1; transform: none; }
+  }
+}
+
+/* 触发步骤：跨过视口 50% 那条线就切换（Scrollama 也是同一原理）
+   const io = new IntersectionObserver(es => es.forEach(e => {
+     if (e.isIntersecting) { setStep(e.target.dataset.step); }
+   }), { rootMargin: '-50% 0px -50% 0px' });
+   document.querySelectorAll('.step').forEach(s => io.observe(s));
+   function setStep(n) {
+     document.querySelectorAll('.step').forEach(s => s.classList.toggle('is-active', s.dataset.step === n));
+     document.querySelector('.scrolly__stage').dataset.step = n;   // 舞台只看这一个状态
+   }
+*/

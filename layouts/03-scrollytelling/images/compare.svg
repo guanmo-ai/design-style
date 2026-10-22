@@ -1,0 +1,65 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1080" height="1350" viewBox="0 0 1080 1350">
+  <!-- Design Style · 布局 03 · 滚动叙事 Scrollytelling —— 四种排法 / 1080×1350（由 make_svgs.py 生成） -->
+  <defs>
+    <style>
+      .sf { font-family: 'Instrument Serif', 'Noto Sans SC', serif; }
+      .d { font-family: 'Inter Display', 'Noto Sans SC', sans-serif; }
+      .t { font-family: 'Inter', 'Noto Sans SC', sans-serif; }
+      .m { font-family: 'Geist Mono', 'SFMono-Regular', Menlo, monospace; }
+      .c { font-family: 'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif; }
+    </style>
+    <linearGradient id="g" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#FF7A2F"/><stop offset=".35" stop-color="#FF2E7E"/><stop offset=".68" stop-color="#8B3DFF"/><stop offset="1" stop-color="#2997FF"/></linearGradient>
+    <linearGradient id="wall" x1="0" y1="0" x2=".6" y2="1"><stop offset="0" stop-color="#FF7A2F"/><stop offset=".38" stop-color="#FF2E7E"/><stop offset=".7" stop-color="#8B3DFF"/><stop offset="1" stop-color="#2997FF"/></linearGradient>
+    <linearGradient id="ti" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#6A6D75"/><stop offset=".4" stop-color="#3A3C43"/><stop offset=".7" stop-color="#55585F"/><stop offset="1" stop-color="#26282D"/></linearGradient>
+    <radialGradient id="glow" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#FF2E7E" stop-opacity=".45"/><stop offset=".5" stop-color="#8B3DFF" stop-opacity=".18"/><stop offset="1" stop-color="#2997FF" stop-opacity="0"/></radialGradient>
+    <filter id="soft" x="-10%" y="-10%" width="120%" height="130%"><feDropShadow dx="0" dy="8" stdDeviation="12" flood-color="#000" flood-opacity=".10"/></filter>
+    
+  </defs>
+  <rect x="0" y="0" width="1080" height="1350" rx="0" fill="#F5F5F7" />
+  <circle cx="77" cy="98" r="5" fill="#2997FF"/>
+  <text x="92" y="105" class="m" font-size="20" font-weight="500" fill="#6E6E73" >Design Style · 布局 03 · 四种排法</text>
+  <text x="1008" y="105" class="c" font-size="20" font-weight="500" fill="#6E6E73" text-anchor="end" letter-spacing="1" >同一副骨架</text>
+  <text x="72" y="196" class="c" font-size="64" font-weight="900" fill="#1D1D1F" letter-spacing="2" >四种排法</text>
+  <text x="72" y="244" class="c" font-size="20" font-weight="400" fill="#6E6E73" >骨架都一样：高 section + sticky 舞台 + 步骤 + 触发线；区别在舞台和文字怎么摆。</text>
+  <rect x="72" y="282" width="456" height="418" rx="26" fill="#FFFFFF" filter="url(#soft)"/>
+  <rect x="92" y="302" width="416" height="200" rx="16" fill="#FFFFFF" stroke="#D2D2D7" stroke-width="1.5"/><clipPath id="mn0"><rect x="92" y="302" width="416" height="200" rx="16"/></clipPath><g clip-path="url(#mn0)"><rect x="92" y="302" width="241.3" height="200" rx="0" fill="#F2F2F4" /><rect x="122" y="392" width="36" height="70" rx="6" fill="#C7C7CC" /><rect x="174" y="332" width="36" height="130" rx="6" fill="#2997FF" /><rect x="226" y="367" width="36" height="95" rx="6" fill="#C7C7CC" /><rect x="349.9" y="266" width="141.4" height="52" rx="8" fill="#EDEDF0" /><rect x="349.9" y="376" width="141.4" height="52" rx="8" fill="rgba(41,151,255,.16)" stroke="#2997FF" stroke-width="2"/><rect x="349.9" y="486" width="141.4" height="52" rx="8" fill="#EDEDF0" /><rect x="96" y="310" width="233.3" height="184" rx="10" fill="none" stroke="#30D158" stroke-width="1.5" stroke-opacity=".7"/></g><rect x="499" y="326" width="4" height="40" rx="2" fill="rgba(0,0,0,.35)" />
+  <text x="96" y="548" class="m" font-size="18" font-weight="500" fill="#2997FF" >01</text>
+  <text x="132" y="550" class="c" font-size="26" font-weight="900" fill="#1D1D1F" >并排 Side-by-side</text>
+  <text x="96" y="588" class="c" font-size="20" font-weight="500" fill="#1D1D1F" >图钉一边，文字一边</text>
+  <text x="96" y="628" class="c" font-size="16" font-weight="700" fill="#6E6E73" >适合</text>
+  <text x="142" y="628" class="c" font-size="16" font-weight="400" fill="#6E6E73" >数据图表 · 地图 · 步骤讲解</text>
+  <text x="96" y="660" class="c" font-size="16" font-weight="700" fill="#6E6E73" >例子</text>
+  <text x="142" y="660" class="c" font-size="16" font-weight="400" fill="#6E6E73" >The Pudding · Scrollama</text>
+  <rect x="552" y="282" width="456" height="418" rx="26" fill="#FFFFFF" filter="url(#soft)"/>
+  <rect x="572" y="302" width="416" height="200" rx="16" fill="#FFFFFF" stroke="#D2D2D7" stroke-width="1.5"/><clipPath id="mn1"><rect x="572" y="302" width="416" height="200" rx="16"/></clipPath><g clip-path="url(#mn1)"><rect x="572" y="302" width="416" height="200" rx="0" fill="#D8E0E7" /><path d="M572 502 L676 372 L759.2 422 L854.9 358 L988 412 L988 502 Z" fill="#9AA8B6"/><path d="M572 502 L655.2 442 L800.8 466 L988 434 L988 502 Z" fill="#F4F6F8"/><rect x="655.2" y="338" width="249.6" height="68" rx="6" fill="#FFFFFF" filter="url(#soft)"/><rect x="680.2" y="360" width="166.4" height="7" rx="3.5" fill="#C7C7CC" /><rect x="680.2" y="378" width="116.5" height="7" rx="3.5" fill="#E5E5EA" /><rect x="655.2" y="478" width="249.6" height="68" rx="6" fill="#FFFFFF" filter="url(#soft)"/><rect x="680.2" y="500" width="166.4" height="7" rx="3.5" fill="#C7C7CC" /><rect x="680.2" y="518" width="116.5" height="7" rx="3.5" fill="#E5E5EA" /></g><rect x="979" y="344" width="4" height="40" rx="2" fill="rgba(0,0,0,.35)" />
+  <text x="576" y="548" class="m" font-size="18" font-weight="500" fill="#2997FF" >02</text>
+  <text x="612" y="550" class="c" font-size="26" font-weight="900" fill="#1D1D1F" >覆盖 Overlay</text>
+  <text x="576" y="588" class="c" font-size="20" font-weight="500" fill="#1D1D1F" >图铺满，卡片浮在上面滚</text>
+  <text x="576" y="628" class="c" font-size="16" font-weight="700" fill="#6E6E73" >适合</text>
+  <text x="622" y="628" class="c" font-size="16" font-weight="400" fill="#6E6E73" >照片 · 视频 · 长篇特稿</text>
+  <text x="576" y="660" class="c" font-size="16" font-weight="700" fill="#6E6E73" >例子</text>
+  <text x="622" y="660" class="c" font-size="16" font-weight="400" fill="#6E6E73" >2012《Snow Fall》</text>
+  <rect x="72" y="720" width="456" height="418" rx="26" fill="#FFFFFF" filter="url(#soft)"/>
+  <rect x="92" y="740" width="416" height="200" rx="16" fill="#FFFFFF" stroke="#D2D2D7" stroke-width="1.5"/><clipPath id="mn2"><rect x="92" y="740" width="416" height="200" rx="16"/></clipPath><g clip-path="url(#mn2)"><rect x="92" y="740" width="416" height="200" rx="0" fill="#0B0B0D" /><circle cx="300" cy="826" r="89.6" fill="url(#glow)"/><g transform="translate(300 826)"><rect x="-28" y="-58" width="56" height="115.9" rx="10.6" fill="#0A0A0A" stroke="#8E9199" stroke-width="1.1"/><rect x="-25.5" y="-55.4" width="51" height="110.9" rx="8.7" fill="url(#wall)"/><rect x="-9" y="-53.5" width="17.9" height="5" rx="2.5" fill="#000"/></g><rect x="165" y="906" width="5" height="16" rx="2.5" fill="#5A5A60" /><rect x="174" y="906" width="5" height="16" rx="2.5" fill="#5A5A60" /><rect x="183" y="906" width="5" height="16" rx="2.5" fill="#5A5A60" /><rect x="192" y="906" width="5" height="16" rx="2.5" fill="#5A5A60" /><rect x="201" y="906" width="5" height="16" rx="2.5" fill="#5A5A60" /><rect x="210" y="906" width="5" height="16" rx="2.5" fill="#5A5A60" /><rect x="219" y="906" width="5" height="16" rx="2.5" fill="#5A5A60" /><rect x="228" y="906" width="5" height="16" rx="2.5" fill="#5A5A60" /><rect x="237" y="906" width="5" height="16" rx="2.5" fill="#5A5A60" /><rect x="246" y="906" width="5" height="16" rx="2.5" fill="#5A5A60" /><rect x="255" y="906" width="5" height="16" rx="2.5" fill="#5A5A60" /><rect x="264" y="906" width="5" height="16" rx="2.5" fill="#5A5A60" /><rect x="273" y="906" width="5" height="16" rx="2.5" fill="#5A5A60" /><rect x="282" y="898" width="5" height="24" rx="2.5" fill="#2997FF" /><rect x="291" y="906" width="5" height="16" rx="2.5" fill="#2C2C2E" /><rect x="300" y="906" width="5" height="16" rx="2.5" fill="#2C2C2E" /><rect x="309" y="906" width="5" height="16" rx="2.5" fill="#2C2C2E" /><rect x="318" y="906" width="5" height="16" rx="2.5" fill="#2C2C2E" /><rect x="327" y="906" width="5" height="16" rx="2.5" fill="#2C2C2E" /><rect x="336" y="906" width="5" height="16" rx="2.5" fill="#2C2C2E" /><rect x="345" y="906" width="5" height="16" rx="2.5" fill="#2C2C2E" /><rect x="354" y="906" width="5" height="16" rx="2.5" fill="#2C2C2E" /><rect x="363" y="906" width="5" height="16" rx="2.5" fill="#2C2C2E" /><rect x="372" y="906" width="5" height="16" rx="2.5" fill="#2C2C2E" /><rect x="381" y="906" width="5" height="16" rx="2.5" fill="#2C2C2E" /><rect x="390" y="906" width="5" height="16" rx="2.5" fill="#2C2C2E" /><rect x="399" y="906" width="5" height="16" rx="2.5" fill="#2C2C2E" /><rect x="408" y="906" width="5" height="16" rx="2.5" fill="#2C2C2E" /><rect x="417" y="906" width="5" height="16" rx="2.5" fill="#2C2C2E" /><rect x="426" y="906" width="5" height="16" rx="2.5" fill="#2C2C2E" /><text x="110" y="770" class="m" font-size="14" font-weight="400" fill="#86868B" >img_027 / 120</text></g><rect x="499" y="800" width="4" height="40" rx="2" fill="rgba(255,255,255,.5)" />
+  <text x="96" y="986" class="m" font-size="18" font-weight="500" fill="#2997FF" >03</text>
+  <text x="132" y="988" class="c" font-size="26" font-weight="900" fill="#1D1D1F" >逐帧 Scrub</text>
+  <text x="96" y="1026" class="c" font-size="20" font-weight="500" fill="#1D1D1F" >滚到哪，就播到哪一帧</text>
+  <text x="96" y="1066" class="c" font-size="16" font-weight="700" fill="#6E6E73" >适合</text>
+  <text x="142" y="1066" class="c" font-size="16" font-weight="400" fill="#6E6E73" >产品 · 3D · 过程演示</text>
+  <text x="96" y="1098" class="c" font-size="16" font-weight="700" fill="#6E6E73" >例子</text>
+  <text x="142" y="1098" class="c" font-size="16" font-weight="400" fill="#6E6E73" >苹果产品页（canvas 图片序列）</text>
+  <rect x="552" y="720" width="456" height="418" rx="26" fill="#FFFFFF" filter="url(#soft)"/>
+  <rect x="572" y="740" width="416" height="200" rx="16" fill="#FFFFFF" stroke="#D2D2D7" stroke-width="1.5"/><clipPath id="mn3"><rect x="572" y="740" width="416" height="200" rx="16"/></clipPath><g clip-path="url(#mn3)"><rect x="572" y="740" width="416" height="200" rx="0" fill="#F2F2F4" /><rect x="458.9" y="790" width="183" height="100" rx="14" fill="#FF7A2F" opacity=".9"/><rect x="666.9" y="790" width="183" height="100" rx="14" fill="#FF2E7E" opacity=".9"/><rect x="874.9" y="790" width="183" height="100" rx="14" fill="#8B3DFF" opacity=".9"/><rect x="1082.9" y="790" width="183" height="100" rx="14" fill="#2997FF" opacity=".9"/><rect x="1290.9" y="790" width="183" height="100" rx="14" fill="#1D1D1F" opacity=".9"/><path d="M928 914 h40 m-10 -7 l10 7 l-10 7" fill="none" stroke="#1D1D1F" stroke-width="2"/></g><rect x="979" y="818" width="4" height="40" rx="2" fill="rgba(0,0,0,.35)" />
+  <text x="576" y="986" class="m" font-size="18" font-weight="500" fill="#2997FF" >04</text>
+  <text x="612" y="988" class="c" font-size="26" font-weight="900" fill="#1D1D1F" >横移 Horizontal</text>
+  <text x="576" y="1026" class="c" font-size="20" font-weight="500" fill="#1D1D1F" >竖着滚，横着走</text>
+  <text x="576" y="1066" class="c" font-size="16" font-weight="700" fill="#6E6E73" >适合</text>
+  <text x="622" y="1066" class="c" font-size="16" font-weight="400" fill="#6E6E73" >时间线 · 作品集 · 年表</text>
+  <text x="576" y="1098" class="c" font-size="16" font-weight="700" fill="#6E6E73" >例子</text>
+  <text x="622" y="1098" class="c" font-size="16" font-weight="400" fill="#6E6E73" >纵向 sticky + 横向 translateX</text>
+  <rect x="72" y="1160" width="936" height="60" rx="18" fill="rgba(255,69,58,.07)" stroke="#FF453A" stroke-opacity=".35" stroke-width="1.5"/>
+  <text x="98" y="1199" class="c" font-size="20" font-weight="900" fill="#FF453A" >× 不算</text>
+  <text x="182" y="1199" class="c" font-size="18" font-weight="500" fill="#1D1D1F" >劫持滚轮（一下翻一整屏）· 点击翻页 · 自动轮播 —— 滚动叙事只“看”滚动，不改滚动</text>
+  <text x="540" y="1258" class="c" font-size="22" font-weight="700" fill="#1D1D1F" text-anchor="middle" letter-spacing="2" >先选排法，再选风格：同一副骨架，NYT、Pudding、苹果各有各的样子</text>
+  <text x="540" y="1296" class="m" font-size="16" font-weight="400" fill="#6E6E73" text-anchor="middle" >@guanmo_ai   ·   github.com/guanmo-ai/design-style</text>
+</svg>

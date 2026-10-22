@@ -1,0 +1,118 @@
+<!doctype html><html><head><meta charset="utf-8">
+<!-- 布局 03 · 从 0 到 1 的十步。这张图本身就是一个「并排」滚动叙事：左边舞台钉住（工具箱 + 投入与产出），右边十步往上滚，跨过蓝色触发线的第 05 步就是此刻舞台在讲的 -->
+<!-- 导出：chromium --headless --no-sandbox --hide-scrollbars --window-size=1920,1200 --screenshot=05-workflow.png 05-workflow.html -->
+<style>
+@font-face{font-family:ID;src:url(../../../public/fonts/InterDisplay-SemiBold.ttf);font-weight:600}
+@font-face{font-family:ID;src:url(../../../public/fonts/InterDisplay-Bold.ttf);font-weight:700}
+@font-face{font-family:I;src:url(../../../public/fonts/Inter-Regular.ttf);font-weight:400}
+@font-face{font-family:I;src:url(../../../public/fonts/Inter-Medium.ttf);font-weight:500}
+@font-face{font-family:GM;src:url(../../../public/fonts/GeistMono-Regular.ttf);font-weight:400}
+@font-face{font-family:GM;src:url(../../../public/fonts/GeistMono-Medium.ttf);font-weight:500}
+@font-face{font-family:SC;src:url(../../../public/fonts/NotoSansSC-Regular.otf);font-weight:400}
+@font-face{font-family:SC;src:url(../../../public/fonts/NotoSansSC-Medium.otf);font-weight:500}
+@font-face{font-family:SC;src:url(../../../public/fonts/NotoSansSC-Bold.otf);font-weight:700}
+:root{--bg:#000;--p:#1C1C1E;--p2:#2C2C2E;--t1:#F5F5F7;--t2:#86868B;--t3:#48484A;--a:#2997FF;--g:#30D158;
+  --grad:linear-gradient(90deg,#FF7A2F 0%,#FF2E7E 35%,#8B3DFF 68%,#2997FF 100%)}
+*{margin:0;padding:0;box-sizing:border-box}
+body{width:1920px;height:1200px;background:var(--bg);color:var(--t1);font-family:I,SC;overflow:hidden;padding:52px 96px 48px 72px;position:relative;
+  background-image:radial-gradient(rgba(255,255,255,.06) 1px,transparent 1px);background-size:32px 32px}
+header{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:30px}
+.k{font:500 17px GM;color:var(--t2);letter-spacing:.04em}
+h1{font:700 50px ID,SC;letter-spacing:-.01em;margin-top:10px}
+h1 em{font-style:normal;background:var(--grad);-webkit-background-clip:text;color:transparent}
+.sub{font:400 20px SC;color:var(--t2);margin-top:10px}
+.sub b{color:var(--t1);font-weight:500}
+.read{font:500 16px GM;color:var(--t2);text-align:right;line-height:1.7}
+.read b{color:var(--a);font-weight:500}
+.wrap{display:grid;grid-template-columns:minmax(0,1fr) 820px;grid-template-rows:930px;gap:40px;height:930px}
+/* 舞台：钉住 */
+.stage{position:relative;border:2px dashed var(--g);border-radius:26px;padding:30px 34px;background:rgba(48,209,88,.035)}
+.lab{position:absolute;top:-14px;left:28px;background:#000;padding:0 10px;font:500 16px GM;color:var(--g)}
+h2{font:700 26px SC;margin-bottom:16px;display:flex;align-items:baseline;gap:12px}
+h2 span{font:500 15px GM;color:var(--t2)}
+.tools{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.tools div{background:var(--p);border-radius:16px;padding:11px 18px;font:400 16px SC;color:var(--t2);line-height:1.45}
+.tools b{display:block;font:500 18px I,SC;color:var(--t1);margin-bottom:2px}
+.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
+.stats div{background:var(--p);border-radius:16px;padding:12px 18px 12px}
+.stats b{display:block;font:700 36px ID,SC;letter-spacing:-.02em;line-height:1.1}
+.stats div:first-child b{background:var(--grad);-webkit-background-clip:text;color:transparent}
+.stats span{font:400 15px SC;color:var(--t2);line-height:1.4;display:block;margin-top:4px}
+.loop{margin-top:18px;display:flex;align-items:center;gap:14px;font:500 17px SC;color:var(--t1)}
+.loop i{flex:0 0 auto;font:500 15px GM;color:var(--a);border:1.5px solid var(--a);border-radius:99px;padding:4px 12px;font-style:normal}
+.curve{margin-top:22px;background:var(--p);border-radius:16px;padding:14px 18px 10px}
+.ch{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px}.ch b{font:500 17px GM}.ch span{font:400 14px SC;color:var(--t2)}
+.curve svg{display:block;width:100%;height:auto}
+/* 步骤：往上滚 */
+.steps{position:relative;display:grid;grid-template-rows:repeat(10,1fr);gap:9px}
+.c{display:grid;grid-template-columns:58px 196px 1fr;align-items:center;background:var(--p);border-radius:16px;padding:0 20px;opacity:.72;border:1.5px solid transparent}
+.c.done{opacity:.55}
+.c .n{font:500 22px GM;color:var(--t2)}
+.c .t{font:700 21px SC}
+.c .d{font:400 16px SC;color:#C7C7CC;line-height:1.45}
+.c .d u{text-decoration:none;font:400 13.5px GM;color:var(--t2);display:block;margin-top:3px}
+.c.on{opacity:1;border-color:var(--a);background:#101A26;box-shadow:0 0 0 6px rgba(41,151,255,.12),0 18px 50px rgba(41,151,255,.18);transform:translateX(-14px)}
+.c.on .n{color:var(--a)}
+.c.on .d{color:var(--t1)}
+.c.on .d b{color:var(--a);font-weight:500}
+.trig{position:absolute;left:-30px;right:-22px;top:calc(4 * (100% - 81px) / 10 + 36px + (100% - 81px) / 20);border-top:2.5px dashed var(--a);pointer-events:none}
+.trig span{position:absolute;right:0;top:-30px;font:500 14px GM;color:var(--a)}
+/* 滚动条 */
+.bar{position:absolute;right:40px;top:180px;bottom:48px;width:6px;border-radius:3px;background:var(--p2)}
+.bar i{position:absolute;left:0;right:0;top:38%;height:13%;border-radius:3px;background:var(--a)}
+footer{position:absolute;left:72px;right:96px;bottom:14px;display:flex;justify-content:space-between;font:400 14px GM;color:var(--t3)}
+</style></head><body>
+<header>
+  <div>
+    <div class="k">DESIGN STYLE · LAYOUT 03 · MAKING OF</div>
+    <h1>从 0 到 1：<em>滚动叙事</em>这支 15 秒短片是怎么做出来的</h1>
+    <div class="sub">这张图本身就是一个「并排」滚动叙事：<b>左边舞台钉住不动，右边十步往上滚</b>，跨过蓝色触发线的那一步，就是此刻舞台在讲的。</div>
+  </div>
+  <div class="read">scrollY = <b>8 640</b> / 19 980<br>当前步骤 <b>05</b> / 10</div>
+</header>
+<div class="wrap">
+  <section class="stage">
+    <span class="lab">.stage { position: sticky; top: 0 }</span>
+    <h2>工具箱 <span>全部本地、免费</span></h2>
+    <div class="tools">
+      <div><b>Remotion 4 · React · TS</b>每一帧 = 页面在 scrollY(f) 处的样子</div>
+      <div><b>CSS 3D transform</b>爆炸手机：9 层框、主板、屏幕，不用 3D 软件</div>
+      <div><b>numpy</b>从零合成配乐与滚轮、拨弦、风声</div>
+      <div><b>ffmpeg</b>响度 −14 LUFS、抽帧、分享版</div>
+      <div><b>Python 手写 SVG</b>四张 1080×1350 布局图</div>
+      <div><b>fontTools · Chromium</b>字体子集内嵌、导出 2x PNG</div>
+      <div><b>Pillow · matplotlib</b>联系表、前后对比、节拍时间轴</div>
+      <div><b>git · GitHub</b>一期一个分支，Release 放成片</div>
+    </div>
+    <h2 style="margin-top:24px">投入与产出 <span>15 秒 · 900 帧 · 60fps</span></h2>
+    <div class="stats">
+      <div><b>1 个变量</b><span>全片只有 scrollY，<br>其余都是它的函数</span></div>
+      <div><b>30 次</b><span>滑动，速度峰值<br>全落在拍点上</span></div>
+      <div><b>21 060 px</b><span>虚拟页面高度，<br>9 个章节</span></div>
+      <div><b>0</b><span>外部素材：没有照片、<br>音源、AI 生图</span></div>
+      <div><b>≈ 1 700 行</b><span>视频 TS · 配乐与图片<br>≈ 1 000 行 Py</span></div>
+      <div><b>≈ 2.5 分钟</b><span>2 核并发渲染整片；<br>配乐 6 秒生成</span></div>
+    </div>
+    <div class="curve"><div class="ch"><b>scrollY = S(f)</b><span>30 次滑动 · 每拍一次 · 第 489 帧 = 8 640px</span></div>
+<svg width="820" height="128" viewBox="0 0 820 128"><defs><linearGradient id="g" x1="0" x2="1"><stop offset="0" stop-color="#FF7A2F"/><stop offset=".35" stop-color="#FF2E7E"/><stop offset=".68" stop-color="#8B3DFF"/><stop offset="1" stop-color="#2997FF"/></linearGradient></defs>
+<line x1="0" y1="120" x2="820" y2="120" stroke="#2C2C2E"/><line x1="0.0" y1="120" x2="0.0" y2="125" stroke="#48484A"/><line x1="27.3" y1="120" x2="27.3" y2="125" stroke="#48484A"/><line x1="54.7" y1="120" x2="54.7" y2="125" stroke="#48484A"/><line x1="82.0" y1="120" x2="82.0" y2="125" stroke="#48484A"/><line x1="109.3" y1="120" x2="109.3" y2="125" stroke="#48484A"/><line x1="136.7" y1="120" x2="136.7" y2="125" stroke="#48484A"/><line x1="164.0" y1="120" x2="164.0" y2="125" stroke="#48484A"/><line x1="191.3" y1="120" x2="191.3" y2="125" stroke="#48484A"/><line x1="218.7" y1="120" x2="218.7" y2="125" stroke="#48484A"/><line x1="246.0" y1="120" x2="246.0" y2="125" stroke="#48484A"/><line x1="273.3" y1="120" x2="273.3" y2="125" stroke="#48484A"/><line x1="300.7" y1="120" x2="300.7" y2="125" stroke="#48484A"/><line x1="328.0" y1="120" x2="328.0" y2="125" stroke="#48484A"/><line x1="355.3" y1="120" x2="355.3" y2="125" stroke="#48484A"/><line x1="382.7" y1="120" x2="382.7" y2="125" stroke="#48484A"/><line x1="410.0" y1="120" x2="410.0" y2="125" stroke="#48484A"/><line x1="437.3" y1="120" x2="437.3" y2="125" stroke="#48484A"/><line x1="464.7" y1="120" x2="464.7" y2="125" stroke="#48484A"/><line x1="492.0" y1="120" x2="492.0" y2="125" stroke="#48484A"/><line x1="519.3" y1="120" x2="519.3" y2="125" stroke="#48484A"/><line x1="546.7" y1="120" x2="546.7" y2="125" stroke="#48484A"/><line x1="574.0" y1="120" x2="574.0" y2="125" stroke="#48484A"/><line x1="601.3" y1="120" x2="601.3" y2="125" stroke="#48484A"/><line x1="628.7" y1="120" x2="628.7" y2="125" stroke="#48484A"/><line x1="656.0" y1="120" x2="656.0" y2="125" stroke="#48484A"/><line x1="683.3" y1="120" x2="683.3" y2="125" stroke="#48484A"/><line x1="710.7" y1="120" x2="710.7" y2="125" stroke="#48484A"/><line x1="738.0" y1="120" x2="738.0" y2="125" stroke="#48484A"/><line x1="765.3" y1="120" x2="765.3" y2="125" stroke="#48484A"/><line x1="792.7" y1="120" x2="792.7" y2="125" stroke="#48484A"/><line x1="820.0" y1="120" x2="820.0" y2="125" stroke="#48484A"/>
+<polyline points="0.0,120.0 2.7,120.0 5.5,119.9 8.2,119.7 10.9,119.1 13.7,118.5 16.4,118.2 19.1,118.0 21.9,117.9 24.6,117.8 27.3,117.8 30.1,116.8 32.8,116.3 35.5,116.0 38.3,115.9 41.0,115.8 43.7,115.7 46.5,115.7 49.2,115.7 51.9,115.7 54.7,115.7 57.4,114.6 60.1,114.1 62.9,113.8 65.6,113.7 68.3,113.6 71.1,113.6 73.8,113.5 76.5,113.5 79.3,113.5 82.0,113.5 84.7,111.9 87.5,111.1 90.2,110.8 92.9,110.6 95.7,110.4 98.4,110.4 101.1,110.3 103.9,110.3 106.6,110.3 109.3,110.3 112.1,108.6 114.8,107.9 117.5,107.5 120.3,107.3 123.0,107.2 125.7,107.1 128.5,107.1 131.2,107.0 133.9,107.0 136.7,107.0 139.4,105.4 142.1,104.7 144.9,104.3 147.6,104.1 150.3,104.0 153.1,103.9 155.8,103.8 158.5,103.8 161.3,103.8 164.0,103.8 166.7,102.2 169.5,101.4 172.2,101.0 174.9,100.8 177.7,100.7 180.4,100.6 183.1,100.6 185.9,100.6 188.6,100.5 191.3,100.5 194.1,100.5 196.8,100.5 199.5,100.5 202.3,100.5 205.0,100.5 207.7,100.5 210.5,100.5 213.2,100.5 215.9,100.5 218.7,100.5 221.4,100.8 224.1,102.1 226.9,106.3 229.6,110.7 232.3,112.5 235.1,113.2 237.8,113.5 240.5,113.5 243.3,113.5 246.0,113.3 248.7,112.6 251.5,111.1 254.2,107.8 256.9,104.4 259.7,102.5 262.4,101.5 265.1,101.0 267.9,100.7 270.6,100.5 273.3,100.5 276.1,100.5 278.8,100.2 281.5,99.5 284.3,97.8 287.0,96.0 289.7,95.0 292.5,94.5 295.2,94.2 297.9,94.1 300.7,94.1 303.4,92.4 306.1,91.7 308.9,91.3 311.6,91.1 314.3,91.0 317.1,90.9 319.8,90.9 322.5,90.8 325.3,90.8 328.0,90.8 330.7,89.2 333.5,88.4 336.2,88.1 338.9,87.9 341.7,87.7 344.4,87.7 347.1,87.6 349.9,87.6 352.6,87.6 355.3,87.6 358.1,87.4 360.8,86.6 363.5,84.3 366.3,80.7 369.0,79.0 371.7,78.3 374.5,77.9 377.2,77.8 379.9,77.8 382.7,77.8 385.4,76.2 388.1,75.5 390.9,75.1 393.6,74.9 396.3,74.8 399.1,74.7 401.8,74.6 404.5,74.6 407.3,74.6 410.0,74.6 412.7,73.0 415.5,72.2 418.2,71.9 420.9,71.6 423.7,71.5 426.4,71.4 429.1,71.4 431.9,71.4 434.6,71.4 437.3,71.4 440.1,71.2 442.8,70.4 445.5,68.1 448.3,64.5 451.0,62.8 453.7,62.0 456.5,61.7 459.2,61.6 461.9,61.6 464.7,61.6 467.4,60.0 470.1,59.2 472.9,58.9 475.6,58.7 478.3,58.5 481.1,58.5 483.8,58.4 486.5,58.4 489.3,58.4 492.0,58.4 494.7,56.8 497.5,56.0 500.2,55.6 502.9,55.4 505.7,55.3 508.4,55.2 511.1,55.2 513.9,55.2 516.6,55.1 519.3,55.1 522.1,54.9 524.8,53.9 527.5,50.8 530.3,46.0 533.0,43.7 535.7,42.7 538.5,42.3 541.2,42.2 543.9,42.2 546.7,42.2 549.4,42.1 552.1,42.0 554.9,41.6 557.6,40.8 560.3,39.9 563.1,39.4 565.8,39.1 568.5,39.0 571.3,38.9 574.0,38.9 576.7,38.8 579.5,38.1 582.2,36.0 584.9,33.8 587.7,32.9 590.4,32.6 593.1,32.4 595.9,32.4 598.6,32.4 601.3,32.4 604.1,32.4 606.8,32.4 609.5,32.4 612.3,32.4 615.0,32.4 617.7,32.4 620.5,32.4 623.2,32.4 625.9,32.4 628.7,32.4 631.4,32.4 634.1,32.4 636.9,32.4 639.6,32.4 642.3,32.4 645.1,32.4 647.8,32.4 650.5,32.4 653.3,32.4 656.0,32.4 658.7,32.2 661.5,31.4 664.2,29.1 666.9,24.5 669.7,21.7 672.4,20.4 675.1,19.8 677.9,17.7 680.6,16.8 683.3,16.4 686.1,16.3 688.8,16.2 691.5,16.2 694.3,14.5 697.0,13.5 699.7,13.2 702.5,13.1 705.2,13.0 707.9,13.0 710.7,13.0 713.4,10.4 716.1,9.9 718.9,9.8 721.6,9.7 724.3,10.2 727.1,11.7 729.8,11.9 732.5,10.0 735.3,9.8 738.0,9.7 740.7,7.7 743.5,7.0 746.2,6.7 748.9,6.6 751.7,6.5 754.4,6.5 757.1,6.5 759.9,6.5 762.6,6.5 765.3,6.5 768.1,6.4 770.8,5.8 773.5,4.2 776.3,1.6 779.0,0.5 781.7,-0.1 784.5,-0.3 787.2,-0.4 789.9,-0.2 792.7,-0.1 795.4,-0.0 798.1,-0.0 800.9,-0.0 803.6,0.0 806.3,0.0 809.1,0.0 811.8,0.0 814.5,0.0 817.3,0.0 820.0,0.0" fill="none" stroke="url(#g)" stroke-width="3" stroke-linejoin="round"/>
+<line x1="445.5" y1="0" x2="445.5" y2="120" stroke="#2997FF" stroke-dasharray="4 4"/><circle cx="445.5" cy="68.1" r="6" fill="#2997FF" stroke="#000" stroke-width="2"/></svg></div>
+  </section>
+  <section class="steps">
+    <div class="trig"><span>50%</span></div>
+    <div class="c done"><div class="n">01</div><div class="t">读仓库 · 换题</div><div class="d">读布局 01、02 与 MAKING 模板；圣杯做完被否，改做滚动叙事。<u>git pull · MAKING_TEMPLATE</u></div></div>
+    <div class="c done"><div class="n">02</div><div class="t">验证是布局</div><div class="d">它排的是滚动轴：高 section + 钉住的舞台 + 步骤 + 触发线。<u>与风格无关 · 有规则 · 有原生 CSS</u></div></div>
+    <div class="c done"><div class="n">03</div><div class="t">研究</div><div class="d">2012 Snow Fall → Bostock → Scrollama → 苹果逐帧 → 原生 CSS<u>README §1—§7</u></div></div>
+    <div class="c done"><div class="n">04</div><div class="t">设计令牌</div><div class="d">苹果黑 + 唯一强调蓝 #2997FF · Inter + Geist Mono · 30 帧一拍。<u>tokens.ts / .css / .json</u></div></div>
+    <div class="c on"><div class="n">05</div><div class="t">全片是一次滚动</div><div class="d">一张 21 060px 的虚拟网页，镜头只有 <b>scrollY = S(f)</b>：30 次滑动拼成的缓动曲线。<u>page.ts · FLICKS · S(f)</u></div></div>
+    <div class="c"><div class="n">06</div><div class="t">舞台与触发线</div><div class="d">stickyY 公式钉住舞台；步骤跨过 540px 才切换；X 光把结构画出来。<u>ui.tsx · intro.tsx</u></div></div>
+    <div class="c"><div class="n">07</div><div class="t">3D 设备</div><div class="d">纯 CSS 3D 手机，旋转、拆开的程度都 = 滚动进度。<u>Device.tsx</u></div></div>
+    <div class="c"><div class="n">08</div><div class="t">配乐音效</div><div class="d">从 page.ts 读滑动表：滑动 = 风声，每 120px 一声滚轮，过线 = 拨弦。<u>make_music.py · ffmpeg</u></div></div>
+    <div class="c"><div class="n">09</div><div class="t">质检循环</div><div class="d">只导要看的帧 → 拼图 → 改：首帧糊、X 光标签挤、标题被盖。<u>stills.mjs · contact_sheet.py</u></div></div>
+    <div class="c"><div class="n">10</div><div class="t">图与发布</div><div class="d">4 张图 → 母版 → 分享版 → 封面 → Release → 画廊。<u>make_svgs.py · remotion · gh</u></div></div>
+  </section>
+</div>
+<div class="bar"><i></i></div>
+<footer><span>github.com/guanmo-ai/design-style · layouts/03-scrollytelling/MAKING.md</span><span>风格塑造视觉，布局组织信息。</span></footer>
+</body></html>
