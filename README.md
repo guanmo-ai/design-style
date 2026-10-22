@@ -69,6 +69,7 @@ by 观默 [@guanmo_ai](https://x.com/guanmo_ai)
 |:-:|---|---|---|---|
 | **001** | [**包豪斯 Bauhaus**](styles/001-bauhaus) | 1919—1933 | 圆、方、三角 + 红黄蓝，把“好看”变成可以教的规则 | [🎬 视频](https://github.com/guanmo-ai/design-style/releases/tag/day-01) · [🛠 过程](styles/001-bauhaus/PROCESS.md) |
 | **002** | [**瑞士国际主义 Swiss Style**](styles/002-swiss-style) | 1950—1970 | 一张网格、一种无衬线、一种红，把版面变成一道可以计算的题 | [🎬 视频](https://github.com/guanmo-ai/design-style/releases/tag/day-02) · [🛠 过程](styles/002-swiss-style/PROCESS.md) |
+| **003** | [**构成主义 Constructivism**](styles/003-constructivism) | 1917—1932 | 一条斜线、一块红、一个大声的字：把轴转 30°，版面就开始往前冲 | [🎬 视频](https://github.com/guanmo-ai/design-style/releases/tag/day-03) · [🛠 过程](styles/003-constructivism/PROCESS.md) |
 
 ### 布局方式 · Layout
 
@@ -77,7 +78,7 @@ by 观默 [@guanmo_ai](https://x.com/guanmo_ai)
 | **01** | [**便当盒布局 Bento Grid**](layouts/01-bento-grid) | 2020s— | 大小不一的圆角格子，一格一事，用面积告诉你谁最重要 | [🎬 视频](https://github.com/guanmo-ai/design-style/releases/tag/layout-01) · [🛠 过程](layouts/01-bento-grid/PROCESS.md) |
 | **02** | [**瀑布流布局 Masonry**](layouts/02-masonry) | 2009— | 列宽固定、高度跟着内容走，每一张都落进最短的那一列 | [🎬 视频](https://github.com/guanmo-ai/design-style/releases/tag/layout-02) · [🛠 过程](layouts/02-masonry/PROCESS.md) |
 
-计划中（顺序可能调整）：构成主义 · 装饰艺术 Art Deco · 孟菲斯 Memphis · 新粗野主义网页 Neo-Brutalism · Y2K · 日式极简 …… 想看哪个，来 X 上告诉我。
+计划中（顺序可能调整）：装饰艺术 Art Deco · 孟菲斯 Memphis · 新粗野主义网页 Neo-Brutalism · Y2K · 日式极简 …… 想看哪个，来 X 上告诉我。
 
 ## 本地运行
 
@@ -101,7 +102,7 @@ npm run gallery:serve
 ```bash
 git clone https://github.com/guanmo-ai/design-style.git && cd design-style
 npm install
-npm run fonts                  # 下载开源字体到 public/fonts（Jost / JetBrains Mono / TeX Gyre Heros / Inter / Geist Mono / Selawik / Instrument Serif / Noto Sans SC）
+npm run fonts                  # 下载开源字体到 public/fonts（Jost / JetBrains Mono / TeX Gyre Heros / Oswald / Inter / Geist Mono / Selawik / Instrument Serif / Noto Sans SC）
 pip install numpy fonttools
 
 npm run studio                 # 在浏览器里逐帧预览、改参数
@@ -110,6 +111,8 @@ npx playwright install chromium
 npm run images:001             # 生成图案 → 内嵌字体的 preview SVG + 2x PNG
 npm run render:002             # 风格 002：生成配乐 → 渲染 out/002-swiss-style-master.mp4（带运动模糊，较慢）
 npm run images:002             # 风格 002：生成 4 张风格图 → preview SVG + 2x PNG
+npm run render:003             # 风格 003：生成配乐 → 渲染 out/003-constructivism-master.mp4（带运动模糊）
+npm run images:003             # 风格 003：生成 4 张风格图 → preview SVG + 2x PNG
 npm run render:L01             # 布局 01：生成配乐 → 渲染 out/01-bento-grid-master.mp4
 npm run images:L01             # 布局 01：生成 4 张布局图 → preview SVG + 2x PNG
 npm run render:L02             # 布局 02：生成配乐 → 渲染 out/02-masonry-master.mp4
@@ -138,6 +141,7 @@ design-style/
 │     └─ images/           # poster / cheatsheet / app-ui / pattern(.py)
 │        └─ preview/       # 内嵌字体、可直接分享的 SVG
 │  └─ 002-swiss-style/     # 同上；短片：一张 12 × 6 网格贯穿全片，红色接力换幕
+│  └─ 003-constructivism/  # 同上；短片：全片只有两条轴（−30° / 60°），形状接力换幕
 ├─ layouts/                # 布局：结构同 styles/，期号两位
 │  └─ 01-bento-grid/
 │     ├─ README.md         # 布局指南

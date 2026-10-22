@@ -1,0 +1,145 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1080" height="1350" viewBox="0 0 1080 1350">
+  <!-- Design Style · 风格 003 · 构成主义 Constructivism —— 速查卡 / 1080×1350（由 make_svgs.py 生成） -->
+  <defs>
+    <clipPath id="pc0"><rect x="90" y="1068" width="168" height="64"/></clipPath>
+    <clipPath id="pc1"><rect x="273" y="1068" width="168" height="64"/></clipPath>
+    <clipPath id="pc2"><rect x="456" y="1068" width="168" height="64"/></clipPath>
+    <clipPath id="pc3"><rect x="639" y="1068" width="168" height="64"/></clipPath>
+    <clipPath id="pc4"><rect x="822" y="1068" width="168" height="64"/></clipPath>
+  </defs>
+  <rect width="1080" height="1350" fill="#ECE4D2"/>
+  <text x="87.0" y="116.0" font-family="'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif" font-weight="900" font-size="52" fill="#161412">构成主义</text>
+  <text x="314.0" y="116.0" font-family="'Oswald', 'Noto Sans SC', 'Arial Narrow', sans-serif" font-weight="700" font-size="52" letter-spacing="0.52" fill="#161412">Constructivism</text>
+  <text x="90.0" y="168.0" font-family="'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif" font-weight="400" font-size="20" fill="#8F897D">风格速查卡 · 1917—1932 · 莫斯科 / 维捷布斯克</text>
+  <circle cx="968.0" cy="94.0" r="22.0" fill="#161412"/>
+  <polygon points="971.8,91.8 915.8,139.9 902.1,116.3" fill="#D3261C"/>
+  <text x="990.0" y="168.0" font-family="'Oswald', 'Noto Sans SC', 'Arial Narrow', sans-serif" font-weight="500" font-size="16" letter-spacing="1.28" text-anchor="end" fill="#8F897D">design style no.03</text>
+  <rect x="90.0" y="190.0" width="900.0" height="4.0" fill="#161412"/>
+  <polygon points="90.0,230.0 143.0,230.0 128.0,256.0 90.0,256.0" fill="#D3261C"/>
+  <text x="109.0" y="249.0" font-family="'Oswald', 'Noto Sans SC', 'Arial Narrow', sans-serif" font-weight="700" font-size="17" letter-spacing="0.68" text-anchor="middle" fill="#F6F1E6">01</text>
+  <text x="152.0" y="250.0" font-family="'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif" font-weight="700" font-size="22" fill="#161412">两条轴</text>
+  <text x="228.0" y="250.0" font-family="'Oswald', 'Noto Sans SC', 'Arial Narrow', sans-serif" font-weight="500" font-size="16" letter-spacing="1.28" fill="#8F897D">ДИАГОНАЛЬ</text>
+  <rect x="90.0" y="272.0" width="441.0" height="220.0" fill="#F6F1E6" stroke="#161412" stroke-width="1.5"/>
+  <path d="M154.0 456.0 H507.0" stroke="#8F897D" stroke-width="1.5" stroke-dasharray="4 5"/>
+  <path d="M240.0 456.0 A86 86 0 0 0 228.5 413.0" fill="none" stroke="#D3261C" stroke-width="2"/>
+  <text x="248.0" y="442.0" font-family="'Oswald', 'Noto Sans SC', 'Arial Narrow', sans-serif" font-weight="700" font-size="16" fill="#D3261C">30°</text>
+  <polygon points="148.0,445.6 433.8,280.6 445.8,301.4 160.0,466.4" fill="#D3261C"/>
+  <text x="286.9" y="386.2" font-family="'Oswald', 'Noto Sans SC', 'Arial Narrow', sans-serif" font-weight="600" font-size="15" letter-spacing="1.50" transform="rotate(-30 286.9 386.2)" fill="#F6F1E6">MAIN −30°</text>
+  <polygon points="323.3,261.3 333.7,255.3 425.7,414.6 415.3,420.6" fill="#161412"/>
+  <text x="395.9" y="351.0" font-family="'Oswald', 'Noto Sans SC', 'Arial Narrow', sans-serif" font-weight="600" font-size="13" letter-spacing="1.30" transform="rotate(60 395.9 351.0)" fill="#161412">CROSS 60°</text>
+  <rect x="114.0" y="300.0" width="150.0" height="6.0" fill="#161412"/>
+  <rect x="114.0" y="316.0" width="120.0" height="6.0" fill="#8F897D"/>
+  <rect x="114.0" y="332.0" width="136.0" height="6.0" fill="#8F897D"/>
+  <text x="114.0" y="370.0" font-family="'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif" font-weight="700" font-size="14" fill="#161412">信息 0°</text>
+  <text x="90.0" y="520.0" font-family="'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif" font-weight="700" font-size="16" fill="#161412">两条轴：主轴 −30° + 副轴 60°（互相垂直）</text>
+  <text x="90.0" y="542.0" font-family="'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif" font-weight="400" font-size="16" fill="#8F897D">斜的只给标题与色块，要读的字放平</text>
+  <text x="567.0" y="296.0" font-family="'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif" font-weight="400" font-size="16" fill="#8F897D">主轴</text>
+  <text x="672.0" y="296.0" font-family="'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif" font-weight="700" font-size="17" fill="#161412">−30° · 标题、色块、大字</text>
+  <text x="567.0" y="334.0" font-family="'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif" font-weight="400" font-size="16" fill="#8F897D">副轴</text>
+  <text x="672.0" y="334.0" font-family="'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif" font-weight="700" font-size="17" fill="#161412">60° · 粗条、“铆钉”、副标题</text>
+  <rect x="567.0" y="309.0" width="423.0" height="1.0" fill="rgba(22,20,18,0.10)"/>
+  <text x="567.0" y="372.0" font-family="'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif" font-weight="400" font-size="16" fill="#8F897D">信息</text>
+  <text x="672.0" y="372.0" font-family="'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif" font-weight="700" font-size="17" fill="#161412">0° · 日期、说明、数据一律水平</text>
+  <rect x="567.0" y="347.0" width="423.0" height="1.0" fill="rgba(22,20,18,0.10)"/>
+  <text x="567.0" y="410.0" font-family="'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif" font-weight="400" font-size="16" fill="#8F897D">节拍</text>
+  <text x="672.0" y="410.0" font-family="'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif" font-weight="700" font-size="17" fill="#161412">144 BPM · 25 帧 = 1 拍（视频）</text>
+  <rect x="567.0" y="385.0" width="423.0" height="1.0" fill="rgba(22,20,18,0.10)"/>
+  <text x="567.0" y="448.0" font-family="'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif" font-weight="400" font-size="16" fill="#8F897D">形状</text>
+  <text x="672.0" y="448.0" font-family="'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif" font-weight="700" font-size="17" fill="#161412">楔 · 圆 · 粗条 —— 圆角 0</text>
+  <rect x="567.0" y="423.0" width="423.0" height="1.0" fill="rgba(22,20,18,0.10)"/>
+  <text x="567.0" y="486.0" font-family="'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif" font-weight="400" font-size="16" fill="#8F897D">出血</text>
+  <text x="672.0" y="486.0" font-family="'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif" font-weight="700" font-size="17" fill="#161412">斜的东西可以出画面，字不行</text>
+  <rect x="567.0" y="461.0" width="423.0" height="1.0" fill="rgba(22,20,18,0.10)"/>
+  <polygon points="90.0,576.0 143.0,576.0 128.0,602.0 90.0,602.0" fill="#D3261C"/>
+  <text x="109.0" y="595.0" font-family="'Oswald', 'Noto Sans SC', 'Arial Narrow', sans-serif" font-weight="700" font-size="17" letter-spacing="0.68" text-anchor="middle" fill="#F6F1E6">02</text>
+  <text x="152.0" y="596.0" font-family="'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif" font-weight="700" font-size="22" fill="#161412">色板</text>
+  <text x="206.0" y="596.0" font-family="'Oswald', 'Noto Sans SC', 'Arial Narrow', sans-serif" font-weight="500" font-size="16" letter-spacing="1.28" fill="#8F897D">ЦВЕТ</text>
+  <rect x="90.0" y="618.0" width="135.0" height="64.0" fill="#ECE4D2" stroke="#161412" stroke-width="1"/>
+  <text x="90.0" y="710.0" font-family="'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif" font-weight="700" font-size="18" fill="#161412">旧纸</text>
+  <text x="225.0" y="710.0" font-family="'Oswald', 'Noto Sans SC', 'Arial Narrow', sans-serif" font-weight="700" font-size="17" text-anchor="end" fill="#161412">50%</text>
+  <text x="90.0" y="732.0" font-family="'Oswald', 'Noto Sans SC', 'Arial Narrow', sans-serif" font-weight="400" font-size="16" letter-spacing="0.64" fill="#161412">#ECE4D2</text>
+  <text x="90.0" y="752.0" font-family="'Oswald', 'Noto Sans SC', 'Arial Narrow', sans-serif" font-weight="400" font-size="16" letter-spacing="0.64" fill="#8F897D">236 228 210</text>
+  <rect x="243.0" y="618.0" width="135.0" height="64.0" fill="#161412"/>
+  <text x="243.0" y="710.0" font-family="'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif" font-weight="700" font-size="18" fill="#161412">印刷黑</text>
+  <text x="378.0" y="710.0" font-family="'Oswald', 'Noto Sans SC', 'Arial Narrow', sans-serif" font-weight="700" font-size="17" text-anchor="end" fill="#161412">30%</text>
+  <text x="243.0" y="732.0" font-family="'Oswald', 'Noto Sans SC', 'Arial Narrow', sans-serif" font-weight="400" font-size="16" letter-spacing="0.64" fill="#161412">#161412</text>
+  <text x="243.0" y="752.0" font-family="'Oswald', 'Noto Sans SC', 'Arial Narrow', sans-serif" font-weight="400" font-size="16" letter-spacing="0.64" fill="#8F897D">22 20 18</text>
+  <rect x="396.0" y="618.0" width="135.0" height="64.0" fill="#D3261C"/>
+  <text x="396.0" y="710.0" font-family="'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif" font-weight="700" font-size="18" fill="#161412">构成红</text>
+  <text x="531.0" y="710.0" font-family="'Oswald', 'Noto Sans SC', 'Arial Narrow', sans-serif" font-weight="700" font-size="17" text-anchor="end" fill="#D3261C">15%</text>
+  <text x="396.0" y="732.0" font-family="'Oswald', 'Noto Sans SC', 'Arial Narrow', sans-serif" font-weight="400" font-size="16" letter-spacing="0.64" fill="#161412">#D3261C</text>
+  <text x="396.0" y="752.0" font-family="'Oswald', 'Noto Sans SC', 'Arial Narrow', sans-serif" font-weight="400" font-size="16" letter-spacing="0.64" fill="#8F897D">211 38 28</text>
+  <rect x="549.0" y="618.0" width="135.0" height="64.0" fill="#8F897D"/>
+  <text x="549.0" y="710.0" font-family="'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif" font-weight="700" font-size="18" fill="#161412">网点灰</text>
+  <text x="684.0" y="710.0" font-family="'Oswald', 'Noto Sans SC', 'Arial Narrow', sans-serif" font-weight="700" font-size="17" text-anchor="end" fill="#161412">5%</text>
+  <text x="549.0" y="732.0" font-family="'Oswald', 'Noto Sans SC', 'Arial Narrow', sans-serif" font-weight="400" font-size="16" letter-spacing="0.64" fill="#161412">#8F897D</text>
+  <text x="549.0" y="752.0" font-family="'Oswald', 'Noto Sans SC', 'Arial Narrow', sans-serif" font-weight="400" font-size="16" letter-spacing="0.64" fill="#8F897D">143 137 125</text>
+  <rect x="702.0" y="618.0" width="144.0" height="64.0" fill="#ECE4D2" stroke="#161412" stroke-width="1"/>
+  <rect x="846.0" y="618.0" width="86.4" height="64.0" fill="#161412"/>
+  <rect x="932.4" y="618.0" width="43.2" height="64.0" fill="#D3261C"/>
+  <rect x="975.6" y="618.0" width="14.4" height="64.0" fill="#8F897D"/>
+  <text x="702.0" y="710.0" font-family="'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif" font-weight="700" font-size="18" fill="#161412">建议面积</text>
+  <text x="702.0" y="732.0" font-family="'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif" font-weight="400" font-size="16" fill="#161412">红是动词：推、冲、喊。</text>
+  <text x="702.0" y="752.0" font-family="'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif" font-weight="400" font-size="16" fill="#8F897D">亮纸 #F6F1E6 只给“白圆”。</text>
+  <polygon points="90.0,786.0 143.0,786.0 128.0,812.0 90.0,812.0" fill="#D3261C"/>
+  <text x="109.0" y="805.0" font-family="'Oswald', 'Noto Sans SC', 'Arial Narrow', sans-serif" font-weight="700" font-size="17" letter-spacing="0.68" text-anchor="middle" fill="#F6F1E6">03</text>
+  <text x="152.0" y="806.0" font-family="'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif" font-weight="700" font-size="22" fill="#161412">字体</text>
+  <text x="206.0" y="806.0" font-family="'Oswald', 'Noto Sans SC', 'Arial Narrow', sans-serif" font-weight="500" font-size="16" letter-spacing="1.28" fill="#8F897D">ШРИФТ</text>
+  <text x="82.4" y="933.0" font-family="'Oswald', 'Noto Sans SC', 'Arial Narrow', sans-serif" font-weight="700" font-size="120" letter-spacing="2.40" fill="#161412">КНИГИ</text>
+  <rect x="90.0" y="835.8" width="441.0" height="1.0" fill="#D3261C"/>
+  <text x="531.0" y="829.8" font-family="'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif" font-weight="700" font-size="12" text-anchor="end" fill="#D3261C">大写高度 0.81</text>
+  <rect x="90.0" y="933.0" width="441.0" height="1.0" fill="#D3261C"/>
+  <text x="531.0" y="927.0" font-family="'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif" font-weight="700" font-size="12" text-anchor="end" fill="#D3261C">基线</text>
+  <rect x="90.0" y="949.0" width="341.2" height="24.0" fill="#D3261C"/>
+  <text x="441.2" y="967.0" font-family="'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif" font-weight="700" font-size="12" fill="#D3261C">粗条 24 ≈ 字高 ¼</text>
+  <text x="567.0" y="840.0" font-family="'Oswald', 'Noto Sans SC', 'Arial Narrow', sans-serif" font-weight="700" font-size="17" letter-spacing="0.34" fill="#161412">Oswald 700 / 500</text>
+  <text x="567.0" y="862.0" font-family="'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif" font-weight="400" font-size="14" fill="#8F897D">标题、数字、西里尔字母 · 全大写 · 字距 +0.08em</text>
+  <text x="567.0" y="888.0" font-family="'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif" font-weight="700" font-size="17" fill="#161412">思源黑体 Noto Sans SC</text>
+  <text x="567.0" y="910.0" font-family="'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif" font-weight="400" font-size="14" fill="#8F897D">中文：Black 900 标题 · Bold 700 · Regular 400 正文</text>
+  <text x="567.0" y="936.0" font-family="'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif" font-weight="700" font-size="17" fill="#161412">为什么用窄体</text>
+  <text x="567.0" y="958.0" font-family="'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif" font-weight="400" font-size="14" fill="#8F897D">同样的宽度，窄体能放更大的字号 —— 大字靠字号，不靠加粗</text>
+  <text x="567.0" y="984.0" font-family="'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif" font-weight="700" font-size="17" fill="#161412">1920 年代</text>
+  <text x="567.0" y="1006.0" font-family="'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif" font-weight="400" font-size="14" fill="#8F897D">没有现成的字库：字是用直尺和圆规画出来的</text>
+  <polygon points="90.0,1030.0 143.0,1030.0 128.0,1056.0 90.0,1056.0" fill="#D3261C"/>
+  <text x="109.0" y="1049.0" font-family="'Oswald', 'Noto Sans SC', 'Arial Narrow', sans-serif" font-weight="700" font-size="17" letter-spacing="0.68" text-anchor="middle" fill="#F6F1E6">04</text>
+  <text x="152.0" y="1050.0" font-family="'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif" font-weight="700" font-size="22" fill="#161412">五条规则</text>
+  <text x="250.0" y="1050.0" font-family="'Oswald', 'Noto Sans SC', 'Arial Narrow', sans-serif" font-weight="500" font-size="16" letter-spacing="1.28" fill="#8F897D">ПЯТЬ ПРАВИЛ</text>
+  <rect x="90.0" y="1068.0" width="168.0" height="64.0" fill="#F6F1E6" stroke="#161412" stroke-width="1"/>
+  <g clip-path="url(#pc0)"><polygon points="104.5,1115.9 295.0,1005.9 302.0,1018.1 111.5,1128.1" fill="#D3261C"/><rect x="108.0" y="1118.0" width="70.0" height="2.0" fill="#161412"/></g>
+  <text x="90.0" y="1156.0" font-family="'Oswald', 'Noto Sans SC', 'Arial Narrow', sans-serif" font-weight="700" font-size="20" fill="#D3261C">1</text>
+  <text x="106.0" y="1156.0" font-family="'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif" font-weight="700" font-size="18" fill="#161412">斜线</text>
+  <text x="90.0" y="1178.0" font-family="'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif" font-weight="400" font-size="14" fill="#8F897D">主轴 −30°，</text>
+  <text x="90.0" y="1197.0" font-family="'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif" font-weight="400" font-size="14" fill="#8F897D">信息永远 0°</text>
+  <rect x="273.0" y="1068.0" width="168.0" height="64.0" fill="#F6F1E6" stroke="#161412" stroke-width="1"/>
+  <g clip-path="url(#pc1)"><polygon points="273.0,1132.0 441.0,1132.0 441.0,1073.5" fill="#D3261C"/><polygon points="273.0,1132.0 273.0,1068.0 313.0,1068.0" fill="#161412"/></g>
+  <text x="273.0" y="1156.0" font-family="'Oswald', 'Noto Sans SC', 'Arial Narrow', sans-serif" font-weight="700" font-size="20" fill="#D3261C">2</text>
+  <text x="289.0" y="1156.0" font-family="'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif" font-weight="700" font-size="18" fill="#161412">红与黑</text>
+  <text x="273.0" y="1178.0" font-family="'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif" font-weight="400" font-size="14" fill="#8F897D">红 15%、黑 30%，</text>
+  <text x="273.0" y="1197.0" font-family="'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif" font-weight="400" font-size="14" fill="#8F897D">其余是纸</text>
+  <rect x="456.0" y="1068.0" width="168.0" height="64.0" fill="#F6F1E6" stroke="#161412" stroke-width="1"/>
+  <g clip-path="url(#pc2)"><circle cx="508.0" cy="1104.0" r="20.0" fill="#161412"/><polygon points="483.5,1119.7 596.1,1054.7 601.1,1063.3 488.5,1128.3" fill="#D3261C"/><polygon points="576.0,1082.0 606.0,1078.0 588.0,1102.0" fill="#161412"/></g>
+  <text x="456.0" y="1156.0" font-family="'Oswald', 'Noto Sans SC', 'Arial Narrow', sans-serif" font-weight="700" font-size="20" fill="#D3261C">3</text>
+  <text x="472.0" y="1156.0" font-family="'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif" font-weight="700" font-size="18" fill="#161412">组装</text>
+  <text x="456.0" y="1178.0" font-family="'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif" font-weight="400" font-size="14" fill="#8F897D">粗条、圆、楔子</text>
+  <text x="456.0" y="1197.0" font-family="'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif" font-weight="400" font-size="14" fill="#8F897D">像零件一样拼</text>
+  <rect x="639.0" y="1068.0" width="168.0" height="64.0" fill="#F6F1E6" stroke="#161412" stroke-width="1"/>
+  <g clip-path="url(#pc3)"><circle cx="730.2" cy="1072.4" r="1.2" fill="#161412"/><circle cx="724.8" cy="1077.8" r="1.3" fill="#161412"/><circle cx="730.2" cy="1077.8" r="1.6" fill="#161412"/><circle cx="719.4" cy="1083.2" r="1.2" fill="#161412"/><circle cx="724.8" cy="1083.2" r="1.6" fill="#161412"/><circle cx="730.2" cy="1083.2" r="1.9" fill="#161412"/><circle cx="719.4" cy="1088.6" r="1.4" fill="#161412"/><circle cx="724.8" cy="1088.6" r="1.7" fill="#161412"/><circle cx="730.2" cy="1088.6" r="2.1" fill="#161412"/><circle cx="714.0" cy="1094.0" r="1.0" fill="#161412"/><circle cx="719.4" cy="1094.0" r="1.4" fill="#161412"/><circle cx="724.8" cy="1094.0" r="1.8" fill="#161412"/><circle cx="730.2" cy="1094.0" r="2.2" fill="#161412"/><circle cx="719.4" cy="1099.4" r="1.4" fill="#161412"/><circle cx="724.8" cy="1099.4" r="1.7" fill="#161412"/><circle cx="730.2" cy="1099.4" r="2.1" fill="#161412"/><circle cx="719.4" cy="1104.8" r="1.2" fill="#161412"/><circle cx="724.8" cy="1104.8" r="1.6" fill="#161412"/><circle cx="730.2" cy="1104.8" r="1.9" fill="#161412"/><circle cx="724.8" cy="1110.2" r="1.3" fill="#161412"/><circle cx="730.2" cy="1110.2" r="1.6" fill="#161412"/><circle cx="730.2" cy="1115.6" r="1.2" fill="#161412"/><circle cx="745.0" cy="1078.0" r="1.0" fill="#161412"/><circle cx="739.6" cy="1083.4" r="1.4" fill="#161412"/><circle cx="745.0" cy="1083.4" r="1.4" fill="#161412"/><circle cx="750.4" cy="1083.4" r="1.4" fill="#161412"/><circle cx="739.6" cy="1088.8" r="1.7" fill="#161412"/><circle cx="745.0" cy="1088.8" r="1.8" fill="#161412"/><circle cx="750.4" cy="1088.8" r="1.7" fill="#161412"/><circle cx="739.6" cy="1094.2" r="2.1" fill="#161412"/><circle cx="745.0" cy="1094.2" r="2.2" fill="#161412"/><circle cx="750.4" cy="1094.2" r="2.1" fill="#161412"/><circle cx="739.6" cy="1099.6" r="2.4" fill="#161412"/><circle cx="745.0" cy="1099.6" r="2.6" fill="#161412"/><circle cx="750.4" cy="1099.6" r="2.4" fill="#161412"/><circle cx="739.6" cy="1105.0" r="2.6" fill="#161412"/><circle cx="745.0" cy="1105.0" r="3.0" fill="#161412"/><circle cx="750.4" cy="1105.0" r="2.6" fill="#161412"/><circle cx="739.6" cy="1110.4" r="2.4" fill="#161412"/><circle cx="745.0" cy="1110.4" r="2.6" fill="#161412"/><circle cx="750.4" cy="1110.4" r="2.4" fill="#161412"/><circle cx="739.6" cy="1115.8" r="2.1" fill="#161412"/><circle cx="745.0" cy="1115.8" r="2.2" fill="#161412"/><circle cx="750.4" cy="1115.8" r="2.1" fill="#161412"/><circle cx="739.6" cy="1121.2" r="1.7" fill="#161412"/><circle cx="745.0" cy="1121.2" r="1.8" fill="#161412"/><circle cx="750.4" cy="1121.2" r="1.7" fill="#161412"/><circle cx="739.6" cy="1126.6" r="1.4" fill="#161412"/><circle cx="745.0" cy="1126.6" r="1.4" fill="#161412"/><circle cx="750.4" cy="1126.6" r="1.4" fill="#161412"/><circle cx="745.0" cy="1132.0" r="1.0" fill="#161412"/><circle cx="759.8" cy="1076.4" r="1.2" fill="#161412"/><circle cx="759.8" cy="1081.8" r="1.6" fill="#161412"/><circle cx="765.2" cy="1081.8" r="1.3" fill="#161412"/><circle cx="759.8" cy="1087.2" r="1.9" fill="#161412"/><circle cx="765.2" cy="1087.2" r="1.6" fill="#161412"/><circle cx="770.6" cy="1087.2" r="1.2" fill="#161412"/><circle cx="759.8" cy="1092.6" r="2.1" fill="#161412"/><circle cx="765.2" cy="1092.6" r="1.7" fill="#161412"/><circle cx="770.6" cy="1092.6" r="1.4" fill="#161412"/><circle cx="759.8" cy="1098.0" r="2.2" fill="#161412"/><circle cx="765.2" cy="1098.0" r="1.8" fill="#161412"/><circle cx="770.6" cy="1098.0" r="1.4" fill="#161412"/><circle cx="759.8" cy="1103.4" r="2.1" fill="#161412"/><circle cx="765.2" cy="1103.4" r="1.7" fill="#161412"/><circle cx="770.6" cy="1103.4" r="1.4" fill="#161412"/><circle cx="759.8" cy="1108.8" r="1.9" fill="#161412"/><circle cx="765.2" cy="1108.8" r="1.6" fill="#161412"/><circle cx="770.6" cy="1108.8" r="1.2" fill="#161412"/><circle cx="759.8" cy="1114.2" r="1.6" fill="#161412"/><circle cx="765.2" cy="1114.2" r="1.3" fill="#161412"/><circle cx="759.8" cy="1119.6" r="1.2" fill="#161412"/><rect x="657.0" y="1097.0" width="40.0" height="6.0" fill="#D3261C"/></g>
+  <text x="639.0" y="1156.0" font-family="'Oswald', 'Noto Sans SC', 'Arial Narrow', sans-serif" font-weight="700" font-size="20" fill="#D3261C">4</text>
+  <text x="655.0" y="1156.0" font-family="'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif" font-weight="700" font-size="18" fill="#161412">蒙太奇</text>
+  <text x="639.0" y="1178.0" font-family="'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif" font-weight="400" font-size="14" fill="#8F897D">照片剪开再拼，</text>
+  <text x="639.0" y="1197.0" font-family="'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif" font-weight="400" font-size="14" fill="#8F897D">只留最要紧的局部</text>
+  <rect x="822.0" y="1068.0" width="168.0" height="64.0" fill="#F6F1E6" stroke="#161412" stroke-width="1"/>
+  <g clip-path="url(#pc4)"><text x="892.0" y="1166.0" font-family="'Oswald', 'Noto Sans SC', 'Arial Narrow', sans-serif" font-weight="700" font-size="150" fill="#D3261C">А</text></g>
+  <text x="822.0" y="1156.0" font-family="'Oswald', 'Noto Sans SC', 'Arial Narrow', sans-serif" font-weight="700" font-size="20" fill="#D3261C">5</text>
+  <text x="838.0" y="1156.0" font-family="'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif" font-weight="700" font-size="18" fill="#161412">大字</text>
+  <text x="822.0" y="1178.0" font-family="'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif" font-weight="400" font-size="14" fill="#8F897D">最重要的字最大，</text>
+  <text x="822.0" y="1197.0" font-family="'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif" font-weight="400" font-size="14" fill="#8F897D">大到出血</text>
+  <rect x="90.0" y="1222.0" width="441.0" height="46.0" fill="#161412"/>
+  <text x="106.0" y="1252.0" font-family="'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif" font-weight="700" font-size="17" fill="#F6F1E6">这样做</text>
+  <text x="180.0" y="1252.0" font-family="'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif" font-weight="400" font-size="14" fill="#F6F1E6">一条主轴 · 红只给一个主角 · 要读的字放平</text>
+  <rect x="550.0" y="1223.0" width="439.0" height="44.0" fill="none" stroke="#D3261C" stroke-width="2"/>
+  <text x="565.0" y="1252.0" font-family="'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif" font-weight="700" font-size="17" fill="#D3261C">别这样</text>
+  <text x="639.0" y="1252.0" font-family="'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif" font-weight="400" font-size="14" fill="#161412">到处乱斜 · 假西里尔（Я 当 R）· 圆角渐变</text>
+  <text x="90.0" y="1302.0" font-family="'Oswald', 'Noto Sans SC', 'Arial Narrow', sans-serif" font-weight="400" font-size="16" letter-spacing="0.64" fill="#8F897D">github.com/guanmo-ai/design-style</text>
+  <text x="990.0" y="1302.0" font-family="'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif" font-weight="400" font-size="16" text-anchor="end" fill="#8F897D">@guanmo_ai · 每天一个设计风格</text>
+</svg>
