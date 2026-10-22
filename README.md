@@ -5,6 +5,11 @@
 <table>
   <tr>
     <td align="center" valign="top" width="33%">
+      <a href="https://guanmo-ai.github.io/design-style/#work-003-constructivism"><img src="styles/003-constructivism/video/cover.jpg" width="240" alt="构成主义 Constructivism 视频封面" /></a><br />
+      <a href="https://guanmo-ai.github.io/design-style/#work-003-constructivism"><b>构成主义</b></a><br />
+      <sub>Constructivism · 15 秒</sub>
+    </td>
+    <td align="center" valign="top" width="33%">
       <a href="https://guanmo-ai.github.io/design-style/#work-02-masonry"><img src="layouts/02-masonry/video/cover.jpg" width="240" alt="瀑布流布局 Masonry 视频封面" /></a><br />
       <a href="https://guanmo-ai.github.io/design-style/#work-02-masonry"><b>瀑布流布局</b></a><br />
       <sub>Masonry · 15 秒</sub>
@@ -14,13 +19,13 @@
       <a href="https://guanmo-ai.github.io/design-style/#work-002-swiss-style"><b>瑞士国际主义</b></a><br />
       <sub>Swiss Style · 15 秒</sub>
     </td>
+  </tr>
+  <tr>
     <td align="center" valign="top" width="33%">
       <a href="https://guanmo-ai.github.io/design-style/#work-01-bento-grid"><img src="layouts/01-bento-grid/video/cover.jpg" width="240" alt="便当盒布局 Bento Grid 视频封面" /></a><br />
       <a href="https://guanmo-ai.github.io/design-style/#work-01-bento-grid"><b>便当盒布局</b></a><br />
       <sub>Bento Grid · 15 秒</sub>
     </td>
-  </tr>
-  <tr>
     <td align="center" valign="top" width="33%">
       <a href="https://guanmo-ai.github.io/design-style/#work-001-bauhaus"><img src="styles/001-bauhaus/video/cover.jpg" width="240" alt="包豪斯 Bauhaus 视频封面" /></a><br />
       <a href="https://guanmo-ai.github.io/design-style/#work-001-bauhaus"><b>包豪斯</b></a><br />
