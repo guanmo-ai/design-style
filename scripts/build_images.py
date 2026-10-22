@@ -21,7 +21,9 @@ from fontTools.ttLib import TTFont
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 FONTS = os.path.join(ROOT, 'public', 'fonts')
 
-FACES = [  # (family, file, weight)
+FACES = [  # (family, file, weight[, style])
+    ('Instrument Serif', 'InstrumentSerif-Regular.ttf', '400'),
+    ('Instrument Serif', 'InstrumentSerif-Italic.ttf', '400', 'italic'),
     ('Jost', 'Jost.ttf', '100 900'),
     ('JetBrains Mono', 'JetBrainsMono.ttf', '100 800'),
     ('Inter Display', 'InterDisplay-Medium.ttf', '500'),
@@ -68,7 +70,8 @@ def subset_b64(path: str, chars: str) -> str:
 def embed(svg: str) -> str:
     chars = text_chars(svg)
     rules = []
-    for family, file, weight in FACES:
+    for family, file, weight, *rest in FACES:
+        style = rest[0] if rest else 'normal'
         if family not in svg:  # 只嵌入这张图实际用到的字体
             continue
         path = os.path.join(FONTS, file)
@@ -77,11 +80,31 @@ def embed(svg: str) -> str:
             continue
         data = subset_b64(path, chars)
         rules.append(
-            f"@font-face{{font-family:'{family}';font-weight:{weight};"
+            f"@font-face{{font-family:'{family}';font-weight:{weight};font-style:{style};"
             f"src:url(data:font/woff;base64,{data}) format('woff');}}"
         )
     style = '<style>' + ''.join(rules) + '</style>'
     return svg.replace('<defs>', '<defs>\n    ' + style, 1)
+
+
+def inline_images(svg: str, folder: str) -> str:
+    """把 <image href="相对路径.jpg"> 换成 data URI（缩到最长边 900px），让 preview 也是自包含的"""
+    def rep(m):
+        path = os.path.normpath(os.path.join(folder, html.unescape(m.group(1))))
+        if not os.path.exists(path):
+            print(f'  ! 缺少图片 {path}，跳过')
+            return m.group(0)
+        try:
+            from PIL import Image
+            im = Image.open(path).convert('RGB')
+            im.thumbnail((900, 900))
+            buf = io.BytesIO()
+            im.save(buf, 'JPEG', quality=84, optimize=True)
+            data = buf.getvalue()
+        except ImportError:
+            data = open(path, 'rb').read()
+        return f'href="data:image/jpeg;base64,{base64.b64encode(data).decode()}"'
+    return re.sub(r'href="(?!data:|#|https?:)([^"]+\.(?:jpe?g|png))"', rep, svg)
 
 
 def main(folder: str):
@@ -96,7 +119,7 @@ def main(folder: str):
             continue
         src = open(os.path.join(folder, name), encoding='utf-8').read()
         out = os.path.join(prev, name)
-        open(out, 'w', encoding='utf-8').write(embed(src))
+        open(out, 'w', encoding='utf-8').write(embed(inline_images(src, folder)))
         m = re.search(r'width="(\d+)" height="(\d+)"', src)
         jobs.append((out, os.path.join(png, name.replace('.svg', '.png')), int(m.group(1)), int(m.group(2))))
         print('preview', os.path.relpath(out, ROOT), f'{os.path.getsize(out) / 1024:.0f} KB')

@@ -1,0 +1,124 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1080" height="1350" viewBox="0 0 1080 1350">
+  <!-- Design Style · 布局 02 · 瀑布流布局 Masonry —— 速查卡 / 1080×1350（由 make_svgs.py 生成） -->
+  <defs>
+    <style>
+      .sf { font-family: 'Instrument Serif', 'Noto Sans SC', serif; }
+      .d { font-family: 'Inter Display', 'Noto Sans SC', sans-serif; }
+      .t { font-family: 'Inter', 'Noto Sans SC', sans-serif; }
+      .m { font-family: 'Geist Mono', 'SFMono-Regular', Menlo, monospace; }
+      .c { font-family: 'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif; }
+    </style>
+    <filter id="soft" x="-10%" y="-10%" width="120%" height="130%"><feDropShadow dx="0" dy="6" stdDeviation="10" flood-color="#281E14" flood-opacity=".08"/></filter>
+    <filter id="lift" x="-20%" y="-20%" width="140%" height="150%"><feDropShadow dx="0" dy="18" stdDeviation="22" flood-color="#281E14" flood-opacity=".16"/></filter>
+    
+  </defs>
+  <rect x="0" y="0" width="1080" height="1350" rx="0" fill="#0D0E10" />
+  <circle cx="77" cy="96" r="5" fill="#F2462E"/>
+  <text x="92" y="103" class="c" font-size="20" font-weight="500" fill="#8C8A86" letter-spacing="1" >布局 02 · 速查卡</text>
+  <text x="1008" y="103" class="c" font-size="16" font-weight="400" fill="#8C8A86" text-anchor="end" >这张卡本身就是一面两列的瀑布流</text>
+  <text x="69" y="196" class="sf" font-size="96" font-weight="400" fill="#F4F2EE" letter-spacing="-1.5" >Masonry</text>
+  <text x="412" y="190" class="c" font-size="38" font-weight="900" fill="#F4F2EE" letter-spacing="2" >瀑布流 · 一页记住</text>
+  <rect x="72" y="232" width="936" height="290" rx="20" fill="#17181B" stroke="rgba(255,255,255,.07)"/>
+  <text x="100" y="282" class="c" font-size="24" font-weight="700" fill="#F4F2EE" >算法：最短列优先</text>
+  <text x="980" y="281" class="m" font-size="14" font-weight="400" fill="#8C8A86" text-anchor="end" >O(n · 列数)</text>
+  <rect x="102" y="312" width="70" height="150" rx="8" fill="#24262A" />
+  <text x="137" y="486" class="m" font-size="13" font-weight="500" fill="#8C8A86" text-anchor="middle" >600</text>
+  <rect x="186" y="312" width="70" height="100" rx="8" fill="#24262A" />
+  <text x="221" y="436" class="m" font-size="13" font-weight="500" fill="#8C8A86" text-anchor="middle" >400</text>
+  <rect x="270" y="312" width="70" height="126" rx="8" fill="#24262A" />
+  <text x="305" y="462" class="m" font-size="13" font-weight="500" fill="#8C8A86" text-anchor="middle" >504</text>
+  <rect x="354" y="312" width="70" height="80" rx="8" fill="#24262A" />
+  <rect x="354" y="400" width="70" height="56" rx="8" fill="rgba(242,70,46,.12)" stroke="#F2462E" stroke-width="2" stroke-dasharray="6 5"/>
+  <text x="389" y="434" class="c" font-size="16" font-weight="700" fill="#F2462E" text-anchor="middle" >新</text>
+  <text x="450" y="336" class="m" font-size="14.5" font-weight="400" fill="#B9B7B2" >heights = [0] * 列数</text>
+  <text x="450" y="366" class="m" font-size="14.5" font-weight="400" fill="#B9B7B2" >for card in cards:</text>
+  <rect x="440" y="375" width="550" height="30" rx="6" fill="rgba(242,70,46,.16)" />
+  <text x="450" y="396" class="m" font-size="14.5" font-weight="500" fill="#F4F2EE" >  i = argmin(heights)</text>
+  <text x="450" y="426" class="m" font-size="14.5" font-weight="400" fill="#B9B7B2" >  place(card, 列 i)</text>
+  <text x="450" y="456" class="m" font-size="14.5" font-weight="400" fill="#B9B7B2" >  heights[i] += card.h + gap</text>
+  <text x="450" y="492" class="c" font-size="15" font-weight="400" fill="#8C8A86" >一样短取最左边 → 顺序大致还是从左到右。</text>
+  <rect x="72" y="542" width="458" height="380" rx="20" fill="#17181B" stroke="rgba(255,255,255,.07)"/>
+  <text x="100" y="592" class="c" font-size="24" font-weight="700" fill="#F4F2EE" >五条规则</text>
+  <text x="100" y="642" class="m" font-size="16" font-weight="500" fill="#F2462E" >01</text>
+  <text x="142" y="642" class="c" font-size="21" font-weight="700" fill="#F4F2EE" >列宽固定</text>
+  <text x="142" y="668" class="c" font-size="15" font-weight="400" fill="#8C8A86" >宽度统一，高度跟着内容走</text>
+  <text x="100" y="698" class="m" font-size="16" font-weight="500" fill="#F2462E" >02</text>
+  <text x="142" y="698" class="c" font-size="21" font-weight="700" fill="#F4F2EE" >最短优先</text>
+  <text x="142" y="724" class="c" font-size="15" font-weight="400" fill="#8C8A86" >按顺序，每张放进最短的那一列</text>
+  <text x="100" y="754" class="m" font-size="16" font-weight="500" fill="#F2462E" >03</text>
+  <text x="142" y="754" class="c" font-size="21" font-weight="700" fill="#F4F2EE" >统一间距</text>
+  <text x="142" y="780" class="c" font-size="15" font-weight="400" fill="#8C8A86" >横缝竖缝一样宽，8–24px</text>
+  <text x="100" y="810" class="m" font-size="16" font-weight="500" fill="#F2462E" >04</text>
+  <text x="142" y="810" class="c" font-size="21" font-weight="700" fill="#F4F2EE" >保持比例</text>
+  <text x="142" y="836" class="c" font-size="15" font-weight="400" fill="#8C8A86" >图片按原比例放，不裁切</text>
+  <text x="100" y="866" class="m" font-size="16" font-weight="500" fill="#F2462E" >05</text>
+  <text x="142" y="866" class="c" font-size="21" font-weight="700" fill="#F4F2EE" >先占位</text>
+  <text x="142" y="892" class="c" font-size="15" font-weight="400" fill="#8C8A86" >先写好宽高再加载，页面不跳</text>
+  <rect x="550" y="542" width="458" height="270" rx="20" fill="#17181B" stroke="rgba(255,255,255,.07)"/>
+  <text x="578" y="592" class="c" font-size="24" font-weight="700" fill="#F4F2EE" >断点：变的是列数</text>
+  <text x="980" y="591" class="m" font-size="14" font-weight="400" fill="#8C8A86" text-anchor="end" >columns · gap</text>
+  <line x1="578" y1="660" x2="980" y2="660" stroke="rgba(255,255,255,.07)"/>
+  <text x="578" y="644" class="m" font-size="17" font-weight="500" fill="#F4F2EE" >≥ 1200</text>
+  <text x="676" y="644" class="c" font-size="17" font-weight="500" fill="#8C8A86" >桌面</text>
+  <rect x="760" y="624" width="11.8" height="26" rx="3" fill="#F2462E" />
+  <rect x="777.8" y="624" width="11.8" height="26" rx="3" fill="#2A2C31" />
+  <rect x="795.6" y="624" width="11.8" height="26" rx="3" fill="#2A2C31" />
+  <rect x="813.4" y="624" width="11.8" height="26" rx="3" fill="#2A2C31" />
+  <rect x="831.2" y="624" width="8.8" height="26" rx="3" fill="#2A2C31" />
+  <text x="980" y="644" class="c" font-size="17" font-weight="700" fill="#F4F2EE" text-anchor="end" >5 列 · 24px</text>
+  <line x1="578" y1="710" x2="980" y2="710" stroke="rgba(255,255,255,.07)"/>
+  <text x="578" y="694" class="m" font-size="17" font-weight="500" fill="#F4F2EE" >≥ 768</text>
+  <text x="676" y="694" class="c" font-size="17" font-weight="500" fill="#8C8A86" >平板</text>
+  <rect x="760" y="674" width="21.7" height="26" rx="3" fill="#F2462E" />
+  <rect x="787.7" y="674" width="21.7" height="26" rx="3" fill="#2A2C31" />
+  <rect x="815.3" y="674" width="18.7" height="26" rx="3" fill="#2A2C31" />
+  <text x="980" y="694" class="c" font-size="17" font-weight="700" fill="#F4F2EE" text-anchor="end" >3 列 · 16px</text>
+  <text x="578" y="744" class="m" font-size="17" font-weight="500" fill="#F4F2EE" >&lt; 768</text>
+  <text x="676" y="744" class="c" font-size="17" font-weight="500" fill="#8C8A86" >手机</text>
+  <rect x="760" y="724" width="34" height="26" rx="3" fill="#F2462E" />
+  <rect x="800" y="724" width="31" height="26" rx="3" fill="#2A2C31" />
+  <text x="980" y="744" class="c" font-size="17" font-weight="700" fill="#F4F2EE" text-anchor="end" >2 列 · 8px</text>
+  <text x="578" y="786" class="c" font-size="15" font-weight="400" fill="#8C8A86" >列宽大致不变：手机 ≈ 屏宽一半。</text>
+  <rect x="550" y="832" width="458" height="210" rx="20" fill="#17181B" stroke="rgba(255,255,255,.07)"/>
+  <text x="578" y="882" class="c" font-size="24" font-weight="700" fill="#F4F2EE" >只用几种比例</text>
+  <text x="980" y="881" class="m" font-size="14" font-weight="400" fill="#8C8A86" text-anchor="end" >高 = 列宽 × 比例</text>
+  <rect x="578" y="899" width="50" height="75" rx="6" fill="#2A2C31" />
+  <text x="603" y="998" class="m" font-size="13" font-weight="500" fill="#8C8A86" text-anchor="middle" >2:3</text>
+  <rect x="645" y="907.3" width="50" height="66.7" rx="6" fill="#2A2C31" />
+  <text x="670" y="998" class="m" font-size="13" font-weight="500" fill="#8C8A86" text-anchor="middle" >3:4</text>
+  <rect x="712" y="911.5" width="50" height="62.5" rx="6" fill="#F2462E" />
+  <text x="737" y="998" class="m" font-size="13" font-weight="500" fill="#F4F2EE" text-anchor="middle" >4:5</text>
+  <rect x="779" y="924" width="50" height="50" rx="6" fill="#2A2C31" />
+  <text x="804" y="998" class="m" font-size="13" font-weight="500" fill="#8C8A86" text-anchor="middle" >1:1</text>
+  <rect x="846" y="936.5" width="50" height="37.5" rx="6" fill="#2A2C31" />
+  <text x="871" y="998" class="m" font-size="13" font-weight="500" fill="#8C8A86" text-anchor="middle" >4:3</text>
+  <rect x="913" y="945.9" width="50" height="28.1" rx="6" fill="#2A2C31" />
+  <text x="938" y="998" class="m" font-size="13" font-weight="500" fill="#8C8A86" text-anchor="middle" >16:9</text>
+  <text x="578" y="1022" class="c" font-size="15" font-weight="400" fill="#8C8A86" >比例种类少，墙更整齐；竖图最出效果。</text>
+  <rect x="72" y="942" width="458" height="330" rx="20" fill="#17181B" stroke="rgba(255,255,255,.07)"/>
+  <text x="100" y="992" class="c" font-size="24" font-weight="700" fill="#F4F2EE" >CSS（2025 起）</text>
+  <text x="502" y="991" class="m" font-size="14" font-weight="400" fill="#8C8A86" text-anchor="end" >display: grid-lanes</text>
+  <text x="100" y="1034" class="m" font-size="15" font-weight="400" fill="#B9B7B2" >.wall {</text>
+  <text x="100" y="1059" class="m" font-size="15" font-weight="500" fill="#F2462E" >  display: grid-lanes;</text>
+  <text x="100" y="1084" class="m" font-size="15" font-weight="400" fill="#B9B7B2" >  grid-template-columns:</text>
+  <text x="100" y="1109" class="m" font-size="15" font-weight="400" fill="#B9B7B2" >    repeat(auto-fill,</text>
+  <text x="100" y="1134" class="m" font-size="15" font-weight="400" fill="#B9B7B2" >      minmax(240px, 1fr));</text>
+  <text x="100" y="1159" class="m" font-size="15" font-weight="400" fill="#B9B7B2" >  gap: 16px;</text>
+  <text x="100" y="1184" class="m" font-size="15" font-weight="400" fill="#B9B7B2" >}</text>
+  <text x="100" y="1214" class="c" font-size="15" font-weight="400" fill="#8C8A86" >Safari 26.4+ 已支持；Chrome / Firefox</text>
+  <text x="100" y="1240" class="c" font-size="15" font-weight="400" fill="#8C8A86" >还在开关后面 → 先退回普通 Grid 或 JS。</text>
+  <rect x="550" y="1062" width="458" height="210" rx="20" fill="#17181B" stroke="rgba(255,255,255,.07)"/>
+  <text x="578" y="1112" class="c" font-size="24" font-weight="700" fill="#F4F2EE" >本期色板 · 字体</text>
+  <rect x="578" y="1136" width="56" height="56" rx="12" fill="#F2EFE9" stroke="rgba(255,255,255,.12)"/>
+  <text x="606" y="1214" class="c" font-size="14" font-weight="500" fill="#8C8A86" text-anchor="middle" >纸</text>
+  <rect x="654" y="1136" width="56" height="56" rx="12" fill="#141414" stroke="rgba(255,255,255,.12)"/>
+  <text x="682" y="1214" class="c" font-size="14" font-weight="500" fill="#8C8A86" text-anchor="middle" >墨</text>
+  <rect x="730" y="1136" width="56" height="56" rx="12" fill="#F2462E" stroke="rgba(255,255,255,.12)"/>
+  <text x="758" y="1214" class="c" font-size="14" font-weight="500" fill="#8C8A86" text-anchor="middle" >朱</text>
+  <rect x="806" y="1136" width="56" height="56" rx="12" fill="#E9E2D3" stroke="rgba(255,255,255,.12)"/>
+  <text x="834" y="1214" class="c" font-size="14" font-weight="500" fill="#8C8A86" text-anchor="middle" >沙</text>
+  <rect x="882" y="1136" width="56" height="56" rx="12" fill="#0D0E10" stroke="rgba(255,255,255,.12)"/>
+  <text x="910" y="1214" class="c" font-size="14" font-weight="500" fill="#8C8A86" text-anchor="middle" >夜</text>
+  <text x="578" y="1252" class="sf" font-size="26" font-weight="400" fill="#F4F2EE" >Instrument Serif</text>
+  <text x="772" y="1252" class="c" font-size="15" font-weight="400" fill="#8C8A86" >+ 思源黑体 + Geist Mono</text>
+</svg>

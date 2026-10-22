@@ -1,0 +1,184 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1080" height="1350" viewBox="0 0 1080 1350">
+  <!-- Design Style · 布局 02 · 瀑布流布局 Masonry —— 模板 / 1080×1350（由 make_svgs.py 生成） -->
+  <defs>
+    <style>
+      .sf { font-family: 'Instrument Serif', 'Noto Sans SC', serif; }
+      .d { font-family: 'Inter Display', 'Noto Sans SC', sans-serif; }
+      .t { font-family: 'Inter', 'Noto Sans SC', sans-serif; }
+      .m { font-family: 'Geist Mono', 'SFMono-Regular', Menlo, monospace; }
+      .c { font-family: 'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif; }
+    </style>
+    <filter id="soft" x="-10%" y="-10%" width="120%" height="130%"><feDropShadow dx="0" dy="6" stdDeviation="10" flood-color="#281E14" flood-opacity=".08"/></filter>
+    <filter id="lift" x="-20%" y="-20%" width="140%" height="150%"><feDropShadow dx="0" dy="18" stdDeviation="22" flood-color="#281E14" flood-opacity=".16"/></filter>
+    <clipPath id="k1"><rect x="72" y="236" width="936" height="470" rx="18"/></clipPath>
+    <clipPath id="k2"><rect x="104" y="348" width="207.5" height="259.4" rx="10"/></clipPath>
+    <clipPath id="k3"><rect x="325.5" y="348" width="207.5" height="311.2" rx="10"/></clipPath>
+    <clipPath id="k4"><rect x="547" y="348" width="207.5" height="116.7" rx="10"/></clipPath>
+    <clipPath id="k5"><rect x="768.5" y="348" width="207.5" height="276.7" rx="10"/></clipPath>
+    <clipPath id="k6"><rect x="547" y="478.7" width="207.5" height="259.4" rx="10"/></clipPath>
+    <clipPath id="k7"><rect x="104" y="621.4" width="207.5" height="116.7" rx="10"/></clipPath>
+    <clipPath id="k8"><rect x="768.5" y="638.7" width="207.5" height="259.4" rx="10"/></clipPath>
+    <clipPath id="k9"><rect x="325.5" y="673.2" width="207.5" height="311.2" rx="10"/></clipPath>
+    <linearGradient id="wfog" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff" stop-opacity="0"/><stop offset="1" stop-color="#fff"/></linearGradient>
+    <clipPath id="k10"><rect x="129" y="881" width="322" height="332" rx="0"/></clipPath>
+    <clipPath id="k11"><rect x="137" y="883" width="150" height="199.5" rx="8"/></clipPath>
+    <clipPath id="k12"><rect x="293" y="883" width="150" height="150" rx="8"/></clipPath>
+    <clipPath id="k13"><rect x="293" y="1085" width="150" height="112.5" rx="8"/></clipPath>
+    <clipPath id="k14"><rect x="137" y="1134.5" width="150" height="199.5" rx="8"/></clipPath>
+    <clipPath id="k15"><rect x="293" y="1249.5" width="150" height="112.5" rx="8"/></clipPath>
+    <clipPath id="k16"><rect x="137" y="1386" width="150" height="199.5" rx="8"/></clipPath>
+    <clipPath id="k17"><rect x="589" y="881" width="322" height="332" rx="0"/></clipPath>
+    <clipPath id="k18"><rect x="597" y="883" width="150" height="150" rx="8"/></clipPath>
+    <clipPath id="k19"><rect x="753" y="883" width="150" height="187.5" rx="8"/></clipPath>
+    <clipPath id="k20"><rect x="597" y="1089" width="150" height="150" rx="8"/></clipPath>
+    <clipPath id="k21"><rect x="753" y="1126.5" width="150" height="199.5" rx="8"/></clipPath>
+    <clipPath id="k22"><rect x="597" y="1295" width="150" height="199.5" rx="8"/></clipPath>
+    <clipPath id="k23"><rect x="753" y="1382" width="150" height="199.5" rx="8"/></clipPath>
+  </defs>
+  <rect x="0" y="0" width="1080" height="1350" rx="0" fill="#F2EFE9" />
+  <circle cx="77" cy="96" r="5" fill="#F2462E"/>
+  <text x="92" y="103" class="c" font-size="20" font-weight="500" fill="#6F6A62" letter-spacing="1" >布局 02 · 拿来就用</text>
+  <text x="70" y="190" class="c" font-size="54" font-weight="900" fill="#141414" letter-spacing="2" >三套排法</text>
+  <text x="308" y="190" class="sf" font-size="54" font-weight="400" fill="#6F6A62" font-style="italic">Templates</text>
+  <rect x="72" y="236" width="936" height="470" rx="18" fill="#FFFFFF" filter="url(#lift)"/>
+  <circle cx="96" cy="258" r="6" fill="#FF5F57"/>
+  <circle cx="116" cy="258" r="6" fill="#FEBC2E"/>
+  <circle cx="136" cy="258" r="6" fill="#28C840"/>
+  <text x="176" y="263" class="m" font-size="13" font-weight="400" fill="#6F6A62" >portfolio.design</text>
+  <text x="104" y="320" class="c" font-size="26" font-weight="900" fill="#141414" >作品</text>
+  <rect x="177.5" y="297" width="53" height="30" rx="15" fill="#141414" /><text x="204" y="317" class="c" font-size="14" font-weight="500" fill="#FFFFFF" text-anchor="middle" >全部</text>
+  <rect x="247.5" y="297" width="53" height="30" rx="15" fill="#F1EEE8" /><text x="274" y="317" class="c" font-size="14" font-weight="500" fill="#6F6A62" text-anchor="middle" >海报</text>
+  <rect x="317.5" y="297" width="53" height="30" rx="15" fill="#F1EEE8" /><text x="344" y="317" class="c" font-size="14" font-weight="500" fill="#6F6A62" text-anchor="middle" >摄影</text>
+  <rect x="387.5" y="297" width="53" height="30" rx="15" fill="#F1EEE8" /><text x="414" y="317" class="c" font-size="14" font-weight="500" fill="#6F6A62" text-anchor="middle" >静物</text>
+  <g clip-path="url(#k1)">
+  <image href="../../../public/02-masonry/photos/poster-swiss.jpg" x="104" y="348" width="207.5" height="259.4" preserveAspectRatio="xMidYMid slice" clip-path="url(#k2)" />
+  <image href="../../../public/02-masonry/photos/tulips.jpg" x="325.5" y="348" width="207.5" height="311.2" preserveAspectRatio="xMidYMid slice" clip-path="url(#k3)" />
+  <image href="../../../public/02-masonry/photos/lake.jpg" x="547" y="348" width="207.5" height="116.7" preserveAspectRatio="xMidYMid slice" clip-path="url(#k4)" />
+  <image href="../../../public/02-masonry/photos/stairs.jpg" x="768.5" y="348" width="207.5" height="276.7" preserveAspectRatio="xMidYMid slice" clip-path="url(#k5)" />
+  <image href="../../../public/02-masonry/photos/cup.jpg" x="547" y="478.7" width="207.5" height="259.4" preserveAspectRatio="xMidYMid slice" clip-path="url(#k6)" />
+  <image href="../../../public/02-masonry/photos/dunes.jpg" x="104" y="621.4" width="207.5" height="116.7" preserveAspectRatio="xMidYMid slice" clip-path="url(#k7)" />
+  <image href="../../../public/02-masonry/photos/poster-bauhaus.jpg" x="768.5" y="638.7" width="207.5" height="259.4" preserveAspectRatio="xMidYMid slice" clip-path="url(#k8)" />
+  <image href="../../../public/02-masonry/photos/tokyo.jpg" x="325.5" y="673.2" width="207.5" height="311.2" preserveAspectRatio="xMidYMid slice" clip-path="url(#k9)" />
+  </g>
+  <rect x="72" y="636" width="936" height="70" rx="0" fill="url(#wfog)" />
+  <text x="72" y="750" class="c" font-size="22" font-weight="900" fill="#141414" >A · 作品集 / 图库</text>
+  <text x="1008" y="750" class="m" font-size="15" font-weight="400" fill="#6F6A62" text-anchor="end" >4 列 · 列宽 ≈ 220 · 间距 14 · 圆角 10 · 不放文字</text>
+  <rect x="120" y="786" width="340" height="480" rx="46" fill="#111113" filter="url(#lift)"/>
+  <rect x="129" y="795" width="322" height="462" rx="38" fill="#FFFFFF" />
+  <rect x="244" y="806" width="92" height="24" rx="12" fill="#111113" />
+  <text x="158" y="824" class="t" font-size="14" font-weight="600" fill="#141414" >9:41</text>
+  <text x="234" y="861" class="c" font-size="13" font-weight="400" fill="#9A968F" text-anchor="middle" >关注</text>
+  <text x="290" y="861" class="c" font-size="13" font-weight="700" fill="#141414" text-anchor="middle" >发现</text>
+  <text x="346" y="861" class="c" font-size="13" font-weight="400" fill="#9A968F" text-anchor="middle" >附近</text>
+  <rect x="281" y="869" width="18" height="3" rx="1.5" fill="#F2462E" />
+  <g clip-path="url(#k10)">
+  <rect x="137" y="883" width="150" height="245.5" rx="8" fill="#FFFFFF" stroke="rgba(20,20,20,.07)"/>
+  <image href="../../../public/02-masonry/photos/tulips.jpg" x="137" y="883" width="150" height="199.5" preserveAspectRatio="xMidYMid slice" clip-path="url(#k11)" />
+  
+  <text x="144" y="1101.5" class="c" font-size="11" font-weight="500" fill="#141414" >周末给自己买了一束郁</text>
+  <circle cx="150" cy="1118.5" r="6" fill="#C38D9E"/>
+  <text x="160" y="1122.5" class="c" font-size="9.5" font-weight="400" fill="#8A8A8A" >小满</text>
+  <text x="280" y="1122.5" class="t" font-size="9.5" font-weight="400" fill="#8A8A8A" text-anchor="end" >♡ 2.4万</text>
+  <rect x="293" y="883" width="150" height="196" rx="8" fill="#FFFFFF" stroke="rgba(20,20,20,.07)"/>
+  <image href="../../../public/02-masonry/photos/bread.jpg" x="293" y="883" width="150" height="150" preserveAspectRatio="xMidYMid slice" clip-path="url(#k12)" />
+  
+  <text x="300" y="1052" class="c" font-size="11" font-weight="500" fill="#141414" >第一次烤出会裂口的欧</text>
+  <circle cx="306" cy="1069" r="6" fill="#E2C275"/>
+  <text x="316" y="1073" class="c" font-size="9.5" font-weight="400" fill="#8A8A8A" >面包日记</text>
+  <text x="436" y="1073" class="t" font-size="9.5" font-weight="400" fill="#8A8A8A" text-anchor="end" >♡ 3,106</text>
+  <rect x="293" y="1085" width="150" height="158.5" rx="8" fill="#FFFFFF" stroke="rgba(20,20,20,.07)"/>
+  <image href="../../../public/02-masonry/photos/cat.jpg" x="293" y="1085" width="150" height="112.5" preserveAspectRatio="xMidYMid slice" clip-path="url(#k13)" />
+  
+  <text x="300" y="1216.5" class="c" font-size="11" font-weight="500" fill="#141414" >晒太阳的橘猫，一下午</text>
+  <circle cx="306" cy="1233.5" r="6" fill="#C38D9E"/>
+  <text x="316" y="1237.5" class="c" font-size="9.5" font-weight="400" fill="#8A8A8A" >橘子</text>
+  <text x="436" y="1237.5" class="t" font-size="9.5" font-weight="400" fill="#8A8A8A" text-anchor="end" >♡ 5.2万</text>
+  <rect x="137" y="1134.5" width="150" height="245.5" rx="8" fill="#FFFFFF" stroke="rgba(20,20,20,.07)"/>
+  <image href="../../../public/02-masonry/photos/stairs.jpg" x="137" y="1134.5" width="150" height="199.5" preserveAspectRatio="xMidYMid slice" clip-path="url(#k14)" />
+  
+  <text x="144" y="1353" class="c" font-size="11" font-weight="500" fill="#141414" >圣托里尼的白色台阶</text>
+  <circle cx="150" cy="1370" r="6" fill="#C38D9E"/>
+  <text x="160" y="1374" class="c" font-size="9.5" font-weight="400" fill="#8A8A8A" >阿岛</text>
+  <text x="280" y="1374" class="t" font-size="9.5" font-weight="400" fill="#8A8A8A" text-anchor="end" >♡ 8,412</text>
+  <rect x="293" y="1249.5" width="150" height="158.5" rx="8" fill="#FFFFFF" stroke="rgba(20,20,20,.07)"/>
+  <image href="../../../public/02-masonry/photos/lake.jpg" x="293" y="1249.5" width="150" height="112.5" preserveAspectRatio="xMidYMid slice" clip-path="url(#k15)" />
+  
+  <text x="300" y="1381" class="c" font-size="11" font-weight="500" fill="#141414" >清晨五点的湖</text>
+  <circle cx="306" cy="1398" r="6" fill="#85A3C9"/>
+  <text x="316" y="1402" class="c" font-size="9.5" font-weight="400" fill="#8A8A8A" >Neo</text>
+  <text x="436" y="1402" class="t" font-size="9.5" font-weight="400" fill="#8A8A8A" text-anchor="end" >♡ 1.1万</text>
+  <rect x="137" y="1386" width="150" height="245.5" rx="8" fill="#FFFFFF" stroke="rgba(20,20,20,.07)"/>
+  <image href="../../../public/02-masonry/photos/nook.jpg" x="137" y="1386" width="150" height="199.5" preserveAspectRatio="xMidYMid slice" clip-path="url(#k16)" />
+  
+  <text x="144" y="1604.5" class="c" font-size="11" font-weight="500" fill="#141414" >把客厅一角改成阅读角</text>
+  <circle cx="150" cy="1621.5" r="6" fill="#C38D9E"/>
+  <text x="160" y="1625.5" class="c" font-size="9.5" font-weight="400" fill="#8A8A8A" >慢慢</text>
+  <text x="280" y="1625.5" class="t" font-size="9.5" font-weight="400" fill="#8A8A8A" text-anchor="end" >♡ 1.5万</text>
+  </g>
+  <rect x="129" y="1213" width="322" height="44" rx="0" fill="#FFFFFF" />
+  <line x1="129" y1="1213" x2="451" y2="1213" stroke="rgba(20,20,20,.07)"/>
+  <text x="161.2" y="1238" class="c" font-size="11" font-weight="700" fill="#141414" text-anchor="middle" >首页</text>
+  <text x="225.6" y="1238" class="c" font-size="11" font-weight="400" fill="#9A968F" text-anchor="middle" >购物</text>
+  <rect x="274" y="1223" width="32" height="22" rx="7" fill="#F2462E" />
+  <text x="290" y="1239" class="t" font-size="17" font-weight="600" fill="#FFFFFF" text-anchor="middle" >+</text>
+  <text x="354.4" y="1238" class="c" font-size="11" font-weight="400" fill="#9A968F" text-anchor="middle" >消息</text>
+  <text x="418.8" y="1238" class="c" font-size="11" font-weight="400" fill="#9A968F" text-anchor="middle" >我</text>
+  <text x="290" y="1306" class="c" font-size="20" font-weight="900" fill="#141414" text-anchor="middle" >B · 双列种草</text>
+  <text x="290" y="1330" class="c" font-size="13" font-weight="400" fill="#6F6A62" text-anchor="middle" >2 列 · 间距 6 · 封面 + 标题 + 点赞</text>
+  <rect x="580" y="786" width="340" height="480" rx="46" fill="#111113" filter="url(#lift)"/>
+  <rect x="589" y="795" width="322" height="462" rx="38" fill="#FFFFFF" />
+  <rect x="704" y="806" width="92" height="24" rx="12" fill="#111113" />
+  <text x="618" y="824" class="t" font-size="14" font-weight="600" fill="#141414" >9:41</text>
+  <text x="694" y="861" class="c" font-size="13" font-weight="400" fill="#9A968F" text-anchor="middle" >推荐</text>
+  <text x="750" y="861" class="c" font-size="13" font-weight="700" fill="#141414" text-anchor="middle" >家居</text>
+  <text x="806" y="861" class="c" font-size="13" font-weight="400" fill="#9A968F" text-anchor="middle" >吃的</text>
+  <rect x="741" y="869" width="18" height="3" rx="1.5" fill="#F2462E" />
+  <g clip-path="url(#k17)">
+  <rect x="597" y="883" width="150" height="200" rx="8" fill="#FFFFFF" stroke="rgba(20,20,20,.07)"/>
+  <image href="../../../public/02-masonry/photos/bread.jpg" x="597" y="883" width="150" height="150" preserveAspectRatio="xMidYMid slice" clip-path="url(#k18)" />
+  
+  <text x="604" y="1052" class="c" font-size="11" font-weight="500" fill="#141414" >手作欧包 4 只装</text>
+  <text x="604" y="1074" class="t" font-size="15" font-weight="700" fill="#F2462E" >¥39</text>
+  <text x="740" y="1073" class="c" font-size="9.5" font-weight="400" fill="#8A8A8A" text-anchor="end" >已售 2,108</text>
+  <rect x="753" y="883" width="150" height="237.5" rx="8" fill="#FFFFFF" stroke="rgba(20,20,20,.07)"/>
+  <image href="../../../public/02-masonry/photos/cup.jpg" x="753" y="883" width="150" height="187.5" preserveAspectRatio="xMidYMid slice" clip-path="url(#k19)" />
+  
+  <text x="760" y="1089.5" class="c" font-size="11" font-weight="500" fill="#141414" >手捏陶杯 · 米白</text>
+  <text x="760" y="1111.5" class="t" font-size="15" font-weight="700" fill="#F2462E" >¥128</text>
+  <text x="896" y="1110.5" class="c" font-size="9.5" font-weight="400" fill="#8A8A8A" text-anchor="end" >已售 316</text>
+  <rect x="597" y="1089" width="150" height="200" rx="8" fill="#FFFFFF" stroke="rgba(20,20,20,.07)"/>
+  <image href="../../../public/02-masonry/photos/citrus.jpg" x="597" y="1089" width="150" height="150" preserveAspectRatio="xMidYMid slice" clip-path="url(#k20)" />
+  
+  <text x="604" y="1258" class="c" font-size="11" font-weight="500" fill="#141414" >鲜切橙子 5 斤</text>
+  <text x="604" y="1280" class="t" font-size="15" font-weight="700" fill="#F2462E" >¥29.9</text>
+  <text x="740" y="1279" class="c" font-size="9.5" font-weight="400" fill="#8A8A8A" text-anchor="end" >已售 1.2万</text>
+  <rect x="753" y="1126.5" width="150" height="249.5" rx="8" fill="#FFFFFF" stroke="rgba(20,20,20,.07)"/>
+  <image href="../../../public/02-masonry/photos/monstera.jpg" x="753" y="1126.5" width="150" height="199.5" preserveAspectRatio="xMidYMid slice" clip-path="url(#k21)" />
+  
+  <text x="760" y="1345" class="c" font-size="11" font-weight="500" fill="#141414" >龟背竹 中号盆栽</text>
+  <text x="760" y="1367" class="t" font-size="15" font-weight="700" fill="#F2462E" >¥89</text>
+  <text x="896" y="1366" class="c" font-size="9.5" font-weight="400" fill="#8A8A8A" text-anchor="end" >已售 864</text>
+  <rect x="597" y="1295" width="150" height="249.5" rx="8" fill="#FFFFFF" stroke="rgba(20,20,20,.07)"/>
+  <image href="../../../public/02-masonry/photos/nook.jpg" x="597" y="1295" width="150" height="199.5" preserveAspectRatio="xMidYMid slice" clip-path="url(#k22)" />
+  
+  <text x="604" y="1513.5" class="c" font-size="11" font-weight="500" fill="#141414" >纸灯 · 落地款</text>
+  <text x="604" y="1535.5" class="t" font-size="15" font-weight="700" fill="#F2462E" >¥259</text>
+  <text x="740" y="1534.5" class="c" font-size="9.5" font-weight="400" fill="#8A8A8A" text-anchor="end" >已售 92</text>
+  <rect x="753" y="1382" width="150" height="249.5" rx="8" fill="#FFFFFF" stroke="rgba(20,20,20,.07)"/>
+  <image href="../../../public/02-masonry/photos/tulips.jpg" x="753" y="1382" width="150" height="199.5" preserveAspectRatio="xMidYMid slice" clip-path="url(#k23)" />
+  
+  <text x="760" y="1600.5" class="c" font-size="11" font-weight="500" fill="#141414" >郁金香 10 支</text>
+  <text x="760" y="1622.5" class="t" font-size="15" font-weight="700" fill="#F2462E" >¥45</text>
+  <text x="896" y="1621.5" class="c" font-size="9.5" font-weight="400" fill="#8A8A8A" text-anchor="end" >已售 3,410</text>
+  </g>
+  <rect x="589" y="1213" width="322" height="44" rx="0" fill="#FFFFFF" />
+  <line x1="589" y1="1213" x2="911" y2="1213" stroke="rgba(20,20,20,.07)"/>
+  <text x="621.2" y="1238" class="c" font-size="11" font-weight="700" fill="#141414" text-anchor="middle" >首页</text>
+  <text x="685.6" y="1238" class="c" font-size="11" font-weight="400" fill="#9A968F" text-anchor="middle" >分类</text>
+  <rect x="734" y="1223" width="32" height="22" rx="7" fill="#F2462E" />
+  <text x="750" y="1239" class="t" font-size="17" font-weight="600" fill="#FFFFFF" text-anchor="middle" >+</text>
+  <text x="814.4" y="1238" class="c" font-size="11" font-weight="400" fill="#9A968F" text-anchor="middle" >消息</text>
+  <text x="878.8" y="1238" class="c" font-size="11" font-weight="400" fill="#9A968F" text-anchor="middle" >我</text>
+  <text x="750" y="1306" class="c" font-size="20" font-weight="900" fill="#141414" text-anchor="middle" >C · 商品流</text>
+  <text x="750" y="1330" class="c" font-size="13" font-weight="400" fill="#6F6A62" text-anchor="middle" >2 列 · 间距 6 · 封面 + 名字 + 价格</text>
+</svg>

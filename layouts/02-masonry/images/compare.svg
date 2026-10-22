@@ -1,0 +1,158 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1080" height="1350" viewBox="0 0 1080 1350">
+  <!-- Design Style · 布局 02 · 瀑布流布局 Masonry —— 对照 / 1080×1350（由 make_svgs.py 生成） -->
+  <defs>
+    <style>
+      .sf { font-family: 'Instrument Serif', 'Noto Sans SC', serif; }
+      .d { font-family: 'Inter Display', 'Noto Sans SC', sans-serif; }
+      .t { font-family: 'Inter', 'Noto Sans SC', sans-serif; }
+      .m { font-family: 'Geist Mono', 'SFMono-Regular', Menlo, monospace; }
+      .c { font-family: 'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif; }
+    </style>
+    <filter id="soft" x="-10%" y="-10%" width="120%" height="130%"><feDropShadow dx="0" dy="6" stdDeviation="10" flood-color="#281E14" flood-opacity=".08"/></filter>
+    <filter id="lift" x="-20%" y="-20%" width="140%" height="150%"><feDropShadow dx="0" dy="18" stdDeviation="22" flood-color="#281E14" flood-opacity=".16"/></filter>
+    
+  </defs>
+  <rect x="0" y="0" width="1080" height="1350" rx="0" fill="#F2EFE9" />
+  <circle cx="77" cy="96" r="5" fill="#F2462E"/>
+  <text x="92" y="103" class="c" font-size="20" font-weight="500" fill="#6F6A62" letter-spacing="1" >布局 02 · 别排错</text>
+  <text x="70" y="196" class="c" font-size="54" font-weight="900" fill="#141414" letter-spacing="1" >同样 8 张卡片，四种排法</text>
+  <text x="72" y="244" class="c" font-size="22" font-weight="400" fill="#6F6A62" >数字 = 内容的先后顺序。看顺序怎么走、空白在哪里。</text>
+  <rect x="72" y="290" width="456" height="440" rx="24" fill="#FFFFFF" stroke="rgba(20,20,20,.06)" stroke-width="1" filter="url(#soft)"/>
+  <text x="100" y="340" class="c" font-size="26" font-weight="900" fill="#141414" >普通网格</text>
+  <text x="216" y="340" class="sf" font-size="26" font-weight="400" fill="#6F6A62" font-style="italic">Grid</text>
+  <g>
+  <rect x="100" y="366" width="126.7" height="83.3" rx="10" fill="#E6E0D5" />
+  <text x="216.7" y="439.3" class="c" font-size="13" font-weight="700" fill="#F2462E" text-anchor="end" >裁</text>
+  <circle cx="122" cy="388" r="13" fill="#141414"/>
+  <text x="122" y="393" class="m" font-size="14" font-weight="500" fill="#FFFFFF" text-anchor="middle" >1</text>
+  <rect x="236.7" y="366" width="126.7" height="83.3" rx="10" fill="#E6E0D5" />
+  <text x="353.3" y="439.3" class="c" font-size="13" font-weight="700" fill="#F2462E" text-anchor="end" >裁</text>
+  <circle cx="258.7" cy="388" r="13" fill="#141414"/>
+  <text x="258.7" y="393" class="m" font-size="14" font-weight="500" fill="#FFFFFF" text-anchor="middle" >2</text>
+  <rect x="373.3" y="366" width="126.7" height="83.3" rx="10" fill="#E6E0D5" />
+  <text x="490" y="439.3" class="c" font-size="13" font-weight="700" fill="#F2462E" text-anchor="end" >裁</text>
+  <circle cx="395.3" cy="388" r="13" fill="#141414"/>
+  <text x="395.3" y="393" class="m" font-size="14" font-weight="500" fill="#FFFFFF" text-anchor="middle" >3</text>
+  <rect x="100" y="459.3" width="126.7" height="83.3" rx="10" fill="#E6E0D5" />
+  <text x="216.7" y="532.7" class="c" font-size="13" font-weight="700" fill="#F2462E" text-anchor="end" >裁</text>
+  <circle cx="122" cy="481.3" r="13" fill="#141414"/>
+  <text x="122" y="486.3" class="m" font-size="14" font-weight="500" fill="#FFFFFF" text-anchor="middle" >4</text>
+  <rect x="236.7" y="459.3" width="126.7" height="83.3" rx="10" fill="#E6E0D5" />
+  <text x="353.3" y="532.7" class="c" font-size="13" font-weight="700" fill="#F2462E" text-anchor="end" >裁</text>
+  <circle cx="258.7" cy="481.3" r="13" fill="#141414"/>
+  <text x="258.7" y="486.3" class="m" font-size="14" font-weight="500" fill="#FFFFFF" text-anchor="middle" >5</text>
+  <rect x="373.3" y="459.3" width="126.7" height="83.3" rx="10" fill="#E6E0D5" />
+  <rect x="373.3" y="459.3" width="126.7" height="71.2" rx="10" fill="#D8D0C2" />
+  <text x="490" y="532.7" class="c" font-size="13" font-weight="700" fill="#6F6A62" text-anchor="end" >空</text>
+  <circle cx="395.3" cy="481.3" r="13" fill="#141414"/>
+  <text x="395.3" y="486.3" class="m" font-size="14" font-weight="500" fill="#FFFFFF" text-anchor="middle" >6</text>
+  <rect x="100" y="552.7" width="126.7" height="83.3" rx="10" fill="#E6E0D5" />
+  <rect x="100" y="552.7" width="126.7" height="95" rx="10" fill="#D8D0C2" />
+  <text x="216.7" y="626" class="c" font-size="13" font-weight="700" fill="#6F6A62" text-anchor="end" >空</text>
+  <circle cx="122" cy="574.7" r="13" fill="#141414"/>
+  <text x="122" y="579.7" class="m" font-size="14" font-weight="500" fill="#FFFFFF" text-anchor="middle" >7</text>
+  <rect x="236.7" y="552.7" width="126.7" height="83.3" rx="10" fill="#E6E0D5" />
+  <text x="353.3" y="626" class="c" font-size="13" font-weight="700" fill="#F2462E" text-anchor="end" >裁</text>
+  <circle cx="258.7" cy="574.7" r="13" fill="#141414"/>
+  <text x="258.7" y="579.7" class="m" font-size="14" font-weight="500" fill="#FFFFFF" text-anchor="middle" >8</text>
+  </g>
+  <text x="100" y="674" class="c" font-size="17" font-weight="700" fill="#141414" >行对齐 →</text>
+  <text x="100" y="702" class="c" font-size="17" font-weight="400" fill="#6F6A62" >按行读；但高低不一的图只能裁成一样，或留出空白。</text>
+  <rect x="552" y="290" width="456" height="440" rx="24" fill="#FFFFFF" stroke="#F2462E" stroke-width="2.5" filter="url(#soft)"/>
+  <text x="580" y="340" class="c" font-size="26" font-weight="900" fill="#141414" >瀑布流</text>
+  <text x="670" y="340" class="sf" font-size="26" font-weight="400" fill="#6F6A62" font-style="italic">Masonry</text>
+  <rect x="919.5" y="316" width="53" height="30" rx="15" fill="#F2462E" /><text x="946" y="336" class="c" font-size="14" font-weight="700" fill="#FFFFFF" text-anchor="middle" >本期</text>
+  <g>
+  <rect x="580" y="366" width="126.7" height="117.8" rx="10" fill="#E6E0D5" />
+  <circle cx="602" cy="388" r="13" fill="#F2462E"/>
+  <text x="602" y="393" class="m" font-size="14" font-weight="500" fill="#FFFFFF" text-anchor="middle" >1</text>
+  <rect x="716.7" y="366" width="126.7" height="78.5" rx="10" fill="#E6E0D5" />
+  <circle cx="738.7" cy="388" r="13" fill="#F2462E"/>
+  <text x="738.7" y="393" class="m" font-size="14" font-weight="500" fill="#FFFFFF" text-anchor="middle" >2</text>
+  <rect x="853.3" y="366" width="126.7" height="104.7" rx="10" fill="#E6E0D5" />
+  <circle cx="875.3" cy="388" r="13" fill="#F2462E"/>
+  <text x="875.3" y="393" class="m" font-size="14" font-weight="500" fill="#FFFFFF" text-anchor="middle" >3</text>
+  <rect x="716.7" y="454.5" width="126.7" height="78.5" rx="10" fill="#E6E0D5" />
+  <circle cx="738.7" cy="476.5" r="13" fill="#F2462E"/>
+  <text x="738.7" y="481.5" class="m" font-size="14" font-weight="500" fill="#FFFFFF" text-anchor="middle" >4</text>
+  <rect x="853.3" y="480.7" width="126.7" height="98.2" rx="10" fill="#E6E0D5" />
+  <circle cx="875.3" cy="502.7" r="13" fill="#F2462E"/>
+  <text x="875.3" y="507.7" class="m" font-size="14" font-weight="500" fill="#FFFFFF" text-anchor="middle" >5</text>
+  <rect x="580" y="493.8" width="126.7" height="44.2" rx="10" fill="#E6E0D5" />
+  <circle cx="602" cy="515.8" r="13" fill="#F2462E"/>
+  <text x="602" y="520.8" class="m" font-size="14" font-weight="500" fill="#FFFFFF" text-anchor="middle" >6</text>
+  <rect x="716.7" y="543.1" width="126.7" height="58.9" rx="10" fill="#E6E0D5" />
+  <circle cx="738.7" cy="565.1" r="13" fill="#F2462E"/>
+  <text x="738.7" y="570.1" class="m" font-size="14" font-weight="500" fill="#FFFFFF" text-anchor="middle" >7</text>
+  <rect x="580" y="548" width="126.7" height="88" rx="10" fill="#E6E0D5" />
+  <circle cx="602" cy="570" r="13" fill="#F2462E"/>
+  <text x="602" y="575" class="m" font-size="14" font-weight="500" fill="#FFFFFF" text-anchor="middle" >8</text>
+  </g>
+  <polyline points="602,388 738.7,388 875.3,388 738.7,476.5 875.3,502.7 602,515.8 738.7,565.1 602,570" fill="none" stroke="#F2462E" stroke-width="2" stroke-opacity=".55" stroke-linejoin="round"/>
+  <text x="580" y="674" class="c" font-size="17" font-weight="700" fill="#141414" >列宽固定，放进最短列 →</text>
+  <text x="580" y="702" class="c" font-size="17" font-weight="400" fill="#6F6A62" >没有空洞，顺序仍是左→右。</text>
+  <rect x="72" y="754" width="456" height="440" rx="24" fill="#FFFFFF" stroke="rgba(20,20,20,.06)" stroke-width="1" filter="url(#soft)"/>
+  <text x="100" y="804" class="c" font-size="26" font-weight="900" fill="#141414" >CSS 多列</text>
+  <text x="218.6" y="804" class="sf" font-size="26" font-weight="400" fill="#6F6A62" font-style="italic">columns</text>
+  <g>
+  <rect x="100" y="830" width="126.7" height="117.8" rx="10" fill="#E6E0D5" />
+  <circle cx="122" cy="852" r="13" fill="#141414"/>
+  <text x="122" y="857" class="m" font-size="14" font-weight="500" fill="#FFFFFF" text-anchor="middle" >1</text>
+  <rect x="100" y="957.8" width="126.7" height="78.5" rx="10" fill="#E6E0D5" />
+  <circle cx="122" cy="979.8" r="13" fill="#F2462E"/>
+  <text x="122" y="984.8" class="m" font-size="14" font-weight="500" fill="#FFFFFF" text-anchor="middle" >2</text>
+  <rect x="236.7" y="830" width="126.7" height="104.7" rx="10" fill="#E6E0D5" />
+  <circle cx="258.7" cy="852" r="13" fill="#141414"/>
+  <text x="258.7" y="857" class="m" font-size="14" font-weight="500" fill="#FFFFFF" text-anchor="middle" >3</text>
+  <rect x="236.7" y="944.7" width="126.7" height="78.5" rx="10" fill="#E6E0D5" />
+  <circle cx="258.7" cy="966.7" r="13" fill="#141414"/>
+  <text x="258.7" y="971.7" class="m" font-size="14" font-weight="500" fill="#FFFFFF" text-anchor="middle" >4</text>
+  <rect x="236.7" y="1033.2" width="126.7" height="66.8" rx="10" fill="#E6E0D5" />
+  <circle cx="258.7" cy="1055.2" r="13" fill="#141414"/>
+  <text x="258.7" y="1060.2" class="m" font-size="14" font-weight="500" fill="#FFFFFF" text-anchor="middle" >5</text>
+  <rect x="373.3" y="830" width="126.7" height="44.2" rx="10" fill="#E6E0D5" />
+  <circle cx="395.3" cy="852" r="13" fill="#141414"/>
+  <text x="395.3" y="857" class="m" font-size="14" font-weight="500" fill="#FFFFFF" text-anchor="middle" >6</text>
+  <rect x="373.3" y="884.2" width="126.7" height="58.9" rx="10" fill="#E6E0D5" />
+  <circle cx="395.3" cy="906.2" r="13" fill="#141414"/>
+  <text x="395.3" y="911.2" class="m" font-size="14" font-weight="500" fill="#FFFFFF" text-anchor="middle" >7</text>
+  <rect x="373.3" y="953.1" width="126.7" height="117.8" rx="10" fill="#E6E0D5" />
+  <circle cx="395.3" cy="975.1" r="13" fill="#141414"/>
+  <text x="395.3" y="980.1" class="m" font-size="14" font-weight="500" fill="#FFFFFF" text-anchor="middle" >8</text>
+  </g>
+  <polyline points="122,852 122,979.8 258.7,852 258.7,966.7 258.7,1055.2 395.3,852 395.3,906.2 395.3,975.1" fill="none" stroke="#141414" stroke-width="2" stroke-opacity=".55" stroke-linejoin="round"/>
+  <text x="100" y="1138" class="c" font-size="17" font-weight="700" fill="#141414" >看着像瀑布流，顺序却是一列一列往下 →</text>
+  <text x="100" y="1166" class="c" font-size="17" font-weight="400" fill="#6F6A62" >2 号跑到 1 号下面。</text>
+  <rect x="552" y="754" width="456" height="440" rx="24" fill="#FFFFFF" stroke="rgba(20,20,20,.06)" stroke-width="1" filter="url(#soft)"/>
+  <text x="580" y="804" class="c" font-size="26" font-weight="900" fill="#141414" >便当盒</text>
+  <text x="670" y="804" class="sf" font-size="26" font-weight="400" fill="#6F6A62" font-style="italic">Bento</text>
+  <g>
+  <rect x="580" y="830" width="195" height="176.7" rx="10" fill="#E6E0D5" />
+  <circle cx="602" cy="852" r="13" fill="#141414"/>
+  <text x="602" y="857" class="m" font-size="14" font-weight="500" fill="#FFFFFF" text-anchor="middle" >1</text>
+  <rect x="785" y="830" width="195" height="83.3" rx="10" fill="#E6E0D5" />
+  <circle cx="807" cy="852" r="13" fill="#141414"/>
+  <text x="807" y="857" class="m" font-size="14" font-weight="500" fill="#FFFFFF" text-anchor="middle" >2</text>
+  <rect x="785" y="923.3" width="92.5" height="83.3" rx="10" fill="#E6E0D5" />
+  <circle cx="807" cy="945.3" r="13" fill="#141414"/>
+  <text x="807" y="950.3" class="m" font-size="14" font-weight="500" fill="#FFFFFF" text-anchor="middle" >3</text>
+  <rect x="887.5" y="923.3" width="92.5" height="176.7" rx="10" fill="#E6E0D5" />
+  <circle cx="909.5" cy="945.3" r="13" fill="#141414"/>
+  <text x="909.5" y="950.3" class="m" font-size="14" font-weight="500" fill="#FFFFFF" text-anchor="middle" >4</text>
+  <rect x="580" y="1016.7" width="92.5" height="83.3" rx="10" fill="#E6E0D5" />
+  <circle cx="602" cy="1038.7" r="13" fill="#141414"/>
+  <text x="602" y="1043.7" class="m" font-size="14" font-weight="500" fill="#FFFFFF" text-anchor="middle" >5</text>
+  <rect x="682.5" y="1016.7" width="92.5" height="83.3" rx="10" fill="#E6E0D5" />
+  <circle cx="704.5" cy="1038.7" r="13" fill="#141414"/>
+  <text x="704.5" y="1043.7" class="m" font-size="14" font-weight="500" fill="#FFFFFF" text-anchor="middle" >6</text>
+  <rect x="785" y="1016.7" width="92.5" height="83.3" rx="10" fill="#E6E0D5" />
+  <circle cx="807" cy="1038.7" r="13" fill="#141414"/>
+  <text x="807" y="1043.7" class="m" font-size="14" font-weight="500" fill="#FFFFFF" text-anchor="middle" >7</text>
+  </g>
+  <text x="580" y="1138" class="c" font-size="17" font-weight="700" fill="#141414" >人来指定每格大小，格子对齐 →</text>
+  <text x="580" y="1166" class="c" font-size="17" font-weight="400" fill="#6F6A62" >适合 6–9 个固定模块。</text>
+  <text x="72" y="1252" class="c" font-size="22" font-weight="900" fill="#F2462E" >适合</text>
+  <text x="136" y="1252" class="c" font-size="20" font-weight="500" fill="#141414" >图片社区 · 灵感收藏 · 作品集 · 商品推荐 · 笔记信息流</text>
+  <text x="72" y="1292" class="c" font-size="22" font-weight="900" fill="#6F6A62" >不适合</text>
+  <text x="158" y="1292" class="c" font-size="20" font-weight="500" fill="#6F6A62" >要按行比较的（价格表）· 有阅读顺序的长文 · 只有 3–5 个模块</text>
+</svg>

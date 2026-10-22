@@ -1,0 +1,12 @@
+{"fps": 60, "bpm": 128.57, "frames": 900, "title": "布局 02 · 时间轴：每次重排最快的一刻都落在拍点上（1 拍 = 28 帧）",
+ "segments": [
+  {"label": "开场", "start": 0, "dur": 56, "color": "#E4DFD6"},
+  {"label": "01 定义", "start": 56, "dur": 84, "color": "#F2EFE9"},
+  {"label": "02 砌石墙", "start": 140, "dur": 84, "color": "#1D1915"},
+  {"label": "03 算法", "start": 224, "dur": 140, "color": "#0D0E10"},
+  {"label": "04 Pinterest", "start": 364, "dur": 84, "color": "#FFFFFF"},
+  {"label": "05 双列", "start": 448, "dur": 84, "color": "#0E0E10"},
+  {"label": "06 五条规则", "start": 532, "dur": 168, "color": "#17181B"},
+  {"label": "07 响应式", "start": 700, "dur": 84, "color": "#F2EFE9"},
+  {"label": "片尾", "start": 784, "dur": 116, "color": "#F2462E"}
+ ]}

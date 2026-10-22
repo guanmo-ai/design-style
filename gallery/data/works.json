@@ -131,5 +131,50 @@
         "kind": "网格系统"
       }
     ]
+  },
+  {
+    "id": "02-masonry",
+    "type": "layout",
+    "number": "02",
+    "title": "瀑布流布局",
+    "titleEn": "Masonry",
+    "years": "2009—",
+    "category": "当代界面",
+    "description": "列宽固定，高度跟着内容走，每一张都放进最短的那一列。从砌石墙、Pinterest 图钉墙到双列信息流，用 15 秒看懂瀑布流怎么排。",
+    "tags": [
+      "瀑布流",
+      "列",
+      "最短列优先",
+      "图片墙",
+      "Pinterest",
+      "双列信息流",
+      "响应式"
+    ],
+    "publishedAt": "2026-10-22T10:29:23Z",
+    "release": "layout-02",
+    "asset": "02-masonry.mp4",
+    "sha256": "160011b22f71e8420abf7d4c694d49e41337410a931fbaff912d4e8d6d75710e",
+    "images": [
+      {
+        "file": "poster",
+        "title": "一张海报，认识瀑布流",
+        "kind": "布局海报"
+      },
+      {
+        "file": "cheatsheet",
+        "title": "算法、断点、比例与五条规则",
+        "kind": "布局速查"
+      },
+      {
+        "file": "compare",
+        "title": "同样 8 张卡片，四种排法",
+        "kind": "排法对比"
+      },
+      {
+        "file": "templates",
+        "title": "作品集、双列种草、商品流",
+        "kind": "三套模板"
+      }
+    ]
   }
 ]
