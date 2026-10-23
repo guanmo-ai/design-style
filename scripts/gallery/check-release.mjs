@@ -10,6 +10,7 @@ export async function checkRelease(base = output) {
   const works = await loadCatalog();
   const expected = new Set(['index.html', 'LICENSE', 'NOTICE.md', '.nojekyll', 'data/works.json',
     'assets/gallery.css', 'assets/gallery.mjs', 'assets/model.mjs', 'assets/reader.css', 'assets/reader.mjs', 'assets/i18n.mjs', 'assets/mark.svg',
+    'assets/language-menu.mjs', 'assets/icons/globe.svg', 'assets/icons/chevron-down.svg', 'assets/icons/check.svg', 'assets/icons/LICENSE-Lucide.txt',
     'assets/fonts/DMSans-latin.woff2', 'assets/fonts/Newsreader-latin.woff2',
     'assets/fonts/OFL-DMSans.txt', 'assets/fonts/OFL-Newsreader.txt']);
   for (const work of works) {
