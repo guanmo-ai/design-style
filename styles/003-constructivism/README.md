@@ -1,5 +1,7 @@
 # 003 · 构成主义 Constructivism（1917—1932）
 
+**中文** · [English](README.en.md)
+
 > **一句话：** 一条斜线，一块红，一个大声的字——把版面从“摆好”变成“冲出去”。
 
 🎬 [看视频](https://github.com/guanmo-ai/design-style/releases/tag/day-03) · 🛠 [制作过程](PROCESS.md) · 🧰 [从 0 到 1：工具与流程](MAKING.md) · 🖼 [图片源文件](images)

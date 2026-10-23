@@ -1,5 +1,7 @@
 # 001 · 包豪斯 Bauhaus（1919—1933）
 
+**中文** · [English](README.en.md)
+
 > **一句话：** 只用圆、方、三角和红黄蓝，把“好看”变成一套可以教、可以量产的规则。
 
 🎬 [看视频](https://github.com/guanmo-ai/design-style/releases/tag/day-01) · 🛠 [制作过程](PROCESS.md) · 🖼 [图片源文件](images)

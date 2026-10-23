@@ -1,17 +1,17 @@
 import {mkdir, rm, cp, writeFile, access, readFile} from 'node:fs/promises';
 import path from 'node:path';
 import {root, cache, output, loadCatalog, sha256} from './catalog.mjs';
-import {renderDocument} from '../../gallery/render-documents.mjs';
+import {renderDocument, DOCUMENT_PAGES} from '../../gallery/render-documents.mjs';
 import {workDir} from '../../gallery/assets/model.mjs';
 
 const works = await loadCatalog();
 // Render and validate documents before replacing the previous usable build.
 const pages = [];
 for (const work of works) {
-  for (const [kind, file] of [['guide', 'README.md'], ['process', 'PROCESS.md']]) {
-    const document = renderDocument(await readFile(path.join(root, workDir(work), file), 'utf8'), work, kind);
+  for (const {kind, language, file, slug} of DOCUMENT_PAGES) {
+    const document = renderDocument(await readFile(path.join(root, workDir(work), file), 'utf8'), work, kind, language);
     await Promise.all(document.assets.map(asset => access(path.join(root, workDir(work), asset))));
-    pages.push({work, kind, ...document});
+    pages.push({work, slug, ...document});
   }
 }
 for (const work of works) {
@@ -35,7 +35,7 @@ for (const work of works) {
 for (const page of pages) {
   const directory = path.join(output, 'read', page.work.id);
   await mkdir(directory, {recursive: true});
-  await writeFile(path.join(directory, `${page.kind}.html`), page.html);
+  await writeFile(path.join(directory, `${page.slug}.html`), page.html);
   for (const asset of page.assets) {
     const destination = path.join(output, workDir(page.work), asset);
     await mkdir(path.dirname(destination), {recursive: true});

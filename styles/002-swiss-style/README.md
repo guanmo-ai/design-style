@@ -1,5 +1,7 @@
 # 002 · 瑞士国际主义 Swiss Style（1950—1970）
 
+**中文** · [English](README.en.md)
+
 > **一句话：** 一张网格、一种无衬线、一种红——把版面变成一道可以计算的题，答案清楚到全世界都看得懂。
 
 🎬 [看视频](https://github.com/guanmo-ai/design-style/releases/tag/day-02) · 🛠 [制作过程](PROCESS.md) · 🖼 [图片源文件](images)
