@@ -1,0 +1,45 @@
+/* 004 · 孟菲斯 Memphis —— 设计令牌（CSS 版） */
+:root {
+  --memphis-paper: #FDF6EC;
+  --memphis-ink: #111111;
+  --memphis-pink: #FF7EB6;
+  --memphis-yellow: #FFD23F;
+  --memphis-teal: #22C3B5;
+  --memphis-blue: #2D4BFF;
+  --memphis-red: #FF5A36;
+  --memphis-lilac: #B79CFF;
+
+  --memphis-font-display: 'Fredoka', 'Jost', system-ui, sans-serif;
+  --memphis-font-cn: 'Noto Sans SC', 'PingFang SC', sans-serif;
+
+  /* 规则 05：黑描边 + 硬投影（不模糊） */
+  --memphis-outline: 3px solid var(--memphis-ink);
+  --memphis-shadow: 6px 6px 0 var(--memphis-ink);
+  /* 规则 04：歪着放 */
+  --memphis-tilt-s: 6deg;
+  --memphis-tilt-m: 12deg;
+  --memphis-tilt-l: 18deg;
+}
+
+/* 一个孟菲斯按钮：糖果色 + 黑描边 + 硬投影，按下去投影收回 */
+.memphis-button {
+  background: var(--memphis-yellow);
+  color: var(--memphis-ink);
+  border: var(--memphis-outline);
+  border-radius: 999px;
+  box-shadow: var(--memphis-shadow);
+  font: 700 18px/1 var(--memphis-font-display);
+  padding: 14px 28px;
+  transform: rotate(-3deg);
+  transition: transform 0.12s, box-shadow 0.12s;
+}
+.memphis-button:active {
+  transform: rotate(-3deg) translate(6px, 6px);
+  box-shadow: 0 0 0 var(--memphis-ink);
+}
+
+/* 规则 03：图案（波浪线），可以直接当背景 */
+.memphis-squiggle {
+  background-color: var(--memphis-pink);
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='60' height='24'%3E%3Cpath d='M0 12 Q15 0 30 12 T60 12' fill='none' stroke='%23111' stroke-width='4'/%3E%3C/svg%3E");
+}
