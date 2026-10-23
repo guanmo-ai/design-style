@@ -1,21 +1,24 @@
 """
-Design Style · 布局 03 · Scrollytelling 滚动叙事 —— 配乐 v3（纯代码合成，无任何外部音源 / 采样）
+Design Style · 布局 03 · Scrollytelling 滚动叙事 —— 配乐 v5（真乐器采样 × 代码编排）
 
-方向：发布会开场片（keynote launch film）× 电影预告的混合 —— 低频冲击、铜管 braam、超锯齿弦乐 Pad、
-四踩电子律动、带泛音失谐的钢琴、大空间混响。120 BPM（1 拍 = 30 帧 = 0.5 秒）· D 大调 / b 小调 · 15 秒
+v4 的配乐全是合成器，审片意见是“要能触动人心”。v5 换成真乐器：弦乐组（小提琴 / 中提琴 / 大提琴 / 低音提琴）、
+立式钢琴、竖琴、钟琴、圆号、定音鼓、大鼓、吊镲、锣 —— 全部来自 VSCO 2 Community Edition（Versilian Studios，
+CC0 公共领域，可自由使用，https://github.com/sgossner/VSCO-2-CE）。第一次运行时按需下载用到的那几十个文件到
+.cache/vsco/（不进仓库）。编曲、混音、音效仍然全部是这份代码：每一个音在哪一帧响，都从 video/page.ts 读出来。
 
-  0–1.5s    开场：次低频长音 + 倒放的混响钢琴往上涌 → 第 60 帧（屏幕亮起）冲击 + braam
-  1.5–3.4s  01 定义：侧链压缩的八分音符贝斯、轻底鼓、拨弦琶音；每一行字过线 → 一个钢琴音（往上走）
-  3.4–5.75s 02 结构：律动抽空，只剩弦乐与时钟般的细碎高音；第 240 帧倒着滚 → 整条音乐真的“倒带”；
-            第 270 帧再滚一遍 → 钢琴上行；第 300 帧舞台松开 → 低音一击；随后上扫进下一章
-  5.75–10s  03–05：完整律动（四踩底鼓、拍手、开镲）；Snow Fall 加风声与远处的钢琴；
-            数据一章每一步一串拨弦；苹果一章 braam + 合唱“啊”铺满，转一圈的每一下滑动一声低鼓
-  10–11.5s  06 四种排法：滤波慢慢打开，四块面板亮起 → 四声上行的钟；军鼓滚奏 + 上扫，攒到最高
-  11.5–14s  07 五条规则：落地（Asus → A 解决）；匀速滚动里每点亮一条 → 一下铜管和弦 + 低鼓
-  14–15s    片尾：最后一击 + D 大调加九和弦，长长的尾音
-另外，整条片子“滚动的声音”来自 S(f) 本身：滚得越快，空气声越响、越亮。
+120 BPM（1 拍 = 30 帧 = 0.5 秒）· D 大调 · 15 秒。一条旋律贯穿全片：
+  0–1s      开场：高音小提琴从无到有，钢琴两个弱起音 → 第 60 帧窗口落定：弦乐 D 大调铺开 + 竖琴上行
+  1–5s      ① 并排：钢琴八分音符分解和弦；低音一步一步往下走（D → C# → B → G，卡农式）；
+            每一步越过触发线 → 一个旋律音（F# → E → D → B），钟琴叠一个八度
+  5–7s      X 光：弦乐换成颤弓（悬念）；三个半拍倒着滚 → 三个倒放的钢琴音被“吸”回去；一口气滚回来 → 竖琴上行刮奏
+  7–9s      ② 覆盖：V → vi 的假终止落到 b 小调，最温柔的一段；旋律往上爬（F# → G → A → B）
+  9–11.5s   ③ 逐帧：每拍一下大鼓，大提琴 / 小提琴跳弓八分音符推着走；每转一下 → 定音鼓 + 旋律再上一级
+            （B → C# → D → E）；低音一路往上（E → G → A → B → C#）
+  11.5–12.5 变手机：定音鼓滚奏、吊镲滚奏、颤弓一起渐强，憋到最高
+  12.5s     过 768px 断点：全片最重的一击 —— 大鼓 + 定音鼓 + 锣 + 镲 + 圆号 + 全体弦乐，旋律到最高点 F#
+  12.5–15s  旋律落下来（F# → E → D → E → F#），IV → I 的“阿门终止”，D 大调加九和弦长长的尾音
+音效：每次滑动一声很轻的“咔哒”；滚动的风声按 Y(f) 的速度走；跨段快甩有倒放镲 + 落地重音。
 
-滚动曲线 S(f) 直接从 video/page.ts 读出来重算（和画面同一份数据，改了滑动配乐自动跟上）。
 用法：python3 layouts/03-scrollytelling/audio/make_music.py
 输出：public/03-scrollytelling/music.wav（48 kHz 立体声，ffmpeg 两遍 loudnorm → -14 LUFS / -1 dBTP）
 """
@@ -24,6 +27,8 @@ import os
 import re
 import shutil
 import subprocess
+import urllib.parse
+import urllib.request
 import wave
 
 import numpy as np
@@ -33,10 +38,6 @@ DUR = 15.0
 N = int(SR * DUR)
 RNG = np.random.default_rng(2026)
 BEAT = 0.5
-
-
-def fr(frame):
-    return frame / 60.0
 
 
 def tt(d):
@@ -49,20 +50,15 @@ def midi(m):
 
 # ═════════════ 从 page.ts 读滚动曲线 ═════════════
 ROOT = os.path.dirname(os.path.abspath(__file__))
+REPO = os.path.normpath(os.path.join(ROOT, '..', '..', '..'))
 PAGE = open(os.path.join(ROOT, '..', 'video', 'page.ts'), encoding='utf-8').read()
 BLOCK = PAGE[PAGE.index('export const FLICKS'):]
 BLOCK = BLOCK[: BLOCK.index('];')]
 FLICKS = [(int(a), float(b), int(c), (e or 'out')) for a, b, c, e in re.findall(r"\[(\d+),\s*(\d+),\s*(\d+)(?:,\s*'(\w+)')?\]", BLOCK)]
-
-
-def arr(name):
-    return [int(v) for v in re.search(name + r' = \[([\d, ]+)\]', PAGE).group(1).split(',')]
-
-
-RULES_AT = arr('RULES_AT')
-DEF_AT = arr('DEF_AT')
-PATTERN_TH = arr('PATTERN_TH')
 XRAY_IN = int(re.search(r'XRAY = \{in: (\d+)', PAGE).group(1))
+XRAY_OUT = int(re.search(r'out: (\d+), outDur', PAGE).group(1))
+M_AT, M_DUR = [int(v) for v in re.search(r'MORPH = \{at: (\d+), dur: (\d+)\}', PAGE).groups()]
+STEP_FLICK_AT = [int(v) for v in re.findall(r'\[(\d+), \d, \d+\]', PAGE[PAGE.index('export const STEP_FLICKS'):])]
 
 
 def bezier(x1, y1, x2, y2):
@@ -82,7 +78,7 @@ def ease_of(name):
     return bezier(*[float(v) for v in m.groups()])
 
 
-EASE = {'out': ease_of('out'), 'inOut': ease_of('inOut'), 'lin': lambda t: t}
+EASE = {'out': ease_of('out'), 'inOut': ease_of('inOut'), 'whip': ease_of('whip'), 'lin': lambda t: t}
 
 
 def S(f):
@@ -90,8 +86,7 @@ def S(f):
     for at, to, d, e in FLICKS:
         if f < at:
             break
-        t = min(1.0, (f - at) / d)
-        v = v + (to - v) * EASE[e](t)
+        v = v + (to - v) * EASE[e](min(1.0, (f - at) / d))
     return v
 
 
@@ -99,13 +94,45 @@ FINE = 4
 SF = np.array([S(i / FINE) for i in range(900 * FINE + 1)])
 SPEED = np.abs(np.gradient(SF)) * FINE  # px / 帧
 
+# 每一步越过触发线（视口 50%）的帧：并排四步 + 覆盖三步（和 page.ts 的 CROSS 同一个算法）
+CITY_LINES = [900 * (1.3 + 0.85 * i) - 450 for i in range(4)]
+SNOW_LINES = [y - 450 for y in (5554, 6319, 7084)]
 
-def frame_at(y, start=0):
-    i = np.argmax(SF[start * FINE:] >= y)
-    return start + i / FINE
+
+def first_cross(L, after=0):
+    for i in range(int(after * FINE) + 1, len(SF)):
+        if SF[i - 1] < L <= SF[i]:
+            return i / FINE / 60
+    return None
 
 
-PATTERNS_AT = [frame_at(y, 640) for y in PATTERN_TH]
+C_CITY = [first_cross(L) for L in CITY_LINES]
+C_SNOW = [first_cross(L) for L in SNOW_LINES]
+
+
+def eio(t):
+    t = min(1.0, max(0.0, t))
+    return 4 * t ** 3 if t < 0.5 else 1 - (-2 * t + 2) ** 3 / 2
+
+
+# 窗口拉窄到 768px 以下的那一帧（规则 05 的那一下）
+BREAK_AT = next(f for f in range(M_AT, M_AT + M_DUR) if round(1440 - 1050 * eio((f - M_AT) / M_DUR)) < 768)
+
+# 关键时刻（秒）
+sec = lambda f: f / 60.0
+T_LAND = 1.0
+OUTS = [sec(a) for a, _, _, e in FLICKS if e == 'out']
+WHIPS = [(sec(a), sec(a + d)) for a, _, d, e in FLICKS if e == 'whip']
+WHIP_ARR = [a + (b - a) * 0.72 for a, b in WHIPS]  # 快甩“到了”的那一刻（≈ 拍点）
+SIDE = [sec(a) for a, _, _, e in FLICKS if a < XRAY_IN]
+BACK = [sec(a) for a, to, _, e in FLICKS if XRAY_IN <= a < XRAY_OUT and e == 'out']
+FWD = [sec(a) for a, _, _, e in FLICKS if XRAY_IN <= a < XRAY_OUT + 40 and e == 'inOut'][0]
+SNOW_F = [sec(a) for a, to, _, e in FLICKS if e == 'out' and 5000 < to < 8000]
+TURNS = [sec(a) for a, to, _, e in FLICKS if e == 'out' and to > 9000]
+T_XIN = sec(XRAY_IN)
+T_BREAK = sec(BREAK_AT)
+T_PH = [sec(f) for f in STEP_FLICK_AT]
+print('滑动', OUTS, '\n快甩', WHIPS, '\n过线', C_CITY, C_SNOW, '\n断点', T_BREAK, '手机', T_PH)
 
 
 # ═════════════ DSP 基础：FFT 滤波、STFT 时变滤波、混响 ═════════════
@@ -210,14 +237,16 @@ HALL = make_ir(3.6, 1.25, 1)
 ROOM = make_ir(1.2, 0.32, 2, bright=9000, pre=0.004)
 
 
+
 # ═════════════ 总线 ═════════════
-def bus():
-    return np.zeros((2, N))
+BUSES = ['str', 'keys', 'mel', 'perc', 'low', 'fx']
+B = {k: np.zeros((2, N), dtype=np.float32) for k in BUSES}
+SEND_HALL = np.zeros((2, N), dtype=np.float32)
+SEND_ROOM = np.zeros((2, N), dtype=np.float32)
 
 
-B = {k: bus() for k in ['drum', 'bass', 'pad', 'keys', 'fx', 'hit', 'air']}
-SEND_HALL = bus()
-SEND_ROOM = bus()
+def db(v):
+    return 10 ** (v / 20)
 
 
 def place(sig, t, b='keys', gain=1.0, pan=0.0, hall=0.0, room=0.0):
@@ -227,13 +256,14 @@ def place(sig, t, b='keys', gain=1.0, pan=0.0, hall=0.0, room=0.0):
     if i < 0:
         sig = sig[:, -i:]
         i = 0
-    if i >= N:
+    if i >= N or sig.shape[1] == 0:
         return
     sig = sig[:, : N - i]
     L = sig.shape[1]
+    # 等功率声像；立体声采样只做“偏移”，不压成单声道
     gl = np.cos((pan + 1) * np.pi / 4) * np.sqrt(2) * gain
     gr = np.sin((pan + 1) * np.pi / 4) * np.sqrt(2) * gain
-    seg = np.vstack([sig[0] * gl, sig[1] * gr])
+    seg = np.vstack([sig[0] * gl, sig[1] * gr]).astype(np.float32)
     B[b][:, i: i + L] += seg
     if hall:
         SEND_HALL[:, i: i + L] += seg * hall
@@ -241,495 +271,490 @@ def place(sig, t, b='keys', gain=1.0, pan=0.0, hall=0.0, room=0.0):
         SEND_ROOM[:, i: i + L] += seg * room
 
 
-def env_adsr(n, a, d, s, r_, total):
-    """n = 采样数；a/d/r 秒；total = 音符总长（秒，含释放）"""
-    t = np.arange(n) / SR
-    gate = total - r_
-    e = np.where(t < a, t / max(a, 1e-4), s + (1 - s) * np.exp(-(t - a) / max(d, 1e-4)))
-    rel = np.where(t > gate, np.exp(-(t - gate) / max(r_ / 4, 1e-4)), 1.0)
-    return e * rel
-
-
-# ═════════════ 振荡器 ═════════════
-def polyblep(ph, dt):
-    out = np.zeros_like(ph)
-    m = ph < dt
-    x = ph[m] / dt[m]
-    out[m] = x + x - x * x - 1
-    m2 = ph > 1 - dt
-    x = (ph[m2] - 1) / dt[m2]
-    out[m2] = x * x + x + x + 1
-    return out
-
-
-def saw(freq, n, phase0=0.0):
-    freq = np.broadcast_to(np.asarray(freq, dtype=float), (n,))
-    dt = freq / SR
-    ph = (phase0 + np.cumsum(dt)) % 1.0
-    return 2 * ph - 1 - polyblep(ph, dt)
-
-
+# ═════════════ 振荡器与合成音效（只用在“音效”上：低频冲击、风声、咔哒）═════════════
 def sine(freq, n, phase0=0.0):
     freq = np.broadcast_to(np.asarray(freq, dtype=float), (n,))
     return np.sin(2 * np.pi * (phase0 + np.cumsum(freq / SR)))
 
 
-def supersaw(freq, n, voices=7, detune=0.18, seed=0):
-    r = np.random.default_rng(seed)
-    L = np.zeros(n)
-    R = np.zeros(n)
-    offs = np.linspace(-1, 1, voices)
-    for k, o in enumerate(offs):
-        cents = o * detune * 100 * (0.7 + 0.3 * r.random())
-        f = freq * 2 ** (cents / 1200)
-        v = saw(f, n, r.random())
-        amp = 1.0 if k == voices // 2 else 0.62
-        pan = o * 0.9
-        L += v * amp * np.cos((pan + 1) * np.pi / 4)
-        R += v * amp * np.sin((pan + 1) * np.pi / 4)
-    return np.vstack([L, R]) / np.sqrt(voices)
-
-
-# ═════════════ 乐器 ═════════════
-def piano(freq, dur=2.5, vel=1.0, bright=1.0):
-    """加法合成钢琴：三根弦微失谐、泛音带不和谐度 B、高次泛音衰减更快、两段式衰减"""
+def sub_boom(level=1.0, dur=2.4, f_hi=70, f_lo=34):
+    """次低频下坠：给真鼓垫一层电影感的“地面”"""
     n = int(dur * SR)
     t = np.arange(n) / SR
-    B_ = 0.00035 * (freq / 261.6) ** 0.5
-    out = np.zeros(n)
-    kmax = int(min(28, 16000 / freq))
-    for k in range(1, kmax + 1):
-        fk = k * freq * np.sqrt(1 + B_ * k * k)
-        a = (1 / k ** 1.05) * np.exp(-((k - 1) / (6 + 6 * vel * bright)))
-        d1 = 0.25 + 1.6 / (1 + 0.35 * k) * (220 / max(freq, 60)) ** 0.35
-        d2 = d1 * 6
-        e = 0.65 * np.exp(-t / d1) + 0.35 * np.exp(-t / d2)
-        for dc in (-0.7, 0.0, 0.8):
-            out += a * e * np.sin(2 * np.pi * fk * (1 + dc * 0.0004) * t + k * 1.3 + dc)
-    ham = hp(RNG.standard_normal(n) * np.exp(-t / 0.004), 1500) * 0.05 * vel
-    out = (out / 3 + ham) * vel
-    out *= np.minimum(1, t / 0.002)
-    out *= np.minimum(1, (dur - t) / 0.08)
-    return out / 1.8
+    f = f_lo + (f_hi - f_lo) * np.exp(-t / 0.16)
+    return np.tanh(sine(f, n) * np.exp(-t / 0.55) * np.minimum(1, t / 0.004) * 1.3) * level
 
 
-def pluck(freq, dur=0.45, bright=1.0):
-    n = int(dur * SR)
+def tick(level=1.0, f0=3400):
+    """触控板“咔哒”：2 ms 的噪声脉冲 + 一个很短的高音"""
+    n = int(0.05 * SR)
     t = np.arange(n) / SR
-    out = np.zeros(n)
-    for k in range(1, int(min(24, 15000 / freq)) + 1):
-        out += (1 / k) * np.exp(-t * (6 + k * 2.4 / bright)) * np.sin(2 * np.pi * k * freq * t + k)
-    return out * np.minimum(1, t / 0.0015) * np.minimum(1, (dur - t) / 0.03) * 0.6
+    click = hp(RNG.standard_normal(n), 2500, 2) * np.exp(-t / 0.0012)
+    ping = np.sin(2 * np.pi * f0 * t) * np.exp(-t / 0.006) * 0.5
+    return (click * 0.6 + ping) * level
 
 
-def bell(freq, dur=2.6):
-    n = int(dur * SR)
-    t = np.arange(n) / SR
-    parts = [(1, 1, 1.6), (2.0, 0.5, 1.0), (2.76, 0.36, 0.7), (5.4, 0.2, 0.35), (8.93, 0.12, 0.2), (0.5, 0.25, 2.0)]
-    out = sum(a * np.exp(-t / d) * np.sin(2 * np.pi * freq * r * t) for r, a, d in parts)
-    return out * np.minimum(1, t / 0.001) * 0.45
-
-
-def kick(level=1.0, dec=0.3, f0=160, f1=52):
-    n = int(0.6 * SR)
-    t = np.arange(n) / SR
-    f = f1 + (f0 - f1) * np.exp(-t / 0.035)
-    body = sine(f, n) * np.exp(-t / dec)
-    click = hp(RNG.standard_normal(n) * np.exp(-t / 0.0025), 2500) * 0.35
-    return np.tanh((body + click) * 1.6) * level * 0.8
-
-
-def clap(level=1.0):
-    n = int(0.5 * SR)
-    t = np.arange(n) / SR
-    e = np.zeros(n)
-    for k, d in enumerate([0, 0.009, 0.019, 0.028]):
-        m = t >= d
-        e[m] += np.exp(-(t[m] - d) / (0.007 if k < 3 else 0.11))
-    return bp(RNG.standard_normal(n), 1400, 1.6) * e * level * 0.9
-
-
-def hat(level=1.0, dec=0.03):
-    n = int((dec * 6 + 0.02) * SR)
-    t = np.arange(n) / SR
-    return hp(RNG.standard_normal(n), 7500, 3) * np.exp(-t / dec) * level * 0.5
-
-
-def snare(level=1.0):
-    n = int(0.35 * SR)
-    t = np.arange(n) / SR
-    tone = sine(185 + 40 * np.exp(-t / 0.02), n) * np.exp(-t / 0.06) * 0.5
-    nz = bp(RNG.standard_normal(n), 4000, 2.5) * np.exp(-t / 0.09)
-    return (tone + nz) * level * 0.7
-
-
-def taiko(level=1.0, f0=95, f1=52):
-    n = int(1.6 * SR)
-    t = np.arange(n) / SR
-    f = f1 + (f0 - f1) * np.exp(-t / 0.07)
-    body = sine(f, n) * np.exp(-t / 0.45)
-    skin = lp(RNG.standard_normal(n), 900) * np.exp(-t / 0.03) * 0.8
-    return np.tanh((body + skin) * 1.4) * level * 0.8
-
-
-def boom(level=1.0, dur=3.0):
-    """冲击：次低频下坠 + 噪声爆破"""
-    n = int(dur * SR)
-    t = np.arange(n) / SR
-    f = 36 + 62 * np.exp(-t / 0.18)
-    sub = sine(f, n) * np.exp(-t / 0.6) * np.minimum(1, t / 0.003)
-    nz = lp(RNG.standard_normal(n), 2200) * np.exp(-t / 0.22) * 0.5
-    crack = hp(RNG.standard_normal(n), 3000) * np.exp(-t / 0.012) * 0.4
-    return np.tanh((sub * 1.2 + nz + crack) * 1.3) * level
-
-
-def braam(root_midi, dur=2.4, level=1.0, bright=2600, seed=3):
-    """电影铜管 braam：低八度叠五度的锯齿墙，滤波先猛开再慢慢合上，起音带一点往上的滑音"""
-    n = int(dur * SR)
-    t = np.arange(n) / SR
-    bend = 2 ** ((-0.6 * np.exp(-t / 0.06)) / 12)
-    out = np.zeros((2, n))
-    for k, iv in enumerate([0, 7, 12, 19, 24]):
-        f = midi(root_midi + iv) * bend
-        out += supersaw(f, n, voices=5, detune=0.12, seed=seed + k) * (1.0 if iv < 13 else 0.55)
-    cut = lambda tc: 180 + bright * np.exp(-np.maximum(tc, 0) / 0.5) * np.minimum(1, np.maximum(tc, 0) / 0.05) + 380
-    out = np.vstack([stft_filter(out[c], cut, order=2, q=0.6) for c in range(2)])
-    e = np.minimum(1, t / 0.03) * np.exp(-t / (dur * 0.5)) * np.minimum(1, (dur - t) / 0.3)
-    return np.tanh(out * e * 1.8) * level * 0.5
-
-
-def choir(freqs, dur, level=1.0, att=0.6):
-    """合唱“啊”：锯齿 → 共振峰（a：700 / 1220 / 2600 Hz）"""
-    n = int(dur * SR)
-    t = np.arange(n) / SR
-    out = np.zeros((2, n))
-    vib = 1 + 0.004 * np.sin(2 * np.pi * 5.2 * t)
-    for i, f in enumerate(freqs):
-        out += supersaw(f * vib, n, voices=5, detune=0.08, seed=40 + i)
-    form = lambda f: (bp_gain(700, 0.7)(f) + 0.7 * bp_gain(1220, 0.6)(f) + 0.35 * bp_gain(2600, 0.5)(f)) + 0.05
-    out = np.vstack([fft_filter(out[c], form) for c in range(2)])
-    e = np.minimum(1, t / att) * np.minimum(1, (dur - t) / 0.5)
-    return out * e * level * 0.35
-
-
-def riser(dur, level=1.0, f0=300, f1=9000):
+def noise_riser(dur, level=1.0, f0=400, f1=9000, curve=2.0):
     n = int(dur * SR)
     t = np.arange(n) / SR
     x = RNG.standard_normal((2, n))
-    cut = lambda tc: f0 * (f1 / f0) ** np.clip(tc / dur, 0, 1) ** 1.6
-    y = np.vstack([stft_filter(x[c], cut, order=1.2, mode='bp') for c in range(2)])
-    tone = saw(110 * 2 ** (3 * (t / dur) ** 2), n) * 0.08
-    y = y + lp(tone, 3000)
-    return y * (t / dur) ** 2.2 * level
+    cut = lambda tc: f0 * (f1 / f0) ** np.clip(tc / dur, 0, 1) ** 1.4
+    y = np.vstack([stft_filter(x[c], cut, order=1.3, mode='bp') for c in range(2)])
+    return y * (t / dur) ** curve * level
 
 
-def reverse_swell(sig_fn, dur, level=1.0):
-    """把一个音加上大混响再倒放：从无到有地涌上来"""
-    x = sig_fn()
-    wet = conv(np.concatenate([x, np.zeros(int(dur * SR))]), HALL[0])
-    rev = wet[::-1][-int(dur * SR):]
-    rev = rev[::-1][::-1]
-    return rev / (np.abs(rev).max() + 1e-9) * level
+def whoosh(dur=0.42, level=1.0, peak=0.7):
+    """快甩的风声：先涨后落，滤波跟着扫上去再落下来"""
+    n = int(dur * SR)
+    t = np.arange(n) / SR
+    p = t / dur
+    env = np.where(p < peak, (p / peak) ** 2.2, np.exp(-(p - peak) / 0.12))
+    x = RNG.standard_normal((2, n))
+    cut = lambda tc: 500 + 5500 * np.interp(tc / dur, [0, peak, 1], [0, 1, 0.3])
+    y = np.vstack([stft_filter(x[c], cut, order=1.6, mode='bp') for c in range(2)])
+    return y * env * level
+
+
+# ═════════════ 采样器：VSCO 2 CE（CC0）═════════════
+VSCO = os.environ.get('VSCO_DIR', os.path.join(REPO, '.cache', 'vsco'))
+VSCO_URL = 'https://raw.githubusercontent.com/sgossner/VSCO-2-CE/master/'
+PC = {'C': 0, 'C#': 1, 'D': 2, 'D#': 3, 'E': 4, 'F': 5, 'F#': 6, 'G': 7, 'G#': 8, 'A': 9, 'A#': 10, 'B': 11}
+
+
+def nn(s):
+    m = re.match(r'([A-G]#?)(-?\d)$', s)
+    return (int(m.group(2)) + 1) * 12 + PC[m.group(1)]
+
+
+def fetch(rel):
+    p = os.path.join(VSCO, rel)
+    if not os.path.exists(p):
+        os.makedirs(os.path.dirname(p), exist_ok=True)
+        print('  下载', rel)
+        urllib.request.urlretrieve(VSCO_URL + urllib.parse.quote(rel), p + '.part')
+        os.replace(p + '.part', p)
+    return p
+
+
+_WAV = {}
+
+
+def wav(rel, norm='rms'):
+    """读 16/24 位 wav → float32 立体声；去掉开头静音；按 RMS（持续音）或峰值（打击）归一"""
+    if rel in _WAV:
+        return _WAV[rel]
+    w = wave.open(fetch(rel))
+    sr, n, ch, sw = w.getframerate(), w.getnframes(), w.getnchannels(), w.getsampwidth()
+    raw = w.readframes(n)
+    if sw == 2:
+        x = np.frombuffer(raw, np.int16).astype(np.float32) / 32768
+    elif sw == 3:
+        b = np.frombuffer(raw, np.uint8).reshape(-1, 3).astype(np.int32)
+        v = b[:, 0] | (b[:, 1] << 8) | (b[:, 2] << 16)
+        x = (np.where(v >= 1 << 23, v - (1 << 24), v)).astype(np.float32) / (1 << 23)
+    else:
+        x = np.frombuffer(raw, np.int32).astype(np.float32) / 2 ** 31
+    x = x.reshape(-1, ch).T
+    if ch == 1:
+        x = np.vstack([x, x])
+    x = x[:2]
+    a = np.abs(x).max(axis=0)
+    on = int(np.argmax(a > a.max() * 10 ** (-48 / 20)))
+    x = x[:, max(0, on - int(0.002 * sr)):]
+    if norm == 'rms':
+        seg = x[:, : int(1.5 * sr)]
+        x = x / (np.sqrt((seg ** 2).mean()) + 1e-9) * db(-20)
+    else:
+        x = x / (np.abs(x).max() + 1e-9) * db(-3)
+    _WAV[rel] = (x.astype(np.float32), sr)
+    return _WAV[rel]
+
+
+def render(rel, shift=0.0, dur=None, rel_t=0.3, att=0.0, offset=0.0, norm='rms'):
+    """按半音移调（线性插值重采样到 48 kHz）；dur = 按住多久（之后 rel_t 秒余弦释放）"""
+    x, sr = wav(rel, norm)
+    ratio = 2 ** (shift / 12) * sr / SR
+    ns = x.shape[1]
+    o = int(offset * sr)
+    avail = int((ns - 2 - o) / ratio)
+    L = avail if dur is None else min(avail, int((dur + rel_t) * SR))
+    pos = o + np.arange(L) * ratio
+    i = pos.astype(np.int64)
+    a = (pos - i).astype(np.float32)
+    y = x[:, i] * (1 - a) + x[:, i + 1] * a
+    t = np.arange(L) / SR
+    env = np.ones(L, dtype=np.float32)
+    if att > 0:
+        env *= np.sin(np.clip(t / att, 0, 1) * np.pi / 2) ** 2
+    if dur is not None:
+        g = np.clip((t - dur) / max(rel_t, 1e-3), 0, 1)
+        env *= np.cos(g * np.pi / 2) ** 2
+    env[-min(L, 240):] *= np.linspace(1, 0, min(L, 240))
+    return y * env
+
+
+class Inst:
+    """一件乐器：若干个采样根音（MIDI）× 力度层；弹某个音时挑最近的根音再移调"""
+
+    def __init__(self, name, files, octave=0):
+        self.name = name
+        self.map = {}  # midi → [(layer, rel)]，layer 从弱到强
+        for root, layer, rel in files:
+            self.map.setdefault(nn(root) + octave if isinstance(root, str) else root, []).append((layer, rel))
+        for k in self.map:
+            self.map[k].sort()
+        self.roots = np.array(sorted(self.map))
+
+    def pick(self, m, vel):
+        r = int(self.roots[np.argmin(np.abs(self.roots - m + 0.1))])
+        lay = self.map[r]
+        idx = min(len(lay) - 1, int(vel * len(lay))) if len(lay) > 1 else 0
+        return lay[idx][1], m - r
+
+    def play(self, m, t, dur=None, vel=0.7, b='str', gain_db=0.0, pan=0.0, hall=0.25, room=0.0, att=0.0, rel=0.35, offset=0.0, rev=False):
+        rel_path, shift = self.pick(m, vel)
+        y = render(rel_path, shift, dur, rel, att, offset)
+        g = db(gain_db) * (0.35 + 0.65 * vel) ** 1.6
+        if rev:
+            # 倒放：先加大混响再倒过来，从无到有地“吸”进 t 这一刻
+            wet = np.vstack([conv(np.concatenate([y[c], np.zeros(int(1.2 * SR))]), HALL[c]) for c in range(2)])
+            y = (wet * 0.8 + np.pad(y, ((0, 0), (0, int(1.2 * SR)))) * 0.5)[:, ::-1]
+            place(y, t - y.shape[1] / SR, b, g, pan, hall * 0.3, room)
+            return
+        place(y, t, b, g, pan, hall, room)
+
+
+def files(fmt, notes, layers):
+    return [(n, L, fmt.format(n=n, L=L)) for n in notes.split() for L in layers]
+
+
+PIANO = Inst('piano', [(21 + 2 * i, L, f'Keys/Upright Piano/Player_dyn{L}_rr1_{i:03d}.wav') for i in range(6, 41, 2) for L in (1, 2)])
+VLN = Inst('vln', files('Strings/Violin Section/susVib/VlnEns_susVib_{n}_v{L}.wav', 'A2 A3 B2 B4 C4 D3 D5 E4 F#3 G2 G4', (1, 2)), 12)
+VLA = Inst('vla', files('Strings/Viola Section/susvib/ViolaEns_susvib_{n}_v{L}_1.wav', 'A3 B2 B4 C2 C4 D2 D3 D5 E2 E4 F3 G2 G4', (1, 2)), 12)
+VC = Inst('vc', files('Strings/Cello Section/susvib/susvib_{n}_v{L}_1.wav', 'A2 B1 B3 C1 C3 D2 D4 E1 E3 F2 F4 G1 G3', (1, 3)), 12)
+CB = Inst('cb', files('Strings/Solo Contrabass/SusNV/BKCtbss_SusNV_{n}_v{L}_rr1.wav', 'A#0 A1 C#2 C1 D1 E0 E1 E2 F#0 F#1 G#1 G0', (1,)), 12)
+VLN_TR = Inst('vln_trem', files('Strings/Violin Section/Trem/VlnEns_Trem_{n}_v{L}.wav', 'A2 A3 B2 B4 C4 D3 D5 E4 G2 G4', (1, 2)), 12)
+VC_TR = Inst('vc_trem', files('Strings/Cello Section/trem/trem_{n}_v{L}_1.wav', 'A2 B3 C3 D2 D4 E1 E3 F2 F4 G1 G3', (1, 2)), 12)
+VLN_SP = Inst('vln_spic', files('Strings/Violin Section/Spic/VlnEns_Spic_{n}_v{L}_rr1.wav', 'A2 A3 B2 B4 C4 D3 D5 E4 F#3 G2 G4', (1, 2)), 12)
+VC_SP = Inst('vc_spic', files('Strings/Cello Section/spic/spic_{n}_v{L}_RR1.wav', 'A2 B1 B3 C1 C3 D2 D4 E1 E3 F2 F4 G1 G3', (1, 2)), 12)
+HORN = Inst('horn', files('Brass/F Horn/sus/MOHorn_sus_{n}_v{L}_1.wav', 'A#1 A2 C1 C3 D#1 D2 F2 G1', (1, 2, 3)), 12)
+HARP = Inst('harp', [(n.split('_')[0], 1, f'Strings/Harp/KSHarp_{n}.wav') for n in 'A2_mf A4_mf A6_mf B1_mf B3_mf B5_mf B6_mf C3_mf C5_mf D2_mf D4_mf D6_mf D7_f E1_f E3_mf E5_mf F2_mf F4_mf F6_mf F7_f G1_mp G3_mf G5_mf'.split()])
+GLOCK = Inst('glock', [(n, 1, f'Percussion/Glock/glock_medium_{n}.wav') for n in 'C5 C6 C7 G4 G5 G6'.split()], 12)
+
+P = 'VSCO 1 Percussion/'
+TIMP = 'Percussion/Timpani/Timpani1_Hit_v{L}_rr{R}_Sum.wav'  # 鼓 1 的音高 ≈ 89.7 Hz（F2 低 0.54 个半音）
+TIMP_F0 = 41.46
+TIMP_ROLL = 'Percussion/Timpani/Rolls/Timpani1_Roll_v5_rr1_Sum.wav'
+CYM_CRESC = P + 'varMetal/Cymbals/susp/susp_hit_softmall_roll2_cresc.wav'
+CYM_HIT = P + 'varMetal/Cymbals/susp/susp_hit_hardmall_f.wav'
+CYM_SOFT = P + 'varMetal/Cymbals/susp/susp_hit_softmall_ff.wav'
+GONG = P + 'varMetal/Gong/gong_hit_ff.wav'
+GONG_MF = P + 'varMetal/Gong/gong_hit_mf.wav'
+BD = {k: P + f'drums/bass/{k}.wav' for k in ['bdrum_fff_1', 'bdrum_ff_1', 'bdrum_f_1', 'bdrum_mp_1', 'bdrum_muted_ff_1', 'bdrum_muted_mf_1', 'bdrum_muted_mp_1']}
+
+
+def hit(rel, t, gain_db=0.0, b='perc', pan=0.0, hall=0.15, room=0.2, shift=0.0, dur=None, rel_t=0.4, rev=False):
+    y = render(rel, shift, dur, rel_t, norm='peak')
+    if rev:
+        wet = np.vstack([conv(np.concatenate([y[c], np.zeros(int(1.0 * SR))]), HALL[c]) for c in range(2)])
+        y = (wet * 0.7 + np.pad(y, ((0, 0), (0, int(1.0 * SR)))))[:, ::-1]
+        place(y, t - y.shape[1] / SR, b, db(gain_db), pan, 0, 0)
+        return
+    place(y, t, b, db(gain_db), pan, hall, room)
+
+
+def timp(m, t, gain_db=0.0, loud=True, rr=1, dur=None):
+    rel = TIMP.format(L=3 if loud else 1, R=rr)
+    hit(rel, t, gain_db, shift=m - TIMP_F0, hall=0.25, room=0.15, dur=dur)
 
 
 # ═════════════ 和声 ═════════════
-# 每个和弦：(开始秒, 根音 MIDI, 和弦音)
-CH = {
-    'Bm': (35, [59, 62, 66, 69]),
-    'G': (31, [55, 59, 62, 66]),
-    'D': (38, [57, 62, 66, 69]),
-    'A': (33, [57, 61, 64, 71]),
-    'Asus': (33, [57, 62, 64, 69]),
-    'Dadd9': (38, [57, 62, 64, 66, 69]),
+# 每个和弦的配器：低音提琴 / 大提琴两音 / 中提琴两音 / 小提琴两音（MIDI）
+V = {
+    'Dsus2': (None, (), (), (76, 81)),
+    'D': (38, (50, 57), (62, 66), (69, 74)),
+    'A/C#': (37, (45, 52), (61, 64), (69, 73)),
+    'Bm': (35, (47, 54), (62, 66), (71, 74)),
+    'G': (31, (43, 50), (59, 62), (67, 71)),
+    'Em7': (40, (47, 52), (55, 62), (67, 71)),
+    'Asus4': (33, (45, 52), (62, 64), (69, 74)),
+    'A': (33, (45, 52), (61, 64), (69, 73)),
+    'D/F#': (42, (50, 57), (62, 66), (69, 74)),
+    'Gmaj7': (31, (43, 50), (59, 66), (71, 74)),
+    'Dadd9': (38, (50, 57), (64, 66), (69, 76)),
 }
-PROG = [(0.0, 'D'), (1.5, 'Bm'), (2.5, 'G'), (3.5, 'D'), (4.5, 'A'), (5.5, 'Bm'), (6.5, 'G'), (7.5, 'D'), (8.5, 'A'),
-        (9.5, 'Bm'), (10.5, 'G'), (11.0, 'Asus'), (11.5, 'A'), (12.0, 'Bm'), (12.5, 'G'), (13.0, 'D'), (13.5, 'A'), (14.0, 'Dadd9')]
+# 分解和弦用的音（钢琴）
+ARP = {
+    'D': [50, 57, 62, 66, 69, 66, 62, 57], 'A/C#': [49, 57, 61, 64, 69, 64, 61, 57], 'Bm': [47, 54, 59, 62, 66, 62, 59, 54],
+    'G': [43, 50, 55, 59, 62, 59, 55, 50], 'Em7': [40, 47, 52, 55, 62, 55, 52, 47], 'A': [45, 52, 57, 61, 64, 61, 57, 52],
+    'Asus4': [45, 52, 57, 62, 64, 62, 57, 52], 'D/F#': [42, 50, 54, 57, 62, 57, 54, 50], 'Gmaj7': [43, 50, 54, 59, 62, 59, 54, 50],
+    'Dadd9': [38, 50, 57, 64, 66, 69, 74, 76],
+}
+
+# 和弦进行：时间点全部来自 page.ts 的滑动表（换和弦 = 画面里换一步）
+X_END = sec(XRAY_OUT)
+CHORDS = [
+    (0.0, 'Dsus2', 0.22),
+    (T_LAND, 'D', 0.42),
+    (SIDE[1], 'A/C#', 0.45),
+    (SIDE[2], 'Bm', 0.47),
+    (SIDE[3], 'G', 0.5),
+    (T_XIN, 'Em7', 0.38),
+    (FWD, 'Asus4', 0.46),
+    (WHIPS[0][0], 'A', 0.55),
+    (WHIP_ARR[0], 'Bm', 0.5),     # V → vi：假终止，落到 b 小调（最温柔的一段）
+    (SNOW_F[0], 'G', 0.52),
+    (SNOW_F[1], 'D/F#', 0.56),
+    (WHIP_ARR[1], 'Em7', 0.62),
+    (TURNS[0], 'G', 0.68),
+    (TURNS[1], 'A', 0.74),
+    (TURNS[2], 'Bm', 0.8),
+    (TURNS[2] + 0.75, 'A/C#', 0.84),  # 低音 E → G → A → B → C# 一路往上，顶到断点的 D
+    (WHIP_ARR[2], 'Asus4', 0.5),
+    (T_BREAK, 'D', 1.0),
+    (T_PH[0], 'Gmaj7', 0.78),      # IV → I：阿门终止
+    (T_PH[1], 'Dadd9', 0.72),
+]
+CH_T = [c[0] for c in CHORDS]
 
 
 def chord_at(t):
-    c = PROG[0][1]
-    for s_, name in PROG:
-        if t >= s_:
-            c = name
-    return c
+    i = max(0, int(np.searchsorted(CH_T, t, side='right')) - 1)
+    return CHORDS[i][1]
 
 
-# ═════════════ 编曲 ═════════════
-T_IMPACT = fr(60)
-T_DEF = fr(90)
-T_XR = fr(XRAY_IN)
-T_REW = fr(240)
-T_FWD = fr(270)
-T_REL = fr(300)
-T_GROOVE = fr(345)
-T_RULES = fr(RULES_AT[0])
-T_BUILD = T_RULES - 0.75
-T_END = 14.0
-
-# —— 开场：次低频长音 + 倒放混响钢琴涌上来 + 冲击 + braam ——
-n0 = int(1.6 * SR)
-t0 = np.arange(n0) / SR
-drone = (sine(midi(26), n0) * 0.35 + lp(saw(midi(38), n0) + saw(midi(45) * 1.002, n0), 500) * 0.12) * np.minimum(1, t0 / 0.6)
-place(drone * np.minimum(1, (1.6 - t0) / 0.5), 0.0, 'pad', 0.5)
-sw = reverse_swell(lambda: sum(piano(midi(m), 1.2, 0.9) for m in [62, 66, 69, 74, 78]), 1.0)
-place(sw, T_IMPACT - 1.0, 'fx', 0.5, hall=0.2)
-place(riser(0.9, f0=200, f1=7000), T_IMPACT - 0.9, 'fx', 0.22)
-place(boom(1.0, 3.0), T_IMPACT, 'hit', 0.9, hall=0.35)
-place(braam(26, 2.6, 1.0, bright=3000), T_IMPACT, 'hit', 0.55, hall=0.3)
-place(bell(midi(86), 2.5), T_IMPACT, 'keys', 0.12, pan=0.3, hall=0.6)
-for m, pan in [(62, -0.3), (69, 0.3), (74, 0)]:
-    place(piano(midi(m), 2.0, 0.85), T_IMPACT + 0.004, 'keys', 0.28, pan=pan, hall=0.5)
-
-# —— 弦乐 / 超锯齿 Pad：整条贯穿，按段落开合 ——
-pad = np.zeros((2, N))
-for i, (s_, name) in enumerate(PROG):
-    e_ = PROG[i + 1][0] if i + 1 < len(PROG) else DUR
-    if s_ < 1.0:
-        continue
-    root, notes = CH[name]
-    d = e_ - s_ + 0.35
-    n = int(d * SR)
-    t = np.arange(n) / SR
-    sig = np.zeros((2, n))
-    for k, m in enumerate(notes):
-        sig += supersaw(midi(m), n, voices=7, detune=0.16, seed=100 + i * 10 + k) * 0.5
-        sig += supersaw(midi(m - 12), n, voices=3, detune=0.1, seed=200 + i * 10 + k) * 0.25
-    e = np.minimum(1, t / 0.08) * np.minimum(1, (d - t) / 0.3)
-    i0 = int(s_ * SR)
-    L = min(n, N - i0)
-    pad[:, i0: i0 + L] += (sig * e)[:, :L]
+def strings(name, t0, t1, I, trem=False, hi=False, att=0.08, rel=0.45):
+    cb, vc, vla, vln = V[name]
+    d = t1 - t0
+    vel = 0.25 + 0.7 * I
+    vlnI, vcI = (VLN_TR, VC_TR) if trem else (VLN, VC)
+    if cb is not None:
+        CB.play(cb, t0, d, vel, 'low', -6, 0.0, 0.18, att=att, rel=rel)
+        if I > 0.75:
+            CB.play(cb + 12, t0, d, vel, 'low', -9, 0.1, 0.2, att=att, rel=rel)
+    for k, m in enumerate(vc):
+        vcI.play(m, t0, d, vel, 'str', -7 - 2 * k, 0.45, 0.32, att=att, rel=rel)
+    for k, m in enumerate(vla):
+        VLA.play(m, t0, d, vel, 'str', -9 - k, 0.12, 0.35, att=att, rel=rel)
+    for k, m in enumerate(vln):
+        vlnI.play(m, t0, d, vel, 'str', -8 - k, -0.4 + 0.15 * k, 0.4, att=att, rel=rel)
+    if hi:
+        VLN.play(vln[-1] + 12 if vln[-1] + 12 <= 90 else vln[-1], t0, d, vel, 'str', -10, -0.55, 0.5, att=att, rel=rel)
 
 
-def pad_cut(tc):
-    tc = np.asarray(tc)
-    c = np.full(tc.shape, 900.0)
-    c = np.where(tc < T_XR, 900 + 700 * np.clip((tc - 1.0) / 2.4, 0, 1), c)
-    c = np.where((tc >= T_XR) & (tc < T_GROOVE - 0.6), 700, c)
-    c = np.where((tc >= T_GROOVE - 0.6) & (tc < T_GROOVE), 700 * (3200 / 700) ** ((tc - (T_GROOVE - 0.6)) / 0.6), c)
-    c = np.where((tc >= T_GROOVE) & (tc < 9.9), 3200, c)
-    c = np.where((tc >= 9.9) & (tc < T_RULES), 1500 * (9000 / 1500) ** np.clip((tc - 9.9) / (T_RULES - 9.9), 0, 1) ** 2, c)
-    c = np.where(tc >= T_RULES, 4200, c)
-    return c
+# ── 弦乐铺底（开场从无到有；X 光换颤弓；断点之后全体 + 高八度）──
+for k, (t0, name, I) in enumerate(CHORDS):
+    t1 = CHORDS[k + 1][0] if k + 1 < len(CHORDS) else DUR
+    if k == len(CHORDS) - 1:
+        t1 = DUR - 0.2
+    trem = T_XIN <= t0 < FWD or (WHIP_ARR[2] <= t0 < T_BREAK)
+    hi = t0 >= T_BREAK or (TURNS[1] <= t0 < T_BREAK)
+    att = 0.85 if k == 0 else (0.05 if t0 >= WHIP_ARR[1] else 0.1)
+    strings(name, t0, t1, I, trem=trem, hi=hi, att=att, rel=0.5 if k < len(CHORDS) - 1 else 1.2)
 
+# 变手机那一秒：颤弓渐强（大提琴 + 小提琴，A 的属音持续），憋到断点
+for m, inst, g, pan in [(57, VC_TR, 5, 0.4), (69, VLN_TR, 4, -0.4), (76, VLN_TR, 1, -0.2), (81, VLN_TR, -2, -0.55), (45, VC_TR, 2, 0.5)]:
+    y = render(inst.pick(m, 0.95)[0], inst.pick(m, 0.95)[1], T_BREAK - WHIP_ARR[2], 0.08)
+    e = np.linspace(0.08, 1, y.shape[1]) ** 1.7
+    place(y * e, WHIP_ARR[2], 'str', db(g), pan, 0.35)
 
-pad = np.vstack([hp(stft_filter(pad[c], pad_cut, order=2, q=0.3), 110) for c in range(2)])
-lvl = np.interp(np.arange(N) / SR, [0, 1.0, 1.4, T_XR, T_XR + 0.3, T_GROOVE, T_GROOVE + 0.1, T_RULES - 0.1, T_RULES, 13.95, 14.0, 15],
-                [0, 0, 0.55, 0.6, 0.75, 0.8, 0.9, 1.0, 0.95, 0.95, 0, 0])
-B['pad'] += pad * lvl * 0.3
-SEND_HALL += pad * lvl * 0.3 * 0.35
-
-# —— 苹果一章：合唱“啊” + braam；片尾 D 加九和弦 ——
-place(choir([midi(m) for m in [62, 66, 69, 74]], 1.6, att=0.5), fr(504), 'pad', 0.55, hall=0.6)
-place(braam(31, 2.0, 0.8, bright=2000, seed=9), fr(528), 'hit', 0.32, hall=0.3)
-place(choir([midi(m) for m in [57, 61, 64, 69]], 1.2, att=0.3), fr(560), 'pad', 0.5, hall=0.6)
-
-# —— 贝斯：八分音符，侧链 ——
-GROOVE_ON = [(T_DEF, T_XR), (T_GROOVE, T_BUILD), (T_RULES, T_END)]
-
-
-def in_any(t, spans):
-    return any(a <= t < b for a, b in spans)
-
-
-bass = np.zeros(N)
-t8 = 0.0
-while t8 < DUR:
-    if in_any(t8 + 1e-6, GROOVE_ON):
-        root = CH[chord_at(t8 + 0.01)][0]
-        f = midi(root + 12)
-        n = int(0.24 * SR)
-        t = np.arange(n) / SR
-        osc = saw(f, n) * 0.6 + np.sign(sine(f, n)) * 0.25
-        v = lp(osc, 650, 2) + lp(osc, 2600, 2) * np.exp(-t / 0.035) * 0.6 + sine(f / 2, n) * 0.45
-        v *= np.minimum(1, t / 0.004) * np.exp(-t / 0.16) * np.minimum(1, (0.24 - t) / 0.02)
-        i0 = int(t8 * SR)
-        bass[i0: i0 + n] += v[: N - i0]
-    t8 += BEAT / 2
-bass = lp(bass, 1100)
-# X 光一段：长音贝斯
-for s_, name in PROG:
-    if T_XR - 0.1 <= s_ < T_GROOVE - 0.3 or (s_ < T_XR and s_ + 1 > T_XR):
-        st_ = max(s_, T_XR)
-        d = min(s_ + 1.0, T_GROOVE) - st_
-        n = int(d * SR)
-        t = np.arange(n) / SR
-        v = sine(midi(CH[name][0]), n) * 0.7 + lp(saw(midi(CH[name][0] + 12), n), 300) * 0.25
-        v *= np.minimum(1, t / 0.05) * np.minimum(1, (d - t) / 0.08)
-        i0 = int(st_ * SR)
-        bass[i0: i0 + n] += v[: N - i0] * 0.6
-B['bass'][0] += bass * 0.42
-B['bass'][1] += bass * 0.42
-
-# —— 鼓 ——
-KICKS = []
-tb = T_DEF
-while tb < T_END - 1e-6:
-    full = in_any(tb + 1e-6, [(T_GROOVE, T_BUILD), (T_RULES, T_END)])
-    soft = in_any(tb + 1e-6, [(T_DEF, T_XR)])
-    if full or soft:
-        place(kick(1.0 if full else 0.6, dec=0.3 if full else 0.22), tb, 'drum', 0.85 if full else 0.6)
-        KICKS.append(tb)
-    if full and (round(tb / BEAT) % 2 == 1):
-        place(clap(), tb, 'drum', 0.42, room=0.6, hall=0.15)
-    tb += BEAT
-# 鼓组：十六分音符踩镲 / 反拍开镲
-t16 = T_DEF
-k = 0
-while t16 < T_END - 1e-6:
-    if in_any(t16 + 1e-6, [(T_DEF, T_XR), (T_GROOVE, T_BUILD), (T_RULES, T_END)]):
-        accent = 1.0 if k % 2 == 0 else 0.55
-        place(hat(0.5 * accent, 0.02), t16, 'drum', 0.5, pan=0.25 if k % 2 else -0.15, room=0.2)
-        if k % 4 == 2 and t16 >= T_GROOVE:
-            place(hat(0.7, 0.12), t16, 'drum', 0.32, pan=0.1, room=0.3)
-    elif T_XR <= t16 < T_GROOVE - 0.4 and k % 2 == 0:
-        place(hat(0.35, 0.012), t16, 'drum', 0.35, pan=0.4 * np.sin(k), hall=0.3)  # 时钟般的细碎高音
-    t16 += BEAT / 4
-    k += 1
-# 攒劲：军鼓滚奏（越滚越密）+ 上扫 + 倒放镲片
-tr = T_BUILD
-while tr < T_RULES - 0.02:
-    p = (tr - T_BUILD) / (T_RULES - T_BUILD)
-    place(snare(0.35 + 0.65 * p), tr, 'drum', 0.7, room=0.4, hall=0.15)
-    tr += BEAT / (2 if p < 0.4 else 4 if p < 0.75 else 8)
-place(riser(T_RULES - 10.4, 1.0), 10.4, 'fx', 0.5, hall=0.2)
-place(riser(T_GROOVE - T_REL, 0.8, 400, 8000), T_REL, 'fx', 0.22, hall=0.2)
-
-# —— 侧链 ——
-sc = np.ones(N)
-tg = np.arange(int(0.3 * SR)) / SR
-duck = 1 - 0.62 * np.exp(-tg / 0.09) * np.minimum(1, tg / 0.004 + 0.4)
-for kt in KICKS:
-    i0 = int(kt * SR)
-    L = min(len(duck), N - i0)
-    sc[i0: i0 + L] = np.minimum(sc[i0: i0 + L], duck[:L])
-B['pad'] *= sc
-B['bass'] *= sc
-
-# —— 拨弦琶音（01 定义 & 04 数据）——
-for a, b, lv, br in [(T_DEF, T_XR, 0.16, 1.0), (fr(414), fr(504), 0.22, 1.6), (fr(594), T_BUILD, 0.14, 1.2)]:
-    t16 = a
+# ── 钢琴：分解和弦 ──
+def arp(t0, t1, step=0.25, vel=0.32, octave=0, every=1, gain=-16, hall=0.3, jitter=0.006):
+    t = t0
     k = 0
-    while t16 < b - 1e-6:
-        notes = CH[chord_at(t16 + 0.01)][1]
-        pat = [0, 1, 2, 3, 2, 1, 3, 2]
-        m = notes[pat[k % 8] % len(notes)] + 12
-        place(pluck(midi(m), 0.35, br), t16, 'keys', lv * (1.0 if k % 4 == 0 else 0.7), pan=0.5 * np.sin(k * 1.7), hall=0.25)
-        t16 += BEAT / 4
+    while t < t1 - 1e-6:
+        name = chord_at(t + 1e-4)
+        pat = ARP.get(name, ARP['D'])
+        if k % every == 0:
+            m = pat[k % len(pat)] + octave
+            v = vel * (1.0 if k % 4 == 0 else 0.82) * (1 + RNG.uniform(-0.06, 0.06))
+            PIANO.play(m, t + RNG.uniform(-jitter, jitter), 0.6, v, 'keys', gain, 0.15 * np.sin(k), hall)
         k += 1
-
-# —— 钢琴：每一行字过线一个音（往上走）——
-for f_, m in zip(DEF_AT and [90, 120, 150, 180], [78, 81, 83, 86]):
-    place(piano(midi(m), 2.2, 0.8), fr(f_), 'keys', 0.3, pan=0.15, hall=0.55)
-    place(piano(midi(m - 12), 2.2, 0.6), fr(f_), 'keys', 0.16, pan=-0.15, hall=0.55)
-# X 光：再滚一遍 → 钢琴上行；舞台松开 → 低音一击
-for k, m in enumerate([62, 66, 69, 74, 78]):
-    place(piano(midi(m), 1.6, 0.7), T_FWD + k * 0.06, 'keys', 0.22, pan=-0.3 + k * 0.15, hall=0.6)
-place(piano(midi(26), 3.0, 1.0) + piano(midi(38), 3.0, 0.8), T_REL, 'keys', 0.5, hall=0.6)
-place(taiko(0.9), T_REL, 'hit', 0.5, hall=0.4)
-# Snow Fall：风声 + 远处的钢琴
-n = int((fr(420) - T_GROOVE + 0.6) * SR)
-wind = RNG.standard_normal((2, n))
-tw = np.arange(n) / SR
-wcut = lambda tc: 500 + 400 * np.sin(2 * np.pi * 0.6 * tc) + 300 * np.sin(2 * np.pi * 1.3 * tc + 1)
-wind = np.vstack([stft_filter(wind[c], wcut, order=1.0, mode='bp') for c in range(2)])
-wind *= np.minimum(1, tw / 0.3) * np.minimum(1, (tw[-1] - tw) / 0.4)
-place(wind, T_GROOVE - 0.2, 'fx', 0.12, hall=0.3)
-for f_, m in [(345, 81), (372, 78), (396, 76), (404, 74)]:
-    place(piano(midi(m), 2.5, 0.6, bright=0.7), fr(f_), 'keys', 0.26, pan=0.35, hall=0.9)
-place(boom(0.7, 2.0), T_GROOVE, 'hit', 0.55, hall=0.3)
-place(bell(midi(81), 2.0), T_GROOVE, 'keys', 0.08, hall=0.6)
-# 数据：每一步一串快速上行的拨弦
-for f_ in [438, 450, 480]:
-    notes = CH[chord_at(fr(f_) + 0.01)][1]
-    for k, m in enumerate(notes + [notes[0] + 12]):
-        place(pluck(midi(m + 12), 0.5, 2.0), fr(f_) + k * 0.035, 'keys', 0.16, pan=-0.4 + k * 0.2, hall=0.4)
-# 苹果：转一圈的每一下滑动一声低鼓
-for f_ in [528, 540, 570]:
-    place(taiko(0.8), fr(f_), 'hit', 0.5, hall=0.4)
-# 06 四种排法：进章一声；四块面板 → 四声上行的钟
-place(boom(0.5, 1.5), fr(594) + 0.25, 'hit', 0.35, hall=0.3)
-for k, (f_, m) in enumerate(zip(PATTERNS_AT, [86, 90, 93, 98])):
-    place(bell(midi(m), 1.8), fr(f_), 'keys', 0.14, pan=-0.45 + k * 0.3, hall=0.6)
-# 07 规则：落地 + 每条规则点亮时一下铜管和弦 + 低鼓
-place(boom(1.0, 2.5), T_RULES, 'hit', 0.85, hall=0.35)
-place(braam(23, 1.6, 1.0, bright=2600, seed=21), T_RULES, 'hit', 0.4, hall=0.3)
-for k, f_ in enumerate(RULES_AT):
-    t_ = fr(f_)
-    name = chord_at(t_ + 0.01)
-    root, notes = CH[name]
-    n = int(0.42 * SR)
-    stab = np.zeros((2, n))
-    for j, m in enumerate(notes):
-        stab += supersaw(midi(m), n, voices=5, detune=0.14, seed=300 + k * 10 + j)
-    tq = np.arange(n) / SR
-    stab = np.vstack([stft_filter(stab[c], lambda tc: 600 + 5200 * np.exp(-np.maximum(tc, 0) / 0.08), order=2, q=0.4) for c in range(2)])
-    stab *= np.minimum(1, tq / 0.004) * np.exp(-tq / 0.16)
-    place(stab, t_, 'keys', 0.3, hall=0.35)
-    place(taiko(0.9, 90 - k * 4, 50), t_, 'hit', 0.42, hall=0.35)
-# 片尾：最后一击 + D 加九和弦
-place(boom(1.0, 1.2), T_END, 'hit', 0.95, hall=0.4)
-place(braam(26, 1.2, 1.0, bright=3400, seed=31), T_END, 'hit', 0.45, hall=0.35)
-for m, pan in [(50, -0.2), (57, 0.2), (62, -0.1), (66, 0.25), (69, -0.3), (76, 0.3), (74, 0)]:
-    place(piano(midi(m), 1.2, 0.9), T_END + 0.006, 'keys', 0.22, pan=pan, hall=0.6)
-place(bell(midi(90), 1.2), T_END, 'keys', 0.1, hall=0.6)
-place(riser(T_END - fr(846) + 0.1, 0.7, 500, 9000), fr(846) - 0.1, 'fx', 0.2)
-
-# ═════════════ 混音：混响、磁带倒转、滚动空气声、母带 ═════════════
-music = B['drum'] + B['bass'] + B['pad'] + B['keys'] + B['hit']
-music[0] += conv(SEND_HALL[0], HALL[0]) * 0.55 + conv(SEND_ROOM[0], ROOM[0]) * 0.4
-music[1] += conv(SEND_HALL[1], HALL[1]) * 0.55 + conv(SEND_ROOM[1], ROOM[1]) * 0.4
+        t += step
 
 
-def tape(x, t0, t1, rate_fn):
-    """在 [t0, t1) 里按 rate_fn 播放（1 = 正常，负数 = 倒放）；之后从 t1 原位接上"""
-    i0, i1 = int(t0 * SR), int(t1 * SR)
-    n = i1 - i0
-    tl = np.arange(n) / SR
-    pos = i0 + np.cumsum(rate_fn(tl / (t1 - t0)))
-    pos = np.clip(pos, 0, N - 2)
-    j = pos.astype(int)
-    a = pos - j
-    seg = x[:, j] * (1 - a) + x[:, j + 1] * a
-    fade = np.minimum(1, np.minimum(tl, (t1 - t0) - tl) / 0.008)
-    y = x.copy()
-    y[:, i0:i1] = seg * fade + x[:, i0:i1] * 0 * fade
-    return y
+arp(SIDE[0], T_XIN, 0.25, 0.36, gain=-8)                     # ① 八分音符，轻轻的脉动
+arp(WHIP_ARR[0], WHIPS[1][0], 0.5, 0.32, 12, gain=-9)       # ② 高音区四分音符，像落雪
+arp(WHIP_ARR[1], WHIPS[2][0], 0.25, 0.45, 0, gain=-9)  # ③ 推着走
+arp(T_BREAK, T_PH[1], 0.25, 0.5, 0, gain=-10)    # 断点之后
+for k, m in enumerate([38, 50, 57, 64, 66, 69, 74, 76, 81]):  # 片尾：慢慢往上散开
+    PIANO.play(m, T_PH[1] + 0.03 + k * 0.085, 1.6, 0.38 - k * 0.015, 'keys', -14, -0.3 + 0.08 * k, 0.45)
+
+# ── 旋律：一条线贯穿全片（钢琴主奏 + 钟琴高八度点缀；断点之后小提琴唱）──
+MEL = []
+MEL += [(0.5, 69, 0.5, 0.35), (0.75, 74, 0.25, 0.38)]                                     # 弱起
+MEL += [(C_CITY[i], m, 0.9, 0.55) for i, m in enumerate([78, 76, 74, 71])]                 # ① F# E D B（过线才响）
+MEL += [(WHIP_ARR[0], 78, 0.5, 0.5), (SNOW_F[0], 79, 0.5, 0.52), (SNOW_F[1], 81, 0.5, 0.55), (SNOW_F[1] + 0.5, 83, 0.25, 0.45)]  # ② F# G A B
+MEL += [(WHIP_ARR[1], 83, 0.5, 0.55), (TURNS[0], 85, 0.5, 0.58), (TURNS[1], 86, 0.5, 0.62), (TURNS[2], 88, 0.7, 0.66)]  # ③ B C# D E
+for t, m, d, v in MEL:
+    PIANO.play(m, t, d, v, 'mel', -3, -0.05, 0.38)
+    GLOCK.play(m + 12 if m + 12 <= 103 else m, t, None, 0.6, 'mel', -15, 0.25, 0.45)
+
+# 断点之后：小提琴唱出主题的最高点再落下来（F# → E → D → E → F#），钢琴高八度、圆号垫底
+CLIMAX = [(T_BREAK, 78, 0.5), (T_BREAK + 0.5, 76, 0.25), (T_PH[0], 74, 0.5), (T_PH[0] + 0.5, 76, 0.25), (T_PH[1], 78, DUR - T_PH[1] - 0.3)]
+for k, (t, m, d) in enumerate(CLIMAX):
+    VLN.play(m, t, d, 0.95, 'mel', 0, -0.2, 0.45, att=0.03, rel=0.35)
+    VLN.play(m - 12, t, d, 0.8, 'mel', -8, -0.45, 0.45, att=0.03, rel=0.35)
+    PIANO.play(m + 12, t, max(d, 0.6), 0.6, 'mel', -8, 0.1, 0.4)
+    if k in (0, 4):
+        GLOCK.play(m + 12, t, None, 0.7, 'mel', -16, 0.3, 0.5)
+for t0, t1, notes, v in [(T_BREAK, T_PH[0], (50, 54, 57), 0.9), (T_PH[0], T_PH[1], (50, 55, 59), 0.75), (T_PH[1], DUR - 0.3, (50, 54, 57), 0.6)]:
+    for k, m in enumerate(notes):
+        HORN.play(m, t0, t1 - t0, v, 'str', -9 - k, 0.25 - 0.2 * k, 0.45, att=0.04, rel=0.5)
+
+# ── 竖琴：落定、往回滚完那一下、片尾，各一道刮奏 ──
+D_MAJ = [2, 4, 6, 7, 9, 11, 13]
 
 
-# 02 结构：倒着滚（音乐真的倒带）
-music = tape(music, T_REW, T_REW + fr(26), lambda p: 1 - 3.6 * np.sin(np.pi * np.clip(p * 1.0, 0, 1)) ** 0.7)
+def gliss(t, lo, hi, dur, vel=0.6, gain=-12, up=True):
+    notes = [m for m in range(lo, hi + 1) if (m % 12) in (2, 4, 6, 7, 9, 11, 1)]
+    if not up:
+        notes = notes[::-1]
+    for k, m in enumerate(notes):
+        p = k / max(1, len(notes) - 1)
+        HARP.play(m, t + dur * p ** 1.15, None, vel, 'keys', gain - 4 * (1 - p) * (1 if up else 0), -0.5 + p, 0.45)
 
-# 滚动的空气声：响度和亮度都跟着 S(f) 的速度走
+
+gliss(T_LAND, 50, 86, 0.34, 0.55, -13)
+gliss(FWD, 50, 81, 0.36, 0.6, -12)
+gliss(T_PH[1], 62, 93, 0.5, 0.5, -15)
+gliss(WHIP_ARR[0] - 0.02, 62, 86, 0.22, 0.4, -18, up=False)  # 落进雪山：往下撒一把
+
+# ── X 光：三个半拍倒着滚 → 三个倒放的钢琴音被“吸”回去 ──
+for t, m in zip(BACK, [86, 83, 79]):
+    PIANO.play(m, t + 0.012, 1.0, 0.6, 'keys', -9, 0.3, 0.2, rev=True)
+    PIANO.play(m - 12, t, 0.3, 0.35, 'keys', -18, -0.2, 0.3)
+
+# ═════════════ 打击乐 ═════════════
+# 窗口落定：定音鼓 + 大鼓 + 低频，镲从倒放里涌上来
+hit(CYM_SOFT, T_LAND, -9, rev=True)
+timp(38, T_LAND, -4)
+hit(BD['bdrum_ff_1'], T_LAND, -6)
+place(sub_boom(0.8, 1.4), T_LAND, 'low', db(-16))
+
+# ① 每一步：大鼓轻轻一下（心跳）
+for t in SIDE:
+    hit(BD['bdrum_muted_mp_1'], t, -12)
+# X 光：镜头斜过来 —— 锣轻敲 + 低频下坠
+hit(GONG_MF, T_XIN, -14)
+place(sub_boom(0.7, 1.2, 60, 36), T_XIN, 'low', db(-20))
+timp(40, T_XIN, -9, loud=False)
+# 三个快甩：倒放镲涌上来，到达那一拍 定音鼓 + 大鼓 + 低频
+for k, ((a, b), arr) in enumerate(zip(WHIPS, WHIP_ARR)):
+    hit(CYM_SOFT if k < 2 else CYM_HIT, arr, -11, rev=True)
+    place(whoosh(b - a + 0.1, 1.0, 0.68), a, 'fx', db(-16))
+    timp([42, 40, 45][k], arr, -5, rr=1 + k % 2)  # F#2 / E2 / A2：落在和弦里
+    hit(BD['bdrum_ff_1'], arr, -7)
+# ② 两张卡片
+for t in SNOW_F:
+    hit(BD['bdrum_muted_mf_1'], t, -11)
+    hit(CYM_SOFT, t, -24)
+# ③ 每拍一下大鼓；每转一下定音鼓
+t = WHIP_ARR[1]
+k = 0
+while t < WHIPS[2][0] - 0.01:
+    hit(BD['bdrum_muted_ff_1'], t, -7 if k % 2 == 0 else -9)
+    if k % 2 == 1:
+        hit(BD['bdrum_muted_mp_1'], t + 0.25, -16)
+    t += 0.5
+    k += 1
+for k, (t, m) in enumerate(zip(TURNS, [43, 45, 42])):  # G2 / A2 / F#2
+    timp(m, t, -6, rr=1 + k % 2)
+# ③ 跳弓八分音符：大提琴根音 + 小提琴和弦音
+t = WHIP_ARR[1]
+k = 0
+while t < WHIPS[2][0] - 0.01:
+    name = chord_at(t + 1e-4)
+    cb, vc, vla, vln = V[name]
+    VC_SP.play(vc[0], t, None, 0.75 if k % 2 == 0 else 0.55, 'str', -6, 0.4, 0.2)
+    VLN_SP.play(vln[(k // 2) % 2] + (12 if k % 4 == 3 else 0), t + 0.003, None, 0.6 if k % 2 == 0 else 0.45, 'str', -9, -0.4, 0.25)
+    t += 0.25
+    k += 1
+
+# 变手机那一秒：定音鼓滚奏 + 吊镲滚奏渐强，到断点最响
+roll_d = T_BREAK - WHIP_ARR[2]
+y = render(TIMP_ROLL, 45 - TIMP_F0, roll_d, 0.05, norm='peak')  # A2：属音
+place(y * np.linspace(0.05, 1, y.shape[1]) ** 1.8, WHIP_ARR[2], 'perc', db(0), 0.0, 0.2, 0.1)
+cx, csr = wav(CYM_CRESC, 'peak')
+env = np.convolve(np.abs(cx).max(0), np.ones(2000) / 2000, mode='same')
+pk = int(np.argmax(env)) / csr
+hit(CYM_CRESC, T_BREAK - pk, -2, dur=pk + 0.05, rel_t=0.05)
+place(noise_riser(roll_d + 0.2, 1.0, 300, 8000, 2.4), T_BREAK - roll_d - 0.2, 'fx', db(-19))
+
+# 断点：全片最重的一击
+hit(BD['bdrum_fff_1'], T_BREAK, -2)
+hit(BD['bdrum_ff_1'], T_BREAK + 0.003, -6)
+timp(38, T_BREAK, -1)
+timp(38, T_BREAK + 0.004, -6, rr=2)
+hit(GONG, T_BREAK, -7)
+hit(CYM_HIT, T_BREAK, -7)
+place(sub_boom(1.0, 2.2, 80, 34), T_BREAK, 'low', db(-9))
+place(tick(1.0, 5200), T_BREAK - 0.004, 'fx', db(-12))
+# 断点之后：每拍一下大鼓，直到最后一下
+t = T_BREAK + 0.5
+while t < T_PH[1] - 0.01:
+    hit(BD['bdrum_muted_ff_1'], t, -9)
+    t += 0.5
+# 手机里两下
+hit(BD['bdrum_f_1'], T_PH[0], -8)
+timp(43, T_PH[0], -8)
+# 最后一下：温暖的落地（定音鼓 D + 大鼓 + 锣轻 + 镲轻）
+timp(38, T_PH[1], -3)
+hit(BD['bdrum_ff_1'], T_PH[1], -6)
+hit(GONG_MF, T_PH[1], -12)
+hit(CYM_SOFT, T_PH[1], -15)
+place(sub_boom(0.7, 1.6, 70, 38), T_PH[1], 'low', db(-18))
+
+# ═════════════ 音效：咔哒 ═════════════
+for t in OUTS + T_PH:
+    place(tick(1.0), t, 'fx', db(-27))
+for t in [c for c in C_CITY + C_SNOW if c]:
+    place(tick(1.0, 2600), t, 'fx', db(-30))
+
+
+# ═════════════ 混音：混响、滚动风声、母带 ═════════════
+print('混音…')
+music = B['str'] + B['keys'] + B['mel'] + B['perc'] + B['low']
+for c in range(2):
+    music[c] += conv(SEND_HALL[c], HALL[c]) * 0.5 + conv(SEND_ROOM[c], ROOM[c]) * 0.35
+
+# 滚动的风声：响度和亮度都跟着 Y(f) 的速度走（很轻，只是“手感”）
 tA = np.arange(N) / SR
 sp = np.interp(tA * 60 * FINE, np.arange(len(SPEED)), SPEED)
-spn = np.clip(sp / 140, 0, 1.6)
+spn = np.clip(sp / 160, 0, 1.4)
 air = RNG.standard_normal((2, N))
-air = np.vstack([stft_filter(air[c], lambda tc: 600 + 5200 * np.clip(np.interp(tc * 60 * FINE, np.arange(len(SPEED)), SPEED) / 140, 0, 1.4), order=1.4, mode='bp') for c in range(2)])
-air *= spn ** 0.9 * 0.05
+air = np.vstack([stft_filter(air[c], lambda tc: 500 + 4200 * np.clip(np.interp(tc * 60 * FINE, np.arange(len(SPEED)), SPEED) / 160, 0, 1.3), order=1.5, mode='bp') for c in range(2)])
+air *= spn ** 1.1 * 0.025
 
-# 母带：总线胶水压缩（RMS 包络）+ 软削波
 mix = music + B['fx'] + air
-mix[0] += conv(B['fx'][0] * 0.3, HALL[0]) * 0.4
-mix[1] += conv(B['fx'][1] * 0.3, HALL[1]) * 0.4
-# 低频搁架：60 Hz 以下收 4 dB；3–10 kHz 提一点“空气”
-shelf = lambda f: hp_gain(28, 3)(f) * (0.5 + 0.5 / np.sqrt(1 + (70 / np.maximum(f, 1)) ** 4)) * (1 + 0.25 * bp_gain(6000, 2.0)(f))
-mix = np.vstack([fft_filter(mix[0], shelf), fft_filter(mix[1], shelf)])
+# 断点前 0.1 秒“抽空”：所有声音一下子收掉，那一击才显得更重
+gap = np.ones(N)
+g0, g1 = int((T_BREAK - 0.11) * SR), int((T_BREAK - 0.004) * SR)
+gap[g0:g1] = np.interp(np.arange(g0, g1), [g0, g0 + int(0.03 * SR), g1 - int(0.004 * SR), g1], [1, 0.22, 0.22, 1])
+mix *= gap
+for c in range(2):
+    mix[c] += conv(B['fx'][c] * 0.25, HALL[c]) * 0.35
+# 低切 25 Hz；120 Hz 附近收一点浑；10 kHz 以上加一点“空气”
+eq = lambda f: hp_gain(25, 3)(f) * (1 - 0.18 * bp_gain(220, 1.2)(f)) * (1 + 0.18 * hp_gain(9000, 1)(f))
+mix = np.vstack([fft_filter(mix[0], eq), fft_filter(mix[1], eq)])
+# 总线胶水压缩（RMS 包络，2:1，慢起快放）+ 软削波
 pw = (mix ** 2).mean(axis=0)
-win = int(0.03 * SR)
+win = int(0.05 * SR)
 rms = np.sqrt(np.convolve(pw, np.ones(win) / win, mode='same') + 1e-12)
-ref = np.percentile(rms[int(2 * SR):int(13 * SR)], 75)
-thr = ref * 0.7
-gain = np.where(rms > thr, (thr / rms) ** (1 - 1 / 2.5), 1.0)
-gain = np.convolve(gain, np.ones(int(0.01 * SR)) / int(0.01 * SR), mode='same')
+ref = np.percentile(rms[int(1 * SR):int(14 * SR)], 80)
+thr = ref * 0.8
+gain = np.where(rms > thr, (thr / rms) ** (1 - 1 / 2.0), 1.0)
+gain = np.convolve(gain, np.ones(int(0.02 * SR)) / int(0.02 * SR), mode='same')
 mix *= gain
 mix /= np.abs(mix).max() + 1e-9
-mix = np.tanh(mix * 1.35) / np.tanh(1.35)
+mix = np.tanh(mix * 1.2) / np.tanh(1.2)
 fade = np.ones(N)
-fo = int(0.45 * SR)
-fade[-fo:] = np.linspace(1, 0, fo) ** 1.5
+fo = int(0.6 * SR)
+fade[-fo:] = np.linspace(1, 0, fo) ** 1.6
+fade[:int(0.01 * SR)] = np.linspace(0, 1, int(0.01 * SR))
 mix *= fade * 0.95
 
-out_dir = os.path.normpath(os.path.join(ROOT, '..', '..', '..', 'public', '03-scrollytelling'))
+out_dir = os.path.normpath(os.path.join(REPO, 'public', '03-scrollytelling'))
 os.makedirs(out_dir, exist_ok=True)
 raw = os.path.join(out_dir, 'music.raw.wav')
 final = os.path.join(out_dir, 'music.wav')
@@ -738,6 +763,14 @@ with wave.open(raw, 'wb') as w:
     w.setsampwidth(2)
     w.setframerate(SR)
     w.writeframes((np.clip(mix.T, -1, 1) * 32767).astype('<i2').tobytes())
+if os.environ.get('STEMS'):
+    for k in BUSES:
+        x = B[k] / (np.abs(mix).max() + 1e-9)
+        with wave.open(os.path.join(out_dir, f'stem-{k}.wav'), 'wb') as w:
+            w.setnchannels(2)
+            w.setsampwidth(2)
+            w.setframerate(SR)
+            w.writeframes((np.clip(x.T, -1, 1) * 32767).astype('<i2').tobytes())
 
 if shutil.which('ffmpeg'):
     # 两遍 loudnorm：先量，再线性地拉到 -14 LUFS（不改动态）
@@ -748,4 +781,4 @@ if shutil.which('ffmpeg'):
     os.remove(raw)
 else:
     os.replace(raw, final)
-print('wrote', final)
+print('→', final)

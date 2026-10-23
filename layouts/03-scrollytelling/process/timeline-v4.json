@@ -1,0 +1,50 @@
+{
+ "fps": 60,
+ "bpm": 120,
+ "frames": 900,
+ "title": "布局 03 · 时间轴（v4）：拍一张真网页 —— 7 段、12 次滑动 + 手机 2 次，配乐与音效从同一份滑动表生成（1 拍 = 30 帧）",
+ "segments": [
+  {
+   "label": "开场",
+   "start": 0,
+   "dur": 90,
+   "color": "#2C2C2F"
+  },
+  {
+   "label": "① 并排",
+   "start": 90,
+   "dur": 210,
+   "color": "#FF5A8A"
+  },
+  {
+   "label": "X 光",
+   "start": 300,
+   "dur": 150,
+   "color": "#2997FF"
+  },
+  {
+   "label": "② 覆盖",
+   "start": 450,
+   "dur": 105,
+   "color": "#E7ECEF"
+  },
+  {
+   "label": "③ 逐帧",
+   "start": 555,
+   "dur": 135,
+   "color": "#8B3DFF"
+  },
+  {
+   "label": "变手机",
+   "start": 690,
+   "dur": 120,
+   "color": "#30D158"
+  },
+  {
+   "label": "片尾",
+   "start": 810,
+   "dur": 90,
+   "color": "#F5F5F7"
+  }
+ ]
+}

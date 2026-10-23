@@ -4,6 +4,7 @@ import {Bauhaus, BAUHAUS_DURATION} from '../styles/001-bauhaus/video/Bauhaus';
 import {BentoGrid, BENTO_DURATION} from '../layouts/01-bento-grid/video/BentoGrid';
 import {Masonry, MASONRY_DURATION} from '../layouts/02-masonry/video/Masonry';
 import {Scrollytelling, SCROLLY_DURATION} from '../layouts/03-scrollytelling/video/Scrollytelling';
+import {PhoneSpin, SPIN_FRAMES} from '../layouts/03-scrollytelling/video/PhoneSpin';
 import {SwissStyle, SWISS_DURATION} from '../styles/002-swiss-style/video/SwissStyle';
 import {Constructivism, CONSTRUCTIVISM_DURATION} from '../styles/003-constructivism/video/Constructivism';
 
@@ -64,5 +65,7 @@ export const Root: React.FC = () => (
       height={1080}
       defaultProps={{music: true}}
     />
+    {/* 布局 03 演示网页的逐帧图片序列（不是短片） */}
+    <Composition id="L03-PhoneSpin" component={PhoneSpin} durationInFrames={SPIN_FRAMES} fps={30} width={720} height={900} />
   </>
 );
