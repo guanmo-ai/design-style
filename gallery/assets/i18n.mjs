@@ -1,7 +1,7 @@
 export const messages = {
   zh: {
     pageTitle:'Design Style · 设计参考库', description:'用短片认识设计风格与布局方式，探索图解、设计规则、AI 提示词与完整源码。',
-    home:'Design Style 首页', subtitle:'设计参考库', navigation:'网站导航', language:'语言 / Language', creator:'观默',
+    home:'Design Style 首页', subtitle:'设计参考库', navigation:'网站导航', language:'语言 / Language', chooseLanguage:'选择语言', creator:'观默',
     skip:'跳到作品', collection:'全部作品', search:'搜索风格、布局、关键词', placeholder:'搜索作品或关键词', filters:'作品标签筛选',
     all:'全部', style:'设计风格', layout:'布局方式', resultCount:'共 {total} 期，显示 {count} 期',
     emptyTitle:'还没有找到相关作品', emptyHint:'试试「包豪斯」「便当盒」或其他关键词。', reset:'查看全部作品', loading:'正在载入短片…',
@@ -19,7 +19,7 @@ export const messages = {
   },
   en: {
     pageTitle:'Design Style · Design references', description:'Explore design styles and layouts through short films, visual guides, practical rules, AI prompts, and editable source code.',
-    home:'Design Style home', subtitle:'Design references', navigation:'Site navigation', language:'Language / 语言', creator:'Guanmo',
+    home:'Design Style home', subtitle:'Design references', navigation:'Site navigation', language:'Language / 语言', chooseLanguage:'Change language', creator:'Guanmo',
     skip:'Skip to works', collection:'All works', search:'Search styles, layouts, or keywords', placeholder:'Search works or keywords', filters:'Filter works',
     all:'All', style:'Design styles', layout:'Layouts', resultCount:'Showing {count} of {total} films',
     emptyTitle:'No matching works', emptyHint:'Try “Bauhaus”, “Bento”, or another keyword.', reset:'View all works', loading:'Loading films…',

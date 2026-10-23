@@ -1,5 +1,6 @@
 import {REPO, TYPES, typeOf, workDir, sourceUrl, releaseUrl, videoUrl, formatTime, escapeHtml as h, selectWorks, adjacentWork, readState} from './model.mjs';
 import {resolveLanguage, languageUrl, text, content, documentHref} from './i18n.mjs';
+import {renderLanguageMenu, mountLanguageMenus, closeLanguageMenus} from './language-menu.mjs';
 
 const $ = selector => document.querySelector(selector);
 const viewer = $('#viewer');
@@ -25,6 +26,7 @@ const links = work => [
 ].join('');
 
 function applyLanguage() {
+  closeLanguageMenus();
   document.documentElement.lang = language === 'zh' ? 'zh-CN' : 'en';
   document.title = t('pageTitle');
   $('meta[name="description"]').content = t('description');
@@ -32,7 +34,8 @@ function applyLanguage() {
   for (const attribute of ['aria-label', 'placeholder']) {
     for (const node of document.querySelectorAll(`[data-i18n-${attribute}]`)) node.setAttribute(attribute, t(node.getAttribute(`data-i18n-${attribute}`)));
   }
-  for (const node of document.querySelectorAll('.language-switch [data-language]')) node.setAttribute('aria-pressed', String(node.dataset.language === language));
+  for (const node of document.querySelectorAll('[data-language-control]')) node.innerHTML = renderLanguageMenu({language, id:node.dataset.languageControl});
+  mountLanguageMenus();
   if (catalogFailed) $('#loading').innerHTML = t('loadError') + external(REPO, t('githubBrowse'));
   try {localStorage.setItem('design-style-language', language);} catch { /* Language links still work without storage. */ }
 }
@@ -106,9 +109,10 @@ function renderWorkText(work) {
   $('.player-error').innerHTML = t('playbackError') + external(releaseUrl(work), t('release'));
   $('#viewer-content').innerHTML = `
     <div class="viewer-details"><div><h2 id="viewer-title">${h(title(work))}${language === 'zh' ? ` · ${h(work.titleEn)}` : ''}</h2><p>${h(content(work, 'description', language))}</p></div></div>
-    <div class="work-links" style="margin-top:20px">${links(work)}<button class="language-link" type="button" lang="${language === 'zh' ? 'en' : 'zh-CN'}" data-language="${language === 'zh' ? 'en' : 'zh'}">${language === 'zh' ? 'English' : '中文'}</button></div>
+    <div class="work-links" style="margin-top:20px">${links(work)}<div data-language-control="viewer-language">${renderLanguageMenu({language,id:'viewer-language'})}</div></div>
     <p class="media-language-note">${t('mediaNote')}</p>
     ${renderImages(work)}`;
+  mountLanguageMenus();
 }
 
 function showWork(work, trigger) {
@@ -188,14 +192,15 @@ $('#viewer-content').addEventListener('click', event => {
 document.addEventListener('click', event => {
   const button = event.target.closest('[data-language]');
   if (!button || !['zh','en'].includes(button.dataset.language)) return;
+  const controlId = button.closest('.language-menu').id;
   language = button.dataset.language;
   history.replaceState(null, '', languageUrl(location.href, language));
   applyLanguage();
   if (works.length) render();
   if (viewer.open) {
     renderWorkText(works.find(work => work.id === currentWorkId));
-    $('#viewer-content [data-language]').focus();
   }
+  document.getElementById(controlId)?.querySelector('.language-trigger').focus();
 });
 document.addEventListener('keydown', event => {
   if (viewer.open && !imageViewer.open && ['ArrowLeft', 'ArrowRight'].includes(event.key) && !event.defaultPrevented && !event.isComposing && !event.target.closest('video, input, textarea, select, [contenteditable]') && !event.metaKey && !event.ctrlKey && !event.altKey && !event.shiftKey && !document.fullscreenElement && !document.pictureInPictureElement) {
