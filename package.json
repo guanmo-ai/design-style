@@ -34,15 +34,18 @@
     "images:L01": "python3 layouts/01-bento-grid/images/make_svgs.py && python3 scripts/build_images.py layouts/01-bento-grid/images",
     "music:L02": "python3 layouts/02-masonry/audio/make_music.py",
     "render:L02": "npm run music:L02 && remotion render src/index.ts L02-Masonry out/02-masonry-master.mp4 --codec=h264 --crf=16",
-    "images:L02": "python3 layouts/02-masonry/images/make_svgs.py && python3 scripts/build_images.py layouts/02-masonry/images"
+    "images:L02": "python3 layouts/02-masonry/images/make_svgs.py && python3 scripts/build_images.py layouts/02-masonry/images",
+    "postinstall": "node scripts/apply-renderer-security-patch.mjs",
+    "test": "npm run gallery:test && npm run test:security",
+    "test:security": "node --test tests/security/*.test.mjs"
   },
   "dependencies": {
-    "@remotion/cli": "4.0.454",
-    "@remotion/fonts": "4.0.454",
-    "@remotion/motion-blur": "4.0.454",
+    "@remotion/cli": "4.0.538",
+    "@remotion/fonts": "4.0.538",
+    "@remotion/motion-blur": "4.0.538",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
-    "remotion": "4.0.454"
+    "remotion": "4.0.538"
   },
   "devDependencies": {
     "@types/react": "^19.0.0",

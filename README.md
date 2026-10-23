@@ -117,11 +117,11 @@ npm run gallery:serve
 
 ### 制作与渲染
 
-需要 Node 18+、Python 3.10+、ffmpeg。
+需要 Node 22.12+、Python 3.10+、ffmpeg、Git。
 
 ```bash
 git clone https://github.com/guanmo-ai/design-style.git && cd design-style
-npm install
+npm ci
 npm run fonts                  # 下载开源字体到 public/fonts（Jost / JetBrains Mono / TeX Gyre Heros / Oswald / Fredoka / Bangers / Inter / Geist Mono / Selawik / Instrument Serif / Noto Sans SC）
 pip install numpy fonttools
 
@@ -148,6 +148,8 @@ node scripts/stills.mjs out/bundle out/check 164 224 314   # 只导出想检查�
 python3 scripts/contact_sheet.py out/sheet.jpg --video out/001-bauhaus.mp4 "164|01 色彩" "224|02 形与色"
 python3 scripts/timeline_chart.py styles/001-bauhaus/process/timeline.json public/001-bauhaus/music.wav out/timeline.png
 ```
+
+根目录的 `npm ci` 会自动应用浏览器 ZIP 解压安全补丁；使用 `--ignore-scripts` 安装时，须再运行 `npm run postinstall`。运行 `npm test` 检查画廊与安全回归用例；补丁边界和升级注意事项见 [安全维护说明](docs/SECURITY.md)。
 
 ## 目录结构
 

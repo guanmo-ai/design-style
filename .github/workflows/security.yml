@@ -1,0 +1,41 @@
+name: Test security fixes
+
+on:
+  push:
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - name: Checkout
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          persist-credentials: false
+      - name: Set up Node.js
+        uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: |
+            package-lock.json
+            gallery/package-lock.json
+      - name: Install locked dependencies and apply reviewed patch
+        run: |
+          npm ci --ignore-scripts --registry=https://registry.npmjs.org
+          npm run postinstall
+          npm ci --prefix gallery --ignore-scripts --registry=https://registry.npmjs.org
+      - name: Run regression and adversarial tests
+        run: npm test
+      - name: Check TypeScript and bundle compositions
+        run: |
+          npx --no-install tsc --noEmit
+          npx --no-install remotion bundle src/index.ts --out-dir out/security-bundle
+      - name: Audit both dependency trees
+        run: |
+          npm audit --registry=https://registry.npmjs.org
+          npm audit --prefix gallery --registry=https://registry.npmjs.org
