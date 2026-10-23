@@ -6,12 +6,13 @@
   --scrolly-t2: #86868B;
   --scrolly-paper: #F5F5F7;
   --scrolly-ink: #1D1D1F;
-  --scrolly-accent: #2997FF;   /* 唯一强调色：进度、触发线、步骤编号 */
+  --scrolly-accent: #2997FF;   /* 强调色：进度、步骤编号、钉住的舞台 */
+  --scrolly-trigger-line: #FF5C9A; /* 视频里的触发线颜色 */
   --scrolly-stuck: #30D158;    /* 只在结构图里标“钉住”的舞台 */
   --scrolly-grad: linear-gradient(90deg, #FF7A2F 0%, #FF2E7E 35%, #8B3DFF 68%, #2997FF 100%);
 
-  --scrolly-step-gap: 100vh;   /* 规则 03：一步一屏左右，别塞两步 */
-  --scrolly-trigger: 50%;      /* 规则 02：触发线在视口 50% */
+  --scrolly-step-gap: 100vh;   /* 规则 02：一步只变一件事，一步一屏左右 */
+  --scrolly-trigger: 50%;      /* 规则 03：触发线在视口 50% */
 
   --font-display: 'Inter Display', 'Noto Sans SC', sans-serif;
   --font-text: 'Inter', 'Noto Sans SC', sans-serif;

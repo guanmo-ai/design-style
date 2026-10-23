@@ -37,9 +37,11 @@
     "@remotion/cli": "4.0.454",
     "@remotion/fonts": "4.0.454",
     "@remotion/motion-blur": "4.0.454",
+    "@types/three": "^0.186.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",
-    "remotion": "4.0.454"
+    "remotion": "4.0.454",
+    "three": "^0.186.1"
   },
   "devDependencies": {
     "@types/react": "^19.0.0",
