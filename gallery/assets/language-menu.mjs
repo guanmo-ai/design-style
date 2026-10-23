@@ -37,15 +37,19 @@ export function closeLanguageMenus(restoreFocus = false) {
   if (restoreFocus && trigger.isConnected) trigger.focus();
 }
 
+function placeMenu(trigger, panel) {
+  const position = menuPosition(trigger.getBoundingClientRect(), panel.getBoundingClientRect(), {width:document.documentElement.clientWidth, height:innerHeight});
+  panel.style.left = `${position.left}px`;
+  panel.style.top = `${position.top}px`;
+}
+
 function openMenu(menu, focus = 'selected') {
   closeLanguageMenus();
   const trigger = menu.querySelector('.language-trigger');
   const panel = menu.querySelector('.language-panel');
   panel.hidden = false;
   if (typeof panel.showPopover === 'function') panel.showPopover();
-  const position = menuPosition(trigger.getBoundingClientRect(), panel.getBoundingClientRect(), {width:document.documentElement.clientWidth, height:innerHeight});
-  panel.style.left = `${position.left}px`;
-  panel.style.top = `${position.top}px`;
+  placeMenu(trigger, panel);
   trigger.setAttribute('aria-expanded','true');
   active = {menu, trigger, panel};
   const options = [...panel.querySelectorAll('[role="menuitemradio"]')];
@@ -66,6 +70,7 @@ export function mountLanguageMenus(root = document) {
       if (event.target.closest('[role="menuitemradio"]')) closeLanguageMenus();
     });
   }
+  if (active) placeMenu(active.trigger, active.panel);
   if (listening) return;
   listening = true;
   document.addEventListener('pointerdown', event => {

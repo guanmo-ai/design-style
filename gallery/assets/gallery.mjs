@@ -73,6 +73,7 @@ function render() {
     </article>`).join('');
   // Language changes replace cards; keep the dialog's original return target alive.
   if (opener?.dataset.play) opener = [...document.querySelectorAll('[data-play]')].find(node => node.dataset.play === opener.dataset.play);
+  mountLanguageMenus();
 }
 
 function renderImages(work) {
@@ -116,6 +117,7 @@ function renderWorkText(work) {
 }
 
 function showWork(work, trigger) {
+  closeLanguageMenus();
   $('.player')?.pause();
   currentWorkId = work.id;
   $('#viewer-media').innerHTML = `<video class="player" controls playsinline preload="metadata" poster="${h(coverPath(work))}" src="${videoUrl(work)}"></video><p class="player-error" hidden></p>`;
@@ -212,9 +214,14 @@ document.addEventListener('keydown', event => {
     event.preventDefault(); $('#search').focus();
   }
 }, true);
-function restoreNavigation() {
-  language = resolveLanguage(location.href, {stored:storedLanguage(), languages:navigator.languages});
-  applyLanguage();
+function restoreNavigation(event) {
+  if (event) closeLanguageMenus();
+  const nextLanguage = resolveLanguage(location.href, {stored:storedLanguage(), languages:navigator.languages});
+  // Catalog loading must not replace a language menu the visitor already opened.
+  if (language !== nextLanguage) {
+    language = nextLanguage;
+    applyLanguage();
+  }
   state = {...readState(location.href), category: 'all', sort: 'latest'};
   if (state.type !== 'all' && !works.some(work => typeOf(work) === state.type)) state.type = 'all';
   $('#search').value = state.query;
