@@ -40,11 +40,10 @@ export const messages = {
 export function text(language, key, values = {}) {
   return messages[language][key].replace(/\{(\w+)\}/g, (_, name) => String(values[name] ?? ''));
 }
-export function resolveLanguage(url, {stored, languages = []} = {}) {
+export function resolveLanguage(url) {
   const explicit = new URL(url).searchParams.get('lang');
   if (explicit === 'en' || explicit === 'zh') return explicit;
-  if (stored === 'en' || stored === 'zh') return stored;
-  return !languages.length || /^zh(?:-|$)/i.test(languages[0]) ? 'zh' : 'en';
+  return 'zh';
 }
 export function languageUrl(url, language) {
   if (!Object.hasOwn(messages, language)) throw new Error('语言无效');

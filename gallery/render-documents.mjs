@@ -2,7 +2,7 @@ import {Marked} from 'marked';
 import sanitizeHtml from 'sanitize-html';
 import {escapeHtml as h, REPO, sourceUrl, workDir} from './assets/model.mjs';
 import {text, content} from './assets/i18n.mjs';
-import {renderLanguageMenu} from './assets/language-menu.mjs';
+import {renderLanguageToggle} from './assets/language-toggle.mjs';
 
 const DOCUMENTS = {guide: {file: 'README.md'}, process: {file: 'PROCESS.md'}};
 export const DOCUMENT_PAGES = Object.entries(DOCUMENTS).flatMap(([kind, {file}]) => ['zh','en'].map(language => ({kind, language, file:language === 'en' ? file.replace('.md','.en.md') : file, slug:`${kind}${language === 'en' ? '.en' : ''}`})));
@@ -77,7 +77,7 @@ export function renderDocument(markdown, work, kind, language = 'zh') {
   const label = documents[kind].title;
   const tabs = Object.entries(documents).map(([key, doc]) => `<a data-context href="${key}${language === 'en' ? '.en' : ''}.html"${kind === key ? ' aria-current="page"' : ''}>${doc.title}</a>`).join('');
   const contents = headings.map(heading => `<a href="#${h(heading.id)}">${heading.label}</a>`).join('');
-  const languageControl = renderLanguageMenu({language,id:'reader-language',assetBase:'../../assets/',hrefs:{zh:`${kind}.html`,en:`${kind}.en.html`}});
+  const languageControl = renderLanguageToggle({language,id:'reader-language',assetBase:'../../assets/',hrefs:{zh:`${kind}.html`,en:`${kind}.en.html`}});
   const sourceFile = DOCUMENT_PAGES.find(page => page.kind === kind && page.language === language).file;
   const html = `<!doctype html>
 <html lang="${language === 'zh' ? 'zh-CN' : 'en'}"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${h(title)} · ${label} — Design Style</title><meta name="description" content="${h(title)} · ${label} — Design Style"><link rel="icon" href="../../assets/mark.svg"><link rel="stylesheet" href="../../assets/gallery.css"><link rel="stylesheet" href="../../assets/reader.css"><script type="module" src="../../assets/reader.mjs"></script></head>

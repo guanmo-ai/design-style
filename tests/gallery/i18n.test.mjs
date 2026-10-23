@@ -7,12 +7,12 @@ import {loadCatalog, root, validateEntries} from '../../scripts/gallery/catalog.
 import {selectWorks, adjacentWork, workDir} from '../../gallery/assets/model.mjs';
 import {renderDocument} from '../../gallery/render-documents.mjs';
 
-test('语言优先级为链接、已选语言、浏览器语言；不接受任意语言值', () => {
+test('未指定语言时始终进入中文，显式英文链接仍有效，切换保留当前浏览状态', () => {
   const url = 'https://example.com/design-style/?type=layout&q=grid#work-01-bento-grid';
   assert.equal(resolveLanguage(languageUrl(url, 'en'), {stored:'zh', languages:['zh-CN']}), 'en');
-  assert.equal(resolveLanguage(url, {stored:'zh', languages:['en-US']}), 'zh');
+  assert.equal(resolveLanguage(url, {stored:'en', languages:['en-US']}), 'zh');
   assert.equal(resolveLanguage(url, {languages:['zh-TW', 'en']}), 'zh');
-  assert.equal(resolveLanguage(url, {stored:'<script>', languages:['fr-FR']}), 'en');
+  assert.equal(resolveLanguage(url, {stored:'<script>', languages:['fr-FR']}), 'zh');
   assert.equal(resolveLanguage(`${url.replace('#', '&lang=bad#')}`, {languages:['zh']}), 'zh');
   const switched = new URL(languageUrl(url, 'en'));
   assert.equal(switched.searchParams.get('q'), 'grid');
