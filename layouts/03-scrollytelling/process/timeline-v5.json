@@ -1,0 +1,50 @@
+{
+ "fps": 60,
+ "bpm": 120,
+ "frames": 900,
+ "title": "布局 03 · 时间轴（v5）：一拍一下 —— 16 次滑动 + 手机 2 次，三次跨段快甩半拍起手、拍点停住",
+ "segments": [
+  {
+   "label": "开场",
+   "start": 0,
+   "dur": 90,
+   "color": "#2C2C2F"
+  },
+  {
+   "label": "① 并排",
+   "start": 90,
+   "dur": 210,
+   "color": "#FF5A8A"
+  },
+  {
+   "label": "X 光",
+   "start": 300,
+   "dur": 105,
+   "color": "#2997FF"
+  },
+  {
+   "label": "② 覆盖",
+   "start": 405,
+   "dur": 120,
+   "color": "#E7ECEF"
+  },
+  {
+   "label": "③ 逐帧",
+   "start": 525,
+   "dur": 150,
+   "color": "#8B3DFF"
+  },
+  {
+   "label": "变手机",
+   "start": 675,
+   "dur": 135,
+   "color": "#30D158"
+  },
+  {
+   "label": "片尾",
+   "start": 810,
+   "dur": 90,
+   "color": "#F5F5F7"
+  }
+ ]
+}

@@ -1,0 +1,369 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>滚动叙事 · 真网页演示 | Design Style 布局 03</title>
+<style>
+/* 布局 03 · 滚动叙事 —— 一张可以直接打开的真网页：并排 · 覆盖 · 逐帧，三种排法各一段
+   桌面 ≥ 768px：并排（舞台 7fr : 文字 5fr）；手机 < 768px：并排自动改成覆盖（规则 05） */
+/* 字体：仓库里在 public/fonts（npm run fonts 下载）；视频里网页被拷到 public/03-scrollytelling/demo，所以给两条路径。都没有就用系统字体 */
+@font-face{font-family:'Inter Display';font-weight:500;font-display:block;src:url(../../fonts/InterDisplay-Medium.ttf) format('truetype'),url(../../../public/fonts/InterDisplay-Medium.ttf) format('truetype')}
+@font-face{font-family:'Inter Display';font-weight:600;font-display:block;src:url(../../fonts/InterDisplay-SemiBold.ttf) format('truetype'),url(../../../public/fonts/InterDisplay-SemiBold.ttf) format('truetype')}
+@font-face{font-family:'Inter Display';font-weight:700;font-display:block;src:url(../../fonts/InterDisplay-Bold.ttf) format('truetype'),url(../../../public/fonts/InterDisplay-Bold.ttf) format('truetype')}
+@font-face{font-family:'Inter';font-weight:400;font-display:block;src:url(../../fonts/Inter-Regular.ttf) format('truetype'),url(../../../public/fonts/Inter-Regular.ttf) format('truetype')}
+@font-face{font-family:'Inter';font-weight:500;font-display:block;src:url(../../fonts/Inter-Medium.ttf) format('truetype'),url(../../../public/fonts/Inter-Medium.ttf) format('truetype')}
+@font-face{font-family:'Inter';font-weight:600;font-display:block;src:url(../../fonts/Inter-SemiBold.ttf) format('truetype'),url(../../../public/fonts/Inter-SemiBold.ttf) format('truetype')}
+@font-face{font-family:'Geist Mono';font-weight:400;font-display:block;src:url(../../fonts/GeistMono-Regular.ttf) format('truetype'),url(../../../public/fonts/GeistMono-Regular.ttf) format('truetype')}
+@font-face{font-family:'Geist Mono';font-weight:500;font-display:block;src:url(../../fonts/GeistMono-Medium.ttf) format('truetype'),url(../../../public/fonts/GeistMono-Medium.ttf) format('truetype')}
+@font-face{font-family:'Noto Sans SC';font-weight:400;font-display:block;src:url(../../fonts/NotoSansSC-Regular.otf) format('opentype'),url(../../../public/fonts/NotoSansSC-Regular.otf) format('opentype')}
+@font-face{font-family:'Noto Sans SC';font-weight:500;font-display:block;src:url(../../fonts/NotoSansSC-Medium.otf) format('opentype'),url(../../../public/fonts/NotoSansSC-Medium.otf) format('opentype')}
+@font-face{font-family:'Noto Sans SC';font-weight:700;font-display:block;src:url(../../fonts/NotoSansSC-Bold.otf) format('opentype'),url(../../../public/fonts/NotoSansSC-Bold.otf) format('opentype')}
+@font-face{font-family:'Noto Sans SC';font-weight:900;font-display:block;src:url(../../fonts/NotoSansSC-Black.otf) format('opentype'),url(../../../public/fonts/NotoSansSC-Black.otf) format('opentype')}
+@font-face{font-family:'Instrument Serif';font-weight:400;font-display:block;src:url(../../fonts/InstrumentSerif-Regular.ttf) format('truetype'),url(../../../public/fonts/InstrumentSerif-Regular.ttf) format('truetype')}
+@font-face{font-family:'Instrument Serif';font-style:italic;font-weight:400;font-display:block;src:url(../../fonts/InstrumentSerif-Italic.ttf) format('truetype'),url(../../../public/fonts/InstrumentSerif-Italic.ttf) format('truetype')}
+:root{
+  --vh:1vh;                        /* 视频的分层 X 光里会改成固定像素 */
+  --night:#000;--panel:#141416;--t1:#F5F5F7;--t2:#86868B;--dim:#3A3A3E;
+  --blue:#2997FF;--pink:#FF5C9A;
+  --grad:linear-gradient(90deg,#FF7A2F 0%,#FF2E7E 35%,#8B3DFF 68%,#2997FF 100%);
+  --display:'Inter Display','Inter',-apple-system,'PingFang SC','Noto Sans SC',sans-serif;
+  --text:'Inter',-apple-system,'PingFang SC','Noto Sans SC',sans-serif;
+  --mono:'Geist Mono',ui-monospace,'SF Mono',Menlo,monospace;
+  --serif:'Instrument Serif','Noto Serif SC',Georgia,serif;
+}
+*{box-sizing:border-box;margin:0}
+html{background:var(--night);color:var(--t1);font-family:var(--text);-webkit-font-smoothing:antialiased}
+body{overflow-x:clip}
+.grad{background:var(--grad);-webkit-background-clip:text;background-clip:text;color:transparent}
+.eyebrow{font:500 13px/1 var(--mono);letter-spacing:.12em;color:var(--t2);text-transform:uppercase}
+.eyebrow b{color:var(--blue);font-weight:500}
+
+/* ── 顶部导航（普通网页都有） ── */
+nav{position:fixed;inset:0 0 auto;height:52px;display:flex;align-items:center;justify-content:space-between;padding:0 28px;z-index:50;
+  background:rgba(0,0,0,.6);backdrop-filter:saturate(1.6) blur(18px);-webkit-backdrop-filter:saturate(1.6) blur(18px);border-bottom:1px solid rgba(255,255,255,.07);font:500 13px var(--text);color:var(--t2)}
+nav b{color:var(--t1);font-weight:600}
+nav .pg{display:flex;gap:22px}
+nav .pg a{color:inherit;text-decoration:none}
+nav .pg a.on{color:var(--t1)}
+.progress{position:fixed;left:0;top:51px;height:2px;width:100%;transform-origin:0 50%;transform:scaleX(var(--p,0));background:var(--grad);z-index:51}
+
+/* ── 封面 ── */
+.hero{min-height:calc(var(--vh)*100);display:grid;place-items:center;text-align:center;padding:80px 24px 40px;position:relative}
+.hero::before{content:'';position:absolute;left:50%;top:46%;width:min(1100px,140vw);aspect-ratio:2/1;transform:translate(-50%,-50%);background:radial-gradient(closest-side,rgba(139,61,255,.28),rgba(255,46,126,.12) 45%,transparent 75%);filter:blur(10px);pointer-events:none}
+.hero>div{position:relative}
+.hero h1{font:700 clamp(56px,11vw,168px)/.95 var(--display);letter-spacing:-.04em}
+.hero p{margin-top:22px;font:400 clamp(17px,2vw,24px)/1.5 var(--text);color:var(--t2)}
+.hint{position:absolute;bottom:36px;left:50%;transform:translateX(-50%);font:500 12px var(--mono);color:var(--t2);letter-spacing:.14em;display:flex;flex-direction:column;align-items:center;gap:10px}
+.hint i{width:22px;height:34px;border:1.5px solid var(--t2);border-radius:12px;position:relative}
+.hint i::after{content:'';position:absolute;left:50%;top:7px;width:3px;height:7px;margin-left:-1.5px;border-radius:2px;background:var(--t1);animation:wheel 1.6s infinite}
+@keyframes wheel{0%{opacity:0;transform:translateY(-3px)}40%{opacity:1}100%{opacity:0;transform:translateY(9px)}}
+
+/* ── 普通正文：两段滚动叙事之间让读者喘口气 ── */
+.prose{max-width:680px;margin:0 auto;padding:calc(var(--vh)*22) 24px;font:400 clamp(19px,2.1vw,26px)/1.7 var(--text);color:var(--t2)}
+.prose strong{color:var(--t1);font-weight:600}
+.prose .eyebrow{display:block;margin-bottom:18px}
+
+/* ═════ 结构：section + sticky 舞台 + 步骤（三段共用） ═════ */
+.scrolly{position:relative}
+.stage{position:sticky;top:0;height:calc(var(--vh)*100);overflow:hidden}      /* 规则 01：钉住，不劫持 */
+.step{min-height:calc(var(--vh)*85);display:flex;align-items:center}            /* 一步约一屏 */
+.card{--on:0;max-width:26rem;padding:26px 28px;border-radius:22px;background:rgba(20,20,22,.72);border:1px solid rgba(255,255,255,.08);
+  backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);opacity:calc(.35 + var(--on)*.65);transform:scale(calc(.98 + var(--on)*.02));
+  box-shadow:0 0 0 1px rgba(41,151,255,calc(var(--on)*.45))}
+.step{--on:0}
+.step .card{--on:inherit}
+.card .t{font:500 12px var(--mono);letter-spacing:.1em;color:var(--blue);margin-bottom:12px}
+.card h3{font:700 clamp(22px,2.4vw,30px)/1.3 var(--display);letter-spacing:-.01em}
+.card p{margin-top:10px;font:400 16px/1.65 var(--text);color:var(--t2)}
+
+/* ① 并排 Side-by-side：舞台 7 : 文字 5 */
+.side{display:grid;grid-template-columns:7fr 5fr;column-gap:4vw;padding:0 4vw}
+.side .stage{grid-column:1;grid-row:1}
+.side .steps{grid-column:2;grid-row:1;padding:calc(var(--vh)*30) 0 calc(var(--vh)*40)}
+.city{position:absolute;inset:60px 0 0;display:flex;align-items:center;justify-content:center}
+.city svg{width:min(100%,calc(var(--vh)*92));height:auto;overflow:visible}
+.city .cap{position:absolute;left:0;top:96px}
+.city .cap .clock{font:700 clamp(40px,5.4vw,84px)/1 var(--display);letter-spacing:-.03em;margin-top:10px;font-variant-numeric:tabular-nums}
+.legend{position:absolute;left:0;bottom:calc(var(--vh)*7);font:500 12px var(--mono);color:var(--t2);display:flex;gap:18px}
+.legend span::before{content:'';display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:7px;background:var(--c)}
+
+/* ② 覆盖 Overlay：舞台铺满，卡片浮在上面 */
+.overlay .stage{position:sticky}
+.overlay .steps{position:relative;margin-top:calc(var(--vh)*-100);padding:calc(var(--vh)*40) 6vw calc(var(--vh)*60);z-index:2}
+.overlay .step{justify-content:flex-start}
+.snow{position:absolute;inset:0}
+.snow .sky{position:absolute;inset:0;transition:none}
+.snow svg{position:absolute;left:0;bottom:0;width:100%;height:78%}
+.snow .title{position:absolute;right:6vw;top:calc(var(--vh)*18);text-align:right}
+.snow .title h2{font:400 clamp(64px,9vw,150px)/.9 var(--serif);letter-spacing:-.02em;color:#fff;text-shadow:0 6px 40px rgba(0,0,0,.35)}
+.snow .title em{display:block;font:italic 400 clamp(18px,2vw,28px) var(--serif);color:rgba(255,255,255,.8);margin-top:10px}
+.sun{position:absolute;width:9vw;aspect-ratio:1;border-radius:50%;transform:translate(-50%,-50%)}
+.fog{position:absolute;left:0;right:0;bottom:0;height:45%;background:linear-gradient(180deg,transparent,rgba(255,255,255,.10) 60%,rgba(255,255,255,.18));pointer-events:none}
+.flake{position:absolute;border-radius:50%;background:#fff}
+
+/* ③ 逐帧 Scrub：滚到哪，播到哪 */
+.scrub{height:calc(var(--vh)*420)}
+.scrub .stage{display:grid;place-items:center}
+.scrub canvas{height:min(calc(var(--vh)*88),100vw * 1.1);width:auto;aspect-ratio:4/5;margin-left:18vw}
+.scrub .big{position:absolute;left:6vw;top:calc(var(--vh)*22);font:800 clamp(44px,7vw,120px)/1.05 var(--display);letter-spacing:-.03em;pointer-events:none}
+.scrub .big span{display:block}
+.scrub .meta{position:absolute;right:6vw;bottom:calc(var(--vh)*8);font:500 13px var(--mono);color:var(--t2);text-align:right;line-height:1.8}
+.scrub .meta b{color:var(--t1);font-weight:500}
+.film{position:absolute;left:6vw;right:6vw;bottom:calc(var(--vh)*4);height:3px;background:#1c1c1e;border-radius:2px}
+.film i{position:absolute;left:0;top:0;bottom:0;width:calc(var(--p,0)*100%);background:var(--grad);border-radius:2px}
+
+footer{min-height:calc(var(--vh)*80);display:grid;place-items:center;text-align:center;padding:calc(var(--vh)*20) 24px}
+footer h2{font:700 clamp(36px,6vw,92px)/1.15 var(--display);letter-spacing:-.03em}
+footer p{margin-top:24px;color:var(--t2);font:500 13px var(--mono);letter-spacing:.12em}
+
+/* ═════ 规则 05：手机上叠起来 —— 并排自动改成覆盖 ═════ */
+@media (max-width:767px){
+  nav{padding:0 18px}
+  nav .pg{display:none}
+  .side{display:block;padding:0}
+  .side .steps{position:relative;margin-top:calc(var(--vh)*-100);padding:calc(var(--vh)*70) 20px calc(var(--vh)*50);z-index:2}
+  .side .step{min-height:calc(var(--vh)*80);align-items:flex-end;padding-bottom:calc(var(--vh)*6)}
+  .card{max-width:none;width:100%;background:rgba(20,20,22,.86)}
+  .city{inset:52px 0 0;padding:0 14px;align-items:flex-start;padding-top:calc(var(--vh)*22)}
+  .city .cap{left:20px;top:72px}
+  .city .cap .clock{font-size:44px}
+  .legend{left:20px;bottom:auto;top:calc(52px + calc(var(--vh)*22) + 100vw);}
+  .overlay .steps{padding:calc(var(--vh)*60) 20px calc(var(--vh)*60)}
+  .snow .title{right:20px;top:calc(var(--vh)*14)}
+  .scrub canvas{height:auto;width:78vw;margin:calc(var(--vh)*24) 0 0}
+  .scrub .big{left:20px;top:calc(var(--vh)*12)}
+  .scrub .meta{right:20px}
+}
+/* 规则 05 后半句：尊重减少动态 —— 不做插值，直接给每一步的终态 */
+@media (prefers-reduced-motion:reduce){.hint i::after{animation:none}}
+
+/* 可选：?xray 打开结构标注（触发线 + 舞台框） */
+.xray .trigger{position:fixed;left:0;right:0;top:50%;border-top:2px dashed var(--pink);z-index:60;pointer-events:none}
+.xray .trigger::after{content:'触发线 · 50%';position:absolute;right:16px;top:-24px;font:500 12px var(--mono);color:var(--pink)}
+.xray .stage{outline:2px solid rgba(41,151,255,.7);outline-offset:-2px}
+.xray .step{outline:1px dashed rgba(255,255,255,.2);outline-offset:-1px}
+
+/* ── 视频模式（?video）：Remotion 用 iframe 嵌这张网页，每帧 scrollTo + __frame()，所以关掉动画与滚动条 ── */
+html.video{scrollbar-width:none;background:var(--page-bg,#000)}
+html.video::-webkit-scrollbar{display:none}
+html.video *,html.video *::after{animation:none!important;transition:none!important}
+html.video .hint i::after{opacity:1}
+html.video .steps{opacity:var(--steps-op,1)}
+html.video nav,html.video .progress{opacity:var(--nav-op,1)}
+/* ?layer=stage 只留舞台；?layer=steps 只留文字步骤（透明底）——视频里把两层拆开，叠成 X 光 */
+html.layer-stage .steps,html.layer-stage nav,html.layer-stage .progress{visibility:hidden}
+html.layer-steps .stage,html.layer-steps nav,html.layer-steps .progress,html.layer-steps .hint{visibility:hidden}
+html.layer-steps,html.layer-steps body{background:transparent}
+</style>
+</head>
+<body>
+<nav><b>Design Style · 布局 03</b><div class="pg"><a href="#city" data-sec="city">并排</a><a href="#snow" data-sec="snow">覆盖</a><a href="#spin" data-sec="spin">逐帧</a></div><span>滚动叙事</span></nav>
+<div class="progress"></div>
+
+<header class="hero">
+  <div>
+    <div class="eyebrow">Scrollytelling · 真网页演示</div>
+    <h1 style="margin-top:22px">画面钉住，<br><span class="grad">文字滚过。</span></h1>
+    <p>同一副骨架，三种排法：并排 · 覆盖 · 逐帧。<br>在电脑上和手机上分别打开看看。</p>
+  </div>
+  <div class="hint"><i></i>往下滚</div>
+</header>
+
+<!-- ① 并排：数据新闻式 -->
+<section class="scrolly side" id="city" data-steps="4">
+  <figure class="stage">
+    <div class="city">
+      <div class="cap"><div class="eyebrow"><b>①</b> 并排 Side-by-side · 数据新闻</div><div class="clock" id="clock">04:00</div></div>
+      <svg id="dots" viewBox="0 0 600 600" aria-label="一座城市里 160 个人的位置"></svg>
+      <div class="legend"><span style="--c:#FF7A2F">在家</span><span style="--c:#FF2E7E">路上</span><span style="--c:#8B3DFF">上班</span><span style="--c:#2997FF">夜里出门</span></div>
+    </div>
+  </figure>
+  <div class="steps">
+    <div class="step" data-step="0"><div class="card"><div class="t">04:00</div><h3>凌晨四点，城市里只有零星的灯。</h3><p>每个点是一个人。舞台钉在左边，文字从右边滚过。</p></div></div>
+    <div class="step" data-step="1"><div class="card"><div class="t">08:00</div><h3>早高峰，人沿着四条线路涌向市中心。</h3><p>这张卡片越过视口中间那条线，舞台才换到这一步。</p></div></div>
+    <div class="step" data-step="2"><div class="card"><div class="t">12:00</div><h3>中午，人群散进三栋写字楼。</h3><p>一步只变一件事：点的位置。颜色、标题都不动。</p></div></div>
+    <div class="step" data-step="3"><div class="card"><div class="t">21:00</div><h3>晚上九点，城市亮成一个圈。</h3><p>往回滚试试——画面会一步步倒回去。</p></div></div>
+  </div>
+</section>
+
+<div class="prose">
+  <span class="eyebrow">一段普通正文</span>
+  两段滚动叙事之间，放一段普通的文字让读者喘口气。<strong>不是每一屏都要做成滚动叙事</strong>——它最适合“一步一步看懂一件事”的地方。下面这段换一种排法：<strong>图铺满整屏，文字卡片浮在上面滚过去</strong>。
+</div>
+
+<!-- ② 覆盖：长篇特稿式 -->
+<section class="scrolly overlay" id="snow" data-steps="3">
+  <figure class="stage">
+    <div class="snow">
+      <div class="sky" id="sky"></div>
+      <div class="sun" id="sun"></div>
+      <div id="flakes"></div>
+      <svg viewBox="0 0 1600 700" preserveAspectRatio="none" id="ridges"></svg>
+      <div class="fog"></div>
+      <div class="title"><div class="eyebrow" style="color:rgba(255,255,255,.75)"><b>②</b> 覆盖 Overlay · 长篇特稿</div><h2 style="margin-top:14px">Tunnel Creek</h2><em>一座山的一天（示意）</em></div>
+    </div>
+  </figure>
+  <div class="steps">
+    <div class="step" data-step="0"><div class="card"><div class="t">清晨 · 06:40</div><h3>照片铺满整屏，文字浮在上面。</h3><p>这是 2012 年《纽约时报》《Snow Fall》让新闻编辑部记住的样子。</p></div></div>
+    <div class="step" data-step="1"><div class="card"><div class="t">正午 · 12:10</div><h3>每过一张卡片，背景换一个时刻。</h3><p>天色是舞台的“状态”，由滚动位置决定。</p></div></div>
+    <div class="step" data-step="2"><div class="card"><div class="t">黄昏 · 17:30</div><h3>手机上，并排排不下时，就用这一种。</h3><p>舞台铺满，卡片半透明——规则 05：手机上叠起来。</p></div></div>
+  </div>
+</section>
+
+<div class="prose">
+  <span class="eyebrow">再一段普通正文</span>
+  最后一种不靠“步骤”，靠<strong>滚动进度</strong>：滚到 30%，就播第 30% 的那一帧。苹果的产品页就是这么让耳机、手机跟着手指转的。
+</div>
+
+<!-- ③ 逐帧：产品页式 -->
+<section class="scrolly scrub" id="spin">
+  <figure class="stage">
+    <div class="big"><div class="eyebrow" style="margin-bottom:18px"><b>③</b> 逐帧 Scrub · 产品页</div><span>滚到哪，</span><span class="grad">转到哪。</span></div>
+    <canvas id="phone" width="1440" height="1800" aria-label="跟着滚动旋转、拆开的手机"></canvas>
+    <div class="meta">frame <b id="fno">001</b> / 072<br>scroll progress <b id="fp">0%</b></div>
+    <div class="film"><i id="film"></i></div>
+  </figure>
+</section>
+
+<footer><div><h2>风格塑造视觉，<br><span class="grad">布局组织信息。</span></h2><p>DESIGN STYLE · 布局 03 · 滚动叙事 SCROLLYTELLING</p></div></footer>
+
+<script>
+/* ── 工具 ── */
+const clamp=(v,a=0,b=1)=>Math.min(b,Math.max(a,v));
+const ease=t=>t<.5?4*t*t*t:1-Math.pow(-2*t+2,3)/2;
+const lerp=(a,b,t)=>a+(b-a)*t;
+const rnd=(s=>()=>(s=(s*16807)%2147483647)/2147483647)(7);
+const reduce=matchMedia('(prefers-reduced-motion: reduce)').matches;
+const Q=new URLSearchParams(location.search), H=document.documentElement;
+if(Q.has('xray')){document.body.classList.add('xray');document.body.insertAdjacentHTML('beforeend','<div class="trigger"></div>')}
+/* 视频模式：?video 关动画；?layer=stage|steps 只留一层；?vh=900 把 1vh 钉成固定像素（文字层的 iframe 比一屏高） */
+const VIDEO=Q.has('video'), LAYER=Q.get('layer'), FIXVH=+Q.get('vh')||0;
+if(VIDEO)H.classList.add('video');
+if(LAYER)H.classList.add('layer-'+LAYER);
+if(FIXVH)H.style.setProperty('--vh',FIXVH/100+'px');
+const VH=()=>FIXVH||innerHeight;
+let Y=0;                                                    // 这一帧的滚动位置（平时 = scrollY；文字层由视频传入）
+const abs=el=>el.getBoundingClientRect().top+scrollY;       // 元素在页面里的 y
+const top_=el=>abs(el)-Y;                                   // 元素在“视口”里的 y
+
+/* 规则 03：触发线在视口 50%。每一步越过这条线之后，用 ~12% 屏高把状态从上一步过渡到这一步。
+   状态 = f(scrollY)，所以往回滚就往回变（规则 04）。 */
+function stepState(sec){
+  const steps=[...sec.querySelectorAll('.step')], mid=VH()*.5, win=VH()*.12;
+  const c=steps.map(el=>clamp((mid-top_(el))/win));
+  // 卡片的亮度也跟着滚动走：刚过线的这一张最亮，下一张过线时它退后
+  steps.forEach((el,i)=>el.style.setProperty('--on',(c[i]-(c[i+1]||0)).toFixed(3)));
+  const s=c.slice(1).reduce((a,b)=>a+b,0);
+  return reduce?Math.round(s):s;               // reduced motion：直接跳到终态
+}
+
+/* ① 城市：160 个点，四种状态；底下一张很淡的“地图”（四条进城的路 + 环线） */
+const N=160, svg=document.getElementById('dots'), COLORS=['#FF7A2F','#FF2E7E','#8B3DFF','#2997FF'], ANG=[-2.5,-.75,.7,2.35];
+const states=[[],[],[],[]], dots=[];
+for(let i=0;i<N;i++){
+  states[0].push({x:40+rnd()*520,y:40+rnd()*520,r:2+rnd()*2.2,o:.25+rnd()*.35,c:0});
+  const L=i%4, a=ANG[L], t=Math.floor(i/4)/40, j=(rnd()-.5)*26*(1-t*.6);  // 四股人流涌向中心
+  const d=70+t*230; states[1].push({x:300+Math.cos(a)*d-Math.sin(a)*j,y:300+Math.sin(a)*d+Math.cos(a)*j,r:2.2+(1-t)*1.8,o:.55+(1-t)*.45,c:1});
+  const B=i%3, k=Math.floor(i/3), col=k%4, row=Math.floor(k/4);            // 三栋写字楼
+  states[2].push({x:150+B*150+(col-1.5)*24,y:500-row*21,r:4,o:.95,c:2});
+  const ang=i/N*Math.PI*2, rr=210+(i%5)*9;                                   // 夜里的光圈
+  states[3].push({x:300+Math.cos(ang)*rr,y:300+Math.sin(ang)*rr,r:3+(i%5==0?2.6:0),o:i%5==0?1:.75,c:3});
+}
+const map='<g id="map" fill="none" stroke="#fff" stroke-linecap="round">'
+  +'<g id="roads">'+ANG.map(a=>`<line x1="${300+Math.cos(a)*40}" y1="${300+Math.sin(a)*40}" x2="${300+Math.cos(a)*330}" y2="${300+Math.sin(a)*330}" stroke-width="18" stroke-opacity=".05"/><line x1="${300+Math.cos(a)*40}" y1="${300+Math.sin(a)*40}" x2="${300+Math.cos(a)*330}" y2="${300+Math.sin(a)*330}" stroke-width="1" stroke-opacity=".22" stroke-dasharray="2 6"/>`).join('')+'</g>'
+  +'<circle id="ringroad" cx="300" cy="300" r="228" stroke-width="1" stroke-opacity=".14"/>'
+  +'<circle cx="300" cy="300" r="120" stroke-width="1" stroke-opacity=".07"/><circle cx="300" cy="300" r="3" fill="#fff" fill-opacity=".35" stroke="none"/></g>';
+svg.innerHTML='<defs><filter id="glow" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="3.5" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter></defs>'
+  +map+'<g id="towers" opacity="0"></g><g filter="url(#glow)">'+states[0].map(()=>'<circle/>').join('')+'</g>';
+svg.querySelectorAll('g[filter] circle').forEach(c=>dots.push(c));
+const towers=svg.querySelector('#towers'), roads=svg.querySelector('#roads'), ring=svg.querySelector('#ringroad');
+towers.innerHTML=[0,1,2].map(b=>`<rect x="${150+b*150-56}" y="${500-9*21-14}" width="112" height="${9*21+28}" rx="10" fill="rgba(139,61,255,.06)" stroke="#8B3DFF" stroke-opacity=".45" stroke-dasharray="4 5"/>`).join('');
+const mixHex=(a,b,t)=>{const p=h=>[1,3,5].map(i=>parseInt(h.slice(i,i+2),16));const A=p(a),B=p(b);return`rgb(${A.map((v,i)=>Math.round(lerp(v,B[i],t))).join(',')})`};
+const CLOCK=['04:00','08:00','12:00','21:00'];
+function drawCity(s){
+  const i=Math.min(2,Math.floor(s)), t=ease(clamp(s-i));
+  dots.forEach((el,k)=>{
+    const d=(k%17)/17*.35, tt=ease(clamp((t-d)/(1-.35)));                 // 每个点稍微错开一点，像人群
+    const A=states[i][k],B=states[i+1][k];
+    el.setAttribute('cx',lerp(A.x,B.x,tt).toFixed(1));el.setAttribute('cy',lerp(A.y,B.y,tt).toFixed(1));
+    el.setAttribute('r',lerp(A.r,B.r,tt).toFixed(2));el.setAttribute('fill-opacity',lerp(A.o,B.o,tt).toFixed(2));
+    el.setAttribute('fill',mixHex(COLORS[A.c],COLORS[B.c],tt));
+  });
+  towers.setAttribute('opacity',clamp(1-Math.abs(s-2)).toFixed(2));
+  roads.setAttribute('opacity',(.35+.65*clamp(1-Math.abs(s-1))).toFixed(2));
+  ring.setAttribute('stroke-opacity',(.1+.35*clamp(s-2)).toFixed(2));
+  document.getElementById('clock').textContent=CLOCK[Math.round(s)];
+}
+
+/* ② 雪山：天色、太阳、山的颜色都随步骤变；山按远近视差 */
+const SKY=[['#1b2a4a','#5f7fae','#c9d6ea'],['#3f7fc4','#9cc3ea','#eef5fc'],['#2a1d3f','#b0507a','#ffb38a']];
+const RIDGE=[['#7f93b8','#3d4f74','#1a2440'],['#c7d6ec','#7e97bf','#3c5078'],['#8a6c94','#4f3d68','#22183a']];
+const SUN=[[22,62,'#ffd9a8'],[50,16,'#fffaf0'],[80,50,'#ff9a6a']];
+const ridgesEl=document.getElementById('ridges'), skyEl=document.getElementById('sky'), sunEl=document.getElementById('sun');
+const ridgePath=(seed,base,amp)=>{let r=(s=>()=>(s=(s*16807)%2147483647)/2147483647)(seed);let y=base,p=`M0 700 L0 ${base}`;for(let x=0;x<=1600;x+=20){y=clamp(y+(r()-.5)*amp,base-amp*2.6,base+amp*1.2);p+=` L${x} ${y.toFixed(1)}`}return p+' L1600 700 Z'};
+const PATHS=[ridgePath(3,230,34),ridgePath(11,380,30),ridgePath(29,520,22)];
+ridgesEl.innerHTML=PATHS.map(d=>`<path d="${d}"/>`).join('')+'<path d="M380 700 C 520 560, 700 520, 860 430" fill="none" stroke="#ff4d4d" stroke-width="3" stroke-dasharray="7 7" opacity=".0" id="route"/>';
+const flakes=document.getElementById('flakes');
+for(let i=0;i<70;i++){const f=document.createElement('i');f.className='flake';const z=rnd();f.style.cssText=`left:${rnd()*100}%;width:${1+z*3}px;height:${1+z*3}px;opacity:${.3+z*.6}`;f.dataset.z=z;f.dataset.y=rnd();flakes.appendChild(f)}
+function drawSnow(s,local){
+  const i=Math.min(1,Math.floor(s)),t=ease(clamp(s-i));
+  const sk=SKY[i].map((c,k)=>mixHex(c,SKY[i+1][k],t));
+  skyEl.style.background=`linear-gradient(180deg,${sk[0]} 0%,${sk[1]} 55%,${sk[2]} 100%)`;
+  const A=SUN[i],B=SUN[i+1],sc=mixHex(A[2],B[2],t);
+  sunEl.style.left=lerp(A[0],B[0],t).toFixed(2)+'%';sunEl.style.top=lerp(A[1],B[1],t).toFixed(2)+'%';
+  sunEl.style.background=sc;sunEl.style.boxShadow=`0 0 60px 20px ${sc.replace('rgb','rgba').replace(')',',.55)')},0 0 240px 90px ${sc.replace('rgb','rgba').replace(')',',.25)')}`;
+  ridgesEl.querySelectorAll('path:not(#route)').forEach((p,k)=>{p.setAttribute('fill',mixHex(RIDGE[i][k],RIDGE[i+1][k],t));p.style.transform=`translateY(${(local*(3-k)*16).toFixed(1)}px)`});
+  document.getElementById('route').setAttribute('opacity',clamp(s-1.2).toFixed(2));
+  [...flakes.children].forEach(f=>{const z=+f.dataset.z;f.style.top=(((+f.dataset.y+local*(0.6+z*1.6))%1)*100).toFixed(2)+'%'});
+}
+
+/* ③ 逐帧：预先渲染好的 72 张图（three.js 手机转一圈、中途拆开），滚到哪就画第几张——苹果产品页的做法 */
+const cv=document.getElementById('phone'),cx=cv.getContext('2d'),NF=72,imgs=[];
+let lastF=0,lastP=0;
+const loaded=[];
+for(let i=0;i<NF;i++){const im=new Image();loaded.push(new Promise(r=>{im.addEventListener('load',r);im.addEventListener('error',r)}));im.addEventListener('load',()=>{if(i===0||i===lastF)drawPhone(lastP)});im.src=`spin/${String(i).padStart(3,'0')}.webp`;imgs.push(im)}  // 全部预加载
+function drawPhone(p){
+  const f=Math.min(NF-1,Math.round(p*(NF-1))); lastF=f; lastP=p;      // round(p × (n − 1))
+  const im=imgs[f]; if(im.complete&&im.naturalWidth){cx.clearRect(0,0,cv.width,cv.height);cx.drawImage(im,0,0,cv.width,cv.height)}
+  document.getElementById('fno').textContent=String(f+1).padStart(3,'0');
+  document.getElementById('fp').textContent=Math.round(p*100)+'%';
+  document.getElementById('film').style.setProperty('--p',p);
+}
+
+/* 规则 03 的标准写法：IntersectionObserver 判断“哪一步过了线”，给读屏器和样式一个离散的 data-step */
+const io=new IntersectionObserver(es=>es.forEach(e=>{ if(e.isIntersecting){
+  const sec=e.target.closest('.scrolly'); sec.dataset.step=e.target.dataset.step;
+  sec.querySelectorAll('.step').forEach(s=>s.toggleAttribute('aria-current',s===e.target)); }}),{rootMargin:'-50% 0px -50% 0px'});
+document.querySelectorAll('.step').forEach(s=>io.observe(s));
+
+/* ── 一个滚动回调：只读取滚动位置，从不改写（规则 01）；画面 = f(scrollY) ── */
+const secCity=document.getElementById('city'),secSnow=document.getElementById('snow'),secSpin=document.getElementById('spin'),bar=document.querySelector('.progress');
+const prog=sec=>{const t=top_(sec);return clamp(-t/(sec.offsetHeight-VH()))};
+let ticking=false;
+function frame(){
+  ticking=false;
+  if(!LAYER||LAYER==='stage')Y=scrollY;
+  drawCity(stepState(secCity));
+  drawSnow(stepState(secSnow),prog(secSnow));
+  drawPhone(prog(secSpin));
+  bar.style.setProperty('--p',Y/(H.scrollHeight-VH()));
+  document.querySelectorAll('nav .pg a').forEach(a=>{const s=document.getElementById(a.dataset.sec),t=top_(s);a.classList.toggle('on',t<VH()*.5&&t+s.offsetHeight>VH()*.5)});
+}
+addEventListener('scroll',()=>{if(!ticking){ticking=true;requestAnimationFrame(frame)}},{passive:true});
+addEventListener('resize',frame);
+frame();
+
+/* ── 给视频用的接口（平时用不到）：__frame(y) 同步画出第 y 像素的那一帧；__anchors() 返回各段的滚动位置 ── */
+window.__frame=y=>{ if(y!=null){ if(LAYER==='steps')Y=y; else scrollTo(0,y);} frame(); };
+window.__ready=Promise.all([document.fonts.ready,...loaded]).then(()=>{frame();return true});
+window.__anchors=()=>{
+  const vh=VH(), st=sec=>[...sec.querySelectorAll('.step')].map(el=>Math.round(abs(el)-vh*.2));
+  const pr=[...document.querySelectorAll('.prose')].map(el=>Math.round(abs(el)+el.offsetHeight/2-vh/2));
+  const box=el=>({top:Math.round(abs(el)),h:el.offsetHeight});
+  return {vh,w:innerWidth,max:H.scrollHeight-vh,hero:0,city:st(secCity),cityBox:box(secCity),cityStepTops:[...secCity.querySelectorAll('.step')].map(el=>Math.round(abs(el))),
+    p1:pr[0],snow:st(secSnow),snowBox:box(secSnow),snowStepTops:[...secSnow.querySelectorAll('.step')].map(el=>Math.round(abs(el))),p2:pr[1],spin0:Math.round(abs(secSpin)),spin1:Math.round(abs(secSpin)+secSpin.offsetHeight-vh),end:H.scrollHeight-vh};
+};
+</script>
+</body>
+</html>

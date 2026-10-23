@@ -58,7 +58,7 @@ by 观默 [@guanmo_ai](https://x.com/guanmo_ai)
 
 | | 内容 | 规格 | 源码 |
 |---|---|---|---|
-| 🎬 | **15 秒动效短片** | 1920×1080 · 60fps · 配乐与音效全部由代码合成 · 成片在 [Releases](https://github.com/guanmo-ai/design-style/releases) | `video/*.tsx`（[Remotion](https://www.remotion.dev)）· `audio/make_music.py` |
+| 🎬 | **15 秒动效短片** | 1920×1080 · 60fps（布局 03 起出 4K 母版）· 配乐与音效由代码合成（布局 03 v5 起用 CC0 真乐器采样、代码编排）· 成片在 [Releases](https://github.com/guanmo-ai/design-style/releases) | `video/*.tsx`（[Remotion](https://www.remotion.dev)）· `audio/make_music.py` |
 | 🖼 | **4 张风格图 / 布局图** | 1080×1350（X / 小红书竖图比例） | `images/*.svg`，手写 SVG，可直接改 |
 | 🛠 | **制作过程** | 研究 → 令牌 → 风格图 → 分镜 → 改版 → 质检 → 发布，每一步怎么想、怎么做、踩了什么坑 | `PROCESS.md` · `process/`（联系表、时间轴等过程图） |
 | 🧰 | **从 0 到 1**（003 起） | 用了哪些工具、按什么顺序、每一步敲什么命令、做到什么程度算过关；附开工提示词，照着做能复刻一期 | `MAKING.md` · `process/05-workflow.png` |
@@ -124,7 +124,7 @@ npm run render:L01             # 布局 01：生成配乐 → 渲染 out/01-bent
 npm run images:L01             # 布局 01：生成 4 张布局图 → preview SVG + 2x PNG
 npm run render:L02             # 布局 02：生成配乐 → 渲染 out/02-masonry-master.mp4
 npm run images:L02             # 布局 02：生成 4 张布局图 → preview SVG（内嵌字体和照片）+ 2x PNG
-npm run render:L03             # 布局 03：生成配乐 → 渲染 out/03-scrollytelling-master.mp4
+npm run render:L03             # 布局 03：生成配乐 → 渲染 out/03-scrollytelling-master.mp4（4K，2× 超采样）
 npm run images:L03             # 布局 03：生成 4 张布局图 → preview SVG + 2x PNG
 
 # 制作过程里的过程图
@@ -160,7 +160,7 @@ design-style/
 │     ├─ audio/make_music.py
 │     └─ images/           # poster / cheatsheet / skins / templates（make_svgs.py 生成）
   └─ 02-masonry/           # 同上；短片：26 张卡片在 13 种排法之间流动（落雨 → 砌石墙 → 算法 → Pinterest → 手机 → 规则 → 响应式）
-  └─ 03-scrollytelling/    # 同上，另有 MAKING.md；短片：全片就是一张 17 280px 网页的一次滚动（定义 → X 光结构 → Snow Fall → 数据新闻 → 苹果 → 四种排法 → 规则），主角是 three.js 实时渲染的 3D 手机
+  └─ 03-scrollytelling/    # 同上，另有 MAKING.md 和一张可直接打开的演示网页 demo/；短片拍的就是这张真网页：电脑上滚一遍（并排 → X 光结构 → 覆盖 → 逐帧），再缩成手机宽度看它自动改排
 ├─ gallery/                # 网页画廊（静态站点源码与作品数据 works.json）
 ├─ scripts/                # 字体下载 · SVG → PNG · 关键帧截图 · 联系表 · 节拍时间轴
 ├─ docs/PROCESS_TEMPLATE.md # 每期制作过程的模板
