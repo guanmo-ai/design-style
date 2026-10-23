@@ -1,0 +1,46 @@
+<!doctype html><html><head><meta charset="utf-8"><style>
+@font-face{font-family:Fred;src:url(../../../public/fonts/Fredoka.ttf);font-weight:300 700}
+@font-face{font-family:SC;src:url(../../../public/fonts/NotoSansSC-Regular.otf);font-weight:400}
+@font-face{font-family:SC;src:url(../../../public/fonts/NotoSansSC-Medium.otf);font-weight:500}
+@font-face{font-family:SC;src:url(../../../public/fonts/NotoSansSC-Bold.otf);font-weight:700}
+@font-face{font-family:SC;src:url(../../../public/fonts/NotoSansSC-Black.otf);font-weight:900}
+*{margin:0;padding:0;box-sizing:border-box}
+body{width:1920px;height:1200px;background:#FDF6EC;color:#111;font-family:Fred,SC;position:relative;overflow:hidden}
+.blob{position:absolute;border:5px solid #111;box-shadow:10px 10px 0 #111}
+.hd{position:absolute;left:96px;top:66px}
+.kick{display:inline-block;font:600 22px Fred;letter-spacing:.12em;background:#FFD23F;border:4px solid #111;box-shadow:5px 5px 0 #111;border-radius:12px;padding:4px 14px;transform:rotate(-3deg)}
+h1{font:900 64px SC;margin-top:18px}
+.sub{font:500 24px SC;color:#444;margin-top:10px}
+.rule{position:absolute;left:96px;right:96px;top:300px;height:5px;background:#111}
+.grid{position:absolute;left:96px;top:344px;display:grid;grid-template-columns:repeat(5,322px);column-gap:24px;row-gap:96px}
+.c{height:300px;background:#fff;border:5px solid #111;box-shadow:10px 10px 0 #111;border-radius:22px;padding:18px 22px;position:relative}
+.c:nth-child(odd){transform:rotate(-1.2deg)}.c:nth-child(even){transform:rotate(1.2deg)}
+.n{display:inline-block;font:700 34px Fred;line-height:1;border:4px solid #111;border-radius:30px;padding:6px 14px}
+.t{font:900 34px SC;margin-top:12px}
+.d{font:500 19px SC;line-height:1.55;margin-top:8px;color:#222}
+.tool{position:absolute;left:22px;right:22px;bottom:16px;font:500 16px Fred;color:#555;border-top:3px dashed #111;padding-top:8px;line-height:1.35}
+.lp{position:absolute;top:1094px;font:700 21px SC}
+.ft{position:absolute;left:96px;right:96px;bottom:34px;display:flex;justify-content:space-between;font:500 18px Fred;color:#555}
+</style></head><body>
+<div class="blob" style="right:300px;top:70px;width:150px;height:150px;border-radius:50%;background:#FF7EB6"></div>
+<div class="blob" style="right:120px;top:120px;width:130px;height:130px;background:#22C3B5;transform:rotate(12deg)"></div>
+<svg style="position:absolute;right:250px;top:36px" width="140" height="50"><path d="M5 25 q 16 -22 32 0 t 32 0 t 32 0 t 32 0" fill="none" stroke="#111" stroke-width="16" stroke-linecap="round"/><path d="M5 25 q 16 -22 32 0 t 32 0 t 32 0 t 32 0" fill="none" stroke="#2D4BFF" stroke-width="8" stroke-linecap="round"/></svg>
+<div class="hd"><div class="kick">DESIGN STYLE · NO.004 · MAKING OF</div>
+<h1>从 0 到 1：这支 15 秒短片是怎么做出来的</h1>
+<div class="sub">没有 Figma、没有 AE、没有素材库：画面、图片、配乐全部是代码。十步，按顺序做。</div></div>
+<div class="rule"></div>
+<div class="grid">
+<div class="c"><div class="n" style="background:#FF7EB6">01</div><div class="t">读仓库</div><div class="d">看 001—003 的指南、过程和模板。抄结构，不抄画面。</div><div class="tool">git · README · PROCESS_TEMPLATE</div></div>
+<div class="c"><div class="n" style="background:#FFD23F">02</div><div class="t">选题定调</div><div class="d">一句话定义 + 这期最有用的一招：<b>一块一色，描黑边，歪一点</b>。</div><div class="tool">先写下来，再动手</div></div>
+<div class="c"><div class="n" style="background:#22C3B5">03</div><div class="t">研究</div><div class="d">时间线、五条规则、广度清单（唱片 · 家具 · 灯 · 椅子 · 贴面 · 今天）。</div><div class="tool">README.md §1—§7</div></div>
+<div class="c"><div class="n" style="background:#B79CFF">04</div><div class="t">设计令牌</div><div class="d">纸 + 6 糖果色 + 黑 · 描边 5 / 投影 10 · 歪 6/12/18° · 120 BPM = 30 帧一拍。</div><div class="tool">tokens.ts / .css / .json</div></div>
+<div class="c"><div class="n" style="background:#FF5A36">05</div><div class="t">风格图先行</div><div class="d">Python 写 SVG，字宽用 Fredoka 真实度量；先把“定帧”做对。</div><div class="tool">make_svgs.py · fontTools · Chromium</div></div>
+<div class="c"><div class="n" style="background:#FFD23F">06</div><div class="t">时间轴</div><div class="d">30 拍 × 30 帧：开场 4 · 六章各 3 · 规则 5 · 片尾 3。</div><div class="tool">timeline.ts · timeline.json</div></div>
+<div class="c"><div class="n" style="background:#2D4BFF;color:#fff">07</div><div class="t">视频代码</div><div class="d">每块积木：掉下来 → 压扁 0.24 → 回弹。f → 位置、缩放。</div><div class="tool">Remotion 4 · React · TypeScript</div></div>
+<div class="c"><div class="n" style="background:#FF7EB6">08</div><div class="t">配乐与音效</div><div class="d">numpy 合成 Italo-disco，“咚”“嘣”“嘀”都写帧号，−14 LUFS。</div><div class="tool">make_music.py · numpy · ffmpeg</div></div>
+<div class="c"><div class="n" style="background:#22C3B5">09</div><div class="t">质检循环</div><div class="d">只导出要看的帧 → 拼图 → 改 → 再看。转场必看中间帧。</div><div class="tool">stills.mjs · contact_sheet.py · timeline_chart.py</div></div>
+<div class="c"><div class="n" style="background:#B79CFF">10</div><div class="t">渲染发布</div><div class="d">分享版 → 封面 → 源码包 → Release → 画廊上架。</div><div class="tool">remotion render · ffmpeg · git</div></div>
+</div>
+<div class="lp" style="left:96px">看 → 改 → 再看：每改一处，只重看受影响的那几帧；配乐要人戴耳机听一遍</div>
+<div class="ft"><span>github.com/guanmo-ai/design-style · styles/004-memphis/MAKING.md</span><span>@guanmo_ai · 每天一个设计风格</span></div>
+</body></html>

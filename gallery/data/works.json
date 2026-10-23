@@ -221,5 +221,50 @@
         "kind": "改造教程"
       }
     ]
+  },
+  {
+    "id": "004-memphis",
+    "type": "style",
+    "number": "004",
+    "title": "孟菲斯",
+    "titleEn": "Memphis",
+    "years": "1980—1988",
+    "category": "后现代主义",
+    "description": "一块一色、描一圈黑边、再歪一点。一支 15 秒短片，所有东西都是会掉下来、压扁、回弹的糖果色积木：从迪伦的唱片、Carlton 书架、Tahiti 台灯、First 椅子、Bacterio 纹样一路颜色接力到今天的 App 界面。",
+    "tags": [
+      "糖果色",
+      "黑描边",
+      "硬投影",
+      "几何积木",
+      "纹样",
+      "索特萨斯",
+      "80 年代"
+    ],
+    "publishedAt": "2026-10-23T05:14:16Z",
+    "release": "day-04",
+    "asset": "004-memphis.mp4",
+    "sha256": "d1ff264a8c4421620dee0371c4cf4cf4da865f894615c71a09e809137a222d31",
+    "images": [
+      {
+        "file": "poster",
+        "title": "一张海报，认识孟菲斯",
+        "kind": "风格海报"
+      },
+      {
+        "file": "cheatsheet",
+        "title": "积木、色板、纹样、字体与五条规则",
+        "kind": "风格速查"
+      },
+      {
+        "file": "app-ui",
+        "title": "如果孟菲斯来做 App",
+        "kind": "界面应用"
+      },
+      {
+        "file": "steps",
+        "title": "一张普通海报，四步改成孟菲斯",
+        "kind": "改造教程"
+      }
+    ]
   }
 ]
