@@ -21,6 +21,11 @@ curl -fsSL -o Oswald.ttf        "$GF/oswald/Oswald%5Bwght%5D.ttf"
 curl -fsSL -o Fredoka.ttf       "$GF/fredoka/Fredoka%5Bwdth,wght%5D.ttf"
 # 风格 005 波普艺术：Bangers（漫画书拟声字风格的窄粗体，Vernon Adams 设计；OFL）
 curl -fsSL -o Bangers-Regular.ttf "$GF/bangers/Bangers-Regular.ttf"
+# 风格 006 千禧未来主义：Unbounded（宽体几何标题，可变字重 200—900）+ Michroma（宽体“科技”小字）+ Silkscreen（像素字读数）；均为 OFL
+curl -fsSL -o Unbounded.ttf          "$GF/unbounded/Unbounded%5Bwght%5D.ttf"
+curl -fsSL -o Michroma-Regular.ttf   "$GF/michroma/Michroma-Regular.ttf"
+curl -fsSL -o Silkscreen-Regular.ttf "$GF/silkscreen/Silkscreen-Regular.ttf"
+curl -fsSL -o Silkscreen-Bold.ttf    "$GF/silkscreen/Silkscreen-Bold.ttf"
 # 布局 01 Bento Grid：Inter Display（标题）+ Inter（正文）+ Geist Mono（数字 / 标注）
 TMP=$(mktemp -d)
 curl -fsSL -o "$TMP/inter.zip" https://github.com/rsms/inter/releases/download/v4.1/Inter-4.1.zip
@@ -38,4 +43,4 @@ curl -fsSL -o InstrumentSerif-Regular.ttf "$GF/instrumentserif/InstrumentSerif-R
 curl -fsSL -o InstrumentSerif-Italic.ttf  "$GF/instrumentserif/InstrumentSerif-Italic.ttf"
 rm -rf "$TMP"
 ls -lh
-echo "✓ 字体就绪。视频渲染时 Jost / JetBrains Mono / Noto Sans SC / TeX Gyre Heros / Oswald / Fredoka / Bangers / Inter / Geist Mono / Selawik / Instrument Serif 自动加载，无需安装到系统。"
+echo "✓ 字体就绪。视频渲染时 Jost / JetBrains Mono / Noto Sans SC / TeX Gyre Heros / Oswald / Fredoka / Bangers / Unbounded / Michroma / Silkscreen / Inter / Geist Mono / Selawik / Instrument Serif 自动加载，无需安装到系统。"

@@ -7,6 +7,7 @@ import {SwissStyle, SWISS_DURATION} from '../styles/002-swiss-style/video/SwissS
 import {Constructivism, CONSTRUCTIVISM_DURATION} from '../styles/003-constructivism/video/Constructivism';
 import {Memphis, MEMPHIS_DURATION} from '../styles/004-memphis/video/Memphis';
 import {PopArt, POPART_DURATION} from '../styles/005-pop-art/video/PopArt';
+import {Y2K, Y2K_DURATION} from '../styles/006-y2k/video/Y2K';
 
 // 每期注册为一个 Composition：风格 S{期号}-{名字}，布局 L{期号}-{名字}
 // 统一规格：1920×1080 · 60fps · 15s
@@ -69,6 +70,15 @@ export const Root: React.FC = () => (
       id="L02-Masonry"
       component={Masonry}
       durationInFrames={MASONRY_DURATION}
+      fps={60}
+      width={1920}
+      height={1080}
+      defaultProps={{music: true}}
+    />
+    <Composition
+      id="S006-Y2K"
+      component={Y2K}
+      durationInFrames={Y2K_DURATION}
       fps={60}
       width={1920}
       height={1080}

@@ -1,0 +1,145 @@
+/* 006 · 千禧未来主义 Y2K Futurism —— 设计令牌（CSS 版）
+   真正的铬 / 果冻要靠光照算（见 video/material.js）；这里是网页里够用的“平面版” */
+:root {
+  --y2k-ink: #0A1633;
+  --y2k-grey: #5E6880;
+  --y2k-silver: #C9CED8;
+  --y2k-paper-top: #EEF0F4;
+  --y2k-paper-bottom: #D9DEE6;
+  --y2k-white: #FFFFFF;
+  --y2k-aqua: #1E6FF0;
+  --y2k-aqua-deep: #0D58D6;
+  --y2k-aqua-light: #7DC0FF;
+  --y2k-bondi: #0095B6;
+  --y2k-lime: #C8F53C;
+  --y2k-red: #E0443A;
+  --y2k-yellow: #F2B53A;
+  --y2k-green: #4DBA3F;
+
+  --y2k-font-display: 'Unbounded', 'Arial Black', sans-serif;
+  --y2k-font-tech: 'Michroma', 'Eurostile', sans-serif;
+  --y2k-font-pixel: 'Silkscreen', ui-monospace, monospace;
+  --y2k-font-cn: 'Noto Sans SC', 'PingFang SC', sans-serif;
+  --y2k-font-latin: 'Inter', 'Lucida Grande', sans-serif;
+
+  /* 规则 01：铬 = 天空 + 地平线 + 地面（49% → 51% 那一下“断层”是关键） */
+  --y2k-chrome: linear-gradient(180deg, #2A4FB8 0%, #9DB6EE 32%, #FFFFFF 49%, #1A2236 51%, #3B4458 75%, #A9B3C6 100%);
+  /* 规则 02：果冻 = 上半截亮、中线一断、底部反光 */
+  --y2k-gel: linear-gradient(180deg, #6FA8FF 0%, var(--y2k-aqua) 50%, var(--y2k-aqua-deep) 52%, var(--y2k-aqua-light) 100%);
+  --y2k-gel-white: linear-gradient(180deg, #FFFFFF 0%, #E9ECF1 50%, #DADFE7 52%, #FFFFFF 100%);
+  --y2k-gel-highlight: linear-gradient(180deg, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.1));
+  /* 规则 03：2px 细条纹 + 80px 网格 */
+  --y2k-pinstripe: repeating-linear-gradient(180deg, rgba(255, 255, 255, 0.38) 0 2px, transparent 2px 4px);
+  --y2k-grid: linear-gradient(rgba(10, 22, 51, 0.07) 1px, transparent 1px) 0 0 / 80px 80px,
+    linear-gradient(90deg, rgba(10, 22, 51, 0.07) 1px, transparent 1px) 0 0 / 80px 80px;
+  --y2k-shadow: 0 18px 28px rgba(10, 22, 51, 0.3);
+}
+
+/* 底：冷灰银 + 细条纹 + 网格 */
+.y2k-page {
+  background: var(--y2k-pinstripe), var(--y2k-grid), linear-gradient(180deg, var(--y2k-paper-top), var(--y2k-paper-bottom));
+  color: var(--y2k-ink);
+  font: 500 16px/1.6 var(--y2k-font-cn);
+}
+
+/* 平面版铬字：同一套色标填进字里，再描一圈深色细边 */
+.y2k-chrome-text {
+  font: 900 96px/1 var(--y2k-font-display);
+  letter-spacing: -0.03em;
+  background: var(--y2k-chrome);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  -webkit-text-stroke: 1px rgba(10, 22, 51, 0.55);
+  filter: drop-shadow(0 8px 8px rgba(10, 22, 51, 0.35));
+}
+
+/* 果冻按钮：胶囊 + 中线断开的渐变 + 上半截一块高光 */
+.y2k-gel-button {
+  position: relative;
+  border: 1px solid #1144A8;
+  border-radius: 999px;
+  padding: 8px 28px;
+  background: var(--y2k-gel);
+  color: var(--y2k-white);
+  font: 700 15px/1.4 var(--y2k-font-cn);
+  box-shadow: 0 3px 4px rgba(10, 22, 51, 0.18);
+}
+.y2k-gel-button::before {
+  content: '';
+  position: absolute;
+  left: 12px;
+  right: 12px;
+  top: 2px;
+  height: 46%;
+  border-radius: 999px;
+  background: var(--y2k-gel-highlight);
+}
+.y2k-gel-button.is-secondary {
+  background: var(--y2k-gel-white);
+  border-color: #9AA3B5;
+  color: var(--y2k-ink);
+}
+
+/* 进度条：凹槽 + 果冻蓝 + 45° 斜条纹（动起来：改 background-position） */
+.y2k-progress {
+  height: 22px;
+  border-radius: 999px;
+  border: 1px solid #8A93A6;
+  background: linear-gradient(180deg, #B9C0CC, #F2F4F7);
+  overflow: hidden;
+}
+.y2k-progress > span {
+  display: block;
+  height: 100%;
+  border-radius: inherit;
+  background: repeating-linear-gradient(-45deg, rgba(255, 255, 255, 0.35) 0 11px, transparent 11px 22px), var(--y2k-gel);
+  animation: y2k-barber 0.5s linear infinite;
+}
+@keyframes y2k-barber {
+  to { background-position: 31px 0, 0 0; }
+}
+
+/* Aqua 窗口：细条纹窗体 + 银色标题栏 */
+.y2k-window {
+  border: 1px solid #8C94A6;
+  border-radius: 9px;
+  background: repeating-linear-gradient(180deg, #F8F9FB 0 2px, #ECEEF2 2px 4px);
+  box-shadow: var(--y2k-shadow);
+  overflow: hidden;
+}
+.y2k-window > header {
+  height: 36px;
+  background: var(--y2k-pinstripe), linear-gradient(180deg, #F4F5F7, var(--y2k-silver));
+  border-bottom: 1px solid #9AA2B2;
+  font: 500 13px/36px var(--y2k-font-cn);
+  text-align: center;
+}
+
+/* 液态玻璃（2025 的回声）：网页里用 backdrop-filter 近似 */
+.y2k-glass {
+  border-radius: 28px;
+  background: rgba(255, 255, 255, 0.18);
+  border: 1px solid rgba(255, 255, 255, 0.7);
+  backdrop-filter: blur(14px) saturate(1.6);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.9), 0 18px 40px rgba(10, 22, 51, 0.18);
+}
+
+/* 读数：像素字 */
+.y2k-readout {
+  font: 400 12px/1.6 var(--y2k-font-pixel);
+  letter-spacing: 0.1em;
+  color: var(--y2k-grey);
+  text-transform: uppercase;
+}
+
+/* 状态胶囊：荧光绿只给“通过” */
+.y2k-pill-ok {
+  display: inline-block;
+  border-radius: 999px;
+  padding: 3px 12px;
+  background: var(--y2k-lime);
+  color: var(--y2k-ink);
+  font: 400 10px/1.6 var(--y2k-font-tech);
+  letter-spacing: 0.1em;
+}
