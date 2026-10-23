@@ -1,0 +1,105 @@
+/* 005 · 波普艺术 Pop Art —— 设计令牌（CSS 版） */
+:root {
+  --pop-paper: #FFF4DC;
+  --pop-ink: #111111;
+  --pop-yellow: #FFD31A;
+  --pop-red: #E62E2D;
+  --pop-blue: #1E5BC6;
+  --pop-pink: #F7B5A8;
+  --pop-magenta: #F0458E;
+  --pop-cyan: #4FB3E8;
+  --pop-white: #FFFFFF;
+
+  --pop-font-display: 'Bangers', 'Impact', 'Arial Black', sans-serif;
+  --pop-font-cn: 'Noto Sans SC', 'PingFang SC', sans-serif;
+  --pop-font-mono: 'JetBrains Mono', ui-monospace, monospace;
+
+  /* 规则 02：粗黑线 + 硬投影（不模糊） */
+  --pop-outline: 4px solid var(--pop-ink);
+  --pop-shadow: 6px 6px 0 var(--pop-ink);
+  /* 规则 01：本戴点（点距 14px，点的大小 = 深浅） */
+  --pop-dot-pitch: 14px;
+  --pop-dots-light: radial-gradient(var(--pop-red) 22%, transparent 23%);
+  --pop-dots-mid: radial-gradient(var(--pop-red) 34%, transparent 35%);
+  --pop-dots-dark: radial-gradient(var(--pop-red) 46%, transparent 47%);
+}
+
+/* 底色：新闻纸 + 一层淡淡的网点 */
+.pop-page {
+  background-color: var(--pop-paper);
+  background-image: radial-gradient(rgba(230, 46, 45, 0.18) 18%, transparent 19%);
+  background-size: var(--pop-dot-pitch) var(--pop-dot-pitch);
+  color: var(--pop-ink);
+  font: 500 16px/1.6 var(--pop-font-cn);
+}
+
+/* 一块网点：六角排列 = 两层错开半个点距 */
+.pop-halftone {
+  background-color: var(--pop-white);
+  background-image: var(--pop-dots-mid), var(--pop-dots-mid);
+  background-size: var(--pop-dot-pitch) var(--pop-dot-pitch);
+  background-position: 0 0, calc(var(--pop-dot-pitch) / 2) calc(var(--pop-dot-pitch) / 2);
+  border: var(--pop-outline);
+  box-shadow: var(--pop-shadow);
+}
+
+/* 旁白框：黄底方框，字水平 */
+.pop-caption {
+  display: inline-block;
+  background: var(--pop-yellow);
+  border: var(--pop-outline);
+  box-shadow: var(--pop-shadow);
+  font: 900 16px/1.3 var(--pop-font-cn);
+  padding: 6px 12px;
+}
+
+/* 对话框：白底圆角 + 尖尾巴 */
+.pop-bubble {
+  position: relative;
+  display: inline-block;
+  background: var(--pop-white);
+  border: var(--pop-outline);
+  border-radius: 24px;
+  box-shadow: var(--pop-shadow);
+  font: 900 18px/1.3 var(--pop-font-cn);
+  padding: 12px 20px;
+}
+.pop-bubble::after {
+  content: '';
+  position: absolute;
+  left: 28px;
+  bottom: -22px;
+  width: 26px;
+  height: 22px;
+  background: var(--pop-ink);
+  clip-path: polygon(0 0, 100% 0, 10% 100%);
+}
+
+/* 拟声字：Bangers 红字 + 粗黑边 + 硬投影 + 往上斜 */
+.pop-bang {
+  font: 400 64px/1 var(--pop-font-display);
+  letter-spacing: 0.03em;
+  color: var(--pop-red);
+  -webkit-text-stroke: 3px var(--pop-ink);
+  paint-order: stroke fill;
+  text-shadow: 5px 5px 0 var(--pop-ink);
+  transform: rotate(-6deg);
+  display: inline-block;
+}
+
+/* 按钮做成爆炸框：多边形裁切 + 下面垫一层黑 */
+.pop-burst {
+  background: var(--pop-yellow);
+  color: var(--pop-red);
+  font: 400 28px/1 var(--pop-font-display);
+  padding: 34px 40px;
+  clip-path: polygon(50% 0, 61% 22%, 86% 8%, 79% 34%, 100% 42%, 80% 58%, 94% 84%, 66% 76%, 56% 100%, 44% 78%, 18% 94%, 22% 66%, 0 56%, 20% 42%, 8% 16%, 36% 22%);
+  filter: drop-shadow(4px 4px 0 var(--pop-ink));
+}
+
+/* 出现：“拍上去”——从 1.35 倍落到 1 */
+@keyframes pop-slap {
+  from { transform: scale(1.35); }
+  to { transform: scale(1); }
+}
+.pop-slap { animation: pop-slap 0.12s ease-in both; }
