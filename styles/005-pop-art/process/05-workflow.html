@@ -1,0 +1,47 @@
+<!doctype html><html><head><meta charset="utf-8"><style>
+@font-face{font-family:Bang;src:url(../../../public/fonts/Bangers-Regular.ttf)}
+@font-face{font-family:Mono;src:url(../../../public/fonts/JetBrainsMono.ttf);font-weight:100 800}
+@font-face{font-family:SC;src:url(../../../public/fonts/NotoSansSC-Regular.otf);font-weight:400}
+@font-face{font-family:SC;src:url(../../../public/fonts/NotoSansSC-Medium.otf);font-weight:500}
+@font-face{font-family:SC;src:url(../../../public/fonts/NotoSansSC-Bold.otf);font-weight:700}
+@font-face{font-family:SC;src:url(../../../public/fonts/NotoSansSC-Black.otf);font-weight:900}
+*{margin:0;padding:0;box-sizing:border-box}
+body{width:1920px;height:1200px;background-color:#FFF4DC;background-image:radial-gradient(rgba(230,46,45,.16) 20%,transparent 21%),radial-gradient(rgba(230,46,45,.16) 20%,transparent 21%);background-size:24px 24px;background-position:0 0,12px 12px;color:#111;font-family:SC;position:relative;overflow:hidden}
+.hd{position:absolute;left:96px;top:66px}
+.kick{display:inline-block;font:400 30px Bang;letter-spacing:.06em;color:#E62E2D;background:#FFD31A;border:4px solid #111;box-shadow:6px 6px 0 #111;padding:2px 16px;transform:rotate(-3deg)}
+h1{font:900 64px SC;margin-top:18px}
+.sub{font:500 24px SC;color:#444;margin-top:10px}
+.rule{position:absolute;left:96px;right:96px;top:300px;height:6px;background:#111}
+.grid{position:absolute;left:96px;top:344px;display:grid;grid-template-columns:repeat(5,322px);column-gap:24px;row-gap:64px}
+.c{height:336px;background:#fff;border:6px solid #111;box-shadow:12px 12px 0 #111;padding:18px 22px;position:relative}
+.c:nth-child(odd){transform:rotate(-1deg)}.c:nth-child(even){transform:rotate(1deg)}
+.n{display:inline-block;font:400 40px Bang;line-height:1;border:4px solid #111;padding:4px 12px;letter-spacing:.04em}
+.t{font:900 34px SC;margin-top:12px}
+.d{font:500 19px SC;line-height:1.55;margin-top:8px;color:#222}
+.tool{position:absolute;left:22px;right:22px;bottom:16px;font:500 15px Mono;color:#555;border-top:3px dashed #111;padding-top:8px;line-height:1.35}
+.lp{position:absolute;top:1100px;font:700 21px SC}
+.ft{position:absolute;left:96px;right:96px;bottom:34px;display:flex;justify-content:space-between;font:500 17px Mono;color:#555}
+.burst{position:absolute;right:140px;top:46px;width:250px;height:200px;background:#111;clip-path:polygon(50% 0,60% 24%,86% 6%,78% 34%,100% 42%,80% 58%,96% 86%,66% 76%,56% 100%,44% 78%,16% 96%,22% 66%,0 56%,20% 42%,8% 14%,36% 24%)}
+.burst2{position:absolute;right:150px;top:52px;width:236px;height:186px;background:#fff;clip-path:polygon(50% 0,60% 24%,86% 6%,78% 34%,100% 42%,80% 58%,96% 86%,66% 76%,56% 100%,44% 78%,16% 96%,22% 66%,0 56%,20% 42%,8% 14%,36% 24%)}
+.pop{position:absolute;right:190px;top:96px;font:400 84px Bang;color:#E62E2D;-webkit-text-stroke:4px #111;paint-order:stroke fill;text-shadow:6px 6px 0 #111;transform:rotate(-8deg)}
+</style></head><body>
+<div class="burst"></div><div class="burst2"></div><div class="pop">POP!</div>
+<div class="hd"><div class="kick">DESIGN STYLE · NO.005 · MAKING OF</div>
+<h1>从 0 到 1：这支 18 秒短片是怎么做出来的</h1>
+<div class="sub">没有 Figma、没有 AE、没有素材库：画面、图片、配乐全部是代码。十步，按顺序做。</div></div>
+<div class="rule"></div>
+<div class="grid">
+<div class="c"><div class="n" style="background:#FFD31A">01</div><div class="t">读仓库</div><div class="d">看 001—004 的指南、过程和模板。抄结构，不抄画面。</div><div class="tool">git · README · PROCESS_TEMPLATE</div></div>
+<div class="c"><div class="n" style="background:#E62E2D;color:#fff">02</div><div class="t">选题定调</div><div class="d">一句话定义 + 这期最有用的一招：<b>网点代替渐变，黑线圈住颜色</b>。</div><div class="tool">先写下来，再动手</div></div>
+<div class="c"><div class="n" style="background:#4FB3E8">03</div><div class="t">研究</div><div class="d">时间线、五条规则、广度清单（拼贴 · 汤罐 · 漫画 · 丝网 · 雕塑 · 今天）。</div><div class="tool">README.md §1—§7</div></div>
+<div class="c"><div class="n" style="background:#F0458E;color:#fff">04</div><div class="t">设计令牌</div><div class="d">新闻纸 + 红黄蓝 + 黑白 · 黑线 6 / 投影 12 · 网点点距 24 · 1 拍 30 帧。</div><div class="tool">tokens.ts / .css / .json</div></div>
+<div class="c"><div class="n" style="background:#1E5BC6;color:#fff">05</div><div class="t">风格图先行</div><div class="d">Python 写 SVG，字宽按真实字体度量算；先把“定帧”做对。</div><div class="tool">make_svgs.py · fontTools · Chromium</div></div>
+<div class="c"><div class="n" style="background:#FFD31A">06</div><div class="t">时间轴</div><div class="d">30 拍：开场 4 · 六章各 3 · 规则 5 · 片尾 3；留一个 STRETCH 调节奏。</div><div class="tool">timeline.ts · timeline.json</div></div>
+<div class="c"><div class="n" style="background:#E62E2D;color:#fff">07</div><div class="t">视频代码</div><div class="d">网点、爆炸框、对话框、网点转场：帧 → 半径、位置。</div><div class="tool">Remotion 4 · React · TypeScript</div></div>
+<div class="c"><div class="n" style="background:#4FB3E8">08</div><div class="t">配乐与音效</div><div class="d">numpy 合成冲浪摇滚；“砰”“啵”都写帧号。</div><div class="tool">make_music.py · numpy · ffmpeg</div></div>
+<div class="c"><div class="n" style="background:#F0458E;color:#fff">09</div><div class="t">审片与质检</div><div class="d">导出要看的帧 → 拼图 → 改。审片后整体放慢 1.2 倍。</div><div class="tool">stills.mjs · contact_sheet.py · timeline_chart.py</div></div>
+<div class="c"><div class="n" style="background:#1E5BC6;color:#fff">10</div><div class="t">渲染发布</div><div class="d">分享版 → 封面 → 源码包 → Release → 画廊上架。</div><div class="tool">remotion render · ffmpeg · git</div></div>
+</div>
+<div class="lp" style="left:96px">看 → 改 → 再看：每改一处，只重看受影响的那几帧；节奏留一个旋钮，一行就能放慢</div>
+<div class="ft"><span>github.com/guanmo-ai/design-style · styles/005-pop-art/MAKING.md</span><span>@guanmo_ai · 每天一个设计风格</span></div>
+</body></html>

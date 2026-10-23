@@ -19,6 +19,8 @@ curl -fsSL -o TeXGyreHeros-Bold.otf    "$CTAN/texgyreheros-bold.otf"
 curl -fsSL -o Oswald.ttf        "$GF/oswald/Oswald%5Bwght%5D.ttf"
 # 风格 004 孟菲斯：Fredoka（圆头几何无衬线，可变字重 300—700 / 字宽 75—125；OFL）
 curl -fsSL -o Fredoka.ttf       "$GF/fredoka/Fredoka%5Bwdth,wght%5D.ttf"
+# 风格 005 波普艺术：Bangers（漫画书拟声字风格的窄粗体，Vernon Adams 设计；OFL）
+curl -fsSL -o Bangers-Regular.ttf "$GF/bangers/Bangers-Regular.ttf"
 # 布局 01 Bento Grid：Inter Display（标题）+ Inter（正文）+ Geist Mono（数字 / 标注）
 TMP=$(mktemp -d)
 curl -fsSL -o "$TMP/inter.zip" https://github.com/rsms/inter/releases/download/v4.1/Inter-4.1.zip
@@ -36,4 +38,4 @@ curl -fsSL -o InstrumentSerif-Regular.ttf "$GF/instrumentserif/InstrumentSerif-R
 curl -fsSL -o InstrumentSerif-Italic.ttf  "$GF/instrumentserif/InstrumentSerif-Italic.ttf"
 rm -rf "$TMP"
 ls -lh
-echo "✓ 字体就绪。视频渲染时 Jost / JetBrains Mono / Noto Sans SC / TeX Gyre Heros / Oswald / Fredoka / Inter / Geist Mono / Selawik / Instrument Serif 自动加载，无需安装到系统。"
+echo "✓ 字体就绪。视频渲染时 Jost / JetBrains Mono / Noto Sans SC / TeX Gyre Heros / Oswald / Fredoka / Bangers / Inter / Geist Mono / Selawik / Instrument Serif 自动加载，无需安装到系统。"
