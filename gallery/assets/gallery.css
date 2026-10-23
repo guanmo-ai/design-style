@@ -19,3 +19,12 @@ dialog{width:1040px;max-width:calc(100% - 48px);max-height:90dvh;padding:0 26px 
 
 @media(max-width:600px){#close,.close-button{width:44px;height:44px}}
 @media(max-width:360px){.category{padding:10px 9px}.category span{margin-left:6px}}
+
+/* 复用 Awesome AI Motion 的顶部作品导航样式。 */
+.viewer-header>#viewer-label{flex:1;letter-spacing:.04em}
+.viewer-navigation{display:flex;align-items:center;gap:10px}
+.viewer-navigation button{padding:8px 11px;border:1px solid var(--border);border-radius:7px;background:transparent;font-size:11px;line-height:1.3;white-space:nowrap}
+.viewer-navigation button:hover:not(:disabled){background:#efede7}
+.viewer-navigation span{min-width:54px;text-align:center;font-size:10px;color:var(--muted);font-variant-numeric:tabular-nums}
+@media(max-width:800px){#viewer>.viewer-header{gap:12px}#viewer-label{display:none}.viewer-navigation{flex:1;justify-content:space-between;gap:6px}}
+@media(max-width:370px){#viewer>.viewer-header{gap:8px}.viewer-navigation{gap:4px}.viewer-navigation button{padding:7px;font-size:10px}.viewer-navigation span{min-width:40px;font-size:9px}}
