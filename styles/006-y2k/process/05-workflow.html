@@ -1,0 +1,85 @@
+<!doctype html><html><head><meta charset="utf-8"><style>
+@font-face{font-family:Unb;src:url(../../../public/fonts/Unbounded.ttf);font-weight:200 900}
+@font-face{font-family:Mic;src:url(../../../public/fonts/Michroma-Regular.ttf)}
+@font-face{font-family:Pix;src:url(../../../public/fonts/Silkscreen-Regular.ttf)}
+@font-face{font-family:SC;src:url(../../../public/fonts/NotoSansSC-Regular.otf);font-weight:400}
+@font-face{font-family:SC;src:url(../../../public/fonts/NotoSansSC-Medium.otf);font-weight:500}
+@font-face{font-family:SC;src:url(../../../public/fonts/NotoSansSC-Bold.otf);font-weight:700}
+@font-face{font-family:SC;src:url(../../../public/fonts/NotoSansSC-Black.otf);font-weight:900}
+*{margin:0;padding:0;box-sizing:border-box}
+body{width:1920px;height:1200px;color:#0A1633;font-family:SC;position:relative;overflow:hidden;
+ background:linear-gradient(rgba(10,22,51,.07) 1px,transparent 1px) 0 0/80px 80px,linear-gradient(90deg,rgba(10,22,51,.07) 1px,transparent 1px) 0 0/80px 80px,linear-gradient(180deg,#EEF0F4,#D9DEE6)}
+.top{position:absolute;left:80px;right:80px;top:40px;display:flex;justify-content:space-between;font:13px Mic;letter-spacing:2.6px}
+.top .m{font:12px Pix;letter-spacing:1.5px;color:#5E6880}
+.hr{position:absolute;left:80px;right:80px;height:1px;background:#0A1633;opacity:.8}
+.hd{position:absolute;left:96px;top:110px}
+.kick{font:15px Mic;letter-spacing:3px;color:#1E6FF0}
+h1{font:900 62px SC;margin-top:16px;letter-spacing:-1px}
+.sub{font:500 23px SC;color:#5E6880;margin-top:12px}
+.chrome{position:absolute;right:120px;top:84px;font:900 180px/1 Unb;letter-spacing:-8px;
+ background:linear-gradient(180deg,#2A4FB8 0%,#9DB6EE 32%,#FFFFFF 49%,#1A2236 51%,#3B4458 75%,#A9B3C6 100%);
+ -webkit-background-clip:text;background-clip:text;color:transparent;-webkit-text-stroke:1.5px rgba(10,22,51,.55);filter:drop-shadow(0 14px 12px rgba(10,22,51,.35))}
+.star{position:absolute;width:110px;height:110px}
+.grid{position:absolute;left:96px;top:356px;display:grid;grid-template-columns:repeat(5,326px);column-gap:24px;row-gap:40px}
+.c{height:322px;border-radius:12px;border:1px solid #7E879A;background:#F7F8FA;box-shadow:0 18px 28px rgba(10,22,51,.22);overflow:hidden;position:relative}
+.bar{height:40px;border-bottom:1px solid #9AA3B5;background:repeating-linear-gradient(180deg,rgba(255,255,255,.7) 0 2px,transparent 2px 4px),linear-gradient(180deg,#E9ECF1,#C9CED8);display:flex;align-items:center;padding:0 14px;gap:8px}
+.dot{width:14px;height:14px;border-radius:50%;border:1px solid rgba(0,0,0,.25);box-shadow:inset 0 2px 2px rgba(255,255,255,.7)}
+.bar .nm{margin-left:auto;font:11px Pix;letter-spacing:1px;color:#5E6880}
+.in{padding:16px 22px}
+.n{display:inline-block;font:13px Mic;letter-spacing:2px;color:#fff;border-radius:999px;padding:6px 16px 5px;border:1px solid #1144A8;position:relative;
+ background:linear-gradient(180deg,#6FA8FF 0%,#1E6FF0 50%,#0D58D6 52%,#7DC0FF 100%)}
+.n::before{content:'';position:absolute;left:8px;right:8px;top:2px;height:45%;border-radius:999px;background:linear-gradient(180deg,rgba(255,255,255,.95),rgba(255,255,255,.1))}
+.n.w{color:#0A1633;border-color:#9AA3B5;background:linear-gradient(180deg,#fff 0%,#E9ECF1 50%,#DADFE7 52%,#fff 100%)}
+.t{font:900 32px SC;margin-top:12px}
+.d{font:500 18.5px SC;line-height:1.55;margin-top:6px;color:#22304F}
+.d b{color:#1E6FF0}
+.tool{position:absolute;left:22px;right:22px;bottom:14px;font:11.5px Pix,SC;letter-spacing:.6px;color:#5E6880;border-top:1px dashed #7E879A;padding-top:8px;line-height:1.5}
+.prog{position:absolute;left:96px;top:1084px;width:1080px;height:22px;border-radius:999px;border:1px solid #8A93A6;background:linear-gradient(180deg,#B9C0CC,#F2F4F7);overflow:hidden}
+.prog span{display:block;height:100%;width:100%;border-radius:999px;background:repeating-linear-gradient(-45deg,rgba(255,255,255,.28) 0 10px,transparent 10px 20px),linear-gradient(180deg,#6FA8FF 0%,#1E6FF0 50%,#0D58D6 52%,#7DC0FF 100%)}
+.pt{position:absolute;left:1200px;top:1080px;font:700 21px SC}
+.ok{position:absolute;right:96px;top:1078px;font:12px Mic;letter-spacing:2px;background:#C8F53C;border:1px solid #6E8A12;border-radius:999px;padding:7px 18px 6px}
+.ft{position:absolute;left:80px;right:80px;bottom:30px;display:flex;justify-content:space-between;font:12px Pix;letter-spacing:1px;color:#5E6880}
+.reg{position:absolute;width:26px;height:26px;border:1px solid #0A1633;border-radius:50%;opacity:.6}
+.reg::before,.reg::after{content:'';position:absolute;background:#0A1633}
+.reg::before{left:12px;top:-8px;width:1px;height:40px}.reg::after{top:12px;left:-8px;height:1px;width:40px}
+</style></head><body>
+<div class="top"><span>DESIGN STYLE  ⁄  N°006</span><span class="m">Y2K_FUTURISM.SIT · MAKING_OF.TXT</span><span>1997 — 2004</span></div>
+<div class="hr" style="top:66px"></div>
+<canvas id="chrome" style="position:absolute;right:64px;top:84px"></canvas>
+<script src="../video/material.js"></script>
+<script>
+// 右上角的铬字：和视频、风格图同一个着色器（WebGL2）实时算出来，不是渐变
+(async () => {
+  const cfg = {w: 600, h: 240, scale: 2, bevel: 15, smooth: 1.6, shadowBlur: 8, shadow: [0, 12, 0.4, 0], envRot: 0.12,
+    env: {skyTop: [0.04, 0.16, 0.62], skyMid: [0.45, 0.62, 0.95], skyHor: [1.35, 1.38, 1.45], floorHor: [0.015, 0.018, 0.025], floorBot: [0.2, 0.22, 0.27]},
+    cam: [300, -124, 700], texts: [{text: 'Y2K', x: 300, y: 194, size: 180, font: "'Unb'", weight: 900, align: 'center', ls: -7}]};
+  const cv = document.getElementById('chrome');
+  cv.style.width = cfg.w + 'px'; cv.style.height = cfg.h + 'px';
+  await document.fonts.load("900 180px 'Unb'");
+  await Y2K.render(cv, cfg);
+  window.__done = true;
+})().catch((e) => { console.error(e); window.__done = 'error'; });
+</script>
+<img class="star" src="../images/layers/star-48.webp" style="right:600px;top:80px"><img class="star" src="../images/layers/star-30.webp" style="right:70px;top:250px;width:80px;height:80px">
+<div class="hd"><div class="kick">DESIGN STYLE · NO.006 · MAKING OF</div>
+<h1>从 0 到 1：这支 18 秒短片是怎么做出来的</h1>
+<div class="sub">没有 Figma、没有 AE、没有 3D 软件：铬、果冻、泡泡都是着色器逐帧算的光。十步，按顺序做。</div></div>
+<div class="grid">
+<div class="c"><div class="bar"><i class="dot" style="background:#E0443A"></i><i class="dot" style="background:#F2B53A"></i><i class="dot" style="background:#4DBA3F"></i><span class="nm">01.TXT</span></div><div class="in"><span class="n w">01</span><div class="t">读仓库</div><div class="d">看 001—005 的指南、过程和模板。抄结构，不抄画面。</div></div><div class="tool">GIT · README · PROCESS_TEMPLATE</div></div>
+<div class="c"><div class="bar"><i class="dot" style="background:#E0443A"></i><i class="dot" style="background:#F2B53A"></i><i class="dot" style="background:#4DBA3F"></i><span class="nm">02.TXT</span></div><div class="in"><span class="n">02</span><div class="t">选题定调</div><div class="d">这期最有用的一招：<b>给平面加一层材质——铬一定要有地平线</b>。</div></div><div class="tool">先写下来，再动手</div></div>
+<div class="c"><div class="bar"><i class="dot" style="background:#E0443A"></i><i class="dot" style="background:#F2B53A"></i><i class="dot" style="background:#4DBA3F"></i><span class="nm">03.TXT</span></div><div class="in"><span class="n w">03</span><div class="t">研究</div><div class="d">时间线、五条规则、广度清单：铬字、iMac、Aqua、i-mode、千年虫。</div></div><div class="tool">只写查得到的年份</div></div>
+<div class="c"><div class="bar"><i class="dot" style="background:#E0443A"></i><i class="dot" style="background:#F2B53A"></i><i class="dot" style="background:#4DBA3F"></i><span class="nm">04.TXT</span></div><div class="in"><span class="n">04</span><div class="t">令牌 + 材质</div><div class="d">银灰 + Aqua 蓝 + 一点荧光绿；先写着色器：<b>距离场 → 倒角 → 反射影棚</b>。</div></div><div class="tool">TOKENS.* · MATERIAL.JS · WEBGL2</div></div>
+<div class="c"><div class="bar"><i class="dot" style="background:#E0443A"></i><i class="dot" style="background:#F2B53A"></i><i class="dot" style="background:#4DBA3F"></i><span class="nm">05.TXT</span></div><div class="in"><span class="n w">05</span><div class="t">风格图先行</div><div class="d">材质渲染成透明图层，再放进 SVG；和视频是同一个着色器。</div></div><div class="tool">MAKE_SVGS.PY · RENDER_LAYERS.MJS</div></div>
+<div class="c"><div class="bar"><i class="dot" style="background:#E0443A"></i><i class="dot" style="background:#F2B53A"></i><i class="dot" style="background:#4DBA3F"></i><span class="nm">06.TXT</span></div><div class="in"><span class="n">06</span><div class="t">时间轴</div><div class="d">36 拍：开场、六章、规则、片尾各 4 拍；转场提前 14 帧盖上来。</div></div><div class="tool">TIMELINE.TS · TIMELINE.JSON</div></div>
+<div class="c"><div class="bar"><i class="dot" style="background:#E0443A"></i><i class="dot" style="background:#F2B53A"></i><i class="dot" style="background:#4DBA3F"></i><span class="nm">07.TXT</span></div><div class="in"><span class="n w">07</span><div class="t">视频代码</div><div class="d">铬层是一张画布，每帧只改镜头、环境、扫光；其余是 SVG。</div></div><div class="tool">REMOTION 4 · REACT · --GL=SWANGLE</div></div>
+<div class="c"><div class="bar"><i class="dot" style="background:#E0443A"></i><i class="dot" style="background:#F2B53A"></i><i class="dot" style="background:#4DBA3F"></i><span class="nm">08.TXT</span></div><div class="in"><span class="n">08</span><div class="t">配乐与音效</div><div class="d">numpy 合成 120 BPM trance-pop；开机“哔”、泡泡“啵”都写帧号。</div></div><div class="tool">MAKE_MUSIC.PY · NUMPY · FFMPEG</div></div>
+<div class="c"><div class="bar"><i class="dot" style="background:#E0443A"></i><i class="dot" style="background:#F2B53A"></i><i class="dot" style="background:#4DBA3F"></i><span class="nm">09.TXT</span></div><div class="in"><span class="n w">09</span><div class="t">质检循环</div><div class="d">一帧 8—14 秒：只导出要看的帧 → 拼图 → 改。材质单独放大看。</div></div><div class="tool">STILLS.MJS · CONTACT_SHEET.PY</div></div>
+<div class="c"><div class="bar"><i class="dot" style="background:#E0443A"></i><i class="dot" style="background:#F2B53A"></i><i class="dot" style="background:#4DBA3F"></i><span class="nm">10.TXT</span></div><div class="in"><span class="n">10</span><div class="t">渲染发布</div><div class="d">后台渲染母版 → 分享版 → 封面 → 源码包 → Release → 画廊。</div></div><div class="tool">REMOTION RENDER · FFMPEG · GIT</div></div>
+</div>
+<div class="prog"><span></span></div>
+<div class="pt">10 / 10 · 看 → 改 → 再看</div>
+<div class="ok">SYSTEM READY ✓</div>
+<div class="reg" style="left:40px;top:1140px"></div><div class="reg" style="right:40px;top:1140px"></div>
+<div class="hr" style="top:1150px;left:100px;right:100px"></div>
+<div class="ft" style="left:100px;right:100px"><span>GITHUB.COM/GUANMO-AI/DESIGN-STYLE · STYLES/006-Y2K/MAKING.MD</span><span>@GUANMO_AI · 每天一个设计风格</span></div>
+</body></html>
