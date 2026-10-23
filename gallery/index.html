@@ -11,38 +11,38 @@
   <script type="module" src="./assets/gallery.mjs"></script>
 </head>
 <body>
-  <a class="skip-link" href="#collection">跳到作品</a>
+  <a class="skip-link" href="#collection" data-i18n="skip">跳到作品</a>
   <div class="shell">
     <header class="site-header">
-      <a class="brand" href="./" aria-label="Design Style 首页"><img src="./assets/mark.svg" width="32" height="32" alt=""><span>Design<span class="brand-dot">.</span>style<small>设计参考库</small></span></a>
-      <nav aria-label="网站导航"><a class="creator" href="https://x.com/guanmo_ai" target="_blank" rel="noopener noreferrer">观默 <span>↗</span></a><a class="repo-link" href="https://github.com/guanmo-ai/design-style" target="_blank" rel="noopener noreferrer">GitHub ↗</a></nav>
+      <a class="brand" href="./" data-i18n-aria-label="home" aria-label="Design Style 首页"><img src="./assets/mark.svg" width="32" height="32" alt=""><span>Design<span class="brand-dot">.</span>style<small data-i18n="subtitle">设计参考库</small></span></a>
+      <nav data-i18n-aria-label="navigation" aria-label="网站导航"><span class="language-switch" role="group" data-i18n-aria-label="language" aria-label="语言 / Language"><button type="button" data-language="zh" lang="zh-CN" aria-pressed="true">中文</button><button type="button" data-language="en" lang="en" aria-pressed="false">EN</button></span><a class="creator" href="https://x.com/guanmo_ai" target="_blank" rel="noopener noreferrer"><span class="creator-name" data-i18n="creator">观默</span> <span>↗</span></a><a class="repo-link" href="https://github.com/guanmo-ai/design-style" target="_blank" rel="noopener noreferrer">GitHub ↗</a></nav>
     </header>
     <main>
       <section id="collection" aria-labelledby="collection-title">
-        <div class="section-heading"><div class="heading-with-count"><h1 id="collection-title">全部作品</h1><span id="total-count" class="count"></span></div><label class="search"><span aria-hidden="true">⌕</span><span class="sr-only">搜索风格、布局、关键词</span><input id="search" type="search" placeholder="搜索作品或关键词" autocomplete="off"><kbd aria-hidden="true">/</kbd></label></div>
-        <div class="toolbar"><nav id="types" aria-label="作品标签筛选"></nav></div>
+        <div class="section-heading"><div class="heading-with-count"><h1 id="collection-title" data-i18n="collection">全部作品</h1><span id="total-count" class="count"></span></div><label class="search"><span aria-hidden="true">⌕</span><span class="sr-only" data-i18n="search">搜索风格、布局、关键词</span><input id="search" type="search" data-i18n-placeholder="placeholder" placeholder="搜索作品或关键词" autocomplete="off"><kbd aria-hidden="true">/</kbd></label></div>
+        <div class="toolbar"><nav id="types" data-i18n-aria-label="filters" aria-label="作品标签筛选"></nav></div>
         <p id="result-count" class="sr-only" role="status"></p>
         <div id="works"></div>
-        <div id="empty" class="empty" hidden><span aria-hidden="true">⌕</span><h3>还没有找到相关作品</h3><p>试试「包豪斯」「便当盒」或其他关键词。</p><button id="reset" class="button secondary" type="button">查看全部作品</button></div>
-        <div id="loading" class="empty" role="status">正在载入短片…</div>
+        <div id="empty" class="empty" hidden><span aria-hidden="true">⌕</span><h3 data-i18n="emptyTitle">还没有找到相关作品</h3><p data-i18n="emptyHint">试试「包豪斯」「便当盒」或其他关键词。</p><button id="reset" data-i18n="reset" class="button secondary" type="button">查看全部作品</button></div>
+        <div id="loading" data-i18n="loading" class="empty" role="status">正在载入短片…</div>
       </section>
-      <noscript><p>请开启 JavaScript 浏览短片，或前往 <a href="https://github.com/guanmo-ai/design-style">GitHub 查看作品与源文件</a>。</p></noscript>
+      <noscript><p>请开启 JavaScript 浏览短片，或前往 <a href="https://github.com/guanmo-ai/design-style">GitHub 查看作品与源文件 / Browse works and source on GitHub</a>. Enable JavaScript to use the gallery.</p></noscript>
     </main>
-    <footer><a class="footer-brand" href="./">Design.style</a><p>由 <a href="https://x.com/guanmo_ai" target="_blank" rel="noopener noreferrer">观默 @guanmo_ai</a> 创作 · 视频与图片转载请注明出处</p><a href="https://github.com/guanmo-ai/design-style" target="_blank" rel="noopener noreferrer">源码开放，灵感流动 ↗</a></footer>
+    <footer><a class="footer-brand" href="./">Design.style</a><p><span data-i18n="by">由</span> <a href="https://x.com/guanmo_ai" target="_blank" rel="noopener noreferrer"><span data-i18n="creator">观默</span> @guanmo_ai</a> <span data-i18n="credit">创作 · 视频与图片转载请注明出处</span></p><a href="https://github.com/guanmo-ai/design-style" target="_blank" rel="noopener noreferrer" data-i18n="openSource">源码开放，灵感流动 ↗</a></footer>
   </div>
   <dialog id="viewer" aria-labelledby="viewer-title">
     <header class="viewer-header">
       <span id="viewer-label"></span>
       <div id="viewer-navigation" class="viewer-navigation">
-        <button id="previous-work" type="button" aria-label="上一条作品" disabled>← 上一条</button>
+        <button id="previous-work" type="button" data-i18n="previous" data-i18n-aria-label="previousLabel" aria-label="上一条作品" disabled>← 上一条</button>
         <span id="viewer-position" role="status" aria-live="polite"></span>
-        <button id="next-work" type="button" aria-label="下一条作品" disabled>下一条 →</button>
+        <button id="next-work" type="button" data-i18n="next" data-i18n-aria-label="nextLabel" aria-label="下一条作品" disabled>下一条 →</button>
       </div>
-      <button id="close" type="button" aria-label="关闭预览" autofocus>×</button>
+      <button id="close" type="button" data-i18n-aria-label="close" aria-label="关闭预览" autofocus>×</button>
     </header>
     <div id="viewer-media"></div>
     <div id="viewer-content"></div>
   </dialog>
-  <dialog id="image-viewer" aria-labelledby="image-viewer-title"><header class="viewer-header"><span id="image-viewer-label">图片预览</span><button id="image-close" class="close-button" type="button" aria-label="关闭图片预览" autofocus>×</button></header><div id="image-viewer-content"></div></dialog>
+  <dialog id="image-viewer" aria-labelledby="image-viewer-title"><header class="viewer-header"><span id="image-viewer-label" data-i18n="imagePreview">图片预览</span><button id="image-close" class="close-button" type="button" data-i18n-aria-label="closeImage" aria-label="关闭图片预览" autofocus>×</button></header><div id="image-viewer-content"></div></dialog>
 </body>
 </html>

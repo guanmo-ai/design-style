@@ -16,7 +16,7 @@ export const escapeHtml = value => String(value).replace(/[&<>"']/g, char => ({'
 export function selectWorks(works, {query = '', type = 'all', category = 'all', sort = 'latest'} = {}) {
   const terms = query.toLocaleLowerCase().trim().split(/\s+/).filter(Boolean);
   return works.filter(work => (type === 'all' || typeOf(work) === type) && (category === 'all' || work.category === category) &&
-    terms.every(term => [work.title, work.titleEn, work.description, typeInfo(work).name, ...work.tags].join(' ').toLocaleLowerCase().includes(term)))
+    terms.every(term => [work.title, work.titleEn, work.description, work.descriptionEn, typeInfo(work).name, work.type === 'layout' ? 'layouts' : 'design styles', work.categoryEn, ...work.tags, ...(work.tagsEn || [])].join(' ').toLocaleLowerCase().includes(term)))
     .sort((a, b) => (sort === 'oldest' ? 1 : -1) * (a.publishedAt.localeCompare(b.publishedAt) || a.id.localeCompare(b.id)));
 }
 export function adjacentWork(works, state, currentId, direction) {

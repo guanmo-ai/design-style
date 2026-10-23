@@ -40,7 +40,8 @@ test('布局作品的文档从 layouts/ 读取素材', async () => {
 test('文档渲染移除脚本与危险 URL，同时保留安全链接', () => {
   const work = {id:'001-bauhaus', number:'001', title:'包豪斯', titleEn:'Bauhaus', release:'day-01'};
   const result = renderDocument('# 标题\n\n<script>alert(1)</script>\n\n<a href="javascript:alert(1)" onclick="alert(1)">危险链接</a>\n\n[官方](https://example.com/)\n\n## 相同标题\n\n## 相同标题', work, 'guide');
-  assert.doesNotMatch(result.html, /<script|onclick|javascript:/);
+  assert.doesNotMatch(result.html, /alert\(1\)|onclick|javascript:/);
+  assert.deepEqual([...result.html.matchAll(/<script\b[^>]*>[\s\S]*?<\/script>/g)].map(match => match[0]), ['<script type="module" src="../../assets/reader.mjs"></script>']);
   assert.match(result.html, /href="https:\/\/example.com\/" target="_blank" rel="noopener noreferrer"/);
   assert.deepEqual(result.headings.map(heading => heading.id), ['doc-相同标题','doc-相同标题-1']);
   assert.throws(() => renderDocument('![外部图片](https://example.com/image.png)', work, 'guide'), /本期本地素材/);

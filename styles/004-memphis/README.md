@@ -1,5 +1,7 @@
 # 004 · 孟菲斯 Memphis（1980—1988）
 
+**中文** · [English](README.en.md)
+
 > **一句话：** 一块一色、描一圈黑边、再歪一点——让普通的东西，看起来“好玩”。
 
 🎬 [看视频](https://github.com/guanmo-ai/design-style/releases/tag/day-04) · 🛠 [制作过程](PROCESS.md) · 🧰 [从 0 到 1：工具与流程](MAKING.md) · 🖼 [图片源文件](images)

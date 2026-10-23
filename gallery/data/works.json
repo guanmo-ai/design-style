@@ -23,23 +23,40 @@
       {
         "file": "poster",
         "title": "一张海报，认识包豪斯",
-        "kind": "风格海报"
+        "kind": "风格海报",
+        "titleEn": "Bauhaus at a glance",
+        "kindEn": "Style poster"
       },
       {
         "file": "cheatsheet",
         "title": "颜色、字体与五条规则",
-        "kind": "风格速查"
+        "kind": "风格速查",
+        "titleEn": "Colors, typography, and five rules",
+        "kindEn": "Quick reference"
       },
       {
         "file": "app-ui",
         "title": "如果包豪斯来做 App",
-        "kind": "界面应用"
+        "kind": "界面应用",
+        "titleEn": "Bauhaus in an app",
+        "kindEn": "UI application"
       },
       {
         "file": "pattern",
         "title": "基本形的无限组合",
-        "kind": "几何图案"
+        "kind": "几何图案",
+        "titleEn": "Endless combinations of basic shapes",
+        "kindEn": "Geometric patterns"
       }
+    ],
+    "categoryEn": "Modernism",
+    "descriptionEn": "More than red, yellow, and blue. A 15-second film explores nine sides of Bauhaus, from color and typography to architecture and the stage.",
+    "tagsEn": [
+      "geometry",
+      "primary colors",
+      "grid",
+      "typography",
+      "architecture"
     ]
   },
   {
@@ -69,23 +86,43 @@
       {
         "file": "poster",
         "title": "一张海报，认识便当盒布局",
-        "kind": "布局海报"
+        "kind": "布局海报",
+        "titleEn": "Bento Grid at a glance",
+        "kindEn": "Layout poster"
       },
       {
         "file": "cheatsheet",
         "title": "网格、间距、圆角与五条规则",
-        "kind": "布局速查"
+        "kind": "布局速查",
+        "titleEn": "Grid, gaps, corners, and five rules",
+        "kindEn": "Quick reference"
       },
       {
         "file": "skins",
         "title": "同一布局，六种风格",
-        "kind": "布局 × 风格"
+        "kind": "布局 × 风格",
+        "titleEn": "One layout, six visual styles",
+        "kindEn": "Layout × style"
       },
       {
         "file": "templates",
         "title": "拿来就用：三套排法",
-        "kind": "布局模板"
+        "kind": "布局模板",
+        "titleEn": "Three ready-to-use arrangements",
+        "kindEn": "Layout templates"
       }
+    ],
+    "categoryEn": "Contemporary interfaces",
+    "descriptionEn": "One set of cards, many ways to organize information. From lunch boxes and live tiles to personal websites, learn grids, proportions, and hierarchy in 15 seconds.",
+    "tagsEn": [
+      "grid",
+      "cards",
+      "rounded corners",
+      "keynote",
+      "personal website",
+      "dashboard",
+      "Metro",
+      "iOS"
     ]
   },
   {
@@ -113,23 +150,41 @@
       {
         "file": "poster",
         "title": "一张海报，认识瑞士风格",
-        "kind": "风格海报"
+        "kind": "风格海报",
+        "titleEn": "Swiss Style at a glance",
+        "kindEn": "Style poster"
       },
       {
         "file": "cheatsheet",
         "title": "网格、色板、字体与五条规则",
-        "kind": "风格速查"
+        "kind": "风格速查",
+        "titleEn": "Grid, palette, typography, and five rules",
+        "kindEn": "Quick reference"
       },
       {
         "file": "app-ui",
         "title": "如果瑞士风格来做 App",
-        "kind": "界面应用"
+        "kind": "界面应用",
+        "titleEn": "Swiss Style in an app",
+        "kindEn": "UI application"
       },
       {
         "file": "grid",
         "title": "一张网格，四种排法",
-        "kind": "网格系统"
+        "kind": "网格系统",
+        "titleEn": "One grid, four arrangements",
+        "kindEn": "Grid system"
       }
+    ],
+    "categoryEn": "Modernism",
+    "descriptionEn": "One grid, one typeface, one red. A 15-second film uses the same 12-column grid for headlines, typography, posters, New York subway signs, and five key principles.",
+    "tagsEn": [
+      "grid",
+      "sans serif",
+      "Helvetica",
+      "poster",
+      "Swiss red",
+      "New York subway"
     ]
   },
   {
@@ -158,23 +213,43 @@
       {
         "file": "poster",
         "title": "一张海报，认识瀑布流",
-        "kind": "布局海报"
+        "kind": "布局海报",
+        "titleEn": "Masonry at a glance",
+        "kindEn": "Layout poster"
       },
       {
         "file": "cheatsheet",
         "title": "算法、断点、比例与五条规则",
-        "kind": "布局速查"
+        "kind": "布局速查",
+        "titleEn": "Algorithm, breakpoints, ratios, and five rules",
+        "kindEn": "Quick reference"
       },
       {
         "file": "compare",
         "title": "同样 8 张卡片，四种排法",
-        "kind": "排法对比"
+        "kind": "排法对比",
+        "titleEn": "The same eight cards in four layouts",
+        "kindEn": "Layout comparison"
       },
       {
         "file": "templates",
         "title": "作品集、双列种草、商品流",
-        "kind": "三套模板"
+        "kind": "三套模板",
+        "titleEn": "Portfolio, two-column feed, and product gallery",
+        "kindEn": "Three templates"
       }
+    ],
+    "categoryEn": "Contemporary interfaces",
+    "descriptionEn": "Equal-width columns, content-driven heights: each card goes into the shortest column. From stone walls and Pinterest boards to two-column feeds, discover masonry in 15 seconds.",
+    "tagsEn": [
+      "masonry",
+      "grid",
+      "columns",
+      "shortest column first",
+      "image wall",
+      "Pinterest",
+      "two-column feed",
+      "responsive"
     ]
   },
   {
@@ -203,23 +278,43 @@
       {
         "file": "poster",
         "title": "一张海报，认识构成主义",
-        "kind": "风格海报"
+        "kind": "风格海报",
+        "titleEn": "Constructivism at a glance",
+        "kindEn": "Style poster"
       },
       {
         "file": "cheatsheet",
         "title": "两条轴、色板、字体与五条规则",
-        "kind": "风格速查"
+        "kind": "风格速查",
+        "titleEn": "Two axes, palette, typography, and five rules",
+        "kindEn": "Quick reference"
       },
       {
         "file": "app-ui",
         "title": "如果构成主义来做 App",
-        "kind": "界面应用"
+        "kind": "界面应用",
+        "titleEn": "Constructivism in an app",
+        "kindEn": "UI application"
       },
       {
         "file": "steps",
         "title": "一张普通海报，四步改成构成主义",
-        "kind": "改造教程"
+        "kind": "改造教程",
+        "titleEn": "Four steps from a plain poster to Constructivism",
+        "kindEn": "Poster tutorial"
       }
+    ],
+    "categoryEn": "Modernism",
+    "descriptionEn": "A diagonal, a splash of red, and type that shouts. This 15-second film follows two axes (−30° and 60°) through wedges, posters, a tower, textiles, stage sets, and books.",
+    "tagsEn": [
+      "diagonal",
+      "red and black",
+      "large type",
+      "photomontage",
+      "Rodchenko",
+      "El Lissitzky",
+      "Cyrillic",
+      "halftone"
     ]
   },
   {
@@ -248,23 +343,42 @@
       {
         "file": "poster",
         "title": "一张海报，认识孟菲斯",
-        "kind": "风格海报"
+        "kind": "风格海报",
+        "titleEn": "Memphis at a glance",
+        "kindEn": "Style poster"
       },
       {
         "file": "cheatsheet",
         "title": "积木、色板、纹样、字体与五条规则",
-        "kind": "风格速查"
+        "kind": "风格速查",
+        "titleEn": "Blocks, palette, patterns, typography, and five rules",
+        "kindEn": "Quick reference"
       },
       {
         "file": "app-ui",
         "title": "如果孟菲斯来做 App",
-        "kind": "界面应用"
+        "kind": "界面应用",
+        "titleEn": "Memphis in an app",
+        "kindEn": "UI application"
       },
       {
         "file": "steps",
         "title": "一张普通海报，四步改成孟菲斯",
-        "kind": "改造教程"
+        "kind": "改造教程",
+        "titleEn": "Four steps from a plain poster to Memphis",
+        "kindEn": "Poster tutorial"
       }
+    ],
+    "categoryEn": "Postmodernism",
+    "descriptionEn": "One color per shape, a black outline, and a playful tilt. Candy-colored blocks drop, squash, and bounce through a record, the Carlton bookcase, Tahiti lamp, First chair, patterns, and a modern app in 15 seconds.",
+    "tagsEn": [
+      "candy colors",
+      "black outlines",
+      "hard shadows",
+      "geometric blocks",
+      "patterns",
+      "Sottsass",
+      "1980s"
     ]
   },
   {
@@ -293,23 +407,42 @@
       {
         "file": "poster",
         "title": "一张海报，认识波普艺术",
-        "kind": "风格海报"
+        "kind": "风格海报",
+        "titleEn": "Pop Art at a glance",
+        "kindEn": "Style poster"
       },
       {
         "file": "cheatsheet",
         "title": "网点、色板、对话框、字体与五条规则",
-        "kind": "风格速查"
+        "kind": "风格速查",
+        "titleEn": "Dots, palette, speech bubbles, typography, and five rules",
+        "kindEn": "Quick reference"
       },
       {
         "file": "app-ui",
         "title": "如果波普来做 App",
-        "kind": "界面应用"
+        "kind": "界面应用",
+        "titleEn": "Pop Art in an app",
+        "kindEn": "UI application"
       },
       {
         "file": "steps",
         "title": "一张普通海报，四步改成波普",
-        "kind": "改造教程"
+        "kind": "改造教程",
+        "titleEn": "Four steps from a plain poster to Pop Art",
+        "kindEn": "Poster tutorial"
       }
+    ],
+    "categoryEn": "Pop culture",
+    "descriptionEn": "Halftone dots replace gradients, and bold black outlines frame every color. An 18-second journey from collage, soup cans, comic dots, silkscreen flowers, and a soft burger to today’s emoji and comic filters.",
+    "tagsEn": [
+      "Ben-Day dots",
+      "halftone",
+      "bold outlines",
+      "primary colors",
+      "comic lettering",
+      "Warhol",
+      "1960s"
     ]
   }
 ]
