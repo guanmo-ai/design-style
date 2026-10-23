@@ -1,13 +1,12 @@
-{"fps": 60, "bpm": 120, "frames": 900, "title": "布局 03 · 时间轴：全片 30 次滑动，章节切换全落在拍点上（1 拍 = 30 帧）",
+{"fps": 60, "bpm": 120, "frames": 900, "title": "布局 03 · 时间轴（v3）：9 段、22 次滑动，配乐与音效从同一份滑动表生成（1 拍 = 30 帧）",
  "segments": [
-  {"label": "开场", "start": 0, "dur": 90, "color": "#2C2C2E"},
-  {"label": "01 定义", "start": 90, "dur": 120, "color": "#1C1C1E"},
-  {"label": "02 结构", "start": 210, "dur": 90, "color": "#30D158"},
-  {"label": "03 Snow Fall", "start": 300, "dur": 90, "color": "#E7ECEF"},
-  {"label": "04 数据", "start": 390, "dur": 90, "color": "#FBF7F0"},
-  {"label": "05 苹果", "start": 480, "dur": 90, "color": "#FF2E7E"},
-  {"label": "06 CSS", "start": 570, "dur": 60, "color": "#16161A"},
-  {"label": "07 排法", "start": 630, "dur": 90, "color": "#F5F5F7"},
-  {"label": "08 五条规则", "start": 720, "dur": 120, "color": "#2997FF"},
-  {"label": "片尾", "start": 840, "dur": 60, "color": "#000000"}
+  {"label": "开场", "start": 0, "dur": 90, "color": "#2C2C2F"},
+  {"label": "01 定义", "start": 90, "dur": 116, "color": "#1C1C1E"},
+  {"label": "02 X 光", "start": 206, "dur": 139, "color": "#2997FF"},
+  {"label": "03 Snow Fall", "start": 345, "dur": 69, "color": "#E7ECEF"},
+  {"label": "04 数据", "start": 414, "dur": 90, "color": "#8B3DFF"},
+  {"label": "05 苹果", "start": 504, "dur": 90, "color": "#FF2E7E"},
+  {"label": "06 四种排法", "start": 594, "dur": 78, "color": "#48484A"},
+  {"label": "07 五条规则", "start": 672, "dur": 174, "color": "#FF5C9A"},
+  {"label": "片尾", "start": 846, "dur": 54, "color": "#000000"}
  ]}

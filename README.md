@@ -160,7 +160,7 @@ design-style/
 │     ├─ audio/make_music.py
 │     └─ images/           # poster / cheatsheet / skins / templates（make_svgs.py 生成）
   └─ 02-masonry/           # 同上；短片：26 张卡片在 13 种排法之间流动（落雨 → 砌石墙 → 算法 → Pinterest → 手机 → 规则 → 响应式）
-  └─ 03-scrollytelling/    # 同上，另有 MAKING.md；短片：全片就是一张 21 060px 网页的一次滚动（定义 → X 光结构 → Snow Fall → 数据新闻 → 苹果 → CSS → 规则）
+  └─ 03-scrollytelling/    # 同上，另有 MAKING.md；短片：全片就是一张 17 280px 网页的一次滚动（定义 → X 光结构 → Snow Fall → 数据新闻 → 苹果 → 四种排法 → 规则），主角是 three.js 实时渲染的 3D 手机
 ├─ gallery/                # 网页画廊（静态站点源码与作品数据 works.json）
 ├─ scripts/                # 字体下载 · SVG → PNG · 关键帧截图 · 联系表 · 节拍时间轴
 ├─ docs/PROCESS_TEMPLATE.md # 每期制作过程的模板
