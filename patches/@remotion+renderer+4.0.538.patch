@@ -1,0 +1,103 @@
+diff --git a/node_modules/@remotion/renderer/dist/browser/extract-zip-archive.js b/node_modules/@remotion/renderer/dist/browser/extract-zip-archive.js
+index 9b4de48..9080b66 100644
+--- a/node_modules/@remotion/renderer/dist/browser/extract-zip-archive.js
++++ b/node_modules/@remotion/renderer/dist/browser/extract-zip-archive.js
+@@ -63,12 +63,33 @@ const getExtractedMode = (entryMode, isDir) => {
+     }
+     return isDir ? 0o755 : 0o644;
+ };
++const isInsideArchive = (dir, target) => {
++    const relative = path.relative(dir, target);
++    return relative !== '..' && !relative.startsWith('..' + path.sep) && !path.isAbsolute(relative);
++};
++const assertArchivePath = async (dir, target) => {
++    if (!isInsideArchive(dir, target)) throw new Error('Out of bound archive path: ' + target);
++    let existing = target;
++    while (true) {
++        try {
++            const canonical = await (0, promises_1.realpath)(existing);
++            if (!isInsideArchive(dir, canonical)) throw new Error('Out of bound archive path: ' + target);
++            return;
++        } catch (error) {
++            if (error.code !== 'ENOENT') throw error;
++            const parent = path.dirname(existing);
++            if (parent === existing) throw error;
++            existing = parent;
++        }
++    }
++};
+ const extractEntry = async ({ entry, zipfile, dir, }) => {
+     if (entry.fileName.startsWith('__MACOSX/')) {
+         return;
+     }
+     const dest = path.join(dir, entry.fileName);
+     const destDir = path.dirname(dest);
++    await assertArchivePath(dir, dest);
+     await (0, promises_1.mkdir)(destDir, { recursive: true });
+     const canonicalDestDir = await (0, promises_1.realpath)(destDir);
+     const relativeDestDir = path.relative(dir, canonicalDestDir);
+@@ -100,10 +121,11 @@ const extractEntry = async ({ entry, zipfile, dir, }) => {
+     const readStream = await openReadStream(zipfile, entry);
+     if (symlinkEntry) {
+         const link = (await (0, consumers_1.buffer)(readStream)).toString();
++        await assertArchivePath(dir, path.resolve(canonicalDestDir, link));
+         await (0, promises_1.symlink)(link, dest);
+         return;
+     }
+-    await (0, promises_2.pipeline)(readStream, (0, node_fs_1.createWriteStream)(dest, { mode: procMode }));
++    await (0, promises_2.pipeline)(readStream, (0, node_fs_1.createWriteStream)(dest, { mode: procMode, flags: "wx" }));
+ };
+ const extractZipArchive = async (archivePath, dir) => {
+     if (!path.isAbsolute(dir)) {
+diff --git a/node_modules/@remotion/renderer/dist/esm/index.mjs b/node_modules/@remotion/renderer/dist/esm/index.mjs
+index 600db37..a73daec 100644
+--- a/node_modules/@remotion/renderer/dist/esm/index.mjs
++++ b/node_modules/@remotion/renderer/dist/esm/index.mjs
+@@ -6471,6 +6471,26 @@ var getExtractedMode = (entryMode, isDir) => {
+   }
+   return isDir ? 493 : 420;
+ };
++const isInsideArchive = (dir, target) => {
++    const relative = path7.relative(dir, target);
++    return relative !== '..' && !relative.startsWith('..' + path7.sep) && !path7.isAbsolute(relative);
++};
++const assertArchivePath = async (dir, target) => {
++    if (!isInsideArchive(dir, target)) throw new Error('Out of bound archive path: ' + target);
++    let existing = target;
++    while (true) {
++        try {
++            const canonical = await realpath(existing);
++            if (!isInsideArchive(dir, canonical)) throw new Error('Out of bound archive path: ' + target);
++            return;
++        } catch (error) {
++            if (error.code !== 'ENOENT') throw error;
++            const parent = path7.dirname(existing);
++            if (parent === existing) throw error;
++            existing = parent;
++        }
++    }
++};
+ var extractEntry = async ({
+   entry,
+   zipfile,
+@@ -6481,6 +6501,7 @@ var extractEntry = async ({
+   }
+   const dest = path7.join(dir, entry.fileName);
+   const destDir = path7.dirname(dest);
++    await assertArchivePath(dir, dest);
+   await mkdir(destDir, { recursive: true });
+   const canonicalDestDir = await realpath(destDir);
+   const relativeDestDir = path7.relative(dir, canonicalDestDir);
+@@ -6512,10 +6533,11 @@ var extractEntry = async ({
+   const readStream = await openReadStream(zipfile, entry);
+   if (symlinkEntry) {
+     const link = (await buffer(readStream)).toString();
++    await assertArchivePath(dir, path7.resolve(canonicalDestDir, link));
+     await symlink(link, dest);
+     return;
+   }
+-  await pipeline(readStream, createWriteStream2(dest, { mode: procMode }));
++  await pipeline(readStream, createWriteStream2(dest, { mode: procMode, flags: "wx" }));
+ };
+ var extractZipArchive = async (archivePath, dir) => {
+   if (!path7.isAbsolute(dir)) {

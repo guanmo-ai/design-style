@@ -30,14 +30,18 @@ export function createGalleryServer(base = output) {
       }
       headers['Content-Length'] = end - start + 1;
       res.writeHead(status, headers);
-      if (req.method === 'HEAD') res.end();
+      if (req.method === 'HEAD' || info.size === 0) res.end();
       else {
         const stream = createReadStream(file, {start, end});
         stream.on('error', () => res.destroy());
         res.on('close', () => stream.destroy());
         stream.pipe(res);
       }
-    } catch {res.writeHead(404, {'Content-Type':'text/plain; charset=utf-8'});res.end('未找到页面，请先运行 npm run gallery:build');}
+    } catch {
+      if (res.headersSent) {res.destroy();return;}
+      res.writeHead(404, {'Content-Type':'text/plain; charset=utf-8'});
+      res.end('未找到页面，请先运行 npm run gallery:build');
+    }
   });
 }
 if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
