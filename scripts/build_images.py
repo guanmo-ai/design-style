@@ -44,6 +44,9 @@ FACES = [  # (family, file, weight[, style])
     ('Oswald', 'Oswald.ttf', '200 700'),
     ('Fredoka', 'Fredoka.ttf', '300 700'),
     ('Bangers', 'Bangers-Regular.ttf', '400'),
+    ('Unbounded', 'Unbounded.ttf', '200 900'),
+    ('Michroma', 'Michroma-Regular.ttf', '400'),
+    ('Silkscreen', 'Silkscreen-Regular.ttf', '400'),
 ]
 
 
@@ -91,23 +94,33 @@ def embed(svg: str) -> str:
 
 
 def inline_images(svg: str, folder: str) -> str:
-    """把 <image href="相对路径.jpg"> 换成 data URI（缩到最长边 900px），让 preview 也是自包含的"""
+    """把 <image href="相对路径"> 换成 data URI，让 preview 也是自包含的
+    照片（.jpg）：缩到最长边 900px 的 JPEG；带透明的图层（.png / .webp，如 006 的铬层）：保留透明，最长边 2700px 的 WebP"""
     def rep(m):
-        path = os.path.normpath(os.path.join(folder, html.unescape(m.group(1))))
+        rel = html.unescape(m.group(1))
+        path = os.path.normpath(os.path.join(folder, rel))
         if not os.path.exists(path):
             print(f'  ! 缺少图片 {path}，跳过')
             return m.group(0)
+        alpha = rel.lower().endswith(('.png', '.webp'))
+        mime = 'image/webp' if alpha else 'image/jpeg'
         try:
             from PIL import Image
-            im = Image.open(path).convert('RGB')
-            im.thumbnail((900, 900))
+            im = Image.open(path)
             buf = io.BytesIO()
-            im.save(buf, 'JPEG', quality=84, optimize=True)
+            if alpha:
+                im = im.convert('RGBA')
+                im.thumbnail((2700, 2700))
+                im.save(buf, 'WEBP', quality=90, method=6)
+            else:
+                im = im.convert('RGB')
+                im.thumbnail((900, 900))
+                im.save(buf, 'JPEG', quality=84, optimize=True)
             data = buf.getvalue()
         except ImportError:
             data = open(path, 'rb').read()
-        return f'href="data:image/jpeg;base64,{base64.b64encode(data).decode()}"'
-    return re.sub(r'href="(?!data:|#|https?:)([^"]+\.(?:jpe?g|png))"', rep, svg)
+        return f'href="data:{mime};base64,{base64.b64encode(data).decode()}"'
+    return re.sub(r'href="(?!data:|#|https?:)([^"]+\.(?:jpe?g|png|webp))"', rep, svg)
 
 
 def main(folder: str):
