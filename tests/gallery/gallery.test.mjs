@@ -6,7 +6,8 @@ import path from 'node:path';
 import {once} from 'node:events';
 import {loadCatalog, validateEntries} from '../../scripts/gallery/catalog.mjs';
 import {createGalleryServer} from '../../scripts/gallery/serve.mjs';
-import {selectWorks, sourceUrl, videoUrl, readState, typeOf, workLabel} from '../../gallery/assets/model.mjs';
+import * as model from '../../gallery/assets/model.mjs';
+const {selectWorks, adjacentWork, sourceUrl, videoUrl, readState, typeOf, workLabel} = model;
 
 test('作品来自本仓库，规格和章节来自现有源文件', async () => {
   const works = await loadCatalog();
@@ -60,6 +61,32 @@ test('搜索支持多关键词和英文，分类、空结果和排序组合生�
   assert.deepEqual(readState('https://site.test/design-style/?q=几何&sort=unknown'), {query: '几何', type: 'all', sort: 'latest', category: 'all'});
   assert.equal(readState('https://site.test/design-style/?type=layout').type, 'layout');
   assert.equal(readState('https://site.test/design-style/?type=../x').type, 'all');
+});
+
+test('影片导航沿当前筛选与排序循环，全部作品可跨风格和布局', async () => {
+  assert.equal(typeof adjacentWork, 'function');
+  const works = (await loadCatalog()).filter(work => ['003-constructivism', '002-swiss-style', '001-bauhaus', '02-masonry', '01-bento-grid'].includes(work.id));
+  const cases = [
+    [{type: 'style'}, '003-constructivism', 1, '002-swiss-style'],
+    [{type: 'style'}, '001-bauhaus', 1, '003-constructivism'],
+    [{type: 'style'}, '003-constructivism', -1, '001-bauhaus'],
+    [{type: 'layout'}, '02-masonry', 1, '01-bento-grid'],
+    [{type: 'all'}, '003-constructivism', 1, '02-masonry'],
+    [{type: 'all'}, '02-masonry', -1, '003-constructivism'],
+    [{type: 'all', query: '网格'}, '002-swiss-style', 1, '01-bento-grid'],
+    [{type: 'style', sort: 'oldest'}, '001-bauhaus', 1, '002-swiss-style']
+  ];
+  for (const [state, id, direction, expected] of cases) {
+    assert.equal(adjacentWork(works, state, id, direction)?.id, expected);
+  }
+});
+
+test('空列表、单部影片和不在筛选结果内的直达影片不提供导航', async () => {
+  assert.equal(typeof adjacentWork, 'function');
+  const works = await loadCatalog();
+  assert.equal(adjacentWork([], {}, '001-bauhaus', 1), undefined);
+  assert.equal(adjacentWork(works, {query: '包豪斯'}, '001-bauhaus', -1), undefined);
+  assert.equal(adjacentWork(works, {type: 'layout'}, '003-constructivism', 1), undefined);
 });
 
 test('静态预览支持视频范围请求、HEAD，并阻止站点外文件', async t => {

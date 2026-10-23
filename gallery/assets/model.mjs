@@ -19,6 +19,12 @@ export function selectWorks(works, {query = '', type = 'all', category = 'all', 
     terms.every(term => [work.title, work.titleEn, work.description, typeInfo(work).name, ...work.tags].join(' ').toLocaleLowerCase().includes(term)))
     .sort((a, b) => (sort === 'oldest' ? 1 : -1) * (a.publishedAt.localeCompare(b.publishedAt) || a.id.localeCompare(b.id)));
 }
+export function adjacentWork(works, state, currentId, direction) {
+  const selected = selectWorks(works, state);
+  const index = selected.findIndex(work => work.id === currentId);
+  if (selected.length < 2 || index < 0) return;
+  return selected[(index + direction + selected.length) % selected.length];
+}
 export function readState(url) {
   const params = new URL(url).searchParams;
   const type = params.get('type');

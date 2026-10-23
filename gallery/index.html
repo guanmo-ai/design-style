@@ -30,7 +30,19 @@
     </main>
     <footer><a class="footer-brand" href="./">Design.style</a><p>由 <a href="https://x.com/guanmo_ai" target="_blank" rel="noopener noreferrer">观默 @guanmo_ai</a> 创作 · 视频与图片转载请注明出处</p><a href="https://github.com/guanmo-ai/design-style" target="_blank" rel="noopener noreferrer">源码开放，灵感流动 ↗</a></footer>
   </div>
-  <dialog id="viewer" aria-labelledby="viewer-title"><header class="viewer-header"><span id="viewer-label"></span><button id="close" type="button" aria-label="关闭预览" autofocus>×</button></header><div id="viewer-content"></div></dialog>
+  <dialog id="viewer" aria-labelledby="viewer-title">
+    <header class="viewer-header">
+      <span id="viewer-label"></span>
+      <div id="viewer-navigation" class="viewer-navigation">
+        <button id="previous-work" type="button" aria-label="上一条作品" disabled>← 上一条</button>
+        <span id="viewer-position" role="status" aria-live="polite"></span>
+        <button id="next-work" type="button" aria-label="下一条作品" disabled>下一条 →</button>
+      </div>
+      <button id="close" type="button" aria-label="关闭预览" autofocus>×</button>
+    </header>
+    <div id="viewer-media"></div>
+    <div id="viewer-content"></div>
+  </dialog>
   <dialog id="image-viewer" aria-labelledby="image-viewer-title"><header class="viewer-header"><span id="image-viewer-label">图片预览</span><button id="image-close" class="close-button" type="button" aria-label="关闭图片预览" autofocus>×</button></header><div id="image-viewer-content"></div></dialog>
 </body>
 </html>

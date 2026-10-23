@@ -1,4 +1,4 @@
-import {REPO, TYPES, typeOf, typeInfo, workDir, workLabel, sourceUrl, releaseUrl, videoUrl, formatTime, escapeHtml as h, selectWorks, readState} from './model.mjs';
+import {REPO, TYPES, typeOf, typeInfo, workDir, workLabel, sourceUrl, releaseUrl, videoUrl, formatTime, escapeHtml as h, selectWorks, adjacentWork, readState} from './model.mjs';
 
 const $ = selector => document.querySelector(selector);
 const viewer = $('#viewer');
@@ -6,6 +6,7 @@ const imageViewer = $('#image-viewer');
 let works = [];
 let state = readState(location.href);
 let opener;
+let currentWorkId;
 const external = (url, label) => `<a href="${h(url)}" target="_blank" rel="noopener noreferrer">${label}</a>`;
 const imagePath = (work, image) => `./${workDir(work)}/images/preview/${image.file}.svg`;
 const coverPath = work => `./${workDir(work)}/video/cover.jpg`;
@@ -59,27 +60,47 @@ function renderImages(work) {
 }
 
 function showDialog(trigger) {
-  opener = trigger || document.activeElement;
-  if (!viewer.open) viewer.showModal();
+  if (!viewer.open) {
+    opener = trigger || document.activeElement;
+    viewer.showModal();
+  }
   viewer.scrollTop = 0;
 }
 
 function showWork(work, trigger) {
+  $('.player')?.pause();
+  currentWorkId = work.id;
+  const selected = selectWorks(works, state);
+  const index = selected.findIndex(item => item.id === work.id);
+  $('#viewer-position').textContent = `${index < 0 ? '—' : index + 1} / ${selected.length}`;
+  $('#viewer-position').title = index < 0 ? '不在当前筛选结果中' : '';
+  for (const [selector, direction, label] of [['#previous-work', -1, '上一条'], ['#next-work', 1, '下一条']]) {
+    const adjacent = adjacentWork(works, state, work.id, direction);
+    $(selector).disabled = !adjacent;
+    $(selector).title = adjacent ? `${label}：${adjacent.title}` : '当前列表没有其他影片';
+  }
   $('#viewer-label').textContent = `${workLabel(work)} / DESIGN STYLE`;
-  $('#viewer-content').innerHTML = `
+  $('#viewer-media').innerHTML = `
     <video class="player" controls playsinline preload="metadata" poster="${h(coverPath(work))}" src="${videoUrl(work)}"></video>
-    <p class="player-error" hidden>暂时无法加载视频。可以${external(releaseUrl(work), '前往本仓库 Release 观看或下载 ↗')}。</p>
+    <p class="player-error" hidden>暂时无法加载视频。可以${external(releaseUrl(work), '前往本仓库 Release 观看或下载 ↗')}。</p>`;
+  $('#viewer-content').innerHTML = `
     <div class="viewer-details"><div><h2 id="viewer-title">${h(work.title)} · ${h(work.titleEn)}</h2><p>${h(work.description)}</p></div></div>
     <div class="work-links" style="margin-top:20px">${links(work)}</div>
     ${renderImages(work)}`;
   const player = $('.player');
-  player.addEventListener('error', () => { $('.player-error').hidden = false; });
+  const playerError = $('.player-error');
+  player.addEventListener('error', () => { playerError.hidden = false; });
   const url = new URL(location.href);
   url.hash = `work-${work.id}`;
   history.replaceState(null, '', url);
   showDialog(trigger);
   // Only an explicit click starts playback; deep links open paused.
   if (trigger) player.play().catch(() => {});
+}
+
+function navigateWork(direction, trigger) {
+  const work = adjacentWork(works, state, currentWorkId, direction);
+  if (work) showWork(work, trigger);
 }
 
 function showImage(work, index) {
@@ -100,13 +121,17 @@ imageViewer.addEventListener('click', event => {
 });
 
 $('#close').addEventListener('click', () => viewer.close());
+$('#previous-work').addEventListener('click', event => navigateWork(-1, event.currentTarget));
+$('#next-work').addEventListener('click', event => navigateWork(1, event.currentTarget));
 viewer.addEventListener('click', event => {
   const rect = viewer.getBoundingClientRect();
   if (event.target === viewer && (event.clientX < rect.left || event.clientX > rect.right || event.clientY < rect.top || event.clientY > rect.bottom)) viewer.close();
 });
 viewer.addEventListener('close', () => {
   $('.player')?.pause();
+  $('#viewer-media').replaceChildren();
   $('#viewer-content').replaceChildren();
+  currentWorkId = undefined;
   const url = new URL(location.href); url.hash = ''; history.replaceState(null, '', url);
   if (opener?.isConnected) opener.focus();
 });
@@ -131,10 +156,15 @@ $('#viewer-content').addEventListener('click', event => {
   if (button) showImage(works.find(work => work.id === button.dataset.work), Number(button.dataset.image));
 });
 document.addEventListener('keydown', event => {
+  if (viewer.open && !imageViewer.open && ['ArrowLeft', 'ArrowRight'].includes(event.key) && !event.defaultPrevented && !event.isComposing && !event.target.closest('video, input, textarea, select, [contenteditable]') && !event.metaKey && !event.ctrlKey && !event.altKey && !event.shiftKey && !document.fullscreenElement && !document.pictureInPictureElement) {
+    event.preventDefault();
+    event.stopPropagation();
+    if (!event.repeat) navigateWork(event.key === 'ArrowLeft' ? -1 : 1, document.activeElement);
+  }
   if (event.key === '/' && !viewer.open && !['INPUT', 'TEXTAREA', 'SELECT'].includes(document.activeElement.tagName) && !event.metaKey && !event.ctrlKey && !event.altKey) {
     event.preventDefault(); $('#search').focus();
   }
-});
+}, true);
 function restoreNavigation() {
   state = {...readState(location.href), category: 'all', sort: 'latest'};
   if (state.type !== 'all' && !works.some(work => typeOf(work) === state.type)) state.type = 'all';
