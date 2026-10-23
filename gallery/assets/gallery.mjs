@@ -1,6 +1,6 @@
 import {REPO, TYPES, typeOf, workDir, sourceUrl, releaseUrl, videoUrl, formatTime, escapeHtml as h, selectWorks, adjacentWork, readState} from './model.mjs';
 import {resolveLanguage, languageUrl, text, content, documentHref} from './i18n.mjs';
-import {renderLanguageMenu, mountLanguageMenus, closeLanguageMenus} from './language-menu.mjs';
+import {renderLanguageToggle} from './language-toggle.mjs';
 
 const $ = selector => document.querySelector(selector);
 const viewer = $('#viewer');
@@ -10,8 +10,7 @@ let state = readState(location.href);
 let opener;
 let currentWorkId;
 let catalogFailed = false;
-const storedLanguage = () => {try {return localStorage.getItem('design-style-language');} catch {return null;}};
-let language = resolveLanguage(location.href, {stored:storedLanguage(), languages:navigator.languages});
+let language = resolveLanguage(location.href);
 const t = (key, values) => text(language, key, values);
 const title = work => content(work, 'title', language);
 const workTypeText = (work, suffix = '') => t(`${typeOf(work)}${suffix}`);
@@ -26,7 +25,6 @@ const links = work => [
 ].join('');
 
 function applyLanguage() {
-  closeLanguageMenus();
   document.documentElement.lang = language === 'zh' ? 'zh-CN' : 'en';
   document.title = t('pageTitle');
   $('meta[name="description"]').content = t('description');
@@ -34,10 +32,8 @@ function applyLanguage() {
   for (const attribute of ['aria-label', 'placeholder']) {
     for (const node of document.querySelectorAll(`[data-i18n-${attribute}]`)) node.setAttribute(attribute, t(node.getAttribute(`data-i18n-${attribute}`)));
   }
-  for (const node of document.querySelectorAll('[data-language-control]')) node.innerHTML = renderLanguageMenu({language, id:node.dataset.languageControl});
-  mountLanguageMenus();
+  for (const node of document.querySelectorAll('[data-language-control]')) node.innerHTML = renderLanguageToggle({language, id:node.dataset.languageControl});
   if (catalogFailed) $('#loading').innerHTML = t('loadError') + external(REPO, t('githubBrowse'));
-  try {localStorage.setItem('design-style-language', language);} catch { /* Language links still work without storage. */ }
 }
 applyLanguage();
 
@@ -73,7 +69,6 @@ function render() {
     </article>`).join('');
   // Language changes replace cards; keep the dialog's original return target alive.
   if (opener?.dataset.play) opener = [...document.querySelectorAll('[data-play]')].find(node => node.dataset.play === opener.dataset.play);
-  mountLanguageMenus();
 }
 
 function renderImages(work) {
@@ -110,14 +105,12 @@ function renderWorkText(work) {
   $('.player-error').innerHTML = t('playbackError') + external(releaseUrl(work), t('release'));
   $('#viewer-content').innerHTML = `
     <div class="viewer-details"><div><h2 id="viewer-title">${h(title(work))}${language === 'zh' ? ` · ${h(work.titleEn)}` : ''}</h2><p>${h(content(work, 'description', language))}</p></div></div>
-    <div class="work-links" style="margin-top:20px">${links(work)}<div data-language-control="viewer-language">${renderLanguageMenu({language,id:'viewer-language'})}</div></div>
+    <div class="work-links" style="margin-top:20px">${links(work)}<div data-language-control="viewer-language">${renderLanguageToggle({language,id:'viewer-language'})}</div></div>
     <p class="media-language-note">${t('mediaNote')}</p>
     ${renderImages(work)}`;
-  mountLanguageMenus();
 }
 
 function showWork(work, trigger) {
-  closeLanguageMenus();
   $('.player')?.pause();
   currentWorkId = work.id;
   $('#viewer-media').innerHTML = `<video class="player" controls playsinline preload="metadata" poster="${h(coverPath(work))}" src="${videoUrl(work)}"></video><p class="player-error" hidden></p>`;
@@ -194,7 +187,7 @@ $('#viewer-content').addEventListener('click', event => {
 document.addEventListener('click', event => {
   const button = event.target.closest('[data-language]');
   if (!button || !['zh','en'].includes(button.dataset.language)) return;
-  const controlId = button.closest('.language-menu').id;
+  const controlId = button.closest('.language-control').id;
   language = button.dataset.language;
   history.replaceState(null, '', languageUrl(location.href, language));
   applyLanguage();
@@ -214,10 +207,9 @@ document.addEventListener('keydown', event => {
     event.preventDefault(); $('#search').focus();
   }
 }, true);
-function restoreNavigation(event) {
-  if (event) closeLanguageMenus();
-  const nextLanguage = resolveLanguage(location.href, {stored:storedLanguage(), languages:navigator.languages});
-  // Catalog loading must not replace a language menu the visitor already opened.
+function restoreNavigation() {
+  const nextLanguage = resolveLanguage(location.href);
+  // Keep the language action focused when the catalog finishes loading.
   if (language !== nextLanguage) {
     language = nextLanguage;
     applyLanguage();
