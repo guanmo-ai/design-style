@@ -6,6 +6,8 @@
 
 网站提供「中文 / EN」切换。语言优先级为 URL `?lang=zh` / `?lang=en`、已保存的选择、浏览器首选语言（中文用中文，其他语言用英文）。切换保留当前搜索、系列筛选与作品直达链接；详情内切换语言不重建播放器。`localStorage` 不可用时仍可通过语言链接浏览。
 
+首页、影片详情与阅读页共用 `language-menu.mjs` 的单入口菜单：Lucide 地球图标、当前语言与展开箭头；选项显示语言本名、辅助译名和当前选中标记。入口至少 44px 高；弹层使用浏览器 Popover 顶层以避免被影片对话框裁切，根据视口边缘定位，必要时向上展开。支持方向键、Home / End、Enter / Space 选择、Escape 返回入口、Tab 继续页面操作及点击外部关闭；减少动态效果偏好下停用展开动画。图标来源与许可证见 `gallery/NOTICE.md`。
+
 界面文案集中在 `gallery/assets/i18n.mjs`；每期在 `works.json` 中同时维护 `titleEn`、`descriptionEn`、`categoryEn`、`tagsEn`，以及每张图的 `titleEn` / `kindEn`。搜索同时匹配两种语言。英文内容缺失时目录验证失败。
 
 需要 Node.js 22.12+、已登录的 GitHub CLI。只安装 `gallery/` 内独立的 Markdown 构建依赖，无需安装 Remotion 或重新渲染短片。

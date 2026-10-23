@@ -1,4 +1,5 @@
 import {readState} from './model.mjs';
+import {mountLanguageMenus} from './language-menu.mjs';
 
 const language = document.documentElement.lang === 'en' ? 'en' : 'zh';
 try {localStorage.setItem('design-style-language', language);} catch { /* Static links still carry the language. */ }
@@ -14,3 +15,4 @@ for (const link of document.querySelectorAll('a[data-context], .prose a[href]'))
   if (state.type !== 'all') url.searchParams.set('type', state.type);
   link.href = url.href;
 }
+mountLanguageMenus();

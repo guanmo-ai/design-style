@@ -46,7 +46,9 @@ test('每期英文简介、标签、图片标题和英文阅读文档齐全；�
       assert.match(html, /hreflang="zh-CN"/);
       assert.match(html, /guide\.en\.html/);
       assert.match(html, /process\.en\.html/);
-      assert.ok(!/[\p{Script=Han}]/u.test(html.replace(/<[^>]*>/g,'').replaceAll('中文','')), `${work.id}: English reader contains untranslated text`);
+      // The language picker deliberately names each language in its own script.
+      const translatedText = html.replace(/<[^>]*>/g,'').replaceAll('简体中文','').replaceAll('英语','').replaceAll('中文','');
+      assert.ok(!/[\p{Script=Han}]/u.test(translatedText), `${work.id}: English reader contains untranslated text`);
     }
   }
   const missing = structuredClone(works);
