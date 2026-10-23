@@ -7,6 +7,11 @@
 <table>
   <tr>
     <td align="center" valign="top" width="33%">
+      <a href="https://guanmo-ai.github.io/design-style/?lang=zh#work-006-y2k"><img src="styles/006-y2k/video/cover.jpg" width="240" alt="千禧未来主义 视频封面" /></a><br />
+      <a href="https://guanmo-ai.github.io/design-style/?lang=zh#work-006-y2k"><b>千禧未来主义</b></a><br />
+      <sub>Y2K Futurism · 18 秒</sub>
+    </td>
+    <td align="center" valign="top" width="33%">
       <a href="https://guanmo-ai.github.io/design-style/?lang=zh#work-005-pop-art"><img src="styles/005-pop-art/video/cover.jpg" width="240" alt="波普艺术 视频封面" /></a><br />
       <a href="https://guanmo-ai.github.io/design-style/?lang=zh#work-005-pop-art"><b>波普艺术</b></a><br />
       <sub>Pop Art · 18 秒</sub>
@@ -16,13 +21,13 @@
       <a href="https://guanmo-ai.github.io/design-style/?lang=zh#work-004-memphis"><b>孟菲斯</b></a><br />
       <sub>Memphis · 15 秒</sub>
     </td>
+  </tr>
+  <tr>
     <td align="center" valign="top" width="33%">
       <a href="https://guanmo-ai.github.io/design-style/?lang=zh#work-003-constructivism"><img src="styles/003-constructivism/video/cover.jpg" width="240" alt="构成主义 视频封面" /></a><br />
       <a href="https://guanmo-ai.github.io/design-style/?lang=zh#work-003-constructivism"><b>构成主义</b></a><br />
       <sub>Constructivism · 15 秒</sub>
     </td>
-  </tr>
-  <tr>
     <td align="center" valign="top" width="33%">
       <a href="https://guanmo-ai.github.io/design-style/?lang=zh#work-02-masonry"><img src="layouts/02-masonry/video/cover.jpg" width="240" alt="瀑布流布局 视频封面" /></a><br />
       <a href="https://guanmo-ai.github.io/design-style/?lang=zh#work-02-masonry"><b>瀑布流布局</b></a><br />
@@ -33,13 +38,13 @@
       <a href="https://guanmo-ai.github.io/design-style/?lang=zh#work-002-swiss-style"><b>瑞士国际主义</b></a><br />
       <sub>Swiss Style · 15 秒</sub>
     </td>
+  </tr>
+  <tr>
     <td align="center" valign="top" width="33%">
       <a href="https://guanmo-ai.github.io/design-style/?lang=zh#work-01-bento-grid"><img src="layouts/01-bento-grid/video/cover.jpg" width="240" alt="便当盒布局 视频封面" /></a><br />
       <a href="https://guanmo-ai.github.io/design-style/?lang=zh#work-01-bento-grid"><b>便当盒布局</b></a><br />
       <sub>Bento Grid · 15 秒</sub>
     </td>
-  </tr>
-  <tr>
     <td align="center" valign="top" width="33%">
       <a href="https://guanmo-ai.github.io/design-style/?lang=zh#work-001-bauhaus"><img src="styles/001-bauhaus/video/cover.jpg" width="240" alt="包豪斯 视频封面" /></a><br />
       <a href="https://guanmo-ai.github.io/design-style/?lang=zh#work-001-bauhaus"><b>包豪斯</b></a><br />
@@ -92,6 +97,7 @@ by 观默 [@guanmo_ai](https://x.com/guanmo_ai)
 | **003** | [**构成主义 Constructivism**](styles/003-constructivism) | 1917—1932 | 一条斜线、一块红、一个大声的字：把轴转 30°，版面就开始往前冲 | [🎬 视频](https://github.com/guanmo-ai/design-style/releases/tag/day-03) · [🛠 过程](styles/003-constructivism/PROCESS.md) · [🧰 从 0 到 1](styles/003-constructivism/MAKING.md) |
 | **004** | [**孟菲斯 Memphis**](styles/004-memphis) | 1980—1988 | 一块一色、描一圈黑边、再歪一点：让普通的东西，看起来“好玩” | [🎬 视频](https://github.com/guanmo-ai/design-style/releases/tag/day-04) · [🛠 过程](styles/004-memphis/PROCESS.md) · [🧰 从 0 到 1](styles/004-memphis/MAKING.md) |
 | **005** | [**波普艺术 Pop Art**](styles/005-pop-art) | 1956—1970 | 网点代替渐变、粗黑线圈住每块颜色：普通的东西，也能上墙 | [🎬 视频](https://github.com/guanmo-ai/design-style/releases/tag/day-05) · [🛠 过程](styles/005-pop-art/PROCESS.md) · [🧰 从 0 到 1](styles/005-pop-art/MAKING.md) |
+| **006** | [**千禧未来主义 Y2K**](styles/006-y2k) | 1997—2004 | 铬、果冻和半透明塑料：把对 2000 年的期待做进屏幕——未来，正在加载 | [🎬 视频](https://github.com/guanmo-ai/design-style/releases/tag/day-06) · [🛠 过程](styles/006-y2k/PROCESS.md) · [🧰 从 0 到 1](styles/006-y2k/MAKING.md) |
 
 ### 布局方式 · Layout
 
@@ -124,7 +130,7 @@ npm run gallery:serve
 ```bash
 git clone https://github.com/guanmo-ai/design-style.git && cd design-style
 npm ci
-npm run fonts                  # 下载开源字体到 public/fonts（Jost / JetBrains Mono / TeX Gyre Heros / Oswald / Fredoka / Bangers / Inter / Geist Mono / Selawik / Instrument Serif / Noto Sans SC）
+npm run fonts                  # 下载开源字体到 public/fonts（Jost / JetBrains Mono / TeX Gyre Heros / Oswald / Fredoka / Bangers / Unbounded / Michroma / Silkscreen / Inter / Geist Mono / Selawik / Instrument Serif / Noto Sans SC）
 pip install numpy fonttools
 
 npm run studio                 # 在浏览器里逐帧预览、改参数
@@ -139,6 +145,8 @@ npm run render:004             # 风格 004：生成配乐 → 渲染 out/004-me
 npm run images:004             # 风格 004：生成 4 张风格图 → preview SVG + 2x PNG
 npm run render:005             # 风格 005：生成配乐 → 渲染 out/005-pop-art-master.mp4（带运动模糊，18 秒）
 npm run images:005             # 风格 005：生成 4 张风格图 → preview SVG + 2x PNG
+npm run render:006             # 风格 006：生成配乐 → 渲染 out/006-y2k-master.mp4（WebGL2 材质，用 SwiftShader 软渲染，较慢）
+npm run images:006             # 风格 006：生成 4 张风格图 → 用视频同款着色器渲染材质图层 → preview SVG + 2x PNG
 npm run render:L01             # 布局 01：生成配乐 → 渲染 out/01-bento-grid-master.mp4
 npm run images:L01             # 布局 01：生成 4 张布局图 → preview SVG + 2x PNG
 npm run render:L02             # 布局 02：生成配乐 → 渲染 out/02-masonry-master.mp4
@@ -172,6 +180,7 @@ design-style/
 │  └─ 003-constructivism/  # 同上，另有 MAKING.md（从 0 到 1 的工具与流程）；短片：全片只有两条轴（−30° / 60°），形状接力换幕
 │  └─ 004-memphis/         # 同上，含 MAKING.md；短片：每样东西都是“糖果色 + 黑描边 + 硬投影”的积木，掉下来、压扁、回弹，颜色接力换幕
 │  └─ 005-pop-art/         # 同上，含 MAKING.md；短片：一切都像印出来的——网点代替渐变、粗黑线 + 硬投影，网点长满接力换幕；整体放慢 1.2 倍到 18 秒
+│  └─ 006-y2k/             # 同上，含 MAKING.md；短片：开机 → 铬字 → 果冻 iMac → Aqua → 像素表情 → 千年虫 → 今天；铬、果冻、泡泡、玻璃由 WebGL2 着色器逐帧算出（video/material.js），18 秒
 ├─ layouts/                # 布局：结构同 styles/，期号两位
 │  └─ 01-bento-grid/
 │     ├─ README.md         # 布局指南
@@ -199,4 +208,4 @@ design-style/
 ## 授权
 
 代码欢迎学习和改造；转发视频和图片请注明出处 **观默 @guanmo_ai**。
-字体 Jost、JetBrains Mono、Inter、Geist Mono、Selawik、Instrument Serif、Noto Sans SC 均为 SIL Open Font License 1.1；TeX Gyre Heros 为 GUST Font License。
+字体 Jost、JetBrains Mono、Inter、Geist Mono、Selawik、Instrument Serif、Noto Sans SC、Oswald、Fredoka、Bangers、Unbounded、Michroma、Silkscreen 均为 SIL Open Font License 1.1；TeX Gyre Heros 为 GUST Font License。
