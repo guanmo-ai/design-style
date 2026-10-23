@@ -1,0 +1,18 @@
+<!doctype html>
+<!-- 006 · 图片用的材质层：读 layers/<name>.json，用视频同一份 material.js 渲染，背景透明 -->
+<html><head><meta charset="utf-8"><style>
+@font-face{font-family:'Unbounded';src:url('../../../public/fonts/Unbounded.ttf');font-weight:200 900}
+@font-face{font-family:'Michroma';src:url('../../../public/fonts/Michroma-Regular.ttf')}
+@font-face{font-family:'Noto Sans SC';src:url('../../../public/fonts/NotoSansSC-Black.otf');font-weight:900}
+html,body{margin:0;background:transparent}canvas{display:block}
+</style></head><body><canvas id="c"></canvas>
+<script src="../video/material.js"></script><script>
+(async () => {
+  const name = new URLSearchParams(location.search).get('c');
+  const cfg = await (await fetch(`layers/${name}.json`)).json();
+  const cv = document.getElementById('c');
+  cv.style.width = cfg.w + 'px'; cv.style.height = cfg.h + 'px';
+  await Y2K.render(cv, cfg);
+  window.__done = true;
+})().catch((e) => { console.error(e); window.__done = 'error'; });
+</script></body></html>
