@@ -4,6 +4,8 @@
 
 ## 本地预览
 
+首页进入视口的卡片默认静音循环播放，离屏、页面切到后台或打开作品详情时暂停；离屏或手动暂停时释放视频资源。工具栏提供「暂停预览 / 播放预览」，加载失败时保留封面和详情入口。系统启用减少动态效果或节省流量时默认暂停，仍可主动开启预览。
+
 网站未指定语言时默认中文，不读取浏览器语言或本机历史选择；显式 `?lang=zh` / `?lang=en` 链接保留其语言。中文页面显示「English」，一次点击切到英文；英文页面显示「中文」，一次点击切回。切换保留当前搜索、系列筛选与作品直达链接；详情内切换语言不重建播放器。
 
 首页、影片详情与阅读页共用 `language-toggle.mjs` 的直接切换入口：Lucide 地球图标与目标语言名称，无需展开菜单。入口至少 44px 高；首页与详情使用原生按钮，阅读页使用直达另一语言的原生链接，支持键盘激活及浏览器链接操作。图标来源与许可证见 `gallery/NOTICE.md`。
@@ -42,6 +44,8 @@ npm run gallery:check   # 构建后检查发布文件、Pages 子路径链接、
 
 ## 添加下一期
 
+`gallery/data/works.json` 只登记已有 Release 成片的作品。尚未完成的登记保存在 `gallery/data/pending/<作品 ID>.json`，不参与同步、构建、README 视频预览或站点发布，原作品源码继续保留在 `styles/` 或 `layouts/`。恢复发布前先补齐 Release 视频，重新核对 SHA-256 和真实发布时间，再将条目移回 `works.json`。当前 `006-y2k` 因缺少 `day-06` 的成片暂存于此。
+
 1. 完成本期目录：风格为 `styles/NNN-name/`（三位期号），布局为 `layouts/NN-name/`（两位期号）。内含封面 `video/cover.jpg`、风格图或布局图 `images/preview/*.svg` 及对应源文件、中英文 `README.md` / `README.en.md`、`PROCESS.md` / `PROCESS.en.md`、`tokens.json`、`process/timeline.json`。
 2. 在本仓库 Release 发布成片。视频名与目录名一致：风格 `NNN-name.mp4`，布局 `NN-name.mp4`；Release tag 现有 `day-01`（风格 001）与 `layout-01`（布局 01）。
 3. 向 `gallery/data/works.json` 添加条目，填写类型 `type`（`style` 或 `layout`，缺省按 `style`）、期号、标题、分类、简介、标签、发布日期、Release tag、视频文件名、SHA-256 与四张图的信息。SHA-256 可由 `gh release view <tag> --repo guanmo-ai/design-style --json assets` 返回的 digest 核对。
@@ -53,4 +57,4 @@ npm run gallery:check   # 构建后检查发布文件、Pages 子路径链接、
 
 ## 复用范围
 
-仅复用 Awesome AI Motion 的视觉基础和字体，许可见 `gallery/NOTICE.md`。没有复制其案例库、采集流程、本地管理接口和发布配置。原 Remotion 项目、渲染脚本和媒体源文件保持独立。
+复用 Awesome AI Motion 的视觉基础、字体与视口内静音循环预览方式，许可见 `gallery/NOTICE.md`。没有复制其案例库、采集流程、本地管理接口和发布配置。原 Remotion 项目、渲染脚本和媒体源文件保持独立。

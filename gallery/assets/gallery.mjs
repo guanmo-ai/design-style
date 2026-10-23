@@ -24,6 +24,97 @@ const links = work => [
   external(sourceUrl(work, 'video'), t('source'))
 ].join('');
 
+const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+let previewsEnabled = !reducedMotion.matches && !navigator.connection?.saveData;
+const previews = new Map();
+const previewObserver = typeof IntersectionObserver === 'function' ? new IntersectionObserver(entries => {
+  for (const entry of entries) {
+    const preview = previews.get(entry.target);
+    if (!preview) continue;
+    preview.visible = entry.isIntersecting && entry.intersectionRatio >= 0.01;
+    updatePreview(preview);
+  }
+}, {threshold:[0, 0.01]}) : null;
+
+function previewAllowed(preview) {
+  return preview.visible && previewsEnabled && !document.hidden && !viewer.open && !preview.failed;
+}
+
+function stopPreview(preview, release = false) {
+  preview.video.pause();
+  preview.video.hidden = true;
+  preview.cover.classList.remove('preview-playing');
+  if (release && preview.video.hasAttribute('src')) {
+    preview.video.removeAttribute('src');
+    preview.video.load();
+  }
+}
+
+function updatePreview(preview) {
+  if (!previewAllowed(preview)) {
+    stopPreview(preview, !preview.visible || !previewsEnabled || preview.failed);
+    return;
+  }
+  if (preview.pending || !preview.video.paused) return;
+  if (!preview.video.hasAttribute('src')) preview.video.src = preview.url;
+  preview.pending = true;
+  let retry = false;
+  preview.video.play().catch(error => {
+    retry = error.name === 'AbortError';
+    preview.video.hidden = true;
+    preview.cover.classList.remove('preview-playing');
+  }).finally(() => {
+    preview.pending = false;
+    if (retry && previews.get(preview.cover) === preview && previewAllowed(preview)) updatePreview(preview);
+  });
+}
+
+function syncPreviews() {
+  for (const preview of previews.values()) updatePreview(preview);
+}
+
+function renderPreviewControl() {
+  const button = $('#toggle-previews');
+  button.hidden = !previewObserver;
+  button.textContent = t(previewsEnabled ? 'pausePreviews' : 'playPreviews');
+  button.setAttribute('aria-pressed', String(previewsEnabled));
+}
+
+function addPreview(cover, work) {
+  if (!previewObserver) return;
+  const video = document.createElement('video');
+  video.className = 'card-preview';
+  video.muted = video.defaultMuted = video.loop = video.playsInline = true;
+  video.preload = 'none';
+  video.hidden = true;
+  video.tabIndex = -1;
+  video.setAttribute('aria-hidden', 'true');
+  const preview = {cover, video, url:videoUrl(work), visible:false, failed:false, pending:false};
+  video.addEventListener('playing', () => {
+    if (previews.get(cover) !== preview || !previewAllowed(preview)) { stopPreview(preview); return; }
+    video.hidden = false;
+    cover.classList.add('preview-playing');
+  });
+  video.addEventListener('error', () => { preview.failed = true; stopPreview(preview, true); });
+  cover.querySelector('img').after(video);
+  previews.set(cover, preview);
+  previewObserver.observe(cover);
+}
+
+$('#toggle-previews').addEventListener('click', () => {
+  previewsEnabled = !previewsEnabled;
+  renderPreviewControl();
+  syncPreviews();
+});
+reducedMotion.addEventListener('change', () => {
+  previewsEnabled = !reducedMotion.matches && !navigator.connection?.saveData;
+  renderPreviewControl();
+  syncPreviews();
+});
+document.addEventListener('visibilitychange', syncPreviews);
+window.addEventListener('pagehide', () => { for (const preview of previews.values()) stopPreview(preview, true); });
+window.addEventListener('pageshow', syncPreviews);
+
 function applyLanguage() {
   document.documentElement.lang = language === 'zh' ? 'zh-CN' : 'en';
   document.title = t('pageTitle');
@@ -33,6 +124,7 @@ function applyLanguage() {
     for (const node of document.querySelectorAll(`[data-i18n-${attribute}]`)) node.setAttribute(attribute, t(node.getAttribute(`data-i18n-${attribute}`)));
   }
   for (const node of document.querySelectorAll('[data-language-control]')) node.innerHTML = renderLanguageToggle({language, id:node.dataset.languageControl});
+  renderPreviewControl();
   if (catalogFailed) $('#loading').innerHTML = t('loadError') + external(REPO, t('githubBrowse'));
 }
 applyLanguage();
@@ -56,6 +148,9 @@ function render() {
   $('#total-count').textContent = String(works.length).padStart(2, '0');
   $('#result-count').textContent = t('resultCount', {total:works.length, count:selected.length});
   $('#empty').hidden = selected.length !== 0;
+  previewObserver?.disconnect();
+  for (const preview of previews.values()) stopPreview(preview, true);
+  previews.clear();
   $('#works').innerHTML = selected.map(work => `
     <article class="work-card">
       <button type="button" class="card-open" data-play="${h(work.id)}" aria-label="${h(t('view', {title:language === 'zh' ? `${work.title} ${work.titleEn}` : title(work)}))}">
@@ -67,6 +162,9 @@ function render() {
         <span class="card-meta">${h(label(work))} · ${h(content(work, 'category', language))} · ${h(work.years)}</span>
       </button>
     </article>`).join('');
+  for (const button of document.querySelectorAll('#works [data-play]')) {
+    addPreview(button.querySelector('.cover-button'), selected.find(work => work.id === button.dataset.play));
+  }
   // Language changes replace cards; keep the dialog's original return target alive.
   if (opener?.dataset.play) opener = [...document.querySelectorAll('[data-play]')].find(node => node.dataset.play === opener.dataset.play);
 }
@@ -87,6 +185,7 @@ function showDialog(trigger) {
   if (!viewer.open) {
     opener = trigger || document.activeElement;
     viewer.showModal();
+    syncPreviews();
   }
   viewer.scrollTop = 0;
 }
@@ -163,6 +262,7 @@ viewer.addEventListener('close', () => {
   currentWorkId = undefined;
   const url = new URL(location.href); url.hash = ''; history.replaceState(null, '', url);
   if (opener?.isConnected) opener.focus();
+  syncPreviews();
 });
 $('#types').addEventListener('click', event => {
   const button = event.target.closest('[data-type]');

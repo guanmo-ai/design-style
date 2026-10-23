@@ -1,0 +1,64 @@
+{
+  "id": "006-y2k",
+  "type": "style",
+  "number": "006",
+  "title": "千禧未来主义",
+  "titleEn": "Y2K Futurism",
+  "years": "1997—2004",
+  "category": "数字未来",
+  "description": "世纪之交，人们把对“2000 年”的期待做进了电脑、手机和屏幕。一支 18 秒短片，铬、果冻、泡泡和玻璃都由着色器逐帧算出：从开机画面、Wipeout 的铬字、果冻色 iMac G3、Mac OS X 的 Aqua、i-mode 的 176 个像素表情，到千年虫倒计时，一路加载到今天的 Liquid Glass。",
+  "tags": [
+    "铬",
+    "果冻",
+    "半透明塑料",
+    "Aqua",
+    "像素字",
+    "iMac G3",
+    "千年虫"
+  ],
+  "publishedAt": "2026-10-23T14:35:29Z",
+  "release": "day-06",
+  "asset": "006-y2k.mp4",
+  "sha256": "1ad5754fe9d117d81a833123a0a548f47ece5c735adca5ca1e2856bf8474e1c8",
+  "images": [
+    {
+      "file": "poster",
+      "title": "一张海报，认识千禧未来主义",
+      "kind": "风格海报",
+      "titleEn": "Y2K Futurism at a glance",
+      "kindEn": "Style poster"
+    },
+    {
+      "file": "cheatsheet",
+      "title": "四种材质、铬的色标、色板、字体、界面零件与五条规则",
+      "kind": "风格速查",
+      "titleEn": "Four materials, chrome stops, palette, typography, UI parts, and five rules",
+      "kindEn": "Quick reference"
+    },
+    {
+      "file": "app-ui",
+      "title": "如果千禧年来做 App",
+      "kind": "界面应用",
+      "titleEn": "Y2K in an app",
+      "kindEn": "UI application"
+    },
+    {
+      "file": "steps",
+      "title": "一张普通海报，四步改成 Y2K",
+      "kind": "改造教程",
+      "titleEn": "Four steps from a plain poster to Y2K",
+      "kindEn": "Poster tutorial"
+    }
+  ],
+  "categoryEn": "Digital futures",
+  "descriptionEn": "At the turn of the millennium, hopes for the year 2000 were built into computers, phones, and screens. An 18-second film in which chrome, jelly, bubbles, and glass are lit frame by frame by a shader: from a boot screen, wide chrome lettering, the translucent iMac G3, Aqua, and 176 pixel emoji to the millennium bug countdown and today’s Liquid Glass.",
+  "tagsEn": [
+    "chrome",
+    "jelly",
+    "translucent plastic",
+    "Aqua",
+    "pixel type",
+    "iMac G3",
+    "millennium bug"
+  ]
+}
