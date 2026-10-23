@@ -1,6 +1,6 @@
 # 画廊代码与素材来源
 
-网页参考 [Awesome AI Motion](https://github.com/guanmo-ai/awesome-ai-motion) 的暖纸色视觉、画廊布局、搜索筛选及弹窗观看方式，改写为 Design Style 自有作品目录。沿用其 CSS 基础约定与本地字体，相关 MIT 许可保留于 `LICENSE`。
+网页参考 [Awesome AI Motion](https://github.com/guanmo-ai/awesome-ai-motion) 的暖纸色视觉、画廊布局、视口内静音循环预览、搜索筛选及弹窗观看方式，改写为 Design Style 自有作品目录。沿用其 CSS 基础约定与本地字体，相关 MIT 许可保留于 `LICENSE`。
 
 - 字体 DM Sans、Newsreader 来自 Awesome AI Motion 的字体目录，SIL OFL 许可文件保留于 `assets/fonts/`。
 - 语言切换入口的 globe 图标来自 [Lucide](https://github.com/lucide-icons/lucide/tree/main/icons)，保留原始 SVG；ISC 及其中继承 Feather 图标的 MIT 许可全文位于 `assets/icons/LICENSE-Lucide.txt`。未引入浏览器图标库运行时。

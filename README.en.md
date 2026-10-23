@@ -19,11 +19,6 @@ By Guanmo [@guanmo_ai](https://x.com/guanmo_ai)
 <table>
   <tr>
     <td align="center" valign="top" width="33%">
-      <a href="https://guanmo-ai.github.io/design-style/?lang=en#work-006-y2k"><img src="styles/006-y2k/video/cover.jpg" width="240" alt="Y2K Futurism film cover" /></a><br />
-      <a href="https://guanmo-ai.github.io/design-style/?lang=en#work-006-y2k"><b>Y2K Futurism</b></a><br />
-      <sub>18 seconds</sub>
-    </td>
-    <td align="center" valign="top" width="33%">
       <a href="https://guanmo-ai.github.io/design-style/?lang=en#work-005-pop-art"><img src="styles/005-pop-art/video/cover.jpg" width="240" alt="Pop Art film cover" /></a><br />
       <a href="https://guanmo-ai.github.io/design-style/?lang=en#work-005-pop-art"><b>Pop Art</b></a><br />
       <sub>18 seconds</sub>
@@ -33,13 +28,13 @@ By Guanmo [@guanmo_ai](https://x.com/guanmo_ai)
       <a href="https://guanmo-ai.github.io/design-style/?lang=en#work-004-memphis"><b>Memphis</b></a><br />
       <sub>15 seconds</sub>
     </td>
-  </tr>
-  <tr>
     <td align="center" valign="top" width="33%">
       <a href="https://guanmo-ai.github.io/design-style/?lang=en#work-003-constructivism"><img src="styles/003-constructivism/video/cover.jpg" width="240" alt="Constructivism film cover" /></a><br />
       <a href="https://guanmo-ai.github.io/design-style/?lang=en#work-003-constructivism"><b>Constructivism</b></a><br />
       <sub>15 seconds</sub>
     </td>
+  </tr>
+  <tr>
     <td align="center" valign="top" width="33%">
       <a href="https://guanmo-ai.github.io/design-style/?lang=en#work-02-masonry"><img src="layouts/02-masonry/video/cover.jpg" width="240" alt="Masonry film cover" /></a><br />
       <a href="https://guanmo-ai.github.io/design-style/?lang=en#work-02-masonry"><b>Masonry</b></a><br />
@@ -50,13 +45,13 @@ By Guanmo [@guanmo_ai](https://x.com/guanmo_ai)
       <a href="https://guanmo-ai.github.io/design-style/?lang=en#work-002-swiss-style"><b>Swiss Style</b></a><br />
       <sub>15 seconds</sub>
     </td>
-  </tr>
-  <tr>
     <td align="center" valign="top" width="33%">
       <a href="https://guanmo-ai.github.io/design-style/?lang=en#work-01-bento-grid"><img src="layouts/01-bento-grid/video/cover.jpg" width="240" alt="Bento Grid film cover" /></a><br />
       <a href="https://guanmo-ai.github.io/design-style/?lang=en#work-01-bento-grid"><b>Bento Grid</b></a><br />
       <sub>15 seconds</sub>
     </td>
+  </tr>
+  <tr>
     <td align="center" valign="top" width="33%">
       <a href="https://guanmo-ai.github.io/design-style/?lang=en#work-001-bauhaus"><img src="styles/001-bauhaus/video/cover.jpg" width="240" alt="Bauhaus film cover" /></a><br />
       <a href="https://guanmo-ai.github.io/design-style/?lang=en#work-001-bauhaus"><b>Bauhaus</b></a><br />
@@ -92,7 +87,7 @@ The gallery interface, descriptions, search, and reading pages support **Chinese
 | 003 | [Constructivism](styles/003-constructivism/README.en.md) | [Production overview](styles/003-constructivism/PROCESS.en.md) | 1917–1932 |
 | 004 | [Memphis](styles/004-memphis/README.en.md) | [Production overview](styles/004-memphis/PROCESS.en.md) | 1980–1988 |
 | 005 | [Pop Art](styles/005-pop-art/README.en.md) | [Production overview](styles/005-pop-art/PROCESS.en.md) | 1956–1970 |
-| 006 | [Y2K Futurism](styles/006-y2k/README.en.md) | [Production overview](styles/006-y2k/PROCESS.en.md) | 1997–2004 |
+| 006 | [Y2K Futurism — video pending, not yet published](styles/006-y2k/README.en.md) | [Production overview](styles/006-y2k/PROCESS.en.md) | 1997–2004 |
 
 ### Layouts
 
