@@ -1,9 +1,9 @@
 """
 Design Style · 风格 010 · Paper Cut 剪纸层叠 —— 配乐与音效（纯代码合成，无外部音源）
 
-20 秒 · 120 BPM（1 拍 = 0.5 秒 = 30 帧）· G 大调
-暖的纸工艺：软垫、卡林巴式玻璃钟、轻底鼓 + 沙锤；音效是揭纸、剪刀、纸张摩擦。
-和弦（每章）：G（开场 5 拍）| Em（编辑 6）| C（App 6）| D（片头 6）| G–Em（规则 8）| C–D（常见坑 5）| G（片尾 4）
+24 秒 · 120 BPM（1 拍 = 0.5 秒 = 30 帧）· G 大调
+暖的纸工艺：软垫、卡林巴式玻璃钟、轻底鼓 + 沙锤；音效是展开、撕开、揭层、剪刀、落纸。
+和弦：C 民俗 6 · G 几何 7 · Em 纸板 6 · C 剪影 6 · G–Em 毛边 7 · D 字体 7 · G 带走 9
 时间点与 video/timeline.ts 对齐（帧 / 60 = 秒）。
 
 用法：python3 styles/010-paper-cut/audio/make_music.py
@@ -18,7 +18,7 @@ import wave
 import numpy as np
 
 SR = 48000
-DUR = 20.0
+DUR = 24.0
 N = int(SR * DUR)
 BEAT = 0.5
 rng = np.random.default_rng(2010)
@@ -165,55 +165,46 @@ CH = {
     'C': [36, [64, 67, 72, 76]],
     'D': [38, [66, 69, 74, 78]],
 }
-# 40 beats
-PLAN = (
-    ['G'] * 5
-    + ['Em'] * 6
-    + ['C'] * 6
-    + ['D'] * 6
-    + ['G'] * 4
-    + ['Em'] * 4
-    + ['C'] * 3
-    + ['D'] * 2
-    + ['G'] * 4
-)
+# 48 beats
+PLAN = ['C'] * 6 + ['G'] * 7 + ['Em'] * 6 + ['C'] * 6 + ['G'] * 4 + ['Em'] * 3 + ['D'] * 7 + ['G'] * 9
+NB = len(PLAN)
 
-for b0 in range(0, 40, 2):
-    c = PLAN[min(b0, 39)]
+for b0 in range(0, NB, 2):
+    c = PLAN[min(b0, NB - 1)]
     pad = pad_tone(CH[c][1], 2 * BEAT + 0.3)
     g = 0.13 if b0 >= 2 else 0.08
     for ch in range(2):
         place(lp(pad[ch], 3200 if b0 >= 4 else 1800), b0 * BEAT, g, -1 if ch == 0 else 1, 0.4, PUMP)
 
-for b in range(1, 40):
-    r = CH[PLAN[min(b, 39)]][0]
+for b in range(1, NB):
+    r = CH[PLAN[min(b, NB - 1)]][0]
     s = sine(note(r), 0.28, 0.18) * 0.7
     place(lp(s, 700), (b + 0.5) * BEAT, 0.28, 0, 0, PUMP)
 
-for b in range(0, 40):
+for b in range(0, NB):
     t = b * BEAT
-    if 1 <= b < 39:
+    if 1 <= b < NB - 1:
         place(kick(), t, 0.72)
-    if b >= 2 and b < 39:
+    if b >= 2 and b < NB - 1:
         place(hat(), t + 0.25, 0.12, 0.3, 0.08)
-    if b >= 4 and b < 39:
+    if b >= 4 and b < NB - 1:
         for s in range(4):
             place(shaker(), t + s * BEAT / 4, 0.08 if s % 2 else 0.05, -0.25, 0)
 
 duck = np.ones(N)
-for b in range(1, 39):
+for b in range(1, NB - 1):
     i = int(b * BEAT * SR)
     L = int(0.28 * SR)
     duck[i : i + L] = np.minimum(duck[i : i + L], 1 - 0.55 * np.exp(-np.arange(min(L, N - i)) / SR / 0.1))
 PUMP *= duck
 
 MEL = {
-    5: [(0, 79, 0.5), (0.5, 76, 0.5), (1, 74, 1), (2.5, 71, 0.5), (3, 74, 1)],
-    11: [(0, 76, 0.5), (0.5, 79, 0.5), (1, 83, 1), (2.5, 79, 0.5), (3, 76, 1)],
-    17: [(0, 74, 0.5), (0.5, 76, 0.5), (1, 79, 0.5), (1.5, 83, 0.5), (2, 86, 1.2)],
-    23: [(0, 79, 0.5), (0.5, 83, 0.5), (1, 86, 1), (2.5, 83, 0.5), (3, 79, 1)],
-    29: [(0, 74, 0.5), (1, 76, 0.5), (2, 79, 0.5), (3, 83, 1)],
-    35: [(0, 79, 0.5), (0.5, 83, 0.5), (1, 86, 0.5), (1.5, 91, 1.4)],
+    6: [(0, 76, 0.5), (0.5, 79, 0.5), (1, 83, 1), (2.5, 79, 0.5), (3, 76, 1)],
+    13: [(0, 74, 0.5), (0.5, 76, 0.5), (1, 79, 0.5), (1.5, 83, 0.5), (2, 86, 1.2)],
+    20: [(0, 79, 0.5), (0.5, 83, 0.5), (1, 86, 1), (2.5, 83, 0.5), (3, 79, 1)],
+    27: [(0, 74, 0.5), (1, 76, 0.5), (2, 79, 0.5), (3, 83, 1)],
+    34: [(0, 79, 0.5), (0.5, 83, 0.5), (1, 86, 0.5), (1.5, 91, 1.2)],
+    41: [(0, 74, 0.5), (0.5, 79, 0.5), (1, 83, 0.5), (1.5, 86, 1.6)],
 }
 for b0, ph in MEL.items():
     for rb, n, d in ph:
@@ -226,39 +217,49 @@ for k, g in enumerate([0.36, 0.2, 0.1]):
     sh = D * (k + 1)
     dl[k % 2, sh:] += mono[: N - sh] * g
 
-# 开场：六层纸依次落下
-for i, frn in enumerate([8, 20, 32, 44, 56, 68]):
-    sfx(rustle(0.16), fr(frn), 0.22, -0.5 + i * 0.18, 0.2)
-    sfx(kalimba(note(67 + [0, 2, 4, 7, 9, 12][i]), 0.4), fr(frn), 0.08, -0.4 + i * 0.15, 0.2)
-sfx(snip(0.07), fr(34), 0.18, 0.2)
-sfx(whoosh(0.35, 600, 2400), fr(70), 0.16, -0.2, 0.2)
-# 转场 → 编辑
-sfx(whoosh(0.32, 400, 2200), fr(132), 0.2, 0, 0.2)
+# 民俗：展开 + 一圈圈剪孔
+sfx(rustle(0.28), fr(8), 0.2, -0.2, 0.2)
+sfx(whoosh(0.32, 280, 1600), fr(8), 0.12, 0, 0.15)
+for i, frn in enumerate([26, 32, 38, 44, 52, 58, 64, 70, 78, 84, 90, 96]):
+    sfx(snip(0.055), fr(frn), 0.11, -0.4 + (i % 6) * 0.14)
+    sfx(rustle(0.08), fr(frn), 0.08, -0.3 + (i % 6) * 0.1, 0.12)
+# 撕开 → 几何层叠
+sfx(whoosh(0.38, 400, 2400), fr(156), 0.2, 0, 0.22)
+sfx(rustle(0.2), fr(168), 0.18, 0.1, 0.15)
+for i, frn in enumerate([184, 194, 204, 214, 224, 234]):
+    sfx(rustle(0.14), fr(frn), 0.16, -0.45 + i * 0.15, 0.15)
+    sfx(kalimba(note(67 + [0, 2, 4, 7, 9, 12][i]), 0.4), fr(frn), 0.07, -0.4 + i * 0.14, 0.18)
+sfx(snip(0.07), fr(210), 0.16, 0.2)
+# → 立体纸板
+sfx(whoosh(0.3, 350, 2000), fr(366), 0.18, -0.1, 0.2)
 for i in range(6):
-    sfx(rustle(0.12), fr(166 + i * 16), 0.16, -0.4 + i * 0.14, 0.15)
-    sfx(snip(0.05), fr(168 + i * 16), 0.1, -0.3 + i * 0.12)
-# → App
-sfx(whoosh(0.3, 800, 2600), fr(312), 0.18, 0.3, 0.2)
-for i in range(8):
-    sfx(shaker(0.05), fr(372 + i * 12), 0.07, 0.2)
-# → 片头
-sfx(whoosh(0.4, 300, 4000), fr(492), 0.22, 0, 0.25)
-place(kalimba(note(86), 1.2), fr(540), 0.16, 0.1, 0.4, LEAD)
-# 规则五声
-for i, frn in enumerate([708, 750, 792, 834, 876]):
-    sfx(kalimba(note([71, 74, 76, 79, 83][i]), 0.55), fr(frn), 0.14, -0.5 + i * 0.25, 0.3)
-    sfx(rustle(0.1), fr(frn), 0.1, -0.4 + i * 0.2)
-# 常见坑
-for frn in (948, 990, 1032):
-    sfx(snip(0.06), fr(frn), 0.12, 0.1)
-    sfx(kalimba(note(74), 0.35), fr(frn + 22), 0.1, 0.2, 0.2)
-# 片尾
-sfx(whoosh(0.36, 500, 1800), fr(1080), 0.16, 0, 0.2)
+    sfx(rustle(0.11), fr(398 + i * 12), 0.14, -0.4 + i * 0.14, 0.14)
+# → 刀切剪影
+sfx(whoosh(0.22, 1200, 3600), fr(546), 0.16, 0, 0.12)
+sfx(snip(0.08), fr(570), 0.18, 0)
+sfx(rustle(0.1), fr(620), 0.1, -0.2)
+sfx(kalimba(note(74), 0.4), fr(660), 0.1, 0.15, 0.2)
+# → 毛边 / App
+sfx(whoosh(0.36, 500, 2200), fr(726), 0.2, 0.2, 0.2)
+sfx(rustle(0.18), fr(750), 0.16, 0.1, 0.15)
+for i in range(6):
+    sfx(shaker(0.05), fr(790 + i * 14), 0.07, 0.25)
+# → 字体剪纸
+sfx(whoosh(0.34, 300, 3800), fr(936), 0.2, 0, 0.22)
+sfx(snip(0.09), fr(988), 0.2, 0.05)
+place(kalimba(note(86), 1.2), fr(988), 0.14, 0.1, 0.35, LEAD)
+sfx(rustle(0.12), fr(1040), 0.12, 0.2)
+# 带走
+sfx(whoosh(0.3, 450, 1600), fr(1146), 0.14, 0, 0.18)
+for i, frn in enumerate([1178, 1218, 1258]):
+    sfx(rustle(0.12), fr(frn), 0.14, -0.3 + i * 0.25, 0.16)
+    sfx(kalimba(note([71, 76, 83][i]), 0.55), fr(frn), 0.1, -0.3 + i * 0.25, 0.25)
 for k, n in enumerate([67, 71, 74, 79, 83, 86]):
-    place(kalimba(note(n), 1.1), fr(1104) + k * 0.06, 0.12, -0.5 + k * 0.18, 0.4, LEAD)
-end = pad_tone([55, 67, 71, 74, 79], 1.8)
+    place(kalimba(note(n), 1.0), fr(1284) + k * 0.05, 0.1, -0.5 + k * 0.18, 0.35, LEAD)
+sfx(rustle(0.14), fr(1332), 0.12, 0, 0.15)
+end = pad_tone([55, 67, 71, 74, 79], 2.0)
 for ch in range(2):
-    place(lp(end[ch], 2400), fr(1152), 0.2, -1 if ch == 0 else 1, 0.45, PUMP)
+    place(lp(end[ch], 2400), fr(1320), 0.18, -1 if ch == 0 else 1, 0.45, PUMP)
 
 
 def reverb(x, seed, dec=0.8, length=2.4):
@@ -281,7 +282,7 @@ mix = mix.T
 mix /= np.abs(mix).max() + 1e-9
 mix = np.tanh(mix * 1.25) / np.tanh(1.25)
 fade = np.ones(N)
-f0 = int(fr(1176) * SR)
+f0 = int(fr(1380) * SR)
 fade[f0:] = np.linspace(1, 0, N - f0) ** 2
 mix *= fade[:, None]
 
