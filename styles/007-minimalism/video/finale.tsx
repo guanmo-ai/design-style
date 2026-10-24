@@ -16,10 +16,19 @@ export const END_AT = AT.end;
 export const POSTER_AT = AT.poster;
 
 const GHOST = 'rgba(28,27,25,0.28)';
+/** 6×8 虚线圆全部压在地平线以上，缺一格落到橙点——和印刷海报同一构图。 */
 const GRID_X0 = 1180;
-const GRID_Y0 = 220;
-const PITCH = 56;
-const MISSING = {i: 4, j: 5};
+const GRID_Y0 = 168;
+const PITCH = 46;
+const GR = 15;
+const MISSING = {i: 4, j: 6};
+const STRUCK: {zh: string; dead: boolean}[] = [
+  {zh: '促销字', dead: true},
+  {zh: '第二色', dead: true},
+  {zh: '重复入口', dead: true},
+  {zh: '装饰', dead: true},
+  {zh: '有用的', dead: false},
+];
 
 const PosterHold: React.FC<P> = ({f}) => {
   if (f < AT.poster - 4 || f >= AT.end) return null;
@@ -34,42 +43,67 @@ const PosterHold: React.FC<P> = ({f}) => {
       <Letters
         text="少"
         x={L - 4}
-        y={300}
+        y={232}
         k="d100"
-        size={220}
+        size={168}
         fx={(i) => {
           const p = tween(f, AT.poster + 4 + i * 2, 16, 0, 1, E.out);
           return {o: p, dy: (1 - p) * 24};
         }}
       />
-      <Txt x={L} y={380} k="sc300" size={42} o={tween(f, AT.poster + 12, 12)}>
-        {THESIS.zh}
+      <Txt x={L} y={286} k="sc300" size={30} ls={0.04} o={tween(f, AT.poster + 12, 12)}>
+        = 删到只剩有用的
       </Txt>
-      <Txt x={L} y={430} k="t300" size={28} c={C.greyDk} o={tween(f, AT.poster + 18, 10)}>
+      <Txt x={L} y={320} k="t300" size={22} c={C.greyDk} o={tween(f, AT.poster + 18, 10)}>
         {THESIS.en}
       </Txt>
-      <Txt x={L} y={400} k="d100" size={88} o={tween(f, AT.poster + 16, 10)}>
+      <Txt x={R} y={286} k="mono" size={13} ls={0.14} c={C.greyDk} anchor="end" o={tween(f, AT.poster + 16, 10)}>
+        WENIGER, ABER BESSER
+      </Txt>
+      {STRUCK.map((row, i) => {
+        const yy = 368 + i * 28;
+        const show = tween(f, AT.poster + 20 + i * 3, 8);
+        const w = row.zh.length * 20;
+        return (
+          <g key={row.zh} opacity={n2(show)}>
+            <Txt x={L} y={yy} k="mono" size={13} ls={0.12} c={row.dead ? C.grey : C.accent}>
+              {`0${i + 1}`}
+            </Txt>
+            <Txt x={L + 40} y={yy} k="sc400" size={20} c={row.dead ? C.grey : C.accent}>
+              {row.zh}
+            </Txt>
+            {row.dead ? <line x1={L + 38} y1={yy - 7} x2={L + 42 + w} y2={yy - 7} stroke={C.grey} strokeWidth={1} /> : null}
+          </g>
+        );
+      })}
+      <Txt x={L} y={HZ - 24} k="d100" size={72} o={tween(f, AT.poster + 36, 10)}>
         47
       </Txt>
-      <Txt x={L + 170} y={372} k="sc300" size={18} o={tween(f, AT.poster + 20, 8)}>
+      <Txt x={L + 136} y={HZ - 52} k="sc300" size={16} o={tween(f, AT.poster + 40, 8)}>
         样东西，删掉了
       </Txt>
-      <Txt x={L} y={HZ - 12} k="d100" size={88} o={tween(f, AT.poster + 24, 10)}>
+      <Txt x={L + 136} y={HZ - 28} k="mono" size={11} ls={0.14} c={C.grey} o={tween(f, AT.poster + 42, 8)}>
+        REMOVED
+      </Txt>
+      <Txt x={L + 400} y={HZ - 24} k="d100" size={72} o={tween(f, AT.poster + 44, 10)}>
         1
       </Txt>
-      <Txt x={L + 80} y={HZ - 36} k="sc300" size={18} o={tween(f, AT.poster + 28, 8)}>
+      <Txt x={L + 456} y={HZ - 52} k="sc300" size={16} o={tween(f, AT.poster + 48, 8)}>
         个留下：有用的那一个
       </Txt>
       {Array.from({length: 8}, (_, j) =>
         Array.from({length: 6}, (_, i) => {
           if (i === MISSING.i && j === MISSING.j) return null;
-          return <circle key={`${i}-${j}`} cx={GRID_X0 + i * PITCH} cy={GRID_Y0 + j * PITCH} r={18} fill="none" stroke={GHOST} strokeWidth={1} strokeDasharray="2.5 3.5" opacity={n2(tween(f, AT.poster + 6 + i + j, 8))} />;
+          return <circle key={`${i}-${j}`} cx={GRID_X0 + i * PITCH} cy={GRID_Y0 + j * PITCH} r={GR} fill="none" stroke={GHOST} strokeWidth={1} strokeDasharray="2.5 3.5" opacity={n2(tween(f, AT.poster + 6 + i + j, 8))} />;
         }),
       )}
-      <circle cx={mx} cy={my} r={18} fill="none" stroke={C.accent} strokeWidth={1} strokeDasharray="1 5" opacity={0.7 * (1 - drop)} />
-      <line x1={mx} y1={lerp(my + 20, HZ - 20, drop)} x2={mx} y2={HZ - 20} stroke={C.grey} strokeWidth={1} strokeDasharray="1 6" opacity={n2(drop)} />
+      <circle cx={mx} cy={my} r={GR} fill="none" stroke={C.accent} strokeWidth={1} strokeDasharray="1 5" opacity={0.7 * (1 - drop)} />
+      <line x1={mx} y1={lerp(my + GR + 6, HZ - 20, drop)} x2={mx} y2={HZ - 20} stroke={C.grey} strokeWidth={1} strokeDasharray="1 6" opacity={n2(drop)} />
       <Hair x1={L} y1={HZ} x2={R} y2={HZ} p={tween(f, AT.poster + 8, 16, 0, 1, E.inOut)} from="center" o={0.85} />
       <Dot x={mx} y={HZ} r={DOT.r * drop} />
+      <Txt x={mx} y={HZ + 36} k="mono" size={11} ls={0.14} c={C.grey} anchor="middle" o={tween(f, AT.poster + 28, 8)}>
+        ONE LEFT
+      </Txt>
     </g>
   );
 };
