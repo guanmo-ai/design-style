@@ -49,7 +49,7 @@
 - **字体：** Inter Display + Inter + Noto Sans SC + Geist Mono。全部 OFL。
 - **层叠：** 680×380，圆角 28，抬起 14，旋转 −1.2°，每层向左上露出 24 / 38px，暗 11%。
 - **节拍：** 120 BPM，1 拍 = 30 帧，全片 22 秒 = 1320 帧。
-- **缓动：** 世界切换用 Bento 同款 `REFLOW = bezier(0.6, 0, 0.12, 1)` + stagger。
+- **缓动：** 卡位 SNAP 过冲，进场 POP，运镜 SMOOTH。`TRANS.at` 比拍点早 14 帧，最快一刻落在拍上。
 
 ## 4 · 视频 v1（已否决）
 
@@ -78,7 +78,24 @@ v1 用同一叠 4 张仪表盘卡走完全片：弹进、抬起、两次弧线�
 
 八章（约 22s）：钩子 → iOS A-roll → 后台 B-roll → 隐喻 B-roll → 爆炸拆解 → 规则面板 → 坏→好 → 片尾。
 
-v2 构图被认可，但 iOS 幕「停在那不动」——v3 补上持续运动：层叠呼吸、焦点脉冲、iOS 完整交互节拍（登机牌 → 通知 → sheet → 切卡 + 条码推近）、Stripe 交棒到 Linear、镜头始终在漂，禁止主画面静停超过半秒。
+v2 构图被认可，但 iOS 幕「停在那不动」。v3 用呼吸 / 微振 / 镜头漂移冒充丝滑，主人第三次否决：成绩不过关，动效普通，一点丝滑都没有。
+
+## 5b · 视频 v4（对标 Bento + Swiss，推倒运动）
+
+从成片源码里抄来的招，不再「加呼吸」：
+
+| 学谁 | 招 | Card Stack v4 |
+|---|---|---|
+| Bento `cardState` | 同一批卡 REFLOW + stagger，颜色比位置更快 | 4 卡 SNAP 过冲插值；`COLOR_DUR` 用 SMOOTH |
+| Bento `HIT` | 重排最快一刻落在拍点 | `TRANS.at = 拍点 − 14`，过冲落在拍上 |
+| Bento 内容 spring | `Pop` = POP 缩放进场 | 柱、行、按钮、规则 pill 全部 POP |
+| Bento 镜头交棒 | 开场退、Metro 转、飞进手机 | `camAt` 用 `track` + SMOOTH，每段盯一个兴趣点 |
+| Swiss 红色接力 | 同一元素变形接下一幕 | 4 卡共享元素变形，章与章重叠 12–24 帧 |
+| Swiss zoom/pan | 扎进 a、摇到画面中 | iOS 推 Gate → 通知 → Sheet → 条码 → 抽卡 |
+| Swiss 拍点脉冲 | 一次弹，指数衰减 | `shake` + 规则卡一次 POP，禁止循环微振 |
+| Swiss Rise / Swap | 遮罩升起、旧词上走新词上来 | 标题 Rise、iOS 文案 / 误区标题 Swap |
+
+禁止：构图停住、只做位移、PPT 切章、匀速线性、无效微振。
 
 ![动效分解](process/02-motion.jpg)
 

@@ -3,7 +3,7 @@ import React from 'react';
 import {E, tween} from '../../../src/lib/anim';
 import {C} from '../tokens';
 import {HIT, LAYOUTS, PIT, RULES_AT, SCENE, TRANS} from './layout';
-import {Kicker, Pill, Rise, Show, disp, gradText, mono, sc, ui} from './ui';
+import {Kicker, Pill, Rise, Swap, Show, disp, gradText, mono, sc, ui} from './ui';
 
 type P = {f: number};
 const L = 88;
@@ -130,30 +130,36 @@ export const Annotations: React.FC<P> = ({f}) => {
 
 export const PitCaption: React.FC<P> = ({f}) => {
   const {in: a, out: o} = SCENE.PIT;
-  const phase = f < PIT.flat ? 'crowd' : f < PIT.fix ? 'flat' : 'fix';
-  const title = phase === 'crowd' ? '叠太多' : phase === 'flat' ? '没有焦点' : '这样就对了';
-  const en = phase === 'crowd' ? 'Too many layers' : phase === 'flat' ? 'No focus' : '3–4 · lift · dim';
-  const body =
-    phase === 'crowd'
-      ? '超过 4 张，后面只是噪声。人眼数不清第五张以后的层。'
-      : phase === 'flat'
-        ? '不抬、不旋、不压暗，就只是一沓打印纸，不是界面。'
-        : '坏 → 好：收回来，顶卡重新成为唯一可读的一层。';
+  const phase = f < PIT.flat ? 0 : f < PIT.fix ? 1 : 2;
+  const titles = ['叠太多', '没有焦点', '这样就对了'];
+  const ens = ['Too many layers', 'No focus', '3–4 · lift · dim'];
+  const bodies = [
+    '超过 4 张，后面只是噪声。人眼数不清第五张以后的层。',
+    '不抬、不旋、不压暗，就只是一沓打印纸，不是界面。',
+    '坏 → 好：收回来，顶卡重新成为唯一可读的一层。',
+  ];
+  const swapAt = phase === 0 ? a : phase === 1 ? PIT.flat : PIT.fix;
   return (
     <>
       <Show f={f} at={a} out={o} style={{left: L, top: 88}}>
-        <Kicker color={C.ink2} dot={phase === 'fix' ? C.accent : C.pink}>
+        <Kicker color={C.ink2} dot={phase === 2 ? C.accent : C.pink}>
           常见坑 · Bad → Good
         </Kicker>
       </Show>
-      <Show f={f} at={a + 2} out={o} dy={18} style={{left: L, top: 136}}>
-        <div style={{...sc(52, 800, 0.02), color: C.ink}}>{title}</div>
+      <div style={{position: 'absolute', left: L, top: 136, width: 640}}>
+        <Swap
+          f={f}
+          at={swapAt}
+          h={72}
+          a={<div style={{...sc(52, 800, 0.02), color: C.ink}}>{titles[Math.max(0, phase - 1)]}</div>}
+          b={<div style={{...sc(52, 800, 0.02), color: C.ink}}>{titles[phase]}</div>}
+        />
+      </div>
+      <Show f={f} at={a + 6} out={o} style={{left: L, top: 216}}>
+        <div style={{...disp(20, 500, 0), color: C.ink2}}>{ens[phase]}</div>
       </Show>
-      <Show f={f} at={a + 6} out={o} style={{left: L, top: 206}}>
-        <div style={{...disp(20, 500, 0), color: C.ink2}}>{en}</div>
-      </Show>
-      <Show f={f} at={a + 10} out={o} style={{left: L, top: 250, width: 560}}>
-        <div style={{...sc(22, 400, 0.02), lineHeight: 1.65, color: C.ink2}}>{body}</div>
+      <Show f={f} at={a + 10} out={o} style={{left: L, top: 260, width: 560}}>
+        <div style={{...sc(22, 400, 0.02), lineHeight: 1.65, color: C.ink2}}>{bodies[phase]}</div>
       </Show>
     </>
   );

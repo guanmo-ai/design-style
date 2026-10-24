@@ -1,14 +1,18 @@
 /**
  * 布局 03 · Card Stack —— 同一批 4 张卡片贯穿全片，在九种「世界」之间变形。
- * 每种世界 = 4 个 Pose（画布坐标 + 深度 / 旋转 / 压暗）。层叠不是手摆的：
- * stack() 按槽位算出 offset、scale、opacity、lift；世界切换用 Bento 同款 REFLOW + stagger。
+ * 运动对标 Bento（REFLOW + stagger + 拍点交棒）和 Swiss（共享元素接力、有目的推拉摇）。
+ * 位置用 SNAP 弹簧过冲；镜头用 SMOOTH；进场用 POP。禁止呼吸/微振冒充丝滑。
  */
 import {Easing} from 'remotion';
-import {E, tween} from '../../../src/lib/anim';
+import {POP, SNAP, SMOOTH, spr, track, tween} from '../../../src/lib/anim';
 
 export const DURATION = 1320;
 export const FPS = 60;
 export const BEAT = 30;
+/** 重排开始比拍点早这么多帧：最快一刻（过冲）落在拍上，和 Bento HIT 同一招 */
+export const HIT = 14;
+/** 章与章共享元素交棒的重叠（帧） */
+export const OVERLAP = 18;
 
 export type LayoutName =
   | 'HOOK'
@@ -185,44 +189,58 @@ export const LAYOUTS: Record<LayoutName, Pose[]> = {
 };
 
 export type Trans = {at: number; to: LayoutName; dur: number; stagger: number; order: number[]};
+/** at = 拍点 − HIT，弹簧过冲落在拍上；章与章用 36–44 帧变形，和下一章重叠 12–24 帧 */
 export const TRANS: Trans[] = [
-  {at: 48, to: 'KEY', dur: 46, stagger: 3, order: [0, 1, 2, 3]},
-  {at: 150, to: 'IOS', dur: 38, stagger: 3, order: [0, 1, 2, 3]},
-  {at: 198, to: 'NOTE', dur: 22, stagger: 2, order: [2, 0, 1, 3]},
-  {at: 232, to: 'SHEET', dur: 24, stagger: 2, order: [3, 0, 2, 1]},
-  {at: 288, to: 'WALLET', dur: 26, stagger: 2, order: [1, 0, 2, 3]},
-  {at: 330, to: 'STRIPE', dur: 40, stagger: 3, order: [0, 1, 3, 2]},
-  {at: 438, to: 'ISSUE', dur: 28, stagger: 2, order: [1, 0, 2, 3]},
-  {at: 510, to: 'DECK', dur: 42, stagger: 3, order: [3, 2, 1, 0]},
-  {at: 690, to: 'EXPLODE', dur: 44, stagger: 4, order: [0, 1, 2, 3]},
-  {at: 870, to: 'WIRE', dur: 40, stagger: 3, order: [0, 1, 2, 3]},
-  {at: 1080, to: 'CROWD', dur: 26, stagger: 2, order: [0, 1, 2, 3]},
-  {at: 1134, to: 'FLAT', dur: 22, stagger: 1, order: [0, 1, 2, 3]},
-  {at: 1170, to: 'FIX', dur: 28, stagger: 2, order: [0, 1, 2, 3]},
-  {at: 1200, to: 'END', dur: 40, stagger: 2, order: [0, 1, 2, 3]},
+  {at: 34, to: 'KEY', dur: 40, stagger: 3, order: [0, 1, 2, 3]},
+  {at: 136, to: 'IOS', dur: 36, stagger: 3, order: [0, 1, 2, 3]},
+  {at: 184, to: 'NOTE', dur: 22, stagger: 2, order: [2, 0, 1, 3]},
+  {at: 218, to: 'SHEET', dur: 24, stagger: 2, order: [3, 0, 2, 1]},
+  {at: 274, to: 'WALLET', dur: 26, stagger: 2, order: [1, 0, 2, 3]},
+  {at: 316, to: 'STRIPE', dur: 38, stagger: 3, order: [0, 1, 3, 2]},
+  {at: 424, to: 'ISSUE', dur: 26, stagger: 2, order: [1, 0, 2, 3]},
+  {at: 496, to: 'DECK', dur: 40, stagger: 3, order: [3, 2, 1, 0]},
+  {at: 676, to: 'EXPLODE', dur: 42, stagger: 4, order: [0, 1, 2, 3]},
+  {at: 856, to: 'WIRE', dur: 38, stagger: 3, order: [0, 1, 2, 3]},
+  {at: 1066, to: 'CROWD', dur: 24, stagger: 2, order: [0, 1, 2, 3]},
+  {at: 1120, to: 'FLAT', dur: 20, stagger: 1, order: [0, 1, 2, 3]},
+  {at: 1156, to: 'FIX', dur: 26, stagger: 2, order: [0, 1, 2, 3]},
+  {at: 1186, to: 'END', dur: 40, stagger: 2, order: [0, 1, 2, 3]},
 ];
 
-export const HIT = 12;
 export const REFLOW = Easing.bezier(0.6, 0, 0.12, 1);
 export const COLOR_DUR = 12;
-const COLOR = Easing.bezier(0.45, 0, 0.55, 1);
 
 export const SCENE = {
-  KEY: {in: 56, out: 140},
-  IOS: {in: 164, out: 322},
-  STRIPE: {in: 344, out: 500},
-  DECK: {in: 524, out: 678},
-  EXPLODE: {in: 704, out: 858},
-  WIRE: {in: 888, out: 1068},
-  PIT: {in: 1090, out: 1192},
-  END: {in: 1220, out: 9999},
+  KEY: {in: 56, out: 148},
+  IOS: {in: 150, out: 330},
+  STRIPE: {in: 330, out: 510},
+  DECK: {in: 510, out: 690},
+  EXPLODE: {in: 690, out: 870},
+  WIRE: {in: 870, out: 1080},
+  PIT: {in: 1080, out: 1200},
+  END: {in: 1200, out: 9999},
 };
 
-export const BEATS = {note: 198, sheet: 232, wallet: 288, issue: 438, zoom: 258};
+export const BEATS = {
+  key: 48,
+  ios: 150,
+  note: 198,
+  sheet: 232,
+  wallet: 288,
+  zoom: 258,
+  stripe: 330,
+  issue: 438,
+  deck: 510,
+  explode: 690,
+  wire: 870,
+  crowd: 1080,
+  flat: 1134,
+  fix: 1170,
+  end: 1200,
+};
 
 export const RULES_AT = [888, 924, 960, 996, 1032];
 export const PIT = {crowd: 1080, flat: 1134, fix: 1170, end: 1200};
-
 export const GHOSTS = 3;
 
 const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
@@ -240,7 +258,7 @@ export const lerpPose = (a: Pose, b: Pose, t: number): Pose => ({
   blur: lerp(a.blur, b.blur, t),
 });
 
-/** 第 i 张卡片在第 f 帧：处在哪两种世界之间、走到了多少 */
+/** 第 i 张卡片在第 f 帧：SNAP 过冲插值 + 颜色 SMOOTH（比位置更快，学 Bento COLOR_DUR） */
 export const cardState = (f: number, i: number) => {
   let from: LayoutName = 'HOOK';
   let to: LayoutName = 'HOOK';
@@ -251,26 +269,42 @@ export const cardState = (f: number, i: number) => {
     if (f < t.at) break;
     from = to;
     to = t.to;
-    const x = Math.min(1, Math.max(0, (f - start) / t.dur));
-    p = REFLOW(x);
-    pc = COLOR(Math.min(1, Math.max(0, (f - start) / COLOR_DUR)));
+    p = spr(f, start, SNAP, t.dur);
+    pc = spr(f, start, SMOOTH, COLOR_DUR);
   }
-  if (from === to) p = pc = 1;
-  const rect = lerpPose(LAYOUTS[from][i], LAYOUTS[to][i], p);
+  if (from === to && f < TRANS[0].at) p = pc = 1;
+  let pose = lerpPose(LAYOUTS[from][i], LAYOUTS[to][i], p);
   if (f < 48) {
-    const enter = tween(f, 6 + i * 8, 36, 0, 1, E.out);
-    return {
-      from,
-      to,
-      p: enter,
-      pc: enter,
-      pose: lerpPose({...rect, y: rect.y + 140, z: rect.z - 80, o: 0, sc: rect.sc * 0.9}, rect, enter),
+    const enter = spr(f, 4 + i * 7, POP, 36);
+    const hidden: Pose = {...pose, y: pose.y + 168, z: pose.z - 90, o: 0, sc: pose.sc * 0.78, rot: pose.rot - 8};
+    pose = lerpPose(hidden, pose, enter);
+    pose = {...pose, o: Math.min(1, Math.max(0, pose.o))};
+    return {from, to, p: enter, pc: enter, pose};
+  }
+  // 爆炸：落地之后沿深度轴继续拉开（单向，不是振荡）
+  if ((from === 'EXPLODE' || to === 'EXPLODE') && f >= BEATS.explode) {
+    const drift = tween(f, BEATS.explode + 16, 150, 0, 1);
+    pose = {
+      ...pose,
+      x: pose.x + i * 14 * drift,
+      y: pose.y + i * 11 * drift,
+      z: pose.z - i * 10 * drift,
     };
   }
-  return {from, to, p, pc, pose: rect};
+  // 规则：对应那条拍点上，这张卡 POP 一下再落回（一次，不是脉冲循环）
+  if ((from === 'WIRE' || to === 'WIRE') && f >= RULES_AT[0] && f < PIT.crowd) {
+    const at = RULES_AT[i] ?? RULES_AT[0];
+    const hit = spr(f, at, POP, 28);
+    const back = spr(f, at + 16, SMOOTH, 22);
+    const k = Math.max(0, hit - back);
+    pose = {...pose, sc: pose.sc * (1 + 0.07 * k), y: pose.y - 10 * k};
+  }
+  pose = {...pose, o: Math.min(1, Math.max(0, pose.o))};
+  return {from, to, p, pc, pose};
 };
 
-export const T = (name: LayoutName) => TRANS.find((t) => t.to === name)!.at;
+/** 视觉拍点 = TRANS.at + HIT（给字幕 / B-roll / 音效用） */
+export const T = (name: LayoutName) => TRANS.find((t) => t.to === name)!.at + HIT;
 
 export const worldAt = (f: number): LayoutName => {
   let cur: LayoutName = 'HOOK';
@@ -281,76 +315,148 @@ export const worldAt = (f: number): LayoutName => {
   return cur;
 };
 
-/** 误区段多出来的 3 张空卡片 */
+/** 误区段多出来的 3 张空卡片：SNAP 弹入，FLAT 时被收走。无摆动。 */
 export const ghostState = (f: number, g: number): Pose | null => {
-  const on = tween(f, PIT.crowd, 20, 0, 1, E.out) * (1 - tween(f, PIT.flat - 6, 16, 0, 1, E.inOut));
+  const inn = spr(f, PIT.crowd + g * 5, SNAP, 28);
+  const out = spr(f, PIT.flat - 8, SMOOTH, 20);
+  const on = Math.max(0, inn - out);
   if (on <= 0.001) return null;
   const dest = [
-    P(980, 210, 560, 300, 16, {z: -24, rot: 8, dim: 0.12, o: on}),
-    P(640, 180, 560, 300, 16, {z: -30, rot: -7, dim: 0.16, o: on}),
-    P(900, 140, 560, 300, 16, {z: -36, rot: 5, dim: 0.2, o: on}),
+    P(980, 210, 560, 300, 16, {z: -24, rot: 8, dim: 0.12}),
+    P(640, 180, 560, 300, 16, {z: -30, rot: -7, dim: 0.16}),
+    P(900, 140, 560, 300, 16, {z: -36, rot: 5, dim: 0.2}),
   ][g];
-  const wobble = Math.sin((f / FPS) * 3.2 + g * 1.4) * 5;
-  return {...dest, y: dest.y + (1 - on) * 36 + wobble, rot: dest.rot + wobble * 0.12, o: on};
-};
-
-/** 落地之后也不许静：呼吸、焦点脉冲、爆炸继续拉开 */
-export const poseLive = (f: number, i: number, pose: Pose): Pose => {
-  const t = f / FPS;
-  const fam = familyOf(worldAt(f));
-  const still = fam === 'END' ? 0.25 : fam === 'WIRE' ? 0.7 : fam === 'PIT' && f >= PIT.flat && f < PIT.fix ? 0.15 : 1;
-  const dy = Math.sin(t * 2.15 + i * 0.85) * 3.4 * still * (i === 0 ? 1.3 : 0.75);
-  const drot = Math.sin(t * 1.55 + i * 1.1) * 0.5 * still;
-  const ddim = i === 0 || (fam === 'PIT' && f >= PIT.flat && f < PIT.fix) ? 0 : 0.025 * (0.5 + 0.5 * Math.sin(t * 1.9 + i));
-  let lift = 0;
-  if (fam === 'KEY') lift = i === 0 ? 5 * (0.5 + 0.5 * Math.sin(t * 2.5)) : 0;
-  let dx = 0;
-  let extraY = 0;
-  if (fam === 'EXPLODE') {
-    const drift = tween(f, 710, 120, 0, 1, E.out);
-    dx = i * 10 * drift;
-    extraY = i * 8 * drift;
-  }
-  if (fam === 'DECK') {
-    dx = Math.sin(t * 1.2 + i) * 2.5;
-  }
-  if (fam === 'IOS') {
-    dx += Math.sin(f / 26) * 10;
-    extraY += Math.cos(f / 32) * 7;
-  }
   return {
-    ...pose,
-    x: pose.x + dx,
-    y: pose.y + dy - lift + extraY,
-    rot: pose.rot + drot,
-    dim: Math.min(0.55, pose.dim + ddim),
+    ...dest,
+    y: dest.y + (1 - inn) * 80,
+    sc: 0.86 + 0.14 * inn,
+    o: Math.min(1, on),
   };
 };
 
-export type Cam = {s: number; x: number; y: number; r: number; ox: number; oy: number};
-export const camAt = (f: number): Cam => {
-  const t = f / FPS;
-  const fam = familyOf(worldAt(f));
-  let s = 1.034 - 0.024 * tween(f, 0, 80, 0, 1, E.out);
-  let x = 4 * Math.sin(t * 0.85);
-  let y = 3 * Math.cos(t * 1.05);
-  let r = 0.18 * Math.sin(t * 0.65);
-  s += 0.007 * Math.sin(t * 1.25);
-  const ios = tween(f, 150, 26, 0, 1, E.out) * (1 - tween(f, 330, 20, 0, 1, E.inOut));
-  s += 0.035 * ios;
-  const zoom = tween(f, BEATS.zoom, 16, 0, 1, E.inOut) * (1 - tween(f, 292, 14, 0, 1, E.inOut));
-  s += 0.2 * zoom;
-  y += 48 * zoom;
-  const st = tween(f, 330, 22, 0, 1, E.out) * (1 - tween(f, 510, 18, 0, 1, E.inOut));
-  x += 16 * st;
-  const exp = tween(f, 690, 28, 0, 1, E.out) * (1 - tween(f, 870, 20, 0, 1, E.inOut));
-  s -= 0.07 * exp;
-  if (f >= PIT.crowd && f < PIT.flat) {
-    const a = 4 * Math.exp(-(f - PIT.crowd) / 18);
-    x += a * Math.sin(f * 1.8);
-    y += a * Math.cos(f * 2.2);
-  }
-  const ox = fam === 'IOS' ? 1484 : fam === 'EXPLODE' ? 1100 : 960;
-  const oy = fam === 'IOS' ? 620 : 520;
-  return {s, x, y, r, ox, oy};
+/** 相邻帧位移：给关键路径运动模糊用 */
+export const poseVel = (f: number, i: number) => {
+  const a = cardState(Math.max(0, f), i).pose;
+  const b = cardState(Math.max(0, f - 1), i).pose;
+  return Math.hypot(a.x - b.x, a.y - b.y) + Math.hypot(a.w - b.w, a.h - b.h) * 0.28 + Math.abs(a.rot - b.rot) * 2.4;
 };
+
+export const motionBlurPx = (vel: number) => {
+  if (vel < 2.2) return 0;
+  return Math.min(7.5, (vel - 2.2) * 0.28);
+};
+
+export type Cam = {s: number; x: number; y: number; r: number; ox: number; oy: number};
+
+/**
+ * 有目的的镜头：每一段都盯一个兴趣点。
+ * iOS：登机牌 Gate → 通知 → Sheet → 条码 → 抽出 Apple Card。
+ * 章与章提前 12–18 帧起手，SMOOTH 落幅；冲击点用 POP。
+ */
+export const camAt = (f: number): Cam => {
+  const s = track(f, [
+    {f: 0, v: 1.2},
+    {f: 8, v: 1.0, d: 52, e: 'smooth'},
+    {f: 132, v: 1.12, d: 26, e: 'smooth'},
+    {f: 176, v: 1.2, d: 20, e: 'smooth'},
+    {f: 198, v: 1.28, d: 16, e: 'pop'},
+    {f: 220, v: 1.1, d: 18, e: 'smooth'},
+    {f: 232, v: 1.16, d: 16, e: 'pop'},
+    {f: 258, v: 1.42, d: 16, e: 'smooth'},
+    {f: 280, v: 1.16, d: 16, e: 'smooth'},
+    {f: 288, v: 1.22, d: 14, e: 'pop'},
+    {f: 312, v: 1.02, d: 22, e: 'smooth'},
+    {f: 330, v: 1.08, d: 24, e: 'smooth'},
+    {f: 422, v: 1.12, d: 18, e: 'smooth'},
+    {f: 438, v: 1.14, d: 16, e: 'pop'},
+    {f: 492, v: 0.96, d: 24, e: 'smooth'},
+    {f: 510, v: 0.92, d: 32, e: 'smooth'},
+    {f: 600, v: 0.98, d: 44, e: 'smooth'},
+    {f: 672, v: 0.84, d: 28, e: 'smooth'},
+    {f: 690, v: 0.82, d: 36, e: 'smooth'},
+    {f: 852, v: 0.98, d: 24, e: 'smooth'},
+    {f: 870, v: 1.0, d: 32, e: 'smooth'},
+    {f: 960, v: 1.05, d: 48, e: 'smooth'},
+    {f: 1064, v: 1.1, d: 20, e: 'smooth'},
+    {f: 1080, v: 1.12, d: 16, e: 'pop'},
+    {f: 1134, v: 1.04, d: 20, e: 'smooth'},
+    {f: 1170, v: 1.02, d: 22, e: 'smooth'},
+    {f: 1200, v: 1.0, d: 40, e: 'smooth'},
+  ]);
+  const x = track(f, [
+    {f: 0, v: 40},
+    {f: 10, v: 0, d: 48, e: 'smooth'},
+    {f: 132, v: 36, d: 26, e: 'smooth'},
+    {f: 198, v: 28, d: 16, e: 'smooth'},
+    {f: 232, v: 18, d: 18, e: 'smooth'},
+    {f: 316, v: -20, d: 24, e: 'smooth'},
+    {f: 330, v: -8, d: 22, e: 'smooth'},
+    {f: 496, v: 12, d: 26, e: 'smooth'},
+    {f: 510, v: 40, d: 36, e: 'smooth'},
+    {f: 600, v: -30, d: 50, e: 'smooth'},
+    {f: 690, v: 0, d: 32, e: 'smooth'},
+    {f: 870, v: 0, d: 28, e: 'smooth'},
+    {f: 1080, v: 8, d: 18, e: 'smooth'},
+    {f: 1200, v: 0, d: 36, e: 'smooth'},
+  ]);
+  const y = track(f, [
+    {f: 0, v: 18},
+    {f: 10, v: 0, d: 48, e: 'smooth'},
+    {f: 176, v: -8, d: 20, e: 'smooth'},
+    {f: 198, v: -56, d: 16, e: 'pop'},
+    {f: 220, v: 28, d: 18, e: 'smooth'},
+    {f: 232, v: 46, d: 16, e: 'pop'},
+    {f: 258, v: 88, d: 16, e: 'smooth'},
+    {f: 280, v: 12, d: 16, e: 'smooth'},
+    {f: 288, v: -6, d: 14, e: 'smooth'},
+    {f: 316, v: 0, d: 20, e: 'smooth'},
+    {f: 690, v: 10, d: 28, e: 'smooth'},
+    {f: 870, v: 0, d: 28, e: 'smooth'},
+    {f: 1200, v: 0, d: 36, e: 'smooth'},
+  ]);
+  const ox = track(f, [
+    {f: 0, v: 960},
+    {f: 132, v: 1484, d: 28, e: 'smooth'},
+    {f: 316, v: 1100, d: 24, e: 'smooth'},
+    {f: 330, v: 1180, d: 22, e: 'smooth'},
+    {f: 496, v: 1080, d: 26, e: 'smooth'},
+    {f: 690, v: 1100, d: 28, e: 'smooth'},
+    {f: 856, v: 1180, d: 24, e: 'smooth'},
+    {f: 1066, v: 960, d: 24, e: 'smooth'},
+    {f: 1200, v: 960, d: 36, e: 'smooth'},
+  ]);
+  const oy = track(f, [
+    {f: 0, v: 520},
+    {f: 132, v: 560, d: 28, e: 'smooth'},
+    {f: 176, v: 470, d: 20, e: 'smooth'},
+    {f: 198, v: 210, d: 16, e: 'pop'},
+    {f: 220, v: 620, d: 18, e: 'smooth'},
+    {f: 232, v: 640, d: 16, e: 'smooth'},
+    {f: 258, v: 760, d: 16, e: 'smooth'},
+    {f: 280, v: 520, d: 16, e: 'smooth'},
+    {f: 288, v: 500, d: 14, e: 'smooth'},
+    {f: 316, v: 520, d: 22, e: 'smooth'},
+    {f: 690, v: 500, d: 28, e: 'smooth'},
+    {f: 870, v: 420, d: 28, e: 'smooth'},
+    {f: 1066, v: 520, d: 24, e: 'smooth'},
+    {f: 1200, v: 300, d: 40, e: 'smooth'},
+  ]);
+  return {s, x, y, r: 0, ox, oy};
+};
+
+/** 交棒 / 交互拍点上的冲击抖动（衰减正弦，不是循环呼吸） */
+export const CAM_HITS: [number, number][] = [
+  [48, 5],
+  [150, 6],
+  [198, 7],
+  [232, 6],
+  [258, 8],
+  [288, 6],
+  [330, 5],
+  [438, 5],
+  [510, 6],
+  [690, 7],
+  [1080, 8],
+  [1170, 6],
+  [1200, 4],
+];

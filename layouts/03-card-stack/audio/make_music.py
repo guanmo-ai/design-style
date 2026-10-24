@@ -196,8 +196,8 @@ LAND, IOS, STRIPE, DECK = 60, 150, 330, 510
 EXPLODE, RULES = 690, 870
 PIT_CROWD, PIT_FLAT, RESTORE, END = 1080, 1134, 1170, 1200
 RULES_AT = [888, 924, 960, 996, 1032]
-NOTE, SHEET, WALLET, ISSUE = 198, 232, 288, 438
-HITS = [LAND, IOS, NOTE, SHEET, WALLET, STRIPE, ISSUE, DECK, EXPLODE, RULES, PIT_CROWD, END]
+NOTE, SHEET, WALLET, ISSUE, ZOOM = 198, 232, 288, 438, 258
+HITS = [LAND, IOS, NOTE, SHEET, ZOOM, WALLET, STRIPE, ISSUE, DECK, EXPLODE, RULES, PIT_CROWD, END]
 
 CH = {
     'Fmaj9': (41, [53, 57, 60, 64]),  # F2 | F3 A3 C4 E4
@@ -279,6 +279,8 @@ sfx(swipe(0.16, 0.22), fr(NOTE - 2), pan=-0.2, send=0.2)
 sfx(glass(midi(84), 0.14, 0.45), fr(NOTE), pan=-0.12, send=0.45)
 sfx(whoosh(fr(16), 400, 4800, 0.16, 0.45), fr(SHEET - 8), pan=0.1)
 sfx(thock(0.32, 170, 60), fr(SHEET), send=0.16)
+sfx(swipe(0.14, 0.2), fr(ZOOM - 2), pan=0.08, send=0.22)
+sfx(bell(midi(88), 0.12, 0.5), fr(ZOOM), pan=0.1, send=0.45)
 sfx(bell(midi(86), 0.14, 0.55), fr(WALLET), pan=0.16, send=0.5)
 sfx(bell(midi(77), 0.16, 0.7), fr(STRIPE), pan=0.18, send=0.5)
 sfx(pluck(midi(81), 0.1, 0.1), fr(ISSUE), pan=-0.14, send=0.35)
