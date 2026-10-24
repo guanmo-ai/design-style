@@ -4,10 +4,10 @@
  *   每种 ≤1.8s，信息密；章重叠 12 帧
  */
 import React from 'react';
-import {E, POP, SNAP, SMOOTH, spr, tween} from '../../../src/lib/anim';
+import {E, POP, SNAP, spr, tween} from '../../../src/lib/anim';
 import {C, LINE} from '../tokens';
 import {AT} from './timeline';
-import {Box, Txt, mixBox, n2, P, lerp} from './ui';
+import {Box, Txt, n2, P, lerp} from './ui';
 
 export const PANES: Box[] = [
   {x: 100, y: 90, w: 500, h: 720, r: 56},
@@ -17,22 +17,14 @@ export const PANES: Box[] = [
   {x: 1440, y: 470, w: 380, h: 420, r: 8},
 ];
 
-export const FULL: Box[] = [
-  {x: 700, y: 72, w: 520, h: 800, r: 64},
-  {x: 200, y: 80, w: 1520, h: 820, r: 14},
-  {x: 620, y: 160, w: 680, h: 640, r: 8},
-  {x: 360, y: 140, w: 1200, h: 700, r: 12},
-  {x: 560, y: 80, w: 800, h: 800, r: 8},
-];
-
 export const APP_CUTS = [312, 330, 348, 366, 384];
 export const APP_KEEP = 396;
 export const WEB_CUTS = [420, 438, 456, 474];
 export const WEB_KEEP = 492;
 export const PAY_CUTS = [528, 546, 564, 582];
 export const PAY_KEEP = 600;
-export const DATA_CUTS = [636, 654, 672];
-export const DATA_KEEP = 690;
+export const DATA_CUTS = [636, 654, 666];
+export const DATA_KEEP = 666;
 
 const POST_ZOOM = 696;
 const STARTS = [AT.app, AT.web, AT.pay, AT.data, POST_ZOOM];
@@ -47,19 +39,18 @@ const focus = (f: number) => {
   return -1;
 };
 
+const EXTRA_H = [0, 160, 90, 70, 50];
+
 const bodyOf = (f: number, i: number): Box => {
   const small = PANES[i];
-  const big = FULL[i];
   const k = focus(f);
-  if (k === i) {
-    const inn = spr(f, STARTS[i], SMOOTH, 18);
-    return mixBox(small, big, inn);
-  }
-  if (k >= 0 && k !== i) {
-    const hide = tween(f, [AT.app, AT.web, AT.pay, AT.data][k], 10, 0, 1, E.in);
-    return {...small, y: small.y + 20 * hide};
-  }
-  return small;
+  if (k !== i) return small;
+  const inn = spr(f, STARTS[i], SNAP, 16);
+  const s = 1 + 0.16 * inn;
+  const cx = small.x + small.w / 2;
+  const w = small.w * s;
+  const h = small.h * s + EXTRA_H[i] * inn;
+  return {x: cx - w / 2, y: small.y - 8 * inn, w, h, r: small.r};
 };
 
 const Scale: React.FC<{s: number; cx: number; cy: number; children: React.ReactNode}> = ({s, cx, cy, children}) =>
@@ -256,7 +247,7 @@ const DataIn: React.FC<{f: number; b: Box}> = ({f, b}) => {
         const r = Math.floor(i / cols);
         const x = b.x + 24 + c * (cw + gap);
         const y = b.y + 64 + r * (ch + gap);
-        const s = 1 - fold * (i === 0 ? 0 : 1);
+        const s = (1 - fold * (i === 0 ? 0 : 1)) * (1 - keep * (i === 0 ? 1 : 0));
         const dx = lerp(0, b.x + 24 - x, mid);
         const dy = lerp(0, b.y + 64 - y, mid);
         return (
@@ -325,7 +316,7 @@ export const Panes: React.FC<P> = ({f}) => {
       {PANES.map((p, i) => {
         const body = bodyOf(f, i);
         const enter = crack;
-        const dim = k >= 0 && k !== i ? 0.18 + 0.1 * (1 - tween(f, AT.app, 8)) : 1;
+        const dim = k >= 0 && k !== i ? 0.06 * (1 - tween(f, STARTS[k], 8)) : 1;
         const leave = tween(f, AT.vs - 14, 14, 0, 1, E.in);
         if (enter * (1 - leave) < 0.02) return null;
         const ox = lerp(960 - p.w / 2, body.x, enter);
