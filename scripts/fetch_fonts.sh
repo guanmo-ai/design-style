@@ -33,6 +33,10 @@ curl -fsSL -o "$TMP/geist.zip" https://github.com/vercel/geist-font/releases/dow
 unzip -qjo "$TMP/inter.zip" 'extras/ttf/InterDisplay-Medium.ttf' 'extras/ttf/InterDisplay-SemiBold.ttf' 'extras/ttf/InterDisplay-Bold.ttf' \
   'extras/ttf/Inter-Regular.ttf' 'extras/ttf/Inter-Medium.ttf' 'extras/ttf/Inter-SemiBold.ttf' -d .
 unzip -qjo "$TMP/geist.zip" '*/GeistMono-Regular.ttf' '*/GeistMono-Medium.ttf' -d .
+# 风格 007 极简主义：Inter Display 的细字重（Thin / ExtraLight / Light）+ Inter Light + 思源黑体 Light
+unzip -qjo "$TMP/inter.zip" 'extras/ttf/InterDisplay-Thin.ttf' 'extras/ttf/InterDisplay-ExtraLight.ttf' 'extras/ttf/InterDisplay-Light.ttf' \
+  'extras/ttf/Inter-Light.ttf' -d .
+curl -fsSL -o NotoSansSC-Light.otf "$NOTO/NotoSansSC-Light.otf"
 # 布局 01 里的 Windows Phone 段：Selawik（微软开源的 Segoe UI 替代字体）
 curl -fsSL -o "$TMP/selawik.zip" https://github.com/microsoft/Selawik/releases/download/1.01/Selawik_Release.zip
 unzip -qjo "$TMP/selawik.zip" '*selawk.ttf' '*selawksb.ttf' '*selawkb.ttf' '*selawkl.ttf' -d "$TMP/sel"
