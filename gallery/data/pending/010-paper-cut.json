@@ -1,0 +1,64 @@
+{
+  "id": "010-paper-cut",
+  "type": "style",
+  "number": "010",
+  "title": "剪纸层叠",
+  "titleEn": "Paper Cut",
+  "years": "民间传统—今天",
+  "category": "当代插画",
+  "description": "剪纸不止一种。一支 24 秒博览：民俗红纸镂空、几何色块层叠、立体景深纸板、单色剪影、水彩纸毛边、字体剪纸，用撕揭折剪交棒；几何层叠落进天气 App。片尾开场窗花收成一点再砸成红纸印章，三句改成门笺挖空。",
+  "tags": [
+    "剪纸",
+    "层叠",
+    "视差",
+    "剪影",
+    "阴影深度",
+    "编辑海报",
+    "App 插画"
+  ],
+  "publishedAt": "2026-10-24T12:00:00Z",
+  "release": "day-10",
+  "asset": "010-paper-cut.mp4",
+  "sha256": "",
+  "images": [
+    {
+      "file": "poster",
+      "title": "一张海报，认识剪纸层叠",
+      "kind": "风格海报",
+      "titleEn": "Paper Cut at a glance",
+      "kindEn": "Style poster"
+    },
+    {
+      "file": "cheatsheet",
+      "title": "五条规则、色板、远慢近快与这样做 / 别这样",
+      "kind": "风格速查",
+      "titleEn": "Five rules, palette, parallax, and do / don’t",
+      "kindEn": "Quick reference"
+    },
+    {
+      "file": "app-ui",
+      "title": "如果剪纸层叠来做 App",
+      "kind": "界面应用",
+      "titleEn": "Paper Cut in an app",
+      "kindEn": "UI application"
+    },
+    {
+      "file": "steps",
+      "title": "一张平涂，四步改成剪纸层叠",
+      "kind": "改造教程",
+      "titleEn": "Four steps from a flat fill to Paper Cut",
+      "kindEn": "Poster tutorial"
+    }
+  ],
+  "categoryEn": "Contemporary illustration",
+  "descriptionEn": "Paper cut is more than one look. A 24-second expo of six named variants — folk red cutouts, color-block strata, cardboard diorama, monochrome silhouette, deckle-edge wash, and type cut from stacked sheets — handed off with tear, peel, fold, and snip. The ending spins the opening window flower down to a point and slams it as a red paper seal.",
+  "tagsEn": [
+    "paper cut",
+    "layers",
+    "parallax",
+    "silhouette",
+    "shadow depth",
+    "editorial poster",
+    "app illustration"
+  ]
+}

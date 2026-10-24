@@ -9,6 +9,7 @@ import {Memphis, MEMPHIS_DURATION} from '../styles/004-memphis/video/Memphis';
 import {PopArt, POPART_DURATION} from '../styles/005-pop-art/video/PopArt';
 import {Y2K, Y2K_DURATION} from '../styles/006-y2k/video/Y2K';
 import {Risograph, RISOGRAPH_DURATION} from '../styles/008-risograph/video/Risograph';
+import {PaperCut, PAPERCUT_DURATION} from '../styles/010-paper-cut/video/PaperCut';
 
 // 每期注册为一个 Composition：风格 S{期号}-{名字}，布局 L{期号}-{名字}
 // 统一规格：1920×1080 · 60fps · 15s
@@ -93,6 +94,15 @@ export const Root: React.FC = () => (
       width={1920}
       height={1080}
       defaultProps={{music: true, blur: 5}}
+    />
+    <Composition
+      id="S010-PaperCut"
+      component={PaperCut}
+      durationInFrames={PAPERCUT_DURATION}
+      fps={60}
+      width={1920}
+      height={1080}
+      defaultProps={{music: true}}
     />
   </>
 );
