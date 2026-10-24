@@ -23,17 +23,17 @@ const SLIPS = [
   {a: '换一种剪纸', b: '就换一种纸的运动', rot: 2.8},
 ] as const;
 
-const tornTop = (w: number, seed: number) => {
+const tornTop = (w: number, seed: number, h = 148) => {
   let d = `M0 18`;
   for (let i = 0; i <= 14; i++) {
     const x = (w / 14) * i;
     const y = 10 + 9 * Math.sin(i * 1.7 + seed) + 5 * Math.sin(i * 0.6 + seed * 2);
     d += ` L${n1(x)} ${n1(y)}`;
   }
-  d += ` L${w} 18 L${w} 148`;
+  d += ` L${w} 18 L${w} ${h}`;
   for (let i = 14; i >= 0; i--) {
     const x = (w / 14) * i;
-    const y = 148 + 7 * Math.sin(i * 2.1 + seed + 1);
+    const y = h + 7 * Math.sin(i * 2.1 + seed + 1);
     d += ` L${n1(x)} ${n1(y)}`;
   }
   return `${d} Z`;
@@ -82,27 +82,23 @@ export const Take: React.FC<{f: number}> = ({f}) => {
         </g>
       )}
       {zi > 0.02 && (
-        <text
-          x={960}
-          y={n1(408 + idle)}
-          fontFamily="Noto Sans SC"
-          fontSize={100}
-          fontWeight={900}
-          textAnchor="middle"
-          fill={C.wall}
+        <g
           opacity={Math.min(1, zi)}
-          transform={`translate(960 ${n1(388 + idle)}) scale(${zi.toFixed(3)}) translate(-960 ${n1(-388 - idle)})`}
+          transform={`translate(960 ${n1(388 + idle)}) scale(${zi.toFixed(3)})`}
         >
-          剪
-        </text>
+          <circle r={90} fill={C.folk} />
+          <text y={34} fontFamily="Noto Sans SC" fontSize={96} fontWeight={900} textAnchor="middle" fill={C.wall}>
+            剪
+          </text>
+        </g>
       )}
       {handle > 0.02 && (
         <g
           opacity={Math.min(1, handle)}
-          transform={`translate(960 ${n1(718 + (1 - handle) * 24 + idle)})`}
+          transform={`translate(760 ${n1(700 + (1 - handle) * 24 + idle)})`}
           filter="url(#shMid)"
         >
-          <rect x={-200} y={-28} width={400} height={56} rx={6} fill={C.folk} mask="url(#handleCut)" />
+          <path d={tornTop(400, 4.1, 56)} fill={C.folk} mask="url(#handleCut)" />
         </g>
       )}
       {SLIPS.map((s, i) => {
@@ -110,23 +106,33 @@ export const Take: React.FC<{f: number}> = ({f}) => {
         if (k < 0.02) return null;
         const flutter = Math.sin(t * 0.07 + i * 1.3) * 3.4;
         const x = 140 + i * 560;
+        const y = 760 + (1 - k) * -72;
+        const cx = x + 240 + flutter;
         return (
-          <g
-            key={i}
-            opacity={Math.min(1, k)}
-            transform={`translate(${n1(x + flutter)} ${n1(760 + (1 - k) * -72)}) rotate(${n1(s.rot + flutter * 0.2)})`}
-            filter="url(#shMid)"
-          >
-            <path d={tornTop(480, i * 2.2)} fill={C.folk} mask={`url(#slip${i})`} />
-            <circle cx={36} cy={22} r={7} fill={C.wall} />
-            <circle cx={444} cy={22} r={7} fill={C.wall} />
+          <g key={i}>
+            <path
+              d={`M960 ${n1(388 + 412 * scale)} C ${n1((960 + cx) / 2)} ${n1(388 + 412 * scale + 40)} ${n1(cx)} ${n1(y - 20)} ${n1(cx)} ${n1(y + 8)}`}
+              fill="none"
+              stroke={C.folk}
+              strokeWidth={2.5}
+              opacity={0.55 * k}
+            />
+            <g
+              opacity={Math.min(1, k)}
+              transform={`translate(${n1(x + flutter)} ${n1(y)}) rotate(${n1(s.rot + flutter * 0.2)})`}
+              filter="url(#shMid)"
+            >
+              <path d={tornTop(480, i * 2.2)} fill={C.folk} mask={`url(#slip${i})`} />
+              <circle cx={36} cy={22} r={7} fill={C.wall} />
+              <circle cx={444} cy={22} r={7} fill={C.wall} />
+            </g>
           </g>
         );
       })}
       <defs>
-        <mask id="handleCut" maskUnits="userSpaceOnUse" x="-200" y="-28" width="400" height="56">
-          <rect x="-200" y="-28" width="400" height="56" rx="6" fill="white" />
-          <text x="0" y="10" fontFamily="Jost" fontSize="26" fontWeight="600" textAnchor="middle" fill="black" letterSpacing="1.4">
+        <mask id="handleCut" maskUnits="userSpaceOnUse" x="0" y="0" width="400" height="80">
+          <rect width="400" height="80" fill="white" />
+          <text x="200" y="44" fontFamily="Jost" fontSize="26" fontWeight="600" textAnchor="middle" fill="black" letterSpacing="1.2">
             @guanmo_ai
           </text>
         </mask>
