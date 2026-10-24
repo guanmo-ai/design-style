@@ -13,7 +13,7 @@ The film and the four reference sheets share `tokens.ts`, `tokens.css`, and `tok
 ## Production workflow
 
 1. Read the [English guide](README.en.md) and lock one job for each chapter: stack, edit, scroll, fly-through, rules, pitfalls.
-2. Use `process/timeline.json` as the chapter clock: 24 seconds, 120 BPM, 24-frame overlapping paper wipes.
+2. Use `process/timeline.json` as the chapter clock: 24 seconds, 120 BPM, 32-frame overlapping paper wipes. The last chapter is a stamp, not a title card.
 3. Build the shared `World` first (`video/layers.tsx`), then scene chrome in `video/`.
 4. Generate the soundtrack with `audio/make_music.py` (NumPy, −14 LUFS).
 5. Build the four sheets with `images/make_svgs.py` and `scripts/build_images.py`.
