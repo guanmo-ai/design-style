@@ -180,7 +180,7 @@ export const IosFace: React.FC<P> = ({f, i}) => {
           <div style={{position: 'absolute', left: 20, top: 32, ...sc(20, 700), color: C.ink}}>共享这张登机牌？</div>
           <div style={{position: 'absolute', left: 20, top: 68, ...ui(14, 500), color: C.ink2}}>Share Pass · Messages / Mail / Wallet</div>
           {['拷贝', '隔空投送', '取消'].map((t, k2) => {
-            const s = spr(f, BEATS.buttons + k2 * 5, POP, 28);
+            const s = spr(f, BEATS.sheet + 4 + k2 * 5, POP, 28);
             return (
               <div key={t} style={{position: 'absolute', left: 20, right: 20, top: 110 + k2 * 52, height: 44, borderRadius: 12, background: k2 === 2 ? C.chip : C.accentSoft, display: 'flex', alignItems: 'center', justifyContent: 'center', ...sc(16, 600), color: k2 === 2 ? C.ink2 : C.accent, transform: `scale(${0.72 + 0.28 * s})`, opacity: Math.min(1, s * 1.5)}}>
                 {t}
@@ -204,7 +204,7 @@ export const StripeFace: React.FC<P> = ({f, i}) => {
             <span style={{...ui(12, 600), color: '#16A34A', background: '#DCFCE7', padding: '4px 8px', borderRadius: 999}}>Succeeded</span>
             <span style={{...mono(12), color: C.ink3}}>py_3Q8s2K</span>
           </div>
-          <div style={{position: 'absolute', left: 24, top: 62, ...disp(48, 600, -0.045), color: C.ink}}>${count(f, BEATS.amount, 28, 2480)}</div>
+          <div style={{position: 'absolute', left: 24, top: 62, ...disp(48, 600, -0.045), color: C.ink}}>${count(f, 360, 40, 2480)}</div>
           <div style={{position: 'absolute', left: 24, top: 124, ...ui(14, 500), color: C.ink2}}>Visa ••4242 · Acme Labs · 2 min ago</div>
           <div style={{position: 'absolute', left: 24, right: 24, top: 168, display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10}}>
             {[['Customer', 'Acme Labs'], ['Fee', '$72.00'], ['Net', '$2,408.00'], ['Country', 'US']].map(([a, b]) => (
@@ -247,13 +247,13 @@ export const StripeFace: React.FC<P> = ({f, i}) => {
             <path d="M80 500 C200 440 280 480 400 380 C520 280 600 340 680 260" fill="none" stroke="#94A3B8" strokeWidth="2" />
           </svg>
           {(() => {
-            const drop = spr(f, BEATS.map + 4, POP, 28);
-            const pick = spr(f, BEATS.map + 24, POP, 22);
+            const drop = spr(f, BEATS.map - 4, POP, 28);
+            const pick = spr(f, BEATS.map + 12, POP, 22);
             return (
               <div style={{position: 'absolute', left: 48, top: 210 - (1 - drop) * 80, width: 22, height: 22, borderRadius: 11, background: C.accent, boxShadow: `0 0 0 ${6 + 10 * pick}px rgba(37,99,235,.28)`, transform: `scale(${0.2 + 0.8 * drop})`}} />
             );
           })()}
-          <div style={{position: 'absolute', left: 24, bottom: 24, right: 24, padding: 16, borderRadius: 14, background: '#fff', boxShadow: '0 10px 24px rgba(15,23,42,.12)', opacity: Math.min(1, spr(f, BEATS.map + 16, POP, 24) * 1.4), transform: `translateY(${(1 - spr(f, BEATS.map + 16, POP, 26)) * 24}px)`}}>
+          <div style={{position: 'absolute', left: 24, bottom: 24, right: 24, padding: 16, borderRadius: 14, background: '#fff', boxShadow: '0 10px 24px rgba(15,23,42,.12)', opacity: Math.min(1, spr(f, BEATS.map, POP, 24) * 1.4), transform: `translateY(${(1 - spr(f, BEATS.map, POP, 26)) * 24}px)`}}>
             <div style={{...sc(16, 700), color: C.ink}}>选这个点</div>
             <div style={{...ui(13, 500), color: C.ink2, marginTop: 6}}>Folsom St · San Francisco · 0.3 km</div>
           </div>

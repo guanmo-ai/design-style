@@ -413,7 +413,7 @@ export const worldAt = (f: number): LayoutName => {
 };
 
 export const ghostState = (f: number, g: number): Pose | null => {
-  const inn = spr(f, PIT.crowd + g * 6, SNAP, 26);
+  const inn = spr(f, PIT.crowd - 18 + g * 6, SNAP, 26);
   const out = spr(f, PIT.flat - 6, SMOOTH, 18);
   const on = Math.max(0, inn - out);
   if (on <= 0.001) return null;

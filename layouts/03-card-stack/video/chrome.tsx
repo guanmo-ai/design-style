@@ -203,13 +203,13 @@ export const IosCaption: React.FC<P> = ({f}) => {
       <div style={{position: 'absolute', left: 88, top: 210, width: 560}}>
         <Swap
           f={f}
-          at={k === 0 ? 92 : cur.at}
+          at={k === 0 ? 90 : cur.at - 10}
           h={110}
           a={<div style={{...disp(92, 600, -0.045), color: C.t1}}>{k === 0 ? 'iOS' : prev.title}</div>}
           b={<div style={{...disp(92, 600, -0.045), color: C.t1}}>{cur.title}</div>}
         />
       </div>
-      <RiseBox f={f} at={cur.at + 6} out={out} h={140} style={{left: 92, top: 340, width: 560}}>
+      <RiseBox f={f} at={cur.at - 2} out={out} h={140} style={{left: 92, top: 340, width: 560}}>
         <div style={{...sc(28, 500, 0.02), lineHeight: 1.55, color: C.t2, whiteSpace: 'pre-line'}}>{cur.body}</div>
       </RiseBox>
       <Show f={f} at={cur.at + 12} out={out} style={{left: 92, top: 560}}>
