@@ -236,6 +236,8 @@ v5 六幕、21 秒，硬保证「任意 0.3s 窗口镜头或主体至少有一�
 
 片尾三句都必须在片中用画面证明过。配乐有主题句 A–C–E–D–G，按抽/提/压变奏。
 
+专业意义分镜（先于成片）：[`process/00-meaning.jpg`](process/00-meaning.jpg)。成片联系表：[`process/01-storyboard.jpg`](process/01-storyboard.jpg)。
+
 ## 10 · 下期沿用
 
 - [ ] 先判断是风格还是布局；布局要写出和上一期的差别
