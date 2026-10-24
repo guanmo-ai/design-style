@@ -94,6 +94,7 @@ The gallery interface, descriptions, search, and reading pages support **Chinese
 | 005 | [Pop Art](styles/005-pop-art/README.en.md) | [Production overview](styles/005-pop-art/PROCESS.en.md) | 1956–1970 |
 | 006 | [Y2K Futurism — video pending, not yet published](styles/006-y2k/README.en.md) | [Production overview](styles/006-y2k/PROCESS.en.md) | 1997–2004 |
 | 008 | [Risograph](styles/008-risograph/README.en.md) | [Production overview](styles/008-risograph/PROCESS.en.md) | 1946–today |
+| 010 | [Paper Cut — video pending, not yet published](styles/010-paper-cut/README.en.md) | [Production overview](styles/010-paper-cut/PROCESS.en.md) | folk tradition–today |
 
 ### Layouts
 
