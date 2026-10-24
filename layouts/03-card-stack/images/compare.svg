@@ -1,0 +1,65 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1080" height="1350" viewBox="0 0 1080 1350">
+  <!-- Design Style · 布局 03 · 卡片层叠 Card Stack —— 对照 / 1080×1350 -->
+  <defs>
+    <style>
+      .d { font-family: 'Inter Display', 'Noto Sans SC', sans-serif; }
+      .t { font-family: 'Inter', 'Noto Sans SC', sans-serif; }
+      .m { font-family: 'Geist Mono', 'SFMono-Regular', Menlo, monospace; }
+      .c { font-family: 'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif; }
+    </style>
+    <filter id="soft" x="-20%" y="-20%" width="140%" height="160%"><feDropShadow dx="0" dy="10" stdDeviation="14" flood-color="#0F172A" flood-opacity=".08"/></filter>
+    <filter id="lift" x="-30%" y="-30%" width="160%" height="180%"><feDropShadow dx="0" dy="22" stdDeviation="28" flood-color="#0F172A" flood-opacity=".12"/></filter>
+    <filter id="dim1"><feColorMatrix type="matrix" values="0.92 0 0 0 0  0 0.92 0 0 0  0 0 0.92 0 0  0 0 0 1 0"/></filter>
+    <filter id="dim2"><feColorMatrix type="matrix" values="0.84 0 0 0 0  0 0.84 0 0 0  0 0 0.84 0 0  0 0 0 1 0"/></filter>
+    <filter id="dim3"><feColorMatrix type="matrix" values="0.76 0 0 0 0  0 0.76 0 0 0  0 0 0.76 0 0  0 0 0 1 0"/></filter>
+    
+  </defs>
+  <rect x="0" y="0" width="1080" height="1350" rx="0" fill="#F4F5F7" />
+  <circle cx="77" cy="96" r="5" fill="#2563EB"/>
+  <text x="92" y="103" class="c" font-size="18" font-weight="500" fill="#64748B" letter-spacing="1" >布局 03 · 别用错</text>
+  <text x="70" y="190" class="c" font-size="44" font-weight="800" fill="#0F172A" letter-spacing="1" >同一组内容，四种排法</text>
+  <text x="72" y="236" class="c" font-size="20" font-weight="400" fill="#64748B" >看谁在被读、其余藏在哪。</text>
+  <rect x="72" y="286" width="456" height="430" rx="22" fill="#FFFFFF" stroke="#2563EB" stroke-width="2.4" filter="url(#soft)"/>
+  <text x="96" y="334" class="c" font-size="24" font-weight="800" fill="#0F172A" >卡片层叠</text>
+  <text x="202" y="334" class="t" font-size="18" font-weight="500" fill="#64748B" >Card Stack</text>
+  <g filter="url(#dim3)"><rect x="102" y="341" width="300" height="140" rx="14" fill="#FFFFFF" /></g><g filter="url(#dim2)"><rect x="118" y="367" width="300" height="140" rx="14" fill="#FFFFFF" /></g><g filter="url(#dim1)"><rect x="134" y="393" width="300" height="140" rx="14" fill="#FFFFFF" /></g><g transform="rotate(-1.1 300 489)" filter="url(#lift)"><rect x="150" y="409" width="300" height="140" rx="14" fill="#FFFFFF" /><circle cx="178" cy="439" r="6" fill="#2563EB"/><text x="192" y="444" class="t" font-size="15" font-weight="600" fill="#64748B" >Focusus</text><text x="422" y="444" class="m" font-size="12" font-weight="500" fill="#94A3B8" text-anchor="end" >04</text><text x="178" y="477" class="c" font-size="20" font-weight="700" fill="#0F172A" >This week</text><rect x="178" y="495" width="244" height="1" rx="0" fill="rgba(15,23,42,.08)" /><rect x="178" y="509" width="116" height="44" rx="10" fill="#F1F5F9" /><rect x="306" y="509" width="116" height="44" rx="10" fill="#F1F5F9" /><rect x="182" y="517" width="24.6" height="8" rx="3" fill="#D9DEE7" /><rect x="214.6" y="517" width="24.6" height="8" rx="3" fill="#D9DEE7" /><rect x="247.1" y="517" width="24.6" height="8" rx="3" fill="#D9DEE7" /><rect x="279.7" y="517" width="24.6" height="8" rx="3" fill="#D9DEE7" /><rect x="312.3" y="517" width="24.6" height="8" rx="3" fill="#D9DEE7" /><rect x="344.9" y="517" width="24.6" height="8" rx="3" fill="#2563EB" /><rect x="377.4" y="517" width="24.6" height="8" rx="3" fill="#D9DEE7" /></g>
+  <text x="96" y="660" class="c" font-size="16" font-weight="700" fill="#0F172A" >一次一张。</text>
+  <text x="96" y="688" class="c" font-size="15" font-weight="400" fill="#64748B" >其余待命。</text>
+  <rect x="552" y="286" width="456" height="430" rx="22" fill="#FFFFFF" stroke="rgba(15,23,42,.08)" stroke-width="1" filter="url(#soft)"/>
+  <text x="576" y="334" class="c" font-size="24" font-weight="800" fill="#0F172A" >标签页</text>
+  <text x="658" y="334" class="t" font-size="18" font-weight="500" fill="#64748B" >Tabs</text>
+  <rect x="580" y="364" width="62" height="28" rx="8" fill="#2563EB" />
+  <text x="611" y="384" class="t" font-size="13" font-weight="600" fill="#fff" text-anchor="middle" >A</text>
+  <rect x="650" y="364" width="62" height="28" rx="8" fill="#F1F5F9" />
+  <text x="681" y="384" class="t" font-size="13" font-weight="600" fill="#64748B" text-anchor="middle" >B</text>
+  <rect x="720" y="364" width="62" height="28" rx="8" fill="#F1F5F9" />
+  <text x="751" y="384" class="t" font-size="13" font-weight="600" fill="#64748B" text-anchor="middle" >C</text>
+  <rect x="580" y="404" width="400" height="182" rx="14" fill="#F1F5F9" />
+  <text x="600" y="444" class="c" font-size="18" font-weight="700" fill="#0F172A" >Panel A</text>
+  <text x="576" y="660" class="c" font-size="16" font-weight="700" fill="#0F172A" >全部可达，但要先点标签。</text>
+  <text x="576" y="688" class="c" font-size="15" font-weight="400" fill="#64748B" >适合并列的几个面。</text>
+  <rect x="72" y="738" width="456" height="430" rx="22" fill="#FFFFFF" stroke="rgba(15,23,42,.08)" stroke-width="1" filter="url(#soft)"/>
+  <text x="96" y="786" class="c" font-size="24" font-weight="800" fill="#0F172A" >走马灯</text>
+  <text x="178" y="786" class="t" font-size="18" font-weight="500" fill="#64748B" >Carousel</text>
+  <rect x="136" y="840" width="328" height="182" rx="16" fill="#F1F5F9" />
+  <rect x="100" y="866" width="28" height="130" rx="8" fill="#E2E8F0" />
+  <rect x="472" y="866" width="28" height="130" rx="8" fill="#E2E8F0" />
+  <circle cx="284" cy="1036" r="4" fill="#CBD5E1"/>
+  <circle cx="300" cy="1036" r="4" fill="#2563EB"/>
+  <circle cx="316" cy="1036" r="4" fill="#CBD5E1"/>
+  <text x="96" y="1112" class="c" font-size="16" font-weight="700" fill="#0F172A" >左右滑。</text>
+  <text x="96" y="1140" class="c" font-size="15" font-weight="400" fill="#64748B" >适合浏览，不适合“处理完一张再下一张”。</text>
+  <rect x="552" y="738" width="456" height="430" rx="22" fill="#FFFFFF" stroke="rgba(15,23,42,.08)" stroke-width="1" filter="url(#soft)"/>
+  <text x="576" y="786" class="c" font-size="24" font-weight="800" fill="#0F172A" >网格</text>
+  <text x="634" y="786" class="t" font-size="18" font-weight="500" fill="#64748B" >Grid</text>
+  <rect x="580" y="816" width="125.3" height="105" rx="12" fill="#F1F5F9" />
+  <rect x="715.3" y="816" width="125.3" height="105" rx="12" fill="#F1F5F9" />
+  <rect x="850.7" y="816" width="125.3" height="105" rx="12" fill="#F1F5F9" />
+  <rect x="580" y="933" width="125.3" height="105" rx="12" fill="#F1F5F9" />
+  <rect x="715.3" y="933" width="125.3" height="105" rx="12" fill="#F1F5F9" />
+  <rect x="850.7" y="933" width="125.3" height="105" rx="12" fill="#F1F5F9" />
+  <text x="576" y="1112" class="c" font-size="16" font-weight="700" fill="#0F172A" >一眼看见全部。</text>
+  <text x="576" y="1140" class="c" font-size="15" font-weight="400" fill="#64748B" >适合比较，不适合排队。</text>
+  <text x="72" y="1288" class="c" font-size="20" font-weight="800" fill="#2563EB" >适合</text>
+  <text x="136" y="1288" class="c" font-size="18" font-weight="500" fill="#0F172A" >队列 · 弹层 · 详情抽屉 · 一次只处理一件</text>
+</svg>

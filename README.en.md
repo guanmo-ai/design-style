@@ -95,6 +95,7 @@ The gallery interface, descriptions, search, and reading pages support **Chinese
 |---|---|---|---|
 | 01 | [Bento Grid](layouts/01-bento-grid/README.en.md) | [Production overview](layouts/01-bento-grid/PROCESS.en.md) | 2020s– |
 | 02 | [Masonry](layouts/02-masonry/README.en.md) | [Production overview](layouts/02-masonry/PROCESS.en.md) | 2009– |
+| 03 | [Card Stack](layouts/03-card-stack/README.en.md) | [Production overview](layouts/03-card-stack/PROCESS.en.md) | 2013– |
 
 ## Run the gallery locally
 
@@ -135,7 +136,7 @@ npx playwright install chromium
 npm run images:001
 ```
 
-Episode suffixes are `001`–`006`, `L01`, and `L02`; for example, `npm run render:L02` renders Masonry. Episode 006 renders its WebGL2 materials with SwiftShader (`--gl=swangle`), so it is slower. Output goes into `out/`. The root `npm ci` applies the browser ZIP extraction security patch. If installation uses `--ignore-scripts`, run `npm run postinstall` before rendering or running the security tests.
+Episode suffixes are `001`–`006`, `L01`, `L02`, and `L03`; for example, `npm run render:L03` renders Card Stack. Episode 006 renders its WebGL2 materials with SwiftShader (`--gl=swangle`), so it is slower. Output goes into `out/`. The root `npm ci` applies the browser ZIP extraction security patch. If installation uses `--ignore-scripts`, run `npm run postinstall` before rendering or running the security tests.
 
 ```bash
 npm test

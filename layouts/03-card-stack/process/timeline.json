@@ -1,0 +1,10 @@
+{"fps": 60, "bpm": 120, "frames": 1080, "title": "布局 03 · 时间轴：换页最快的一刻落在拍点上（1 拍 = 30 帧）",
+ "segments": [
+  {"label": "01 定义", "start": 0, "dur": 120, "color": "#F4F5F7"},
+  {"label": "02 焦点", "start": 120, "dur": 120, "color": "#E8EEF8"},
+  {"label": "03 换页", "start": 240, "dur": 180, "color": "#DBE6F8"},
+  {"label": "04 何时用", "start": 420, "dur": 180, "color": "#F4F5F7"},
+  {"label": "05 五条规则", "start": 600, "dur": 210, "color": "#EEF0F3"},
+  {"label": "06 常见坑", "start": 810, "dur": 150, "color": "#E2E8F0"},
+  {"label": "片尾", "start": 960, "dur": 120, "color": "#2563EB"}
+ ]}
