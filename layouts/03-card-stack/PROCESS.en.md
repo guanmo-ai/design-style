@@ -6,9 +6,9 @@
 
 ## Design constraint
 
-Show 3–4 rounded cards in a stack. Only the top sheet is in focus: a light lift, a 1–2° rotation, and quieter layers behind it. v4 still paused between beats (same-layout TRANS is a no-op lerp). v5 keeps every beat on a *different* pose, drives one-way inside a scene, and never lets the camera plateau. Six acts, 21 seconds.
+Show 3–4 posters in a stack. Only the front sheet is in focus. v5 was still trapped in phone chrome and white UI. v6 is a greenfield remake: magazine / layer / proof, three verbs (pull / lift / press), Swiss type, no Wallet assets. 22 seconds.
 
-The film and four reference sheets share the values in `tokens.ts`, `tokens.css`, and `tokens.json`. Typography uses Inter / Inter Display, Noto Sans SC, and Geist Mono.
+The film shares the values in `tokens.ts`, `tokens.css`, and `tokens.json`. Typography uses TeX Gyre Heros, Noto Sans SC, and Geist Mono.
 
 ## Production workflow
 
@@ -25,8 +25,8 @@ The film and four reference sheets share the values in `tokens.ts`, `tokens.css`
 |---|---|
 | Canvas | 1920 × 1080 |
 | Frame rate | 60 fps |
-| Composition duration | 21 seconds |
-| Frames | 1260 |
+| Composition duration | 22 seconds |
+| Frames | 1320 |
 | Tempo | 120 BPM |
 
 ## Reproduce locally

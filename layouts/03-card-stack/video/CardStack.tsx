@@ -1,13 +1,14 @@
 /**
- * Design Style · 布局 03 · Card Stack 卡片层叠 —— 21 秒短片（1920×1080 · 60fps · 120 BPM）
+ * Design Style · 布局 03 · Card Stack 卡片层叠 —— 22 秒短片（1920×1080 · 60fps · 120 BPM）
  *
- * 全片只有 4 张卡片。同一叠在产品世界之间 SNAP 过冲变形，六幕不停：
- *   0.0–1.5s  01 钩子     四张卡 POP 进层叠，顶卡再抬
- *   1.5–6.5s  02 iOS      登机牌 → 通知 → Sheet → 扫码 → 抽卡
- *   6.5–10.5s 03 后台     Stripe 抽屉 · Linear 详情 · 地图选点
- *  10.5–15.0s 04 拆解     炸开 z 轴 + 四条可带走规则
- *  15.0–18.0s 05 坏→好    鬼卡乱叠 → 铺平 → 弹簧叠回
- *  18.0–21.0s 片尾        收成图标 · 三句规则 · @guanmo_ai
+ * v6 全新视觉：四张竖版海报贯穿。不是 Wallet，不是白 UI。
+ *   0.0–1.5s   01 砸进     四张刊从镜头里砸成一叠
+ *   1.5–5.3s   02 刊·抽    抽走正在看的封面，下一本接手
+ *   4.8–8.3s   03 层·提    压扁成图层板，后层穿过深度提到最前
+ *   7.8–10.6s  04 样·压    扇开印刷样，选定一张，其余压回
+ *  10.3–14.2s  05 拆解     沿 z 炸开，三条规则落在运动上
+ *  13.8–17.8s  06 坏→好    八张杂刊在动 → 铺平 → 弹簧叠回
+ *  17.8–22.0s  片尾        缩成图标 · 抽/提/压 · @guanmo_ai
  */
 import React from 'react';
 import {AbsoluteFill, Audio, interpolateColors, staticFile, useCurrentFrame} from 'remotion';
@@ -15,10 +16,9 @@ import {loadFont} from '@remotion/fonts';
 import {E, shake, tween} from '../../../src/lib/anim';
 import {Grain} from '../../../src/lib/Grain';
 import {C} from '../tokens';
-import {EndFace, ExplodeFace, GhostFace, IosFace, KeyFace, PitFace, StripeFace} from './cards';
-import {DepthTicks, ExplodeAxis, IosCaption, IosTouch, PhoneBack, PhoneFront, StripeCaption, StripeDesk} from './chrome';
-import {CAM_HITS, COLOR_DUR, DURATION, GHOSTS, LayoutName, OVERLAP, PIT, RULES_AT, SCENE, TRANS, camAt, cardState, familyOf, ghostState, motionBlurPx, poseVel} from './layout';
-import {Annotations, EndTitle, Hud, KeyCaption, PitCaption, TeachCaption} from './scenes';
+import {ExtraFace, ID, PosterFace} from './faces';
+import {BEATS, CAM_HITS, COLOR_DUR, DURATION, EXTRAS, LayoutName, SCENE, TRANS, camAt, cardState, extraState, familyOf, motionBlurPx, poseVel} from './layout';
+import {Axis, CoverCaption, EndTitle, Hud, LayerCaption, LayerTicks, LightTable, PitCaption, ProofCaption, Rail, TeachCaption} from './stage';
 
 export const CARDSTACK_DURATION = DURATION;
 
@@ -28,12 +28,8 @@ const loadFonts = () => {
   fontsLoaded = true;
   const F = (family: string, file: string, weight: string) =>
     loadFont({family, url: staticFile(`fonts/${file}`), weight, format: file.endsWith('.otf') ? 'opentype' : 'truetype'});
-  F('Inter Display', 'InterDisplay-Medium.ttf', '500');
-  F('Inter Display', 'InterDisplay-SemiBold.ttf', '600');
-  F('Inter Display', 'InterDisplay-Bold.ttf', '700');
-  F('Inter', 'Inter-Regular.ttf', '400');
-  F('Inter', 'Inter-Medium.ttf', '500');
-  F('Inter', 'Inter-SemiBold.ttf', '600');
+  F('TeX Gyre Heros', 'TeXGyreHeros-Regular.otf', '400');
+  F('TeX Gyre Heros', 'TeXGyreHeros-Bold.otf', '700');
   F('Geist Mono', 'GeistMono-Regular.ttf', '400');
   F('Geist Mono', 'GeistMono-Medium.ttf', '500');
   F('Noto Sans SC', 'NotoSansSC-Regular.otf', '400');
@@ -43,23 +39,29 @@ const loadFonts = () => {
 };
 
 type Theme = {top: string; bot: string; line: string; lw: number; sh: number; hi: number};
-const WHITE: Theme = {top: '#FFFFFF', bot: '#FFFFFF', line: 'rgba(15,23,42,0.08)', lw: 1, sh: 1, hi: 0.08};
-const theme = (name: LayoutName): Theme => {
+const posterTheme = (i: number): Theme => {
+  const id = ID[i];
+  const cream = i === 1;
+  return {
+    top: id.bg,
+    bot: id.bg2,
+    line: cream ? 'rgba(17,17,17,0.16)' : 'rgba(246,240,228,0.16)',
+    lw: 1,
+    sh: 1.15,
+    hi: cream ? 0.04 : 0.12,
+  };
+};
+const theme = (name: LayoutName, i: number): Theme => {
+  const poster = posterTheme(i);
   switch (familyOf(name)) {
-    case 'IOS':
-      return {top: '#FFFFFF', bot: '#F3F4F6', line: 'rgba(0,0,0,0.06)', lw: 1, sh: 1.2, hi: 0.12};
-    case 'STRIPE':
-      return {top: '#FFFFFF', bot: '#F8FAFC', line: 'rgba(99,91,255,0.12)', lw: 1, sh: 1.1, hi: 0.06};
     case 'TEACH':
-      return {top: 'rgba(255,255,255,0.96)', bot: 'rgba(248,250,252,0.96)', line: 'rgba(37,99,235,0.18)', lw: 1.2, sh: 0.6, hi: 0.1};
+      return {top: C.cream, bot: C.bone, line: 'rgba(17,17,17,0.12)', lw: 1, sh: 0.55, hi: 0.06};
     case 'PIT':
       return name === 'FLAT'
-        ? {top: '#FFFFFF', bot: '#FFFFFF', line: 'rgba(15,23,42,0.12)', lw: 1, sh: 0.15, hi: 0}
-        : {top: '#F8FAFC', bot: '#F1F5F9', line: 'rgba(15,23,42,0.06)', lw: 1, sh: 0.4, hi: 0};
-    case 'END':
-      return {top: '#1C1C1E', bot: '#18181A', line: 'rgba(255,255,255,0.06)', lw: 1, sh: 0, hi: 0};
+        ? {top: C.cream, bot: C.cream, line: 'rgba(17,17,17,0.1)', lw: 1, sh: 0.08, hi: 0}
+        : poster;
     default:
-      return WHITE;
+      return poster;
   }
 };
 const mixTheme = (a: Theme, b: Theme, p: number): Theme => {
@@ -70,23 +72,25 @@ const mixTheme = (a: Theme, b: Theme, p: number): Theme => {
 
 const bgFamily = (name: LayoutName) => {
   switch (familyOf(name)) {
-    case 'IOS':
-      return '#000000';
-    case 'STRIPE':
-      return C.stripeBg;
-    case 'TEACH':
-      return C.navy;
-    case 'PIT':
-      return '#E8E4DC';
-    case 'END':
-      return '#0B0B0D';
-    default:
+    case 'HOOK':
+      return C.night;
+    case 'COVER':
       return C.paper;
+    case 'LAYER':
+      return C.night;
+    case 'PROOF':
+      return C.sand;
+    case 'TEACH':
+      return C.teal;
+    case 'PIT':
+      return name === 'FLAT' ? '#D4CBB8' : C.bone;
+    default:
+      return C.night;
   }
 };
 const bgAt = (f: number) => {
-  let cur = bgFamily('HOOK');
-  let prev: LayoutName = 'HOOK';
+  let cur = bgFamily('SLAM');
+  let prev: LayoutName = 'SLAM';
   for (const t of TRANS) {
     if (f < t.at) break;
     cur = interpolateColors(tween(f, t.at + 2, COLOR_DUR + 4, 0, 1, E.inOut), [0, 1], [bgFamily(prev), bgFamily(t.to)]);
@@ -95,27 +99,14 @@ const bgAt = (f: number) => {
   return cur;
 };
 
-const Face: React.FC<{f: number; i: number; from: LayoutName; to: LayoutName}> = ({f, i, from, to}) => {
-  const pitKind = f >= PIT.fix ? 'fix' : f >= PIT.flat ? 'flat' : 'crowd';
-  return (
-    <>
-      {(from === 'HOOK' || from === 'KEY' || from === 'KEY_UP' || to === 'HOOK' || to === 'KEY' || to === 'KEY_UP') && f < 110 && <KeyFace f={f} i={i} />}
-      {(familyOf(from) === 'IOS' || familyOf(to) === 'IOS') && f >= 70 && f < 370 && <IosFace f={f} i={i} />}
-      {(familyOf(from) === 'STRIPE' || familyOf(to) === 'STRIPE') && f >= 348 && f < 640 && <StripeFace f={f} i={i} />}
-      {(familyOf(from) === 'TEACH' || familyOf(to) === 'TEACH') && f >= 538 && f < 910 && <ExplodeFace f={f} i={i} />}
-      {f >= PIT.crowd - OVERLAP && f < PIT.end && <PitFace i={i} kind={pitKind} />}
-      {f >= PIT.end - 8 && <EndFace i={i} />}
-    </>
-  );
-};
-
 const Card: React.FC<{f: number; i: number}> = ({f, i}) => {
   const st = cardState(f, i);
-  const th = mixTheme(theme(st.from), theme(st.to), st.pc);
+  const th = mixTheme(theme(st.from, i), theme(st.to, i), st.pc);
   const {x, y, w, h, r, z, rot, sc, o, dim} = st.pose;
   if (o <= 0.001) return null;
   const blur = motionBlurPx(poseVel(f, i));
   const front = dim < 0.03;
+  const shade = ID[i].bg === C.cream ? '17,17,17' : '12,12,14';
   return (
     <div
       style={{
@@ -132,16 +123,16 @@ const Card: React.FC<{f: number; i: number}> = ({f, i}) => {
         transformOrigin: '50% 80%',
         background: `linear-gradient(180deg, ${th.top}, ${th.bot})`,
         filter: `brightness(${1 - dim})${blur > 0.15 ? ` blur(${blur.toFixed(2)}px)` : ''}`,
-        boxShadow: `inset 0 0 0 ${th.lw}px ${th.line}, inset 0 1px 0 rgba(255,255,255,${th.hi}), 0 2px 4px rgba(15,23,42,${0.04 * th.sh}), 0 ${front ? 18 : 10}px ${front ? 48 : 24}px rgba(15,23,42,${0.12 * th.sh * (1 - dim)})`,
+        boxShadow: `inset 0 0 0 ${th.lw}px ${th.line}, inset 0 1px 0 rgba(255,255,255,${th.hi}), 0 2px 4px rgba(${shade},${0.05 * th.sh}), 0 ${front ? 22 : 10}px ${front ? 56 : 24}px rgba(${shade},${0.22 * th.sh * (1 - dim)})`,
       }}
     >
-      <Face f={f} i={i} from={st.from} to={st.to} />
+      <PosterFace f={f} i={i} from={st.from} to={st.to} />
     </div>
   );
 };
 
-const Ghost: React.FC<{f: number; g: number}> = ({f, g}) => {
-  const pose = ghostState(f, g);
+const Extra: React.FC<{f: number; g: number}> = ({f, g}) => {
+  const pose = extraState(f, g);
   if (!pose) return null;
   return (
     <div
@@ -156,15 +147,17 @@ const Ghost: React.FC<{f: number; g: number}> = ({f, g}) => {
         opacity: pose.o,
         zIndex: 8 - g,
         transform: `rotate(${pose.rot}deg) scale(${pose.sc})`,
-        background: '#F8FAFC',
+        background: EXTRA_FACE_BG[g],
         filter: `brightness(${1 - pose.dim})`,
-        boxShadow: '0 8px 20px rgba(15,23,42,.08)',
+        boxShadow: '0 10px 28px rgba(12,12,14,.18)',
       }}
     >
-      <GhostFace g={g} />
+      <ExtraFace g={g} />
     </div>
   );
 };
+
+const EXTRA_FACE_BG = [C.sand, C.red, C.ink2, C.teal];
 
 export const CardStack: React.FC<{music?: boolean}> = ({music = true}) => {
   React.useState(loadFonts);
@@ -179,32 +172,29 @@ export const CardStack: React.FC<{music?: boolean}> = ({music = true}) => {
           transformOrigin: `${cam.ox}px ${cam.oy}px`,
         }}
       >
-        {f >= 70 && f < 380 && <PhoneBack f={f} />}
-        {f >= 330 && f < 580 && <StripeDesk f={f} />}
-        {f >= 538 && f < 900 && <ExplodeAxis f={f} />}
+        {f >= SCENE.PROOF.in - 12 && f < SCENE.TEACH.in + 8 && <LightTable f={f} />}
+        {f >= BEATS.explode - 8 && f < BEATS.noise && <Axis f={f} />}
         {Array.from({length: 4}, (_, i) => (
           <Card key={i} f={f} i={i} />
         ))}
-        {Array.from({length: GHOSTS}, (_, g) => (
-          <Ghost key={`g${g}`} f={f} g={g} />
+        {Array.from({length: EXTRAS}, (_, g) => (
+          <Extra key={`e${g}`} f={f} g={g} />
         ))}
         <AbsoluteFill style={{zIndex: 80}}>
-          {f >= 70 && f < 380 && <PhoneFront f={f} />}
-          {f >= 90 && f < 360 && <IosTouch f={f} />}
-          {f >= 630 && f < 900 && <DepthTicks f={f} />}
-          {f >= RULES_AT[0] - 4 && f < SCENE.TEACH.out && <Annotations f={f} />}
+          {f >= SCENE.LAYER.in - 6 && f < SCENE.PROOF.in && <LayerTicks f={f} />}
         </AbsoluteFill>
       </AbsoluteFill>
       <AbsoluteFill style={{zIndex: 90, pointerEvents: 'none'}}>
-        {f >= SCENE.KEY.in - 8 && f < SCENE.KEY.out && <KeyCaption f={f} />}
-        {f >= SCENE.IOS.in - 4 && f < 362 && <IosCaption f={f} />}
-        {f >= SCENE.STRIPE.in - 4 && f < 558 && <StripeCaption f={f} />}
-        {f >= SCENE.TEACH.in - 4 && f < SCENE.TEACH.out && <TeachCaption f={f} />}
-        {f >= SCENE.PIT.in - 8 && f < SCENE.PIT.out + 8 && <PitCaption f={f} />}
+        <Rail f={f} />
+        {f >= SCENE.COVER.in - 6 && f < SCENE.LAYER.out - 10 && <CoverCaption f={f} />}
+        {f >= SCENE.LAYER.in - 4 && f < SCENE.PROOF.out - 8 && <LayerCaption f={f} />}
+        {f >= SCENE.PROOF.in - 4 && f < SCENE.TEACH.out - 20 && <ProofCaption f={f} />}
+        {f >= SCENE.TEACH.in - 4 && f < SCENE.PIT.in + 8 && <TeachCaption f={f} />}
+        {f >= SCENE.PIT.in - 8 && f < SCENE.END.in && <PitCaption f={f} />}
         {f >= SCENE.END.in - 8 && <EndTitle f={f} />}
         <Hud f={f} />
       </AbsoluteFill>
-      <Grain opacity={0.03} />
+      <Grain opacity={0.045} />
       {music && <Audio src={staticFile('03-card-stack/music.wav')} />}
     </AbsoluteFill>
   );
