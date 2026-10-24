@@ -61,7 +61,7 @@ const theme = (name: LayoutName, i: number): Theme => {
     case 'EXPLODE':
       return {top: 'rgba(255,255,255,0.96)', bot: 'rgba(248,250,252,0.96)', line: 'rgba(37,99,235,0.18)', lw: 1.2, sh: 0.6, hi: 0.1};
     case 'WIRE':
-      return {top: 'rgba(24,24,26,0.28)', bot: 'rgba(24,24,26,0.28)', line: 'rgba(255,255,255,0.26)', lw: 1.5, sh: 0, hi: 0};
+      return {top: 'rgba(40,40,46,0.62)', bot: 'rgba(22,22,26,0.62)', line: 'rgba(255,255,255,0.5)', lw: 1.8, sh: 0, hi: 0.08};
     case 'CROWD':
       return {top: '#F8FAFC', bot: '#F1F5F9', line: 'rgba(15,23,42,0.06)', lw: 1, sh: 0.4, hi: 0};
     case 'FLAT':

@@ -102,11 +102,11 @@ export const Annotations: React.FC<P> = ({f}) => {
     <>
       <svg width={1920} height={1080} fill="none" stroke="#FF2D6F" style={{position: 'absolute', inset: 0, opacity: 1 - tween(f, out, 8)}}>
         <g opacity={tween(f, RULES_AT[2], 14)} strokeWidth={2}>
-          <path d={`M${s[0].x} ${s[0].y + 20} H${s[0].x - 16} M${s[1].x} ${s[1].y + 20} H${s[1].x - 16}`} />
-          <path d={`M${s[0].x - 16} ${s[0].y + 20} V${s[1].y + 20}`} />
+          <path d={`M${s[0].x} ${s[0].y + 24} H${s[0].x - 20} M${s[1].x} ${s[1].y + 24} H${s[1].x - 20}`} />
+          <path d={`M${s[0].x - 20} ${s[0].y + 24} V${s[1].y + 24}`} />
         </g>
         <g opacity={tween(f, RULES_AT[3], 14)} strokeWidth={2}>
-          <path d={`M${s[0].x + s[0].w + 8} ${s[0].y} V${s[0].y + 40}`} />
+          <path d={`M${s[0].x + s[0].w + 10} ${s[0].y} V${s[0].y + 36}`} />
         </g>
       </svg>
       <Pill f={f} at={RULES_AT[0]} out={out} x={s[0].x + s[0].w - 20} y={s[0].y - 18}>
