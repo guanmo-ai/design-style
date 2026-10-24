@@ -18,8 +18,8 @@ The first draft was rejected: centered text cards on empty paper, no protagonist
 
 1. Research the timeline (Browning, Sullivan, Loos, Mies, Rams, Judd, Reich, flat UI) and reduce it to five rules.
 2. Write all frame numbers in `video/timeline.ts` and the scene files; `video/cues.ts` gathers them and `audio/export_cues.mjs` writes `audio/cues.json`, so the music reads the same numbers as the picture.
-3. Write eight storyboard sentences in `video/script.ts` first. The film tells one thesis — less = remove until only the useful remains. Motion is causal (cut, collapse, align, emphasize). Product beats apply that same cut: one row, one column, one amount. No interaction tourism.
-4. Synthesize the score with NumPy (`audio/make_music.py`): soft opening bed, UI-aligned clicks and whooshes, a marimba ostinato that loses voices into the empty state; mastered to −14 LUFS with a −2 dBTP ceiling.
+3. Sixth cut: write a 10-cell high-density storyboard in `video/script.ts` first (on-screen count + motion move + principle). Opening 0–3s explodes with ≥16 moving elements; five landings run in parallel; a readable motion event every 1–1.2s. Thesis stays “less = remove until only the useful remains.”
+4. Synthesize the score with NumPy (`audio/make_music.py`): Swiss-grid kicks from beat 0, land/shout ticks, scheme cuts, explode/suck, then voices drop after the versus; mastered to −14 LUFS with a −2 dBTP ceiling.
 5. Generate the four sheets with `images/make_svgs.py` and embed font subsets with `scripts/build_images.py`.
 6. Check stills, contact sheets, the beat chart, loudness and the encoded files.
 
