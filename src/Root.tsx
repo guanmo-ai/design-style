@@ -8,6 +8,7 @@ import {Constructivism, CONSTRUCTIVISM_DURATION} from '../styles/003-constructiv
 import {Memphis, MEMPHIS_DURATION} from '../styles/004-memphis/video/Memphis';
 import {PopArt, POPART_DURATION} from '../styles/005-pop-art/video/PopArt';
 import {Y2K, Y2K_DURATION} from '../styles/006-y2k/video/Y2K';
+import {Minimalism, MINIMALISM_DURATION} from '../styles/007-minimalism/video/Minimalism';
 
 // 每期注册为一个 Composition：风格 S{期号}-{名字}，布局 L{期号}-{名字}
 // 统一规格：1920×1080 · 60fps · 15s
@@ -83,6 +84,15 @@ export const Root: React.FC = () => (
       width={1920}
       height={1080}
       defaultProps={{music: true}}
+    />
+    <Composition
+      id="S007-Minimalism"
+      component={Minimalism}
+      durationInFrames={MINIMALISM_DURATION}
+      fps={60}
+      width={1920}
+      height={1080}
+      defaultProps={{music: true, blur: 6}}
     />
   </>
 );
