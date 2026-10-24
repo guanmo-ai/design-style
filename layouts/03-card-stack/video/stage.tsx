@@ -57,8 +57,8 @@ export const CoverCaption: React.FC<{f: number}> = ({f}) => {
   const color = inkOn(f);
   return (
     <>
-      <Show f={f} at={BEATS.cover - 8} out={BEATS.pull2 + 8} style={{left: 64, top: 72, color}}>
-        <Rise f={f} at={BEATS.cover} out={BEATS.pull2} text="刊 · 抽" style={{...gro(56, 700, -0.05), color}} />
+      <Show f={f} at={BEATS.cover - 18} out={BEATS.pull2 + 8} style={{left: 64, top: 72, color}}>
+        <Rise f={f} at={BEATS.cover - 12} out={BEATS.pull2} text="刊 · 抽" style={{...gro(56, 700, -0.05), color}} />
       </Show>
       <Show f={f} at={BEATS.pull1 - 6} out={BEATS.layer - 12} style={{left: 64, top: 148, color}}>
         <Swap
@@ -77,8 +77,8 @@ export const CoverCaption: React.FC<{f: number}> = ({f}) => {
 
 export const LayerCaption: React.FC<{f: number}> = ({f}) => (
   <>
-    <Show f={f} at={BEATS.layer - 6} out={BEATS.fan - 8} style={{left: 64, top: 72, color: C.cream}}>
-      <Rise f={f} at={BEATS.layer} out={BEATS.fan} text="层 · 提" style={{...gro(56, 700, -0.05), color: C.cream}} />
+    <Show f={f} at={BEATS.layer - 16} out={BEATS.fan - 8} style={{left: 64, top: 72, color: C.cream}}>
+      <Rise f={f} at={BEATS.layer - 8} out={BEATS.fan} text="层 · 提" style={{...gro(56, 700, -0.05), color: C.cream}} />
     </Show>
     <Show f={f} at={BEATS.mark} out={BEATS.fan - 4} style={{left: 64, top: 148, color: C.cream}}>
       <Swap
@@ -95,8 +95,8 @@ export const LayerCaption: React.FC<{f: number}> = ({f}) => (
 
 export const ProofCaption: React.FC<{f: number}> = ({f}) => (
   <>
-    <Show f={f} at={BEATS.fan - 8} out={BEATS.explode - 6} style={{left: 64, top: 72, color: C.ink}}>
-      <Rise f={f} at={BEATS.fan} out={BEATS.explode} text="样 · 压" style={{...gro(56, 700, -0.05)}} />
+    <Show f={f} at={BEATS.fan - 16} out={BEATS.explode - 12} style={{left: 64, top: 72, color: C.ink}}>
+      <Rise f={f} at={BEATS.fan - 8} out={BEATS.explode - 10} text="样 · 压" style={{...gro(56, 700, -0.05)}} />
     </Show>
     <Show f={f} at={BEATS.pick - 4} out={BEATS.explode - 4} style={{left: 64, top: 148, color: C.ink}}>
       <Swap
@@ -113,8 +113,8 @@ export const ProofCaption: React.FC<{f: number}> = ({f}) => (
 
 export const TeachCaption: React.FC<{f: number}> = ({f}) => (
   <>
-    <Show f={f} at={BEATS.explode - 6} out={BEATS.noise - 4} style={{left: 64, top: 64, color: C.cream}}>
-      <Rise f={f} at={BEATS.explode} out={BEATS.noise} text="这叠怎么构成" style={{...gro(48, 700, -0.04), color: C.cream}} />
+    <Show f={f} at={BEATS.explode - 14} out={BEATS.noise - 8} style={{left: 64, top: 64, color: C.cream}}>
+      <Rise f={f} at={BEATS.explode - 8} out={BEATS.noise - 6} text="这叠怎么构成" style={{...gro(48, 700, -0.04), color: C.cream}} />
     </Show>
     <Show f={f} at={BEATS.r1} out={BEATS.noise} style={{left: 64, top: 140, color: C.cream}}>
       <div style={{...sc(20, 500), opacity: 0.8}}>规则落在运动上，不是静图</div>
@@ -123,7 +123,7 @@ export const TeachCaption: React.FC<{f: number}> = ({f}) => (
 );
 
 export const PitCaption: React.FC<{f: number}> = ({f}) => (
-  <Show f={f} at={BEATS.noise - 6} out={BEATS.end - 8} style={{left: 64, top: 72, color: C.ink}}>
+  <Show f={f} at={BEATS.noise - 18} out={BEATS.end - 8} style={{left: 64, top: 72, color: C.ink}}>
     <Swap
       f={f}
       at={BEATS.flat}
@@ -146,18 +146,18 @@ export const EndTitle: React.FC<{f: number}> = ({f}) => {
   if (f < SCENE.END.in - 4) return null;
   return (
     <>
-      <RiseBox f={f} at={BEATS.end} out={DURATION} h={90} style={{left: 72, top: 720}}>
+      <RiseBox f={f} at={SCENE.END.in} out={DURATION} h={90} style={{left: 72, top: 720}}>
         <div style={{...gro(84, 700, -0.05), color: C.cream}}>Card Stack</div>
       </RiseBox>
-      <Show f={f} at={BEATS.end + 16} out={DURATION} style={{left: 76, top: 820, color: C.cream}}>
+      <Show f={f} at={SCENE.END.in + 10} out={DURATION} style={{left: 76, top: 820, color: C.cream}}>
         <div style={{...sc(22, 500, 0.08), opacity: 0.7}}>卡片层叠</div>
       </Show>
-      <Show f={f} at={BEATS.end + 28} out={DURATION} style={{left: 76, top: 868, display: 'flex', gap: 28, color: C.cream}}>
+      <Show f={f} at={SCENE.END.in + 22} out={DURATION} style={{left: 76, top: 868, display: 'flex', gap: 28, color: C.cream}}>
         {['3–4 张', '只读一张', '抽 / 提 / 压'].map((t) => (
           <span key={t} style={{...sc(18, 500)}}>{t}</span>
         ))}
       </Show>
-      <Show f={f} at={BEATS.end + 48} out={DURATION} style={{left: 76, top: 920, color: C.red, ...gro(22, 700, 0.02)}}>
+      <Show f={f} at={SCENE.END.in + 40} out={DURATION} style={{left: 76, top: 920, color: C.red, ...gro(22, 700, 0.02)}}>
         @guanmo_ai
       </Show>
     </>

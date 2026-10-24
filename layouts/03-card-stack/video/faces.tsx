@@ -36,16 +36,6 @@ export const EXTRA_FACE = [
   {bg: C.teal, fg: C.cream, t: '声'},
 ] as const;
 
-const Pop: React.FC<{f: number; at: number; children: React.ReactNode; style?: CSS; dy?: number}> = ({f, at, children, style, dy = 14}) => {
-  const p = spr(f, at, POP, 26);
-  if (p <= 0.02) return null;
-  return (
-    <div style={{opacity: Math.min(1, p * 1.35), transform: `translateY(${(1 - p) * dy}px)`, ...style}}>
-      {children}
-    </div>
-  );
-};
-
 const Marks: React.FC<{c: string; s?: number}> = ({c, s = 14}) => {
   const corner = (style: CSS) => (
     <div style={{position: 'absolute', width: s, height: s, pointerEvents: 'none', ...style}}>
@@ -65,25 +55,24 @@ const Marks: React.FC<{c: string; s?: number}> = ({c, s = 14}) => {
 
 export const CoverFace: React.FC<{f: number; i: number}> = ({f, i}) => {
   const id = ID[i];
-  const verbAt = [BEATS.cover, BEATS.land2, BEATS.land3, BEATS.front][i];
   return (
     <div style={{position: 'absolute', inset: 0, color: id.fg, overflow: 'hidden'}}>
-      <div style={{position: 'absolute', left: 0, top: 0, bottom: 0, width: 18, background: i === 1 ? C.red : id.fg, opacity: i === 1 ? 1 : 0.18}} />
-      <Pop f={f} at={8 + i * 4} style={{position: 'absolute', left: 36, top: 28, right: 28, display: 'flex', justifyContent: 'space-between', alignItems: 'baseline'}}>
+      <div style={{position: 'absolute', left: 0, top: 0, bottom: 0, width: 18, background: i === 1 ? C.red : id.fg, opacity: i === 1 ? 1 : 0.22}} />
+      <div style={{position: 'absolute', left: 36, top: 28, right: 28, display: 'flex', justifyContent: 'space-between', alignItems: 'baseline'}}>
         <span style={{...mono(13), opacity: 0.7}}>{id.vol}.{id.no}</span>
         <span style={{...sc(15, 700, 0.12)}}>{id.tag}</span>
-      </Pop>
-      <Pop f={f} at={verbAt - 8} dy={28} style={{position: 'absolute', left: 28, top: '18%', right: 16}}>
+      </div>
+      <div style={{position: 'absolute', left: 28, top: '16%', right: 16}}>
         <div style={{...gro(i === 2 ? 168 : 188, 700, -0.07), lineHeight: 0.82}}>{id.verb}</div>
-      </Pop>
-      <Pop f={f} at={verbAt + 4} style={{position: 'absolute', left: 36, top: '48%'}}>
+      </div>
+      <div style={{position: 'absolute', left: 36, top: '46%'}}>
         <div style={{...gro(28, 700, 0.08), opacity: 0.88}}>{id.en}</div>
         <div style={{width: 72, height: 4, background: i === 1 ? C.red : id.fg, marginTop: 10}} />
-      </Pop>
-      <Pop f={f} at={36 + i * 5} style={{position: 'absolute', left: 36, bottom: 36, right: 28}}>
+      </div>
+      <div style={{position: 'absolute', left: 36, bottom: 36, right: 28}}>
         <div style={{...sc(16, 500, 0.08), opacity: 0.72}}>24.10.26</div>
         <div style={{...mono(12), opacity: 0.5, marginTop: 6}}>NO.{id.no}  ·  520 × 740</div>
-      </Pop>
+      </div>
       <div style={{position: 'absolute', right: 22, top: 86, width: 10, height: 10, borderRadius: 10, background: i === 1 ? C.red : id.fg, opacity: 0.85}} />
     </div>
   );
@@ -94,21 +83,24 @@ export const LayerFace: React.FC<{f: number; i: number}> = ({f, i}) => {
   const named = LAYER_NAME[i];
   const on = i === 3 && f >= BEATS.mark;
   return (
-    <div style={{position: 'absolute', inset: 0, background: C.cream, color: C.ink, overflow: 'hidden'}}>
-      <div style={{position: 'absolute', left: 0, top: 0, bottom: 0, width: 16, background: id.bg}} />
-      <Marks c={on ? C.red : 'rgba(17,17,17,0.28)'} />
-      {on && <div style={{position: 'absolute', inset: 6, border: `2px solid ${C.red}`, pointerEvents: 'none'}} />}
-      <Pop f={f} at={BEATS.layer + i * 4} style={{position: 'absolute', left: 36, top: 18, right: 20, display: 'flex', justifyContent: 'space-between'}}>
-        <span style={{...gro(42, 700, -0.04)}}>L{i + 1}</span>
-        <span style={{...mono(14), color: C.ink2}}>z {40 - i * 18}</span>
-      </Pop>
-      <Pop f={f} at={BEATS.layer + 8 + i * 4} style={{position: 'absolute', left: 36, top: 72}}>
-        <div style={{...sc(28, 700)}}>{named}</div>
-        <div style={{...mono(13), color: C.ink2, marginTop: 6}}>{id.en}  ·  {id.vol}.{id.no}</div>
-      </Pop>
-      <div style={{position: 'absolute', left: 36, bottom: 22, right: 24, display: 'flex', gap: 6}}>
+    <div style={{position: 'absolute', inset: 0, background: id.bg, color: id.fg, overflow: 'hidden'}}>
+      <div style={{position: 'absolute', left: 0, top: 0, bottom: 0, width: '32%', background: i === 1 ? C.red : 'rgba(0,0,0,0.18)'}} />
+      <Marks c={on ? C.red : id.fg} />
+      {on && <div style={{position: 'absolute', inset: 6, border: `3px solid ${C.red}`, pointerEvents: 'none'}} />}
+      <div style={{position: 'absolute', left: '38%', top: 22, right: 20, display: 'flex', justifyContent: 'space-between'}}>
+        <span style={{...gro(56, 700, -0.05)}}>L{i + 1}</span>
+        <span style={{...mono(14), opacity: 0.7}}>z {40 - i * 18}</span>
+      </div>
+      <div style={{position: 'absolute', left: '38%', top: 92}}>
+        <div style={{...sc(32, 700)}}>{named}</div>
+        <div style={{...mono(13), opacity: 0.7, marginTop: 8}}>{id.en}  ·  {id.vol}.{id.no}</div>
+      </div>
+      <div style={{position: 'absolute', left: 16, bottom: 20, width: '26%'}}>
+        <div style={{...gro(72, 700, -0.06), opacity: 0.35}}>{id.verb}</div>
+      </div>
+      <div style={{position: 'absolute', left: '38%', bottom: 22, right: 24, display: 'flex', gap: 6}}>
         {[0, 1, 2, 3, 4, 5].map((k) => (
-          <div key={k} style={{flex: 1, height: 10, background: k <= i ? id.bg : 'rgba(17,17,17,0.08)'}} />
+          <div key={k} style={{flex: 1, height: 12, background: k <= i ? id.fg : 'rgba(246,240,228,0.2)'}} />
         ))}
       </div>
     </div>
@@ -117,28 +109,27 @@ export const LayerFace: React.FC<{f: number; i: number}> = ({f, i}) => {
 
 export const ProofFace: React.FC<{f: number; i: number}> = ({f, i}) => {
   const p = PAPER[i];
+  const id = ID[i];
   const picked = i === 1 && f >= BEATS.pick;
   return (
-    <div style={{position: 'absolute', inset: 0, background: C.cream, color: C.ink, overflow: 'hidden'}}>
-      <Marks c={C.ink} s={16} />
-      <div style={{position: 'absolute', left: 0, right: 0, top: 0, height: 18, background: ID[i].bg}} />
-      <Pop f={f} at={BEATS.fan + i * 3} style={{position: 'absolute', left: 24, top: 36, right: 20}}>
-        <div style={{...mono(12), color: C.ink2}}>PROOF 0{i + 1}</div>
-        <div style={{...gro(i === 1 ? 36 : 28, 700, -0.03), marginTop: 8}}>{p.name}</div>
-        <div style={{...sc(16, 500), marginTop: 6}}>{p.gsm} gsm</div>
-      </Pop>
-      <div style={{position: 'absolute', left: 24, bottom: 56, right: 20, display: 'flex', height: 18}}>
+    <div style={{position: 'absolute', inset: 0, background: id.bg, color: id.fg, overflow: 'hidden'}}>
+      <Marks c={id.fg} s={16} />
+      <div style={{position: 'absolute', left: 22, top: 28, right: 20}}>
+        <div style={{...mono(12), opacity: 0.7}}>PROOF 0{i + 1}</div>
+        <div style={{...gro(i === 1 ? 42 : 32, 700, -0.04), marginTop: 10}}>{p.name}</div>
+        <div style={{...sc(16, 500), marginTop: 8, opacity: 0.8}}>{p.gsm} gsm</div>
+      </div>
+      <div style={{position: 'absolute', left: 22, top: '42%', ...gro(88, 700, -0.06), opacity: 0.28}}>{id.verb}</div>
+      <div style={{position: 'absolute', left: 0, right: 0, bottom: 48, height: 22, display: 'flex'}}>
         {p.cmyk.map((c) => (
           <div key={c} style={{flex: 1, background: c}} />
         ))}
       </div>
-      <Pop f={f} at={BEATS.fan + 10} style={{position: 'absolute', left: 24, bottom: 22, ...mono(12), color: C.ink2}}>
-        C M Y K  ·  套准
-      </Pop>
+      <div style={{position: 'absolute', left: 22, bottom: 16, ...mono(12), opacity: 0.65}}>C M Y K  ·  套准</div>
       {picked && (
-        <Pop f={f} at={BEATS.pick} style={{position: 'absolute', right: 16, top: 44, border: `2px solid ${C.red}`, color: C.red, padding: '6px 8px', ...gro(16, 700, 0.06)}}>
+        <div style={{position: 'absolute', right: 16, top: 28, border: `2px solid ${C.red}`, background: C.red, color: C.cream, padding: '6px 8px', ...gro(16, 700, 0.06)}}>
           选定
-        </Pop>
+        </div>
       )}
     </div>
   );
@@ -146,17 +137,17 @@ export const ProofFace: React.FC<{f: number; i: number}> = ({f, i}) => {
 
 export const TeachFace: React.FC<{f: number; i: number}> = ({f, i}) => {
   const r = RULES[i];
-  const at = BEATS[['r1', 'r2', 'r3', 'r3'][i] as 'r1' | 'r2' | 'r3'] + (i === 3 ? 30 : 0);
+  const id = ID[i];
+  const hit = BEATS[['r1', 'r2', 'r3', 'r3'][i] as 'r1' | 'r2' | 'r3'] + (i === 3 ? 30 : 0);
+  const pulse = spr(f, hit, POP, 22);
   return (
-    <div style={{position: 'absolute', inset: 0, background: C.cream, color: C.ink, overflow: 'hidden'}}>
-      <div style={{position: 'absolute', left: 0, top: 0, bottom: 0, width: 14, background: ID[i].bg}} />
-      <Pop f={f} at={BEATS.explode + i * 5} style={{position: 'absolute', left: 28, top: 18}}>
-        <div style={{...gro(22, 700), color: C.red}}>{r.n}</div>
-      </Pop>
-      <Pop f={f} at={at} dy={20} style={{position: 'absolute', left: 28, top: 52, right: 18}}>
-        <div style={{...gro(i === 2 ? 36 : 48, 700, -0.04)}}>{r.t}</div>
-        <div style={{...sc(18, 500), marginTop: 10, color: C.ink2}}>{r.d}</div>
-      </Pop>
+    <div style={{position: 'absolute', inset: 0, background: id.bg, color: id.fg, overflow: 'hidden', transform: `scale(${1 + 0.04 * pulse})`}}>
+      <div style={{position: 'absolute', left: 0, top: 0, bottom: 0, width: 22, background: i === 1 ? C.red : id.fg, opacity: i === 1 ? 1 : 0.22}} />
+      <div style={{position: 'absolute', left: 36, top: 20, ...gro(20, 700), color: i === 1 ? C.red : id.fg, opacity: 0.85}}>{r.n}</div>
+      <div style={{position: 'absolute', left: 36, top: 56, right: 18}}>
+        <div style={{...gro(i === 2 ? 40 : 52, 700, -0.04)}}>{r.t}</div>
+        <div style={{...sc(18, 500), marginTop: 12, opacity: 0.75}}>{r.d}</div>
+      </div>
     </div>
   );
 };
