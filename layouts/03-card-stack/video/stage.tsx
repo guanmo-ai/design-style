@@ -65,7 +65,7 @@ export const Meaning: React.FC<{f: number}> = ({f}) => {
   return (
     <Show f={f} at={line.at} out={line.out} style={{left: 48, top: 36, color, width: 820}}>
       <div style={{...mono(12), opacity: 0.62, marginBottom: 6}}>{line.en}</div>
-      <Rise f={f} at={line.at + 2} out={line.out} text={line.zh} style={{...sc(28, 700, 0.02)}} />
+      <div style={{...sc(28, 700, 0.02)}}>{line.zh}</div>
     </Show>
   );
 };
@@ -74,15 +74,15 @@ export const EndTitle: React.FC<{f: number}> = ({f}) => {
   if (f < SCENE.END.in - 2) return null;
   return (
     <>
-      <RiseBox f={f} at={SCENE.END.in} out={DURATION} h={70} style={{left: 56, top: 700}}>
-        <div style={{...gro(64, 700, -0.05), color: C.cream}}>Card Stack</div>
+      <RiseBox f={f} at={SCENE.END.in} out={DURATION} h={78} style={{left: 56, top: 620}}>
+        <div style={{...gro(72, 700, -0.05), color: C.cream}}>Card Stack</div>
       </RiseBox>
-      <Show f={f} at={SCENE.END.in + 8} out={DURATION} style={{left: 58, top: 780, color: C.cream, display: 'flex', flexDirection: 'column', gap: 8}}>
+      <Show f={f} at={SCENE.END.in + 8} out={DURATION} style={{left: 58, top: 714, color: C.cream, display: 'flex', flexDirection: 'column', gap: 10}}>
         {['3–4 张，第五张是噪声', '同时只读一张', '换层用抽 / 提 / 压'].map((t) => (
-          <span key={t} style={{...sc(18, 500)}}>{t}</span>
+          <span key={t} style={{...sc(22, 500)}}>{t}</span>
         ))}
       </Show>
-      <Show f={f} at={SCENE.END.in + 18} out={DURATION} style={{left: 58, top: 890, color: C.red, ...gro(18, 700)}}>
+      <Show f={f} at={SCENE.END.in + 18} out={DURATION} style={{left: 58, top: 840, color: C.red, ...gro(20, 700)}}>
         @guanmo_ai
       </Show>
     </>

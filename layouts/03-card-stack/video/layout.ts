@@ -94,29 +94,26 @@ const AFTER_PRESS = [1, 2, 3, 4];
 const flat = (open: number, front: number[]): Pose[] =>
   I.map((i) => {
     const d = front.indexOf(i);
-    if (d < 0) {
-      const t = i === 5 ? 0 : 1;
-      return P(40, 140 + t * 220, 160, 200, 6, {z: -2, dim: 0.32, o: 0.85});
-    }
-    return P(640 + d * (28 + open * 36), 80 + d * (70 + open * 28), 720 - d * 8, 92 + open * 8, 6, {
-      z: 36 - d,
-      dim: d * 0.08,
-      rot: d === 0 ? -0.4 : d % 2 ? 0.3 : -0.2,
+    if (d < 0) return P(36, 200 + (i === 5 ? 0 : 1) * 180, 140, 176, 6, {z: -2, dim: 0.36, o: 0.5});
+    if (d === 0) return P(860 + open * 10, 90, 520, 740, 8, {z: 50, dim: 0, rot: -1});
+    const k = d - 1;
+    return P(80 + k * (36 + open * 20), 70 + k * (150 + open * 24), 420, 280, 8, {
+      z: 20 - d,
+      dim: 0.16 + k * 0.05,
+      rot: k % 2 ? 1.2 : -1,
     });
   });
 
 const fan = (wide: number, pick: number, front: number[]): Pose[] =>
   I.map((i) => {
     const d = front.indexOf(i);
-    if (d < 0) return P(40, 200, 140, 180, 6, {o: 0.35, dim: 0.4, z: -4});
-    if (pick === i) {
-      return P(700, 60, 560, 780, 8, {z: 50, rot: -1, dim: 0});
-    }
+    if (d < 0) return P(36, 220, 130, 170, 6, {o: 0.3, dim: 0.42, z: -4});
+    if (pick === i) return P(680, 50, 560, 780, 8, {z: 50, rot: -1, dim: 0});
     const t = (d - 1.5) / 2;
-    return P(120 + d * 280 * wide, 180 + Math.abs(t) * 70, 240, 560, 7, {
-      rot: t * 14,
+    return P(70 + d * 380 * wide, 120 + Math.abs(t) * 36, 340, 640, 7, {
+      rot: t * 8,
       z: 16 - Math.abs(d - 1),
-      dim: pick >= 0 ? 0.22 : Math.abs(t) * 0.1,
+      dim: pick >= 0 ? (pick === i ? 0 : 0.2) : 0,
     });
   });
 
@@ -133,20 +130,19 @@ const folio = (split: number, pulled: boolean): Pose[] =>
     });
   });
 
-const board = (moved: boolean, bump = 0): Pose[] =>
-  I.map((i) => {
-    let col = i < 2 ? 0 : i < 4 ? 1 : 2;
-    let row = i < 2 ? i : i < 4 ? i - 2 : i - 4;
-    if (moved && i === 1) {
-      col = 1;
-      row = 2;
-    }
-    return P(40 + col * 620 + bump * (col - 1) * 6, 80 + row * 300 + (moved && i === 1 ? -12 : 0), 580, 260, 10, {
-      z: moved && i === 1 ? 28 : 12 - row,
-      rot: moved && i === 1 ? -0.6 : row % 2 ? 0.3 : -0.2,
-      dim: col === 2 ? 0.1 : 0,
+const board = (moved: boolean, bump = 0): Pose[] => {
+  const map: Record<number, [number, number]> = moved
+    ? {0: [0, 0], 3: [0, 1], 2: [1, 0], 1: [1, 1], 4: [2, 0], 5: [2, 1]}
+    : {0: [0, 0], 1: [0, 1], 2: [1, 0], 3: [1, 1], 4: [2, 0], 5: [2, 1]};
+  return I.map((i) => {
+    const [col, row] = map[i];
+    return P(48 + col * 620 + bump * (col - 1) * 6, 120 + row * 300 + (moved && i === 1 ? -10 : 0), 580, 260, 10, {
+      z: moved && i === 1 ? 30 : 12 - row,
+      rot: moved && i === 1 ? -0.5 : 0,
+      dim: col === 2 ? 0.08 : 0,
     });
   });
+};
 
 const proofs = (mode: 'fan' | 'wide' | 'commit'): Pose[] =>
   I.map((i) => {
@@ -173,27 +169,25 @@ const noise = (wild: number): Pose[] =>
     }),
   );
 
-const fix = (lift: number): Pose[] =>
-  I.map((i) => {
-    if (i > 3) return P(960, 540, 40, 40, 6, {o: 0, z: -20});
-    return P(820 - i * 34, 130 - i * 24 - (i === 0 ? lift : 0), 500, 700, 8, {
-      rot: i === 0 ? -1.3 : i % 2 ? 1 : -0.7,
-      z: 36 - i * 10,
-      dim: i * 0.11,
-    });
-  });
+const fix = (lift: number): Pose[] => {
+  const p = working(AFTER_PRESS, [], [0, 5], lift);
+  p[0] = {...p[0], o: 0};
+  p[5] = {...p[5], o: 0};
+  return p;
+};
 
-const shrink = (s: number): Pose[] =>
-  I.map((i) => {
-    if (i > 3) return P(960, 260, 16, 16, 4, {o: 0, z: -20});
-    const x = 820 - i * 34;
-    const y = 130 - i * 24;
-    return P(960 + (x - 960) * s, 250 + (y - 540) * s, 500 * s, 700 * s, 6, {
-      z: 20 - i,
-      rot: i === 0 ? -1 : i % 2 ? 0.7 : -0.5,
-      dim: i * 0.1,
+const shrink = (s: number): Pose[] => {
+  const base = fix(8);
+  return I.map((i) => {
+    const p = base[i];
+    if (p.o < 0.01) return {...p, o: 0, w: 8, h: 8};
+    return P(1180 + (p.x - 820) * s, 90 + (p.y - 120) * s, p.w * s, p.h * s, 6, {
+      z: p.z,
+      rot: p.rot,
+      dim: p.dim,
     });
   });
+};
 
 export const LAYOUTS: Record<LayoutName, Pose[]> = {
   MESS: mess(0),
@@ -202,9 +196,21 @@ export const LAYOUTS: Record<LayoutName, Pose[]> = {
   STACK: working(STACK_A, TRAY_A, [], 8),
   STACK2: working(STACK_A, TRAY_A, [], 18),
   STACK3: working(STACK_A, TRAY_A, [], 26, 4),
-  PULL: working(AFTER_PULL, TRAY_B, [0], 6),
-  LAND: working(AFTER_PULL, TRAY_B, [0], 16),
-  LAND2: working(AFTER_PULL, TRAY_B, [0], 10, 4),
+  PULL: (() => {
+    const p = working(AFTER_PULL, TRAY_B, [], 8);
+    p[0] = P(40, 70, 400, 540, 8, {rot: -18, z: 55, sc: 0.94, o: 1});
+    return p;
+  })(),
+  LAND: (() => {
+    const p = working(AFTER_PULL, TRAY_B, [], 16);
+    p[0] = P(-280, 40, 380, 520, 8, {rot: -24, z: 52, sc: 0.9, o: 0.55});
+    return p;
+  })(),
+  LAND2: (() => {
+    const p = working(AFTER_PULL, TRAY_B, [], 10, 4);
+    p[0] = P(-420, 20, 360, 500, 8, {rot: -28, z: 48, sc: 0.86, o: 0.22});
+    return p;
+  })(),
   LAND3: working(AFTER_PULL, TRAY_B, [0], 20, -2),
   FLAT: flat(0.15, AFTER_PULL),
   FLAT2: flat(0.55, AFTER_PULL),
@@ -230,8 +236,8 @@ export const LAYOUTS: Record<LayoutName, Pose[]> = {
   NOISE: noise(0.7),
   FIX: fix(14),
   FIX2: fix(24),
-  END: shrink(0.2),
-  END2: shrink(0.16),
+  END: shrink(0.62),
+  END2: shrink(0.56),
 };
 
 export type Trans = {at: number; to: LayoutName; dur: number; stagger: number; order: number[]};
@@ -531,7 +537,7 @@ export const camAt = (f: number): Cam => {
     {f: 534, v: 500, d: 16, e: 'smooth'},
     {f: 738, v: 500, d: 16, e: 'smooth'},
     {f: 1134, v: 460, d: 16, e: 'smooth'},
-    {f: 1242, v: 260, d: 18, e: 'smooth'},
+    {f: 1242, v: 500, d: 18, e: 'smooth'},
   ]);
   return {s, x, y, ox, oy};
 };

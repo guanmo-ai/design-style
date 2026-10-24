@@ -89,7 +89,7 @@ const Card: React.FC<{f: number; i: number}> = ({f, i}) => {
         boxShadow: `inset 0 0 0 1px rgba(17,17,17,0.10), 0 ${front ? 18 : 7}px ${front ? 40 : 18}px rgba(12,12,14,${front ? 0.24 : 0.12})`,
       }}
     >
-      <Face i={i} fam={familyOf(st.to)} w={w} h={h} />
+      <Face i={i} fam={familyOf(st.to)} w={w} h={h} front={front && familyOf(st.to) !== 'HOOK'} />
     </div>
   );
 };
