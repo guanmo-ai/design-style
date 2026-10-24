@@ -29,8 +29,8 @@ The first draft was rejected: centered text cards on empty paper, no protagonist
 |---|---|
 | Canvas | 1920 × 1080 |
 | Frame rate | 60 fps |
-| Composition duration | 15 seconds |
-| Frames | 900 |
+| Composition duration | 18 seconds |
+| Frames | 1080 |
 | Tempo | 120 BPM (beat = 30 frames, sixteenth = 7.5 frames) |
 | Loudness | −14 LUFS, true peak below −1 dBTP after AAC |
 

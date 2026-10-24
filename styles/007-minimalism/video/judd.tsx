@@ -1,15 +1,15 @@
 /**
  * 007 · Minimalism —— 04 重复 8.0–10.0s（f480–600）
- *   8.0–9.1s   机身压成的那个盒子是第一个；其余九个一个十六分音符一个从墙里推出来（上行的马林巴），点一格一格往上跳
- *   9.25–9.9s  点往下跳回中间那一格，经过的盒子一个个被敲亮（下行的应答）；视点慢慢抬高，盒子的顶面变成底面
- *   9.75–10s   交棒：九个盒子缩回墙里，中间那一个留下来，变成下一幕的手机
+ *   8.0–9.1s   机身压成的那个盒子是第一个；其余九个一个十六分音符一个从墙里推出来，镜头钉着最新的那一格往上走
+ *   9.1–9.6s   镜头拉开看整摞；点往下跳回中间那一格，经过的盒子一个个被敲亮
+ *   9.5–10s    九个盒子缩回墙里，镜头推进留下的那一个，变成下一幕的手机
  * 一点透视：每个盒子的正面是矩形，背面朝灭点缩 q 倍；盒高 = 间距（贾德的规矩）
  */
 import React from 'react';
 import {E, SNAP, spr, tween} from '../../../src/lib/anim';
 import {C, LINE} from '../tokens';
-import {juddFirst} from './radio';
-import {Dot, lerp, n2, P, quad, Txt, vis} from './ui';
+import {CAM_JUDD0, juddFirst} from './radio';
+import {Cam2, Dot, lerp, mixCam, n2, P, quad, Txt, vis, World} from './ui';
 
 export const N = 10;
 const UH = juddFirst.h;
@@ -18,16 +18,29 @@ const UX = juddFirst.x;
 const uy = (i: number) => juddFirst.y - i * UH * 2;
 export const UNIT_TIMES = Array.from({length: N}, (_, i) => 480 + i * 7.5);
 export const KEEP = 4; // 留下来变成手机的那一格
-const DOWN_AT = 555;
+const DOWN_AT = 549; // 最后一个盒子刚到位就往下跳，中间不留空拍
 /** 往下跳：9 → 4，一个十六分音符一格 */
 export const DOWN_TIMES = Array.from({length: N - 1 - KEEP}, (_, i) => DOWN_AT + i * 7.5);
-export const RETRACT = 585;
+export const RETRACT = 568;
 export const PHONE_AT = 600;
 
-/** 灭点：视点从下往上慢慢抬，同时向右挪一点（像摄影机升降） */
+/** 灭点：一边升一边绕，顶面 / 底面一直在换，不像展板 */
 const vp = (f: number) => {
   const t = tween(f, 478, 122, 0, 1, E.inOut);
-  return {x: lerp(840, 1010, t), y: lerp(860, 300, t)};
+  const orbit = Math.sin(tween(f, 480, 120, 0, Math.PI, E.soft));
+  return {x: lerp(760, 1100, t) + 55 * orbit, y: lerp(920, 220, t)};
+};
+
+/** 04 运镜：钉着码高的那一格 → 拉开看整摞 → 推进留下的那一格 */
+export const CAM_PHONE0: Cam2 = {ox: 1160, oy: 560, s: 1.7};
+const cam04 = (f: number): Cam2 => {
+  const k = Math.min(1, Math.max(0, (f - 480) / (7.5 * (N - 1))));
+  const follow: Cam2 = {ox: 1160, oy: lerp(880, 300, k), s: lerp(1.82, 1.28, k)};
+  const wide: Cam2 = {ox: 1100, oy: 580, s: 0.9};
+  const c = mixCam(follow, wide, tween(f, 548, 16, 0, 1, E.inOut));
+  const tight = mixCam(c, CAM_PHONE0, tween(f, 568, 32, 0, 1, E.inOut));
+  const d = 5 * (1 - tween(f, 588, 12, 0, 1, E.inOut));
+  return {ox: tight.ox + Math.sin(f * 0.05) * d, oy: tight.oy + Math.cos(f * 0.036) * d * 0.6, s: tight.s};
 };
 const Q = 0.84;
 
@@ -77,20 +90,21 @@ const Shadow: React.FC<{f: number; i: number; out: number}> = ({f, i, out}) => {
   return <path d={'M' + pts.map(([x, y]) => `${n2(x)} ${n2(y)}`).join('L') + 'Z'} fill={C.ink} opacity={0.07} />;
 };
 
-/** 左边一个大数字：×1 → ×10（和 02 的 48 → 1 正好相反）；九个缩回墙里时又一路减回 ×1 */
+/** 左上角一个小计数：跟着盒子往上加，拉开看全貌时就收掉，不再占半张展板 */
 const Count: React.FC<P> = ({f}) => {
-  const o = vis(f, 482, PHONE_AT - 2, 10, 8);
+  const o = vis(f, 482, 556, 8, 10);
   if (o <= 0.001) return null;
   let n = 1;
   for (let i = 1; i < N; i++) {
     if (f >= UNIT_TIMES[i] && !(f >= RETRACT + Math.abs(i - KEEP) * 1.5 + 6)) n++;
   }
+  const bump = 1 - tween(f, UNIT_TIMES[Math.min(N - 1, n - 1)], 5, 0, 1, E.out);
   return (
     <g opacity={o < 1 ? n2(o) : undefined}>
-      <Txt x={112} y={700} k="d100" size={230} ls={-0.02}>
+      <Txt x={120} y={n2(236 + bump * 8)} k="d100" size={110} ls={-0.02}>
         {`×${n}`}
       </Txt>
-      <Txt x={120} y={756} k="sc300" size={26} ls={0.12} c={C.greyDk}>
+      <Txt x={124} y={268} k="sc300" size={18} ls={0.12} c={C.greyDk}>
         {n > 1 ? '个一模一样的盒子' : '个盒子'}
       </Txt>
     </g>
@@ -128,14 +142,14 @@ const dotJudd = (f: number) => {
 };
 export {dotJudd};
 
-/** 盒高 = 间距：右边一根标尺 */
+/** 盒高 = 间距：只在镜头拉开看整摞的那几帧闪一下 */
 const Ruler: React.FC<P> = ({f}) => {
-  const o = vis(f, 520, RETRACT - 6, 16, 10);
+  const o = vis(f, 548, 568, 8, 8);
   if (o <= 0.001) return null;
-  const x = UX + UW + 64;
+  const x = UX + UW + 48;
   const top = uy(N - 1);
   const bot = uy(0) + UH;
-  const p = tween(f, 520, 30, 0, 1, E.out);
+  const p = tween(f, 548, 12, 0, 1, E.out);
   return (
     <g opacity={o < 1 ? n2(o) : undefined}>
       <line x1={x} y1={bot} x2={x} y2={n2(lerp(bot, top, p))} stroke={C.ink} strokeWidth={LINE.note} />
@@ -144,31 +158,24 @@ const Ruler: React.FC<P> = ({f}) => {
         if (y < lerp(bot, top, p) - 0.5) return null;
         return <line key={k} x1={x - 6} y1={y} x2={x + 6} y2={y} stroke={C.ink} strokeWidth={LINE.note} />;
       })}
-      <line x1={x - 6} y1={top} x2={x + 6} y2={top} stroke={C.ink} strokeWidth={LINE.note} opacity={p >= 1 ? 1 : 0} />
-      <Txt x={x + 22} y={uy(KEEP) + 6} k="mono" size={14} ls={0.16} c={C.greyDk} o={tween(f, 540, 12)}>
+      <Txt x={x + 18} y={uy(KEEP) + 8} k="mono" size={13} ls={0.16} c={C.greyDk} o={tween(f, 552, 8)}>
         H = GAP
-      </Txt>
-      <Txt x={x + 22} y={uy(KEEP) + 30} k="sc300" size={18} ls={0.1} c={C.greyDk} o={tween(f, 544, 12)}>
-        盒高 = 间距
-      </Txt>
-      <Txt x={x + 22} y={uy(N - 1) + UH} k="mono" size={14} ls={0.16} c={C.greyDk} o={tween(f, 546, 12)}>
-        × 10
       </Txt>
     </g>
   );
 };
 
 const Captions: React.FC<P> = ({f}) => {
-  const s = (at: number) => vis(f, at, RETRACT + 4, 14, 10);
+  const s = (at: number) => vis(f, at, 548, 10, 8);
   return (
     <g>
-      <Txt x={120} y={172} k="sc300" size={46} ls={0.08} o={s(506)}>
+      <Txt x={120} y={172} k="sc300" size={40} ls={0.08} o={s(500)}>
         同一个形状，重复十次。
       </Txt>
-      <Txt x={120} y={218} k="t300" size={24} ls={0.01} c={C.greyDk} o={s(514)}>
+      <Txt x={120} y={210} k="t300" size={22} ls={0.01} c={C.greyDk} o={s(508)}>
         What you see is what you see. — Frank Stella
       </Txt>
-      <Txt x={1800} y={150} k="mono" size={14} ls={0.18} c={C.greyDk} anchor="end" o={s(520)}>
+      <Txt x={1800} y={150} k="mono" size={14} ls={0.18} c={C.greyDk} anchor="end" o={s(512)}>
         AFTER DONALD JUDD · STACK · 1967
       </Txt>
     </g>
@@ -208,22 +215,23 @@ export const Judd: React.FC<P> = ({f}) => {
   return (
     <g>
       <Count f={f} />
-      <Ruler f={f} />
-      {Array.from({length: N}, (_, i) => {
-        const out = outOf(i);
-        if (out <= 0.01 || (f >= PHONE_AT && i === KEEP)) return null;
-        return <Shadow key={`s${i}`} f={f} i={i} out={out} />;
-      })}
-      {Array.from({length: N}, (_, i) => {
-        if (f >= PHONE_AT && i === KEEP) return null;
-        let out = i === 0 ? 1 : spr(f, UNIT_TIMES[i], SNAP, 22);
-        if (i !== KEEP) out *= 1 - tween(f, RETRACT + Math.abs(i - KEEP) * 1.5, 10, 0, 1, E.in);
-        if (out <= 0.01) return null;
-        // 第一个盒子是收音机压成的：正面已经在那儿，只是厚度从 0 长出来
-        const q = i === 0 ? lerp(1, Q, tween(f, 480, 14, 0, 1, E.out)) : Q;
-        return <Unit key={i} f={f} i={i} out={out} lit={litAt(i)} q={q} />;
-      })}
-      {f < PHONE_AT && <Dot x={d.x} y={d.y} r={11} />}
+      <World c={cam04(f)}>
+        <Ruler f={f} />
+        {Array.from({length: N}, (_, i) => {
+          const out = outOf(i);
+          if (out <= 0.01 || (f >= PHONE_AT && i === KEEP)) return null;
+          return <Shadow key={`s${i}`} f={f} i={i} out={out} />;
+        })}
+        {Array.from({length: N}, (_, i) => {
+          if (f >= PHONE_AT && i === KEEP) return null;
+          let out = i === 0 ? 1 : spr(f, UNIT_TIMES[i], SNAP, 22);
+          if (i !== KEEP) out *= 1 - tween(f, RETRACT + Math.abs(i - KEEP) * 1.5, 10, 0, 1, E.in);
+          if (out <= 0.01) return null;
+          const q = i === 0 ? lerp(1, Q, tween(f, 480, 14, 0, 1, E.out)) : Q;
+          return <Unit key={i} f={f} i={i} out={out} lit={litAt(i)} q={q} />;
+        })}
+        {f < PHONE_AT && <Dot x={d.x} y={d.y} r={11} />}
+      </World>
       <Captions f={f} />
     </g>
   );
