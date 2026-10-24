@@ -5,9 +5,9 @@
 import React from 'react';
 import {E, POP, SNAP, spr, tween} from '../../../src/lib/anim';
 import {C, DOT, LAYOUT} from '../tokens';
-import {LINES, THESIS} from './script';
+import {THESIS} from './script';
 import {AT} from './timeline';
-import {Dot, Hair, Letters, Txt, Why, lerp, n2, P, Ripple, vis} from './ui';
+import {Dot, Hair, Letters, Txt, lerp, n2, P, Ripple} from './ui';
 
 const HZ = LAYOUT.horizon;
 const L = LAYOUT.mx;
@@ -48,16 +48,16 @@ const PosterHold: React.FC<P> = ({f}) => {
       <Txt x={L} y={430} k="t300" size={28} c={C.greyDk} o={tween(f, AT.poster + 18, 10)}>
         {THESIS.en}
       </Txt>
-      <Txt x={L} y={560} k="d100" size={140} o={tween(f, AT.poster + 16, 10)}>
+      <Txt x={L} y={500} k="d100" size={100} o={tween(f, AT.poster + 16, 10)}>
         47
       </Txt>
-      <Txt x={L + 220} y={540} k="sc300" size={20} o={tween(f, AT.poster + 20, 8)}>
+      <Txt x={L + 200} y={468} k="sc300" size={20} o={tween(f, AT.poster + 20, 8)}>
         样东西，删掉了
       </Txt>
-      <Txt x={L} y={700} k="d100" size={140} o={tween(f, AT.poster + 24, 10)}>
+      <Txt x={L} y={HZ - 16} k="d100" size={100} o={tween(f, AT.poster + 24, 10)}>
         1
       </Txt>
-      <Txt x={L + 110} y={680} k="sc300" size={20} o={tween(f, AT.poster + 28, 8)}>
+      <Txt x={L + 90} y={HZ - 40} k="sc300" size={18} o={tween(f, AT.poster + 28, 8)}>
         个留下：有用的那一个
       </Txt>
       {Array.from({length: 8}, (_, j) =>
@@ -70,7 +70,6 @@ const PosterHold: React.FC<P> = ({f}) => {
       <line x1={mx} y1={lerp(my + 20, HZ - 20, drop)} x2={mx} y2={HZ - 20} stroke={C.grey} strokeWidth={1} strokeDasharray="1 6" opacity={n2(drop)} />
       <Hair x1={L} y1={HZ} x2={R} y2={HZ} p={tween(f, AT.poster + 8, 16, 0, 1, E.inOut)} from="center" o={0.85} />
       <Dot x={mx} y={HZ} r={DOT.r * drop} />
-      <Why o={vis(f, AT.poster + 6, AT.end - 6, 8, 8)} kicker="定妆" line={LINES[7]} en="LESS, BUT BETTER" />
     </g>
   );
 };

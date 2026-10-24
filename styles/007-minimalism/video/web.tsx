@@ -5,13 +5,12 @@
 import React from 'react';
 import {E, SNAP, SMOOTH, spr, tween} from '../../../src/lib/anim';
 import {C} from '../tokens';
-import {INTO} from './script';
 import {AT} from './timeline';
 import {PHONE, WIN} from './app';
-import {Box, Cam2, Txt, Why, camTrack, mixBox, n2, P, vis} from './ui';
+import {Box, Cam2, Txt, camTrack, mixBox, n2, P} from './ui';
 
-export const WEB_CUTS = [810, 828, 846, 864];
-export const WEB_KEEP = 882;
+export const WEB_CUTS = [828, 846, 864, 882];
+export const WEB_KEEP = 900;
 export const PAY_GO = AT.pay;
 
 export const camWeb = (f: number): Cam2 =>
@@ -103,7 +102,6 @@ export const Web: React.FC<P> = ({f}) => {
           </g>
         </g>
       </g>
-      <Why o={vis(f, AT.web + 4, AT.pay - 8, 10, 8)} kicker="进产品  Web" line={INTO.web.why} en={INTO.web.en} />
     </g>
   );
 };

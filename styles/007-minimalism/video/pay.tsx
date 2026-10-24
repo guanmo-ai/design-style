@@ -5,14 +5,13 @@
 import React from 'react';
 import {E, SNAP, SMOOTH, spr, tween} from '../../../src/lib/anim';
 import {C} from '../tokens';
-import {INTO} from './script';
 import {AT} from './timeline';
 import {WIN} from './app';
-import {Box, Cam2, Txt, Why, camTrack, mixBox, n2, P, vis} from './ui';
+import {Box, Cam2, Txt, camTrack, mixBox, n2, P} from './ui';
 
 export const CARD: Box = {x: 560, y: 160, w: 800, h: 680, r: 8};
-export const PAY_CUTS = [942, 960, 978, 996];
-export const PAY_KEEP = 1014;
+export const PAY_CUTS = [960, 978, 996, 1014];
+export const PAY_KEEP = 1032;
 export const VS_GO = AT.vs;
 
 export const camPay = (f: number): Cam2 =>
@@ -94,7 +93,6 @@ export const Pay: React.FC<P> = ({f}) => {
           确认支付
         </Txt>
       </g>
-      <Why o={vis(f, AT.pay + 4, AT.vs - 8, 10, 8)} kicker="进产品  确认" line={INTO.pay.why} en={INTO.pay.en} />
     </g>
   );
 };

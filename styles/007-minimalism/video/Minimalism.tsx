@@ -73,7 +73,7 @@ const Hud: React.FC<{f: number}> = ({f}) => {
       <div style={{position: 'absolute', left: 0, top: 0, height: 1, width: `${Math.min(1, Math.max(0, prog)) * 100}%`, background: C.ink, opacity: 0.55}} />
       <div style={{position: 'absolute', left: 0, top: 16, display: 'flex', alignItems: 'baseline'}}>
         <span style={{...font('mono', 14, 0.14), color: C.greyDk}}>{`0${Math.min(k + 1, 8)} / 08`}</span>
-        <span style={{...font('sc400', 16, 0.06), color: C.ink, marginLeft: 14}}>{beat.zh}</span>
+        <span style={{...font('sc400', 16, 0.06), color: C.ink, marginLeft: 14}}>{beat.line}</span>
       </div>
       <div style={{position: 'absolute', right: 0, top: 16, display: 'flex', alignItems: 'baseline', opacity: 0.25 + 0.75 * p, transform: `translateY(${(1 - p) * 8}px)`}}>
         <span style={{...font('t300', 15, 0.02), color: C.grey}}>{beat.en}</span>
