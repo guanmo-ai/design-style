@@ -140,7 +140,7 @@ npm run render:L03          # → out/03-card-stack-master.mp4
 npm run images:L03
 ```
 
-封面：iOS 通知压上登机牌那一帧 → `video/cover.jpg`。成片不进 git。
+封面：iOS 通知压上登机牌那一帧 → `video/cover.jpg`。成片不进 git。v5 母版 21.01s · 1920×1080 · 60fps · H.264+AAC · 约 32MB · 成片响度 −14.4 LUFS。
 
 ## 5c · 视频 v5（零死区，推倒重做）
 
