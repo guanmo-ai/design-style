@@ -3,7 +3,7 @@ Design Style · 风格 010 · Paper Cut 剪纸层叠 —— 配乐与音效（�
 
 24 秒 · 120 BPM（1 拍 = 0.5 秒 = 30 帧）· G 大调
 暖的纸工艺：软垫、卡林巴式玻璃钟、轻底鼓 + 沙锤；音效是展开、撕开、揭层、剪刀、落纸。
-和弦：C 民俗 6 · G 几何 7 · Em 纸板 6 · C 剪影 6 · G–Em 毛边 7 · D 字体 7 · G 盖章 9
+和弦：C 民俗 6 · G 几何 7 · Em 纸板 6 · C 剪影 6 · G–Em 毛边 7 · D 字体 7 · G 片尾 9
 时间点与 video/timeline.ts 对齐（帧 / 60 = 秒）。
 
 用法：python3 styles/010-paper-cut/audio/make_music.py
@@ -271,20 +271,21 @@ for i in range(5):
     sfx(snip(0.07), fr(1000 + i * 4), 0.15, -0.35 + i * 0.16)
     sfx(tick(), fr(1000 + i * 4), 0.08, -0.3 + i * 0.14)
 place(kalimba(note(86), 1.2), fr(1000), 0.14, 0.1, 0.35, LEAD)
-sfx(snip(0.08), fr(1062), 0.16, 0.1)
-sfx(rustle(0.12), fr(1062), 0.12, 0.2)
-# 片尾：窗花落回 → 标题逐字 → 一句 → 底栏。不要砸章、不要门笺连打。
+sfx(rustle(0.14), fr(1074), 0.13, 0.1, 0.12)
+for i in range(4):
+    sfx(tick(), fr(1074 + i * 8), 0.06, -0.2 + i * 0.1)
+# 片尾：窗花+门笺落下 → 镂空逐字 → 一句 → 底栏。不要砸章。
 sfx(whoosh(0.36, 380, 1600), fr(1138), 0.14, 0, 0.18)
-sfx(rustle(0.18), fr(1188), 0.16, 0, 0.16)
+sfx(rustle(0.18), fr(1168), 0.16, 0, 0.16)
 for i in range(8):
-    sfx(tick(), fr(1196 + i * 3), 0.07, -0.35 + i * 0.08)
-sfx(rustle(0.1), fr(1224), 0.11, 0.1, 0.12)
-sfx(tick(), fr(1242), 0.09, 0)
-place(kalimba(note(79), 0.9), fr(1242), 0.1, 0, 0.28, LEAD)
-sfx(rustle(0.12), fr(1258), 0.12, 0, 0.14)
+    sfx(tick(), fr(1178 + i * 3), 0.07, -0.35 + i * 0.08)
+sfx(rustle(0.1), fr(1206), 0.11, 0.1, 0.12)
+sfx(tick(), fr(1224), 0.09, 0)
+place(kalimba(note(79), 0.9), fr(1224), 0.1, 0, 0.28, LEAD)
+sfx(rustle(0.12), fr(1240), 0.12, 0, 0.14)
 end = pad_tone([55, 67, 71, 74, 79], 2.4)
 for ch in range(2):
-    place(lp(end[ch], 2400), fr(1248), 0.2, -1 if ch == 0 else 1, 0.45, PUMP)
+    place(lp(end[ch], 2400), fr(1236), 0.2, -1 if ch == 0 else 1, 0.45, PUMP)
 
 
 def reverb(x, seed, dec=0.8, length=2.4):
