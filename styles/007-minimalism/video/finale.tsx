@@ -48,16 +48,16 @@ const PosterHold: React.FC<P> = ({f}) => {
       <Txt x={L} y={430} k="t300" size={28} c={C.greyDk} o={tween(f, AT.poster + 18, 10)}>
         {THESIS.en}
       </Txt>
-      <Txt x={L} y={500} k="d100" size={100} o={tween(f, AT.poster + 16, 10)}>
+      <Txt x={L} y={400} k="d100" size={88} o={tween(f, AT.poster + 16, 10)}>
         47
       </Txt>
-      <Txt x={L + 200} y={468} k="sc300" size={20} o={tween(f, AT.poster + 20, 8)}>
+      <Txt x={L + 170} y={372} k="sc300" size={18} o={tween(f, AT.poster + 20, 8)}>
         样东西，删掉了
       </Txt>
-      <Txt x={L} y={HZ - 16} k="d100" size={100} o={tween(f, AT.poster + 24, 10)}>
+      <Txt x={L} y={HZ - 12} k="d100" size={88} o={tween(f, AT.poster + 24, 10)}>
         1
       </Txt>
-      <Txt x={L + 90} y={HZ - 40} k="sc300" size={18} o={tween(f, AT.poster + 28, 8)}>
+      <Txt x={L + 80} y={HZ - 36} k="sc300" size={18} o={tween(f, AT.poster + 28, 8)}>
         个留下：有用的那一个
       </Txt>
       {Array.from({length: 8}, (_, j) =>
