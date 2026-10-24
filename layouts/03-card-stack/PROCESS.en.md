@@ -41,6 +41,12 @@ npm run images:L03
 
 The render command first generates the music and then renders the composition.
 
+## Process images
+
+![Storyboard](process/01-storyboard.jpg)
+
+![Motion](process/02-motion.jpg)
+
 ## Files and further reading
 
 - [English design guide](README.en.md)
