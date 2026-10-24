@@ -19,8 +19,8 @@ STEP = MOD + GUT
 
 PAPER, PINK, TEAL, YELLOW, BLACK = '#F3ECDB', '#FF48B0', '#00838A', '#FFB511', '#000000'
 INK, GREY = '#1C1A17', '#8A8478'
-FAM = "'Archivo', 'Helvetica Neue', Arial, 'Noto Sans SC', sans-serif"
-MONO = "'Space Mono', 'JetBrains Mono', ui-monospace, monospace"
+FAM = "'Noto Sans SC', 'Helvetica Neue', Arial, sans-serif"
+MONO = "'Noto Sans SC', 'Helvetica Neue', Arial, sans-serif"
 SC = "'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif"
 
 
@@ -47,13 +47,10 @@ def t(x, y, size, text, family=FAM, weight=900, fill='currentColor', ls='-0.02em
 HEAD = f'''<?xml version="1.0" encoding="UTF-8"?>
 <svg xmlns="http://www.w3.org/2000/svg" width="{W}" height="{H}" viewBox="0 0 {W} {H}" role="img">
   <defs>
-    <filter id="grain" x="-10%" y="-10%" width="120%" height="120%">
-      <feTurbulence type="fractalNoise" baseFrequency="0.85" numOctaves="2" seed="8" result="n"/>
-      <feColorMatrix type="luminanceToAlpha" in="n" result="a"/>
-      <feComponentTransfer in="a" result="m">
-        <feFuncA type="discrete" tableValues="0 0 0 0 0 1 1 1"/>
-      </feComponentTransfer>
-      <feComposite in="SourceGraphic" in2="m" operator="in"/>
+    <filter id="grain" x="-5%" y="-5%" width="110%" height="110%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.8" numOctaves="2" seed="8" result="n"/>
+      <feColorMatrix type="matrix" values="0 0 0 0 1  0 0 0 0 1  0 0 0 0 1  0 0 0 0.22 0" in="n" result="g"/>
+      <feBlend in="SourceGraphic" in2="g" mode="multiply"/>
     </filter>
     <filter id="paper" x="0" y="0" width="100%" height="100%">
       <feTurbulence type="fractalNoise" baseFrequency="0.04" numOctaves="3" seed="3" result="n"/>
@@ -80,8 +77,9 @@ def marks():
     return ''.join(s)
 
 
-def plate(color, inner, opacity=0.94):
-    return f'<g fill="{color}" style="mix-blend-mode:multiply" opacity="{opacity}" filter="url(#grain)">{inner}</g>'
+def plate(color, inner, opacity=0.92, grain=True):
+    filt = ' filter="url(#grain)"' if grain else ''
+    return f'<g fill="{color}" style="mix-blend-mode:multiply" opacity="{opacity}"{filt}>{inner}</g>'
 
 
 def poster():
@@ -98,7 +96,7 @@ def poster():
     )))
     # 粉
     art.append(plate(PINK, (
-        f'<circle cx="220" cy="280" r="110"/>'
+        f'<circle cx="228" cy="286" r="110"/>'
         f'<circle cx="360" cy="520" r="24"/><circle cx="410" cy="520" r="24"/><circle cx="385" cy="568" r="24"/>'
         f'<circle cx="148" cy="240" r="48" fill="none" stroke-width="7"/>'
         f'<circle cx="160" cy="1100" r="44" fill="none" stroke-width="6"/>'
@@ -108,17 +106,17 @@ def poster():
     body = [
         paper_bg(),
         *art,
-        plate(PINK, t(540, 168, 92, 'RISOGRAPH', ls='-0.04em', anchor='middle', extra='font-stretch="100%"')),
-        plate(TEAL, t(543, 165, 92, 'RISOGRAPH', ls='-0.04em', anchor='middle')),
-        plate(YELLOW, t(538, 170, 92, 'RISOGRAPH', ls='-0.04em', anchor='middle')),
-        plate(BLACK, t(540, 220, 28, '孔版印刷', SC, 900, ls='0.18em', anchor='middle'), 0.82),
-        plate(PINK, t(148, 246, 9, 'PROOF', MONO, 700, ls='0.12em', anchor='middle')),
-        plate(PINK, t(160, 1106, 9, 'PASS', MONO, 700, ls='0.12em', anchor='middle')),
-        plate(TEAL, t(930, 1186, 10, 'RISOLO', MONO, 700, ls='0.1em', anchor='middle')),
+        plate(PINK, t(532, 172, 92, 'RISOGRAPH', ls='-0.04em', anchor='middle'), grain=False),
+        plate(TEAL, t(548, 164, 92, 'RISOGRAPH', ls='-0.04em', anchor='middle'), grain=False),
+        plate(YELLOW, t(540, 168, 92, 'RISOGRAPH', ls='-0.04em', anchor='middle'), grain=False),
+        plate(BLACK, t(540, 220, 28, '孔版印刷', SC, 900, ls='0.18em', anchor='middle'), 0.88, False),
+        plate(PINK, t(148, 246, 9, 'PROOF', MONO, 700, ls='0.12em', anchor='middle'), grain=False),
+        plate(PINK, t(160, 1106, 9, 'PASS', MONO, 700, ls='0.12em', anchor='middle'), grain=False),
+        plate(TEAL, t(930, 1186, 10, 'RISOLO', MONO, 700, ls='0.1em', anchor='middle'), grain=False),
         plate(BLACK, (
             t(90, 1288, 13, 'SHOP · RUN #047 · PINK / TEAL / MUSTARD', MONO, 700, ls='0.08em')
             + t(990, 1288, 13, 'misreg · grain · 3-ink', MONO, 400, ls='0.06em', anchor='end')
-        ), 0.75),
+        ), 0.8, False),
         marks(),
     ]
     return HEAD + ''.join(body) + FOOT
@@ -142,23 +140,23 @@ def cheatsheet():
         chips.append(plate(BLACK, (
             t(x + 140, y + 42, 28, zh, SC, 900, ls='0.04em')
             + t(x + 140, y + 70, 14, f'{en}  ·  {pms}', MONO, 700, ls='0.08em')
-        ), 0.8))
+        ), 0.88, False))
     body = [
         paper_bg(),
-        plate(PINK, t(90, 140, 56, 'RISO', ls='-0.03em')),
-        plate(TEAL, t(93, 137, 56, 'RISO', ls='-0.03em')),
-        plate(BLACK, t(90, 190, 22, '速查 · 五种油墨做法', SC, 700, ls='0.08em'), 0.8),
+        plate(PINK, t(84, 144, 56, 'RISO', ls='-0.03em'), grain=False),
+        plate(TEAL, t(98, 136, 56, 'RISO', ls='-0.03em'), grain=False),
+        plate(BLACK, t(90, 190, 22, '速查 · 五种油墨做法', SC, 700, ls='0.08em'), 0.88, False),
         *chips,
         plate(YELLOW, f'<circle cx="820" cy="360" r="70"/>'),
         plate(PINK, f'<circle cx="880" cy="360" r="70"/>'),
         plate(TEAL, f'<circle cx="850" cy="420" r="70"/>'),
-        plate(BLACK, t(90, 540, 18, '叠印 = 正片叠底。粉×黄=朱红，青×黄=墨绿，粉×青=藏蓝。', SC, 500, ls='0.02em'), 0.75),
+        plate(BLACK, t(90, 540, 18, '叠印 = 正片叠底。粉×黄=朱红，青×黄=墨绿，粉×青=藏蓝。', SC, 500, ls='0.02em'), 0.85, False),
     ]
     for i, (n, title, desc) in enumerate(rules):
         y = 600 + i * 120
-        body.append(plate(PINK if i % 2 == 0 else TEAL, t(90, y, 22, n, MONO, 700, ls='0.1em')))
-        body.append(plate(BLACK, t(160, y, 28, title, SC, 900, ls='0.04em') + t(160, y + 36, 18, desc, SC, 400, ls='0.02em'), 0.82))
-    body.append(plate(BLACK, t(90, 1288, 13, '008 · RISOGRAPH  ·  DO：专色叠印   DON’T：渐变铜版纸', MONO, 400, ls='0.08em'), 0.7))
+        body.append(plate(PINK if i % 2 == 0 else TEAL, t(90, y, 22, n, MONO, 700, ls='0.1em'), grain=False))
+        body.append(plate(BLACK, t(160, y, 28, title, SC, 900, ls='0.04em') + t(160, y + 36, 18, desc, SC, 400, ls='0.02em'), 0.88, False))
+    body.append(plate(BLACK, t(90, 1288, 13, '008 · RISOGRAPH  ·  DO：专色叠印   DON’T：渐变铜版纸', MONO, 400, ls='0.08em'), 0.75, False))
     body.append(marks())
     return HEAD + ''.join(body) + FOOT
 
@@ -167,31 +165,31 @@ def app_ui():
     # 印件工单 app
     body = [paper_bg()]
     body.append(plate(TEAL, f'<rect x="90" y="200" width="900" height="980"/>', 0.18))
-    body.append(plate(PINK, t(90, 140, 36, 'RISO SHOP', ls='-0.03em')))
-    body.append(plate(BLACK, t(90, 180, 16, '印件工单  ·  JOB TICKET  #047', MONO, 700, ls='0.1em'), 0.75))
+    body.append(plate(PINK, t(90, 140, 36, 'RISO SHOP', ls='-0.03em'), grain=False))
+    body.append(plate(BLACK, t(90, 180, 16, '印件工单  ·  JOB TICKET  #047', MONO, 700, ls='0.1em'), 0.85, False))
     # 预览
     body.append(plate(YELLOW, f'<circle cx="340" cy="420" r="110"/>'))
     body.append(plate(PINK, f'<circle cx="420" cy="400" r="90"/>'))
     body.append(plate(TEAL, f'<rect x="560" y="300" width="160" height="200"/>'))
-    body.append(plate(BLACK, t(90, 620, 22, 'RUN  200  ·  120 ppm  ·  3 drums', MONO, 700, ls='0.08em'), 0.8))
+    body.append(plate(BLACK, t(90, 620, 22, 'RUN  200  ·  120 ppm  ·  3 drums', MONO, 700, ls='0.08em'), 0.85, False))
     rows = [('荧光粉', 'FLUO PINK', 'Drum A'), ('青绿', 'TEAL', 'Drum B'), ('芥末黄', 'SUNFLOWER', 'Drum C')]
     cols = [PINK, TEAL, YELLOW]
     for i, ((zh, en, drum), c) in enumerate(zip(rows, cols)):
         y = 680 + i * 110
         body.append(plate(c, f'<rect x="90" y="{y}" width="72" height="72"/>'))
-        body.append(plate(BLACK, t(184, y + 32, 26, zh, SC, 900, ls='0.04em') + t(184, y + 60, 14, f'{en}  ·  {drum}', MONO, 700, ls='0.08em'), 0.8))
+        body.append(plate(BLACK, t(184, y + 32, 26, zh, SC, 900, ls='0.04em') + t(184, y + 60, 14, f'{en}  ·  {drum}', MONO, 700, ls='0.08em'), 0.88, False))
     body.append(plate(PINK, f'<rect x="90" y="1040" width="900" height="88"/>'))
-    body.append(plate(BLACK, t(540, 1096, 28, '开始制版  ·  MAKE MASTER', SC, 900, ls='0.08em', anchor='middle'), 0.85))
-    body.append(plate(BLACK, t(90, 1288, 13, '如果孔版印刷来做 app：工单、滚筒、张数，不假装是激光打印机', MONO, 400, ls='0.04em'), 0.7))
+    body.append(plate(BLACK, t(540, 1096, 28, '开始制版  ·  MAKE MASTER', SC, 900, ls='0.08em', anchor='middle'), 0.9, False))
+    body.append(plate(BLACK, t(90, 1288, 13, '如果孔版印刷来做 app：工单、滚筒、张数，不假装是激光打印机', MONO, 400, ls='0.04em'), 0.75, False))
     body.append(marks())
     return HEAD + ''.join(body) + FOOT
 
 
 def inks():
     body = [paper_bg()]
-    body.append(plate(PINK, t(90, 150, 48, '3 INKS', ls='-0.03em')))
-    body.append(plate(TEAL, t(93, 147, 48, '3 INKS', ls='-0.03em')))
-    body.append(plate(BLACK, t(90, 200, 22, '三种油墨，七种颜色', SC, 900, ls='0.1em'), 0.8))
+    body.append(plate(PINK, t(84, 154, 48, '3 INKS', ls='-0.03em'), grain=False))
+    body.append(plate(TEAL, t(98, 146, 48, '3 INKS', ls='-0.03em'), grain=False))
+    body.append(plate(BLACK, t(90, 200, 22, '三种油墨，七种颜色', SC, 900, ls='0.1em'), 0.88, False))
     # 大三圆
     body.append(plate(PINK, f'<circle cx="400" cy="520" r="200"/>'))
     body.append(plate(TEAL, f'<circle cx="680" cy="520" r="200"/>'))
@@ -201,12 +199,12 @@ def inks():
         (540, 430, '藏蓝'), (360, 700, '朱红'), (720, 700, '墨绿'), (540, 620, '近黑'),
     ]
     for x, y, lab in labels:
-        body.append(plate(BLACK, t(x, y, 18, lab, SC, 700, ls='0.06em', anchor='middle'), 0.78))
+        body.append(plate(BLACK, t(x, y, 18, lab, SC, 700, ls='0.06em', anchor='middle'), 0.88, False))
     steps = ['分色画三张版', '一种颜色过一遍', '趁湿叠上去', '把套不准留下']
     for i, s in enumerate(steps):
         x = 90 + i * 225
         body.append(plate([PINK, TEAL, YELLOW, BLACK][i], f'<rect x="{x}" y="1040" width="210" height="140"/>', 0.88 if i < 3 else 0.55))
-        body.append(plate(BLACK, t(x + 16, 1088, 18, f'0{i+1}', MONO, 700, ls='0.1em') + t(x + 16, 1140, 20, s, SC, 900, ls='0.02em'), 0.85))
+        body.append(plate(BLACK, t(x + 16, 1088, 18, f'0{i+1}', MONO, 700, ls='0.1em') + t(x + 16, 1140, 20, s, SC, 900, ls='0.02em'), 0.9, False))
     body.append(marks())
     return HEAD + ''.join(body) + FOOT
 

@@ -61,7 +61,7 @@ export const ShopArt: React.FC<{ink: Ink}> = ({ink}) => {
   if (ink === 'pink') {
     return (
       <>
-        <Dot x={310} y={210} r={118} />
+        <Dot x={322} y={222} r={118} />
         <Dot x={430} y={430} r={28} />
         <Dot x={500} y={430} r={28} />
         <Dot x={465} y={490} r={28} />
@@ -76,7 +76,7 @@ export const ShopArt: React.FC<{ink: Ink}> = ({ink}) => {
   if (ink === 'teal') {
     return (
       <>
-        <Dot x={310} y={210} r={118} />
+        <Dot x={322} y={222} r={118} />
         <Box x={1380} y={168} w={360} h={248} />
         <Bolt x={1468} y={176} s={210} />
         <Stamp x={1610} y={210} r={42} label="色刷" ring={4} />
@@ -124,7 +124,7 @@ export const flyReg = (f: number, ink: Exclude<Ink, 'black'>): Reg => {
 
 /* ═══════════════ 标题：三只墨各印一遍，字母逐个升起 ═══════════════ */
 const TITLE_INK: Ink[] = ['pink', 'teal', 'yellow'];
-const TITLE_OFF: Record<Ink, [number, number]> = {pink: [-3.2, 1.4], teal: [3.5, -1.8], yellow: [0.6, 2.6], black: [0, 0]};
+const TITLE_OFF: Record<Ink, [number, number]> = {pink: [-7, 2.4], teal: [7.5, -3.2], yellow: [1.2, 5.5], black: [0, 0]};
 
 export const TitleWord: React.FC<{f: number; at?: number; size?: number; x?: number; y?: number; out?: number}> = ({f, at = 32, size = TS, x = TITLE_X, y = TITLE_BASE, out = 1e9}) => {
   const fade = 1 - tween(f, out, 10, 0, 1, E.in);
@@ -191,7 +191,7 @@ export const Opening: React.FC<P> = ({f}) => {
         </Plate>
       ))}
       <TitleWord f={f} at={34} />
-      <Plate ink="black" f={f} grain="t70" density={0.82} reg={jitter(f, 'black', 0.3)}>
+      <Plate ink="black" f={f} grain="solid" density={0.86} reg={jitter(f, 'black', 0.3)}>
         <Show f={f} at={58} out={ZOOM.at + 4} dy={12}>
           <T k="sc" x={960} y={TITLE_BASE + 74} size={40} align="center" style={{...sc(40, 900, 0.16), color: 'currentColor'}}>
             孔版印刷
