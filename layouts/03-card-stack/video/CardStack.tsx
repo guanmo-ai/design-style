@@ -19,7 +19,7 @@ import {Grain} from '../../../src/lib/Grain';
 import {C} from '../tokens';
 import {DeckFace, EndFace, ExplodeFace, GhostFace, IosFace, KeyFace, PitFace, StripeFace, WireFace} from './cards';
 import {DeckCaption, DepthTicks, ExplodeAxis, Felt, IosCaption, PhoneBack, PhoneFront, StripeCaption, StripeDesk} from './chrome';
-import {COLOR_DUR, DURATION, GHOSTS, LayoutName, PIT, RULES_AT, SCENE, TRANS, cardState, ghostState} from './layout';
+import {COLOR_DUR, DURATION, GHOSTS, LayoutName, PIT, RULES_AT, SCENE, TRANS, camAt, cardState, familyOf, ghostState, poseLive} from './layout';
 import {Annotations, EndTitle, ExplodeCaption, Hud, KeyCaption, PitCaption, RulesPanel} from './scenes';
 
 export const CARDSTACK_DURATION = DURATION;
@@ -53,8 +53,12 @@ const theme = (name: LayoutName, i: number): Theme => {
     case 'FIX':
       return WHITE;
     case 'IOS':
+    case 'NOTE':
+    case 'SHEET':
+    case 'WALLET':
       return {top: '#FFFFFF', bot: '#F3F4F6', line: 'rgba(0,0,0,0.06)', lw: 1, sh: 1.2, hi: 0.12};
     case 'STRIPE':
+    case 'ISSUE':
       return {top: '#FFFFFF', bot: '#F8FAFC', line: 'rgba(99,91,255,0.12)', lw: 1, sh: 1.1, hi: 0.06};
     case 'DECK':
       return i === 1 ? {top: '#FFFBFF', bot: '#F4F0E8', line: 'rgba(17,24,39,0.16)', lw: 1.5, sh: 0.8, hi: 0.2} : {top: '#FAF6EE', bot: '#F3E6C8', line: 'rgba(68,64,60,0.12)', lw: 1, sh: 0.7, hi: 0.1};
@@ -80,7 +84,11 @@ const BG: Record<LayoutName, string> = {
   HOOK: C.paper,
   KEY: C.paper,
   IOS: '#000000',
+  NOTE: '#000000',
+  SHEET: '#000000',
+  WALLET: '#000000',
   STRIPE: C.stripeBg,
+  ISSUE: C.stripeBg,
   DECK: C.felt,
   EXPLODE: C.navy,
   WIRE: '#050508',
@@ -106,8 +114,8 @@ const Face: React.FC<{f: number; i: number; from: LayoutName; to: LayoutName}> =
   return (
     <>
       {(from === 'HOOK' || from === 'KEY' || to === 'HOOK' || to === 'KEY') && f < 175 && <KeyFace f={f} i={i} />}
-      {win(SCENE.IOS) && <IosFace f={f} i={i} />}
-      {win(SCENE.STRIPE) && <StripeFace f={f} i={i} />}
+      {(familyOf(from) === 'IOS' || familyOf(to) === 'IOS' || win(SCENE.IOS)) && f >= 145 && f < 340 && <IosFace f={f} i={i} />}
+      {(familyOf(from) === 'STRIPE' || familyOf(to) === 'STRIPE' || win(SCENE.STRIPE)) && f >= 320 && f < 520 && <StripeFace f={f} i={i} />}
       {win(SCENE.DECK) && <DeckFace f={f} i={i} />}
       {win(SCENE.EXPLODE) && <ExplodeFace f={f} i={i} />}
       {win(SCENE.WIRE) && <WireFace f={f} i={i} />}
@@ -120,7 +128,7 @@ const Face: React.FC<{f: number; i: number; from: LayoutName; to: LayoutName}> =
 const Card: React.FC<{f: number; i: number}> = ({f, i}) => {
   const st = cardState(f, i);
   const th = mixTheme(theme(st.from, i), theme(st.to, i), st.pc);
-  const {x, y, w, h, r, z, rot, sc, o, dim} = st.pose;
+  const {x, y, w, h, r, z, rot, sc, o, dim} = poseLive(f, i, st.pose);
   if (o <= 0.001) return null;
   const front = dim < 0.03;
   return (
@@ -173,20 +181,13 @@ const Ghost: React.FC<{f: number; g: number}> = ({f, g}) => {
   );
 };
 
-const camAt = (f: number) => {
-  const base = 1.03 - 0.03 * tween(f, 0, 90, 0, 1, E.out) + 0.01 * (f / DURATION);
-  const ios = 0.02 * tween(f, 150, 24, 0, 1, E.inOut) * (1 - tween(f, 330, 20, 0, 1, E.inOut));
-  const exp = 0.03 * tween(f, 690, 28, 0, 1, E.inOut) * (1 - tween(f, 870, 20, 0, 1, E.inOut));
-  return base + ios - exp;
-};
-
 export const CardStack: React.FC<{music?: boolean}> = ({music = true}) => {
   React.useState(loadFonts);
   const f = useCurrentFrame();
   const cam = camAt(f);
   return (
     <AbsoluteFill style={{background: bgAt(f), overflow: 'hidden'}}>
-      <AbsoluteFill style={{transform: `scale(${cam})`, transformOrigin: '960px 520px'}}>
+      <AbsoluteFill style={{transform: `translate(${cam.x}px, ${cam.y}px) rotate(${cam.r}deg) scale(${cam.s})`, transformOrigin: `${cam.ox}px ${cam.oy}px`}}>
         {f >= 150 && f < 345 && <PhoneBack f={f} />}
         {f >= 330 && f < 525 && <StripeDesk f={f} />}
         {f >= 510 && f < 705 && <Felt f={f} />}

@@ -2,7 +2,7 @@
 import React from 'react';
 import {E, POP, spr, tween} from '../../../src/lib/anim';
 import {C} from '../tokens';
-import {RULES_AT, SCENE} from './layout';
+import {BEATS, RULES_AT, SCENE} from './layout';
 import {count, disp, mono, sc, ui} from './ui';
 
 type P = {f: number; i: number};
@@ -16,10 +16,10 @@ const PEOPLE = [
   {name: '阿南', wait: '1d', role: 'Copy', color: '#A7F3D0'},
 ];
 
-const Bars: React.FC<{accent: string; h?: number}> = ({accent, h = 78}) => (
+const Bars: React.FC<{accent: string; f: number; at: number; h?: number}> = ({accent, f, at, h = 78}) => (
   <div style={{position: 'absolute', left: 28, right: 28, bottom: 22, height: h, display: 'flex', alignItems: 'flex-end', gap: 8}}>
     {BARS.map((v, i) => (
-      <div key={i} style={{flex: 1, height: v, borderRadius: 5, background: i === 5 ? accent : '#D9DEE7'}} />
+      <div key={i} style={{flex: 1, height: v * (0.18 + 0.82 * tween(f, at + i * 3, 18, 0, 1, E.out)), borderRadius: 5, background: i === 5 ? accent : '#D9DEE7'}} />
     ))}
   </div>
 );
@@ -52,7 +52,7 @@ export const KeyFace: React.FC<P> = ({f, i}) => {
               </div>
             ))}
           </div>
-          <Bars accent={C.accent} />
+          <Bars accent={C.accent} f={f} at={at} />
         </>
       );
     case 1:
@@ -126,14 +126,19 @@ export const IosFace: React.FC<P> = ({f, i}) => {
             </div>
           </div>
           <div style={{position: 'absolute', left: 22, right: 22, top: 160, display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 10}}>
-            {[['Gate', 'B12'], ['Seat', '14A'], ['Boards', '09:40']].map(([a, b]) => (
-              <div key={a}>
-                <div style={{...ui(11, 500), color: 'rgba(255,255,255,.55)'}}>{a}</div>
-                <div style={{...disp(22, 600, -0.02), color: '#fff', marginTop: 6}}>{b}</div>
-              </div>
-            ))}
+            {[['Gate', 'B12'], ['Seat', '14A'], ['Boards', '09:40']].map(([a, b], k) => {
+              const s = spr(f, SCENE.IOS.in + 6 + k * 4, POP, 28);
+              return (
+                <div key={a} style={{transform: `scale(${0.86 + 0.14 * s})`, opacity: Math.min(1, s * 1.4)}}>
+                  <div style={{...ui(11, 500), color: 'rgba(255,255,255,.55)'}}>{a}</div>
+                  <div style={{...disp(22, 600, -0.02), color: '#fff', marginTop: 6}}>{b}</div>
+                </div>
+              );
+            })}
           </div>
-          <div style={{position: 'absolute', left: 22, right: 22, bottom: 28, height: 56, borderRadius: 8, background: 'repeating-linear-gradient(90deg,#fff 0 2px, transparent 2px 6px)', opacity: 0.85}} />
+          <div style={{position: 'absolute', left: 22, right: 22, bottom: 28, height: 56, borderRadius: 8, background: 'repeating-linear-gradient(90deg,#fff 0 2px, transparent 2px 6px)', overflow: 'hidden'}}>
+            <div style={{position: 'absolute', left: 0, right: 0, top: ((f * 2.4) % 56), height: 3, background: 'rgba(255,255,255,.95)', boxShadow: '0 0 12px rgba(255,255,255,.8)'}} />
+          </div>
           <div style={{position: 'absolute', left: 22, bottom: 92, ...ui(12, 500), color: 'rgba(255,255,255,.7)'}}>Boarding Pass · Oct 24</div>
         </>
       );
@@ -163,21 +168,22 @@ export const IosFace: React.FC<P> = ({f, i}) => {
           <div style={{position: 'absolute', left: 20, top: 150, ...ui(13, 500), color: C.ink3}}>iOS Notification Stack · 2 more below</div>
         </>
       );
-    default: {
-      const k = spr(f, at + 8, POP, 32);
+    default:
       return (
         <>
           <Grabber />
           <div style={{position: 'absolute', left: 20, top: 32, ...sc(20, 700), color: C.ink}}>共享这张登机牌？</div>
           <div style={{position: 'absolute', left: 20, top: 68, ...ui(14, 500), color: C.ink2}}>Share Pass · Messages / Mail / Wallet</div>
-          {['拷贝', '隔空投送', '取消'].map((t, k2) => (
-            <div key={t} style={{position: 'absolute', left: 20, right: 20, top: 110 + k2 * 52, height: 44, borderRadius: 12, background: k2 === 2 ? C.chip : C.accentSoft, display: 'flex', alignItems: 'center', justifyContent: 'center', ...sc(16, 600), color: k2 === 2 ? C.ink2 : C.accent, transform: `scale(${0.92 + 0.08 * k})`}}>
-              {t}
-            </div>
-          ))}
+          {['拷贝', '隔空投送', '取消'].map((t, k2) => {
+            const s = spr(f, BEATS.sheet + 6 + k2 * 5, POP, 28);
+            return (
+              <div key={t} style={{position: 'absolute', left: 20, right: 20, top: 110 + k2 * 52, height: 44, borderRadius: 12, background: k2 === 2 ? C.chip : C.accentSoft, display: 'flex', alignItems: 'center', justifyContent: 'center', ...sc(16, 600), color: k2 === 2 ? C.ink2 : C.accent, transform: `scale(${0.72 + 0.28 * s})`, opacity: Math.min(1, s * 1.5)}}>
+                {t}
+              </div>
+            );
+          })}
         </>
       );
-    }
   }
 };
 
@@ -230,7 +236,7 @@ export const StripeFace: React.FC<P> = ({f, i}) => {
             <path d="M40 420 C120 300 220 340 300 250 C380 160 460 220 660 120" fill="none" stroke="#64748B" strokeWidth="3" />
             <path d="M80 500 C200 440 280 480 400 380 C520 280 600 340 680 260" fill="none" stroke="#94A3B8" strokeWidth="2" />
           </svg>
-          <div style={{position: 'absolute', left: 48, top: 210, width: 22, height: 22, borderRadius: 11, background: C.accent, boxShadow: '0 0 0 8px rgba(37,99,235,.25)'}} />
+          <div style={{position: 'absolute', left: 48, top: 210, width: 22, height: 22, borderRadius: 11, background: C.accent, boxShadow: `0 0 0 ${8 + 6 * (0.5 + 0.5 * Math.sin(f / 8))}px rgba(37,99,235,.28)`, transform: `scale(${1 + 0.12 * Math.sin(f / 9)})`}} />
           <div style={{position: 'absolute', left: 24, bottom: 24, right: 24, padding: 16, borderRadius: 14, background: '#fff', boxShadow: '0 10px 24px rgba(15,23,42,.12)'}}>
             <div style={{...sc(16, 700), color: C.ink}}>选这个点</div>
             <div style={{...ui(13, 500), color: C.ink2, marginTop: 6}}>Folsom St · San Francisco · 0.3 km</div>
@@ -277,7 +283,7 @@ const Suit: React.FC<{kind: 'S' | 'H' | 'C' | 'D'; size?: number}> = ({kind, siz
   );
 };
 
-export const DeckFace: React.FC<P> = ({i}) => {
+export const DeckFace: React.FC<P> = ({f, i}) => {
   switch (i) {
     case 0:
       return (
@@ -293,7 +299,7 @@ export const DeckFace: React.FC<P> = ({i}) => {
     case 1:
       return (
         <>
-          <div style={{position: 'absolute', inset: 8, borderRadius: 12, boxShadow: 'inset 0 0 0 2px #111827'}} />
+          <div style={{position: 'absolute', inset: 8, borderRadius: 12, boxShadow: 'inset 0 0 0 2px #111827', transform: `rotateY(${16 * Math.sin(f / 14)}deg)`}} />
           <div style={{position: 'absolute', left: 18, top: 16, ...disp(42, 700, -0.04), color: '#111827'}}>A</div>
           <div style={{position: 'absolute', left: 20, top: 62}}>
             <Suit kind="S" size={26} />

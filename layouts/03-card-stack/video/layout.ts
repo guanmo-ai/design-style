@@ -10,7 +10,33 @@ export const DURATION = 1320;
 export const FPS = 60;
 export const BEAT = 30;
 
-export type LayoutName = 'HOOK' | 'KEY' | 'IOS' | 'STRIPE' | 'DECK' | 'EXPLODE' | 'WIRE' | 'CROWD' | 'FLAT' | 'FIX' | 'END';
+export type LayoutName =
+  | 'HOOK'
+  | 'KEY'
+  | 'IOS'
+  | 'NOTE'
+  | 'SHEET'
+  | 'WALLET'
+  | 'STRIPE'
+  | 'ISSUE'
+  | 'DECK'
+  | 'EXPLODE'
+  | 'WIRE'
+  | 'CROWD'
+  | 'FLAT'
+  | 'FIX'
+  | 'END';
+
+export const familyOf = (name: LayoutName): 'KEY' | 'IOS' | 'STRIPE' | 'DECK' | 'EXPLODE' | 'WIRE' | 'PIT' | 'END' => {
+  if (name === 'HOOK' || name === 'KEY' || name === 'FIX') return 'KEY';
+  if (name === 'IOS' || name === 'NOTE' || name === 'SHEET' || name === 'WALLET') return 'IOS';
+  if (name === 'STRIPE' || name === 'ISSUE') return 'STRIPE';
+  if (name === 'DECK') return 'DECK';
+  if (name === 'EXPLODE') return 'EXPLODE';
+  if (name === 'WIRE') return 'WIRE';
+  if (name === 'CROWD' || name === 'FLAT') return 'PIT';
+  return 'END';
+};
 
 export type Pose = {
   x: number;
@@ -83,14 +109,38 @@ const KEY = stack(1110, 292, 680, 380, 28);
 const HOOK = stack(620, 340, 680, 380, 28, {lift: 6});
 const IOS = [
   P(1308, 292, 352, 548, 32, {z: 40, rot: 0, dim: 0}),
-  P(1308, 256, 352, 548, 32, {z: 20, rot: 0.2, dim: 0.1}),
-  P(1308, 224, 352, 548, 32, {z: 4, rot: -0.15, dim: 0.2}),
-  P(1308, 196, 352, 548, 32, {z: -12, rot: 0.1, dim: 0.3}),
+  P(1308, 248, 352, 548, 32, {z: 12, rot: 0.2, dim: 0.12}),
+  P(1314, -80, 340, 168, 22, {z: 70, o: 0, dim: 0}),
+  P(1308, 920, 352, 400, 28, {z: 80, o: 0.12, dim: 0}),
+];
+const NOTE = [
+  P(1308, 308, 352, 548, 32, {z: 28, dim: 0.22}),
+  P(1308, 248, 352, 548, 32, {z: 8, dim: 0.3}),
+  P(1314, 122, 340, 172, 22, {z: 80, dim: 0}),
+  P(1308, 880, 352, 400, 28, {z: 70, o: 0.22}),
+];
+const SHEET = [
+  P(1308, 292, 352, 548, 32, {z: 18, dim: 0.36}),
+  P(1308, 248, 352, 548, 32, {z: 6, dim: 0.42}),
+  P(1314, 122, 340, 172, 22, {z: 50, dim: 0.08}),
+  P(1308, 348, 352, 430, 28, {z: 90, dim: 0}),
+];
+const WALLET = [
+  P(1308, 236, 352, 548, 32, {z: 16, dim: 0.18}),
+  P(1308, 292, 352, 548, 32, {z: 44, dim: 0}),
+  P(1314, 36, 340, 172, 22, {z: 10, o: 0.12}),
+  P(1308, 820, 352, 400, 28, {z: 8, o: 0.08}),
 ];
 const STRIPE = [
   P(992, 168, 700, 620, 16, {z: 36, rot: 0, dim: 0}),
   P(1010, 132, 664, 620, 16, {z: 16, rot: 0.15, dim: 0.1}),
   P(1026, 102, 632, 620, 16, {z: -2, rot: -0.1, dim: 0.2}),
+  P(1040, 76, 604, 620, 16, {z: -18, rot: 0.08, dim: 0.3}),
+];
+const ISSUE = [
+  P(1010, 132, 664, 620, 16, {z: 14, rot: 0.12, dim: 0.14}),
+  P(992, 168, 700, 620, 16, {z: 38, rot: 0, dim: 0}),
+  P(1026, 102, 632, 620, 16, {z: -2, rot: -0.1, dim: 0.22}),
   P(1040, 76, 604, 620, 16, {z: -18, rot: 0.08, dim: 0.3}),
 ];
 const DECK = [
@@ -120,7 +170,11 @@ export const LAYOUTS: Record<LayoutName, Pose[]> = {
   HOOK,
   KEY,
   IOS,
+  NOTE,
+  SHEET,
+  WALLET,
   STRIPE,
+  ISSUE,
   DECK,
   EXPLODE,
   WIRE,
@@ -133,8 +187,12 @@ export const LAYOUTS: Record<LayoutName, Pose[]> = {
 export type Trans = {at: number; to: LayoutName; dur: number; stagger: number; order: number[]};
 export const TRANS: Trans[] = [
   {at: 48, to: 'KEY', dur: 46, stagger: 3, order: [0, 1, 2, 3]},
-  {at: 150, to: 'IOS', dur: 42, stagger: 3, order: [0, 1, 2, 3]},
-  {at: 330, to: 'STRIPE', dur: 42, stagger: 3, order: [0, 1, 3, 2]},
+  {at: 150, to: 'IOS', dur: 38, stagger: 3, order: [0, 1, 2, 3]},
+  {at: 198, to: 'NOTE', dur: 22, stagger: 2, order: [2, 0, 1, 3]},
+  {at: 232, to: 'SHEET', dur: 24, stagger: 2, order: [3, 0, 2, 1]},
+  {at: 288, to: 'WALLET', dur: 26, stagger: 2, order: [1, 0, 2, 3]},
+  {at: 330, to: 'STRIPE', dur: 40, stagger: 3, order: [0, 1, 3, 2]},
+  {at: 438, to: 'ISSUE', dur: 28, stagger: 2, order: [1, 0, 2, 3]},
   {at: 510, to: 'DECK', dur: 42, stagger: 3, order: [3, 2, 1, 0]},
   {at: 690, to: 'EXPLODE', dur: 44, stagger: 4, order: [0, 1, 2, 3]},
   {at: 870, to: 'WIRE', dur: 40, stagger: 3, order: [0, 1, 2, 3]},
@@ -151,14 +209,16 @@ const COLOR = Easing.bezier(0.45, 0, 0.55, 1);
 
 export const SCENE = {
   KEY: {in: 56, out: 140},
-  IOS: {in: 172, out: 318},
-  STRIPE: {in: 352, out: 498},
-  DECK: {in: 532, out: 678},
-  EXPLODE: {in: 712, out: 858},
+  IOS: {in: 164, out: 322},
+  STRIPE: {in: 344, out: 500},
+  DECK: {in: 524, out: 678},
+  EXPLODE: {in: 704, out: 858},
   WIRE: {in: 888, out: 1068},
   PIT: {in: 1090, out: 1192},
   END: {in: 1220, out: 9999},
 };
+
+export const BEATS = {note: 198, sheet: 232, wallet: 288, issue: 438, zoom: 258};
 
 export const RULES_AT = [888, 924, 960, 996, 1032];
 export const PIT = {crowd: 1080, flat: 1134, fix: 1170, end: 1200};
@@ -230,5 +290,67 @@ export const ghostState = (f: number, g: number): Pose | null => {
     P(640, 180, 560, 300, 16, {z: -30, rot: -7, dim: 0.16, o: on}),
     P(900, 140, 560, 300, 16, {z: -36, rot: 5, dim: 0.2, o: on}),
   ][g];
-  return {...dest, y: dest.y + (1 - on) * 36, o: on};
+  const wobble = Math.sin((f / FPS) * 3.2 + g * 1.4) * 5;
+  return {...dest, y: dest.y + (1 - on) * 36 + wobble, rot: dest.rot + wobble * 0.12, o: on};
+};
+
+/** 落地之后也不许静：呼吸、焦点脉冲、爆炸继续拉开 */
+export const poseLive = (f: number, i: number, pose: Pose): Pose => {
+  const t = f / FPS;
+  const fam = familyOf(worldAt(f));
+  const still = fam === 'END' ? 0.25 : fam === 'WIRE' ? 0.7 : fam === 'PIT' && f >= PIT.flat && f < PIT.fix ? 0.15 : 1;
+  const dy = Math.sin(t * 2.15 + i * 0.85) * 3.4 * still * (i === 0 ? 1.3 : 0.75);
+  const drot = Math.sin(t * 1.55 + i * 1.1) * 0.5 * still;
+  const ddim = i === 0 || (fam === 'PIT' && f >= PIT.flat && f < PIT.fix) ? 0 : 0.025 * (0.5 + 0.5 * Math.sin(t * 1.9 + i));
+  let lift = 0;
+  if (fam === 'KEY') lift = i === 0 ? 5 * (0.5 + 0.5 * Math.sin(t * 2.5)) : 0;
+  let dx = 0;
+  let extraY = 0;
+  if (fam === 'EXPLODE') {
+    const drift = tween(f, 710, 120, 0, 1, E.out);
+    dx = i * 10 * drift;
+    extraY = i * 8 * drift;
+  }
+  if (fam === 'DECK') {
+    dx = Math.sin(t * 1.2 + i) * 2.5;
+  }
+  if (fam === 'IOS') {
+    dx += Math.sin(f / 26) * 10;
+    extraY += Math.cos(f / 32) * 7;
+  }
+  return {
+    ...pose,
+    x: pose.x + dx,
+    y: pose.y + dy - lift + extraY,
+    rot: pose.rot + drot,
+    dim: Math.min(0.55, pose.dim + ddim),
+  };
+};
+
+export type Cam = {s: number; x: number; y: number; r: number; ox: number; oy: number};
+export const camAt = (f: number): Cam => {
+  const t = f / FPS;
+  const fam = familyOf(worldAt(f));
+  let s = 1.034 - 0.024 * tween(f, 0, 80, 0, 1, E.out);
+  let x = 4 * Math.sin(t * 0.85);
+  let y = 3 * Math.cos(t * 1.05);
+  let r = 0.18 * Math.sin(t * 0.65);
+  s += 0.007 * Math.sin(t * 1.25);
+  const ios = tween(f, 150, 26, 0, 1, E.out) * (1 - tween(f, 330, 20, 0, 1, E.inOut));
+  s += 0.035 * ios;
+  const zoom = tween(f, BEATS.zoom, 16, 0, 1, E.inOut) * (1 - tween(f, 292, 14, 0, 1, E.inOut));
+  s += 0.2 * zoom;
+  y += 48 * zoom;
+  const st = tween(f, 330, 22, 0, 1, E.out) * (1 - tween(f, 510, 18, 0, 1, E.inOut));
+  x += 16 * st;
+  const exp = tween(f, 690, 28, 0, 1, E.out) * (1 - tween(f, 870, 20, 0, 1, E.inOut));
+  s -= 0.07 * exp;
+  if (f >= PIT.crowd && f < PIT.flat) {
+    const a = 4 * Math.exp(-(f - PIT.crowd) / 18);
+    x += a * Math.sin(f * 1.8);
+    y += a * Math.cos(f * 2.2);
+  }
+  const ox = fam === 'IOS' ? 1484 : fam === 'EXPLODE' ? 1100 : 960;
+  const oy = fam === 'IOS' ? 620 : 520;
+  return {s, x, y, r, ox, oy};
 };

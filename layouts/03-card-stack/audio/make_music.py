@@ -196,7 +196,8 @@ LAND, IOS, STRIPE, DECK = 60, 150, 330, 510
 EXPLODE, RULES = 690, 870
 PIT_CROWD, PIT_FLAT, RESTORE, END = 1080, 1134, 1170, 1200
 RULES_AT = [888, 924, 960, 996, 1032]
-HITS = [LAND, IOS, STRIPE, DECK, EXPLODE, RULES, PIT_CROWD, END]
+NOTE, SHEET, WALLET, ISSUE = 198, 232, 288, 438
+HITS = [LAND, IOS, NOTE, SHEET, WALLET, STRIPE, ISSUE, DECK, EXPLODE, RULES, PIT_CROWD, END]
 
 CH = {
     'Fmaj9': (41, [53, 57, 60, 64]),  # F2 | F3 A3 C4 E4
@@ -274,7 +275,14 @@ for k, h in enumerate(HITS[:-1]):
 # 世界切换的音色：iOS 玻璃、Stripe 钟、扑克木击、爆炸空间
 sfx(bell(midi(81), 0.18, 0.85), fr(IOS), pan=-0.16, send=0.55)
 sfx(glass(midi(89), 0.12, 0.55), fr(IOS + 6), pan=0.14, send=0.45)
+sfx(swipe(0.16, 0.22), fr(NOTE - 2), pan=-0.2, send=0.2)
+sfx(glass(midi(84), 0.14, 0.45), fr(NOTE), pan=-0.12, send=0.45)
+sfx(whoosh(fr(16), 400, 4800, 0.16, 0.45), fr(SHEET - 8), pan=0.1)
+sfx(thock(0.32, 170, 60), fr(SHEET), send=0.16)
+sfx(bell(midi(86), 0.14, 0.55), fr(WALLET), pan=0.16, send=0.5)
 sfx(bell(midi(77), 0.16, 0.7), fr(STRIPE), pan=0.18, send=0.5)
+sfx(pluck(midi(81), 0.1, 0.1), fr(ISSUE), pan=-0.14, send=0.35)
+sfx(thock(0.28, 150, 62), fr(ISSUE + 4), send=0.12)
 sfx(thock(0.4, 160, 58), fr(DECK), send=0.18)
 sfx(bell(midi(84), 0.14, 0.7), fr(DECK + 4), pan=-0.12, send=0.5)
 sfx(riser(fr(24), 0.18), fr(EXPLODE - 18), send=0.2)
