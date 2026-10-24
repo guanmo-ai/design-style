@@ -12,8 +12,10 @@ export const PhoneBack: React.FC<P> = ({f}) => {
   const p = tween(f, t0, 32, 0, 1, E.out);
   const o = tween(f, t0, 14) * (1 - tween(f, T('STRIPE'), 12, 0, 1, E.inOut));
   if (o <= 0.001) return null;
+  const px = Math.sin(f / 26) * 10;
+  const py = Math.cos(f / 32) * 7;
   return (
-    <div style={{position: 'absolute', inset: 0, opacity: o, transform: `translateY(${(1 - p) * 50}px) scale(${0.94 + 0.06 * p})`, transformOrigin: `${PHONE.x + PHONE.w / 2}px 540px`}}>
+    <div style={{position: 'absolute', inset: 0, opacity: o, transform: `translate(${px}px, ${(1 - p) * 50 + py}px) rotateY(${Math.sin(f / 40) * 4}deg) scale(${0.94 + 0.06 * p})`, transformOrigin: `${PHONE.x + PHONE.w / 2}px 540px`}}>
       <div style={{position: 'absolute', left: PHONE.x - 14, top: PHONE.y - 14, width: PHONE.w + 28, height: PHONE.h + 28, borderRadius: PHONE.r + 14, background: '#1A1A1C', boxShadow: 'inset 0 0 0 2px #3A3A3C, inset 0 0 0 5px #0C0C0D, 0 48px 120px rgba(0,0,0,.7)'}} />
       <div
         style={{
@@ -34,8 +36,10 @@ export const PhoneBack: React.FC<P> = ({f}) => {
 export const PhoneFront: React.FC<P> = ({f}) => {
   const o = tween(f, T('IOS') + 8, 14) * (1 - tween(f, T('STRIPE'), 12, 0, 1, E.inOut));
   if (o <= 0.001) return null;
+  const px = Math.sin(f / 26) * 10;
+  const py = Math.cos(f / 32) * 7;
   return (
-    <div style={{position: 'absolute', inset: 0, opacity: o, pointerEvents: 'none'}}>
+    <div style={{position: 'absolute', inset: 0, opacity: o, pointerEvents: 'none', transform: `translate(${px}px, ${py}px)`}}>
       <div style={{position: 'absolute', left: PHONE.x + 118, top: PHONE.y, width: 156, height: 28, background: '#000', borderRadius: '0 0 18px 18px'}} />
       <div style={{position: 'absolute', left: PHONE.x + 28, top: PHONE.y + 14, ...disp(16, 600, 0), color: '#fff'}}>9:41</div>
       <svg width={72} height={18} style={{position: 'absolute', left: PHONE.x + PHONE.w - 92, top: PHONE.y + 16}}>
@@ -86,7 +90,7 @@ export const StripeDesk: React.FC<P> = ({f}) => {
             <span>ID</span><span>Customer</span><span>Amount</span><span>Status</span>
           </div>
           {ROWS.map(([id, name, amt, st], k) => (
-            <div key={id} style={{display: 'grid', gridTemplateColumns: '1.2fr 1fr .8fr .7fr', gap: 8, height: 36, alignItems: 'center', ...ui(13, 500), color: k === 0 ? '#fff' : 'rgba(255,255,255,.55)', background: k === 0 ? 'rgba(99,91,255,.16)' : 'transparent', borderRadius: 8, padding: '0 8px'}}>
+            <div key={id} style={{display: 'grid', gridTemplateColumns: '1.2fr 1fr .8fr .7fr', gap: 8, height: 36, alignItems: 'center', ...ui(13, 500), color: k === 0 ? '#fff' : 'rgba(255,255,255,.55)', background: k === 0 ? `rgba(99,91,255,${0.12 + 0.1 * (0.5 + 0.5 * Math.sin(f / 10))})` : 'transparent', borderRadius: 8, padding: '0 8px'}}>
               <span style={mono(12)}>{id}</span>
               <span>{name}</span>
               <span>{amt}</span>

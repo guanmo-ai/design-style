@@ -220,6 +220,9 @@ export const Hud: React.FC<P> = ({f}) => {
         <span style={{...mono(16, 500), ...gradText, marginRight: 12}}>{`0${Math.min(k + 1, 7)} / 07`}</span>
         <span style={{...sc(17, 500, 0.03), color: main}}>{CHAPTERS[k][1]}</span>
       </div>
+      <div style={{position: 'absolute', left: 0, right: 0, top: -8, height: 2, background: paper ? 'rgba(15,23,42,.08)' : 'rgba(255,255,255,.1)', overflow: 'hidden'}}>
+        <div style={{width: `${((f - at(CHAPTERS[k][0])) / 180) * 100}%`, height: '100%', background: C.pink, opacity: 0.85}} />
+      </div>
     </div>
   );
 };
