@@ -3,18 +3,17 @@
  *   同一原则进 App：列表删成一行、一主按钮。不是交互旅游。
  */
 import React from 'react';
-import {E, POP, SNAP, SMOOTH, spr, tween} from '../../../src/lib/anim';
+import {E, SNAP, SMOOTH, spr, tween} from '../../../src/lib/anim';
 import {C, LINE} from '../tokens';
-import {INTO} from './script';
 import {AT} from './timeline';
-import {Box, Cam2, Dot, Txt, Why, camTrack, lerp, mixBox, n2, P, vis} from './ui';
+import {Box, Cam2, Txt, camTrack, mixBox, n2, P} from './ui';
 
-export const PHONE: Box = {x: 680, y: 68, w: 560, h: 944, r: 76};
+export const PHONE: Box = {x: 700, y: 72, w: 520, h: 800, r: 72};
 export const WIN: Box = {x: 200, y: 72, w: 1520, h: 888, r: 16};
 const SCR = (body: Box): Box => ({x: body.x + 14, y: body.y + 14, w: body.w - 28, h: body.h - 28, r: (body.r ?? 0) - 14});
 
-export const APP_CUTS = [678, 696, 714, 732, 750];
-export const APP_KEEP = 768;
+export const APP_CUTS = [696, 714, 732, 750, 768];
+export const APP_KEEP = 780;
 export const WEB_GO = AT.web;
 
 export const camApp = (f: number): Cam2 =>
@@ -83,15 +82,15 @@ export const App: React.FC<P> = ({f}) => {
       </g>
       {EXTRAS.map((e) => {
         const s = (1 - tween(f, e.cut, 10, 0, 1, E.in)) * tween(f, AT.app + 12 + e.y * 2, 8);
-        return <Row key={e.t} x={sx} r={sr} y={scr.y + 360 + e.y * 96} t={e.t} sub={e.sub} s={s} grey />;
+        return <Row key={e.t} x={sx} r={sr} y={scr.y + 340 + e.y * 80} t={e.t} sub={e.sub} s={s} grey />;
       })}
       <g opacity={n2(chrome * tween(f, AT.app + 16, 8))}>
-        <rect x={sx} y={scr.y + 760} width={110} height={36} rx={18} fill="#C23B2E" />
-        <Txt x={sx + 55} y={scr.y + 784} k="sc400" size={13} c={C.paper} anchor="middle">
+        <rect x={sx} y={scr.y + 660} width={100} height={32} rx={16} fill="#C23B2E" />
+        <Txt x={sx + 50} y={scr.y + 682} k="sc400" size={13} c={C.paper} anchor="middle">
           NEW
         </Txt>
-        <rect x={sx + 122} y={scr.y + 760} width={110} height={36} rx={18} fill={C.ink} />
-        <Txt x={sx + 177} y={scr.y + 784} k="sc400" size={13} c={C.paper} anchor="middle">
+        <rect x={sx + 112} y={scr.y + 660} width={100} height={32} rx={16} fill={C.ink} />
+        <Txt x={sx + 162} y={scr.y + 682} k="sc400" size={13} c={C.paper} anchor="middle">
           全部关闭
         </Txt>
         {['闹钟', '世界钟', '秒表', '计时'].map((lab, i) => (
@@ -105,8 +104,6 @@ export const App: React.FC<P> = ({f}) => {
         <line x1={(sx + sr) / 2 - 9} y1={scr.y + scr.h - 56} x2={(sx + sr) / 2 + 9} y2={scr.y + scr.h - 56} stroke={C.ink} strokeWidth={1.5} />
         <line x1={(sx + sr) / 2} y1={scr.y + scr.h - 65} x2={(sx + sr) / 2} y2={scr.y + scr.h - 47} stroke={C.ink} strokeWidth={1.5} />
       </g>
-      {togOn > 0.2 && <Dot x={sr - 19} y={scr.y + 232} r={0} />}
-      <Why o={vis(f, AT.app + 6, AT.web - 8, 10, 8)} kicker="进产品  App" line={INTO.app.why} en={INTO.app.en} />
     </g>
   );
 };

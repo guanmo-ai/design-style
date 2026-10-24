@@ -5,12 +5,11 @@
 import React from 'react';
 import {E, POP, SNAP, spr, tween} from '../../../src/lib/anim';
 import {C} from '../tokens';
-import {LINES} from './script';
 import {AT} from './timeline';
-import {Hair, Txt, Why, lerp, n2, P, vis} from './ui';
+import {Hair, Txt, lerp, n2, P, vis} from './ui';
 
-export const VS_SPLIT = 1072;
-export const VS_LABEL = 1088;
+export const VS_SPLIT = 1064;
+export const VS_LABEL = 1068;
 
 const Bad: React.FC<{x: number; y: number; s: number}> = ({x, y, s}) => (
   <g transform={`translate(${n2(x)} ${n2(y)}) scale(${n2(s)})`}>
@@ -80,7 +79,6 @@ export const Versus: React.FC<P> = ({f}) => {
           有焦点
         </Txt>
       </g>
-      <Why o={vis(f, AT.vs + 4, AT.poster - 6, 8, 8)} kicker="对照" line={LINES[6]} en="FOCUS VERSUS NOISE" />
     </g>
   );
 };
