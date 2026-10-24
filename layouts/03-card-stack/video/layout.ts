@@ -94,10 +94,10 @@ const STRIPE = [
   P(1040, 76, 604, 620, 16, {z: -18, rot: 0.08, dim: 0.3}),
 ];
 const DECK = [
-  P(860, 268, 292, 420, 18, {z: 28, rot: -11, dim: 0}),
-  P(1004, 292, 292, 420, 18, {z: 12, rot: -2.5, dim: 0.08}),
-  P(1144, 318, 292, 420, 18, {z: -4, rot: 7.5, dim: 0.16}),
-  P(1284, 348, 292, 420, 18, {z: -20, rot: 16, dim: 0.24}),
+  P(780, 260, 292, 420, 18, {z: 28, rot: -11, dim: 0}),
+  P(930, 286, 292, 420, 18, {z: 12, rot: -2.5, dim: 0.08}),
+  P(1080, 314, 292, 420, 18, {z: -4, rot: 7.5, dim: 0.16}),
+  P(1230, 348, 292, 420, 18, {z: -20, rot: 16, dim: 0.24}),
 ];
 const EXPLODE = [
   P(700, 148, 560, 292, 22, {z: 48, rot: -2.2, dim: 0}),
@@ -105,10 +105,15 @@ const EXPLODE = [
   P(1060, 488, 560, 292, 22, {z: -16, rot: 1.1, dim: 0.12}),
   P(1240, 658, 560, 292, 22, {z: -48, rot: 2.4, dim: 0.18}),
 ];
-const WIRE = stack(1124, 268, 640, 352, 24, {sx: 28, sy: 46, sz: 42, lift: 16});
-const CROWD = stack(820, 340, 620, 340, 20, {sx: 12, sy: 18, sz: 16, lift: 2, rot0: 0.4, dim: 0.05, dsc: 0.01});
-const FLAT = [0, 1, 2, 3].map((i) => P(780 + i * 10, 360 + i * 6, 640, 340, 16, {z: -i * 2, rot: 0, dim: 0, sc: 1}));
-const FIX = stack(620, 300, 680, 380, 28);
+const WIRE = stack(1080, 200, 620, 320, 22, {sx: 40, sy: 62, sz: 48, lift: 18, dim: 0.04, dsc: 0.012});
+const CROWD = [
+  P(760, 300, 600, 320, 18, {z: 20, rot: -3.5, dim: 0.02}),
+  P(820, 268, 600, 320, 18, {z: 8, rot: 2.8, dim: 0.06}),
+  P(700, 244, 600, 320, 18, {z: -4, rot: -1.6, dim: 0.1}),
+  P(860, 220, 600, 320, 18, {z: -16, rot: 4.2, dim: 0.14}),
+];
+const FLAT = [0, 1, 2, 3].map((i) => P(780 + i * 8, 360 + i * 5, 640, 340, 16, {z: -i * 2, rot: 0, dim: 0, sc: 1}));
+const FIX = stack(700, 280, 680, 380, 28, {sx: 28, sy: 44, lift: 16});
 const END = KEY.map((p) => shrink(p, 0.2, 960, 300));
 
 export const LAYOUTS: Record<LayoutName, Pose[]> = {
@@ -220,11 +225,10 @@ export const worldAt = (f: number): LayoutName => {
 export const ghostState = (f: number, g: number): Pose | null => {
   const on = tween(f, PIT.crowd, 20, 0, 1, E.out) * (1 - tween(f, PIT.flat - 6, 16, 0, 1, E.inOut));
   if (on <= 0.001) return null;
-  const dest = P(796 - (4 + g) * 12, 328 - (4 + g) * 18, 620, 340, 18, {
-    z: -(4 + g) * 14,
-    rot: g % 2 ? 0.8 : -0.6,
-    dim: 0.08 + g * 0.04,
-    o: on,
-  });
-  return {...dest, y: dest.y + (1 - on) * 40};
+  const dest = [
+    P(980, 210, 560, 300, 16, {z: -24, rot: 8, dim: 0.12, o: on}),
+    P(640, 180, 560, 300, 16, {z: -30, rot: -7, dim: 0.16, o: on}),
+    P(900, 140, 560, 300, 16, {z: -36, rot: 5, dim: 0.2, o: on}),
+  ][g];
+  return {...dest, y: dest.y + (1 - on) * 36, o: on};
 };
