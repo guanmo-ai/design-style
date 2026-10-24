@@ -1,6 +1,6 @@
 /** 布局 03 · Card Stack —— 四个世界里，同一叠 4 张卡各自装真实内容 */
 import React from 'react';
-import {E, POP, SNAP, SMOOTH, spr, tween} from '../../../src/lib/anim';
+import {E, POP, SMOOTH, spr, tween} from '../../../src/lib/anim';
 import {C} from '../tokens';
 import {BEATS, RULES_AT, SCENE} from './layout';
 import {count, disp, mono, sc, ui} from './ui';
@@ -35,14 +35,14 @@ const Spark: React.FC<{accent: string}> = ({accent}) => {
   );
 };
 
-/* ---------------- 01 定义：产品队列 A-roll ---------------- */
+/* ---------------- 01 钩子：产品队列 ---------------- */
 export const KeyFace: React.FC<P> = ({f, i}) => {
   const at = SCENE.KEY.in + i * 4;
   switch (i) {
     case 0:
       return (
         <>
-          <div style={cap()}>Focusus · P0</div>
+          <div style={cap()}>Focus · P0</div>
           <div style={{position: 'absolute', left: 28, top: 48, ...sc(28, 700, 0.01), color: C.ink}}>本周只做这一件</div>
           <div style={{position: 'absolute', left: 28, top: 88, ...ui(15, 500), color: C.ink2}}>This week's bet · ship the layout film</div>
           <div style={{position: 'absolute', left: 28, top: 124, display: 'flex', gap: 10}}>
@@ -106,11 +106,10 @@ export const KeyFace: React.FC<P> = ({f, i}) => {
   }
 };
 
-/* ---------------- 02 iOS Wallet / sheet / 通知 ---------------- */
+/* ---------------- 02 iOS Wallet / 通知 / Sheet / 扫码 / 抽卡 ---------------- */
 const Grabber = () => <div style={{position: 'absolute', left: '50%', top: 10, width: 42, height: 5, marginLeft: -21, borderRadius: 3, background: '#D1D5DB'}} />;
 
 export const IosFace: React.FC<P> = ({f, i}) => {
-  const at = SCENE.IOS.in + i * 5;
   switch (i) {
     case 0:
       return (
@@ -131,7 +130,7 @@ export const IosFace: React.FC<P> = ({f, i}) => {
           </div>
           <div style={{position: 'absolute', left: 22, right: 22, top: 160, display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: 10}}>
             {[['Gate', 'B12'], ['Seat', '14A'], ['Boards', '09:40']].map(([a, b], k) => {
-              const s = spr(f, SCENE.IOS.in + 6 + k * 4, POP, 28);
+              const s = spr(f, BEATS.gate + k * 4, POP, 28);
               return (
                 <div key={a} style={{transform: `scale(${0.86 + 0.14 * s})`, opacity: Math.min(1, s * 1.4)}}>
                   <div style={{...ui(11, 500), color: 'rgba(255,255,255,.55)'}}>{a}</div>
@@ -181,7 +180,7 @@ export const IosFace: React.FC<P> = ({f, i}) => {
           <div style={{position: 'absolute', left: 20, top: 32, ...sc(20, 700), color: C.ink}}>共享这张登机牌？</div>
           <div style={{position: 'absolute', left: 20, top: 68, ...ui(14, 500), color: C.ink2}}>Share Pass · Messages / Mail / Wallet</div>
           {['拷贝', '隔空投送', '取消'].map((t, k2) => {
-            const s = spr(f, BEATS.sheet + 6 + k2 * 5, POP, 28);
+            const s = spr(f, BEATS.buttons + k2 * 5, POP, 28);
             return (
               <div key={t} style={{position: 'absolute', left: 20, right: 20, top: 110 + k2 * 52, height: 44, borderRadius: 12, background: k2 === 2 ? C.chip : C.accentSoft, display: 'flex', alignItems: 'center', justifyContent: 'center', ...sc(16, 600), color: k2 === 2 ? C.ink2 : C.accent, transform: `scale(${0.72 + 0.28 * s})`, opacity: Math.min(1, s * 1.5)}}>
                 {t}
@@ -205,7 +204,7 @@ export const StripeFace: React.FC<P> = ({f, i}) => {
             <span style={{...ui(12, 600), color: '#16A34A', background: '#DCFCE7', padding: '4px 8px', borderRadius: 999}}>Succeeded</span>
             <span style={{...mono(12), color: C.ink3}}>py_3Q8s2K</span>
           </div>
-          <div style={{position: 'absolute', left: 24, top: 62, ...disp(48, 600, -0.045), color: C.ink}}>${count(f, at, 36, 2480)}</div>
+          <div style={{position: 'absolute', left: 24, top: 62, ...disp(48, 600, -0.045), color: C.ink}}>${count(f, BEATS.amount, 28, 2480)}</div>
           <div style={{position: 'absolute', left: 24, top: 124, ...ui(14, 500), color: C.ink2}}>Visa ••4242 · Acme Labs · 2 min ago</div>
           <div style={{position: 'absolute', left: 24, right: 24, top: 168, display: 'grid', gridTemplateColumns: '1fr 1fr', gap: 10}}>
             {[['Customer', 'Acme Labs'], ['Fee', '$72.00'], ['Net', '$2,408.00'], ['Country', 'US']].map(([a, b]) => (
@@ -248,13 +247,13 @@ export const StripeFace: React.FC<P> = ({f, i}) => {
             <path d="M80 500 C200 440 280 480 400 380 C520 280 600 340 680 260" fill="none" stroke="#94A3B8" strokeWidth="2" />
           </svg>
           {(() => {
-            const drop = spr(f, at + 8, POP, 28);
-            const pick = spr(f, at + 36, POP, 22);
+            const drop = spr(f, BEATS.map + 4, POP, 28);
+            const pick = spr(f, BEATS.map + 24, POP, 22);
             return (
               <div style={{position: 'absolute', left: 48, top: 210 - (1 - drop) * 80, width: 22, height: 22, borderRadius: 11, background: C.accent, boxShadow: `0 0 0 ${6 + 10 * pick}px rgba(37,99,235,.28)`, transform: `scale(${0.2 + 0.8 * drop})`}} />
             );
           })()}
-          <div style={{position: 'absolute', left: 24, bottom: 24, right: 24, padding: 16, borderRadius: 14, background: '#fff', boxShadow: '0 10px 24px rgba(15,23,42,.12)', opacity: Math.min(1, spr(f, at + 20, POP, 24) * 1.4), transform: `translateY(${(1 - spr(f, at + 20, POP, 26)) * 24}px)`}}>
+          <div style={{position: 'absolute', left: 24, bottom: 24, right: 24, padding: 16, borderRadius: 14, background: '#fff', boxShadow: '0 10px 24px rgba(15,23,42,.12)', opacity: Math.min(1, spr(f, BEATS.map + 16, POP, 24) * 1.4), transform: `translateY(${(1 - spr(f, BEATS.map + 16, POP, 26)) * 24}px)`}}>
             <div style={{...sc(16, 700), color: C.ink}}>选这个点</div>
             <div style={{...ui(13, 500), color: C.ink2, marginTop: 6}}>Folsom St · San Francisco · 0.3 km</div>
           </div>
@@ -285,124 +284,37 @@ export const StripeFace: React.FC<P> = ({f, i}) => {
   }
 };
 
-/* ---------------- 04 历史隐喻：名片 / 扑克 / 档案袋 / 索引卡 ---------------- */
-const Suit: React.FC<{kind: 'S' | 'H' | 'C' | 'D'; size?: number}> = ({kind, size = 28}) => {
-  const fill = kind === 'H' || kind === 'D' ? '#DC2626' : '#111827';
-  const d =
-    kind === 'S'
-      ? 'M14 2 C8 10 2 14 2 20 C2 25 6 28 10 28 C12 28 13 27 14 25 C15 27 16 28 18 28 C22 28 26 25 26 20 C26 14 20 10 14 2 Z M11 28 Q14 34 14 38 Q14 34 17 28'
-      : kind === 'H'
-        ? 'M14 26 C4 16 2 12 2 8 C2 4 5 2 8 2 C11 2 13 4 14 7 C15 4 17 2 20 2 C23 2 26 4 26 8 C26 12 24 16 14 26 Z'
-        : kind === 'D'
-          ? 'M14 2 L26 14 L14 26 L2 14 Z'
-          : 'M14 2 C10 8 8 12 8 16 C4 16 2 19 2 22 C2 25 5 27 8 26 C8 30 12 34 14 38 C16 34 20 30 20 26 C23 27 26 25 26 22 C26 19 24 16 20 16 C20 12 18 8 14 2 Z';
-  return (
-    <svg width={size} height={size} viewBox="0 0 28 40">
-      <path d={d} fill={fill} />
-    </svg>
-  );
-};
-
-export const DeckFace: React.FC<P> = ({f, i}) => {
-  switch (i) {
-    case 0:
-      return (
-        <>
-          <div style={{position: 'absolute', inset: 0, background: 'linear-gradient(180deg,#FAF6EE,#F3E6C8)'}} />
-          <div style={{position: 'absolute', left: 20, top: 22, width: 44, height: 44, borderRadius: 22, background: 'linear-gradient(135deg,#FF8A3D,#A63DFF)', display: 'flex', alignItems: 'center', justifyContent: 'center', ...sc(20, 700), color: '#fff'}}>观</div>
-          <div style={{position: 'absolute', left: 20, top: 84, ...sc(28, 800), color: '#1C1917'}}>观默</div>
-          <div style={{position: 'absolute', left: 20, top: 124, ...ui(13, 500), color: '#78716C'}}>@guanmo_ai</div>
-          <div style={{position: 'absolute', left: 20, top: 168, right: 20, ...sc(15, 500), color: '#44403C', lineHeight: 1.5}}>设计 × AI。每天拆一个风格，做成短片和规范。</div>
-          <div style={{position: 'absolute', left: 20, bottom: 28, ...mono(11), color: '#A8A29E'}}>BUSINESS CARD · 2013 隐喻</div>
-        </>
-      );
-    case 1:
-      return (
-        <>
-          <div style={{position: 'absolute', inset: 8, borderRadius: 12, boxShadow: 'inset 0 0 0 2px #111827', transform: `rotateY(${90 * (1 - spr(f, SCENE.DECK.in + 18, SNAP, 32))}deg)`, transformOrigin: 'center'}} />
-          <div style={{position: 'absolute', left: 18, top: 16, ...disp(42, 700, -0.04), color: '#111827'}}>A</div>
-          <div style={{position: 'absolute', left: 20, top: 62}}>
-            <Suit kind="S" size={26} />
-          </div>
-          <div style={{position: 'absolute', left: '50%', top: '50%', transform: 'translate(-50%,-50%)'}}>
-            <Suit kind="S" size={72} />
-          </div>
-          <div style={{position: 'absolute', right: 18, bottom: 16, transform: 'rotate(180deg)', ...disp(42, 700, -0.04), color: '#111827'}}>A</div>
-        </>
-      );
-    case 2:
-      return (
-        <>
-          <div style={{position: 'absolute', inset: 0, background: 'linear-gradient(180deg,#E8C37A,#C5964A)'}} />
-          <div style={{position: 'absolute', left: 0, top: 0, right: 0, height: 36, background: 'linear-gradient(180deg,#D6A24E,#C08A32)'}} />
-          <div style={{position: 'absolute', left: 18, top: 8, ...ui(12, 700), color: '#44403C', letterSpacing: '0.12em'}}>PROJECTS</div>
-          <div style={{position: 'absolute', left: 18, top: 64, ...sc(20, 700), color: '#292524'}}>档案袋</div>
-          <div style={{position: 'absolute', left: 18, top: 100, right: 18, ...ui(13, 500), color: '#57534E', lineHeight: 1.5}}>Folder stack · 一次只抽出最上面那份。</div>
-          {['L01 Bento', 'L02 Masonry', 'L03 Card Stack'].map((t, k) => {
-            const s = spr(f, SCENE.DECK.in + 22 + k * 6, POP, 24);
-            return (
-              <div key={t} style={{position: 'absolute', left: 18, right: 18, top: 168 + k * 40, height: 32, borderRadius: 6, background: 'rgba(255,255,255,.35)', display: 'flex', alignItems: 'center', padding: '0 10px', ...ui(13, 500), color: '#44403C', opacity: Math.min(1, s * 1.5), transform: `translateX(${(1 - s) * 20}px)`}}>
-                {t}
-              </div>
-            );
-          })}
-        </>
-      );
-    default:
-      return (
-        <>
-          <div style={{position: 'absolute', inset: 0, background: '#FFFBEB'}} />
-          <div style={{position: 'absolute', inset: 0, backgroundImage: 'repeating-linear-gradient(transparent, transparent 27px, #FDE68A 28px)', opacity: 0.7}} />
-          <div style={{position: 'absolute', left: 20, top: 24, ...sc(16, 600), color: '#92400E'}}>规则备忘</div>
-          <div style={{position: 'absolute', left: 20, top: 64, right: 16, ...sc(18, 500), color: '#78350F', lineHeight: 1.7}}>
-            3–4 张
-            <br />
-            只读顶卡
-            <br />
-            轻抬 8–16
-          </div>
-          <div style={{position: 'absolute', left: 20, bottom: 24, ...mono(11), color: '#B45309'}}>INDEX CARD</div>
-        </>
-      );
-  }
-};
-
-/* ---------------- 05 爆炸：z-index + 结构数字 ---------------- */
+/* ---------------- 04 拆解：z-index 然后变成可带走的规则 ---------------- */
 const ZINFO: [string, string, string][] = [
   ['z-index 40', 'FOCUS', 'lift 14 · rot −1.2°'],
   ['z-index 30', 'NEXT', 'offset 24 / 38'],
   ['z-index 20', 'WAIT', 'scale 0.964'],
   ['z-index 10', 'BACK', 'dim 33%'],
 ];
-export const ExplodeFace: React.FC<{i: number}> = ({i}) => {
+const TAKE: [string, string, string][] = [
+  ['01 焦点', '一张在被读', '同一交互面 · 只处理顶卡'],
+  ['02 露出', '24 × 38', '后层只暗示，不抢读'],
+  ['03 退让', 'scale −1.8%', '每层压暗 11%'],
+  ['04 张数', '3–4 张', '第五张是噪声'],
+];
+export const ExplodeFace: React.FC<P> = ({f, i}) => {
   const [z, role, rule] = ZINFO[i];
+  const [k, t, d] = TAKE[i];
+  const flip = spr(f, RULES_AT[i] ?? RULES_AT[0], POP, 22);
   return (
     <>
-      <div style={{position: 'absolute', left: 28, top: 22, ...mono(13), color: C.accent}}>{z}</div>
-      <div style={{position: 'absolute', left: 28, top: 52, ...disp(48, 600, -0.04), color: C.ink}}>{role}</div>
-      <div style={{position: 'absolute', left: 28, top: 118, ...ui(16, 500), color: C.ink2}}>{rule}</div>
-      <div style={{position: 'absolute', right: 28, bottom: 24, ...mono(12), color: C.ink3}}>{`slot ${i}`}</div>
+      <div style={{position: 'absolute', inset: 0, opacity: 1 - flip}}>
+        <div style={{position: 'absolute', left: 28, top: 22, ...mono(13), color: C.accent}}>{z}</div>
+        <div style={{position: 'absolute', left: 28, top: 52, ...disp(48, 600, -0.04), color: C.ink}}>{role}</div>
+        <div style={{position: 'absolute', left: 28, top: 118, ...ui(16, 500), color: C.ink2}}>{rule}</div>
+        <div style={{position: 'absolute', right: 28, bottom: 24, ...mono(12), color: C.ink3}}>{`slot ${i}`}</div>
+      </div>
+      <div style={{position: 'absolute', inset: 0, opacity: flip, transform: `translateY(${(1 - flip) * 16}px)`}}>
+        <div style={{position: 'absolute', left: 28, top: 22, ...mono(13), color: C.accent}}>{k}</div>
+        <div style={{position: 'absolute', left: 28, top: 52, ...disp(40, 600, -0.03), color: C.ink}}>{t}</div>
+        <div style={{position: 'absolute', left: 28, top: 118, ...ui(16, 500), color: C.ink2}}>{d}</div>
+      </div>
     </>
-  );
-};
-
-/* ---------------- 06 线框：每张卡一个可测量参数 ---------------- */
-const WIRE: [string, string, string][] = [
-  ['01  FOCUS', '一张焦点', 'only the top sheet is read'],
-  ['02  OFFSET', '24 × 38', 'peek up-left per layer'],
-  ['03  SCALE', '0.982', '−1.8% per layer'],
-  ['04  DIM', '11%', 'brightness per layer'],
-];
-export const WireFace: React.FC<P> = ({f, i}) => {
-  const at = RULES_AT[i] ?? RULES_AT[0];
-  const [k, t, d] = WIRE[i];
-  const o = tween(f, at, 12);
-  return (
-    <div style={{position: 'absolute', inset: 0, opacity: o, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', color: 'rgba(245,245,247,.92)'}}>
-      <div style={{...mono(14), color: 'rgba(245,245,247,.5)', letterSpacing: '0.08em'}}>{k}</div>
-      <div style={{...disp(i === 0 ? 52 : 40, 600, -0.03), marginTop: 14}}>{t}</div>
-      <div style={{...ui(14, 500), color: 'rgba(245,245,247,.55)', marginTop: 12}}>{d}</div>
-    </div>
   );
 };
 
