@@ -1,6 +1,6 @@
 /** 010 · 片尾：三句可带走的话 + 六格代码渲定妆 + @guanmo_ai */
 import React from 'react';
-import {spr} from '../../../src/lib/anim';
+import {POP, spr} from '../../../src/lib/anim';
 import {C, HILLS} from '../tokens';
 import {AT, LINES} from './timeline';
 import {W, n1} from './layers';
@@ -135,24 +135,30 @@ export const Take: React.FC<{f: number}> = ({f}) => {
         <circle cx={1680} cy={180} r={18} fill={C.folk} />
       </g>
       {LINES.map((line, i) => {
-        const k = spr(f, AT.take + 8 + i * 40, {damping: 12, mass: 0.7, stiffness: 170});
+        const k = spr(f, AT.take + 22 + i * 30, POP, 28);
         if (k < 0.01) return null;
+        const num = spr(f, AT.take + 25 + i * 30, POP, 24);
+        const body = spr(f, AT.take + 28 + i * 30, POP, 24);
         const flutter = Math.sin(t * 0.07 + i) * 3;
         return (
-          <g key={i} opacity={k} transform={`translate(${n1((1 - k) * -36 + flutter)} ${n1(72 + i * 188)})`} filter="url(#shNear)">
+          <g key={i} opacity={Math.min(1, k)} transform={`translate(${n1((1 - k) * -40 + flutter)} ${n1(72 + i * 188)})`} filter="url(#shNear)">
             <rect x={72} width={1180} height={164} rx={22} fill={C.paper} />
             <rect x={72} width={14} height={164} rx={8} fill={i === 0 ? C.folk : i === 1 ? HILLS[3] : C.sun} />
-            <Txt x={114} y={66} size={18} font="mono" c={C.sun} ls={1.4}>
-              {`0${i + 1}  TAKE AWAY`}
-            </Txt>
-            <Txt x={114} y={118} size={30} font="cn" w={900} c={C.ink}>
-              {line}
-            </Txt>
+            <g opacity={Math.min(1, num)}>
+              <Txt x={114} y={66} size={18} font="mono" c={C.sun} ls={1.4}>
+                {`0${i + 1}  TAKE AWAY`}
+              </Txt>
+            </g>
+            <g opacity={Math.min(1, body)} transform={`translate(${n1((1 - body) * 12)} 0)`}>
+              <Txt x={114} y={118} size={30} font="cn" w={900} c={C.ink}>
+                {line}
+              </Txt>
+            </g>
           </g>
         );
       })}
       {THUMBS.map((thumb, i) => {
-        const k = spr(f, AT.take + 118 + i * 8, {damping: 11, mass: 0.6, stiffness: 190});
+        const k = spr(f, AT.take + 118 + i * 4, POP, 28);
         if (k < 0.01) return null;
         const x = 72 + i * 296;
         const bob = Math.sin(t * 0.09 + i * 0.7) * 4;
@@ -176,7 +182,7 @@ export const Take: React.FC<{f: number}> = ({f}) => {
         );
       })}
       {(() => {
-        const handle = spr(f, AT.take + 168, {damping: 14, mass: 0.8, stiffness: 140});
+        const handle = spr(f, AT.take + 172, POP, 28);
         if (handle < 0.01) return null;
         return (
           <g opacity={handle} transform={`translate(0 ${n1((1 - handle) * 16)})`}>

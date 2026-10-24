@@ -149,6 +149,13 @@ def snip(d=0.08):
     return s
 
 
+def tick(d=0.035):
+    t = tt(d)
+    s = hp(noise(d), 6200, 3) * np.exp(-t / 0.007)
+    s += 0.18 * np.sin(2 * np.pi * 2100 * t) * np.exp(-t / 0.009)
+    return s
+
+
 def whoosh(d=0.4, f0=400, f1=2800):
     n = noise(d)
     out = np.zeros_like(n)
@@ -217,50 +224,65 @@ for k, g in enumerate([0.36, 0.2, 0.1]):
     sh = D * (k + 1)
     dl[k % 2, sh:] += mono[: N - sh] * g
 
-# 民俗：展开 + 一圈圈剪孔
+# 民俗：左右页错开落 + 花瓣/铜钱逐个砸拍
 sfx(rustle(0.28), fr(8), 0.2, -0.2, 0.2)
 sfx(whoosh(0.32, 280, 1600), fr(8), 0.12, 0, 0.15)
-for i, frn in enumerate([26, 32, 38, 44, 52, 58, 64, 70, 78, 84, 90, 96]):
-    sfx(snip(0.055), fr(frn), 0.11, -0.4 + (i % 6) * 0.14)
-    sfx(rustle(0.08), fr(frn), 0.08, -0.3 + (i % 6) * 0.1, 0.12)
-# 撕开 → 几何层叠
-sfx(whoosh(0.38, 400, 2400), fr(156), 0.2, 0, 0.22)
+sfx(tick(), fr(16), 0.1, -0.3)
+sfx(tick(), fr(20), 0.1, 0.3)
+sfx(tick(), fr(30), 0.12, 0)
+for i in range(12):
+    sfx(snip(0.05), fr(34 + i * 3), 0.1, -0.4 + (i % 6) * 0.14)
+    sfx(tick(), fr(34 + i * 3), 0.06, -0.3 + (i % 6) * 0.1)
+for i in range(8):
+    sfx(snip(0.045), fr(70 + i * 3), 0.09, -0.35 + i * 0.08)
+# 撕开 → 几何层叠：6 层 3 帧一档，红日砸第 7 拍
+sfx(whoosh(0.42, 400, 2400), fr(148), 0.2, 0, 0.22)
 sfx(rustle(0.2), fr(168), 0.18, 0.1, 0.15)
-for i, frn in enumerate([184, 194, 204, 214, 224, 234]):
-    sfx(rustle(0.14), fr(frn), 0.16, -0.45 + i * 0.15, 0.15)
-    sfx(kalimba(note(67 + [0, 2, 4, 7, 9, 12][i]), 0.4), fr(frn), 0.07, -0.4 + i * 0.14, 0.18)
-sfx(snip(0.07), fr(210), 0.16, 0.2)
-# → 立体纸板
-sfx(whoosh(0.3, 350, 2000), fr(366), 0.18, -0.1, 0.2)
 for i in range(6):
-    sfx(rustle(0.11), fr(398 + i * 12), 0.14, -0.4 + i * 0.14, 0.14)
+    sfx(rustle(0.12), fr(192 + i * 3), 0.14, -0.45 + i * 0.15, 0.15)
+    sfx(tick(), fr(192 + i * 3), 0.08, -0.4 + i * 0.14)
+    sfx(kalimba(note(67 + [0, 2, 4, 7, 9, 12][i]), 0.35), fr(192 + i * 3), 0.06, -0.4 + i * 0.14, 0.16)
+sfx(snip(0.07), fr(210), 0.16, 0.2)
+# → 立体纸板：外壳/行/揭层逐个
+sfx(whoosh(0.34, 350, 2000), fr(358), 0.18, -0.1, 0.2)
+for i in range(6):
+    sfx(tick(), fr(386 + i * 4), 0.08, -0.4 + i * 0.14)
+    sfx(rustle(0.1), fr(406 + i * 4), 0.13, -0.4 + i * 0.14, 0.12)
 # → 刀切剪影
-sfx(whoosh(0.22, 1200, 3600), fr(546), 0.16, 0, 0.12)
+sfx(whoosh(0.26, 1200, 3600), fr(538), 0.16, 0, 0.12)
 sfx(snip(0.08), fr(570), 0.18, 0)
-sfx(rustle(0.1), fr(620), 0.1, -0.2)
-sfx(kalimba(note(74), 0.4), fr(660), 0.1, 0.15, 0.2)
+sfx(tick(), fr(576), 0.1, -0.25)
+sfx(tick(), fr(580), 0.1, 0.25)
+sfx(rustle(0.1), fr(630), 0.1, -0.2)
+sfx(kalimba(note(74), 0.4), fr(666), 0.1, 0.15, 0.2)
 # → 毛边 / App
-sfx(whoosh(0.36, 500, 2200), fr(726), 0.2, 0.2, 0.2)
-sfx(rustle(0.18), fr(750), 0.16, 0.1, 0.15)
+sfx(whoosh(0.4, 500, 2200), fr(718), 0.2, 0.2, 0.2)
+sfx(tick(), fr(738), 0.09, -0.3)
+sfx(tick(), fr(760), 0.1, 0)
+sfx(tick(), fr(780), 0.11, 0.1)
 for i in range(6):
     sfx(shaker(0.05), fr(790 + i * 14), 0.07, 0.25)
-# → 字体剪纸：揭走手机，再一刀一字母剪穿
-sfx(whoosh(0.34, 300, 3800), fr(936), 0.2, 0, 0.22)
-sfx(rustle(0.14), fr(962), 0.12, -0.15, 0.15)
-for i, frn in enumerate([996, 1004, 1012, 1020, 1028]):
-    sfx(snip(0.07), fr(frn), 0.16, -0.35 + i * 0.16)
-    sfx(rustle(0.07), fr(frn), 0.08, -0.3 + i * 0.14, 0.1)
-place(kalimba(note(86), 1.2), fr(996), 0.14, 0.1, 0.35, LEAD)
+# → 字体剪纸：三层纸 + 五字母逐个
+sfx(whoosh(0.38, 300, 3800), fr(928), 0.2, 0, 0.22)
+for i in range(3):
+    sfx(tick(), fr(970 + i * 4), 0.08, -0.2 + i * 0.15)
+    sfx(rustle(0.08), fr(970 + i * 4), 0.09, -0.2 + i * 0.15, 0.1)
+for i in range(5):
+    sfx(snip(0.07), fr(1000 + i * 4), 0.15, -0.35 + i * 0.16)
+    sfx(tick(), fr(1000 + i * 4), 0.08, -0.3 + i * 0.14)
+place(kalimba(note(86), 1.2), fr(1000), 0.14, 0.1, 0.35, LEAD)
 sfx(snip(0.08), fr(1062), 0.16, 0.1)
 sfx(rustle(0.12), fr(1062), 0.12, 0.2)
-# 带走
-sfx(whoosh(0.3, 450, 1600), fr(1146), 0.14, 0, 0.18)
-for i, frn in enumerate([1178, 1218, 1258]):
+# 带走：三句砸拍 + 六格 + handle
+sfx(whoosh(0.34, 450, 1600), fr(1138), 0.14, 0, 0.18)
+for i, frn in enumerate([1200, 1230, 1260]):
     sfx(rustle(0.12), fr(frn), 0.14, -0.3 + i * 0.25, 0.16)
+    sfx(tick(), fr(frn), 0.09, -0.3 + i * 0.25)
     sfx(kalimba(note([71, 76, 83][i]), 0.55), fr(frn), 0.1, -0.3 + i * 0.25, 0.25)
 for k, n in enumerate([67, 71, 74, 79, 83, 86]):
-    place(kalimba(note(n), 1.0), fr(1284) + k * 0.05, 0.1, -0.5 + k * 0.18, 0.35, LEAD)
-sfx(rustle(0.14), fr(1332), 0.12, 0, 0.15)
+    place(kalimba(note(n), 1.0), fr(1296) + k * 0.04, 0.1, -0.5 + k * 0.18, 0.35, LEAD)
+    sfx(tick(), fr(1296 + k * 4), 0.07, -0.45 + k * 0.15)
+sfx(rustle(0.14), fr(1350), 0.12, 0, 0.15)
 end = pad_tone([55, 67, 71, 74, 79], 2.0)
 for ch in range(2):
     place(lp(end[ch], 2400), fr(1320), 0.18, -1 if ch == 0 else 1, 0.45, PUMP)

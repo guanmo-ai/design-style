@@ -3,7 +3,7 @@
  * 六层山 + 夜空 + 红日 + 松树剪影。层移的量按 PARA，远慢近快。
  */
 import React from 'react';
-import {E, spr, track, tween} from '../../../src/lib/anim';
+import {E, POP, spr, track, tween} from '../../../src/lib/anim';
 import {C, HILLS, PARA, SHADOW, TREES} from '../tokens';
 import {AT, DURATION, TR} from './timeline';
 
@@ -188,8 +188,8 @@ export const phoneCam = (f: number): Cam => {
 
 /** 立体纸板：揭起某一层。0 = 贴着，1 = 揭开 */
 export const peelAt = (f: number, i: number) => {
-  const up = spr(f, AT.dio + 8 + i * 12, {damping: 12, mass: 0.7, stiffness: 170});
-  const down = spr(f, AT.dio + 108 + i * 6, {damping: 14, mass: 0.8, stiffness: 150});
+  const up = spr(f, AT.dio + 8 + i * 4, POP, 28);
+  const down = spr(f, AT.dio + 108 + i * 4, {damping: 14, mass: 0.8, stiffness: 150});
   return c01(up * (1 - down * 0.72));
 };
 
@@ -210,8 +210,8 @@ export const World: React.FC<{f: number; mode?: WorldMode; dim?: number; cam?: C
   born = AT.geo,
 }) => {
   const cam = given ?? worldCam(f);
-  const enter = (i: number) => spr(f, born + 4 + i * 10, {damping: 11, mass: 0.65, stiffness: 180});
-  const sunK = mode.startsWith('mono') ? 0 : spr(f, born + 24, {damping: 8, mass: 0.5, stiffness: 220});
+  const enter = (i: number) => spr(f, born + 4 + i * 3, POP, 28);
+  const sunK = mode.startsWith('mono') ? 0 : spr(f, born + 22, POP, 28);
   const raySpin = f * 0.08;
   const shade = mode === 'flat' ? 0 : 1;
   const lock = 1;
@@ -260,7 +260,7 @@ export const World: React.FC<{f: number; mode?: WorldMode; dim?: number; cam?: C
             <g key={i} transform={`translate(${n1(px)} ${n1(py)})`} opacity={k} filter={filt}>
               <path d={d} fill={fill} />
               {PINES.filter((p) => p.layer === i).map((p, j) => {
-                const tk = spr(f, born + 36 + i * 8 + j * 3, {damping: 9, mass: 0.55, stiffness: 200});
+                const tk = spr(f, born + 28 + i * 4 + j * 3, POP, 24);
                 if (tk < 0.01) return null;
                 return (
                   <path

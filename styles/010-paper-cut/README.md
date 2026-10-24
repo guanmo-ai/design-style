@@ -125,7 +125,7 @@ then a brand title sequence flying through the paper strata. Soft paper shadows,
 
 ## 9 · 24 秒分镜（剪纸博览）
 
-不是一座山加五条文字规则。全片是一场**剪纸风格博览**：每 2–3 秒一种可命名的变体，交棒用纸自己的动作。设计师带走片尾三句话。逐格纸层怎么动见 [`process/timeline.json`](process/timeline.json)。
+不是一座山加五条文字规则。全片是一场**剪纸风格博览**：每 2–3 秒一种可命名的变体，交棒用纸自己的动作。设计师带走片尾三句话。逐格纸层怎么动见 [`process/timeline.json`](process/timeline.json)。每个元素几帧出场见 [`process/stagger.json`](process/stagger.json)。
 
 | 时间 | 帧 | 变体 | 纸层怎么动 |
 |---|---|---|---|
@@ -144,6 +144,7 @@ then a brand title sequence flying through the paper strata. Soft paper shadows,
 ├─ PROCESS.md                             # 制作过程
 ├─ MAKING.md                              # 从 0 到 1
 ├─ process/timeline.json                  # 分镜
+├─ process/stagger.json                   # 逐个出场：变体 × 元素 × 帧
 ├─ tokens.ts / tokens.css / tokens.json
 ├─ video/PaperCut.tsx                     # 主合成：交叠揭纸转场
 ├─ video/timeline.ts
