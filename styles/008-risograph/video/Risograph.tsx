@@ -33,7 +33,7 @@ const Hud: React.FC<{f: number}> = ({f}) => {
   });
   const p = tween(f, CHAPTERS[k][2], 14, 0, 1, E.out);
   return (
-    <Plate ink="black" f={f} grain="t70" density={0.78} boil={false} style={{opacity: o, mixBlendMode: 'multiply'}}>
+    <Plate ink="black" f={f} grain="solid" density={0.82} boil={false} style={{opacity: o, mixBlendMode: 'multiply'}}>
       <div style={{position: 'absolute', left: 80, right: 80, top: 36, height: 28, display: 'flex', justifyContent: 'space-between', alignItems: 'baseline'}}>
         <div>
           <span style={{...mono(16, 700, 0.12)}}>RISOGRAPH</span>

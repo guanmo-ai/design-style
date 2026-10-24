@@ -36,7 +36,7 @@ const HOLES = (() => {
       const cx = (x - 960) / 520;
       const cy = (y - 500) / 280;
       const inO = cx * cx + cy * cy < 1;
-      if (inO || (i + j) % 3 === 0) out.push([x, y, inO ? 7 : 4.2]);
+      if (inO || (i + j) % 2 === 0) out.push([x, y, inO ? 8 : 3.6]);
     }
   }
   return out;
@@ -53,7 +53,7 @@ export const Stencil: React.FC<P> = ({f}) => {
       {/* 版纸底 */}
       <div style={{position: 'absolute', inset: 0, background: C.master, transform: `translateY(${-peel * 1080}px) rotate(${-peel * 4}deg)`, transformOrigin: '50% 0%'}}>
         <div style={{position: 'absolute', inset: 24, border: `2px dashed ${C.grey}`, opacity: 0.45}} />
-        <Plate ink="black" f={f} grain="t50" density={0.55} boil={false}>
+        <Plate ink="black" f={f} grain="solid" density={0.72} boil={false}>
           <T k="mono" x={80} y={72} size={22} style={{...mono(20, 700, 0.14), color: 'currentColor'}}>
             MASTER · THERMAL HEAD · 300 dpi
           </T>
@@ -82,9 +82,9 @@ export const Stencil: React.FC<P> = ({f}) => {
           <div key={i} style={{position: 'absolute', left: x - 18, top: y - 18, width: 36, height: 36, borderRadius: '50%', background: 'currentColor', transform: `scale(${0.4 + 0.6 * flood})`}} />
         ))}
       </Plate>
-      <Plate ink="black" f={f} grain="t70" density={0.78}>
+      <Plate ink="black" f={f} grain="solid" density={0.86}>
         <Show f={f} at={t0 + 8} out={t0 + 78} dy={14}>
-          <T x={80} y={1000} size={64} style={{...disp(64, 900, 80, -0.02), color: 'currentColor'}}>
+          <T x={80} y={1000} size={72} style={{...disp(72, 900, 80, -0.02), color: 'currentColor'}}>
             01  孔
           </T>
         </Show>
@@ -149,7 +149,7 @@ export const Passes: React.FC<P> = ({f}) => {
         })}
       </div>
       {PASS.map((p) => (
-        <Plate key={p.label} ink={p.ink} f={f} grain="t70">
+        <Plate key={p.label} ink={p.ink} f={f} grain="solid">
           <Show f={f} at={p.at} out={p.at + 26} dy={10}>
             <T k="mono" x={80} y={80} size={22} style={{...mono(20, 700, 0.12), color: 'currentColor'}}>
               {p.label}
@@ -157,7 +157,7 @@ export const Passes: React.FC<P> = ({f}) => {
           </Show>
         </Plate>
       ))}
-      <Plate ink="black" f={f} grain="t50" density={0.8}>
+      <Plate ink="black" f={f} grain="solid" density={0.86}>
         <Show f={f} at={SPLIT + 4} out={AT.overprint - 6} dy={12}>
           <T k="sc" x={80} y={980} size={36} style={{...sc(36, 700, 0.05), color: 'currentColor'}}>
             一种颜色，过一遍机器。
@@ -212,7 +212,7 @@ export const Overprint: React.FC<P> = ({f}) => {
           </Plate>
         );
       })}
-      <Plate ink="black" f={f} grain="t70" density={0.85}>
+      <Plate ink="black" f={f} grain="solid" density={0.88}>
         <Rise f={f} at={t0 + 6} top={56} h={90}>
           <T x={80} y={120} size={72} style={{...disp(72, 900, 80, -0.03), color: 'currentColor'}}>
             03  叠印
@@ -261,7 +261,7 @@ export const Zine: React.FC<P> = ({f}) => {
               <DotLike x={80} y={320} r={36} />
               <DotLike x={170} y={300} r={52} />
             </Plate>
-            <Plate ink="black" f={f} grain="t70" density={0.88} style={{position: 'absolute', inset: 0}}>
+            <Plate ink="black" f={f} grain="solid" density={0.9} style={{position: 'absolute', inset: 0}}>
               <T k="sc" x={28} y={400} size={40} style={{...sc(40, 900, 0.02), color: 'currentColor'}}>
                 {p.title}
               </T>
@@ -272,7 +272,7 @@ export const Zine: React.FC<P> = ({f}) => {
           </div>
         );
       })}
-      <Plate ink="black" f={f} grain="t50" density={0.8}>
+      <Plate ink="black" f={f} grain="solid" density={0.88}>
         <Rise f={f} at={t0 + 4} top={40} h={80}>
           <T x={80} y={100} size={64} style={{...disp(64, 900, 80, -0.03), color: 'currentColor'}}>
             04  小志
@@ -324,7 +324,7 @@ export const Words: React.FC<P> = ({f}) => {
               <div style={{position: 'absolute', left: 1100 + i * 30, top: 180, width: 220, height: 700, borderRadius: 110, background: 'currentColor'}} />
             </Plate>
           ))}
-          <Plate ink="black" f={f} grain="t70">
+          <Plate ink="black" f={f} grain="solid">
             <Rise f={f} at={a} top={200} h={280}>
               <Zh top={420} size={220}>
                 专色
@@ -345,7 +345,7 @@ export const Words: React.FC<P> = ({f}) => {
               <div style={{position: 'absolute', left: c.x - 200, top: c.y - 280, width: 400, height: 400, borderRadius: '50%', background: 'currentColor'}} />
             </Plate>
           ))}
-          <Plate ink="black" f={f} grain="t70">
+          <Plate ink="black" f={f} grain="solid">
             <Rise f={f} at={a - 2} top={140} h={240}>
               <Zh top={320} size={200}>
                 叠印
@@ -368,7 +368,7 @@ export const Words: React.FC<P> = ({f}) => {
               </T>
             </Plate>
           ))}
-          <Plate ink="black" f={f} grain="t70">
+          <Plate ink="black" f={f} grain="solid">
             <Rise f={f} at={a} top={160} h={160}>
               <Zh top={280} size={180}>
                 套不准
@@ -397,7 +397,7 @@ export const Words: React.FC<P> = ({f}) => {
               />
             </svg>
           </Plate>
-          <Plate ink="black" f={f} grain="t70">
+          <Plate ink="black" f={f} grain="solid">
             <Rise f={f} at={a} top={200} h={220}>
               <Zh top={380} size={200}>
                 网点
@@ -419,7 +419,7 @@ export const Words: React.FC<P> = ({f}) => {
           <Plate ink="pink" f={f} grain="heavy" reg={{x: 8, y: -6}}>
             <div style={{position: 'absolute', left: 900, top: 80, width: 900, height: 920, background: 'currentColor'}} />
           </Plate>
-          <Plate ink="black" f={f} grain="t70">
+          <Plate ink="black" f={f} grain="solid">
             <Rise f={f} at={a - 2} out={AT.end - 10} top={220} h={240}>
               <Zh top={420} size={200}>
                 颗粒
@@ -453,7 +453,7 @@ export const End: React.FC<P> = ({f}) => {
         </Plate>
       ))}
       <TitleWord f={f} at={t0 + 2} />
-      <Plate ink="black" f={f} grain="t70" density={0.86}>
+      <Plate ink="black" f={f} grain="solid" density={0.88}>
         <Show f={f} at={t0 + 16} dy={12}>
           <T k="sc" x={960} y={342} size={40} align="center" style={{...sc(40, 900, 0.16), color: 'currentColor'}}>
             孔版印刷
