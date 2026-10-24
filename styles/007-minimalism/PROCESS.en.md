@@ -18,8 +18,8 @@ The first draft was rejected: centered text cards on empty paper, no protagonist
 
 1. Research the timeline (Browning, Sullivan, Loos, Mies, Rams, Judd, Reich, flat UI) and reduce it to five rules.
 2. Write all frame numbers in `video/timeline.ts` and the scene files; `video/cues.ts` gathers them and `audio/export_cues.mjs` writes `audio/cues.json`, so the music reads the same numbers as the picture.
-3. Build the scenes in Remotion: a hand-written axonometric projection with painter's sorting for the pavilion, 47 radio parts that pop in by distance and are deleted on 32nd notes, a one-point-perspective Judd stack, a phone whose screen opens inside the box, a recap that zooms out to a timeline.
-4. Synthesize the score with NumPy (`audio/make_music.py`): 147 deletion pops, a 48-voice cluster that loses one voice per deleted part, detent clicks, a marimba ostinato, a recap where drums, bass, marimba and pad leave one by one; mastered to −14 LUFS with a −2 dBTP ceiling.
+3. Build the product scenes in Remotion: an App alarm (press-scale, page push, sheet, orange toggle), a handbook landing (hover underline, scroll, anchor), a checkout card that clears to an empty state. History (radio / Judd) is only a two-second opening hook.
+4. Synthesize the score with NumPy (`audio/make_music.py`): soft opening bed, UI-aligned clicks and whooshes, a marimba ostinato that loses voices into the empty state; mastered to −14 LUFS with a −2 dBTP ceiling.
 5. Generate the four sheets with `images/make_svgs.py` and embed font subsets with `scripts/build_images.py`.
 6. Check stills, contact sheets, the beat chart, loudness and the encoded files.
 
@@ -29,8 +29,8 @@ The first draft was rejected: centered text cards on empty paper, no protagonist
 |---|---|
 | Canvas | 1920 × 1080 |
 | Frame rate | 60 fps |
-| Composition duration | 18 seconds |
-| Frames | 1080 |
+| Composition duration | 22 seconds |
+| Frames | 1320 |
 | Tempo | 120 BPM (beat = 30 frames, sixteenth = 7.5 frames) |
 | Loudness | −14 LUFS, true peak below −1 dBTP after AAC |
 

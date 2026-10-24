@@ -8,7 +8,7 @@
 
 One dot, one line, a lot of space. Remove until nothing more can be removed; everything that is left has a reason to be there. Less is more.
 
-The 18-second film performs a single move — subtraction — with a single protagonist: a signal-orange dot. Every scene is reduced to its last remaining shape, and that shape becomes the start of the next scene: noise → dot → horizon → Mies's pavilion plan → roof slab → radio → knob → box → phone → timeline → dot.
+The 22-second film keeps a two-second noise→dot hook, then spends the rest of the runtime on how minimalism looks and moves in real products: an App UI (press, page push, sheet, toggle), an HTML handbook (hover, scroll, anchor), and a checkout card that empties. The orange dot is the pointer, the switch, and the CTA.
 
 Series: **Design styles**. Period shown in this episode: **1929—today**.
 
@@ -85,4 +85,4 @@ precise hairlines, no texture, no gradients, no shadows, no ornaments --ar 4:5
 - [Music synthesis](audio/make_music.py)
 - [Original SVG files](images)
 
-The pavilion, radio, stack and phone in the film are re-drawn homages, not reproductions; the radio does not correspond to any Braun product and the alarm interface is fictional.
+The App, handbook, and checkout screens are code-drawn fictional interfaces, not screenshots of a real product. Reference stills are rendered from the same code; no AI-generated images.

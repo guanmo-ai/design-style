@@ -10,7 +10,6 @@
 import React from 'react';
 import {E, POP, spr, tween} from '../../../src/lib/anim';
 import {C, LINE} from '../tokens';
-import {AT} from './timeline';
 import {Box, c01, Cam2, camTrack, Dot, lerp, mixBox, n2, P, quad, Txt, vis, World} from './ui';
 import {dot01, PASS01, roofCorners} from './space';
 
@@ -415,7 +414,7 @@ const Counter: React.FC<P> = ({f}) => {
 
 /* ═══════════ 图注：03 不再钉三条引线，镜头自己讲孔 / 圆 / 橙 ═══════════ */
 const Captions: React.FC<P> = ({f}) => {
-  const s2 = (at: number) => vis(f, at, AT.function - 4, 14, 10);
+  const s2 = (at: number) => vis(f, at, 356, 14, 10);
   const s3 = (at: number) => vis(f, at, 384, 8, 8);
   return (
     <g>

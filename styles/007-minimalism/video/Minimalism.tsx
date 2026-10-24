@@ -1,18 +1,12 @@
 /**
- * Design Style · 风格 007 · 极简主义 Minimalism —— 18 秒短片（1920×1080 · 60fps · 120 BPM · 1080 帧）
+ * Design Style · 风格 007 · 极简主义 Minimalism —— 22 秒短片（1920×1080 · 60fps · 120 BPM · 1320 帧）
  *
- * 不讲课，只做一件事：删。全片只有一个主角——一个橙色的点（全片唯一的彩色），
- * 它在每一幕里都是“最要紧的那一处”；每一幕最后剩下的那个形状，直接变成下一幕的起点（“减法接力”）。
- *   0.0–0.5s   噪音    150 个多余的东西（促销字、徽章、星星……前六期的全部字体）被删到只剩一个点
- *   0.5–2.0s   标题    一根发丝线从点向两边画出去；MINIMALISM / 极简主义 / Less is more.
- *   2.0–4.0s   负空间  线收短成台基，长出密斯的巴塞罗那德国馆（1929）平面；点走进去；平面立成轴测
- *   4.0–6.0s   删减    屋顶板转正成一台收音机——48 个按键旋钮贴纸，一个十六分音符删一个，删到 1 个
- *   6.0–8.0s   功能    镜头推进格栅再摇到旋钮；转一下，开机，立刻压扁成盒子（不再钉着注释）
- *   8.0–10.0s  重复    机身变成一个盒子 → 十个（贾德）；镜头跟着往上走，再拉开、推进留下的那一个
- *  10.0–12.0s  今天    剩下的一个盒子变成手机：一个屏幕只做一件事；开关的圆点就是那个点
- *  12.0–14.0s  回顾    一条线上的四个年代，再一个个删掉
- *  14.0–18s   片尾    回到开场：一个点，一根线；少即是多。@guanmo_ai
- * 各幕见同目录 opening / space / radio / judd / today / finale，时间轴见 ../process/timeline.json
+ * 不讲收音机史。只看极简在真实产品里长什么样、怎么丝滑动。
+ *   0.0–2.0s   开场    噪音删到一个点；MINIMALISM / 极简主义
+ *   2.0–10.0s  App     线长成手机；删掉多余闹钟；按压缩放 → 推页 → sheet → 拨橙点开关
+ *  10.0–15.5s  Web     极简手册站：大标题、细线栏；hover / 滚动 / 锚点
+ *  15.5–19.0s  确认    一张纸：一个金额、一个按钮；做完了就空着
+ *  19.0–22.0s  片尾    回到那个点；少即是多。@guanmo_ai
  */
 import React from 'react';
 import {AbsoluteFill, Audio, staticFile, useCurrentFrame} from 'remotion';
@@ -24,10 +18,9 @@ import {C} from '../tokens';
 import {AT, CHAPTERS, DURATION} from './timeline';
 import {font} from './ui';
 import {Opening} from './opening';
-import {Space} from './space';
-import {Radio} from './radio';
-import {Judd} from './judd';
-import {Today} from './today';
+import {App} from './app';
+import {Web} from './web';
+import {Pay} from './pay';
 import {Finale} from './finale';
 
 export const MINIMALISM_DURATION = DURATION;
@@ -49,7 +42,6 @@ const loadFonts = () => {
   F('Noto Sans SC', 'NotoSansSC-Regular.otf', '400');
   F('Noto Sans SC', 'NotoSansSC-Medium.otf', '500');
   F('Noto Sans SC', 'NotoSansSC-Black.otf', '900');
-  // 开场的“噪音”：前六期用过的字体
   F('Bangers', 'Bangers-Regular.ttf', '400');
   F('Oswald', 'Oswald.ttf', '200 700');
   F('Fredoka', 'Fredoka.ttf', '300 700');
@@ -60,16 +52,15 @@ const loadFonts = () => {
   F('Silkscreen', 'Silkscreen-Regular.ttf', '400');
 };
 
-/** 底部 HUD：左边片名，右边“章节号 / 总数 + 章节名”，中间一根进度发丝线 */
 const Hud: React.FC<{f: number}> = ({f}) => {
-  const o = tween(f, AT.space, 16) * (1 - tween(f, AT.recap, 12));
+  const o = tween(f, AT.app, 16) * (1 - tween(f, AT.end, 12));
   if (o <= 0.001) return null;
   let k = 0;
   CHAPTERS.forEach(([, , at], j) => {
     if (f >= at) k = j;
   });
   const p = tween(f, CHAPTERS[k][2], 16, 0, 1, E.out);
-  const prog = (f - AT.space) / (AT.recap - AT.space);
+  const prog = (f - AT.app) / (AT.end - AT.app);
   return (
     <div style={{position: 'absolute', left: 120, right: 120, top: 990, height: 40, opacity: o}}>
       <div style={{position: 'absolute', left: 0, right: 0, top: 0, height: 1, background: C.hair}} />
@@ -87,7 +78,6 @@ const Hud: React.FC<{f: number}> = ({f}) => {
   );
 };
 
-/** 画面本身（运动模糊会把它在一帧之内渲染好几次） */
 const Stage: React.FC = () => {
   const f = useCurrentFrame();
   const on = (a: number, b: number) => f >= a && f < b;
@@ -95,11 +85,10 @@ const Stage: React.FC = () => {
     <AbsoluteFill style={{background: `radial-gradient(ellipse 70% 80% at 50% 46%, ${C.paperHi} 0%, ${C.paper} 62%, #E8E4DD 100%)`, overflow: 'hidden'}}>
       <svg width={1920} height={1080} viewBox="0 0 1920 1080" style={{position: 'absolute', inset: 0}}>
         {on(0, 124) && <Opening f={f} />}
-        {on(104, 242) && <Space f={f} />}
-        {on(224, 482) && <Radio f={f} />}
-        {on(480, 602) && <Judd f={f} />}
-        {on(600, 706) && <Today f={f} />}
-        {on(704, DURATION) && <Finale f={f} />}
+        {on(104, 612) && <App f={f} />}
+        {on(592, 942) && <Web f={f} />}
+        {on(922, 1152) && <Pay f={f} />}
+        {on(1140, DURATION) && <Finale f={f} />}
       </svg>
       <Hud f={f} />
     </AbsoluteFill>
