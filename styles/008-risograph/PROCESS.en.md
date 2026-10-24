@@ -37,3 +37,5 @@ npm run images:008
 ```
 
 Composition id: `S008-Risograph`. This branch does not touch `styles/007-minimalism/`.
+
+- [Released video](https://github.com/guanmo-ai/design-style/releases/tag/day-08)
