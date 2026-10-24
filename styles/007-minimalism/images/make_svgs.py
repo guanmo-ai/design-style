@@ -258,14 +258,14 @@ def cheatsheet():
         ('10', '片尾', '5', '逐字升起', '@guanmo_ai'),
     ]
     colw = CW / 2
-    for i, (n, zh, el, move, line) in enumerate(cells):
+    for i, (n, zh, el, move, sentence) in enumerate(cells):
         x = MX + (i % 2) * colw
         yy = y + 32 + (i // 2) * 58
         b.append(NOTE(x, yy, n, ACCENT if i == 8 else GREY_DK, size=11))
         b.append(ZH(x + 36, yy, zh, 16, 400, INK))
         b.append(NOTE(x + 132, yy, f'{el} EL', GREY, size=11))
         b.append(ZH(x + 200, yy, move, 13, 300, GREY_DK))
-        b.append(ZH(x + 36, yy + 24, line, 14, 300, INK))
+        b.append(ZH(x + 36, yy + 24, sentence, 14, 300, INK))
         if i >= 2:
             b.append(line(x, yy - 12, x + colw - 20, yy - 12, HAIR, 1))
 

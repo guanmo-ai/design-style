@@ -50,8 +50,8 @@ export const BITS: Bit[] = [
   {kind: 'code', x: 1540, y: 700, rot: 4, label: '', fill: C.ink, in: 12, shout: 62, pane: 2},
   {kind: 'check', x: 860, y: 780, rot: 0, label: 'VIP', fill: C.ink, in: 13, shout: 66, pane: 2},
   {kind: 'tog', x: 1640, y: 240, rot: 0, label: '', fill: BLUE, in: 14, shout: 70, pane: 0},
-  {kind: 'stamp', x: 250, y: 860, rot: -16, label: 'SALE', fill: GOLD, ink: C.ink, in: 15, shout: 74, pane: 1},
-  {kind: 'dots', x: 1060, y: 860, rot: 0, label: '', fill: C.grey, in: 16, shout: 78, pane: 3},
+  {kind: 'stamp', x: 250, y: 740, rot: -16, label: 'SALE', fill: GOLD, ink: C.ink, in: 15, shout: 74, pane: 1},
+  {kind: 'dots', x: 1060, y: 820, rot: 0, label: '', fill: C.grey, in: 16, shout: 78, pane: 3},
   {kind: 'note', x: 640, y: 360, rot: 10, label: 'ULTRA', fill: BLUE, ink: '#fff', in: 17, shout: 82, pane: 4},
   {kind: 'spin', x: 1380, y: 380, rot: 0, label: '', fill: C.ink, in: 18, shout: 86, pane: 3},
 ];
@@ -195,9 +195,9 @@ const BitDraw: React.FC<{b: Bit; s: number}> = ({b, s}) => {
 };
 
 const WEIGHTS: {t: string; k: 'd100' | 'd300' | 't500'; size: number; x: number; y: number; at: number}[] = [
-  {t: 'Aa', k: 'd100', size: 96, x: 180, y: 980, at: 36},
-  {t: 'Aa', k: 'd300', size: 56, x: 400, y: 980, at: 48},
-  {t: 'Aa', k: 't500', size: 28, x: 600, y: 980, at: 60},
+  {t: 'Aa', k: 'd100', size: 96, x: 180, y: 900, at: 36},
+  {t: 'Aa', k: 'd300', size: 56, x: 400, y: 900, at: 48},
+  {t: 'Aa', k: 't500', size: 28, x: 600, y: 900, at: 60},
 ];
 
 export const Blast: React.FC<P> = ({f}) => {

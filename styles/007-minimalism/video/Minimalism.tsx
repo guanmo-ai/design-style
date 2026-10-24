@@ -63,11 +63,18 @@ const camAt = (f: number): Cam2 =>
     [20, {ox: 960, oy: 540, s: 1}],
     [108, {ox: 960, oy: 480, s: 1.18}],
     [168, {ox: 960, oy: 540, s: 1}],
-    [AT.app, {ox: 350, oy: 450, s: 1.46}],
-    [AT.web, {ox: 1020, oy: 260, s: 1.36}],
-    [AT.pay, {ox: 1630, oy: 260, s: 1.52}],
-    [AT.data, {ox: 1020, oy: 680, s: 1.4}],
-    [696, {ox: 1630, oy: 680, s: 1.42}],
+    [AT.split + 10, {ox: 960, oy: 540, s: 1}],
+    [AT.app - 6, {ox: 960, oy: 540, s: 1}],
+    [AT.app, {ox: 350, oy: 450, s: 1.62}],
+    [AT.web - 6, {ox: 350, oy: 450, s: 1.62}],
+    [AT.web, {ox: 1020, oy: 300, s: 1.5}],
+    [AT.pay - 6, {ox: 1020, oy: 300, s: 1.5}],
+    [AT.pay, {ox: 1630, oy: 280, s: 1.88}],
+    [AT.data - 6, {ox: 1630, oy: 280, s: 1.88}],
+    [AT.data, {ox: 1020, oy: 680, s: 1.55}],
+    [690, {ox: 1020, oy: 680, s: 1.55}],
+    [696, {ox: 1630, oy: 680, s: 1.8}],
+    [AT.vs - 8, {ox: 1630, oy: 680, s: 1.8}],
     [AT.vs, {ox: 960, oy: 540, s: 1}],
     [AT.bone, {ox: 960, oy: 520, s: 1.06}],
     [AT.hold, {ox: 960, oy: 540, s: 1}],
@@ -80,7 +87,7 @@ const Hud: React.FC<{f: number}> = ({f}) => {
   CELLS.forEach((b, j) => {
     if (f >= b.at && b.id !== 'end') k = j;
   });
-  const beat = CELLS[k];
+  const beat = f >= 696 && f < AT.vs ? {...CELLS.find((b) => b.id === 'hold')!, zh: '海报', en: 'One poster.', n: 8, at: 696} : CELLS[k];
   const p = tween(f, beat.at, 10, 0, 1, E.out);
   return (
     <div style={{position: 'absolute', left: 120, right: 120, top: 1010, height: 36, opacity: o, pointerEvents: 'none'}}>
