@@ -20,6 +20,7 @@ export type LayoutName =
   | 'IOS'
   | 'NOTE'
   | 'SHEET'
+  | 'SCAN'
   | 'WALLET'
   | 'STRIPE'
   | 'ISSUE'
@@ -33,7 +34,7 @@ export type LayoutName =
 
 export const familyOf = (name: LayoutName): 'KEY' | 'IOS' | 'STRIPE' | 'DECK' | 'EXPLODE' | 'WIRE' | 'PIT' | 'END' => {
   if (name === 'HOOK' || name === 'KEY' || name === 'FIX') return 'KEY';
-  if (name === 'IOS' || name === 'NOTE' || name === 'SHEET' || name === 'WALLET') return 'IOS';
+  if (name === 'IOS' || name === 'NOTE' || name === 'SHEET' || name === 'SCAN' || name === 'WALLET') return 'IOS';
   if (name === 'STRIPE' || name === 'ISSUE') return 'STRIPE';
   if (name === 'DECK') return 'DECK';
   if (name === 'EXPLODE') return 'EXPLODE';
@@ -129,6 +130,12 @@ const SHEET = [
   P(1314, 122, 340, 172, 22, {z: 50, dim: 0.08}),
   P(1308, 348, 352, 430, 28, {z: 90, dim: 0}),
 ];
+const SCAN = [
+  P(1308, 268, 352, 548, 32, {z: 44, rot: 0, dim: 0}),
+  P(1308, 228, 352, 548, 32, {z: 10, rot: 0.15, dim: 0.2}),
+  P(1314, 36, 340, 172, 22, {z: 20, o: 0.16}),
+  P(1308, 900, 352, 400, 28, {z: 8, o: 0.08}),
+];
 const WALLET = [
   P(1308, 236, 352, 548, 32, {z: 16, dim: 0.18}),
   P(1308, 292, 352, 548, 32, {z: 44, dim: 0}),
@@ -176,6 +183,7 @@ export const LAYOUTS: Record<LayoutName, Pose[]> = {
   IOS,
   NOTE,
   SHEET,
+  SCAN,
   WALLET,
   STRIPE,
   ISSUE,
@@ -195,6 +203,7 @@ export const TRANS: Trans[] = [
   {at: 136, to: 'IOS', dur: 36, stagger: 3, order: [0, 1, 2, 3]},
   {at: 184, to: 'NOTE', dur: 22, stagger: 2, order: [2, 0, 1, 3]},
   {at: 218, to: 'SHEET', dur: 24, stagger: 2, order: [3, 0, 2, 1]},
+  {at: 244, to: 'SCAN', dur: 20, stagger: 2, order: [0, 3, 2, 1]},
   {at: 274, to: 'WALLET', dur: 26, stagger: 2, order: [1, 0, 2, 3]},
   {at: 316, to: 'STRIPE', dur: 38, stagger: 3, order: [0, 1, 3, 2]},
   {at: 424, to: 'ISSUE', dur: 26, stagger: 2, order: [1, 0, 2, 3]},
@@ -342,8 +351,8 @@ export const poseVel = (f: number, i: number) => {
 };
 
 export const motionBlurPx = (vel: number) => {
-  if (vel < 2.2) return 0;
-  return Math.min(7.5, (vel - 2.2) * 0.28);
+  if (vel < 6) return 0;
+  return Math.min(3.2, (vel - 6) * 0.12);
 };
 
 export type Cam = {s: number; x: number; y: number; r: number; ox: number; oy: number};
@@ -357,14 +366,14 @@ export const camAt = (f: number): Cam => {
   const s = track(f, [
     {f: 0, v: 1.2},
     {f: 8, v: 1.0, d: 52, e: 'smooth'},
-    {f: 132, v: 1.12, d: 26, e: 'smooth'},
-    {f: 176, v: 1.2, d: 20, e: 'smooth'},
-    {f: 198, v: 1.28, d: 16, e: 'pop'},
-    {f: 220, v: 1.1, d: 18, e: 'smooth'},
-    {f: 232, v: 1.16, d: 16, e: 'pop'},
-    {f: 258, v: 1.42, d: 16, e: 'smooth'},
-    {f: 280, v: 1.16, d: 16, e: 'smooth'},
-    {f: 288, v: 1.22, d: 14, e: 'pop'},
+    {f: 132, v: 1.1, d: 26, e: 'smooth'},
+    {f: 176, v: 1.16, d: 20, e: 'smooth'},
+    {f: 198, v: 1.18, d: 16, e: 'pop'},
+    {f: 220, v: 1.08, d: 18, e: 'smooth'},
+    {f: 232, v: 1.12, d: 16, e: 'pop'},
+    {f: 258, v: 1.26, d: 16, e: 'smooth'},
+    {f: 280, v: 1.12, d: 16, e: 'smooth'},
+    {f: 288, v: 1.16, d: 14, e: 'pop'},
     {f: 312, v: 1.02, d: 22, e: 'smooth'},
     {f: 330, v: 1.08, d: 24, e: 'smooth'},
     {f: 422, v: 1.12, d: 18, e: 'smooth'},
@@ -402,11 +411,11 @@ export const camAt = (f: number): Cam => {
   const y = track(f, [
     {f: 0, v: 18},
     {f: 10, v: 0, d: 48, e: 'smooth'},
-    {f: 176, v: -8, d: 20, e: 'smooth'},
-    {f: 198, v: -56, d: 16, e: 'pop'},
-    {f: 220, v: 28, d: 18, e: 'smooth'},
-    {f: 232, v: 46, d: 16, e: 'pop'},
-    {f: 258, v: 88, d: 16, e: 'smooth'},
+    {f: 176, v: -6, d: 20, e: 'smooth'},
+    {f: 198, v: -28, d: 16, e: 'pop'},
+    {f: 220, v: 18, d: 18, e: 'smooth'},
+    {f: 232, v: 28, d: 16, e: 'pop'},
+    {f: 258, v: 52, d: 16, e: 'smooth'},
     {f: 280, v: 12, d: 16, e: 'smooth'},
     {f: 288, v: -6, d: 14, e: 'smooth'},
     {f: 316, v: 0, d: 20, e: 'smooth'},

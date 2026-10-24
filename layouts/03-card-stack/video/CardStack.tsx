@@ -55,6 +55,7 @@ const theme = (name: LayoutName, i: number): Theme => {
     case 'IOS':
     case 'NOTE':
     case 'SHEET':
+    case 'SCAN':
     case 'WALLET':
       return {top: '#FFFFFF', bot: '#F3F4F6', line: 'rgba(0,0,0,0.06)', lw: 1, sh: 1.2, hi: 0.12};
     case 'STRIPE':
@@ -86,6 +87,7 @@ const BG: Record<LayoutName, string> = {
   IOS: '#000000',
   NOTE: '#000000',
   SHEET: '#000000',
+  SCAN: '#000000',
   WALLET: '#000000',
   STRIPE: C.stripeBg,
   ISSUE: C.stripeBg,
@@ -207,18 +209,20 @@ export const CardStack: React.FC<{music?: boolean}> = ({music = true}) => {
         <AbsoluteFill style={{zIndex: 80}}>
           {f >= 132 && f < 330 + OVERLAP && <PhoneFront f={f} />}
           {f >= 150 && f < 330 && <IosTouch f={f} />}
-          {f >= SCENE.KEY.in - 8 && f < SCENE.KEY.out + 12 && <KeyCaption f={f} />}
-          {f >= SCENE.IOS.in - 8 && f < SCENE.IOS.out + 10 && <IosCaption f={f} />}
-          {f >= SCENE.STRIPE.in - 8 && f < SCENE.STRIPE.out + 10 && <StripeCaption f={f} />}
-          {f >= SCENE.DECK.in - 8 && f < SCENE.DECK.out + 10 && <DeckCaption f={f} />}
-          {f >= SCENE.EXPLODE.in - 8 && f < SCENE.EXPLODE.out + 10 && <ExplodeCaption f={f} />}
           {f >= 690 && f < 870 && <DepthTicks f={f} />}
-          {f >= SCENE.WIRE.in - 8 && f < SCENE.WIRE.out + 10 && <RulesPanel f={f} />}
           {f >= RULES_AT[0] - 4 && f < SCENE.WIRE.out + 8 && <Annotations f={f} />}
-          {f >= SCENE.PIT.in - 8 && f < SCENE.PIT.out + 8 && <PitCaption f={f} />}
-          {f >= SCENE.END.in - 8 && <EndTitle f={f} />}
-          <Hud f={f} />
         </AbsoluteFill>
+      </AbsoluteFill>
+      <AbsoluteFill style={{zIndex: 90, pointerEvents: 'none'}}>
+        {f >= SCENE.KEY.in - 8 && f < SCENE.KEY.out + 12 && <KeyCaption f={f} />}
+        {f >= SCENE.IOS.in - 8 && f < SCENE.IOS.out + 10 && <IosCaption f={f} />}
+        {f >= SCENE.STRIPE.in - 8 && f < SCENE.STRIPE.out + 10 && <StripeCaption f={f} />}
+        {f >= SCENE.DECK.in - 8 && f < SCENE.DECK.out + 10 && <DeckCaption f={f} />}
+        {f >= SCENE.EXPLODE.in - 8 && f < SCENE.EXPLODE.out + 10 && <ExplodeCaption f={f} />}
+        {f >= SCENE.WIRE.in - 8 && f < SCENE.WIRE.out + 10 && <RulesPanel f={f} />}
+        {f >= SCENE.PIT.in - 8 && f < SCENE.PIT.out + 8 && <PitCaption f={f} />}
+        {f >= SCENE.END.in - 8 && <EndTitle f={f} />}
+        <Hud f={f} />
       </AbsoluteFill>
       <Grain opacity={0.03} />
       {music && <Audio src={staticFile('03-card-stack/music.wav')} />}
