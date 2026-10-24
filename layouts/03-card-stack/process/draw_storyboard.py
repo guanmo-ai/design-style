@@ -90,7 +90,7 @@ def main():
         draw.text((x, y + th + 6), f'{act}  ·  f{fr}', font=tiny, fill=RED)
         draw.text((x, y + th + 26), learn, font=cap, fill=INK)
         draw.text((x, y + th + 50), f'{move}  ·  {cause}', font=why, fill='#5C564C')
-    out = os.path.join(ROOT, '01-storyboard.jpg')
+    out = os.path.join(ROOT, '00-meaning.jpg')
     img.save(out, quality=94, optimize=True)
     print('wrote', out)
 
