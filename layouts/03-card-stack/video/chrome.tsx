@@ -192,7 +192,7 @@ const IOS_COPY: {at: number; kicker: string; title: string; body: string; en: st
   {at: 150, kicker: 'A-roll · 产品', title: 'Wallet', body: '登机牌压在最上面。\n点 Gate，镜头跟过去。', en: 'Boarding pass on top · tap Gate B12'},
   {at: 198, kicker: '通知压下来', title: 'Notify', body: '同一叠拓扑：新的一层\n从顶上弹入，旧的退暗。', en: 'Notification stack · 2 more below'},
   {at: 232, kicker: '从底下抽出', title: 'Sheet', body: '上滑，操作层盖住票面。\n三个按钮逐个 POP。', en: 'Share sheet · Messages / Mail / Wallet'},
-  {at: 258, kicker: '扫登机牌', title: 'Scan', body: '镜头扎进条码。\n扫完一行，状态改成 Checked in。', en: 'Barcode punch · then pull back'},
+  {at: 258, kicker: '扫登机牌', title: 'Scan', body: 'Sheet 让开，镜头扎进条码。\n扫完一行，状态改成 Checked in。', en: 'Barcode punch · then pull back'},
   {at: 288, kicker: '抽出下一张', title: 'Card', body: '顶卡让位，Apple Card\n弹到最前面。', en: 'Wallet swap · same four cards'},
 ];
 

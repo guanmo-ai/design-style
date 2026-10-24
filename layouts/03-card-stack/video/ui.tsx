@@ -32,11 +32,11 @@ export const Rise: React.FC<{f: number; at: number; out: number; text: string; d
   const o = 1 - tween(f, out, 10, 0, 1, E.inOut);
   if (o <= 0.001 || f < at) return null;
   return (
-    <span style={{display: 'inline-flex', opacity: o, overflow: 'hidden', ...style}}>
+    <span style={{display: 'inline-flex', opacity: o, overflow: 'hidden', ...style, letterSpacing: '0em'}}>
       {[...text].map((ch, k) => {
-        const p = spr(f, at + k * d, POP, 28);
+        const p = Math.min(1, spr(f, at + k * d, POP, 28));
         return (
-          <span key={k} style={{display: 'inline-block', whiteSpace: 'pre', opacity: Math.min(1, p * 1.4), transform: `translateY(${(1 - p) * 0.55}em)`}}>
+          <span key={k} style={{display: 'inline-block', whiteSpace: 'pre', opacity: p, transform: `translateY(${(1 - p) * 0.55}em)`}}>
             {ch}
           </span>
         );
