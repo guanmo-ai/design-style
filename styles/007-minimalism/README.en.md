@@ -8,7 +8,7 @@
 
 One dot, one line, a lot of space. Remove until nothing more can be removed; everything that is left has a reason to be there. Less is more.
 
-The 15-second film performs a single move — subtraction — with a single protagonist: a signal-orange dot. Every scene is reduced to its last remaining shape, and that shape becomes the start of the next scene: noise → dot → horizon → Mies's pavilion plan → roof slab → radio → knob → box → phone → timeline → dot.
+The 18-second film performs a single move — subtraction — with a single protagonist: a signal-orange dot. Every scene is reduced to its last remaining shape, and that shape becomes the start of the next scene: noise → dot → horizon → Mies's pavilion plan → roof slab → radio → knob → box → phone → timeline → dot.
 
 Series: **Design styles**. Period shown in this episode: **1929—today**.
 

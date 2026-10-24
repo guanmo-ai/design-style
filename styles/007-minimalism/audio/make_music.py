@@ -1,19 +1,19 @@
 """
 Design Style · 风格 007 · 极简主义 Minimalism —— 配乐与音效（纯代码合成，无外部音源）
 
-一首完整的 15 秒小曲：120 BPM（1 拍 = 0.5 秒 = 30 帧）· D 大调。整首曲子也在做“减法”：
-先是一墙噪音，删到只剩一个音；然后一层一层加回来（只加必要的）；最后再一层一层删掉，回到那一个音。
-  0–0.5s     噪音：147 样东西被删，每删一样一声“噗”，底下一层广告歌似的乱码越来越薄 → 0.5s 一个点：一声纯音（全片的“点”的声音）
+一首完整的 18 秒小曲：120 BPM（1 拍 = 0.5 秒 = 30 帧）· D 大调。整首曲子也在做“减法”：
+先是一墙被捂暖的噪音，删到只剩一个音；然后一层一层加回来（只加必要的）；最后再一层一层删掉，回到那一个音。
+  0–0.5s     噪音：147 样东西被删，每删一样一声软“噗”（低通），底下是一层暖的纸噪而不是刺耳乱码 → 0.5s 一个点：一声纯音
   0.5–2s     一个音：D 的八分音符脉冲（Reich 式），每过一拍加一个音；标题十个字母十声细响；上升 → 2s
-  2–4s       01 负空间：毡槌底鼓 + 正弦贝斯进来；八面墙八声木头“咚”（调在和弦音上）；点走八步 = 八个马林巴音（第一句旋律）；
+  2–4s       01 负空间：毡槌底鼓 + 正弦贝斯进来；八面墙八声木头“咚”；点走八步 = 八个马林巴音（全片的主题句）；
              平面立起来时一阵上扬，八根柱子八声玻璃“嘀”，3.5s 屋顶板落下一记和弦
   4–6s       02 删减：收音机一冒出来，47 个声部同时响成一团不协和的音簇——每删掉一样东西，它的那个声部就停（外加一声“嗒”）；
              删到最后只剩旋钮的纯五度 G–D
-  6–8s       03 功能：整首曲子先像从小喇叭里出来（带通 + 一点底噪）；旋钮六个凹槽六声“咔”→ 7s 开机：全频段、拍手、开镲、低音全部打开
+  6–8s       03 功能：整首曲子先像从小喇叭里出来（带通）；旋钮六个凹槽六声“咔”→ 7s 开机：全频段打开，主题句回一次
   8–10s      04 重复：十个盒子 = 十个上行的马林巴音；第二支马林巴晚一个十六分音符进来（相位）；点往回跳 = 下行的应答
-  10–12s     05 今天：手机亮起；10.5s 开关“咔哒”+ 点的纯音；删四样东西四个下行音；毡钢琴的一句旋律
-  12–13s     回顾：12s 全曲最满的一拍 → 四个年代每删一个，乐队就少一件：鼓 → 贝斯 → 马林巴 → Pad，最后只剩一口吸气
-  13–15s     片尾：一个点 = 那一声纯音；Dmaj9 的长和弦慢慢散掉
+  10–12s     05 今天：手机亮起；10.5s 开关“咔哒”+ 点的纯音；删四样东西四个下行音；毡钢琴把主题句再唱一遍
+  12–14s     回顾：镜头拉远时垫一层 Dmaj7；四个年代每删一个，乐队就少一件：鼓 → 贝斯 → 马林巴 → Pad
+  14–18s     片尾：一个点 = 那一声纯音；Dmaj9 的长和弦慢慢散掉
 所有时间点读自 cues.json（由 export_cues.mjs 从 video/cues.ts 导出），与画面逐帧对齐（帧 / 60 = 秒）。
 
 用法：python3 styles/007-minimalism/audio/make_music.py
@@ -38,7 +38,7 @@ if shutil.which('node'):
 CUE = json.load(open(os.path.join(HERE, 'cues.json'), encoding='utf-8'))
 
 SR = 48000
-DUR = 15.0
+DUR = CUE['frames'] / 60.0
 N = int(SR * DUR)
 rng = np.random.default_rng(1929)
 
@@ -178,17 +178,17 @@ def pad(freqs, d, level=1.0, att=0.4, rel=0.8, bright=1.0):
 
 
 def voice(freq, d, level=1.0, nh=7):
-    """音簇里的一个声部：有点刺耳的方波（广告歌、电子玩具的音色），删掉的瞬间 15ms 收尾"""
+    """音簇里的一个声部：软一点的窄脉冲（不再用刺耳方波），删掉的瞬间 15ms 收尾"""
     t = tt(d + 0.02)
     y = np.zeros_like(t)
-    vib = 1 + 0.006 * np.sin(2 * np.pi * (4.5 + rng.random() * 2) * t + rng.random() * 6)
+    vib = 1 + 0.004 * np.sin(2 * np.pi * (3.2 + rng.random() * 1.4) * t + rng.random() * 6)
     ph = glide(freq * vib)
     for h in range(1, nh * 2, 2):
-        if freq * h > 9000:
+        if freq * h > 4200:
             break
-        y += np.sin(h * ph) / h
-    env = np.minimum(1, t / 0.006) * np.where(t < d, 1, np.exp(-(t - d) / 0.004))
-    return y * env * level
+        y += np.sin(h * ph) / (h ** 1.25)
+    env = np.minimum(1, t / 0.008) * np.where(t < d, 1, np.exp(-(t - d) / 0.006))
+    return onepole_lp(y * env * level, 2600)
 
 
 def thock(level=1.0, f0=190, f1=70, dec=0.07):
@@ -232,10 +232,11 @@ def click(level=1.0, freq=2200):
 
 
 def pop(freq, level=1.0):
-    """被删掉的那一下：极短的下滑正弦“噗”"""
-    t = tt(0.05)
-    f = freq * (0.45 + 0.55 * np.exp(-t / 0.008))
-    return np.sin(glide(f)) * np.minimum(1, t / 0.0006) * np.exp(-t / 0.012) * level
+    """被删掉的那一下：软的下滑正弦“噗”，先过低通，不刺耳"""
+    t = tt(0.07)
+    f = freq * (0.55 + 0.45 * np.exp(-t / 0.014))
+    y = np.sin(glide(f)) * np.minimum(1, t / 0.0014) * np.exp(-t / 0.024) * level
+    return onepole_lp(y, 1200)
 
 
 def shaker(level=1.0, dec=0.03):
@@ -320,6 +321,8 @@ PROG = [
     (660, 'Gmaj9', 31, [50, 55, 59, 64], [67, 71, 74, 76]),
     (690, 'Asus4', 33, [52, 57, 62, 64], [69, 74, 76, 81]),
     (720, 'D/F#', 42, [50, 57, 62, 66], [74, 78, 81, 85]),
+    (780, 'Gmaj9', 31, [50, 55, 59, 64], [67, 71, 74, 78]),
+    (810, 'A6', 33, [52, 57, 61, 66], [69, 73, 76, 81]),
 ]
 ERA = CUE['finale']['eraCuts']  # 回顾：每删一个年代，乐队少一件
 DRUM_END, BASS_END, MAR_END, PAD_END = ERA
@@ -348,9 +351,9 @@ LAND = CUE['opening']['land']
 n_total = len(clutter)
 # 每删一样东西：一声随机音高的“噗”，声像跟着它在画面上的位置走（越晚删的越靠中间）
 for k, t0 in enumerate(clutter):
-    pan = rng.uniform(-0.9, 0.9) * (1 - t0 / 30)
-    place(pop(rng.uniform(500, 3200), 0.17 + 0.06 * rng.random()), fr(t0 + 2), pan=pan, send=0.05)
-# 底下一层“广告歌”乱码：方波快速乱弹 + 电视雪花 + 低频嗡嗡；音量 = 还剩多少东西
+    pan = rng.uniform(-0.85, 0.85) * (1 - t0 / 30)
+    place(pop(rng.uniform(160, 780), 0.09 + 0.04 * rng.random()), fr(t0 + 2), pan=pan, send=0.08)
+# 底下一层暖的纸噪 + 很轻的短音，不再是刺耳广告歌；音量 = 还剩多少东西
 remain = np.ones(N)
 tsec = np.arange(N) / SR
 for t0 in clutter:
@@ -358,24 +361,26 @@ for t0 in clutter:
 remain = np.clip(remain, 0, 1)
 remain[tsec >= fr(LAND - 1)] = 0
 bed = np.zeros(int(fr(LAND) * SR))
-for _ in range(14):  # 14 支“广告歌”，各自乱弹
+for _ in range(6):
     t0 = 0.0
     while t0 < fr(LAND):
-        d = rng.choice([0.035, 0.05, 0.07])
-        m = rng.integers(60, 96)
-        v = voice(midi(m), d, 0.05, nh=5)
+        d = rng.choice([0.05, 0.07, 0.1])
+        m = rng.integers(50, 74)
+        v = voice(midi(m), d, 0.028, nh=3)
         i = int(t0 * SR)
         seg = v[: len(bed) - i]
         bed[i : i + len(seg)] += seg
         t0 += d
-static = hp(noise(fr(LAND)), 2500) * 0.18
-hum = np.sin(2 * np.pi * 100 * tt(fr(LAND))) * 0.08 + np.sin(2 * np.pi * 150 * tt(fr(LAND))) * 0.05
-chaos = (bed + static + hum) * remain[: len(bed)] ** 1.4
+paper = onepole_lp(hp(noise(fr(LAND)), 400), 1800) * 0.1
+hum = np.sin(2 * np.pi * 73.4 * tt(fr(LAND))) * 0.05 + np.sin(2 * np.pi * 110 * tt(fr(LAND))) * 0.03
+chaos = onepole_lp((bed + paper + hum) * remain[: len(bed)] ** 1.15, 1600)
 for ch, sh in ((0, 0), (1, 97)):
-    SFX[ch, : len(chaos)] += np.roll(chaos, sh) * 2.0
-# “MORE!” 缩成一个点：往下拧的一声
+    SFX[ch, : len(chaos)] += np.roll(chaos, sh) * 0.9
+# 开场就垫一层 D，噪音是从音乐里被删掉的，不是一堆 cue
+place(pad([midi(m) for m in (38, 50, 57, 62)], fr(36), 0.22, att=0.55, rel=0.8, bright=0.55), 0.0, send=0.4, bus=KEYS)
+# “MORE!” 缩成一个点：往下拧的一声（从中频开始，不再尖）
 t = tt(fr(12))
-place(np.sin(glide(1400 * 2 ** (-3 * t / t[-1]))) * (t / t[-1]) * 0.12, fr(LAND - 12), send=0.2)
+place(onepole_lp(np.sin(glide(640 * 2 ** (-2.1 * t / t[-1]))) * (t / t[-1]) * 0.08, 1400), fr(LAND - 12), send=0.25)
 # 30：一个点 —— 一声纯音（D6）+ 一点点低音；第二圈涟漪高五度
 place(ping(midi(86), 0.32, 1.6), fr(LAND), send=0.45, bus=KEYS)
 place(ping(midi(74), 0.18, 1.2), fr(LAND), send=0.3, bus=KEYS)
@@ -402,7 +407,7 @@ for i, m in enumerate([62, 66, 69, 74]):
     place(piano(midi(m), 0.8, 0.07), fr(54 + 3 * i), pan=-0.3, send=0.35, bus=KEYS)
 place(piano(midi(78), 1.0, 0.06), fr(62), pan=0.35, send=0.4, bus=KEYS)  # Less is more.
 for fm, pn in ((36, -0.4), (40, 0.4), (70, 0.4), (76, -0.4), (80, 0.4)):  # 四角的小字
-    place(tick(0.025, 3400, 0.006), fr(fm), pan=pn, send=0.15)
+    place(tick(0.018, 1900, 0.008), fr(fm), pan=pn, send=0.12)
 place(sub(midi(38), 2.0, 0.05), fr(60))
 # 96–120：上升 → 2s
 place(riser(fr(24), 0.16, 294), fr(96), send=0.3)
@@ -462,19 +467,21 @@ for m, pn in ((55, -0.2), (62, 0.2)):
 place(ping(midi(86), 0.14, 0.9), fr(POP_IN), pan=0.3, send=0.4, bus=KEYS)
 
 # ================= 03 功能 360–480 =================
-for k, fm in enumerate((366, 381, 392)):  # 三根引线：孔 / 圆 / 橙（橙 = 点的那一声）
+for k, fm in enumerate((362, 376, 394)):  # 三根引线：孔 / 圆 / 橙（一次一根，橙 = 点的那一声）
     if k < 2:
-        place(tink(midi([83, 88][k]), 0.05, 0.4), fr(fm + 8), pan=0.5, send=0.45, bus=KEYS)
+        place(tink(midi([81, 86][k]), 0.045, 0.45), fr(fm + 6), pan=0.45, send=0.45, bus=KEYS)
     else:
-        place(ping(midi(86), 0.13, 1.0), fr(fm + 8), pan=0.5, send=0.4, bus=KEYS)
-    place(air(fr(14), 2000, 9000, 0.02, 0.3), fr(fm), pan=0.5)
+        place(ping(midi(86), 0.12, 1.0), fr(fm + 6), pan=0.45, send=0.4, bus=KEYS)
+    place(air(fr(12), 800, 4200, 0.018, 0.35), fr(fm), pan=0.45)
 for k, fm in enumerate(RA['detents']):  # 旋钮六个凹槽
-    place(click(0.12, 1500 + 120 * k), fr(fm), pan=0.25, send=0.1)
-    place(tick(0.05, 4200, 0.004), fr(fm + 0.5), pan=0.3)
+    place(click(0.1, 1200 + 90 * k), fr(fm), pan=0.25, send=0.1)
+    place(tick(0.04, 2400, 0.005), fr(fm + 0.5), pan=0.3)
 ON = RA['on']
 place(thock(0.5, 140, 42, 0.16), fr(ON), send=0.2)  # 开机
 place(CYM * 0.16, fr(ON), send=0.3)
 place(sub(midi(33), 1.0, 0.25), fr(ON))
+for k, m in enumerate((78, 81, 83, 81)):
+    place(marimba(midi(m), 0.07, 0.3), fr(ON + 8 + k * 7.5), pan=-0.15 + 0.08 * k, send=0.3, bus=KEYS)
 # 452–468：孔一排一排删掉，像一阵小雨；旋钮缩没；机身压扁成盒子
 OUT3 = RA['out']
 for i in range(11):
@@ -516,45 +523,46 @@ place(air(fr(22), 500, 3000, 0.04, 0.5), fr(684), pan=0.3)  # 剩下的居中
 for fm, m, d in ((642, 78, 0.5), (657, 76, 0.25), (664.5, 74, 0.25), (672, 73, 0.6), (690, 76, 0.4), (705, 74, 0.6)):
     place(piano(midi(m), d, 0.12), fr(fm), pan=-0.15, send=0.4, bus=KEYS)
 
-# ================= 回顾 704–780 =================
+# ================= 回顾 704–840 =================
 RC = TO['recap']
-place(air(fr(28), 200, 7000, 0.14, 0.5), fr(RC), send=0.25)  # 往后拉
-place(riser(fr(16), 0.12, 440), fr(RC))
-place(CYM * 0.3, fr(720), send=0.35)  # 全曲最满的一拍
-place(sub(midi(30), 1.2, 0.3), fr(720))
+place(air(fr(40), 200, 5600, 0.12, 0.55), fr(RC), send=0.25)  # 往后拉
+place(riser(fr(22), 0.1, 392), fr(RC))
+place(CYM * 0.26, fr(720), send=0.35)
+place(sub(midi(30), 1.4, 0.26), fr(720))
 for m in (42, 50, 57, 62, 66, 69, 74):
-    place(piano(midi(m), 1.2, 0.07), fr(720), send=0.4, bus=KEYS)
-place(ping(midi(90), 0.08, 1.0), fr(720), send=0.5, bus=KEYS)
-for k, m in enumerate((74, 78, 81, 86)):  # 四个年份
-    place(tink(midi(m + 12), 0.03, 0.3), fr(RC + 18 + k * 2.5), pan=-0.6 + 0.4 * k, send=0.4, bus=KEYS)
-for k, fm in enumerate(ERA):  # 每删一个年代：一声“嗒”（乐队少一件在下面的律动里）
-    place(tick(0.09, 2000 - 200 * k, 0.01), fr(fm), pan=-0.6 + 0.4 * k, send=0.15)
-    place(pop(900 - 120 * k, 0.12), fr(fm), pan=-0.6 + 0.4 * k)
-place(swell(fr(14), 0.12), fr(END - 14))  # 线收回一个点：一口吸气，掐断
+    place(piano(midi(m), 1.6, 0.068), fr(720), send=0.4, bus=KEYS)
+place(ping(midi(90), 0.07, 1.2), fr(720), send=0.5, bus=KEYS)
+for k, m in enumerate((74, 78, 81, 86)):  # 四个年份，跟着拉镜慢慢出来
+    place(tink(midi(m + 12), 0.028, 0.35), fr(RC + 36 + k * 3), pan=-0.6 + 0.4 * k, send=0.4, bus=KEYS)
+for k, fm in enumerate(ERA):  # 每删一个年代：一声软“嗒”
+    place(tick(0.07, 1600 - 140 * k, 0.012), fr(fm), pan=-0.6 + 0.4 * k, send=0.15)
+    place(pop(420 - 40 * k, 0.1), fr(fm), pan=-0.6 + 0.4 * k)
+place(swell(fr(16), 0.11), fr(END - 16))
 
-# ================= 片尾 780–900：回到那一个音 =================
-place(ping(midi(86), 0.42, 2.4), fr(END), send=0.5, bus=KEYS)
-place(ping(midi(74), 0.16, 2.0), fr(END), send=0.4, bus=KEYS)
-place(ping(midi(93), 0.1, 1.4), fr(END + 8), pan=0.2, send=0.5, bus=KEYS)
-place(sub(midi(38), 2.4, 0.12), fr(END))
-for pan in (-0.7, 0.7):  # 地平线再画一遍
-    place(air(fr(28), 1200, 9000, 0.05, 0.4), fr(END + 4), pan=pan, send=0.2)
-# Dmaj9：毡钢琴 + Pad，长长地散掉
+# ================= 片尾：回到那一个音 =================
+FRAMES = CUE['frames']
+place(ping(midi(86), 0.4, 2.8), fr(END), send=0.5, bus=KEYS)
+place(ping(midi(74), 0.15, 2.4), fr(END), send=0.4, bus=KEYS)
+place(ping(midi(93), 0.09, 1.6), fr(END + 8), pan=0.2, send=0.5, bus=KEYS)
+place(sub(midi(38), 3.0, 0.12), fr(END))
+for pan in (-0.7, 0.7):
+    place(air(fr(28), 900, 6400, 0.045, 0.4), fr(END + 4), pan=pan, send=0.2)
 for m in (38, 50, 57, 61, 64, 66, 69):
-    place(piano(midi(m), 2.0, 0.075), fr(END), send=0.45, bus=KEYS)
+    place(piano(midi(m), 2.6, 0.07), fr(END), send=0.45, bus=KEYS)
 for pn in (-0.6, 0.6):
-    place(pad([midi(m) for m in (50, 57, 61, 64, 66)], fr(900 - END), 0.3, att=0.1, rel=0.6, bright=1.0), fr(END), pan=pn, send=0.4, bus=KEYS)
-# 少即是多：四个字四个音；Less is more. 一声马林巴；页脚三声细响
+    place(pad([midi(m) for m in (50, 57, 61, 64, 66)], fr(FRAMES - END), 0.28, att=0.15, rel=0.9, bright=0.85), fr(END), pan=pn, send=0.4, bus=KEYS)
 for i, m in enumerate((78, 81, 85, 86)):
-    place(piano(midi(m), 0.9, 0.065), fr(END + 12 + 3 * i), pan=-0.3 + 0.1 * i, send=0.45, bus=KEYS)
-place(marimba(midi(74), 0.1, 0.4), fr(END + 24), pan=-0.3, send=0.35, bus=KEYS)
+    place(piano(midi(m), 1.1, 0.06), fr(END + 12 + 3 * i), pan=-0.3 + 0.1 * i, send=0.45, bus=KEYS)
+place(marimba(midi(74), 0.1, 0.45), fr(END + 24), pan=-0.3, send=0.35, bus=KEYS)
+# 主题句最后一次，越来越轻
+for k, m in enumerate((78, 81, 83, 81, 78)):
+    place(marimba(midi(m), 0.055 * (1 - k / 6), 0.36), fr(END + 48 + k * 15), pan=-0.2 + 0.08 * k, send=0.35, bus=KEYS)
 for k, fm in enumerate((END + 44, END + 48, END + 52)):
-    place(tick(0.03, 3000 + 300 * k, 0.006), fr(fm), pan=-0.5 + 0.5 * k, send=0.2)
-# 和开场一样的 D 八分音符脉冲，越来越轻（首尾呼应）
-for k in range(int((870 - END - 30) / 15)):
+    place(tick(0.022, 2100 + 180 * k, 0.008), fr(fm), pan=-0.5 + 0.5 * k, send=0.2)
+for k in range(int((FRAMES - 60 - END - 30) / 15)):
     fm = END + 30 + k * 15
-    place(marimba(midi(62), 0.09 * (1 - k / 7) ** 1.5 * (1.0 if k % 2 == 0 else 0.7), 0.22), fr(fm), send=0.3, bus=KEYS)
-place(ping(midi(98), 0.05, 1.5), fr(864), pan=0.3, send=0.6, bus=KEYS)
+    place(marimba(midi(62), 0.08 * (1 - k / 10) ** 1.4 * (1.0 if k % 2 == 0 else 0.7), 0.24), fr(fm), send=0.3, bus=KEYS)
+place(ping(midi(93), 0.045, 1.8), fr(END + 150), pan=0.25, send=0.55, bus=KEYS)
 
 # ================= 律动 120–765：一层一层加，最后一层一层删 =================
 # 毡槌底鼓：每拍；02 的音簇里也不停（脉搏不断）
@@ -652,11 +660,16 @@ mix[0] += reverb(SEND[0], 1) * 0.6
 mix[1] += reverb(SEND[1], 2) * 0.6
 for ch in range(2):
     mix[ch] = hp(hp(mix[ch], 30), 30)
+# 开场 0.7 秒整轨过暖低通，高频慢慢打开——主人审的那一下刺耳从这儿掐掉
+warm_w = np.clip(1.0 - tsec / 0.7, 0, 1)
+for ch in range(2):
+    warm = onepole_lp(onepole_lp(mix[ch], 1500), 1500)
+    mix[ch] = mix[ch] * (1 - 0.8 * warm_w) + warm * 0.8 * warm_w
 mix = mix.T
 mix /= np.abs(mix).max() + 1e-9
 mix = np.tanh(mix * 1.2) / np.tanh(1.2)
 fade = np.ones(N)
-f0 = int(fr(870) * SR)
+f0 = int(fr(FRAMES - 48) * SR)
 fade[f0:] = np.linspace(1, 0, N - f0) ** 2
 # 第 0 帧就是满屏噪音：6ms 的淡入，免得 AAC 在静音 → 重音的那一下冒出 +3dB 的过冲
 n_in = int(0.006 * SR)

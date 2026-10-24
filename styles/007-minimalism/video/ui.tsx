@@ -173,3 +173,26 @@ export const mixBox = (a: Box, b: Box, t: number): Box => ({
 });
 /** 四边形四个角 → path */
 export const quad = (pts: [number, number][]) => 'M' + pts.map(([x, y]) => `${n2(x)} ${n2(y)}`).join('L') + 'Z';
+
+/** 2D 运镜：原点 (ox, oy) 放到画面中心，再按 s 放大。相邻两幕在交棒帧要对上同一组 (ox, oy, s)。 */
+export type Cam2 = {ox: number; oy: number; s: number};
+export const mixCam = (a: Cam2, b: Cam2, t: number): Cam2 => ({
+  ox: lerp(a.ox, b.ox, t),
+  oy: lerp(a.oy, b.oy, t),
+  s: lerp(a.s, b.s, t),
+});
+export const camTrack = (f: number, keys: [number, Cam2][], ease: (t: number) => number = E.inOut): Cam2 => {
+  if (f <= keys[0][0]) return keys[0][1];
+  for (let i = 1; i < keys.length; i++) {
+    if (f <= keys[i][0]) {
+      const t = tween(f, keys[i - 1][0], keys[i][0] - keys[i - 1][0], 0, 1, ease);
+      return mixCam(keys[i - 1][1], keys[i][1], t);
+    }
+  }
+  return keys[keys.length - 1][1];
+};
+/** 世界坐标 → 运镜后的屏幕坐标（引线、字卡留在屏幕空间时用） */
+export const toScreen = (c: Cam2, x: number, y: number) => ({x: 960 + (x - c.ox) * c.s, y: 540 + (y - c.oy) * c.s});
+export const World: React.FC<{c: Cam2; children: React.ReactNode}> = ({c, children}) => (
+  <g transform={`translate(960 540) scale(${n2(c.s)}) translate(${n2(-c.ox)} ${n2(-c.oy)})`}>{children}</g>
+);

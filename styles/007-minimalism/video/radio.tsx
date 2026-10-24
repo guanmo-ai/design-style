@@ -3,15 +3,15 @@
  *   3.73–4.0s  屋顶板转正成一台收音机的机身；那个点落到调频旋钮上，变成指针
  *   4.0–4.2s   “超级豪华 3000”：把手、天线、两翼喇叭、贴纸、VU 表、均衡器、磁带键……47 样东西一下子全冒出来
  *   4.4–5.25s  一个三十二分音符删一组，右边的大数字 48 → 1；最后两下慢下来：喇叭的纸盆一圈一圈拆掉，露出底下的孔
- *   6.0–6.8s   03：画面左移，三根引线说明剩下的每个形状为什么在那儿（孔 / 圆 / 橙）
- *   6.75–7.0s  转一下旋钮（点跟着转）→ 开机：孔跟着鼓点一圈一圈亮，声波从格栅里出来
- *   7.6–8.0s   交棒：孔和旋钮删掉，机身压扁成一个盒子（贾德）
+ *   6.0–6.7s   03：镜头推进格栅 → 摇到旋钮，引线一次只出一根（不再三根同时钉在那儿）
+ *   6.7–7.0s   转一下旋钮（点跟着转）→ 开机：孔跟着鼓点亮，声波从格栅里出来
+ *   7.3–8.0s   交棒：立刻压扁成一个盒子，镜头跟着推到盒子上（贾德）
  */
 import React from 'react';
 import {E, POP, spr, tween} from '../../../src/lib/anim';
 import {C, LINE} from '../tokens';
 import {AT} from './timeline';
-import {Box, c01, Dot, Leader, lerp, mixBox, n2, P, quad, Txt, vis} from './ui';
+import {Box, c01, Cam2, camTrack, Dot, Leader, lerp, mixBox, n2, P, quad, toScreen, Txt, vis, World} from './ui';
 import {dot01, PASS01, roofCorners} from './space';
 
 export const BODY: Box = {x: 520, y: 330, w: 720, h: 420, r: 28};
@@ -21,11 +21,24 @@ const GRILLE = {x0: 596, y0: 432, pitch: 36, cols: 11, rows: 7, r: 6.5};
 const CONE = {x: 776, y: 540};
 export const ON_AT = 420; // 开机（03 的第 3 拍）
 export const TURN_AT = 402;
-export const OUT03 = 452;
+export const OUT03 = 436; // 开机后立刻压扁，不再盯着注释看
 export const JUDD_AT = 480;
 
-/** 03 的镜头：整台收音机往左让出位置给引线 */
-const shift = (f: number) => tween(f, 356, 26, 0, -160, E.inOut) + tween(f, OUT03 - 4, 28, 0, 160, E.inOut);
+/** 贾德接手时的镜头：钉在第一个盒子上（judd.tsx 从同一组数字起） */
+export const CAM_JUDD0: Cam2 = {ox: 1160, oy: 880, s: 1.82};
+/** 03：推进格栅 → 摇到旋钮 → 拉开看开机 → 推进压扁后的盒子 */
+export const cam03 = (f: number): Cam2 => {
+  const c = camTrack(f, [
+    [360, {ox: 960, oy: 540, s: 1}],
+    [372, {ox: 796, oy: 528, s: 1.58}],
+    [388, {ox: 1112, oy: 548, s: 1.7}],
+    [418, {ox: 1124, oy: 540, s: 1.48}],
+    [434, {ox: 900, oy: 516, s: 1.16}],
+    [480, CAM_JUDD0],
+  ]);
+  const d = 4 * (1 - tween(f, 458, 22, 0, 1, E.inOut));
+  return {ox: c.ox + Math.sin(f * 0.045) * d, oy: c.oy + Math.cos(f * 0.031) * d * 0.65, s: c.s};
+};
 
 /** 旋钮指针的角度：开机前转 90°，每过一个凹槽停一下 */
 const dialAngle = (f: number) => {
@@ -334,15 +347,15 @@ const Dial: React.FC<P> = ({f}) => {
   );
 };
 
-/** 声波：开机后每拍从格栅里推出一圈发丝线 */
+/** 声波：开机后立刻从格栅里推两圈，跟着镜头走，不在那儿停着 */
 const Waves: React.FC<P> = ({f}) => (
   <g>
-    {[ON_AT, ON_AT + 30].map((at) =>
-      [0, 6].map((d) => {
-        const p = tween(f, at + d, 34, 0, 1, E.out);
+    {[ON_AT, ON_AT + 8].map((at) =>
+      [0, 5].map((d) => {
+        const p = tween(f, at + d, 28, 0, 1, E.out);
         if (p <= 0 || p >= 1) return null;
-        const r = lerp(170, 360, p);
-        return <circle key={`${at}-${d}`} cx={CONE.x} cy={CONE.y} r={n2(r)} fill="none" stroke={C.ink} strokeWidth={LINE.note} opacity={n2(0.35 * (1 - p))} />;
+        const r = lerp(160, 340, p);
+        return <circle key={`${at}-${d}`} cx={CONE.x} cy={CONE.y} r={n2(r)} fill="none" stroke={C.ink} strokeWidth={LINE.note} opacity={n2(0.32 * (1 - p))} />;
       }),
     )}
   </g>
@@ -400,33 +413,31 @@ const Counter: React.FC<P> = ({f}) => {
   );
 };
 
-/* ═══════════ 03：三根引线 ═══════════ */
-type Note = {at: number; zh: string; en: string; y: number; from: (f: number) => {x: number; y: number}; kx: number};
+/* ═══════════ 03：引线一次只出一根，跟着运镜走，不三根同时钉在那儿 ═══════════ */
+type Note = {at: number; out: number; zh: string; en: string; y: number; from: (f: number) => {x: number; y: number}};
 const NOTES: Note[] = [
-  {at: 366, zh: '孔 —— 让声音出来', en: 'HOLES · LET THE SOUND OUT', y: 290, from: () => ({x: GRILLE.x0 + 10 * GRILLE.pitch, y: GRILLE.y0}), kx: 1060},
-  {at: 381, zh: '圆 —— 因为要转', en: 'ROUND · BECAUSE IT TURNS', y: 690, from: () => ({x: DIAL.x + DIAL.r * Math.cos(0.7), y: DIAL.y + DIAL.r * Math.sin(0.7)}), kx: 1250},
-  {at: 392, zh: '橙 —— 只标最要紧的一处', en: 'ORANGE · ONLY WHERE IT MATTERS', y: 456, from: (f) => dotOnDial(f), kx: 1250},
+  {at: 362, out: 378, zh: '孔 —— 让声音出来', en: 'HOLES · LET THE SOUND OUT', y: 248, from: () => ({x: GRILLE.x0 + 10 * GRILLE.pitch, y: GRILLE.y0})},
+  {at: 376, out: 396, zh: '圆 —— 因为要转', en: 'ROUND · BECAUSE IT TURNS', y: 780, from: () => ({x: DIAL.x + DIAL.r * Math.cos(0.7), y: DIAL.y + DIAL.r * Math.sin(0.7)})},
+  {at: 394, out: 416, zh: '橙 —— 只标最要紧的一处', en: 'ORANGE · ONLY WHERE IT MATTERS', y: 248, from: (f) => dotOnDial(f)},
 ];
 const Notes03: React.FC<P> = ({f}) => {
-  const sx = shift(f);
-  const lx = 1330;
+  const cam = cam03(f);
+  const lx = 1680;
   return (
     <g>
       {NOTES.map((n, i) => {
-        const p = tween(f, n.at, 16, 0, 1, E.out) * (1 - tween(f, OUT03 - 10 + i * 2, 10, 0, 1, E.inOut));
+        const p = tween(f, n.at, 10, 0, 1, E.out) * (1 - tween(f, n.out, 10, 0, 1, E.in));
         if (p <= 0.001) return null;
-        const a = n.from(f);
-        const ax = a.x + sx;
-        // 引线先斜着出去，再水平走到字
+        const a = toScreen(cam, n.from(f).x, n.from(f).y);
         const ky = n.y;
-        const kx = Math.max(ax + Math.abs(ky - a.y) * 0.9, n.kx + sx);
+        const kx = Math.min(lx - 80, a.x + 90);
         return (
           <g key={i}>
-            <Leader x={ax} y={a.y} kx={kx} ky={ky} ex={lx - 22} p={p} c={i === 2 ? C.ink : C.ink} />
-            <Txt x={lx} y={ky + 10} k="sc300" size={30} ls={0.06} o={tween(f, n.at + 8, 12)}>
+            <Leader x={a.x} y={a.y} kx={kx} ky={ky} ex={lx - 22} p={p} />
+            <Txt x={lx} y={ky + 10} k="sc300" size={28} ls={0.06} o={p}>
               {n.zh}
             </Txt>
-            <Txt x={lx} y={ky + 40} k="mono" size={13} ls={0.16} c={C.greyDk} o={tween(f, n.at + 12, 12)}>
+            <Txt x={lx} y={ky + 38} k="mono" size={13} ls={0.16} c={C.greyDk} o={p * 0.85}>
               {n.en}
             </Txt>
           </g>
@@ -439,7 +450,7 @@ const Notes03: React.FC<P> = ({f}) => {
 /* ═══════════ 图注 ═══════════ */
 const Captions: React.FC<P> = ({f}) => {
   const s2 = (at: number) => vis(f, at, AT.function - 4, 14, 10);
-  const s3 = (at: number) => vis(f, at, OUT03 - 6, 14, 10);
+  const s3 = (at: number) => vis(f, at, 398, 10, 8);
   return (
     <g>
       <Txt x={120} y={172} k="sc300" size={46} ls={0.08} o={s2(300)}>
@@ -451,13 +462,13 @@ const Captions: React.FC<P> = ({f}) => {
       <Txt x={1800} y={150} k="mono" size={14} ls={0.18} c={C.greyDk} anchor="end" o={s2(314)}>
         DIETER RAMS · TEN PRINCIPLES · No. 10
       </Txt>
-      <Txt x={120} y={172} k="d200" size={52} ls={0.01} o={s3(364)}>
+      <Txt x={120} y={172} k="d200" size={48} ls={0.01} o={s3(362)}>
         Weniger, aber besser.
       </Txt>
-      <Txt x={120} y={218} k="sc300" size={24} ls={0.1} c={C.greyDk} o={s3(372)}>
+      <Txt x={120} y={214} k="sc300" size={22} ls={0.1} c={C.greyDk} o={s3(368)}>
         少，但更好。—— 迪特 · 拉姆斯
       </Txt>
-      <Txt x={1800} y={150} k="mono" size={14} ls={0.18} c={C.greyDk} anchor="end" o={s3(376)}>
+      <Txt x={1800} y={150} k="mono" size={14} ls={0.18} c={C.greyDk} anchor="end" o={s3(370)}>
         AFTER BRAUN · 1958
       </Txt>
     </g>
@@ -465,26 +476,25 @@ const Captions: React.FC<P> = ({f}) => {
 };
 
 export const Radio: React.FC<P> = ({f}) => {
-  const sx = shift(f);
   const d = dotRadio(f);
-  // 交棒：点跟着机身压扁，跳到第一个盒子的正面
   const toJudd = tween(f, OUT03 + 4, JUDD_AT - OUT03 - 4, 0, 1, E.inOut);
   const jx = juddFirst.x + juddFirst.w / 2;
   const jy = juddFirst.y + juddFirst.h / 2;
-  const dx = lerp(d.x + sx, jx, toJudd);
-  const dy = lerp(d.y, jy, toJudd) - Math.sin(Math.PI * toJudd) * 120;
+  const dx = lerp(d.x, jx, toJudd);
+  const dy = lerp(d.y, jy, toJudd) - Math.sin(Math.PI * toJudd) * 80;
+  const cam = f >= 360 ? cam03(f) : {ox: 960, oy: 540, s: 1};
   return (
     <g>
-      <g transform={sx ? `translate(${n2(sx)} 0)` : undefined}>
+      <World c={cam}>
         <Body f={f} />
         {f >= POP_IN - 4 && f < OUT03 + 16 && <Grille f={f} />}
         {f >= POP_IN - 4 && f < LAST_CUT + 8 && <Clutter f={f} />}
         <Dial f={f} />
-        {f >= ON_AT && f < OUT03 && <Waves f={f} />}
-      </g>
-      {f < JUDD_AT && <Dot x={dx} y={dy} r={lerp(d.r, 11, toJudd)} />}
+        {f >= ON_AT && f < OUT03 + 8 && <Waves f={f} />}
+        {f < JUDD_AT && <Dot x={dx} y={dy} r={lerp(d.r, 11, toJudd)} />}
+      </World>
       <Counter f={f} />
-      {f >= 360 && <Notes03 f={f} />}
+      {f >= 360 && f < 420 && <Notes03 f={f} />}
       <Captions f={f} />
     </g>
   );

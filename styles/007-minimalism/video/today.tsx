@@ -8,8 +8,8 @@
 import React from 'react';
 import {E, SMOOTH, SNAP, spr, tween} from '../../../src/lib/anim';
 import {C, LINE} from '../tokens';
-import {keepDot, keepFront, PHONE_AT} from './judd';
-import {Box, Dot, Letters, lerp, mixBox, n2, P, tw, Txt, vis} from './ui';
+import {CAM_PHONE0, keepDot, keepFront, PHONE_AT} from './judd';
+import {Box, camTrack, Dot, Letters, lerp, mixBox, n2, P, tw, Txt, vis, World} from './ui';
 
 export const PHONE: Box = {x: 1060, y: 120, w: 400, h: 820, r: 64};
 const SCR: Box = {x: PHONE.x + 12, y: PHONE.y + 12, w: PHONE.w - 24, h: PHONE.h - 24, r: 52};
@@ -135,8 +135,19 @@ export const dotToday = (f: number) => {
   return {x: lerp(x0, onP.x, on), y: y0 + rowDY(f), r: lerp(11, 14, t)};
 };
 
+const cam05 = (f: number) => {
+  const phone = {ox: PHONE.x + PHONE.w / 2, oy: PHONE.y + PHONE.h / 2, s: 1.14};
+  const c = camTrack(f, [
+    [PHONE_AT, CAM_PHONE0],
+    [PHONE_AT + 28, phone],
+    [RECAP_AT, {ox: 960, oy: 540, s: 1}],
+  ]);
+  const d = 3.2 * (1 - tween(f, RECAP_AT - 18, 18, 0, 1, E.inOut));
+  return {ox: c.ox + Math.sin(f * 0.04) * d, oy: c.oy + Math.cos(f * 0.029) * d * 0.6, s: c.s};
+};
+
 const Captions: React.FC<P> = ({f}) => {
-  const s = (at: number) => vis(f, at, RECAP_AT - 2, 14, 10);
+  const s = (at: number) => vis(f, at, RECAP_AT - 8, 12, 8);
   const fx = (at: number) => (i: number) => {
     const p = tween(f, at + i * 2, 14, 0, 1, E.out);
     const q = tween(f, RECAP_AT - 4, 8, 0, 1, E.in);
@@ -169,8 +180,10 @@ export const Today: React.FC<P> = ({f}) => {
   const d = dotToday(f);
   return (
     <g>
-      <Phone f={f} />
-      {f < RECAP_AT && <Dot x={d.x} y={d.y} r={d.r} />}
+      <World c={cam05(f)}>
+        <Phone f={f} />
+        {f < RECAP_AT && <Dot x={d.x} y={d.y} r={d.r} />}
+      </World>
       <Captions f={f} />
     </g>
   );
