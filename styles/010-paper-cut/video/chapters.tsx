@@ -1,7 +1,7 @@
 /** 010 · 几何层叠 · 立体纸板 · 单色剪影 · 水彩毛边 · 字体剪纸 */
 import React from 'react';
 import {E, spr, tween} from '../../../src/lib/anim';
-import {C, HILLS} from '../tokens';
+import {C, HILLS, TREES} from '../tokens';
 import {AT} from './timeline';
 import {H, W, World, n1, peelAt, phoneCam} from './layers';
 import {EditorChrome, NoteCard, Phone, PhoneStatus, Tag, Txt} from './ui';
@@ -233,18 +233,31 @@ const SCRAPS: {x: number; y: number; vx: number; rot: number; w: number; h: numb
 
 const UnderCut: React.FC<{f: number}> = ({f}) => {
   const drift = (f - AT.type) * 0.42;
+  const sunX = 980 + drift;
+  const sunY = 398;
+  const wave = (y0: number, amp: number, seed: number) => {
+    const y = y0 + Math.sin(f * 0.02 + seed) * 8;
+    return `M-40 ${n1(y)} C 220 ${n1(y - amp)} 520 ${n1(y + amp)} 820 ${n1(y)} S 1280 ${n1(y - amp)} 1580 ${n1(y + amp * 0.6)} S 1960 ${n1(y)} 2000 ${n1(y + 6)} V1280 H-40 Z`;
+  };
   return (
     <g>
       <rect width={W} height={H} fill={C.sky} />
-      <circle cx={n1(1388 + drift)} cy={318} r={78} fill={C.sun} />
+      <circle cx={n1(sunX)} cy={sunY} r={86} fill={C.sun} />
       <path
-        d={rayDType(1388 + drift, 318, 92, 148, 14)}
+        d={rayDType(sunX, sunY, 100, 158, 14)}
         fill={C.sun}
-        opacity={0.9}
-        transform={`rotate(${n1(f * 0.09)} ${n1(1388 + drift)} 318)`}
+        opacity={0.92}
+        transform={`rotate(${n1(f * 0.09)} ${n1(sunX)} ${sunY})`}
       />
-      {HILLS.map((c, i) => (
-        <rect key={i} x={-20} y={n1(300 + i * 86 + Math.sin(f * 0.018 + i) * 7)} width={W + 40} height={110} fill={c} />
+      <path d={wave(428, 26, 0)} fill={HILLS[2]} />
+      <path d={wave(476, 20, 1.2)} fill={HILLS[4]} />
+      <path d={wave(518, 16, 2.1)} fill={C.mist} />
+      {[480, 700, 1320, 1500].map((x, i) => (
+        <path
+          key={x}
+          d={`M${x} ${n1(400 + Math.sin(f * 0.02 + i) * 4)} L${x + 16} ${n1(448)} L${x - 16} ${n1(448)} Z`}
+          fill={TREES[2]}
+        />
       ))}
     </g>
   );
@@ -341,14 +354,10 @@ export const Type: React.FC<{f: number}> = ({f}) => {
       })}
       {zi > 0.01 && (
         <g opacity={zi} transform={`translate(0 ${n1((1 - zi) * 36)})`} filter="url(#shLift)">
-          <rect x={820} y={620} width={280} height={200} rx={18} fill={C.folk} />
-          {punchZi > 0.02 && (
-            <g opacity={punchZi} clipPath="url(#ziGlyph)">
-              <rect x={820} y={620} width={280} height={200} fill={C.sky} />
-              <circle cx={960} cy={700} r={26} fill={C.sun} />
-              <rect x={820} y={748} width={280} height={72} fill={HILLS[2]} />
-            </g>
-          )}
+          <rect x={820} y={620} width={280} height={200} rx={18} fill={C.sky} />
+          <circle cx={960} cy={718} r={36} fill={C.sun} />
+          <rect x={820} y={752} width={280} height={68} fill={HILLS[4]} />
+          <rect x={820} y={620} width={280} height={200} rx={18} fill={C.folk} mask="url(#ziSheet)" />
           {punchZi < 0.96 && (
             <Txt x={960} y={760} size={120} font="cn" w={900} c={C.paper} anchor="middle" o={1 - punchZi}>
               剪
@@ -375,11 +384,12 @@ export const Type: React.FC<{f: number}> = ({f}) => {
             <PaperWord x={960 + s.ox} fill="#000" />
           </mask>
         ))}
-        <clipPath id="ziGlyph">
-          <text x="960" y="760" fontFamily="Noto Sans SC" fontSize="132" fontWeight="900" textAnchor="middle">
+        <mask id="ziSheet" maskUnits="userSpaceOnUse" x="820" y="620" width="280" height="200">
+          <rect x="820" y="620" width="280" height="200" rx="18" fill="white" />
+          <text x="960" y="760" fontFamily="Noto Sans SC" fontSize="132" fontWeight="900" textAnchor="middle" fill="black">
             剪
           </text>
-        </clipPath>
+        </mask>
       </defs>
     </g>
   );

@@ -44,19 +44,22 @@ const MiniStrata: React.FC<{t: number}> = ({t}) => (
 const MiniDio: React.FC<{t: number}> = ({t}) => (
   <g>
     <rect width={TW} height={TH} fill={C.cream} />
-    <rect x={10} y={12} width={256} height={144} rx={8} fill={C.sky} />
+    <rect x={16} y={18} width={200} height={132} rx={8} fill={C.sky} />
     {HILLS.map((c, i) => {
-      const lift = 6 + i * 3 + Math.sin(t * 0.06 + i) * 3;
-      const y = 44 + i * 20 - lift;
+      const lift = 4 + i * 5 + Math.sin(t * 0.06 + i) * 3;
+      const y = 52 + i * 18 - lift;
       return (
         <path
           key={i}
-          d={`M14 ${n1(y)} C 70 ${n1(y - 8)} 130 ${n1(y + 10)} 180 ${n1(y)} S 240 ${n1(y - 6)} 266 ${n1(y + 3)} V156 H14 Z`}
+          d={`M20 ${n1(y)} C 70 ${n1(y - 8)} 120 ${n1(y + 10)} 168 ${n1(y)} S 210 ${n1(y - 6)} 212 ${n1(y + 3)} V148 H20 Z`}
           fill={c}
           filter="url(#shMid)"
         />
       );
     })}
+    {[0, 1, 2, 3, 4, 5].map((i) => (
+      <rect key={i} x={226} y={n1(22 + i * 20)} width={36} height={16} rx={3} fill={HILLS[i]} />
+    ))}
   </g>
 );
 
@@ -74,19 +77,21 @@ const MiniSil: React.FC<{t: number}> = ({t}) => {
 };
 
 const MiniTorn: React.FC<{t: number}> = ({t}) => {
-  const jag = (i: number) => 88 + 10 * Math.sin(i * 1.6 + t * 0.05);
+  const jag = (i: number) => 72 + 8 * Math.sin(i * 1.6 + t * 0.05);
   return (
     <g>
       <rect width={TW} height={TH} fill="#1A1410" />
-      <path d={`M110 20 C 150 40 190 28 230 48 V148 H46 Z`} fill={HILLS[2]} />
-      <circle cx={200} cy={44} r={12} fill={C.sun} />
+      <path d={`M90 36 C 140 28 190 52 250 40 V130 H80 Z`} fill={HILLS[2]} />
+      <path d={`M90 78 C 150 68 200 92 250 80 V168 H80 Z`} fill={HILLS[4]} />
+      <circle cx={208} cy={40} r={13} fill={C.sun} />
+      <rect x={118} y={18} width={52} height={88} rx={10} fill="#1A2228" />
       <path
         d={`M0 0 H${n1(jag(0))} ${[1, 2, 3, 4, 5, 6, 7, 8]
           .map((i) => `L${n1(jag(i))} ${n1((TH / 8) * i)}`)
           .join(' ')} L0 ${TH} Z`}
         fill="#E8D4C4"
       />
-      <ellipse cx={40} cy={50} rx={36} ry={24} fill="#C9A28A" opacity={0.45} />
+      <ellipse cx={28} cy={46} rx={30} ry={20} fill="#C9A28A" opacity={0.5} />
     </g>
   );
 };
