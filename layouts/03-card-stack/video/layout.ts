@@ -1,259 +1,230 @@
 /**
- * 布局 03 · Card Stack —— 同一批 4 张卡片贯穿全片。
- * 层叠不是手摆的：slotPose() 按“第几层”算出抬起、微旋、压暗、景深；
- * 焦点切换时，前一张沿 dismiss 弧线飞出，其余弹簧递补，飞出的那张落到最底层。
+ * 布局 03 · Card Stack —— 同一批 4 张卡片贯穿全片，在九种「世界」之间变形。
+ * 每种世界 = 4 个 Pose（画布坐标 + 深度 / 旋转 / 压暗）。层叠不是手摆的：
+ * stack() 按槽位算出 offset、scale、opacity、lift；世界切换用 Bento 同款 REFLOW + stagger。
  */
 import {Easing} from 'remotion';
-import {E, SMOOTH, spr, tween} from '../../../src/lib/anim';
+import {E, tween} from '../../../src/lib/anim';
 
-export const DURATION = 1080;
+export const DURATION = 1320;
 export const FPS = 60;
 export const BEAT = 30;
 
-export const CARD_W = 760;
-export const CARD_H = 428;
-export const CARD_R = 28;
+export type LayoutName = 'HOOK' | 'KEY' | 'IOS' | 'STRIPE' | 'DECK' | 'EXPLODE' | 'WIRE' | 'CROWD' | 'FLAT' | 'FIX' | 'END';
 
-export type CardKind = 'bars' | 'people' | 'progress' | 'spark';
-export type CardDef = {
-  id: string;
-  kicker: string;
-  title: string;
-  titleEn: string;
-  sub: string;
-  kind: CardKind;
-  a: string;
-  b: string;
-  aLabel: string;
-  bLabel: string;
+export type Pose = {
+  x: number;
+  y: number;
+  w: number;
+  h: number;
+  r: number;
+  z: number;
+  rot: number;
+  sc: number;
+  o: number;
+  dim: number;
+  blur: number;
 };
 
-export const CARDS: CardDef[] = [
-  {id: 'focusus', kicker: '04', title: '本周只做这一件', titleEn: 'Focusus', sub: "This week's bet", kind: 'bars', a: 'P0', b: 'You', aLabel: 'Priority', bLabel: 'Owner'},
-  {id: 'inbox', kicker: '12', title: '先回最先等的人', titleEn: 'Inbox', sub: '12 waiting', kind: 'people', a: '3', b: '9', aLabel: 'Today', bLabel: 'Later'},
-  {id: 'sprint', kicker: '24', title: '这一周的进度', titleEn: 'Sprint', sub: '8 of 14 done', kind: 'progress', a: '8/14', b: 'Fri', aLabel: 'Done', bLabel: 'Due'},
-  {id: 'revenue', kicker: '$', title: '这周进账', titleEn: 'Revenue', sub: '$48.2k this week', kind: 'spark', a: '+12%', b: 'MoM', aLabel: 'Change', bLabel: 'vs last'},
-];
-export const N = CARDS.length;
-export const GHOSTS = 3;
+const P = (x: number, y: number, w: number, h: number, r: number, extra: Partial<Pose> = {}): Pose => ({
+  x,
+  y,
+  w,
+  h,
+  r,
+  z: 0,
+  rot: 0,
+  sc: 1,
+  o: 1,
+  dim: 0,
+  blur: 0,
+  ...extra,
+});
 
-/** 章节切点 = 拍点。CYCLE 的“飞出最快”落在 HIT + 10 帧 */
-export const HIT = {
-  LAND: 60,
-  FOCUS: 120,
-  CYCLE1: 240,
-  CYCLE2: 330,
-  IOS: 420,
-  STRIPE: 510,
-  RULES: 600,
-  PIT_CROWD: 810,
-  PIT_FLAT: 870,
-  RESTORE: 918,
-  END: 960,
-} as const;
+/** 经典层叠：后层往左上露出，顶卡轻抬 + 微旋 + 压暗 */
+const stack = (
+  ox: number,
+  oy: number,
+  w: number,
+  h: number,
+  r: number,
+  opt: {sx?: number; sy?: number; sz?: number; lift?: number; rot0?: number; dim?: number; dsc?: number} = {},
+): Pose[] => {
+  const sx = opt.sx ?? 24;
+  const sy = opt.sy ?? 38;
+  const sz = opt.sz ?? 36;
+  const lift = opt.lift ?? 14;
+  const rot0 = opt.rot0 ?? -1.2;
+  const dim = opt.dim ?? 0.11;
+  const dsc = opt.dsc ?? 0.018;
+  return [0, 1, 2, 3].map((i) =>
+    P(ox - i * sx, oy - i * sy - (i === 0 ? lift : 0), w, h, r, {
+      z: -i * sz,
+      rot: i === 0 ? rot0 : i % 2 ? 0.65 : -0.55,
+      sc: 1 - i * dsc + (i === 0 ? 0.008 : 0),
+      dim: i * dim,
+    }),
+  );
+};
+
+const shrink = (p: Pose, s: number, cx: number, cy: number): Pose => ({
+  ...p,
+  x: cx + (p.x - 960) * s,
+  y: cy + (p.y - 540) * s,
+  w: p.w * s,
+  h: p.h * s,
+  r: Math.max(6, p.r * s),
+});
+
+export const PHONE = {x: 1288, y: 78, w: 392, h: 924, r: 56};
+export const BROWSER = {x: 72, y: 88, w: 1776, h: 880, r: 18};
+
+const KEY = stack(1110, 292, 680, 380, 28);
+const HOOK = stack(620, 340, 680, 380, 28, {lift: 6});
+const IOS = [
+  P(1308, 292, 352, 548, 32, {z: 40, rot: 0, dim: 0}),
+  P(1308, 256, 352, 548, 32, {z: 20, rot: 0.2, dim: 0.1}),
+  P(1308, 224, 352, 548, 32, {z: 4, rot: -0.15, dim: 0.2}),
+  P(1308, 196, 352, 548, 32, {z: -12, rot: 0.1, dim: 0.3}),
+];
+const STRIPE = [
+  P(992, 168, 700, 620, 16, {z: 36, rot: 0, dim: 0}),
+  P(1010, 132, 664, 620, 16, {z: 16, rot: 0.15, dim: 0.1}),
+  P(1026, 102, 632, 620, 16, {z: -2, rot: -0.1, dim: 0.2}),
+  P(1040, 76, 604, 620, 16, {z: -18, rot: 0.08, dim: 0.3}),
+];
+const DECK = [
+  P(860, 268, 292, 420, 18, {z: 28, rot: -11, dim: 0}),
+  P(1004, 292, 292, 420, 18, {z: 12, rot: -2.5, dim: 0.08}),
+  P(1144, 318, 292, 420, 18, {z: -4, rot: 7.5, dim: 0.16}),
+  P(1284, 348, 292, 420, 18, {z: -20, rot: 16, dim: 0.24}),
+];
+const EXPLODE = [
+  P(700, 148, 560, 292, 22, {z: 48, rot: -2.2, dim: 0}),
+  P(880, 318, 560, 292, 22, {z: 16, rot: -0.4, dim: 0.06}),
+  P(1060, 488, 560, 292, 22, {z: -16, rot: 1.1, dim: 0.12}),
+  P(1240, 658, 560, 292, 22, {z: -48, rot: 2.4, dim: 0.18}),
+];
+const WIRE = stack(1124, 268, 640, 352, 24, {sx: 28, sy: 46, sz: 42, lift: 16});
+const CROWD = stack(820, 340, 620, 340, 20, {sx: 12, sy: 18, sz: 16, lift: 2, rot0: 0.4, dim: 0.05, dsc: 0.01});
+const FLAT = [0, 1, 2, 3].map((i) => P(780 + i * 10, 360 + i * 6, 640, 340, 16, {z: -i * 2, rot: 0, dim: 0, sc: 1}));
+const FIX = stack(620, 300, 680, 380, 28);
+const END = KEY.map((p) => shrink(p, 0.2, 960, 300));
+
+export const LAYOUTS: Record<LayoutName, Pose[]> = {
+  HOOK,
+  KEY,
+  IOS,
+  STRIPE,
+  DECK,
+  EXPLODE,
+  WIRE,
+  CROWD,
+  FLAT,
+  FIX,
+  END,
+};
+
+export type Trans = {at: number; to: LayoutName; dur: number; stagger: number; order: number[]};
+export const TRANS: Trans[] = [
+  {at: 48, to: 'KEY', dur: 46, stagger: 3, order: [0, 1, 2, 3]},
+  {at: 150, to: 'IOS', dur: 42, stagger: 3, order: [0, 1, 2, 3]},
+  {at: 330, to: 'STRIPE', dur: 42, stagger: 3, order: [0, 1, 3, 2]},
+  {at: 510, to: 'DECK', dur: 42, stagger: 3, order: [3, 2, 1, 0]},
+  {at: 690, to: 'EXPLODE', dur: 44, stagger: 4, order: [0, 1, 2, 3]},
+  {at: 870, to: 'WIRE', dur: 40, stagger: 3, order: [0, 1, 2, 3]},
+  {at: 1080, to: 'CROWD', dur: 26, stagger: 2, order: [0, 1, 2, 3]},
+  {at: 1134, to: 'FLAT', dur: 22, stagger: 1, order: [0, 1, 2, 3]},
+  {at: 1170, to: 'FIX', dur: 28, stagger: 2, order: [0, 1, 2, 3]},
+  {at: 1200, to: 'END', dur: 40, stagger: 2, order: [0, 1, 2, 3]},
+];
+
+export const HIT = 12;
+export const REFLOW = Easing.bezier(0.6, 0, 0.12, 1);
+export const COLOR_DUR = 12;
+const COLOR = Easing.bezier(0.45, 0, 0.55, 1);
 
 export const SCENE = {
-  KEY: {in: 40, out: 112},
-  FOCUS: {in: 128, out: 226},
-  CYCLE: {in: 248, out: 408},
-  WHEN: {in: 428, out: 588},
-  RULES: {in: 612, out: 798},
-  PIT: {in: 822, out: 948},
-  END: {in: 972, out: 9999},
+  KEY: {in: 56, out: 140},
+  IOS: {in: 172, out: 318},
+  STRIPE: {in: 352, out: 498},
+  DECK: {in: 532, out: 678},
+  EXPLODE: {in: 712, out: 858},
+  WIRE: {in: 888, out: 1068},
+  PIT: {in: 1090, out: 1192},
+  END: {in: 1220, out: 9999},
 };
 
-export const RULES_AT = [618, 654, 690, 726, 762];
-export const CYCLES: {at: number; dur: number}[] = [
-  {at: HIT.CYCLE1, dur: 42},
-  {at: HIT.CYCLE2, dur: 42},
-];
+export const RULES_AT = [888, 924, 960, 996, 1032];
+export const PIT = {crowd: 1080, flat: 1134, fix: 1170, end: 1200};
 
-export type Skin = 'dash' | 'ios' | 'stripe' | 'wire' | 'pit' | 'icon';
-export const skinAt = (f: number): Skin => {
-  if (f >= HIT.END - 4) return 'icon';
-  if (f >= HIT.PIT_CROWD && f < HIT.RESTORE) return 'pit';
-  if (f >= HIT.RULES) return 'wire';
-  if (f >= HIT.STRIPE) return 'stripe';
-  if (f >= HIT.IOS) return 'ios';
-  return 'dash';
-};
-
-export type Variant = 'stack' | 'flat' | 'crowd' | 'icon';
-export const variantAt = (f: number): Variant => {
-  if (f >= HIT.END) return 'icon';
-  if (f >= HIT.PIT_FLAT && f < HIT.RESTORE) return 'flat';
-  if (f >= HIT.PIT_CROWD && f < HIT.PIT_FLAT) return 'crowd';
-  return 'stack';
-};
-
-/** 层叠原点：教学段落靠右，误区 / 片尾回到画面中心 */
-export const originAt = (f: number): {x: number; y: number} => {
-  const right = {x: 1208, y: 560};
-  const mid = {x: 980, y: 560};
-  const end = {x: 960, y: 470};
-  if (f < HIT.PIT_CROWD - 12) {
-    const p = tween(f, HIT.IOS - 8, 28, 0, 1, E.inOut);
-    return {x: right.x - 40 * p, y: right.y + 18 * p};
-  }
-  if (f < HIT.END) {
-    const p = tween(f, HIT.PIT_CROWD - 10, 28, 0, 1, E.inOut);
-    return {x: right.x - 40 + (mid.x - (right.x - 40)) * p, y: right.y + 18 + (mid.y - (right.y + 18)) * p};
-  }
-  const p = tween(f, HIT.END, 36, 0, 1, E.out);
-  return {x: mid.x + (end.x - mid.x) * p, y: mid.y + (end.y - mid.y) * p};
-};
-
-export type Pose = {x: number; y: number; z: number; rot: number; sc: number; o: number; dim: number; blur: number; slot: number};
-
-const DISMISS = Easing.bezier(0.22, 1, 0.36, 1);
-const SETTLE = Easing.bezier(0.22, 0.9, 0.18, 1);
-
-const slotPose = (slot: number, lift: number, variant: Variant): Pose => {
-  if (variant === 'icon') {
-    return {x: 0, y: -slot * 8, z: -slot * 12, rot: slot === 0 ? -1.1 : slot * 0.35, sc: 0.22, o: 1, dim: slot * 0.1, blur: 0, slot};
-  }
-  if (variant === 'flat') {
-    return {x: (slot - 1.5) * 40, y: slot * 8, z: -slot * 4, rot: 0, sc: 0.9, o: 1, dim: 0, blur: 0, slot};
-  }
-  const crowd = variant === 'crowd';
-  const stepY = crowd ? 26 : 38;
-  const stepX = crowd ? 14 : 24;
-  const zStep = crowd ? 24 : 36;
-  const focus = slot === 0 && !crowd;
-  return {
-    x: -slot * stepX + (focus ? -6 : 0),
-    y: -slot * stepY - (focus ? lift : 0),
-    z: -slot * zStep,
-    rot: focus ? -1.2 : slot % 2 ? 0.65 : -0.5,
-    sc: 1 - slot * (crowd ? 0.012 : 0.018) + (focus ? 0.008 : 0),
-    o: 1,
-    dim: crowd ? 0.08 + slot * 0.05 : slot * 0.11,
-    blur: 0,
-    slot,
-  };
-};
-
-const ORDERS: number[][] = [
-  [0, 1, 2, 3],
-  [1, 2, 3, 0],
-  [2, 3, 0, 1],
-];
-
-/** 第 f 帧：谁在第 0 层（焦点）……第 3 层 */
-export const orderAt = (f: number): number[] => {
-  if (f < HIT.CYCLE1) return ORDERS[0];
-  if (f < HIT.CYCLE2) return ORDERS[1];
-  return ORDERS[2];
-};
-
-const prevOrder = (f: number): number[] => {
-  if (f < HIT.CYCLE2) return ORDERS[0];
-  return ORDERS[1];
-};
-
-const cycleOf = (f: number) => CYCLES.find((c) => f >= c.at && f < c.at + c.dur);
+export const GHOSTS = 3;
 
 const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
-const mixPose = (a: Pose, b: Pose, t: number): Pose => ({
+export const lerpPose = (a: Pose, b: Pose, t: number): Pose => ({
   x: lerp(a.x, b.x, t),
   y: lerp(a.y, b.y, t),
+  w: lerp(a.w, b.w, t),
+  h: lerp(a.h, b.h, t),
+  r: lerp(a.r, b.r, t),
   z: lerp(a.z, b.z, t),
   rot: lerp(a.rot, b.rot, t),
   sc: lerp(a.sc, b.sc, t),
   o: lerp(a.o, b.o, t),
   dim: lerp(a.dim, b.dim, t),
   blur: lerp(a.blur, b.blur, t),
-  slot: t < 0.5 ? a.slot : b.slot,
 });
 
-const liftAt = (f: number): number => {
-  const on = tween(f, HIT.FOCUS, 34, 0, 1, E.out);
-  const hold = 1 - tween(f, HIT.PIT_FLAT, 16, 0, 1, E.inOut);
-  const back = tween(f, HIT.RESTORE, 28, 0, 1, E.out);
-  const end = 1 - tween(f, HIT.END, 20);
-  if (f >= HIT.RESTORE) return 14 * back * end;
-  if (f >= HIT.PIT_FLAT) return 14 * (1 - hold);
-  return 14 * on;
+/** 第 i 张卡片在第 f 帧：处在哪两种世界之间、走到了多少 */
+export const cardState = (f: number, i: number) => {
+  let from: LayoutName = 'HOOK';
+  let to: LayoutName = 'HOOK';
+  let p = 1;
+  let pc = 1;
+  for (const t of TRANS) {
+    const start = t.at + t.order.indexOf(i) * t.stagger;
+    if (f < t.at) break;
+    from = to;
+    to = t.to;
+    const x = Math.min(1, Math.max(0, (f - start) / t.dur));
+    p = REFLOW(x);
+    pc = COLOR(Math.min(1, Math.max(0, (f - start) / COLOR_DUR)));
+  }
+  if (from === to) p = pc = 1;
+  const rect = lerpPose(LAYOUTS[from][i], LAYOUTS[to][i], p);
+  if (f < 48) {
+    const enter = tween(f, 6 + i * 8, 36, 0, 1, E.out);
+    return {
+      from,
+      to,
+      p: enter,
+      pc: enter,
+      pose: lerpPose({...rect, y: rect.y + 140, z: rect.z - 80, o: 0, sc: rect.sc * 0.9}, rect, enter),
+    };
+  }
+  return {from, to, p, pc, pose: rect};
 };
 
-/** 第 i 张卡片在第 f 帧的空间姿态（含进场、切换、误区、收束） */
-export const poseAt = (f: number, i: number): Pose => {
-  const variant = variantAt(f);
-  const lift = liftAt(f);
-  const order = orderAt(f);
-  const slot = order.indexOf(i);
-  const dest = slotPose(slot, lift, variant);
+export const T = (name: LayoutName) => TRANS.find((t) => t.to === name)!.at;
 
-  const cyc = cycleOf(f);
-  if (cyc) {
-    const prev = prevOrder(f);
-    const fromSlot = prev.indexOf(i);
-    const p = SETTLE(Math.min(1, Math.max(0, (f - cyc.at) / cyc.dur)));
-    const wasFront = fromSlot === 0;
-    const nowBack = slot === N - 1;
-    if (wasFront && nowBack) {
-      const d = DISMISS(Math.min(1, (f - cyc.at) / 28));
-      const fly: Pose = {
-        x: dest.x + 168 * d,
-        y: dest.y - 96 * d,
-        z: 56 * d,
-        rot: dest.rot + 7.2 * d,
-        sc: dest.sc * (1 - 0.05 * d),
-        o: 1 - Math.pow(d, 1.15),
-        dim: 0,
-        blur: 0.4 * d,
-        slot: 0,
-      };
-      const backIn = tween(f, cyc.at + 18, 22, 0, 1, E.out);
-      const fromBack: Pose = {...slotPose(N - 1, 0, 'stack'), y: slotPose(N - 1, 0, 'stack').y + 36, o: 0, z: -110};
-      return mixPose(fly, mixPose(fromBack, dest, backIn), d > 0.62 ? (d - 0.62) / 0.38 : 0);
-    }
-    const a = slotPose(fromSlot, fromSlot === 0 ? lift : 0, 'stack');
-    return mixPose(a, dest, p);
+export const worldAt = (f: number): LayoutName => {
+  let cur: LayoutName = 'HOOK';
+  for (const t of TRANS) {
+    if (f < t.at) break;
+    cur = t.to;
   }
-
-  // 开场：从下方、更远的一层弹进槽位
-  const enter = spr(f, 6 + i * 8, SMOOTH, 52);
-  if (enter < 0.999 && f < HIT.FOCUS) {
-    const from: Pose = {...dest, y: dest.y + 128, z: dest.z - 90, o: 0, sc: dest.sc * 0.92, rot: dest.rot * 0.2};
-    return mixPose(from, dest, enter);
-  }
-
-  // 误区：多出来的“鬼卡片”不在这 4 张里；这 4 张在 crowd/flat 之间弹簧过渡
-  if (f >= HIT.PIT_CROWD - 2 && f < HIT.END) {
-    let fromV: Variant = 'stack';
-    let at = HIT.PIT_CROWD;
-    if (f >= HIT.RESTORE) {
-      fromV = 'flat';
-      at = HIT.RESTORE;
-    } else if (f >= HIT.PIT_FLAT) {
-      fromV = 'crowd';
-      at = HIT.PIT_FLAT;
-    }
-    const p = spr(f, at, SMOOTH, 32);
-    return mixPose(slotPose(orderAt(at - 1).indexOf(i), liftAt(at - 1), fromV), dest, p);
-  }
-
-  if (f >= HIT.END) {
-    const p = spr(f, HIT.END, SMOOTH, 40);
-    return mixPose(slotPose(slot, liftAt(HIT.END - 1), 'stack'), dest, p);
-  }
-
-  return dest;
+  return cur;
 };
 
-/** 误区段多出来的 3 张空卡片（只在 crowd 出现） */
-export const ghostPose = (f: number, g: number): Pose | null => {
-  const on = tween(f, HIT.PIT_CROWD, 22, 0, 1, E.out) * (1 - tween(f, HIT.PIT_FLAT - 4, 16, 0, 1, E.inOut));
+/** 误区段多出来的 3 张空卡片 */
+export const ghostState = (f: number, g: number): Pose | null => {
+  const on = tween(f, PIT.crowd, 20, 0, 1, E.out) * (1 - tween(f, PIT.flat - 6, 16, 0, 1, E.inOut));
   if (on <= 0.001) return null;
-  const slot = N + g;
-  const dest = slotPose(slot, 0, 'crowd');
-  const from: Pose = {...dest, y: dest.y + 50, o: 0, z: dest.z - 40};
-  return mixPose(from, {...dest, o: on}, on);
-};
-
-export const focusIndex = (f: number) => orderAt(f)[0];
-export const cycleP = (f: number) => {
-  const c = cycleOf(f);
-  return c ? Math.min(1, (f - c.at) / c.dur) : 0;
+  const dest = P(796 - (4 + g) * 12, 328 - (4 + g) * 18, 620, 340, 18, {
+    z: -(4 + g) * 14,
+    rot: g % 2 ? 0.8 : -0.6,
+    dim: 0.08 + g * 0.04,
+    o: on,
+  });
+  return {...dest, y: dest.y + (1 - on) * 40};
 };

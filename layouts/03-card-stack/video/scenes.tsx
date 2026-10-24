@@ -1,9 +1,9 @@
-/** 布局 03 · Card Stack —— 卡片之外：各章标题、规则、测量、误区、片尾、章节栏 */
+/** 布局 03 · Card Stack —— 章节字幕、规则、测量、误区、片尾、HUD */
 import React from 'react';
-import {E, POP, spr, tween} from '../../../src/lib/anim';
+import {E, tween} from '../../../src/lib/anim';
 import {C} from '../tokens';
-import {CARD_H, CARD_W, HIT, RULES_AT, SCENE, focusIndex, originAt} from './layout';
-import {Kicker, Rise, Show, mono, sc, ui} from './ui';
+import {HIT, LAYOUTS, PIT, RULES_AT, SCENE, TRANS} from './layout';
+import {Kicker, Pill, Rise, Show, disp, gradText, mono, sc, ui} from './ui';
 
 type P = {f: number};
 const L = 88;
@@ -12,25 +12,25 @@ export const KeyCaption: React.FC<P> = ({f}) => {
   const {in: a, out: o} = SCENE.KEY;
   return (
     <>
-      <Show f={f} at={a} out={o} style={{left: L, top: 214}}>
+      <Show f={f} at={a} out={o} style={{left: L, top: 168}}>
         <Kicker>Design Style · 布局 03</Kicker>
       </Show>
-      <div style={{position: 'absolute', left: L - 4, top: 268}}>
-        <Rise f={f} at={a + 2} out={o} text="Card Stack" d={2} style={{...sc(92, 900, -0.04), color: C.ink, fontFamily: "'Inter Display', 'Noto Sans SC', sans-serif"}} />
+      <div style={{position: 'absolute', left: L - 4, top: 214}}>
+        <Rise f={f} at={a + 2} out={o} text="Card Stack" d={2} style={{...disp(88, 600, -0.045), color: C.ink}} />
       </div>
-      <Show f={f} at={a + 10} out={o} dy={20} style={{left: L, top: 394}}>
-        <div style={{...sc(52, 700, 0.04), color: C.ink}}>卡片层叠</div>
+      <Show f={f} at={a + 10} out={o} dy={18} style={{left: L, top: 330}}>
+        <div style={{...sc(44, 700, 0.04), color: C.ink}}>卡片层叠</div>
       </Show>
-      <Show f={f} at={a + 16} out={o} style={{left: L, top: 478, width: 520}}>
-        <div style={{...sc(26, 500, 0.02), lineHeight: 1.65, color: C.ink2}}>
+      <Show f={f} at={a + 16} out={o} style={{left: L, top: 404, width: 520}}>
+        <div style={{...sc(24, 500, 0.02), lineHeight: 1.65, color: C.ink2}}>
           <span style={{color: C.ink}}>3–4 张圆角卡片叠在一起，</span>
           <br />
           同一时刻只有最上面那张在被读。
         </div>
       </Show>
-      <Show f={f} at={a + 22} out={o} style={{left: L, top: 612, display: 'flex', gap: 10}}>
-        {['任务队列', '底部弹层', '正在看的一张'].map((t) => (
-          <span key={t} style={{...sc(18, 500, 0.04), color: C.ink, padding: '10px 14px', borderRadius: 999, background: C.card, boxShadow: 'inset 0 0 0 1px rgba(15,23,42,.08)'}}>
+      <Show f={f} at={a + 22} out={o} style={{left: L, top: 540, display: 'flex', gap: 8, flexWrap: 'wrap', width: 520}}>
+        {['任务队列', '底部弹层', '焦点 = 顶卡'].map((t) => (
+          <span key={t} style={{...sc(16, 500, 0.04), color: C.ink, padding: '9px 12px', borderRadius: 999, background: C.card, boxShadow: 'inset 0 0 0 1px rgba(15,23,42,.08)'}}>
             {t}
           </span>
         ))}
@@ -39,132 +39,55 @@ export const KeyCaption: React.FC<P> = ({f}) => {
   );
 };
 
-export const FocusCaption: React.FC<P> = ({f}) => {
-  const {in: a, out: o} = SCENE.FOCUS;
+export const ExplodeCaption: React.FC<P> = ({f}) => {
+  const {in: a, out: o} = SCENE.EXPLODE;
   const rows: [string, string][] = [
-    ['抬起 14px', '焦点离开平面，像被拿起来'],
-    ['微旋 −1.2°', '告诉眼睛：这是一层，不是一张'],
-    ['后层压暗', '每往后一层，大约暗 8%'],
+    ['offset', '后层向左上露出 24 × 38'],
+    ['scale', '每层缩小约 1.8%'],
+    ['opacity / dim', '每层压暗 8–12%'],
+    ['blur', '可选 0.4–0.6px，不是雾'],
   ];
   return (
     <>
-      <Show f={f} at={a} out={o} style={{left: L, top: 214}}>
-        <Kicker>焦点原则</Kicker>
+      <Show f={f} at={a} out={o} style={{left: L, top: 120}}>
+        <Kicker color={C.t2} dot={C.pink}>结构拆解</Kicker>
       </Show>
-      <Show f={f} at={a + 2} out={o} dy={22} style={{left: L, top: 270}}>
-        <div style={{...sc(64, 900, 0.02), color: C.ink}}>一次只看一张</div>
-      </Show>
-      <Show f={f} at={a + 8} out={o} style={{left: L, top: 368, width: 540}}>
-        <div style={{...sc(24, 500, 0.02), lineHeight: 1.7, color: C.ink2}}>
-          <span style={{color: C.ink}}>层叠不是装饰，是注意力。</span>
-          <br />
-          后面的卡片在，只为说明“还有下一张”。
-        </div>
+      <Show f={f} at={a + 2} out={o} dy={20} style={{left: L, top: 166}}>
+        <div style={{...sc(48, 800, 0.02), color: C.t1}}>侧视深度轴</div>
       </Show>
       {rows.map(([t, d], k) => (
-        <Show key={t} f={f} at={a + 16 + k * 10} out={o} dy={14} style={{left: L, top: 520 + k * 86, display: 'flex', alignItems: 'baseline', gap: 18}}>
-          <span style={{...mono(16), color: C.accent, width: 28}}>{`0${k + 1}`}</span>
-          <div>
-            <div style={{...sc(26, 700, 0.02), color: C.ink}}>{t}</div>
-            <div style={{...sc(18, 400, 0.02), color: C.ink2, marginTop: 10}}>{d}</div>
-          </div>
+        <Show key={t} f={f} at={a + 10 + k * 8} out={o} dy={12} style={{left: L, top: 250 + k * 72, width: 420}}>
+          <div style={{...mono(13), color: C.pink}}>{t}</div>
+          <div style={{...sc(22, 500, 0.02), color: C.t1, marginTop: 8}}>{d}</div>
         </Show>
       ))}
     </>
   );
 };
 
-export const CycleCaption: React.FC<P> = ({f}) => {
-  const {in: a, out: o} = SCENE.CYCLE;
-  const n = focusIndex(f);
-  const names = ['Focusus', 'Inbox', 'Sprint', 'Revenue'];
-  return (
-    <>
-      <Show f={f} at={a} out={o} style={{left: L, top: 214}}>
-        <Kicker>像真产品那样换页</Kicker>
-      </Show>
-      <Show f={f} at={a + 2} out={o} dy={22} style={{left: L, top: 270}}>
-        <div style={{...sc(60, 900, 0.02), color: C.ink}}>滑走，下一张顶上</div>
-      </Show>
-      <Show f={f} at={a + 8} out={o} style={{left: L, top: 368, width: 540}}>
-        <div style={{...sc(24, 500, 0.02), lineHeight: 1.7, color: C.ink2}}>
-          <span style={{color: C.ink}}>前一张沿一条弧线离开，</span>
-          <br />
-          后面的用弹簧递补——不要溶解，不要硬切。
-        </div>
-      </Show>
-      <Show f={f} at={a + 16} out={o} style={{left: L, top: 520}}>
-        <div style={{...ui(15, 500), color: C.ink3, letterSpacing: '0.08em', textTransform: 'uppercase'}}>Now in focus</div>
-        <div style={{...sc(44, 800, 0.01), color: C.ink, marginTop: 14}}>{names[n]}</div>
-        <div style={{...sc(20, 400, 0.02), color: C.ink2, marginTop: 12}}>iOS sheet · Stripe drawer · Linear queue</div>
-      </Show>
-    </>
-  );
-};
-
-const USES: [string, string, (f: number) => boolean][] = [
-  ['iOS sheet', '从底下抬起的那一层', (f) => f < HIT.STRIPE],
-  ['Stripe dashboard', '详情叠在列表前面', (f) => f >= HIT.STRIPE],
-  ['任务队列', '一次处理一张，其余待命', () => false],
-];
-
-export const WhenCaption: React.FC<P> = ({f}) => {
-  const {in: a, out: o} = SCENE.WHEN;
-  return (
-    <>
-      <Show f={f} at={a} out={o} style={{left: L, top: 214}}>
-        <Kicker>什么时候用</Kicker>
-      </Show>
-      <Show f={f} at={a + 2} out={o} dy={22} style={{left: L, top: 270}}>
-        <div style={{...sc(56, 900, 0.02), color: C.ink}}>要排队，不要平铺</div>
-      </Show>
-      <Show f={f} at={a + 8} out={o} style={{left: L, top: 360, width: 540}}>
-        {USES.map(([t, d, litOf]) => {
-          const lit = litOf(f);
-          return (
-            <div key={t} style={{display: 'flex', alignItems: 'center', height: 78, borderBottom: '1px solid rgba(15,23,42,.08)', opacity: lit ? 1 : 0.42}}>
-              <span style={{width: 16, height: 16, borderRadius: 8, background: lit ? C.accent : 'transparent', boxShadow: lit ? undefined : `inset 0 0 0 1.5px ${C.ink}`, marginRight: 18}} />
-              <div>
-                <div style={{...ui(22, 650), color: C.ink}}>{t}</div>
-                <div style={{...sc(16, 400, 0.02), color: C.ink2, marginTop: 8}}>{d}</div>
-              </div>
-            </div>
-          );
-        })}
-      </Show>
-      <Show f={f} at={a + 14} out={o} style={{left: L, top: 640, width: 520}}>
-        <div style={{...sc(20, 400, 0.02), lineHeight: 1.65, color: C.ink2}}>
-          不适合：要比对的表格、超过 5 个同等重要的模块、
-          <br />
-          需要一眼看完全部的仪表盘。
-        </div>
-      </Show>
-    </>
-  );
-};
-
-const RULES: [string, string][] = [
-  ['只叠 3–4 张', '第五张开始，后面就只是噪声'],
-  ['一张焦点', '同时被读的，永远只有最上面'],
-  ['轻轻抬起', '8–16px，不要飞出屏幕'],
-  ['微旋 1–2°', '让层叠能被眼睛感觉到'],
-  ['后层压暗', '每层 8–12%，可加 0.5px 景深'],
+const RULES: [string, string, string][] = [
+  ['只叠 3–4 张', '3–4 sheets only', '第五张开始，后面只是噪声'],
+  ['一张焦点', 'One in focus', '同时被读的，永远只有最上面'],
+  ['轻轻抬起', 'Lift 8–16px', '焦点离开平面，不要飞出屏幕'],
+  ['微旋 1–2°', 'Rotate 1–2°', '让层叠能被眼睛感觉到'],
+  ['后层压暗', 'Dim 8–12%', '每层暗一档，可加 0.5px 景深'],
 ];
 
 export const RulesPanel: React.FC<P> = ({f}) => (
   <>
-    <Show f={f} at={SCENE.RULES.in} out={SCENE.RULES.out} style={{left: L, top: 120}}>
-      <Kicker>五条规则</Kicker>
+    <Show f={f} at={SCENE.WIRE.in} out={SCENE.WIRE.out} style={{left: L, top: 100}}>
+      <Kicker color={C.t2} dot={C.pink}>五条规则 · Five rules</Kicker>
     </Show>
-    <Show f={f} at={SCENE.RULES.in + 2} out={SCENE.RULES.out} dy={20} style={{left: L, top: 174}}>
-      <div style={{...sc(52, 900, 0.02), color: C.ink}}>叠得像产品</div>
+    <Show f={f} at={SCENE.WIRE.in + 2} out={SCENE.WIRE.out} dy={18} style={{left: L, top: 148}}>
+      <div style={{...sc(52, 800, 0.02), color: C.t1}}>叠得像产品</div>
     </Show>
-    {RULES.map(([t, d], k) => (
-      <Show key={t} f={f} at={RULES_AT[k]} out={SCENE.RULES.out} dy={16} style={{left: L, top: 268 + k * 96, display: 'grid', gridTemplateColumns: '56px 1fr', width: 560}}>
-        <div style={{...mono(20), lineHeight: '36px', color: C.accent}}>{`0${k + 1}`}</div>
+    {RULES.map(([t, en, d], k) => (
+      <Show key={t} f={f} at={RULES_AT[k]} out={SCENE.WIRE.out} dy={16} style={{left: L, top: 250 + k * 118, display: 'grid', gridTemplateColumns: '56px 1fr', width: 560}}>
+        <div style={{...mono(20), lineHeight: '36px', ...gradText}}>{`0${k + 1}`}</div>
         <div>
-          <div style={{...sc(28, 700, 0.02), color: C.ink, lineHeight: '36px'}}>{t}</div>
-          <div style={{...sc(18, 400, 0.02), color: C.ink2, marginTop: 8}}>{d}</div>
+          <div style={{...sc(28, 700, 0.02), color: C.t1, lineHeight: '36px'}}>{t}</div>
+          <div style={{...disp(16, 500, 0), color: 'rgba(245,245,247,.45)', marginTop: 8}}>{en}</div>
+          <div style={{...sc(16, 400, 0.02), color: C.t2, marginTop: 8}}>{d}</div>
         </div>
       </Show>
     ))}
@@ -172,58 +95,65 @@ export const RulesPanel: React.FC<P> = ({f}) => (
 );
 
 export const Annotations: React.FC<P> = ({f}) => {
-  if (f < RULES_AT[0] - 4 || f > SCENE.RULES.out) return null;
-  const {x, y} = originAt(f);
-  const out = 1 - tween(f, SCENE.RULES.out, 10);
-  const o = (at: number) => tween(f, at, 12) * out;
-  const pill = (at: number, px: number, py: number, label: string) => {
-    const s = spr(f, at, POP, 26);
-    const op = Math.min(1, s * 2) * o(at);
-    if (op <= 0.001) return null;
-    return (
-      <div style={{position: 'absolute', left: px, top: py, transform: `translate(-50%,-50%) scale(${0.65 + 0.35 * s})`, opacity: op, background: C.accent, color: '#fff', ...mono(15), padding: '7px 10px', borderRadius: 8, whiteSpace: 'nowrap', zIndex: 40}}>
-        {label}
-      </div>
-    );
-  };
+  if (f < RULES_AT[0] - 4 || f > SCENE.WIRE.out) return null;
+  const s = LAYOUTS.WIRE;
+  const out = SCENE.WIRE.out;
   return (
     <>
-      {pill(RULES_AT[0], x + CARD_W / 2 - 20, y - CARD_H / 2 - 28, '4 sheets')}
-      {pill(RULES_AT[1], x - 8, y - 18, 'focus')}
-      {pill(RULES_AT[2], x - CARD_W / 2 + 70, y - CARD_H / 2 - 8, 'lift 14')}
-      {pill(RULES_AT[3], x + CARD_W / 2 - 40, y - CARD_H / 2 + 36, '−1.2°')}
-      {pill(RULES_AT[4], x + 40, y + CARD_H / 2 + 8, 'dim 8% / layer')}
+      <svg width={1920} height={1080} fill="none" stroke="#FF2D6F" style={{position: 'absolute', inset: 0, opacity: 1 - tween(f, out, 8)}}>
+        <g opacity={tween(f, RULES_AT[2], 14)} strokeWidth={2}>
+          <path d={`M${s[0].x} ${s[0].y + 20} H${s[0].x - 16} M${s[1].x} ${s[1].y + 20} H${s[1].x - 16}`} />
+          <path d={`M${s[0].x - 16} ${s[0].y + 20} V${s[1].y + 20}`} />
+        </g>
+        <g opacity={tween(f, RULES_AT[3], 14)} strokeWidth={2}>
+          <path d={`M${s[0].x + s[0].w + 8} ${s[0].y} V${s[0].y + 40}`} />
+        </g>
+      </svg>
+      <Pill f={f} at={RULES_AT[0]} out={out} x={s[0].x + s[0].w - 20} y={s[0].y - 18}>
+        4 sheets
+      </Pill>
+      <Pill f={f} at={RULES_AT[1]} out={out} x={s[0].x + 40} y={s[0].y + 20}>
+        focus
+      </Pill>
+      <Pill f={f} at={RULES_AT[2]} out={out} x={s[0].x - 36} y={(s[0].y + s[1].y) / 2 + 20}>
+        38
+      </Pill>
+      <Pill f={f} at={RULES_AT[3]} out={out} x={s[0].x + s[0].w + 36} y={s[0].y + 8}>
+        −1.2°
+      </Pill>
+      <Pill f={f} at={RULES_AT[4]} out={out} x={s[3].x + 80} y={s[3].y + s[3].h + 16}>
+        dim 11%
+      </Pill>
     </>
   );
 };
 
 export const PitCaption: React.FC<P> = ({f}) => {
   const {in: a, out: o} = SCENE.PIT;
-  const crowd = f < HIT.PIT_FLAT;
+  const phase = f < PIT.flat ? 'crowd' : f < PIT.fix ? 'flat' : 'fix';
+  const title = phase === 'crowd' ? '叠太多' : phase === 'flat' ? '没有焦点' : '这样就对了';
+  const en = phase === 'crowd' ? 'Too many layers' : phase === 'flat' ? 'No focus' : '3–4 · lift · dim';
+  const body =
+    phase === 'crowd'
+      ? '超过 4 张，后面只是噪声。人眼数不清第五张以后的层。'
+      : phase === 'flat'
+        ? '不抬、不旋、不压暗，就只是一沓打印纸，不是界面。'
+        : '坏 → 好：收回来，顶卡重新成为唯一可读的一层。';
   return (
     <>
-      <Show f={f} at={a} out={o} style={{left: L, top: 120}}>
-        <Kicker>常见坑</Kicker>
+      <Show f={f} at={a} out={o} style={{left: L, top: 88}}>
+        <Kicker color={C.ink2} dot={phase === 'fix' ? C.accent : C.pink}>
+          常见坑 · Bad → Good
+        </Kicker>
       </Show>
-      <Show f={f} at={a + 2} out={o} dy={20} style={{left: L, top: 174}}>
-        <div style={{...sc(52, 900, 0.02), color: C.ink}}>{crowd ? '叠太多' : '没有焦点'}</div>
+      <Show f={f} at={a + 2} out={o} dy={18} style={{left: L, top: 136}}>
+        <div style={{...sc(52, 800, 0.02), color: C.ink}}>{title}</div>
       </Show>
-      <Show f={f} at={a + 8} out={o} style={{left: L, top: 258, width: 560}}>
-        <div style={{...sc(24, 500, 0.02), lineHeight: 1.7, color: C.ink2}}>
-          {crowd ? (
-            <>
-              <span style={{color: C.ink}}>超过 4 张，后面只是噪声。</span>
-              <br />
-              人眼数不清第五张以后的层。
-            </>
-          ) : (
-            <>
-              <span style={{color: C.ink}}>不抬、不旋、不压暗，</span>
-              <br />
-              就只是一沓打印纸，不是界面。
-            </>
-          )}
-        </div>
+      <Show f={f} at={a + 6} out={o} style={{left: L, top: 206}}>
+        <div style={{...disp(20, 500, 0), color: C.ink2}}>{en}</div>
+      </Show>
+      <Show f={f} at={a + 10} out={o} style={{left: L, top: 250, width: 560}}>
+        <div style={{...sc(22, 400, 0.02), lineHeight: 1.65, color: C.ink2}}>{body}</div>
       </Show>
     </>
   );
@@ -234,53 +164,64 @@ export const EndTitle: React.FC<P> = ({f}) => {
   const center: React.CSSProperties = {left: 0, right: 0, display: 'flex', justifyContent: 'center'};
   return (
     <>
-      <div style={{position: 'absolute', ...center, top: 560}}>
-        <Rise f={f} at={at} out={9999} text="Card Stack" d={2} style={{...sc(72, 800, -0.04), color: C.ink, fontFamily: "'Inter Display', 'Noto Sans SC', sans-serif"}} />
+      <div style={{position: 'absolute', ...center, top: 430}}>
+        <Rise f={f} at={at} out={9999} text="Card Stack" d={2} style={{...disp(96, 600, -0.045), color: C.t1}} />
       </div>
-      <Show f={f} at={at + 10} out={9999} dy={18} style={{...center, top: 658}}>
-        <div style={{...sc(36, 700, 0.08), color: C.ink}}>卡片层叠</div>
+      <Show f={f} at={at + 8} out={9999} dy={16} style={{...center, top: 550}}>
+        <div style={{...sc(40, 700, 0.08), color: 'rgba(245,245,247,.92)'}}>卡片层叠</div>
       </Show>
-      <Show f={f} at={at + 18} out={9999} style={{...center, top: 720}}>
-        <div style={{...sc(24, 500, 0.06), color: C.ink2}}>一次只看一张 · 3–4 张 · 轻抬 · 微旋 · 后层压暗</div>
+      <Show f={f} at={at + 16} out={9999} style={{...center, top: 620}}>
+        <div style={{...sc(22, 400, 0.04), color: C.t2}}>一次只看一张 · 3–4 张 · 轻抬 · 微旋 · 后层压暗</div>
       </Show>
-      <Show f={f} at={at + 26} out={9999} style={{...center, top: 980, alignItems: 'baseline'}}>
-        <span style={{...ui(20, 500), color: 'rgba(15,23,42,.45)'}}>Design Style</span>
-        <span style={{...sc(20, 500, 0.04), color: 'rgba(15,23,42,.7)', marginLeft: 12}}>布局</span>
-        <span style={{...ui(20, 600), color: 'rgba(15,23,42,.7)', marginLeft: 6}}>03</span>
-        <span style={{...ui(20, 500), color: 'rgba(15,23,42,.45)', marginLeft: 28}}>@guanmo_ai</span>
-        <span style={{...mono(16, 400), color: 'rgba(15,23,42,.4)', marginLeft: 28}}>github.com/guanmo-ai/design-style</span>
+      <Show f={f} at={at + 22} out={9999} style={{...center, top: 960, alignItems: 'baseline'}}>
+        <span style={{...ui(20, 500), color: 'rgba(245,245,247,.45)'}}>Design Style</span>
+        <span style={{...sc(20, 500, 0.04), color: 'rgba(245,245,247,.8)', marginLeft: 12}}>布局</span>
+        <span style={{...ui(20, 600), color: 'rgba(245,245,247,.8)', marginLeft: 6}}>03</span>
+        <span style={{...ui(20, 500), color: 'rgba(245,245,247,.45)', marginLeft: 28}}>@guanmo_ai</span>
+        <span style={{...mono(16, 400), color: 'rgba(245,245,247,.4)', marginLeft: 28}}>github.com/guanmo-ai/design-style</span>
       </Show>
     </>
   );
 };
 
-const CHAPTERS: [string, string, number][] = [
-  ['KEY', '什么是卡片层叠', HIT.LAND],
-  ['FOCUS', '一次只看一张', HIT.FOCUS],
-  ['CYCLE', '像产品那样换页', HIT.CYCLE1],
-  ['WHEN', '什么时候用', HIT.IOS],
-  ['RULES', '五条规则', HIT.RULES],
-  ['PIT', '常见坑', HIT.PIT_CROWD],
+const CHAPTERS: [string, string, boolean][] = [
+  ['KEY', '钩子 · 层叠 = 焦点', false],
+  ['IOS', 'A-roll · iOS Wallet / Sheet', false],
+  ['STRIPE', 'B-roll · Stripe / Linear / 地图', false],
+  ['DECK', '隐喻 · 扑克 / 名片 / 档案', false],
+  ['EXPLODE', '拆解 · 深度轴与 z-index', false],
+  ['WIRE', '五条规则', false],
+  ['CROWD', '常见坑 · 坏 → 好', true],
 ];
 
 export const Hud: React.FC<P> = ({f}) => {
-  const o = tween(f, 50, 16) * (1 - tween(f, HIT.END, 12));
+  const o = tween(f, 56, 16) * (1 - tween(f, TRANS[TRANS.length - 1].at, 10));
   if (o <= 0.001) return null;
+  const at = (name: string) => {
+    const t = TRANS.find((x) => x.to === name);
+    return (t?.at ?? 48) + HIT - 6;
+  };
   let k = 0;
-  CHAPTERS.forEach(([, , at], j) => {
-    if (f >= at - 6) k = j;
+  CHAPTERS.forEach(([name], j) => {
+    if (f >= at(name) || j === 0) k = j;
   });
-  const p = tween(f, CHAPTERS[k][2], 14, 0, 1, E.out);
+  const p = tween(f, at(CHAPTERS[k][0]), 14, 0, 1, E.out);
+  const light = CHAPTERS[k][2] || (f >= PIT.fix && f < PIT.end);
+  const paper = f < Tish('IOS') || (f >= PIT.fix && f < PIT.end);
+  const main = paper ? 'rgba(15,23,42,.78)' : light ? 'rgba(29,29,31,.78)' : 'rgba(245,245,247,.78)';
+  const dim = paper ? 'rgba(15,23,42,.42)' : light ? 'rgba(29,29,31,.42)' : 'rgba(245,245,247,.4)';
   return (
-    <div style={{position: 'absolute', left: 88, right: 88, top: 1024, height: 28, opacity: o, display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
+    <div style={{position: 'absolute', left: 88, right: 88, top: 1022, height: 30, opacity: o, display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
       <div style={{display: 'flex', alignItems: 'baseline'}}>
-        <span style={{...ui(22, 600), color: C.ink}}>Card Stack</span>
-        <span style={{...sc(16, 500, 0.06), color: C.ink2, marginLeft: 12}}>卡片层叠</span>
+        <span style={{...disp(20, 600, -0.01), color: main}}>Card Stack</span>
+        <span style={{...sc(16, 500, 0.06), color: dim, marginLeft: 12}}>卡片层叠</span>
       </div>
-      <div style={{display: 'flex', alignItems: 'baseline', opacity: 0.3 + 0.7 * p, transform: `translateY(${(1 - p) * 12}px)`}}>
-        <span style={{...mono(16, 500), color: C.accent, marginRight: 12}}>{`0${k + 1} / 06`}</span>
-        <span style={{...sc(17, 500, 0.03), color: C.ink}}>{CHAPTERS[k][1]}</span>
+      <div style={{display: 'flex', alignItems: 'baseline', opacity: 0.25 + 0.75 * p, transform: `translateY(${(1 - p) * 14}px)`}}>
+        <span style={{...mono(16, 500), ...gradText, marginRight: 12}}>{`0${Math.min(k + 1, 7)} / 07`}</span>
+        <span style={{...sc(17, 500, 0.03), color: main}}>{CHAPTERS[k][1]}</span>
       </div>
     </div>
   );
 };
+
+const Tish = (name: string) => TRANS.find((t) => t.to === name)!.at;

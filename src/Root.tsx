@@ -11,7 +11,7 @@ import {PopArt, POPART_DURATION} from '../styles/005-pop-art/video/PopArt';
 import {Y2K, Y2K_DURATION} from '../styles/006-y2k/video/Y2K';
 
 // 每期注册为一个 Composition：风格 S{期号}-{名字}，布局 L{期号}-{名字}
-// 统一规格：1920×1080 · 60fps（布局 03 为 18s，其余多为 15s）
+// 统一规格：1920×1080 · 60fps（布局 03 为 22s，其余多为 15–18s）
 export const Root: React.FC = () => (
   <>
     <Composition

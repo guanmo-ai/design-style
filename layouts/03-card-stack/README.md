@@ -150,19 +150,20 @@ brightness(0.92)，第 5 张 display:none。换页时顶卡沿弧线离开，其
 递补到新槽位。颜色和字体沿用【你的风格】，设计令牌见 tokens.css。
 ```
 
-## 9 · 18 秒分镜
+## 9 · 22 秒分镜
 
-全片 **4 张卡片**，从头到尾不换。120 BPM，1 拍 = 30 帧。换页时移动最快的一刻落在拍点上。
+全片 **4 张卡片**，从头到尾不换张，只换世界。120 BPM，1 拍 = 30 帧。世界切换最快的一刻落在拍点上。A-roll 是主叠卡运镜；B-roll 是手机、后台、毡面、深度轴和标注。
 
 | 时间 | 帧 | 章节 | 画面 |
 |---|---|---|---|
-| 0:00—2.0 | 0—120 | 01 定义 | 四张卡从下方弹进层叠。「Card Stack / 卡片层叠」 |
-| 2.0—4.0 | 120—240 | 02 焦点 | 顶卡抬起 14px、微旋 −1.2°，后层压暗；三条原则 |
-| 4.0—7.0 | 240—420 | 03 换页 | 两次产品式切换：Focusus → Inbox → Sprint |
-| 7.0—10.0 | 420—600 | 04 何时用 | 同一叠换皮：iOS sheet → Stripe dashboard |
-| 10.0—13.5 | 600—810 | 05 五条规则 | 线框 + 测量：4 sheets / lift 14 / −1.2° / dim 11% |
-| 13.5—16.0 | 810—960 | 06 常见坑 | 先叠太多，再铺平没有焦点，再弹回正确 |
-| 16.0—18.0 | 960—1080 | 片尾 | 收成小图标 →「一次只看一张」· `@guanmo_ai` |
+| 0:00—2.5 | 0—150 | 01 钩子 | 四张卡弹进层叠：顶卡可读、后层压暗。「Card Stack / 卡片层叠」 |
+| 2.5—5.5 | 150—330 | 02 iOS | 飞进手机：Wallet 登机牌 / Apple Card / 通知 / Share sheet |
+| 5.5—8.5 | 330—510 | 03 后台 | Stripe 支付抽屉 · Linear 详情 · 地图选点——同一叠拓扑 |
+| 8.5—11.5 | 510—690 | 04 隐喻 | 名片 / 黑桃 A / 档案袋 / 索引卡：层叠从「抽最上面一张」来 |
+| 11.5—14.5 | 690—870 | 05 拆解 | 爆炸视图 + 深度轴 + z-index：offset / scale / dim / blur |
+| 14.5—18.0 | 870—1080 | 06 规则 | 线框 + 五条中英规则 + 测量标注 |
+| 18.0—20.0 | 1080—1200 | 07 常见坑 | 叠太多 → 没有焦点 → 弹回正确（坏→好） |
+| 20.0—22.0 | 1200—1320 | 片尾 | 收成小图标 →「一次只看一张」· `@guanmo_ai` |
 
 <a href="video/cover.jpg"><img src="video/cover.jpg" width="800" alt="短片里的卡片层叠" /></a>
 
@@ -175,13 +176,14 @@ brightness(0.92)，第 5 张 display:none。换页时顶卡沿弧线离开，其
 ├─ PROCESS.md                             # 制作过程
 ├─ process/                               # 过程图：分镜 · 动效 · 时间轴
 ├─ tokens.ts / tokens.css / tokens.json   # 同一份设计令牌（tokens.css 附可直接用的 .card-stack）
-├─ video/CardStack.tsx                    # 短片主合成
-├─ video/layout.ts                        # 4 张卡片、槽位姿态、换页弧线、时间轴
-├─ video/cards.tsx                        # 卡片的皮：仪表盘 / sheet / Stripe / 线框
+├─ video/CardStack.tsx                    # 短片主合成（22s · 九种世界）
+├─ video/layout.ts                        # 4 张卡片、世界几何、REFLOW 交棒
+├─ video/cards.tsx                        # 卡面：队列 / Wallet / Stripe / 扑克 / 线框
+├─ video/chrome.tsx                       # B-roll：手机、后台、毡面、深度轴
 ├─ video/scenes.tsx                       # 各章标题、规则、测量、片尾
 ├─ video/ui.tsx                           # 排版工具
 ├─ video/cover.jpg                        # 视频封面
-├─ audio/make_music.py                    # 配乐：numpy 合成，F 大调 120 BPM，−14 LUFS
+├─ audio/make_music.py                    # 配乐：numpy 合成，F 大调 120 BPM，22s，−14 LUFS
 └─ images/
    ├─ make_svgs.py    # 生成下面四张图
    ├─ poster.svg      # 布局海报
