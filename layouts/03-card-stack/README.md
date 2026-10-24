@@ -2,9 +2,9 @@
 
 **中文** · [English](README.en.md)
 
-> **一句话：** 3–4 张圆角卡片叠在一起，同一时刻只有最上面那张在被读。
+> **一句话：** 3–4 张叠在一起，同一时刻只有最前面那张在被读。换层用身体动作：抽 / 提 / 压。
 
-> **风格塑造视觉，布局组织信息。** 卡片层叠不规定颜色和字体，只规定“一次看几张、谁在前面”。同一叠可以是 iOS 的底部弹层，也可以是 Stripe 的详情抽屉、收件箱里等你处理的下一封。
+> **风格塑造视觉，布局组织信息。** 层叠只规定张数、焦点和换层方式。本期成片用刊 / 层 / 样三种隐喻讲清楚，不再用手机壳或白 UI 卡。
 
 🎬 视频随本期源码渲染 · 🛠 [制作过程](PROCESS.md) · 🖼 [图片源文件](images)
 
@@ -43,24 +43,23 @@
 
 ## 3 · 色板
 
-层叠是布局，**没有“正宗配色”**。规则只有一条：**墙要安静，让最上面那张说话**。下面是视频与布局图用的产品冷灰：
+层叠是布局，**没有“正宗配色”**。规则只有一条：**墙要安静，让最上面那张说话**。本期成片用刊印色，不是冷灰白卡：
 
 | 名称 | HEX | 用途 |
 |---|---|---|
-| 纸 | `#F4F5F7` | 冷灰画布，iOS / Stripe 的底 |
-| 卡片 | `#FFFFFF` | 每一层的表面 |
-| 墨 | `#0F172A` | 标题 |
-| 次要 | `#64748B` | 说明、标签 |
-| 芯片 | `#F1F5F9` | 卡片里的小格子 |
-| 蓝 | `#2563EB` | **唯一强调色**：焦点柱、规则编号、抬起标注 |
+| 纸 | `#EDE6D6` | 奶油画布 |
+| 奶油 | `#F6F0E4` | 第二本封面、规则板 |
+| 墨 | `#111111` | 标题、第三本 |
+| 朱红 | `#E31C23` | **唯一强调色**：顶刊、抽、规则号 |
+| 青绿 | `#163A3A` | 第四本、拆解幕底 |
+| 沙 | `#C8B89A` | 样张灯台 |
 
 ## 4 · 字体
 
 | 用途 | 本项目 | 商用原版 / 其他选择 |
 |---|---|---|
-| 英文标题 | **Inter Display** 500—700（免费，OFL） | SF Pro Display · Söhne |
+| 英文标题 | **TeX Gyre Heros** 400 / 700（Helvetica 开源替代） | Helvetica · Neue Haas Grotesk |
 | 中文标题 / 正文 | **思源黑体 / Noto Sans SC** 400—900（免费，OFL） | 苹方 · HarmonyOS Sans |
-| 界面字 | **Inter** 400 / 500 / 600 | SF Pro Text |
 | 标注 | **Geist Mono** 400 / 500 | SF Mono · JetBrains Mono |
 
 无衬线、紧字距、少装饰：层叠自己已经有深度，标题不要再“厚”。
@@ -75,7 +74,7 @@
 
 - **焦点卡的阴影更长**，后层只留很浅的一层，避免“每张都在漂”。
 - **换页用弧线离开 + 弹簧递补**，不要溶解、不要闪切。
-- 视频里：卡片 760×428、圆角 28、抬起 14、旋转 −1.2°、每层向左上露出 24 / 38px、暗 11%。
+- 视频里：竖版海报 520×740、圆角 8、抬起 18、旋转 −1.4°、每层向左上露出 40 / 30px、暗 12%。
 
 ## 6 · 这样做 / 别这样
 
@@ -116,11 +115,10 @@
 **图片（Midjourney / 即梦 / ChatGPT 图像）**
 
 ```
-Card stack layout, 4 rounded white dashboard cards stacked with soft depth,
-top card slightly lifted and rotated -1.2 degrees, back cards gently dimmed,
-iOS sheet / Stripe dashboard aesthetic, cool gray canvas #F4F5F7, one blue
-accent #2563EB, Inter-like sans, clean premium product UI, no glitter, no 3D
-explosion --ar 4:5
+Editorial card stack, 4 vertical print posters stacked with depth,
+vermillion / cream / ink / teal covers, top poster lifted 18px and rotated -1.4°,
+back posters dimmed, Swiss-style grotesque type, cream paper #EDE6D6,
+one red accent #E31C23, no phone chrome, no white UI cards --ar 4:5
 ```
 
 **风格 + 布局**
@@ -150,18 +148,19 @@ brightness(0.92)，第 5 张 display:none。换页时顶卡沿弧线离开，其
 递补到新槽位。颜色和字体沿用【你的风格】，设计令牌见 tokens.css。
 ```
 
-## 9 · 21 秒分镜
+## 9 · 22 秒分镜
 
-全片 **4 张卡片**，从头到尾不换张，只换世界。120 BPM，1 拍 = 30 帧。每一拍能说出「为什么动」。A-roll 是主叠卡运镜；B-roll 是手机、后台、深度轴和标注。字幕钉在画布上，不跟镜头飞。
+全片 **4 张竖版海报**，从头到尾不换张，只换世界。120 BPM，1 拍 = 30 帧。每一拍能说出「为什么动」。字幕钉在画布上，不跟镜头飞。
 
 | 时间 | 帧 | 章节 | 画面 | 这一下的因果 |
 |---|---|---|---|---|
-| 0:00—1.5 | 0—90 | 01 钩子 | 四张卡 POP 进层叠，顶卡再抬 | 先看见「一叠」，焦点 = 最上面 |
-| 1.5—6.5 | 90—390 | 02 iOS | 飞进手机 → Gate → 通知压下 → Sheet 上推 → 扫码 → 抽 Apple Card | 一条交互链不停：打断、分享、检票、换卡 |
-| 6.5—10.5 | 390—630 | 03 后台 | 同一叠变成 Stripe 抽屉 · Linear 详情 · 地图选点 | 拓扑不变，语境变 |
-| 10.5—15.0 | 630—900 | 04 拆解 | 炸开 z 轴，四张卡变成可带走的规则 | 看见深度排序是怎么构成的 |
-| 15.0—18.0 | 900—1080 | 05 坏→好 | 鬼卡乱叠 → 铺平 → 弹簧叠回 | 对照：叠太多 / 没有焦点 / 这样就对了 |
-| 18.0—21.0 | 1080—1260 | 片尾 | 收成图标 + 三句规则 + `@guanmo_ai` | 定妆仍在走，镜头继续推 |
+| 0:00—1.5 | 0—90 | 01 砸进 | 四张刊从镜头里砸成一叠，朱红刊再抬 | 先看见「一叠封面」 |
+| 1.5—5.3 | 90—318 | 02 刊·抽 | 抽走顶刊，下一本接手；再抽一次 | 换层 = 抽 |
+| 4.8—8.3 | 288—500 | 03 层·提 | 压扁成图层板，L4 穿过深度提到最前 | 换层 = 提 |
+| 7.8—10.6 | 468—640 | 04 样·压 | 扇开样张，选定第二张，其余压回 | 换层 = 压 |
+| 10.3—14.2 | 618—850 | 05 拆解 | 沿 z 炸开，3–4 / 一张 / 抽提压 | 规则落在运动上 |
+| 13.8—18.0 | 828—1080 | 06 坏→好 | 八张杂刊在动 → 铺平 → 弹簧叠回 | 坏例对照要动 |
+| 17.8—22.0 | 1068—1320 | 片尾 | 缩成图标 + 三句 + `@guanmo_ai` | 定妆仍在走 |
 
 <a href="video/cover.jpg"><img src="video/cover.jpg" width="800" alt="短片里的卡片层叠" /></a>
 
@@ -174,14 +173,13 @@ brightness(0.92)，第 5 张 display:none。换页时顶卡沿弧线离开，其
 ├─ PROCESS.md                             # 制作过程
 ├─ process/                               # 过程图：分镜 · 动效 · 时间轴
 ├─ tokens.ts / tokens.css / tokens.json   # 同一份设计令牌（tokens.css 附可直接用的 .card-stack）
-├─ video/CardStack.tsx                    # 短片主合成（21s · 六幕不停）
-├─ video/layout.ts                        # 4 张卡片、每拍不同姿态、SNAP + 单向 drive
-├─ video/cards.tsx                        # 卡面：队列 / Wallet / Stripe / 拆解规则
-├─ video/chrome.tsx                       # B-roll：手机、后台、深度轴
-├─ video/scenes.tsx                       # 各章标题、拆解、测量、片尾
-├─ video/ui.tsx                           # 排版工具
+├─ video/CardStack.tsx                    # 短片主合成（22s · 刊/层/样）
+├─ video/layout.ts                        # 4 张海报、每拍不同姿态、SNAP + 单向 drive
+├─ video/faces.tsx                        # 卡面：封面 / 图层板 / 样张 / 规则
+├─ video/stage.tsx                        # 取景框字幕、HUD、深度轴
+├─ video/ui.tsx                           # Rise / Swap / Show
 ├─ video/cover.jpg                        # 视频封面
-├─ audio/make_music.py                    # 配乐：numpy 合成，F 大调 120 BPM，21s，−14 LUFS
+├─ audio/make_music.py                    # 配乐：numpy，A 小调 120 BPM，22s，−14 LUFS
 └─ images/
    ├─ make_svgs.py    # 生成下面四张图
    ├─ poster.svg      # 布局海报

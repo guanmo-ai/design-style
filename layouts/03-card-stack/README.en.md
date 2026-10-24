@@ -6,7 +6,7 @@
 
 ## Overview
 
-3–4 rounded cards in a stack; only the top sheet is in focus. The same four cards travel through an iOS Wallet chain, Stripe / Linear / map, an exploded z-axis with takeaway rules, and a bad→good pit — 21 seconds, no dead frames.
+3–4 posters in a stack; only the front sheet is in focus. The same four vertical covers travel through pull / lift / press — magazine, layers, print proofs — then an exploded z-axis and an animated bad→good pit. 22 seconds, no dead frames.
 
 Series: **Layouts**. Period shown in this episode: **2013—**.
 
@@ -24,8 +24,8 @@ Series: **Layouts**. Period shown in this episode: **2013—**.
 
 This is the palette used by this project, not a universal specification for every card stack.
 
-- Colors: `#F4F5F7`, `#FFFFFF`, `#0F172A`, `#64748B`, `#F1F5F9`, `#2563EB`.
-- Typefaces: Inter / Inter Display, Noto Sans SC, Geist Mono.
+- Colors: `#EDE6D6`, `#F6F0E4`, `#111111`, `#E31C23`, `#163A3A`, `#C8B89A`.
+- Typefaces: TeX Gyre Heros, Noto Sans SC, Geist Mono.
 - Editable values: [JSON tokens](tokens.json), [CSS tokens](tokens.css), and [TypeScript tokens](tokens.ts).
 
 ## Visual references
@@ -57,11 +57,10 @@ Do not pile seven cards, keep every sheet equally bright, or hold a title card l
 ## AI image prompt
 
 ```text
-Card stack layout, 4 rounded white dashboard cards stacked with soft depth,
-top card slightly lifted and rotated -1.2 degrees, back cards gently dimmed,
-iOS sheet / Stripe dashboard aesthetic, cool gray canvas #F4F5F7, one blue
-accent #2563EB, Inter-like sans, clean premium product UI, no glitter, no 3D
-explosion --ar 4:5
+Editorial card stack, 4 vertical print posters stacked with depth,
+vermillion / cream / ink / teal covers, top poster lifted 18px and rotated -1.4°,
+Swiss-style grotesque type, cream paper #EDE6D6, one red accent #E31C23,
+no phone chrome, no white UI cards --ar 4:5
 ```
 
 ## Explore the source

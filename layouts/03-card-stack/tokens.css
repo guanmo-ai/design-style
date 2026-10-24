@@ -1,25 +1,24 @@
-/* 布局 03 · Card Stack 卡片层叠 — 设计令牌 + 可直接用的层叠 */
+/* 布局 03 · Card Stack — 刊 / 层 / 样 */
 :root {
-  --stack-paper: #F4F5F7;
-  --stack-card: #FFFFFF;
-  --stack-ink: #0F172A;
-  --stack-ink2: #64748B;
-  --stack-accent: #2563EB;
-  --stack-radius: 28px;
-  --stack-lift: 12px;
-  --stack-rotate: -1.15deg;
-  --stack-step: 28px;
-
-  --font-ui: 'Inter', 'Noto Sans SC', sans-serif;
-  --font-sc: 'Noto Sans SC', 'PingFang SC', sans-serif;
+  --stack-paper: #ede6d6;
+  --stack-cream: #f6f0e4;
+  --stack-ink: #111111;
+  --stack-red: #e31c23;
+  --stack-teal: #163a3a;
+  --stack-radius: 8px;
+  --stack-lift: 18px;
+  --stack-rotate: -1.4deg;
+  --stack-step-x: 40px;
+  --stack-step-y: 30px;
+  --font-display: 'TeX Gyre Heros', 'Helvetica Neue', Helvetica, 'Noto Sans SC', sans-serif;
+  --font-sc: 'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif;
   --font-mono: 'Geist Mono', ui-monospace, monospace;
 }
 
-/* 规则 01–05：3–4 张、一张焦点、轻抬、微旋、后层压暗 */
 .card-stack {
   position: relative;
-  width: min(760px, 100%);
-  aspect-ratio: 760 / 428;
+  width: min(520px, 100%);
+  aspect-ratio: 520 / 740;
   perspective: 1600px;
 }
 
@@ -27,10 +26,6 @@
   position: absolute;
   inset: 0;
   border-radius: var(--stack-radius);
-  background: var(--stack-card);
-  box-shadow:
-    0 1px 2px rgba(15, 23, 42, 0.04),
-    0 18px 40px rgba(15, 23, 42, 0.08);
   transform-origin: 50% 80%;
   overflow: hidden;
 }
@@ -41,22 +36,19 @@
 }
 .card-stack > *:nth-child(2) {
   z-index: 3;
-  transform: translate(-16px, -28px) scale(0.97);
-  filter: brightness(0.9);
+  transform: translate(calc(-1 * var(--stack-step-x)), var(--stack-step-y)) scale(0.982);
+  filter: brightness(0.88);
 }
 .card-stack > *:nth-child(3) {
   z-index: 2;
-  transform: translate(-32px, -56px) scale(0.94);
-  filter: brightness(0.8);
+  transform: translate(calc(-2 * var(--stack-step-x)), calc(2 * var(--stack-step-y))) scale(0.964);
+  filter: brightness(0.76);
 }
 .card-stack > *:nth-child(4) {
   z-index: 1;
-  transform: translate(-48px, -84px) scale(0.91);
-  filter: brightness(0.7);
+  transform: translate(calc(-3 * var(--stack-step-x)), calc(3 * var(--stack-step-y))) scale(0.946);
+  filter: brightness(0.64);
 }
-
-.card-stack > *:nth-child(n + 5) { display: none; } /* 规则 01：第五张藏起来 */
-
-@media (max-width: 640px) {
-  .card-stack { --stack-radius: 22px; --stack-lift: 8px; --stack-step: 12px; }
+.card-stack > *:nth-child(n + 5) {
+  display: none;
 }

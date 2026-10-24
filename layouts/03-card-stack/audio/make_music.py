@@ -1,18 +1,15 @@
 """
-Design Style · 布局 03 · Card Stack 卡片层叠 —— 配乐与音效（纯 numpy 合成，无外部采样）
+Design Style · 布局 03 · Card Stack v6 —— 配乐（纯 numpy，无外部采样）
 
-120 BPM（1 拍 = 30 帧 = 0.5 秒）· F 大调 · 21 秒
-气质：干净、轻、像产品发布会底乐——垫得住，不抢卡片。
-  0–1.5s    钩子：四张卡弹进层叠
-  1.5s      iOS Wallet：玻璃 + 通知 / Sheet / 扫码 / 抽卡
-  6.5s      Stripe / Linear / 地图
-  10.5s     炸开拆解：滤波器打开
-  11.0–14s  规则：鼓停、变薄；每条一声上行钟
-  15.0s     叠太多：一层层闷响
-  16.0s     铺平
-  16.5s     弹回正确
-  18.0–21s  片尾
-时间点与 video/layout.ts 的 TRANS / RULES_AT 对齐（帧 / 60 = 秒）。
+22 秒 · 120 BPM · A 小调 / C 大调（对齐 Swiss 气质，不是产品发布会玻璃垫乐）
+  0–1.5s    砸进：钟表嘀嗒 + 四记刊落
+  1.5–5.3s  刊·抽：干底鼓、抽走时 swipe
+  4.8–8.3s  层·提：垫乐变暗，提起时上行
+  7.8–10.6s 样·压：打开，选定一记钟
+  10.3–14.2s 拆解：低通变薄，规则上行钟琴
+  13.8–17.8s 坏→好：闷响 → 铺平空 → 弹簧叠回
+  17.8–22s  片尾：C 大和弦收束
+时间点与 video/layout.ts 的 TRANS / BEATS 对齐（帧 / 60 = 秒）。
 
 用法：python3 layouts/03-card-stack/audio/make_music.py
 输出：public/03-card-stack/music.wav（ffmpeg loudnorm → −14 LUFS）
@@ -25,13 +22,14 @@ import wave
 import numpy as np
 
 SR = 48000
-DUR = 21.0
+DUR = 22.0
 N = int(SR * DUR)
-rng = np.random.default_rng(2013)
+rng = np.random.default_rng(1960)
 
 MUS = np.zeros((2, N))
 SFX = np.zeros((2, N))
 SEND = np.zeros((2, N))
+PUMP = np.zeros((2, N))
 
 
 def fr(frame):
@@ -89,130 +87,125 @@ def glide(f):
 
 
 def kick(level=1.0):
-    t = tt(0.36)
-    f = 44 + 96 * np.exp(-t / 0.028)
-    body = np.sin(glide(f)) * np.exp(-t / 0.16)
-    click = hp(noise(0.36), 2800) * np.exp(-t / 0.003) * 0.18
-    return np.tanh((body + click) * 1.25) * level
+    t = tt(0.32)
+    f = 48 + 88 * np.exp(-t / 0.024)
+    body = np.sin(glide(f)) * np.exp(-t / 0.14)
+    click = hp(noise(0.32), 3200) * np.exp(-t / 0.003) * 0.16
+    return np.tanh((body + click) * 1.3) * level
 
 
-def hat(level=1.0, dec=0.028):
-    t = tt(0.12)
-    return hp(hp(noise(0.12), 7200), 7200) * np.minimum(1, t / 0.001) * np.exp(-t / dec) * level
+def hat(level=1.0, dec=0.024):
+    t = tt(0.1)
+    return hp(hp(noise(0.1), 7800), 7800) * np.minimum(1, t / 0.001) * np.exp(-t / dec) * level
 
 
-def epiano(freq, d=1.1, level=1.0):
-    t = tt(d + 0.5)
-    index = 1.15 * np.exp(-t / 0.28) + 0.12
-    y = np.sin(2 * np.pi * freq * t + index * np.sin(2 * np.pi * freq * t))
-    y += 0.12 * np.sin(2 * np.pi * freq * 12.0 * t) * np.exp(-t / 0.018)
-    env = np.minimum(1, t / 0.004) * np.exp(-t / 1.05) * np.where(t < d, 1, np.exp(-(t - d) / 0.16))
-    return y * env * level
+def clap(level=1.0):
+    t = tt(0.22)
+    y = hp(noise(0.22), 1800) * np.exp(-t / 0.04)
+    y += hp(noise(0.22), 4200) * np.exp(-t / 0.012) * 0.5
+    return y / (np.abs(y).max() + 1e-9) * level
 
 
-def bell(freq, level=1.0, dec=0.7):
+def bell(freq, level=1.0, dec=0.65):
     t = tt(dec * 3)
-    index = 2.0 * np.exp(-t / 0.14)
-    y = np.sin(2 * np.pi * freq * t + index * np.sin(2 * np.pi * freq * 3.5 * t))
+    index = 2.1 * np.exp(-t / 0.12)
+    y = np.sin(2 * np.pi * freq * t + index * np.sin(2 * np.pi * freq * 3.2 * t))
     return y * np.minimum(1, t / 0.002) * np.exp(-t / dec) * level
 
 
-def bass(freq, d=0.28, level=1.0):
+def bass(freq, d=0.26, level=1.0):
     t = tt(d + 0.08)
-    env = np.minimum(1, t / 0.006) * np.exp(-t / 0.34) * np.where(t < d, 1, np.exp(-(t - d) / 0.03))
-    y = np.sin(2 * np.pi * freq * t) + 0.2 * np.sin(4 * np.pi * freq * t)
-    return np.tanh(y * 1.15) * env * level
+    env = np.minimum(1, t / 0.006) * np.exp(-t / 0.32) * np.where(t < d, 1, np.exp(-(t - d) / 0.03))
+    y = np.sin(2 * np.pi * freq * t) + 0.18 * np.sin(4 * np.pi * freq * t)
+    return np.tanh(y * 1.2) * env * level
 
 
-def pad(freqs, d, level=1.0, att=0.5, rel=0.7, bright=0.9):
+def pad(freqs, d, level=1.0, att=0.5, rel=0.7, bright=0.75):
     t = tt(d + rel)
     y = np.zeros_like(t)
     for fq in freqs:
-        for det in (-0.0035, 0.0, 0.0035):
+        for det in (-0.004, 0.0, 0.004):
             ph0 = rng.random() * 6.28
-            for h in range(1, 8):
-                if fq * h > 7500:
+            for h in range(1, 7):
+                if fq * h > 6800:
                     break
-                y += np.sin(2 * np.pi * fq * (1 + det) * h * t + ph0 * h) / h ** (1.7 / bright)
+                y += np.sin(2 * np.pi * fq * (1 + det) * h * t + ph0 * h) / h ** (1.85 / bright)
     env = np.minimum(1, t / att) * np.where(t < d, 1, np.exp(-(t - d) / (rel / 4)))
-    trem = 1 + 0.045 * np.sin(2 * np.pi * 0.55 * t)
-    return y / (len(freqs) * 5.2) * env * trem * level
+    return y / (len(freqs) * 5.4) * env * level
 
 
-def whoosh(d=0.42, lo=280, hi=5200, level=1.0, rise=0.55):
+def whoosh(d=0.4, lo=260, hi=5000, level=1.0, rise=0.55):
     t = tt(d)
     x = t / d
     cut = lo + (hi - lo) * np.sin(np.pi * np.clip(x / (2 * rise), 0, 1)) ** 2
     y = onepole_lp(onepole_lp(noise(d), cut), cut)
-    env = np.sin(np.pi * x) ** 1.6
-    return y * env / (np.abs(y).max() + 1e-9) * level
+    return y * np.sin(np.pi * x) ** 1.5 / (np.abs(y).max() + 1e-9) * level
 
 
 def riser(d=0.45, level=1.0):
     t = tt(d)
     x = t / d
-    cut = 400 + 9000 * x ** 2
-    n = hp(onepole_lp(noise(d), cut), 280)
-    tone = np.sin(glide(290 * 2 ** (1.6 * x))) * 0.2
+    cut = 360 + 8600 * x ** 2
+    n = hp(onepole_lp(noise(d), cut), 260)
+    tone = np.sin(glide(260 * 2 ** (1.5 * x))) * 0.18
     return (n / (np.abs(n).max() + 1e-9) + tone) * x ** 2.1 * level
 
 
-def pluck(freq, level=1.0, dec=0.16):
+def pluck(freq, level=1.0, dec=0.14):
     t = tt(dec * 4)
     y = np.sin(2 * np.pi * freq * t) * np.exp(-t / dec)
-    y += 0.3 * np.sin(2 * np.pi * freq * 4 * t) * np.exp(-t / (dec * 0.24))
-    y += 0.1 * np.sin(2 * np.pi * freq * 9 * t) * np.exp(-t / (dec * 0.07))
+    y += 0.28 * np.sin(2 * np.pi * freq * 3 * t) * np.exp(-t / (dec * 0.22))
     return y * np.minimum(1, t / 0.0015) * level
 
 
-def thock(level=1.0, f0=180, f1=68):
-    t = tt(0.22)
-    f = f1 + (f0 - f1) * np.exp(-t / 0.024)
-    body = np.sin(glide(f)) * np.exp(-t / 0.07)
-    wood = onepole_lp(hp(noise(0.22), 800), 3800) * np.exp(-t / 0.01) * 0.28
-    return np.tanh((body + wood) * 1.25) * level
+def thock(level=1.0, f0=170, f1=62):
+    t = tt(0.2)
+    f = f1 + (f0 - f1) * np.exp(-t / 0.022)
+    body = np.sin(glide(f)) * np.exp(-t / 0.065)
+    wood = onepole_lp(hp(noise(0.2), 900), 3400) * np.exp(-t / 0.01) * 0.26
+    return np.tanh((body + wood) * 1.2) * level
 
 
-def glass(freq, level=1.0, dec=0.45):
-    t = tt(dec * 3)
-    y = np.zeros_like(t)
-    for r, a, k in ((1, 1, 1), (2.71, 0.42, 1.4), (5.2, 0.18, 2.1), (8.4, 0.08, 3)):
-        y += a * np.sin(2 * np.pi * freq * r * t) * np.exp(-t / (dec / k))
-    return y * np.minimum(1, t / 0.0012) * level
-
-
-def swipe(d=0.18, level=1.0):
+def swipe(d=0.16, level=1.0):
     t = tt(d)
     x = t / d
-    cut = 700 + 8500 * x
-    y = onepole_lp(hp(noise(d), 500), cut)
+    cut = 640 + 8200 * x
+    y = onepole_lp(hp(noise(d), 480), cut)
     return y / (np.abs(y).max() + 1e-9) * np.sin(np.pi * x) ** 0.85 * level
 
 
-# —— 与 layout.ts 对齐 ——
+def tick(level=1.0):
+    t = tt(0.06)
+    return hp(noise(0.06), 6000) * np.exp(-t / 0.008) * level
+
+
+# —— 与 layout.ts BEATS 对齐 ——
 BEAT = 30
-LAND, IOS, STRIPE = 60, 90, 390
-EXPLODE, MAP = 630, 510
-PIT_CROWD, PIT_FLAT, RESTORE, END = 900, 960, 990, 1080
-RULES_AT = [660, 690, 720, 750, 780]
-NOTE, SHEET, WALLET, ISSUE, ZOOM, BUTTONS = 150, 210, 330, 450, 300, 240
-HITS = [LAND, IOS, NOTE, SHEET, ZOOM, WALLET, STRIPE, ISSUE, MAP, EXPLODE, PIT_CROWD, END]
+SLAM, LIFT, COVER = 30, 60, 90
+PULL1, LAND2, PULL2, LAND3 = 120, 150, 210, 240
+LAYER, MARK, RISE, FRONT = 300, 330, 360, 390
+FAN, PICK, PRESS = 480, 540, 570
+EXPLODE, R1, R2, R3, R4 = 630, 690, 720, 750, 780
+NOISE, FLAT, FIX, END = 840, 930, 960, 1080
+HITS = [SLAM, COVER, PULL1, LAND2, PULL2, LAND3, LAYER, MARK, RISE, FAN, PICK, PRESS, EXPLODE, NOISE, FIX, END]
+RULES_AT = [R1, R2, R3, R4]
 
 CH = {
-    'Fmaj9': (41, [53, 57, 60, 64]),  # F2 | F3 A3 C4 E4
-    'Dm9': (38, [53, 57, 60, 62]),
-    'Bbmaj9': (46, [53, 57, 58, 62]),
-    'Csus': (48, [53, 55, 60, 65]),
-    'Am9': (45, [52, 55, 60, 62]),
+    'Am': (33, [57, 60, 64, 67]),
+    'F': (29, [53, 57, 60, 65]),
+    'C': (36, [55, 60, 64, 67]),
+    'G': (31, [55, 59, 62, 67]),
+    'Dm': (38, [53, 57, 60, 65]),
 }
 PROG = [
-    (0, 'Fmaj9'),
-    (90, 'Dm9'),
-    (390, 'Bbmaj9'),
-    (630, 'Am9'),
-    (900, 'Csus'),
-    (990, 'Fmaj9'),
-    (1080, 'Fmaj9'),
+    (0, 'Am'),
+    (90, 'F'),
+    (288, 'Am'),
+    (468, 'C'),
+    (618, 'G'),
+    (828, 'Dm'),
+    (948, 'F'),
+    (1068, 'C'),
 ]
 
 
@@ -224,125 +217,126 @@ def chord_at(frame):
     return CH[cur]
 
 
-PENTA = [72, 74, 77, 79, 81, 84, 86, 89]  # F G Bb C D …
+PENTA = [69, 72, 76, 79, 81, 84, 88, 91]
 
 for k, (s, n) in enumerate(PROG):
-    e = PROG[k + 1][0] if k + 1 < len(PROG) else 1260
-    lvl = 0.42 if s < 1080 else 0.7
-    att = 0.7 if s == 0 else 0.28
-    place(pad([midi(m) for m in CH[n][1]], fr(e - s) + 0.08, lvl, att=att, rel=0.55, bright=0.95), fr(s), send=0.38)
+    e = PROG[k + 1][0] if k + 1 < len(PROG) else 1320
+    lvl = 0.38 if s < 1068 else 0.62
+    att = 0.65 if s == 0 else 0.24
+    place(pad([midi(m) for m in CH[n][1]], fr(e - s) + 0.06, lvl, att=att, rel=0.5, bright=0.72), fr(s), send=0.42, bus=PUMP)
 
-# 开场：四张卡
+# 开场嘀嗒 + 四张刊
+for i in range(8):
+    sfx(tick(0.09), fr(2 + i * 3), pan=-0.4 + 0.1 * i, send=0.1)
 for i in range(4):
-    fm = 8 + i * 8 + 18
-    sfx(glass(midi(PENTA[i + 2]), 0.22, 0.5), fr(fm), pan=-0.35 + 0.22 * i, send=0.55)
-    sfx(pluck(midi(PENTA[i] - 12), 0.08, 0.12), fr(fm), pan=-0.3 + 0.2 * i, send=0.3)
-place(bass(midi(41), 0.8, 0.35), 0.05)
-sfx(riser(fr(48), 0.16), fr(10), send=0.18)
+    sfx(bell(midi(PENTA[i + 1]), 0.2, 0.55), fr(6 + i * 5), pan=-0.32 + 0.2 * i, send=0.58)
+    sfx(thock(0.22 + 0.04 * i, 190 - 12 * i, 58), fr(8 + i * 5), send=0.12)
+sfx(riser(fr(22), 0.14), fr(8), send=0.16)
+place(kick(0.62), fr(SLAM))
+sfx(thock(0.55, 200, 50), fr(SLAM), send=0.2)
 
-# 律动：克制，规则段和误区段把鼓拿掉
-GROOVE = [(60, 630), (990, 1080)]
+GROOVE = [(60, 618), (960, 1068)]
 
 
 def in_groove(fm):
     return any(a <= fm < b for a, b in GROOVE)
 
 
-for b in range(0, 1260 // BEAT + 1):
+for b in range(0, 1320 // BEAT + 1):
     fm = b * BEAT
     root, notes = chord_at(fm)
     if in_groove(fm) and fm >= 60:
-        place(kick(0.55 if fm < 390 else 0.48), fr(fm))
-        place(hat(0.12), fr(fm + 15), pan=0.28)
-        if 390 <= fm < 630:
-            place(hat(0.07, 0.016), fr(fm + 7.5), pan=-0.2)
-    if 60 <= fm < 1260:
-        place(bass(midi(root), 0.22, 0.42 if fm % 60 == 0 else 0.28), fr(fm))
-        if not (630 <= fm < 990):
+        place(kick(0.5 if fm < 288 else 0.42), fr(fm))
+        place(hat(0.1), fr(fm + 15), pan=0.3)
+        if 468 <= fm < 618:
+            place(clap(0.12), fr(fm + 15), pan=-0.1, send=0.08)
+            place(hat(0.06, 0.014), fr(fm + 7.5), pan=-0.22)
+    if 30 <= fm < 1320:
+        place(bass(midi(root), 0.2, 0.4 if fm % 60 == 0 else 0.26), fr(fm))
+        if not (618 <= fm < 960):
             for q in range(2):
                 m = notes[(b + q) % len(notes)] + 12
-                place(epiano(midi(m), 0.7, 0.11 if q else 0.16), fr(fm + q * 15), pan=0.22 * (1 if q else -1), send=0.32)
+                place(pluck(midi(m), 0.09 if q else 0.13, 0.12), fr(fm + q * 15), pan=0.2 * (1 if q else -1), send=0.28, bus=PUMP)
 
-# 章节切点
-for k, h in enumerate(HITS[:-1]):
-    pan = 0.18 if k % 2 == 0 else -0.18
-    sfx(whoosh(fr(28), 260, 5600, 0.22, 0.5), fr(h - 14), pan=pan)
-    sfx(thock(0.38), fr(h), send=0.12)
+for k, h in enumerate(HITS):
+    pan = 0.16 if k % 2 == 0 else -0.16
+    sfx(whoosh(fr(22), 240, 5200, 0.2, 0.5), fr(max(0, h - 12)), pan=pan)
+    sfx(thock(0.34), fr(h), send=0.12)
 
-# 世界切换的音色：iOS 玻璃、Sheet 木击、扫码钟、Stripe、爆炸
-sfx(bell(midi(81), 0.18, 0.85), fr(IOS), pan=-0.16, send=0.55)
-sfx(glass(midi(89), 0.12, 0.55), fr(IOS + 6), pan=0.14, send=0.45)
-sfx(swipe(0.16, 0.22), fr(NOTE - 2), pan=-0.2, send=0.2)
-sfx(glass(midi(84), 0.14, 0.45), fr(NOTE), pan=-0.12, send=0.45)
-sfx(whoosh(fr(16), 400, 4800, 0.16, 0.45), fr(SHEET - 8), pan=0.1)
-sfx(thock(0.32, 170, 60), fr(SHEET), send=0.16)
-sfx(pluck(midi(79), 0.08, 0.08), fr(BUTTONS), pan=0.12, send=0.2)
-sfx(swipe(0.14, 0.2), fr(ZOOM - 2), pan=0.08, send=0.22)
-sfx(bell(midi(88), 0.12, 0.5), fr(ZOOM), pan=0.1, send=0.45)
-sfx(bell(midi(86), 0.14, 0.55), fr(WALLET), pan=0.16, send=0.5)
-sfx(bell(midi(77), 0.16, 0.7), fr(STRIPE), pan=0.18, send=0.5)
-sfx(pluck(midi(81), 0.1, 0.1), fr(ISSUE), pan=-0.14, send=0.35)
-sfx(thock(0.28, 150, 62), fr(ISSUE + 4), send=0.12)
-sfx(thock(0.3, 160, 58), fr(MAP), send=0.16)
-sfx(bell(midi(84), 0.12, 0.55), fr(MAP + 4), pan=-0.1, send=0.45)
-sfx(riser(fr(24), 0.18), fr(EXPLODE - 18), send=0.2)
-sfx(glass(midi(86), 0.16, 0.7), fr(EXPLODE), pan=0.1, send=0.55)
+# 抽 / 提 / 压 音色
+sfx(swipe(0.15, 0.24), fr(PULL1 - 2), pan=-0.22, send=0.2)
+sfx(bell(midi(81), 0.16, 0.7), fr(LAND2), pan=0.12, send=0.5)
+sfx(swipe(0.14, 0.22), fr(PULL2 - 2), pan=0.18, send=0.18)
+sfx(bell(midi(76), 0.15, 0.65), fr(LAND3), pan=-0.1, send=0.48)
+sfx(riser(fr(16), 0.12), fr(RISE - 12), send=0.14)
+sfx(bell(midi(84), 0.18, 0.7), fr(RISE), pan=0.08, send=0.55)
+sfx(whoosh(fr(18), 300, 4000, 0.16, 0.45), fr(FAN - 10), pan=0)
+sfx(bell(midi(79), 0.16, 0.6), fr(PICK), pan=0.14, send=0.5)
+sfx(thock(0.4, 160, 52), fr(PRESS), send=0.16)
 
-# 规则：上行五声
 for k, fm in enumerate(RULES_AT):
-    sfx(bell(midi(PENTA[k] + 12), 0.22, 0.55), fr(fm), pan=-0.18 + 0.08 * k, send=0.5)
-    sfx(pluck(midi(PENTA[k] + 24), 0.06, 0.06), fr(fm + 3), pan=0.1, send=0.25)
+    sfx(bell(midi(PENTA[k] + 12), 0.2, 0.5), fr(fm), pan=-0.16 + 0.08 * k, send=0.52)
+    sfx(pluck(midi(PENTA[k] + 24), 0.05, 0.05), fr(fm + 3), pan=0.12, send=0.2)
 
-# 误区
-for g in range(3):
-    sfx(thock(0.22 + 0.04 * g, 150 - 10 * g, 50), fr(PIT_CROWD + 6 + g * 5), pan=-0.2 + 0.2 * g, send=0.15)
-sfx(whoosh(fr(20), 800, 2400, 0.16, 0.4), fr(PIT_FLAT - 6), pan=0)
-sfx(thock(0.55, 200, 55), fr(RESTORE), send=0.2)
-sfx(bell(midi(84), 0.18, 0.7), fr(RESTORE + 2), pan=0.1, send=0.55)
+for g in range(4):
+    sfx(thock(0.2 + 0.04 * g, 148 - 8 * g, 48), fr(NOISE + 4 + g * 5), pan=-0.24 + 0.16 * g, send=0.12)
+sfx(whoosh(fr(18), 700, 2200, 0.14, 0.4), fr(FLAT - 8), pan=0)
+sfx(thock(0.58, 210, 50), fr(FIX), send=0.22)
+sfx(bell(midi(84), 0.18, 0.75), fr(FIX + 2), pan=0.08, send=0.55)
 
-# 片尾
-sfx(riser(fr(28), 0.22), fr(END - 30), send=0.2)
-place(kick(0.7), fr(END))
-sfx(thock(0.7, 210, 48), fr(END), send=0.22)
-for k, m in enumerate([77, 81, 84]):
-    sfx(bell(midi(m), 0.16, 0.9), fr(END + 8 + k * 8), pan=-0.16 + 0.16 * k, send=0.62)
-place(bass(midi(41), 1.8, 0.5), fr(END))
-sfx(glass(midi(96), 0.1, 0.8), fr(1236), pan=0.18, send=0.75)
+sfx(riser(fr(26), 0.2), fr(END - 28), send=0.18)
+place(kick(0.72), fr(END))
+sfx(thock(0.68, 220, 46), fr(END), send=0.24)
+for k, m in enumerate([72, 76, 79, 84]):
+    sfx(bell(midi(m), 0.15, 0.85), fr(END + 6 + k * 8), pan=-0.18 + 0.12 * k, send=0.6)
+place(bass(midi(36), 1.6, 0.48), fr(END))
 
-# 规则 + 误区：把音乐变薄
+# 拆解 + 坏例：音乐变薄
 tsec = np.arange(N) / SR
-c = np.full(N, 15000.0)
-a, b = fr(620), fr(660)
-c = np.where((tsec >= a) & (tsec < b), 15000 * (900 / 15000) ** np.clip((tsec - a) / (b - a), 0, 1), c)
-c = np.where((tsec >= b) & (tsec < fr(984)), 900, c)
-a2, b2 = fr(984), fr(1010)
-c = np.where((tsec >= a2) & (tsec < b2), 900 * (15000 / 900) ** (np.clip((tsec - a2) / (b2 - a2), 0, 1) ** 2), c)
-seg = slice(int(fr(610) * SR), int(fr(1016) * SR))
+c = np.full(N, 14000.0)
+a, b = fr(610), fr(650)
+c = np.where((tsec >= a) & (tsec < b), 14000 * (800 / 14000) ** np.clip((tsec - a) / (b - a), 0, 1), c)
+c = np.where((tsec >= b) & (tsec < fr(954)), 800, c)
+a2, b2 = fr(954), fr(978)
+c = np.where((tsec >= a2) & (tsec < b2), 800 * (14000 / 800) ** (np.clip((tsec - a2) / (b2 - a2), 0, 1) ** 2), c)
+seg = slice(int(fr(600) * SR), int(fr(986) * SR))
 for ch in range(2):
     MUS[ch, seg] = onepole_lp(onepole_lp(MUS[ch, seg], c[seg]), c[seg])
+    PUMP[ch, seg] = onepole_lp(onepole_lp(PUMP[ch, seg], c[seg]), c[seg])
 
 
-def reverb(x, seed, dec=0.65, length=2.4):
+def reverb(x, seed, dec=0.62, length=2.2):
     t = tt(length)
     ir = np.random.default_rng(seed).standard_normal(len(t)) * np.exp(-t / dec)
-    ir = onepole_lp(ir, 6200)
-    ir[: int(0.018 * SR)] = 0
+    ir = onepole_lp(ir, 5800)
+    ir[: int(0.016 * SR)] = 0
     ir /= np.sqrt(np.sum(ir ** 2))
     n = len(x) + len(ir)
     nfft = 1 << (n - 1).bit_length()
     return np.fft.irfft(np.fft.rfft(x, nfft) * np.fft.rfft(ir, nfft), nfft)[: len(x)]
 
 
-mix = MUS + SFX
-mix[0] += reverb(SEND[0], 3) * 0.55
-mix[1] += reverb(SEND[1], 4) * 0.55
+# 轻侧链：底鼓处压一点 pad
+pump = np.ones(N)
+for b in range(0, 1320 // BEAT + 1):
+    fm = b * BEAT
+    if in_groove(fm) and fm >= 60:
+        i0 = int(fr(fm) * SR)
+        span = int(0.18 * SR)
+        if i0 + span < N:
+            pump[i0 : i0 + span] *= np.linspace(0.55, 1.0, span)
+PUMP *= pump
+
+mix = MUS + PUMP + SFX
+mix[0] += reverb(SEND[0], 3) * 0.5
+mix[1] += reverb(SEND[1], 4) * 0.5
 mix = mix.T
 mix /= np.abs(mix).max() + 1e-9
-mix = np.tanh(mix * 1.08) / np.tanh(1.08)
+mix = np.tanh(mix * 1.06) / np.tanh(1.06)
 fade = np.ones(N)
-fo = int(0.7 * SR)
+fo = int(0.75 * SR)
 fade[-fo:] = np.linspace(1, 0, fo) ** 2
-mix *= fade[:, None] * 0.9
+mix *= fade[:, None] * 0.88
 
 root = os.path.dirname(os.path.abspath(__file__))
 out_dir = os.path.normpath(os.path.join(root, '..', '..', '..', 'public', '03-card-stack'))
