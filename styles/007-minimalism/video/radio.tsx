@@ -11,7 +11,7 @@ import React from 'react';
 import {E, POP, spr, tween} from '../../../src/lib/anim';
 import {C, LINE} from '../tokens';
 import {AT} from './timeline';
-import {Box, c01, Cam2, camTrack, Dot, Leader, lerp, mixBox, n2, P, quad, toScreen, Txt, vis, World} from './ui';
+import {Box, c01, Cam2, camTrack, Dot, lerp, mixBox, n2, P, quad, Txt, vis, World} from './ui';
 import {dot01, PASS01, roofCorners} from './space';
 
 export const BODY: Box = {x: 520, y: 330, w: 720, h: 420, r: 28};
@@ -413,44 +413,10 @@ const Counter: React.FC<P> = ({f}) => {
   );
 };
 
-/* ═══════════ 03：引线一次只出一根，跟着运镜走，不三根同时钉在那儿 ═══════════ */
-type Note = {at: number; out: number; zh: string; en: string; y: number; from: (f: number) => {x: number; y: number}};
-const NOTES: Note[] = [
-  {at: 362, out: 378, zh: '孔 —— 让声音出来', en: 'HOLES · LET THE SOUND OUT', y: 248, from: () => ({x: GRILLE.x0 + 10 * GRILLE.pitch, y: GRILLE.y0})},
-  {at: 376, out: 396, zh: '圆 —— 因为要转', en: 'ROUND · BECAUSE IT TURNS', y: 780, from: () => ({x: DIAL.x + DIAL.r * Math.cos(0.7), y: DIAL.y + DIAL.r * Math.sin(0.7)})},
-  {at: 394, out: 416, zh: '橙 —— 只标最要紧的一处', en: 'ORANGE · ONLY WHERE IT MATTERS', y: 248, from: (f) => dotOnDial(f)},
-];
-const Notes03: React.FC<P> = ({f}) => {
-  const cam = cam03(f);
-  const lx = 1680;
-  return (
-    <g>
-      {NOTES.map((n, i) => {
-        const p = tween(f, n.at, 10, 0, 1, E.out) * (1 - tween(f, n.out, 10, 0, 1, E.in));
-        if (p <= 0.001) return null;
-        const a = toScreen(cam, n.from(f).x, n.from(f).y);
-        const ky = n.y;
-        const kx = Math.min(lx - 80, a.x + 90);
-        return (
-          <g key={i}>
-            <Leader x={a.x} y={a.y} kx={kx} ky={ky} ex={lx - 22} p={p} />
-            <Txt x={lx} y={ky + 10} k="sc300" size={28} ls={0.06} o={p}>
-              {n.zh}
-            </Txt>
-            <Txt x={lx} y={ky + 38} k="mono" size={13} ls={0.16} c={C.greyDk} o={p * 0.85}>
-              {n.en}
-            </Txt>
-          </g>
-        );
-      })}
-    </g>
-  );
-};
-
-/* ═══════════ 图注 ═══════════ */
+/* ═══════════ 图注：03 不再钉三条引线，镜头自己讲孔 / 圆 / 橙 ═══════════ */
 const Captions: React.FC<P> = ({f}) => {
   const s2 = (at: number) => vis(f, at, AT.function - 4, 14, 10);
-  const s3 = (at: number) => vis(f, at, 398, 10, 8);
+  const s3 = (at: number) => vis(f, at, 384, 8, 8);
   return (
     <g>
       <Txt x={120} y={172} k="sc300" size={46} ls={0.08} o={s2(300)}>
@@ -494,7 +460,6 @@ export const Radio: React.FC<P> = ({f}) => {
         {f < JUDD_AT && <Dot x={dx} y={dy} r={lerp(d.r, 11, toJudd)} />}
       </World>
       <Counter f={f} />
-      {f >= 360 && f < 420 && <Notes03 f={f} />}
       <Captions f={f} />
     </g>
   );

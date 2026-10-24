@@ -35,8 +35,8 @@ const vp = (f: number) => {
 export const CAM_PHONE0: Cam2 = {ox: 1160, oy: 560, s: 1.7};
 const cam04 = (f: number): Cam2 => {
   const k = Math.min(1, Math.max(0, (f - 480) / (7.5 * (N - 1))));
-  const follow: Cam2 = {ox: 1160, oy: lerp(880, 300, k), s: lerp(1.82, 1.28, k)};
-  const wide: Cam2 = {ox: 1100, oy: 580, s: 0.9};
+  const follow: Cam2 = {ox: 1160, oy: lerp(880, 280, k), s: lerp(1.88, 1.48, k)};
+  const wide: Cam2 = {ox: 1120, oy: 560, s: 0.86};
   const c = mixCam(follow, wide, tween(f, 548, 16, 0, 1, E.inOut));
   const tight = mixCam(c, CAM_PHONE0, tween(f, 568, 32, 0, 1, E.inOut));
   const d = 5 * (1 - tween(f, 588, 12, 0, 1, E.inOut));
@@ -101,10 +101,10 @@ const Count: React.FC<P> = ({f}) => {
   const bump = 1 - tween(f, UNIT_TIMES[Math.min(N - 1, n - 1)], 5, 0, 1, E.out);
   return (
     <g opacity={o < 1 ? n2(o) : undefined}>
-      <Txt x={120} y={n2(236 + bump * 8)} k="d100" size={110} ls={-0.02}>
+      <Txt x={1800} y={n2(220 + bump * 8)} k="d100" size={96} ls={-0.02} anchor="end">
         {`×${n}`}
       </Txt>
-      <Txt x={124} y={268} k="sc300" size={18} ls={0.12} c={C.greyDk}>
+      <Txt x={1800} y={250} k="sc300" size={16} ls={0.12} c={C.greyDk} anchor="end">
         {n > 1 ? '个一模一样的盒子' : '个盒子'}
       </Txt>
     </g>
@@ -166,7 +166,7 @@ const Ruler: React.FC<P> = ({f}) => {
 };
 
 const Captions: React.FC<P> = ({f}) => {
-  const s = (at: number) => vis(f, at, 548, 10, 8);
+  const s = (at: number) => vis(f, at, 528, 8, 8);
   return (
     <g>
       <Txt x={120} y={172} k="sc300" size={40} ls={0.08} o={s(500)}>
