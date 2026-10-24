@@ -61,34 +61,34 @@ const PosterHold: React.FC<P> = ({f}) => {
         WENIGER, ABER BESSER
       </Txt>
       {STRUCK.map((row, i) => {
-        const yy = 368 + i * 28;
+        const yy = 352 + i * 26;
         const show = tween(f, AT.poster + 20 + i * 3, 8);
         const w = row.zh.length * 20;
         return (
           <g key={row.zh} opacity={n2(show)}>
-            <Txt x={L} y={yy} k="mono" size={13} ls={0.12} c={row.dead ? C.grey : C.accent}>
+            <Txt x={L} y={yy} k="mono" size={12} ls={0.12} c={row.dead ? C.grey : C.accent}>
               {`0${i + 1}`}
             </Txt>
-            <Txt x={L + 40} y={yy} k="sc400" size={20} c={row.dead ? C.grey : C.accent}>
+            <Txt x={L + 40} y={yy} k="sc400" size={18} c={row.dead ? C.grey : C.accent}>
               {row.zh}
             </Txt>
-            {row.dead ? <line x1={L + 38} y1={yy - 7} x2={L + 42 + w} y2={yy - 7} stroke={C.grey} strokeWidth={1} /> : null}
+            {row.dead ? <line x1={L + 38} y1={yy - 6} x2={L + 42 + w} y2={yy - 6} stroke={C.grey} strokeWidth={1} /> : null}
           </g>
         );
       })}
-      <Txt x={L} y={HZ - 24} k="d100" size={72} o={tween(f, AT.poster + 36, 10)}>
+      <Txt x={L} y={HZ + 108} k="d100" size={80} o={tween(f, AT.poster + 36, 10)}>
         47
       </Txt>
-      <Txt x={L + 136} y={HZ - 52} k="sc300" size={16} o={tween(f, AT.poster + 40, 8)}>
+      <Txt x={L + 148} y={HZ + 76} k="sc300" size={16} o={tween(f, AT.poster + 40, 8)}>
         样东西，删掉了
       </Txt>
-      <Txt x={L + 136} y={HZ - 28} k="mono" size={11} ls={0.14} c={C.grey} o={tween(f, AT.poster + 42, 8)}>
+      <Txt x={L + 148} y={HZ + 100} k="mono" size={11} ls={0.14} c={C.grey} o={tween(f, AT.poster + 42, 8)}>
         REMOVED
       </Txt>
-      <Txt x={L + 400} y={HZ - 24} k="d100" size={72} o={tween(f, AT.poster + 44, 10)}>
+      <Txt x={L + 520} y={HZ + 108} k="d100" size={80} o={tween(f, AT.poster + 44, 10)}>
         1
       </Txt>
-      <Txt x={L + 456} y={HZ - 52} k="sc300" size={16} o={tween(f, AT.poster + 48, 8)}>
+      <Txt x={L + 580} y={HZ + 76} k="sc300" size={16} o={tween(f, AT.poster + 48, 8)}>
         个留下：有用的那一个
       </Txt>
       {Array.from({length: 8}, (_, j) =>
