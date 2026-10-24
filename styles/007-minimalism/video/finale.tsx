@@ -1,5 +1,5 @@
 /**
- * 007 · Minimalism —— 片尾 19.0–22.0s（f1140–1320）
+ * 007 · Minimalism —— 片尾 21.0–24.0s（f1260–1440）
  *   从空状态的加号回到开场那个点；少即是多。@guanmo_ai
  */
 import React from 'react';
@@ -43,7 +43,7 @@ const End: React.FC<P> = ({f}) => {
         DESIGN STYLE · 007
       </Txt>
       <Txt x={R} y={132} k="mono" size={16} ls={0.18} c={C.greyDk} anchor="end" o={o(e + 18)}>
-        APP · WEB · TODAY
+        APP · WEB · PAY
       </Txt>
       <line x1={L} y1={884} x2={n2(lerp(L, R, tween(f, e + 32, 26, 0, 1, E.inOut)))} y2={884} stroke={C.hair} strokeWidth={1} />
       <g opacity={n2(o(e + 38))}>

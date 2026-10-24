@@ -1,14 +1,13 @@
 /**
- * 007 · Minimalism —— App 2.0–10.0s（f104–600）
- *   地平线长成一部手机；先把多余的闹钟、徽章、第二按钮删到只剩一行；
- *   按压缩放 → 推到响铃页 → sheet 拉起「稍后」→ 拨开那个橙点开关。
+ * 007 · Minimalism —— App 6.0–10.4s（极简产品）
+ *   界面保持极简；每个交互看得见，同一屏不晾 >0.8s。
  */
 import React from 'react';
-import {E, SNAP, SMOOTH, spr, tween} from '../../../src/lib/anim';
+import {E, POP, SNAP, SMOOTH, spr, tween} from '../../../src/lib/anim';
 import {C, LINE} from '../tokens';
 import {AT} from './timeline';
 import {Box, Cam2, camTrack, Dot, Letters, lerp, mixBox, n2, P, Txt, vis, World} from './ui';
-import {CENTER, HANDOFF} from './opening';
+import {CENTER} from './opening';
 
 export const PHONE: Box = {x: 680, y: 68, w: 560, h: 944, r: 76};
 const SCR: Box = {x: PHONE.x + 14, y: PHONE.y + 14, w: PHONE.w - 28, h: PHONE.h - 28, r: 62};
@@ -17,22 +16,29 @@ const WIN_BOX: Box = {x: 200, y: 72, w: 1520, h: 888, r: 16};
 
 export const camApp = (f: number): Cam2 =>
   camTrack(f, [
-    [HANDOFF, {ox: 960, oy: 540, s: 1}],
-    [200, {ox: 960, oy: 500, s: 1.05}],
+    [AT.app, {ox: 960, oy: 540, s: 1}],
+    [AT.app + 24, {ox: 960, oy: 500, s: 1.06}],
     [PRESS_AT, {ox: 920, oy: 420, s: 1.14}],
-    [PUSH_AT + 24, {ox: 960, oy: 470, s: 1.08}],
-    [SHEET_AT + 8, {ox: 960, oy: 610, s: 1.16}],
-    [TOG_AT, {ox: 960, oy: 430, s: 1.1}],
+    [PUSH_AT + 16, {ox: 960, oy: 470, s: 1.1}],
+    [SHEET_AT + 6, {ox: 960, oy: 610, s: 1.16}],
+    [TOG_AT, {ox: 960, oy: 430, s: 1.12}],
+    [TOAST_AT, {ox: 960, oy: 560, s: 1.1}],
+    [PLUS_BACK, {ox: 960, oy: 500, s: 1.08}],
+    [PLUS_TAP, {ox: 960, oy: 540, s: 1.12}],
     [WEB_GO - 4, {ox: 960, oy: 540, s: 1.02}],
   ]);
 
-export const HOOK_CUTS = [156, 163.5, 171, 178.5, 186];
-export const PRESS_AT = 258;
-export const PUSH_AT = 270;
-export const SHEET_AT = 372;
-export const SHEET_TAP = 414;
-export const SHEET_OUT = 438;
-export const TOG_AT = 504;
+export const HOOK_CUTS = [390, 397.5, 405, 412.5, 420];
+export const PRESS_AT = 432;
+export const PUSH_AT = 444;
+export const SLIDE_AT = 462;
+export const SHEET_AT = 480;
+export const SHEET_TAP = 504;
+export const SHEET_OUT = 522;
+export const TOG_AT = 540;
+export const TOAST_AT = 564;
+export const PLUS_BACK = 588;
+export const PLUS_TAP = 606;
 export const WEB_GO = AT.web;
 
 const SX = SCR.x + 36;
@@ -100,39 +106,63 @@ const List: React.FC<P & {push: number}> = ({f, push}) => {
   const on = spr(f, TOG_AT, SNAP, 16);
   return (
     <g transform={`translate(${n2(-SCR.w * push)} 0)`} opacity={n2(1 - push * 0.15)}>
-      <Status x={SX} y={SCR.y + 18} w={SCR.w - 72} o={ui(128)} />
-      <Txt x={SX} y={SCR.y + 118} k="sc500" size={34} ls={0.04} o={ui(132)}>
+      <Status x={SX} y={SCR.y + 18} w={SCR.w - 72} o={ui(AT.app + 8)} />
+      <Txt x={SX} y={SCR.y + 118} k="sc500" size={34} ls={0.04} o={ui(AT.app + 12)}>
         闹钟
       </Txt>
       <line x1={SX} y1={SCR.y + 148} x2={SR} y2={SCR.y + 148} stroke={C.hair} strokeWidth={1} />
       <g transform={`translate(${n2((SX + SR) / 2)} ${TOG.y}) scale(${n2(mainS)}) translate(${n2(-(SX + SR) / 2)} ${-TOG.y})`}>
-        <Letters text="07:00" x={SX - 4} y={TOG.y + 28} k="d100" size={92} fx={(i) => ({o: tween(f, 138 + i * 1.4, 12), dy: (1 - tween(f, 138 + i * 1.4, 14, 0, 1, E.out)) * 16})} />
-        <Txt x={SX} y={TOG.y + 62} k="sc300" size={18} ls={0.1} c={C.greyDk} o={ui(150)}>
+        <Letters text="07:00" x={SX - 4} y={TOG.y + 28} k="d100" size={92} fx={(i) => ({o: tween(f, AT.app + 16 + i * 1.4, 12), dy: (1 - tween(f, AT.app + 16 + i * 1.4, 14, 0, 1, E.out)) * 16})} />
+        <Txt x={SX} y={TOG.y + 62} k="sc300" size={18} ls={0.1} c={C.greyDk} o={ui(AT.app + 28)}>
           工作日 · 起床
         </Txt>
         <rect x={togX()} y={TOG.y - TOG.h / 2} width={TOG.w} height={TOG.h} rx={TOG.h / 2} fill={on > 0.01 ? C.ink : 'none'} fillOpacity={on > 0.01 ? n2(on) : undefined} stroke={C.ink} strokeWidth={LINE.main} />
         <line x1={SX} y1={TOG.y + 86} x2={SR} y2={TOG.y + 86} stroke={C.hair} strokeWidth={1} />
       </g>
       {EXTRAS.map((e) => (
-        <Row key={e.t} y={e.y} t={e.t} sub={e.sub} s={(1 - tween(f, e.cut, 6, 0, 1, E.in)) * ui(142)} grey />
+        <Row key={e.t} y={e.y} t={e.t} sub={e.sub} s={(1 - tween(f, e.cut, 6, 0, 1, E.in)) * ui(AT.app + 20)} grey />
       ))}
-      <Scale s={(1 - tween(f, HOOK_CUTS[4], 6, 0, 1, E.in)) * ui(160)} cx={(SX + SR) / 2} cy={900}>
+      <Scale s={(1 - tween(f, HOOK_CUTS[4], 6, 0, 1, E.in)) * ui(AT.app + 28)} cx={(SX + SR) / 2} cy={900}>
         <circle cx={(SX + SR) / 2} cy={900} r={26} fill="none" stroke={C.ink} strokeWidth={LINE.main} />
         <path d={`M${(SX + SR) / 2 - 9} 900H${(SX + SR) / 2 + 9}M${(SX + SR) / 2} 891V909`} stroke={C.ink} strokeWidth={LINE.main} />
       </Scale>
-      {/* 删完以后只留一个加号，再淡掉——列表只做一件事 */}
-      <Scale s={tween(f, 196, 14) * (1 - tween(f, 248, 10, 0, 1, E.in))} cx={(SX + SR) / 2} cy={820}>
-        <circle cx={(SX + SR) / 2} cy={820} r={28} fill="none" stroke={C.ink} strokeWidth={LINE.main} />
-        <path d={`M${(SX + SR) / 2 - 10} 820H${(SX + SR) / 2 + 10}M${(SX + SR) / 2} 810V830`} stroke={C.ink} strokeWidth={LINE.main} />
-      </Scale>
     </g>
+  );
+};
+
+const Toast: React.FC<P> = ({f}) => {
+  const up = spr(f, TOAST_AT, POP, 16);
+  const down = tween(f, PLUS_BACK - 6, 10, 0, 1, E.in);
+  const p = up * (1 - down);
+  if (p <= 0.01) return null;
+  const y = lerp(SCR.y + SCR.h + 24, SCR.y + SCR.h - 118, p);
+  return (
+    <g opacity={n2(p)}>
+      <rect x={SX} y={n2(y)} width={SR - SX} height={64} rx={16} fill={C.ink} />
+      <Txt x={(SX + SR) / 2} y={n2(y + 40)} k="sc300" size={18} ls={0.08} c={C.paperHi} anchor="middle">
+        已开启
+      </Txt>
+    </g>
+  );
+};
+
+const PlusBack: React.FC<P> = ({f}) => {
+  const inn = spr(f, PLUS_BACK, POP, 16);
+  const tap = pressAmt(f, PLUS_TAP);
+  if (inn <= 0.01 && f < PLUS_BACK) return null;
+  const s = inn * (1 - 0.1 * tap);
+  return (
+    <Scale s={s} cx={(SX + SR) / 2} cy={900}>
+      <circle cx={(SX + SR) / 2} cy={900} r={26} fill={tap > 0.2 ? C.ink : 'none'} fillOpacity={tap > 0.2 ? n2(tap) : undefined} stroke={C.ink} strokeWidth={LINE.main} />
+      <path d={`M${(SX + SR) / 2 - 9} 900H${(SX + SR) / 2 + 9}M${(SX + SR) / 2} 891V909`} stroke={tap > 0.35 ? C.paperHi : C.ink} strokeWidth={LINE.main} />
+    </Scale>
   );
 };
 
 const Ringing: React.FC<P & {push: number}> = ({f, push}) => {
   const o = tween(f, PUSH_AT + 4, 16);
   if (o <= 0.001 && push <= 0.01) return null;
-  const slide = spr(f, SHEET_TAP + 2, SMOOTH, 20);
+  const slide = spr(f, SLIDE_AT, SMOOTH, 18);
   return (
     <g transform={`translate(${n2(SCR.w * (1 - push))} 0)`} opacity={n2(o)}>
       <Status x={SX} y={SCR.y + 18} w={SCR.w - 72} />
@@ -144,7 +174,7 @@ const Ringing: React.FC<P & {push: number}> = ({f, push}) => {
         起床
       </Txt>
       {/* 滑动停止：一根发丝线，橙点从左滑到右 */}
-      <g opacity={n2(tween(f, 318, 14) * (1 - tween(f, SHEET_AT, 10, 0, 1, E.in)))}>
+      <g opacity={n2(tween(f, SLIDE_AT - 4, 10) * (1 - tween(f, SHEET_AT, 8, 0, 1, E.in)))}>
         <line x1={SX} y1={780} x2={SR} y2={780} stroke={C.ink} strokeWidth={LINE.main} />
         <circle cx={n2(lerp(SX + 18, SR - 18, slide))} cy={780} r={18} fill={C.accent} />
         <Txt x={(SX + SR) / 2} y={824} k="sc300" size={16} ls={0.1} anchor="middle">
@@ -194,8 +224,8 @@ export const dotApp = (f: number) => {
   const k = knob(on);
   const press = {x: SX + 80, y: TOG.y};
   const sheetBtn = {x: (SX + SR) / 2, y: SCR.y + 420 + 202};
-  if (f < 200) return {x: CENTER.x, y: CENTER.y, r: 16};
-  const toList = tween(f, 200, 28, 0, 1, E.inOut);
+  if (f < AT.app + 20) return {x: CENTER.x, y: CENTER.y, r: 16};
+  const toList = tween(f, AT.app + 20, 20, 0, 1, E.inOut);
   const toPress = tween(f, PRESS_AT - 10, 12, 0, 1, E.inOut);
   const toSheet = tween(f, SHEET_AT + 8, 16, 0, 1, E.inOut);
   const toTap = tween(f, SHEET_TAP - 8, 10, 0, 1, E.inOut);
@@ -208,38 +238,57 @@ export const dotApp = (f: number) => {
   y = lerp(y, sheetBtn.y, toSheet * (1 - back));
   x = lerp(x, k.x, Math.max(back, tween(f, TOG_AT - 12, 14, 0, 1, E.inOut)));
   y = lerp(y, k.y, Math.max(back, tween(f, TOG_AT - 12, 14, 0, 1, E.inOut)));
+  const toast = {x: (SX + SR) / 2, y: SCR.y + SCR.h - 86};
+  const plus = {x: (SX + SR) / 2, y: 900};
+  const toToast = tween(f, TOAST_AT - 6, 10, 0, 1, E.inOut);
+  const toPlus = tween(f, PLUS_BACK - 6, 12, 0, 1, E.inOut);
+  x = lerp(x, toast.x, toToast * (1 - toPlus));
+  y = lerp(y, toast.y, toToast * (1 - toPlus));
+  x = lerp(x, plus.x, toPlus);
+  y = lerp(y, plus.y, toPlus);
   const r = lerp(16, 15, toList);
   return {x, y, r};
 };
 
+const Pill: React.FC<{f: number; at: number; x: number; y: number; t: string}> = ({f, at, x, y, t}) => {
+  const o = vis(f, at, at + 26, 5, 7);
+  if (o <= 0.001) return null;
+  const s = 0.84 + 0.16 * spr(f, at, POP, 12);
+  return (
+    <g transform={`translate(${n2(x)} ${n2(y)}) scale(${n2(s)})`} opacity={n2(o)}>
+      <rect x={0} y={-22} width={t.length * 15 + 20} height={30} rx={4} fill={C.ink} />
+      <Txt x={10} y={0} k="mono" size={13} ls={0.08} c={C.paperHi}>
+        {t}
+      </Txt>
+    </g>
+  );
+};
+
 const Captions: React.FC<P> = ({f}) => (
   <g>
-    <Txt x={120} y={172} k="sc300" size={40} ls={0.08} o={vis(f, 210, 250, 10, 8)}>
+    <Txt x={120} y={168} k="sc300" size={32} ls={0.06} o={vis(f, AT.app + 8, PRESS_AT - 4, 8, 6)}>
       一个屏幕，只做一件事。
     </Txt>
-    <Txt x={120} y={172} k="sc300" size={40} ls={0.08} o={vis(f, 280, 360, 10, 8)}>
-      按下去，再推一页。
+    <Txt x={1800} y={150} k="mono" size={14} ls={0.16} c={C.greyDk} anchor="end" o={vis(f, AT.app + 8, WEB_GO - 8, 10, 8)}>
+      极简产品 · APP
     </Txt>
-    <Txt x={120} y={172} k="sc300" size={40} ls={0.08} o={vis(f, 380, 500, 10, 8)}>
-      从底下拉起一张纸。
-    </Txt>
-    <Txt x={120} y={172} k="sc300" size={40} ls={0.08} o={vis(f, 510, 590, 10, 8)}>
-      颜色只给开着的那一处。
-    </Txt>
-    <Txt x={1800} y={150} k="mono" size={14} ls={0.16} c={C.greyDk} anchor="end" o={vis(f, 220, 590, 12, 10)}>
-      APP UI · ALARM
-    </Txt>
+    <Pill f={f} at={PRESS_AT} x={140} y={240} t="PRESS" />
+    <Pill f={f} at={PUSH_AT} x={140} y={240} t="PUSH" />
+    <Pill f={f} at={SHEET_AT} x={140} y={240} t="SHEET" />
+    <Pill f={f} at={TOG_AT} x={140} y={240} t="TOGGLE" />
+    <Pill f={f} at={TOAST_AT} x={140} y={240} t="TOAST" />
+    <Pill f={f} at={PLUS_TAP} x={140} y={240} t="PLUS" />
   </g>
 );
 
 export const App: React.FC<P> = ({f}) => {
-  const grow = spr(f, HANDOFF, SMOOTH, 34);
-  const leave = tween(f, WEB_GO - 18, 18, 0, 1, E.inOut);
+  const grow = spr(f, AT.app, SMOOTH, 28);
+  const leave = tween(f, WEB_GO - 16, 16, 0, 1, E.inOut);
   const body = mixBox(mixBox(LINE_BOX, PHONE, grow), WIN_BOX, leave);
   const inset = 14 * Math.min(1, body.w / PHONE.w + 0.15);
   const sw = Math.max(0, body.w - 2 * inset);
   const sh = Math.max(0, body.h - 2 * inset);
-  const scr = tween(f, HANDOFF + 10, 18, 0, 1, E.out) * (1 - leave);
+  const scr = tween(f, AT.app + 8, 14, 0, 1, E.out) * (1 - leave);
   const shOpen = sh * Math.max(scr, 0.001);
   const sy = body.y + inset + (sh - shOpen) / 2;
   const sr = Math.min(SCR.r ?? 0, sw / 2, shOpen / 2);
@@ -261,6 +310,8 @@ export const App: React.FC<P> = ({f}) => {
               {f < WEB_GO && <List f={f} push={push} />}
               {f >= PUSH_AT && f < SHEET_OUT + 28 && <Ringing f={f} push={push} />}
               {f >= SHEET_AT - 2 && f < SHEET_OUT + 18 && <Sheet f={f} />}
+              {f >= TOAST_AT - 2 && f < PLUS_BACK + 8 && <Toast f={f} />}
+              {f >= PLUS_BACK - 2 && f < WEB_GO && <PlusBack f={f} />}
               {f < WEB_GO && <Dot x={d.x} y={d.y} r={d.r} />}
             </g>
           </g>
