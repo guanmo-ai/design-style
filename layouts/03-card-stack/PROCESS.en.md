@@ -6,7 +6,7 @@
 
 ## Design constraint
 
-Show 3–4 rounded cards in a stack. Only the top sheet is in focus: a light lift, a 1–2° rotation, and quieter layers behind it.
+Show 3–4 rounded cards in a stack. Only the top sheet is in focus: a light lift, a 1–2° rotation, and quieter layers behind it. v1 (one dashboard stack re-skinned) was vetoed for low density; v2 walks the same four cards through iOS Wallet, Stripe / Linear, a paper-stack metaphor, an exploded z-axis, five bilingual rules, and a bad→good pit.
 
 The film and four reference sheets share the values in `tokens.ts`, `tokens.css`, and `tokens.json`. Typography uses Inter / Inter Display, Noto Sans SC, and Geist Mono.
 
@@ -25,8 +25,8 @@ The film and four reference sheets share the values in `tokens.ts`, `tokens.css`
 |---|---|
 | Canvas | 1920 × 1080 |
 | Frame rate | 60 fps |
-| Composition duration | 18 seconds |
-| Frames | 1080 |
+| Composition duration | 22 seconds |
+| Frames | 1320 |
 | Tempo | 120 BPM |
 
 ## Reproduce locally

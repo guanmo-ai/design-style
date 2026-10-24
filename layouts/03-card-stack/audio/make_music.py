@@ -1,19 +1,19 @@
 """
 Design Style · 布局 03 · Card Stack 卡片层叠 —— 配乐与音效（纯 numpy 合成，无外部采样）
 
-120 BPM（1 拍 = 30 帧 = 0.5 秒）· F 大调 · 18 秒
+120 BPM（1 拍 = 30 帧 = 0.5 秒）· F 大调 · 22 秒
 气质：干净、轻、像产品发布会底乐——垫得住，不抢卡片。
-  0–1.0s    开场：四张卡弹进层叠，各一声玻璃叮（按层左右声像）
-  1.0s      第 60 帧落地：低音“落定”+ 主题垫上来
-  2.0s      焦点抬起：一声更亮的钟，垫乐打开
-  4.0 / 5.5s 两次换页：短 whoosh + 顶卡离开的上滑音 + 新焦点叮
-  7.0 / 8.5s iOS / Stripe 换皮：音色略亮，各一声柔和的和弦
-  10.0–13.5s 五条规则：鼓停、音乐变薄；每条规则一声上行钟
-  13.5s     叠太多：一层层加上去的闷响
-  14.5s     铺平：高频被拿掉
-  15.3s     弹回正确：滤波器打开 + 落定
-  16.0–18s  片尾：主题收束，最后一声极轻的玻璃
-时间点与 video/layout.ts 的 HIT / RULES_AT 对齐（帧 / 60 = 秒）。
+  0–2.5s    钩子：四张卡弹进层叠，落地 + 主题垫上来
+  2.5s      iOS Wallet：音色略亮，一声柔和和弦
+  5.5s      Stripe / Linear：whoosh + 紫调和弦
+  8.5s      扑克 / 名片：木击 + 钟
+  11.5s     爆炸拆解：滤波器打开，空间变大
+  14.5–18s  五条规则：鼓停、音乐变薄；每条规则一声上行钟
+  18.0s     叠太多：一层层闷响
+  18.9s     铺平：高频被拿掉
+  19.5s     弹回正确：滤波器打开 + 落定
+  20.0–22s  片尾：主题收束，最后一声极轻的玻璃
+时间点与 video/layout.ts 的 TRANS / RULES_AT 对齐（帧 / 60 = 秒）。
 
 用法：python3 layouts/03-card-stack/audio/make_music.py
 输出：public/03-card-stack/music.wav（ffmpeg loudnorm → −14 LUFS）
@@ -26,7 +26,7 @@ import wave
 import numpy as np
 
 SR = 48000
-DUR = 18.0
+DUR = 22.0
 N = int(SR * DUR)
 rng = np.random.default_rng(2013)
 
@@ -192,12 +192,11 @@ def swipe(d=0.18, level=1.0):
 
 # —— 与 layout.ts 对齐 ——
 BEAT = 30
-LAND, FOCUS = 60, 120
-CYCLE1, CYCLE2 = 240, 330
-IOS, STRIPE, RULES = 420, 510, 600
-PIT_CROWD, PIT_FLAT, RESTORE, END = 810, 870, 918, 960
-RULES_AT = [618, 654, 690, 726, 762]
-HITS = [LAND, FOCUS, CYCLE1, CYCLE2, IOS, STRIPE, RULES, PIT_CROWD, END]
+LAND, IOS, STRIPE, DECK = 60, 150, 330, 510
+EXPLODE, RULES = 690, 870
+PIT_CROWD, PIT_FLAT, RESTORE, END = 1080, 1134, 1170, 1200
+RULES_AT = [888, 924, 960, 996, 1032]
+HITS = [LAND, IOS, STRIPE, DECK, EXPLODE, RULES, PIT_CROWD, END]
 
 CH = {
     'Fmaj9': (41, [53, 57, 60, 64]),  # F2 | F3 A3 C4 E4
@@ -208,16 +207,14 @@ CH = {
 }
 PROG = [
     (0, 'Fmaj9'),
-    (120, 'Dm9'),
-    (240, 'Bbmaj9'),
-    (330, 'Csus'),
-    (420, 'Fmaj9'),
-    (510, 'Am9'),
-    (600, 'Dm9'),
-    (720, 'Bbmaj9'),
-    (810, 'Csus'),
-    (918, 'Fmaj9'),
-    (960, 'Fmaj9'),
+    (150, 'Dm9'),
+    (330, 'Bbmaj9'),
+    (510, 'Csus'),
+    (690, 'Am9'),
+    (870, 'Dm9'),
+    (1080, 'Csus'),
+    (1170, 'Fmaj9'),
+    (1200, 'Fmaj9'),
 ]
 
 
@@ -232,8 +229,8 @@ def chord_at(frame):
 PENTA = [72, 74, 77, 79, 81, 84, 86, 89]  # F G Bb C D …
 
 for k, (s, n) in enumerate(PROG):
-    e = PROG[k + 1][0] if k + 1 < len(PROG) else 1080
-    lvl = 0.42 if s < 960 else 0.7
+    e = PROG[k + 1][0] if k + 1 < len(PROG) else 1320
+    lvl = 0.42 if s < 1200 else 0.7
     att = 0.7 if s == 0 else 0.28
     place(pad([midi(m) for m in CH[n][1]], fr(e - s) + 0.08, lvl, att=att, rel=0.55, bright=0.95), fr(s), send=0.38)
 
@@ -246,24 +243,24 @@ place(bass(midi(41), 0.8, 0.35), 0.05)
 sfx(riser(fr(48), 0.16), fr(10), send=0.18)
 
 # 律动：克制，规则段和误区段把鼓拿掉
-GROOVE = [(60, 600), (918, 960)]
+GROOVE = [(60, 870), (1170, 1200)]
 
 
 def in_groove(fm):
     return any(a <= fm < b for a, b in GROOVE)
 
 
-for b in range(0, 1080 // BEAT + 1):
+for b in range(0, 1320 // BEAT + 1):
     fm = b * BEAT
     root, notes = chord_at(fm)
     if in_groove(fm) and fm >= 60:
-        place(kick(0.55 if fm < 420 else 0.48), fr(fm))
+        place(kick(0.55 if fm < 510 else 0.48), fr(fm))
         place(hat(0.12), fr(fm + 15), pan=0.28)
-        if 420 <= fm < 600:
+        if 330 <= fm < 690:
             place(hat(0.07, 0.016), fr(fm + 7.5), pan=-0.2)
-    if 60 <= fm < 960:
+    if 60 <= fm < 1200:
         place(bass(midi(root), 0.22, 0.42 if fm % 60 == 0 else 0.28), fr(fm))
-        if not (600 <= fm < 918):
+        if not (870 <= fm < 1170):
             for q in range(2):
                 m = notes[(b + q) % len(notes)] + 12
                 place(epiano(midi(m), 0.7, 0.11 if q else 0.16), fr(fm + q * 15), pan=0.22 * (1 if q else -1), send=0.32)
@@ -274,20 +271,14 @@ for k, h in enumerate(HITS[:-1]):
     sfx(whoosh(fr(28), 260, 5600, 0.22, 0.5), fr(h - 14), pan=pan)
     sfx(thock(0.38), fr(h), send=0.12)
 
-# 焦点抬起
-sfx(bell(midi(81), 0.2, 0.9), fr(FOCUS), pan=-0.12, send=0.6)
-sfx(glass(midi(89), 0.12, 0.6), fr(FOCUS + 4), pan=0.16, send=0.5)
-
-# 两次换页：离开 = 上滑，落下 = 叮
-for k, h in enumerate((CYCLE1, CYCLE2)):
-    sfx(swipe(0.2, 0.28), fr(h - 2), pan=0.32, send=0.2)
-    sfx(pluck(midi(84 + k * 3), 0.1, 0.08), fr(h + 4), pan=0.4, send=0.35)
-    sfx(glass(midi(PENTA[3 + k]), 0.2, 0.55), fr(h + 10), pan=-0.15, send=0.5)
-    sfx(thock(0.32, 170, 64), fr(h + 12), send=0.1)
-
-# 换皮
-sfx(bell(midi(77), 0.16, 0.7), fr(IOS), pan=-0.2, send=0.5)
-sfx(bell(midi(81), 0.14, 0.7), fr(STRIPE), pan=0.18, send=0.5)
+# 世界切换的音色：iOS 玻璃、Stripe 钟、扑克木击、爆炸空间
+sfx(bell(midi(81), 0.18, 0.85), fr(IOS), pan=-0.16, send=0.55)
+sfx(glass(midi(89), 0.12, 0.55), fr(IOS + 6), pan=0.14, send=0.45)
+sfx(bell(midi(77), 0.16, 0.7), fr(STRIPE), pan=0.18, send=0.5)
+sfx(thock(0.4, 160, 58), fr(DECK), send=0.18)
+sfx(bell(midi(84), 0.14, 0.7), fr(DECK + 4), pan=-0.12, send=0.5)
+sfx(riser(fr(24), 0.18), fr(EXPLODE - 18), send=0.2)
+sfx(glass(midi(86), 0.16, 0.7), fr(EXPLODE), pan=0.1, send=0.55)
 
 # 规则：上行五声
 for k, fm in enumerate(RULES_AT):
@@ -308,17 +299,17 @@ sfx(thock(0.7, 210, 48), fr(END), send=0.22)
 for k, m in enumerate([77, 81, 84]):
     sfx(bell(midi(m), 0.16, 0.9), fr(END + 8 + k * 8), pan=-0.16 + 0.16 * k, send=0.62)
 place(bass(midi(41), 1.8, 0.5), fr(END))
-sfx(glass(midi(96), 0.1, 0.8), fr(1048), pan=0.18, send=0.75)
+sfx(glass(midi(96), 0.1, 0.8), fr(1288), pan=0.18, send=0.75)
 
 # 规则 + 误区：把音乐变薄
 tsec = np.arange(N) / SR
 c = np.full(N, 15000.0)
-a, b = fr(590), fr(618)
+a, b = fr(860), fr(888)
 c = np.where((tsec >= a) & (tsec < b), 15000 * (900 / 15000) ** np.clip((tsec - a) / (b - a), 0, 1), c)
-c = np.where((tsec >= b) & (tsec < fr(900)), 900, c)
-a2, b2 = fr(900), fr(930)
+c = np.where((tsec >= b) & (tsec < fr(1164)), 900, c)
+a2, b2 = fr(1164), fr(1188)
 c = np.where((tsec >= a2) & (tsec < b2), 900 * (15000 / 900) ** (np.clip((tsec - a2) / (b2 - a2), 0, 1) ** 2), c)
-seg = slice(int(fr(580) * SR), int(fr(940) * SR))
+seg = slice(int(fr(850) * SR), int(fr(1192) * SR))
 for ch in range(2):
     MUS[ch, seg] = onepole_lp(onepole_lp(MUS[ch, seg], c[seg]), c[seg])
 

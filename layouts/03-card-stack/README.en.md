@@ -6,7 +6,7 @@
 
 ## Overview
 
-3–4 rounded cards in a stack; only the top sheet is in focus. From iOS sheets and Stripe drawers to inbox queues, see the layout in 18 seconds.
+3–4 rounded cards in a stack; only the top sheet is in focus. The same four cards travel through iOS Wallet, Stripe / Linear, a poker-table metaphor, an exploded z-axis, five measurable rules, and a bad→good pit — 22 seconds.
 
 Series: **Layouts**. Period shown in this episode: **2013—**.
 
