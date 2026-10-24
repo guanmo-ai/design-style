@@ -17,7 +17,7 @@ Design Style · 风格 007 · 极简主义 Minimalism —— 配乐与音效（�
 所有时间点读自 cues.json（由 export_cues.mjs 从 video/cues.ts 导出），与画面逐帧对齐（帧 / 60 = 秒）。
 
 用法：python3 styles/007-minimalism/audio/make_music.py
-输出：public/007-minimalism/music.wav（响度 -14 LUFS，真峰值 < -1 dBTP）
+输出：public/007-minimalism/music.wav（响度 -14 LUFS，真峰值 ≤ -2 dBTP，转码成 AAC 后仍 < -1 dBTP）
 """
 import json
 import os
@@ -658,6 +658,9 @@ mix = np.tanh(mix * 1.2) / np.tanh(1.2)
 fade = np.ones(N)
 f0 = int(fr(870) * SR)
 fade[f0:] = np.linspace(1, 0, N - f0) ** 2
+# 第 0 帧就是满屏噪音：6ms 的淡入，免得 AAC 在静音 → 重音的那一下冒出 +3dB 的过冲
+n_in = int(0.006 * SR)
+fade[:n_in] = np.sin(np.linspace(0, np.pi / 2, n_in)) ** 2
 mix *= fade[:, None]
 
 out_dir = os.path.normpath(os.path.join(HERE, '..', '..', '..', 'public', '007-minimalism'))
@@ -703,17 +706,18 @@ def limit(y, ceil=0.78, win=0.008):
 
 
 if shutil.which('ffmpeg'):
-    # 测响度 → 线性增益 → 限幅，重复几遍；真峰值超过 -1.2 dBTP 就把限幅天花板再压低一点（开场的“噗”高频多，采样间峰值偏高）
+    # 测响度 → 线性增益 → 限幅，重复几遍；真峰值超过 -2 dBTP 就把限幅天花板再压低一点（开场的“噗”高频多，采样间峰值偏高）
+    # 留 2dB 而不是 1dB：成片和分享版各转一次 AAC，每次真峰值会再冒 0.5—1dB
     ceil = 0.78
-    for _ in range(6):
+    for _ in range(8):
         y = mix * 0.5
         for _ in range(3):
             i, _tp = loudness(y)
             y = limit(y * 10 ** ((-14.0 - i) / 20), ceil)
         i, tp = loudness(y)
-        if tp <= -1.2 and abs(i + 14) < 0.2:
+        if tp <= -2.0 and abs(i + 14) < 0.2:
             break
-        ceil *= 10 ** ((min(-1.2 - tp, -0.1)) / 20)
+        ceil *= 10 ** ((min(-2.0 - tp, -0.1)) / 20)
     print('loudness %.2f LUFS · true peak %.2f dBTP' % (i, tp))
     write(final, y)
 else:
