@@ -45,7 +45,7 @@ export const Hud: React.FC<{f: number}> = ({f}) => {
 export const Rail: React.FC<{f: number}> = ({f}) => {
   const o = tween(f, 48, 12) * (1 - tween(f, SCENE.END.in, 18));
   if (o <= 0.001) return null;
-  const word = f >= SCENE.PROOF.in ? '样' : f >= SCENE.LAYER.in ? '层' : f >= SCENE.COVER.in ? '刊' : '叠';
+  const word = f >= SCENE.END.in ? '叠' : f >= SCENE.PIT.in ? '坏' : f >= SCENE.TEACH.in ? '则' : f >= SCENE.PROOF.in ? '样' : f >= SCENE.LAYER.in ? '层' : f >= SCENE.COVER.in ? '刊' : '叠';
   return (
     <div style={{position: 'absolute', left: 48, top: 120, opacity: o, color: inkOn(f), writingMode: 'vertical-rl', ...gro(22, 700, 0.18)}}>
       {word}
@@ -123,23 +123,17 @@ export const TeachCaption: React.FC<{f: number}> = ({f}) => (
 );
 
 export const PitCaption: React.FC<{f: number}> = ({f}) => (
-  <Show f={f} at={BEATS.noise - 18} out={BEATS.end - 8} style={{left: 64, top: 72, color: C.ink}}>
-    <Swap
-      f={f}
-      at={BEATS.flat}
-      h={56}
-      a={<span style={{...gro(48, 700, -0.04)}}>叠太多</span>}
-      b={
-        <Swap
-          f={f}
-          at={BEATS.fix}
-          h={56}
-          a={<span style={{...gro(48, 700, -0.04)}}>没有焦点</span>}
-          b={<span style={{...gro(48, 700, -0.04)}}>这样就对了</span>}
-        />
-      }
-    />
-  </Show>
+  <>
+    <Show f={f} at={BEATS.noise - 18} out={BEATS.flat - 2} style={{left: 64, top: 72, color: C.ink}}>
+      <Rise f={f} at={BEATS.noise - 12} out={BEATS.flat - 2} text="叠太多" style={{...gro(56, 700, -0.05)}} />
+    </Show>
+    <Show f={f} at={BEATS.flat - 4} out={946} style={{left: 64, top: 72, color: C.ink}}>
+      <Rise f={f} at={BEATS.flat} out={946} text="没有焦点" style={{...gro(56, 700, -0.05)}} />
+    </Show>
+    <Show f={f} at={946} out={BEATS.end - 8} style={{left: 64, top: 72, color: C.ink}}>
+      <Rise f={f} at={948} out={BEATS.end - 8} text="这样就对了" style={{...gro(56, 700, -0.05)}} />
+    </Show>
+  </>
 );
 
 export const EndTitle: React.FC<{f: number}> = ({f}) => {
