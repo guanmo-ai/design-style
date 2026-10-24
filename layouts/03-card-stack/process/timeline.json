@@ -1,0 +1,16 @@
+{
+  "fps": 60,
+  "bpm": 120,
+  "frames": 1320,
+  "title": "布局 03 · 时间轴：世界切换最快的一刻落在拍点上（1 拍 = 30 帧）",
+  "segments": [
+    {"label": "01 钩子", "start": 0, "dur": 150, "color": "#F4F5F7"},
+    {"label": "02 iOS", "start": 150, "dur": 180, "color": "#111827"},
+    {"label": "03 后台", "start": 330, "dur": 180, "color": "#0A2540"},
+    {"label": "04 隐喻", "start": 510, "dur": 180, "color": "#0C3B2E"},
+    {"label": "05 拆解", "start": 690, "dur": 180, "color": "#070B14"},
+    {"label": "06 规则", "start": 870, "dur": 210, "color": "#050508"},
+    {"label": "07 常见坑", "start": 1080, "dur": 120, "color": "#E8E4DC"},
+    {"label": "片尾", "start": 1200, "dur": 120, "color": "#2563EB"}
+  ]
+}

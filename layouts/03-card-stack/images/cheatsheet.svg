@@ -1,0 +1,66 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1080" height="1350" viewBox="0 0 1080 1350">
+  <!-- Design Style · 布局 03 · 卡片层叠 Card Stack —— 速查卡 / 1080×1350 -->
+  <defs>
+    <style>
+      .d { font-family: 'Inter Display', 'Noto Sans SC', sans-serif; }
+      .t { font-family: 'Inter', 'Noto Sans SC', sans-serif; }
+      .m { font-family: 'Geist Mono', 'SFMono-Regular', Menlo, monospace; }
+      .c { font-family: 'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif; }
+    </style>
+    <filter id="soft" x="-20%" y="-20%" width="140%" height="160%"><feDropShadow dx="0" dy="10" stdDeviation="14" flood-color="#0F172A" flood-opacity=".08"/></filter>
+    <filter id="lift" x="-30%" y="-30%" width="160%" height="180%"><feDropShadow dx="0" dy="22" stdDeviation="28" flood-color="#0F172A" flood-opacity=".12"/></filter>
+    <filter id="dim1"><feColorMatrix type="matrix" values="0.92 0 0 0 0  0 0.92 0 0 0  0 0 0.92 0 0  0 0 0 1 0"/></filter>
+    <filter id="dim2"><feColorMatrix type="matrix" values="0.84 0 0 0 0  0 0.84 0 0 0  0 0 0.84 0 0  0 0 0 1 0"/></filter>
+    <filter id="dim3"><feColorMatrix type="matrix" values="0.76 0 0 0 0  0 0.76 0 0 0  0 0 0.76 0 0  0 0 0 1 0"/></filter>
+    
+  </defs>
+  <rect x="0" y="0" width="1080" height="1350" rx="0" fill="#F4F5F7" />
+  <circle cx="77" cy="96" r="5" fill="#2563EB"/>
+  <text x="92" y="103" class="c" font-size="18" font-weight="500" fill="#64748B" letter-spacing="1" >布局 03 · 速查卡</text>
+  <text x="70" y="188" class="d" font-size="64" font-weight="700" fill="#0F172A" letter-spacing="-2" >Card Stack</text>
+  <text x="492" y="186" class="c" font-size="32" font-weight="700" fill="#64748B" >一页记住</text>
+  <rect x="72" y="236" width="936" height="430" rx="20" fill="#FFFFFF" filter="url(#soft)"/>
+  <text x="100" y="284" class="c" font-size="22" font-weight="700" fill="#0F172A" >五条规则</text>
+  <text x="980" y="284" class="m" font-size="13" font-weight="400" fill="#94A3B8" text-anchor="end" >focus first</text>
+  <text x="104" y="322" class="m" font-size="16" font-weight="500" fill="#2563EB" >01</text>
+  <text x="152" y="322" class="c" font-size="22" font-weight="700" fill="#0F172A" >只叠 3–4 张</text>
+  <text x="152" y="348" class="c" font-size="16" font-weight="400" fill="#64748B" >第五张开始，后面只是噪声</text>
+  <text x="104" y="386" class="m" font-size="16" font-weight="500" fill="#2563EB" >02</text>
+  <text x="152" y="386" class="c" font-size="22" font-weight="700" fill="#0F172A" >一张焦点</text>
+  <text x="152" y="412" class="c" font-size="16" font-weight="400" fill="#64748B" >同时被读的永远只有最上面</text>
+  <text x="104" y="450" class="m" font-size="16" font-weight="500" fill="#2563EB" >03</text>
+  <text x="152" y="450" class="c" font-size="22" font-weight="700" fill="#0F172A" >轻轻抬起 8–16px</text>
+  <text x="152" y="476" class="c" font-size="16" font-weight="400" fill="#64748B" >离开平面，不要飞出屏幕</text>
+  <text x="104" y="514" class="m" font-size="16" font-weight="500" fill="#2563EB" >04</text>
+  <text x="152" y="514" class="c" font-size="22" font-weight="700" fill="#0F172A" >微旋 1–2°</text>
+  <text x="152" y="540" class="c" font-size="16" font-weight="400" fill="#64748B" >让层叠能被眼睛感觉到</text>
+  <text x="104" y="578" class="m" font-size="16" font-weight="500" fill="#2563EB" >05</text>
+  <text x="152" y="578" class="c" font-size="22" font-weight="700" fill="#0F172A" >后层压暗 8–12%</text>
+  <text x="152" y="604" class="c" font-size="16" font-weight="400" fill="#64748B" >可加 0.5px 景深模糊</text>
+  <rect x="72" y="684" width="459" height="280" rx="20" fill="#FFFFFF" filter="url(#soft)"/>
+  <text x="100" y="732" class="c" font-size="22" font-weight="700" fill="#0F172A" >何时用</text>
+  <text x="104" y="776" class="c" font-size="17" font-weight="400" fill="#0F172A" >·  任务队列 / Inbox</text>
+  <text x="104" y="816" class="c" font-size="17" font-weight="400" fill="#0F172A" >·  iOS 底部弹层</text>
+  <text x="104" y="856" class="c" font-size="17" font-weight="400" fill="#0F172A" >·  详情抽屉</text>
+  <text x="104" y="896" class="c" font-size="17" font-weight="500" fill="#64748B" >·  不要：要对齐比较的表</text>
+  <rect x="549" y="684" width="459" height="280" rx="20" fill="#FFFFFF" filter="url(#soft)"/>
+  <text x="577" y="732" class="c" font-size="22" font-weight="700" fill="#0F172A" >参数</text>
+  <text x="980" y="732" class="m" font-size="13" font-weight="400" fill="#94A3B8" text-anchor="end" >tokens</text>
+  <text x="577" y="772" class="c" font-size="16" font-weight="400" fill="#64748B" >张数</text>
+  <text x="980" y="772" class="m" font-size="16" font-weight="500" fill="#0F172A" text-anchor="end" >3–4</text>
+  <text x="577" y="806" class="c" font-size="16" font-weight="400" fill="#64748B" >圆角</text>
+  <text x="980" y="806" class="m" font-size="16" font-weight="500" fill="#0F172A" text-anchor="end" >24–32</text>
+  <text x="577" y="840" class="c" font-size="16" font-weight="400" fill="#64748B" >抬起</text>
+  <text x="980" y="840" class="m" font-size="16" font-weight="500" fill="#0F172A" text-anchor="end" >8–16px</text>
+  <text x="577" y="874" class="c" font-size="16" font-weight="400" fill="#64748B" >旋转</text>
+  <text x="980" y="874" class="m" font-size="16" font-weight="500" fill="#0F172A" text-anchor="end" >1–2°</text>
+  <text x="577" y="908" class="c" font-size="16" font-weight="400" fill="#64748B" >压暗</text>
+  <text x="980" y="908" class="m" font-size="16" font-weight="500" fill="#0F172A" text-anchor="end" >8–12% / 层</text>
+  <rect x="72" y="982" width="936" height="250" rx="20" fill="#FFFFFF" filter="url(#soft)"/>
+  <text x="100" y="1030" class="c" font-size="22" font-weight="700" fill="#0F172A" >CSS</text>
+  <text x="980" y="1030" class="m" font-size="13" font-weight="400" fill="#94A3B8" text-anchor="end" >.card-stack</text>
+  <text x="104" y="1074" class="m" font-size="16" font-weight="400" fill="#0F172A" >position: relative;  perspective: 1600px;</text>
+  <text x="104" y="1106" class="m" font-size="16" font-weight="400" fill="#0F172A" >nth-child(1) { translateY(-12px) rotate(-1.2deg); }</text>
+  <text x="104" y="1138" class="m" font-size="16" font-weight="400" fill="#0F172A" >nth-child(n+2) { scale(.97); filter: brightness(.92); }</text>
+  <text x="104" y="1170" class="m" font-size="16" font-weight="400" fill="#2563EB" >nth-child(n+5) { display: none; }</text>
+</svg>

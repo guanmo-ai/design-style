@@ -100,6 +100,7 @@ by 观默 [@guanmo_ai](https://x.com/guanmo_ai)
 |:-:|---|---|---|---|
 | **01** | [**便当盒布局 Bento Grid**](layouts/01-bento-grid) | 2020s— | 大小不一的圆角格子，一格一事，用面积告诉你谁最重要 | [🎬 视频](https://github.com/guanmo-ai/design-style/releases/tag/layout-01) · [🛠 过程](layouts/01-bento-grid/PROCESS.md) |
 | **02** | [**瀑布流布局 Masonry**](layouts/02-masonry) | 2009— | 列宽固定、高度跟着内容走，每一张都落进最短的那一列 | [🎬 视频](https://github.com/guanmo-ai/design-style/releases/tag/layout-02) · [🛠 过程](layouts/02-masonry/PROCESS.md) |
+| **03** | [**卡片层叠 Card Stack**](layouts/03-card-stack) | 2013— | 3–4 张圆角卡片叠在一起，同一时刻只有最上面那张在被读 | 视频待发布 · [🛠 过程](layouts/03-card-stack/PROCESS.md) |
 
 计划中（顺序可能调整）：装饰艺术 Art Deco · 新粗野主义网页 Neo-Brutalism · Y2K · 日式极简 …… 想看哪个，来 X 上告诉我。
 
@@ -146,6 +147,8 @@ npm run render:L01             # 布局 01：生成配乐 → 渲染 out/01-bent
 npm run images:L01             # 布局 01：生成 4 张布局图 → preview SVG + 2x PNG
 npm run render:L02             # 布局 02：生成配乐 → 渲染 out/02-masonry-master.mp4
 npm run images:L02             # 布局 02：生成 4 张布局图 → preview SVG（内嵌字体和照片）+ 2x PNG
+npm run render:L03             # 布局 03：生成配乐 → 渲染 out/03-card-stack-master.mp4
+npm run images:L03             # 布局 03：生成 4 张布局图 → preview SVG + 2x PNG
 
 # 制作过程里的过程图
 npx remotion bundle src/index.ts --out-dir out/bundle

@@ -1,0 +1,62 @@
+/* 布局 03 · Card Stack 卡片层叠 — 设计令牌 + 可直接用的层叠 */
+:root {
+  --stack-paper: #F4F5F7;
+  --stack-card: #FFFFFF;
+  --stack-ink: #0F172A;
+  --stack-ink2: #64748B;
+  --stack-accent: #2563EB;
+  --stack-radius: 28px;
+  --stack-lift: 12px;
+  --stack-rotate: -1.15deg;
+  --stack-step: 28px;
+
+  --font-ui: 'Inter', 'Noto Sans SC', sans-serif;
+  --font-sc: 'Noto Sans SC', 'PingFang SC', sans-serif;
+  --font-mono: 'Geist Mono', ui-monospace, monospace;
+}
+
+/* 规则 01–05：3–4 张、一张焦点、轻抬、微旋、后层压暗 */
+.card-stack {
+  position: relative;
+  width: min(760px, 100%);
+  aspect-ratio: 760 / 428;
+  perspective: 1600px;
+}
+
+.card-stack > * {
+  position: absolute;
+  inset: 0;
+  border-radius: var(--stack-radius);
+  background: var(--stack-card);
+  box-shadow:
+    0 1px 2px rgba(15, 23, 42, 0.04),
+    0 18px 40px rgba(15, 23, 42, 0.08);
+  transform-origin: 50% 80%;
+  overflow: hidden;
+}
+
+.card-stack > *:nth-child(1) {
+  z-index: 4;
+  transform: translateY(calc(-1 * var(--stack-lift))) rotate(var(--stack-rotate));
+}
+.card-stack > *:nth-child(2) {
+  z-index: 3;
+  transform: translate(-16px, -28px) scale(0.97);
+  filter: brightness(0.9);
+}
+.card-stack > *:nth-child(3) {
+  z-index: 2;
+  transform: translate(-32px, -56px) scale(0.94);
+  filter: brightness(0.8);
+}
+.card-stack > *:nth-child(4) {
+  z-index: 1;
+  transform: translate(-48px, -84px) scale(0.91);
+  filter: brightness(0.7);
+}
+
+.card-stack > *:nth-child(n + 5) { display: none; } /* 规则 01：第五张藏起来 */
+
+@media (max-width: 640px) {
+  .card-stack { --stack-radius: 22px; --stack-lift: 8px; --stack-step: 12px; }
+}
