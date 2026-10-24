@@ -1,26 +1,40 @@
 /**
- * 007 · Minimalism —— 开场 0–2s
- *   0.00–0.47s  噪音    满屏 150 个“多余的东西”：促销字、徽章、星星、箭头、条形码……字体是前六期用过的全部字体；
- *                       它们从最远处开始一个个被删掉，越删越快，全部吸向画面中心
- *   0.48s       一个点  最后一个徽章缩成一个橙色的点（全片唯一的彩色第一次出现），一圈涟漪
- *   0.55–1.8s   标题    一根发丝线从点向两边画出去（地平线）；MINIMALISM 逐字母吸进来；极简主义；Less is more.
- *   1.7–2.0s    交棒    标题删掉；地平线收短，成为下一幕台基的前沿
+ * 007 · Minimalism —— 0.0–8.0s
+ *   0.0–2.2  堆满：噪音 / 控件 / 装饰挤满屏。每件东西抢一次注意，不删。
+ *   2.2–8.0  一次删一个：先出「为什么」，再按类、按顺序删。
  */
 import React from 'react';
 import {random} from 'remotion';
-import {E, POP, spr, tween} from '../../../src/lib/anim';
+import {E, POP, SNAP, spr, tween} from '../../../src/lib/anim';
 import {C, DOT, LAYOUT} from '../tokens';
-import {Dot, Hair, Letters, lerp, n2, P, Ripple, Txt, vis} from './ui';
+import {CUTS, LINES, type CutCat} from './script';
+import {AT} from './timeline';
+import {Dot, Hair, lerp, n2, P, Ripple, Txt, vis, Why} from './ui';
 
 export const CENTER = {x: 960, y: LAYOUT.horizon};
-export const LAND = 30; // 第 1 拍：只剩一个点
-export const HANDOFF = 104; // 之后地平线和点交给 01
+export const LAND = 432; // MORE! 收成橙点
+export const HANDOFF = AT.bone;
+export const openPush = (f: number) => 1 + 0.02 * tween(f, LAND, 40, 0, 1, E.soft);
 
-/* ═══════════ 噪音：150 个多余的东西 ═══════════ */
-type Kind = 'word' | 'burst' | 'ring' | 'star' | 'arrow' | 'swash' | 'box' | 'stripes' | 'barcode' | 'ribbon' | 'dots' | 'badge' | 'close';
-type Item = {kind: Kind; x: number; y: number; rot: number; s: number; text: string; fam: string; wt: number; it: boolean; col: string; t: number};
+type Kind = 'word' | 'burst' | 'ring' | 'star' | 'arrow' | 'swash' | 'box' | 'stripes' | 'barcode' | 'ribbon' | 'dots' | 'badge' | 'close' | 'slider' | 'check' | 'progress' | 'chip';
+type Item = {
+  kind: Kind;
+  cat: Exclude<CutCat, 'last'>;
+  x: number;
+  y: number;
+  rot: number;
+  s: number;
+  text: string;
+  fam: string;
+  wt: number;
+  it: boolean;
+  col: string;
+  t: number;
+  shout: number;
+  gx: number;
+  gy: number;
+};
 
-// 字体：前六期用过的全部字体——瑞士的 Heros、包豪斯的 Jost、构成主义的 Oswald、孟菲斯的 Fredoka、波普的 Bangers、千禧的 Unbounded / Silkscreen
 const WORDS: [string, string, number, boolean?][] = [
   ['SALE', 'Bangers', 400],
   ['NEW!', 'Bangers', 400],
@@ -35,36 +49,34 @@ const WORDS: [string, string, number, boolean?][] = [
   ['LIMITED', 'Unbounded', 900],
   ['!!!', 'Bangers', 400],
   ['#1', 'Oswald', 700],
-  ['100%', 'Unbounded', 900],
   ['VIP', 'Fredoka', 700],
   ['BEST', 'Fredoka', 700],
   ['超值', 'Noto Sans SC', 900],
   ['必买', 'Noto Sans SC', 900],
   ['Click here', 'Instrument Serif', 400, true],
-  ['Deluxe', 'Instrument Serif', 400, true],
   ['MEGA', 'Unbounded', 900],
   ['PLUS+', 'Jost', 800],
   ['PRO MAX', 'Jost', 800],
   ['LOADING…', 'Silkscreen', 400],
-  ['×2', 'Oswald', 700],
-  ['NEW', 'Silkscreen', 400],
-  ['今日', 'Noto Sans SC', 900],
-  ['¥9.9', 'Oswald', 700],
   ['GIFT', 'Fredoka', 700],
-  ['3D', 'Unbounded', 900],
   ['SUPER', 'Bangers', 400],
-  ['Premium', 'Instrument Serif', 400, true],
   ['TOP 10', 'Oswald', 700],
   ['抢', 'Noto Sans SC', 900],
-  ['OK!', 'Fredoka', 700],
   ['ULTRA', 'TeX Gyre Heros', 700],
-  ['★★★★★', 'TeX Gyre Heros', 700],
   ['More!', 'Jost', 800],
   ['马上', 'Noto Sans SC', 900],
-  ['+++', 'Bangers', 400],
 ];
-const COLS = [C.ink, C.ink, C.greyDk, C.grey, '#B4B0A8'];
-const KINDS: Kind[] = ['word', 'word', 'word', 'word', 'burst', 'ring', 'star', 'arrow', 'swash', 'box', 'stripes', 'barcode', 'ribbon', 'dots', 'badge', 'close'];
+const INK_COLS = [C.ink, C.ink, C.greyDk, C.grey, '#B4B0A8'];
+const ALT_COLS = ['#C23B2E', '#2A6B7C', '#3D5A99', '#C4A35A'];
+const CATS: Exclude<CutCat, 'last'>[] = ['promo', 'color', 'button', 'deco'];
+const KIND_BY_CAT: Record<Exclude<CutCat, 'last'>, Kind[]> = {
+  promo: ['word', 'word', 'ribbon', 'chip'],
+  color: ['burst', 'badge', 'ring', 'box', 'word'],
+  button: ['box', 'close', 'badge', 'check', 'slider'],
+  deco: ['star', 'arrow', 'swash', 'stripes', 'barcode', 'dots', 'progress'],
+};
+
+const snap = (v: number, pitch: number, origin: number) => origin + Math.round((v - origin) / pitch) * pitch;
 
 const ITEMS: Item[] = (() => {
   const out: Item[] = [];
@@ -75,36 +87,51 @@ const ITEMS: Item[] = (() => {
   let n = 0;
   for (let j = 0; j < rows; j++) {
     for (let i = 0; i < cols; i++) {
-      const per = random(`per-${i}-${j}`) < 0.45 ? 2 : 1;
+      const per = random(`per-${i}-${j}`) < 0.42 ? 2 : 1;
       for (let k = 0; k < per; k++) {
         const r = (s: string) => random(`${s}-${n}`);
-        const x = (i + 0.15 + 0.7 * r('x')) * cw;
-        const y = (j + 0.15 + 0.7 * r('y')) * ch;
-        if (Math.hypot(x - CENTER.x, (y - CENTER.y) * 1.3) < 110) continue; // 中心留给最后一个徽章
-        const kind = KINDS[Math.floor(r('k') * KINDS.length)];
+        const x = (i + 0.16 + 0.68 * r('x')) * cw;
+        const y = (j + 0.16 + 0.62 * r('y')) * ch;
+        if (y > 860) continue;
+        if (Math.hypot(x - 1180, y - 360) < 90) continue;
+        const cat = CATS[n % 4];
+        const kinds = KIND_BY_CAT[cat];
+        const kind = kinds[Math.floor(r('k') * kinds.length)];
         const w = WORDS[Math.floor(r('w') * WORDS.length)];
-        const d = Math.hypot(x - CENTER.x, (y - CENTER.y) * 1.55) / 1180;
         out.push({
           kind,
+          cat,
           x,
           y,
-          rot: (r('r') - 0.5) * 30,
-          s: 0.7 + 0.75 * r('s'),
+          rot: (r('r') - 0.5) * 26,
+          s: 0.68 + 0.7 * r('s'),
           text: w[0],
           fam: w[1],
           wt: w[2],
           it: !!w[3],
-          col: COLS[Math.floor(r('c') * COLS.length)],
-          // 从最远处开始删，越删越快（越靠近中心越密）
-          t: 3 + 23 * (1 - Math.min(1, d)) ** 0.9 + (r('t') - 0.5) * 2,
+          col: cat === 'color' ? ALT_COLS[Math.floor(r('c') * ALT_COLS.length)] : INK_COLS[Math.floor(r('c') * INK_COLS.length)],
+          t: 0,
+          shout: 10 + ((n * 9) % 108),
+          gx: snap(x, 148, 180),
+          gy: snap(y, 128, 160),
         });
         n++;
       }
     }
   }
+  const byCat: Record<string, Item[]> = {promo: [], color: [], button: [], deco: []};
+  for (const it of out) byCat[it.cat].push(it);
+  for (const cat of CATS) {
+    const cut = CUTS.find((c) => c.cat === cat)!;
+    const list = byCat[cat].sort((a, b) => a.y - b.y || a.x - b.x);
+    const span = 56;
+    list.forEach((it, i) => {
+      it.t = cut.at + 10 + (i * span) / Math.max(1, list.length - 1);
+    });
+  }
   return out;
 })();
-/** 配乐脚本用：每一个东西被删掉的帧（导出成 JSON 由 make_music.py 读取） */
+
 export const CLUTTER_TIMES = ITEMS.map((it) => Math.round(it.t * 10) / 10);
 
 const burstPath = (R: number, n: number, inner = 0.74) => {
@@ -118,20 +145,21 @@ const burstPath = (R: number, n: number, inner = 0.74) => {
 };
 const STAR = burstPath(34, 5, 0.42);
 
-const ItemShape: React.FC<{it: Item}> = ({it}) => {
+const ItemShape: React.FC<{it: Item; f: number}> = ({it, f}) => {
   const word = (size: number, col = it.col) => (
     <text x={0} y={size * 0.36} textAnchor="middle" fill={col} style={{fontFamily: `'${it.fam}'`, fontWeight: it.wt, fontStyle: it.it ? 'italic' : undefined, fontSize: size}}>
       {it.text}
     </text>
   );
+  const fill = tween(f, 8 + (it.shout % 20), 90, 0.12, 0.86, E.out);
   switch (it.kind) {
     case 'word':
-      return word(it.text.length > 5 ? 46 : 70);
+      return word(it.text.length > 5 ? 44 : 66);
     case 'burst':
       return (
         <>
-          <path d={burstPath(70, 14)} fill={it.col} />
-          <text x={0} y={12} textAnchor="middle" fill={C.paper} style={{fontFamily: "'Bangers'", fontSize: 36}}>
+          <path d={burstPath(64, 14)} fill={it.col} />
+          <text x={0} y={12} textAnchor="middle" fill={C.paper} style={{fontFamily: "'Bangers'", fontSize: 32}}>
             {it.text.length > 5 ? 'NEW' : it.text}
           </text>
         </>
@@ -139,13 +167,13 @@ const ItemShape: React.FC<{it: Item}> = ({it}) => {
     case 'ring':
       return (
         <>
-          <circle r={56} fill="none" stroke={it.col} strokeWidth={6} />
-          <circle r={44} fill="none" stroke={it.col} strokeWidth={2} strokeDasharray="4 6" />
-          {word(28)}
+          <circle r={50} fill="none" stroke={it.col} strokeWidth={6} />
+          <circle r={38} fill="none" stroke={it.col} strokeWidth={2} strokeDasharray="4 6" />
+          {word(24)}
         </>
       );
     case 'star':
-      return <path d={STAR} fill={it.col} transform="scale(1.4)" />;
+      return <path d={STAR} fill={it.col} transform="scale(1.35)" />;
     case 'arrow':
       return <path d="M-70 -14H20V-36L74 0L20 36V14H-70Z" fill={it.col} />;
     case 'swash':
@@ -153,9 +181,9 @@ const ItemShape: React.FC<{it: Item}> = ({it}) => {
     case 'box':
       return (
         <>
-          <rect x={-78} y={-34} width={156} height={68} fill={C.ink} transform="translate(8 8)" opacity={0.35} />
-          <rect x={-78} y={-34} width={156} height={68} fill={it.col === C.ink ? C.ink : C.paper} stroke={C.ink} strokeWidth={3} />
-          <text x={0} y={12} textAnchor="middle" fill={it.col === C.ink ? C.paper : C.ink} style={{fontFamily: `'${it.fam}'`, fontWeight: it.wt, fontSize: 32}}>
+          <rect x={-72} y={-30} width={144} height={60} fill={C.ink} transform="translate(6 6)" opacity={0.28} />
+          <rect x={-72} y={-30} width={144} height={60} fill={it.col === C.ink ? C.ink : C.paper} stroke={C.ink} strokeWidth={3} />
+          <text x={0} y={10} textAnchor="middle" fill={it.col === C.ink ? C.paper : C.ink} style={{fontFamily: `'${it.fam}'`, fontWeight: it.wt, fontSize: 28}}>
             {it.text.slice(0, 7)}
           </text>
         </>
@@ -171,16 +199,16 @@ const ItemShape: React.FC<{it: Item}> = ({it}) => {
     case 'barcode':
       return (
         <g>
-          {Array.from({length: 18}, (_, k) => (
-            <rect key={k} x={-60 + k * 7} y={-30} width={1 + ((k * 7) % 5)} height={60} fill={it.col} />
+          {Array.from({length: 16}, (_, k) => (
+            <rect key={k} x={-56 + k * 7} y={-26} width={1 + ((k * 7) % 5)} height={52} fill={it.col} />
           ))}
         </g>
       );
     case 'ribbon':
       return (
         <>
-          <path d="M-96 -24H96L80 0L96 24H-96L-80 0Z" fill={it.col} />
-          <text x={0} y={10} textAnchor="middle" fill={C.paper} style={{fontFamily: "'Oswald'", fontWeight: 700, fontSize: 28}}>
+          <path d="M-90 -22H90L76 0L90 22H-90L-76 0Z" fill={it.col} />
+          <text x={0} y={8} textAnchor="middle" fill={C.paper} style={{fontFamily: "'Oswald'", fontWeight: 700, fontSize: 24}}>
             {it.text.slice(0, 8)}
           </text>
         </>
@@ -196,8 +224,8 @@ const ItemShape: React.FC<{it: Item}> = ({it}) => {
     case 'badge':
       return (
         <>
-          <circle r={38} fill={C.ink} />
-          <text x={0} y={11} textAnchor="middle" fill={C.paper} style={{fontFamily: "'Unbounded'", fontWeight: 900, fontSize: 26}}>
+          <circle r={34} fill={it.col} />
+          <text x={0} y={10} textAnchor="middle" fill={C.paper} style={{fontFamily: "'Unbounded'", fontWeight: 900, fontSize: 22}}>
             99+
           </text>
         </>
@@ -205,123 +233,152 @@ const ItemShape: React.FC<{it: Item}> = ({it}) => {
     case 'close':
       return (
         <>
-          <rect x={-30} y={-30} width={60} height={60} rx={8} fill="none" stroke={it.col} strokeWidth={5} />
-          <path d="M-14 -14L14 14M14 -14L-14 14" stroke={it.col} strokeWidth={6} strokeLinecap="round" />
+          <rect x={-26} y={-26} width={52} height={52} rx={8} fill="none" stroke={it.col} strokeWidth={5} />
+          <path d="M-12 -12L12 12M12 -12L-12 12" stroke={it.col} strokeWidth={5} strokeLinecap="round" />
+        </>
+      );
+    case 'slider':
+      return (
+        <>
+          <rect x={-70} y={-8} width={140} height={16} rx={8} fill={C.stone} />
+          <rect x={-70} y={-8} width={140 * fill} height={16} rx={8} fill={it.col} />
+          <circle cx={-70 + 140 * fill} cy={0} r={14} fill={C.paperHi} stroke={it.col} strokeWidth={3} />
+        </>
+      );
+    case 'check':
+      return (
+        <>
+          <rect x={-22} y={-22} width={44} height={44} rx={6} fill={C.paperHi} stroke={it.col} strokeWidth={4} />
+          <path d="M-10 2L-2 12L14 -10" fill="none" stroke={it.col} strokeWidth={5} strokeLinecap="round" opacity={fill} />
+        </>
+      );
+    case 'progress':
+      return (
+        <>
+          <rect x={-80} y={-10} width={160} height={20} rx={4} fill={C.stone} />
+          <rect x={-80} y={-10} width={160 * fill} height={20} rx={4} fill={it.col} />
+        </>
+      );
+    case 'chip':
+      return (
+        <>
+          <rect x={-58} y={-22} width={116} height={44} rx={22} fill={it.col} />
+          <text x={0} y={8} textAnchor="middle" fill={C.paper} style={{fontFamily: `'${it.fam}'`, fontWeight: 700, fontSize: 20}}>
+            {it.text.slice(0, 6)}
+          </text>
         </>
       );
   }
 };
 
-const Clutter: React.FC<P> = ({f}) => (
-  <g>
-    {ITEMS.map((it, i) => {
-      const p = tween(f, it.t, 6, 0, 1, E.in);
-      if (p >= 0.999) return null;
-      // 被删之前一直在抖：两帧换一次位置，像噪音
-      const step = Math.floor(f / 2);
-      const jx = (random(`jx${i}-${step}`) - 0.5) * 5 * (1 - p);
-      const jy = (random(`jy${i}-${step}`) - 0.5) * 5 * (1 - p);
-      const x = lerp(it.x, CENTER.x, 0.32 * p) + jx;
-      const y = lerp(it.y, CENTER.y, 0.32 * p) + jy;
-      return (
-        <g key={i} transform={`translate(${n2(x)} ${n2(y)}) rotate(${n2(it.rot)}) scale(${n2(it.s * (1 - p))})`} opacity={p > 0.6 ? n2((1 - p) / 0.4) : undefined}>
-          <ItemShape it={it} />
-        </g>
-      );
-    })}
-    {/* 最后一个：正中间的徽章，缩成那个点 */}
-    {f < LAND + 1 &&
-      (() => {
-        const s = 1 - tween(f, 20, 10, 0, 1, E.in) * 0.9;
-        const spin = tween(f, 18, 12, 0, 140, E.in);
-        return (
-          <g transform={`translate(${CENTER.x} ${CENTER.y}) rotate(${n2(-8 + spin)}) scale(${n2(s)})`}>
-            <path d={burstPath(150, 18)} fill={C.ink} />
-            {s > 0.5 && (
-              <text x={0} y={30} textAnchor="middle" fill={C.paper} style={{fontFamily: "'Bangers'", fontSize: 92}}>
-                MORE!
-              </text>
-            )}
-          </g>
-        );
-      })()}
-  </g>
-);
+const aligned = (f: number) => {
+  let n = 0;
+  for (const c of CUTS) if (c.cat !== 'last' && f >= c.at + 8) n += 1;
+  return n / 4;
+};
 
-/* ═══════════ 一个点 + 标题 ═══════════ */
-/** 点的半径：第 29 帧弹出来，落在第 30 帧（第 1 拍） */
-export const openDotR = (f: number) => (f < LAND - 1 ? 0 : DOT.r * spr(f, LAND - 1, POP, 30));
-
-const HZ = LAYOUT.horizon;
-const L = LAYOUT.mx;
-const R = 1920 - LAYOUT.mx;
-/** 地平线从点向两边画出去（34–60） */
-export const horizonP = (f: number) => tween(f, 34, 26, 0, 1, E.inOut);
-/** 标题段镜头慢推（线、点、字一起），交棒时 01 从这个宽度开始收 */
-export const openPush = (f: number) => 1 + 0.024 * tween(f, 40, 64, 0, 1, E.soft);
-
-const Title: React.FC<P> = ({f}) => {
-  const out = 98;
-  // 标题一个字母一个字母“吸”进来：从右边疏的位置收到最终字距
-  const inFx = (at: number, gap: number, spread: number) => (i: number, n: number) => {
-    const p = tween(f, at + i * gap, 22, 0, 1, E.out);
-    const q = tween(f, out + (n - 1 - i) * 1.2, 8, 0, 1, E.in);
-    return {o: p * (1 - q), dx: (1 - p) * (i + 1) * spread - q * 30};
-  };
+const Clutter: React.FC<P> = ({f}) => {
+  const align = aligned(f);
+  const alignP = spr(f, AT.cut, SNAP, 28) * align;
   return (
     <g>
-      <Letters text="MINIMALISM" x={L - 4} y={HZ - 48} k="d200" size={84} ls={0.32} fx={inFx(44, 2.2, 16)} />
-      <Letters text="极简主义" x={L - 2} y={HZ + 76} k="sc300" size={40} ls={0.6} c={C.ink} fx={inFx(54, 3, 10)} />
-      <Txt x={R} y={HZ + 72} k="t300" size={36} anchor="end" o={vis(f, 62, out + 4)}>
-        Less is more.
-      </Txt>
-      <Txt x={R} y={HZ - 52} k="mono" size={16} ls={0.16} c={C.greyDk} anchor="end" o={vis(f, 70, out + 2)}>
-        LUDWIG MIES VAN DER ROHE
+      {ITEMS.map((it, i) => {
+        const gone = tween(f, it.t, 10, 0, 1, E.in);
+        if (gone >= 0.999) return null;
+        const shout = f < AT.cut ? spr(f, it.shout, POP, 16) : 0;
+        const peak = Math.sin(Math.min(1, shout) * Math.PI);
+        const marked = CUTS.find((c) => c.cat === it.cat && f >= c.at && f < it.t + 2);
+        const jx = f < AT.cut ? (random(`jx${i}-${Math.floor(f / 2)}`) - 0.5) * 4 : 0;
+        const jy = f < AT.cut ? (random(`jy${i}-${Math.floor(f / 2)}`) - 0.5) * 4 : 0;
+        const x = lerp(it.x, it.gx, alignP) + jx + (it.x - CENTER.x) * 0.35 * gone;
+        const y = lerp(it.y, it.gy, alignP) + jy + (it.y - CENTER.y) * 0.28 * gone;
+        const rot = lerp(it.rot, 0, alignP) + gone * (it.x > 960 ? 12 : -12);
+        const sc = it.s * (1 + 0.2 * peak) * (1 - gone);
+        return (
+          <g key={i} transform={`translate(${n2(x)} ${n2(y)}) rotate(${n2(rot)}) scale(${n2(sc)})`} opacity={gone > 0.55 ? n2((1 - gone) / 0.45) : undefined}>
+            <ItemShape it={it} f={f} />
+            {marked && <line x1={-70} y1={0} x2={70 * tween(f, marked.at, 8)} y2={0} stroke={C.ink} strokeWidth={4} />}
+          </g>
+        );
+      })}
+    </g>
+  );
+};
+
+const LAST = {x: 1180, y: 360};
+
+const LastBadge: React.FC<P> = ({f}) => {
+  if (f >= LAND + 2) return null;
+  const to = spr(f, CUTS[4].at + 8, SNAP, 22);
+  const shrink = tween(f, LAND - 14, 14, 0, 1, E.in);
+  const x = lerp(LAST.x, CENTER.x, to);
+  const y = lerp(LAST.y, CENTER.y, to);
+  const s = lerp(1.15, 0.12, shrink);
+  const spin = tween(f, LAND - 14, 14, 0, 120, E.in);
+  return (
+    <g transform={`translate(${n2(x)} ${n2(y)}) rotate(${n2(-8 + spin)}) scale(${n2(s)})`}>
+      <path d={burstPath(132, 18)} fill={C.ink} />
+      {s > 0.45 && (
+        <text x={0} y={26} textAnchor="middle" fill={C.paper} style={{fontFamily: "'Bangers'", fontSize: 78}}>
+          MORE!
+        </text>
+      )}
+    </g>
+  );
+};
+
+const Remain: React.FC<P> = ({f}) => {
+  const left = ITEMS.filter((it) => f < it.t).length + (f < LAND ? 1 : 0);
+  const o = vis(f, 16, LAND + 20, 10, 12);
+  return (
+    <g opacity={n2(o)}>
+      <Txt x={1800} y={132} k="mono" size={15} ls={0.14} c={C.greyDk} anchor="end">
+        {`LEFT  ${String(left).padStart(3, '0')}`}
       </Txt>
     </g>
   );
 };
 
-/** 四角：期号、年代、四个名字（像片头字幕） */
-const Corners: React.FC<P> = ({f}) => {
-  const o = (at: number) => vis(f, at, 100);
+const Caption: React.FC<P> = ({f}) => {
+  if (f < 14) return null;
+  if (f < AT.cut) {
+    return <Why o={vis(f, 16, AT.cut - 4, 12, 8)} kicker="00  堆满" line={LINES[0]} en="SEE THE EXCESS FIRST" />;
+  }
+  let cur = CUTS[0];
+  for (const c of CUTS) if (f >= c.at) cur = c;
+  const next = CUTS.find((c) => c.at > cur.at);
+  const o = vis(f, cur.at, next ? next.at - 2 : HANDOFF - 8, 8, 8);
+  const dy = (1 - spr(f, cur.at, POP, 16)) * 18;
   return (
-    <g>
-      <Txt x={L} y={132} k="mono" size={16} ls={0.18} c={C.greyDk} o={o(36)}>
-        DESIGN STYLE · 007
-      </Txt>
-      <Txt x={R} y={132} k="mono" size={16} ls={0.18} c={C.greyDk} anchor="end" o={o(40)}>
-        1929 — TODAY
-      </Txt>
-      <Txt x={L} y={968} k="mono" size={15} ls={0.24} c={C.grey} o={o(76)}>
-        MIES · RAMS · JUDD · REICH · NOW
-      </Txt>
-      <Txt x={R} y={968} k="mono" size={15} ls={0.24} c={C.grey} anchor="end" o={o(80)}>
-        @GUANMO_AI
-      </Txt>
+    <g transform={`translate(0 ${n2(dy)})`}>
+      <Why o={o} kicker={cur.kicker} line={cur.why} en={cur.en} />
     </g>
   );
 };
 
 export const Opening: React.FC<P> = ({f}) => {
-  const r = openDotR(f);
-  const hp = horizonP(f);
+  const r = f < LAND - 1 ? 0 : DOT.r * spr(f, LAND - 1, POP, 28);
+  const hp = tween(f, LAND + 4, 22, 0, 1, E.inOut);
   const push = openPush(f);
   return (
     <g>
       {f < LAND + 2 && <Clutter f={f} />}
-      <g transform={push > 1 ? `translate(${CENTER.x} ${HZ}) scale(${n2(push * 1000) / 1000}) translate(${-CENTER.x} ${-HZ})` : undefined}>
-        {f < HANDOFF && (
+      {f < LAND + 2 && <LastBadge f={f} />}
+      <g transform={push > 1 ? `translate(${CENTER.x} ${CENTER.y}) scale(${n2(push)}) translate(${-CENTER.x} ${-CENTER.y})` : undefined}>
+        {f >= LAND - 1 && f < HANDOFF + 8 && (
           <>
-            <Hair x1={L} y1={HZ} x2={R} y2={HZ} p={hp} from="center" c={C.ink} o={0.85} />
-            <Ripple f={f} at={LAND} x={CENTER.x} y={HZ} r0={DOT.r} r1={260} dur={46} />
-            <Ripple f={f} at={LAND + 8} x={CENTER.x} y={HZ} r0={DOT.r} r1={150} dur={40} />
-            <Dot x={CENTER.x} y={HZ} r={r / push} />
+            <Hair x1={120} y1={CENTER.y} x2={1800} y2={CENTER.y} p={hp} from="center" c={C.ink} o={0.85} />
+            <Ripple f={f} at={LAND} x={CENTER.x} y={CENTER.y} r0={DOT.r} r1={240} dur={44} />
+            <Ripple f={f} at={LAND + 8} x={CENTER.x} y={CENTER.y} r0={DOT.r} r1={140} dur={36} />
+            <Dot x={CENTER.x} y={CENTER.y} r={r / push} />
           </>
         )}
-        {f >= 40 && f < 120 && <Title f={f} />}
       </g>
-      {f < 114 && <Corners f={f} />}
+      <Remain f={f} />
+      <Txt x={120} y={132} k="mono" size={15} ls={0.16} c={C.greyDk} o={vis(f, 10, HANDOFF - 6)}>
+        DESIGN STYLE · 007
+      </Txt>
+      <Caption f={f} />
     </g>
   );
 };

@@ -8,7 +8,7 @@
 
 One dot, one line, a lot of space. Remove until nothing more can be removed; everything that is left has a reason to be there. Less is more.
 
-The 24-second film keeps a 1.8-second noise→dot hook, then splits the rest into two layers. **Teaching scenes are deliberately not minimal** — measure lines, type-weight contrast, whitespace flash, fly-off, grid, before→after. **Product UI stays minimal**, but every interaction is visible (press-scale, page push, sheet, toggle, hover underline, scroll, anchor, confirm check) and the same screen never idles longer than 0.8s. The orange dot is the pointer, the switch, and the CTA.
+The 24-second film tells one thing: **less = remove until only the useful remains.** Eight sentences, one per scene. Motion is causal (cut, collapse, align, emphasize) — not looping breath. Product beats apply the same cut: one row, one column, one amount.
 
 Series: **Design styles**. Period shown in this episode: **1929—today**.
 

@@ -152,24 +152,33 @@ def section(y, n, zh, en):
 
 
 # ═════════════════════════════════════ 1 · 海报 ═════════════════════════════════════
-GRID_X0, GRID_Y0, PITCH, GR = 456, 430, 72, 22
-MISSING = (4, 7)
-HORIZON = 1030
+GRID_X0, GRID_Y0, PITCH, GR = 620, 430, 68, 20
+MISSING = (4, 6)
+HORIZON = 1040
 
 
 def poster():
     """
-    右边一张 6 × 8 的网格，48 个虚线圆 = 视频第 02 章那台收音机身上的 48 样东西。
-    只有一格是空的：它顺着一条点线落到地平线上，成了全图唯一一个实心、唯一一个橙色的东西。
-    左边只有两个数字：47 删掉了，1 留下了。
+    印刷感定妆：左边一句原则 + 47 / 1，右边 6×8 虚线圆删掉一格落到地平线。
+    可当海报钉在墙上。和片中 19.6–21.4s 定妆同一构图。
     """
     b = corners()
-    S = 118
-    b.append(T(MX - lsb('L', S, 'd', 200), 252, 'Less is more.', S, 'd', 200, INK, -0.02))
-    b.append(ZH(MX, 318, '少即是多', 30, 300, INK, 0.24))
-    b.append(NOTE(W - MX, 318, 'LUDWIG MIES VAN DER ROHE', anchor='end'))
+    b.append(ZH(MX, 268, '少', 210, 300, INK))
+    b.append(ZH(MX, 348, '= 删到只剩有用的', 36, 300, INK, 0.04))
+    b.append(T(MX, 390, 'Less, but better.', 26, 'd', 200, GREY_DK, -0.01))
+    b.append(NOTE(W - MX, 348, 'WENIGER, ABER BESSER', anchor='end'))
 
-    # 网格：48 个虚线圆，空掉一个
+    struck = [('促销字', True), ('第二色', True), ('重复入口', True), ('装饰', True), ('有用的', False)]
+    y0 = 460
+    for i, (lab, dead) in enumerate(struck):
+        yy = y0 + i * 44
+        col = GREY if dead else ACCENT
+        b.append(NOTE(MX, yy, f'{i + 1:02d}', col if not dead else GREY))
+        b.append(ZH(MX + 40, yy, lab, 22, 400 if not dead else 300, col))
+        if dead:
+            w = width(lab, 22, 's', 300)
+            b.append(line(MX + 38, yy - 7, MX + 42 + w, yy - 7, GREY, 1))
+
     for j in range(8):
         for i in range(6):
             if (i, j) == MISSING:
@@ -178,33 +187,26 @@ def poster():
                             ' stroke-dasharray="2.5 3.5"'))
     mx, my = GRID_X0 + MISSING[0] * PITCH, GRID_Y0 + MISSING[1] * PITCH
     b.append(circle(mx, my, GR, 'none', ACCENT, 1, ' stroke-dasharray="1 5" stroke-linecap="round" opacity="0.7"'))
-    b.append(line(mx, my + GR + 8, mx, HORIZON - 30, GREY, 1, ' stroke-dasharray="1 6" stroke-linecap="round"'))
+    b.append(line(mx, my + GR + 8, mx, HORIZON - 28, GREY, 1, ' stroke-dasharray="1 6" stroke-linecap="round"'))
 
-    # 左栏：两个数字，和网格的顶、地平线各对一条线
-    top = GRID_Y0 - GR
-    b.append(T(MX - lsb('4', 150, 'd', 100), top + round(0.727 * 150), '47', 150, 'd', 100, INK, -0.02))
-    b.append(ZH(MX, top + 150, '样东西，删掉了', 18, 300, INK))
-    b.append(NOTE(MX, top + 176, '47 THINGS REMOVED'))
-    b.append(T(MX - lsb('1', 150, 'd', 100), HORIZON - 14, '1', 150, 'd', 100, INK))
-    b.append(ZH(MX + 64, HORIZON - 40, '个留下：', 18, 300, INK))
-    b.append(ZH(MX + 64, HORIZON - 14, '有用的那一个', 18, 300, INK))
+    b.append(T(MX - lsb('4', 120, 'd', 100), 860, '47', 120, 'd', 100, INK, -0.02))
+    b.append(ZH(MX + 200, 820, '样东西，删掉了', 18, 300, INK))
+    b.append(NOTE(MX + 200, 848, 'REMOVED'))
+    b.append(T(MX - lsb('1', 120, 'd', 100), HORIZON - 16, '1', 120, 'd', 100, INK))
+    b.append(ZH(MX + 90, HORIZON - 40, '个留下：', 18, 300, INK))
+    b.append(ZH(MX + 90, HORIZON - 14, '有用的那一个', 18, 300, INK))
 
-    # 地平线 + 橙点
     b.append(line(MX, HORIZON, W - MX, HORIZON, INK, 1.5))
-    b.append(circle(mx, HORIZON, 18, ACCENT))
-    b.append(NOTE(mx, HORIZON + 44, 'ONE LEFT', anchor='middle'))
+    b.append(circle(mx, HORIZON, 16, ACCENT))
+    b.append(NOTE(mx, HORIZON + 40, 'ONE LEFT', anchor='middle'))
 
-    # 底部三栏
-    y = 1182
-    cols = [
-        [('Minimalism', 't', 500, INK), ('极简主义', 's', 300, INK), ('1929 — today', 't', 300, GREY)],
-        [('一个点，一条线，', 's', 300, INK), ('其余全是空间。', 's', 300, INK), ('Weniger, aber besser.', 't', 300, GREY)],
-        [('Design Style 风格 007', 't', 500, INK), ('每天一个设计风格', 's', 300, INK), ('@guanmo_ai', 't', 400, GREY)],
-    ]
-    b.append(line(MX, y - 40, W - MX, y - 40, HAIR, 1))
-    for k, rows in enumerate(cols):
-        for i, (s, kind, wgt, fill) in enumerate(rows):
-            b.append(T(MX + k * 312, y + i * 28, s, 18, kind, wgt, fill))
+    y = 1226
+    b.append(line(MX, y - 36, W - MX, y - 36, HAIR, 1))
+    b.append(T(MX, y, 'Minimalism', 18, 't', 500, INK))
+    b.append(ZH(MX, y + 28, '极简主义 · 007', 16, 300, GREY_DK))
+    b.append(T(W / 2, y, '@guanmo_ai', 18, 't', 400, INK, anchor='middle'))
+    b.append(NOTE(W - MX, y, 'DESIGN STYLE', anchor='end'))
+    b.append(T(W - MX, y + 28, 'Weniger, aber besser.', 14, 't', 300, GREY, anchor='end'))
     return svg('海报', b)
 
 
@@ -238,11 +240,35 @@ def icon(kind, x, y, s=64):
 
 # ═════════════════════════════════════ 2 · 速查卡 ═════════════════════════════════════
 def cheatsheet():
-    b = header('极简主义', 'Minimalism', '风格速查卡 · 1929 — 今天 · 少，但更好', 'DESIGN STYLE NO.07')
+    b = header('极简主义', 'Minimalism', '八句原则 · 少 = 删到只剩有用的', 'DESIGN STYLE NO.07')
 
-    # ── 01 色板：按面积画 ──
+    # ── 01 全片八句 ──
     y = 262
-    b += section(y, 1, '色板', 'Colour')
+    b += section(y, 1, '全片八句', 'The film, one sentence each')
+    lines = [
+        ('01', '堆满', '先看见多余的，才知道要删什么。', 'SEE THE EXCESS FIRST'),
+        ('02', '一次删一个', '每删一下，必须说清为什么。', 'CUT WITH A REASON'),
+        ('03', '留下骨架', '删完之后，网格、字重、留白才露出来。', 'THE SKELETON APPEARS'),
+        ('04', 'App', '同一条原则：列表删成一行、一主按钮。', 'ONE ROW, ONE CONTROL'),
+        ('05', 'Web', '同一条原则：一栏标题、一个 CTA。', 'ONE COLUMN, ONE CTA'),
+        ('06', '确认', '同一条原则：一金额、一按钮。', 'ONE AMOUNT, ONE BUTTON'),
+        ('07', '坏例对照', '花哨无焦点，极简有焦点。', 'FOCUS VERSUS NOISE'),
+        ('08', '定妆', '少 = 删到只剩有用的。', 'LESS, BUT BETTER'),
+    ]
+    colw = CW / 2
+    for i, (n, zh, sentence, en) in enumerate(lines):
+        x = MX + (i % 2) * colw
+        yy = y + 36 + (i // 2) * 88
+        b.append(NOTE(x, yy, n, ACCENT if i == 7 else GREY_DK))
+        b.append(ZH(x + 40, yy, zh, 18, 400, INK))
+        b.append(ZH(x, yy + 28, sentence, 16, 300, INK))
+        b.append(NOTE(x, yy + 52, en, GREY, size=11))
+        if i >= 2:
+            b.append(line(x, yy - 16, x + colw - 24, yy - 16, HAIR, 1))
+
+    # ── 02 色板：按面积画 ──
+    y = 690
+    b += section(y, 2, '色板', 'Colour')
     sw = [('暖纸白', PAPER, '239 236 230', 80.0), ('中性灰', GREY, '143 140 134', 12.0),
           ('墨', INK, '28 27 25', 7.5), ('信号橙', ACCENT, '242 122 26', 0.5)]
     bx, by, bh = MX, y + 24, 96
@@ -274,70 +300,20 @@ def cheatsheet():
         b.append(ZH(x + 38, yy, name, 14, 300, INK))
         b.append(T(x + 38 + width(name, 14, 's', 300) + 8, yy, hx, 12, 'm', 400, GREY))
 
-    # ── 02 字体 ──
-    y = 566
-    b += section(y, 2, '字体', 'Type')
-    S = 118
-    base = y + 30 + round(0.727 * S)
+    # ── 03 字体 + 版式（压成一条，给八句留位）──
+    y = 980
+    b += section(y, 3, '字重 / 版式', 'Type · Layout')
+    S = 72
+    base = y + 78
     b.append(T(MX - lsb('A', S, 'd', 100), base, 'Aa', S, 'd', 100, INK))
-    ax = MX + width('Aa', S, 'd', 100) + 12
-    b.append(T(ax, base, 'Aa', S, 'd', 200, INK))
-    ax2 = ax + width('Aa', S, 'd', 200) + 12
-    b.append(T(ax2, base, 'Aa', S, 'd', 300, INK))
-    for k, (x, w) in enumerate([(MX, 100), (ax, 200), (ax2, 300)]):
-        b.append(NOTE(x + 2, base + 26, f'{w}', size=12))
-    specs = [('Inter Display', '100 / 200 / 300', '标题、大数字 —— 越大越细'),
-             ('Inter', '300 / 400 / 500', '正文、标签'),
-             ('Geist Mono', '400', '注释、编号、图注（全大写，字距 0.12em）'),
-             ('思源黑体 Light', '300 / 400', '中文 —— 和拉丁一样轻')]
-    tx = 600
-    for i, (k, wv, v) in enumerate(specs):
-        yy = y + 40 + i * 56
-        fam = {0: ('d', 300), 1: ('t', 400), 2: ('m', 400), 3: ('s', 400)}[i]
-        b.append(T(tx, yy, k, 18, fam[0], fam[1], INK))
-        b.append(T(W - MX, yy, wv, 12, 'm', 400, GREY, anchor='end'))
-        b.append(ZH(tx, yy + 22, v, 13, 300, GREY_DK))
-        if i:
-            b.append(line(tx, yy - 26, W - MX, yy - 26, HAIR, 1))
-
-    # ── 03 版式 ──
-    y = 828
-    b += section(y, 3, '版式', 'Layout')
-    s = 384 / 1920
-    ox, oy = MX, y + 24
-    fw, fh = 1920 * s, 1080 * s
-    b.append(rect(ox, oy, fw, fh, PAPER_HI, INK, 1))
-    b.append(rect(ox + 120 * s, oy + 96 * s, (1920 - 240) * s, (1080 - 192) * s, 'none', GHOST, 0.75, extra=' stroke-dasharray="2 3"'))
-    b.append(line(ox + 120 * s, oy + 540 * s, ox + 1800 * s, oy + 540 * s, INK, 1))
-    b.append(circle(ox + 960 * s, oy + 540 * s, 16 * s * 1.6, ACCENT))
-    b.append(NOTE(ox + 120 * s, oy + 96 * s - 8, 'VIDEO 1920 × 1080 · ONE LINE, ONE DOT', size=10))
-    rows = [('边距', '120 / 96（视频）· 96 / 112（图片）'),
-            ('地平线', '540 —— 一切从这条线上长出来'),
-            ('线宽', '1.5 主线 · 1 注释 · 墙 10'),
-            ('圆点 / 圆角', '16 · 物件 28 · 设备 64'),
-            ('间距', '8 · 16 · 32 · 64 · 128（倍增）')]
-    for i, (k, v) in enumerate(rows):
-        yy = oy + 16 + i * 44
-        b.append(ZH(tx, yy, k, 14, 300, GREY))
-        b.append(ZH(tx + 104, yy, v, 15, 400, INK))
-        if i:
-            b.append(line(tx, yy - 28, W - MX, yy - 28, HAIR, 1))
-
-    # ── 04 五条规则 ──
-    y = 1112
-    b += section(y, 4, '五条规则', 'Rules')
-    rules = [('space', '负空间', '空的地方也是', '设计的一部分'),
-             ('subtract', '删减', '删到不能再删，', '剩下的才是必要'),
-             ('function', '功能', '形式跟着功能走，', '不为好看加东西'),
-             ('repeat', '重复', '同一个形状，', '用一样的间距重复'),
-             ('accent', '一处强调', '颜色只给一样东西：', '最要紧的那一个')]
-    colw = CW / 5
-    for i, (ic, zh, d1, d2) in enumerate(rules):
-        x = MX + i * colw
-        b += icon(ic, x, y + 22, 40)
-        b.append(ZH(x + 54, y + 50, zh, 17, 400, INK))
-        b.append(ZH(x, y + 86, d1, 12.5, 300, GREY_DK))
-        b.append(ZH(x, y + 104, d2, 12.5, 300, GREY_DK))
+    ax = MX + width('Aa', S, 'd', 100) + 8
+    b.append(T(ax, base, 'Aa', S, 'd', 300, INK))
+    ax2 = ax + width('Aa', S, 'd', 300) + 8
+    b.append(T(ax2, base, 'Aa', 22, 't', 500, INK))
+    b.append(NOTE(MX, base + 28, '100 / 300 / 500'))
+    b.append(ZH(MX + 320, base - 8, '越大越细 · 颜色只标一件事', 16, 300, INK))
+    b.append(NOTE(MX + 320, base + 20, 'MARGIN 120/96 · HORIZON 540 · LINE 1.5/1 · DOT 16'))
+    b.append(ZH(MX + 320, base + 48, '间距 8 · 16 · 32 · 64 · 128。空也是内容。', 14, 300, GREY_DK))
     b += footer()
     return svg('速查卡', b)
 
@@ -375,55 +351,52 @@ def marker(x0, y, n, mx):
 
 
 def app_ui():
-    b = header('如果极简主义来做', 'app', '一个屏幕，只做一件事 · 一个闹钟 app 的两屏概念稿', 'UI CONCEPT NO.07')
+    b = header('同一条原则进', 'app', '列表删成一行、一主按钮 · 左边是删之前', 'UI CONCEPT NO.07')
     py = 256
     mid = W / 2
-    # ── 屏一：闹钟列表 —— 只有一个闹钟 ──
+    # ── 屏一：堆满的列表（坏例）──
     p1x = MX
     p1, x0, x1, top = phone(p1x, py)
     b += p1
+    b.append(ZH(x0, top + 28, '闹钟', 26, 400, INK))
+    extras = [('06:30', '智能推荐'), ('07:30', '周末'), ('08:15', '每日站会'), ('22:00', '助眠白噪')]
+    for i, (t, sub) in enumerate(extras):
+        yy = top + 90 + i * 86
+        b.append(T(x0, yy + 28, t, 36, 'd', 200, GREY))
+        b.append(ZH(x0, yy + 52, sub, 13, 300, GREY))
+        b.append(rect(x1 - 56, yy + 8, 52, 28, STONE, rx=14))
+        b.append(line(x0, yy + 68, x1, yy + 68, HAIR, 1))
+    b.append(rect(x0, top + 450, 80, 28, '#C23B2E', rx=14))
+    b.append(ZH(x0 + 40, top + 470, 'NEW', 12, 400, PAPER, anchor='middle'))
+    for i, lab in enumerate(['闹钟', '世界钟', '秒表', '计时']):
+        b.append(ZH(x0 + i * 72, py + PH - 48, lab, 12, 300, GREY if i else INK))
+    b.append(NOTE(p1x + PW / 2, py + PH + 34, 'BEFORE · NOISE', anchor='middle', size=11))
+
+    # ── 屏二：删成一行、一主按钮 ──
+    p2x = W - MX - PW
+    p2, x0, x1, top = phone(p2x, py)
+    b += p2
+    c2 = p2x + PW / 2
     b.append(ZH(x0, top + 28, '闹钟', 30, 300, INK))
-    y = top + 180
+    y = top + 200
     b.append(line(x0, y - 74, x1, y - 74, HAIR, 1))
     b.append(T(x0 - lsb('0', 84, 'd', 100), y + 22, '07:00', 84, 'd', 100, INK, -0.01))
     b.append(ZH(x0, y + 58, '工作日 · 起床', 15, 300, GREY_DK))
     knob = (x1 - 18, y + 12)
     b += toggle(x1 - 64, y - 6)
     b.append(line(x0, y + 94, x1, y + 94, HAIR, 1))
-    plus = (p1x + PW / 2, py + PH - 100)
+    plus = (p2x + PW / 2, py + PH - 100)
     b.append(circle(*plus, 28, 'none', INK, 1))
     b.append(line(plus[0] - 9, plus[1], plus[0] + 9, plus[1], INK, 1.5))
     b.append(line(plus[0], plus[1] - 9, plus[0], plus[1] + 9, INK, 1.5))
-    b.append(NOTE(p1x + PW / 2, py + PH + 34, 'SCREEN 1 · LIST', anchor='middle', size=11))
+    b.append(NOTE(c2, py + PH + 34, 'AFTER · ONE ROW', anchor='middle', size=11))
 
-    # ── 屏二：响铃 —— 一个大数字，一个动作 ──
-    p2x = W - MX - PW
-    p2, x0, x1, top = phone(p2x, py)
-    b += p2
-    c2 = p2x + PW / 2
-    b.append(NOTE(c2, top + 40, 'MON · 26 OCT', anchor='middle', size=12))
-    S = 108
-    big_w = width('07:00', S, 'd', 100, -0.01)
-    b.append(T(c2, top + 172, '07:00', S, 'd', 100, INK, -0.01, anchor='middle'))
-    b.append(ZH(c2, top + 214, '起床', 18, 300, GREY_DK, anchor='middle'))
-    ty = py + PH - 206
-    b.append(line(x0, ty, x1, ty, INK, 1.5))
-    b.append(circle(x0 + 18, ty, 18, ACCENT))
-    b.append(T(x1, ty - 20, '→', 16, 't', 300, GREY, anchor='end'))
-    b.append(ZH(c2, ty + 48, '滑动停止', 15, 300, INK, anchor='middle'))
-    snooze = (c2, py + PH - 70)
-    b.append(ZH(snooze[0], snooze[1], '稍后 10 分钟', 13, 300, GREY, anchor='middle'))
-    b.append(NOTE(c2, py + PH + 34, 'SCREEN 2 · RINGING', anchor='middle', size=11))
+    b += marker(x0 + 20, y - 20, 1, mid)
+    b += marker(knob[0], knob[1], 2, mid)
+    b += marker(plus[0] + 28, plus[1], 3, mid)
 
-    # ── 引线：都收进两屏之间那条 128px 的空白 ──
-    b += marker(c2 - big_w / 2 - 10, top + 134, 1, mid)
-    b += marker(knob[0] + 13 + 6, knob[1], 2, mid)
-    b += marker(x0 - 6, ty, 3, mid)
-    b += marker(p1x + PW / 2 + 36, plus[1], 4, mid)
-
-    # ── 注释：四栏 ──
-    notes = [('一个数字', '最大的字给最要紧的时间'), ('一处颜色', '橙色只给“开着”'),
-             ('一个动作', '响铃时只能做一件事'), ('一个入口', '新建只留一个“加”')]
+    notes = [('一行', '列表只留此刻'), ('一处颜色', '橙色只给“开着”'),
+             ('一个入口', '新建只留一个“加”'), ('删掉的', '推荐、标签、第二色、第二按钮')]
     y = 1110
     colw = CW / 4
     for i, (lab, sub) in enumerate(notes):
@@ -433,10 +406,9 @@ def app_ui():
         b.append(ZH(x + 36, y, lab, 16, 400, INK))
         b.append(ZH(x, y + 30, sub, 13, 300, GREY_DK))
 
-    # 底部：这张稿子删掉了什么
     y = 1196
     b.append(NOTE(MX, y, 'REMOVED'))
-    gone = ['标签页', '图标', '卡片阴影', '渐变', '第二种强调色', '铃声预览', '天气', '“今日运势”']
+    gone = ['智能推荐', '标签页', 'NEW 徽章', '全部关闭', '第二种强调色', '周末闹钟', '助眠白噪']
     x = MX + 92
     for g in gone:
         w = width(g, 14, 's', 300)
@@ -554,11 +526,72 @@ def eras():
     return svg('四个年代，同一个动作：删', b)
 
 
+def storyboard():
+    """过程分镜：8 格，每格一句原则。1920×1080，写到 process/。"""
+    sw, sh = 1920, 1080
+    cells = [
+        ('01  堆满', '先看见多余的，才知道要删什么。', 'SEE THE EXCESS'),
+        ('02  一次删一个', '每删一下，必须说清为什么。', 'CUT WITH A REASON'),
+        ('03  留下骨架', '删完之后，网格、字重、留白才露出来。', 'THE SKELETON'),
+        ('04  App', '同一条原则：列表删成一行、一主按钮。', 'ONE ROW'),
+        ('05  Web', '同一条原则：一栏标题、一个 CTA。', 'ONE CTA'),
+        ('06  确认', '同一条原则：一金额、一按钮。', 'ONE BUTTON'),
+        ('07  坏例对照', '花哨无焦点，极简有焦点。', 'FOCUS VS NOISE'),
+        ('08  定妆', '少 = 删到只剩有用的。', 'LESS, BUT BETTER'),
+    ]
+    pad, gap = 36, 16
+    cw, ch = (sw - pad * 2 - gap * 3) / 4, (sh - pad * 2 - gap - 72) / 2
+    body = [f'<rect width="{sw}" height="{sh}" fill="{PAPER}"/>',
+            NOTE(pad, 40, 'DESIGN STYLE · 007  ·  PROCESS STORYBOARD'),
+            T(sw - pad, 40, '@guanmo_ai', 16, 't', 400, INK, anchor='end')]
+    for i, (kicker, sentence, en) in enumerate(cells):
+        col, row = i % 4, i // 4
+        x = pad + col * (cw + gap)
+        y = 64 + row * (ch + gap)
+        body.append(rect(x, y, cw, ch, PAPER_HI, INK, 1))
+        body.append(NOTE(x + 18, y + 36, kicker, ACCENT if i == 7 else GREY_DK))
+        body.append(ZH(x + 18, y + 88, sentence, 22, 300, INK))
+        body.append(NOTE(x + 18, y + ch - 24, en, GREY, size=11))
+        if i == 0:
+            for k in range(12):
+                body.append(circle(x + 40 + (k % 6) * 28, y + 150 + (k // 6) * 28, 8, STONE))
+        elif i == 1:
+            body.append(line(x + 36, y + 160, x + cw - 36, y + 160, INK, 1.5))
+            body.append(ZH(x + 36, y + 190, '不是功能，是噪音', 16, 400, INK))
+        elif i == 2:
+            for gx in range(4):
+                body.append(line(x + 40 + gx * 48, y + 140, x + 40 + gx * 48, y + 240, HAIR, 1))
+            body.append(circle(x + 40 + 2 * 48, y + 190, 6, ACCENT))
+        elif i == 3:
+            body.append(T(x + 36, y + 200, '07:00', 40, 'd', 100, INK))
+            body.append(rect(x + cw - 90, y + 168, 48, 26, INK, rx=13))
+            body.append(circle(x + cw - 55, y + 181, 9, ACCENT))
+        elif i == 4:
+            body.append(T(x + 36, y + 180, 'Less, but better.', 22, 'd', 200, INK))
+            body.append(rect(x + 36, y + 210, 120, 32, INK))
+            body.append(line(x + 36, y + 242, x + 156, y + 242, ACCENT, 3))
+        elif i == 5:
+            body.append(T(x + 36, y + 190, '¥12', 48, 'd', 100, INK))
+            body.append(rect(x + 36, y + 220, 160, 32, INK))
+        elif i == 6:
+            body.append(rect(x + 28, y + 140, (cw - 72) / 2, 140, '#1a1020'))
+            body.append(rect(x + 44 + (cw - 72) / 2, y + 140, (cw - 72) / 2, 140, PAPER_HI, INK, 1))
+        else:
+            body.append(T(x + 36, y + 200, '少', 64, 'd', 100, INK))
+            body.append(circle(x + cw - 48, y + 210, 10, ACCENT))
+    return (f'<svg xmlns="http://www.w3.org/2000/svg" width="{sw}" height="{sh}" viewBox="0 0 {sw} {sh}">\n'
+            f'  <!-- 007 过程分镜：每格一句原则 -->\n'
+            + '\n'.join('  ' + x for x in body) + '\n</svg>\n')
+
+
 def main():
     files = {'poster': poster(), 'cheatsheet': cheatsheet(), 'app-ui': app_ui(), 'eras': eras()}
     for name, content in files.items():
         open(os.path.join(HERE, f'{name}.svg'), 'w', encoding='utf-8').write(content)
         print('wrote', name + '.svg')
+    proc = os.path.join(os.path.dirname(HERE), 'process', 'storyboard.svg')
+    open(proc, 'w', encoding='utf-8').write(storyboard())
+    print('wrote', proc)
 
 
 if __name__ == '__main__':
