@@ -1,0 +1,103 @@
+/* 007 · 极简主义 Minimalism — CSS 设计令牌（与 tokens.ts / tokens.json 同源） */
+:root {
+  /* 色板：纸 80% · 灰 12% · 墨 7.5% · 橙 ≤ 0.5%。彩色只有一种，而且只给一个点 */
+  --mn-paper: #EFECE6;    /* 暖纸白：底色 */
+  --mn-paper-hi: #F6F4EF; /* 亮面：卡片、屏幕、物件正面 */
+  --mn-shade: #E3DFD8;    /* 纸的阴面 */
+  --mn-stone: #CFCAC1;    /* 石色：分隔、暗面 */
+  --mn-grey: #8F8C86;     /* 中性灰：次要文字、灰圆 */
+  --mn-grey-dk: #5F5C57;  /* 深灰：说明文字 */
+  --mn-ink: #1C1B19;      /* 墨：正文、发丝线 */
+  --mn-accent: #F27A1A;   /* 信号橙：全篇唯一的彩色，只给“最要紧的一处” */
+  --mn-hair: rgba(28, 27, 25, 0.16); /* 发丝线 */
+
+  /* 字体：大字用细（100—300）、用疏；中文用 300 / 400 */
+  --mn-font-display: 'Inter Display', 'Inter', 'Noto Sans SC', sans-serif;
+  --mn-font-text: 'Inter', 'Noto Sans SC', sans-serif;
+  --mn-font-mono: 'Geist Mono', 'JetBrains Mono', ui-monospace, monospace;
+  --mn-font-cjk: 'Noto Sans SC', 'Source Han Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+  --mn-tracking-display: 0.02em;  /* 大字微微放开（和瑞士的收紧相反） */
+  --mn-tracking-caps: 0.18em;     /* 小号大写 / 等宽标注 */
+
+  /* 留白：8 的倍数，越重要的东西周围越空 */
+  --mn-space-1: 8px;
+  --mn-space-2: 16px;
+  --mn-space-3: 32px;
+  --mn-space-4: 64px;
+  --mn-space-5: 128px;
+  --mn-margin-x: 120px; /* 视频：左右边距 */
+  --mn-margin-y: 96px;
+
+  /* 形状：发丝线，不投影；圆角只给“拿在手里的东西”（手机、收音机） */
+  --mn-line: 1.5px;
+  --mn-line-note: 1px;
+  --mn-radius-object: 28px;
+  --mn-radius-device: 64px;
+  --mn-dot: 16px; /* 那个点的半径 */
+}
+
+/* 示例 1：页面 —— 暖纸白，内容只占中间一窄条，四周大量留白 */
+.mn-page {
+  background: var(--mn-paper);
+  color: var(--mn-ink);
+  font: 300 18px/1.7 var(--mn-font-text);
+  padding: var(--mn-space-5) var(--mn-margin-x);
+}
+
+/* 示例 2：大标题 —— 细、疏、不加粗；层级靠字号和留白，不靠字重 */
+.mn-display {
+  font: 200 96px/1.05 var(--mn-font-display);
+  letter-spacing: var(--mn-tracking-display);
+  margin: 0 0 var(--mn-space-4);
+}
+
+/* 示例 3：标注 —— 等宽、小号、全大写、灰 */
+.mn-note {
+  font: 400 13px/1.4 var(--mn-font-mono);
+  letter-spacing: var(--mn-tracking-caps);
+  text-transform: uppercase;
+  color: var(--mn-grey-dk);
+}
+
+/* 示例 4：分隔 —— 一根发丝线代替卡片、边框和阴影 */
+.mn-rule {
+  border: 0;
+  border-top: var(--mn-line-note) solid var(--mn-hair);
+  margin: var(--mn-space-4) 0;
+}
+
+/* 示例 5：那个点 —— 一个页面只有一处用橙色：当前状态 / 唯一的主操作 */
+.mn-dot {
+  width: calc(var(--mn-dot) * 2);
+  height: calc(var(--mn-dot) * 2);
+  border-radius: 50%;
+  background: var(--mn-accent);
+}
+
+/* 示例 6：开关 —— 关是一圈发丝线，开是墨色底 + 橙色圆点 */
+.mn-toggle {
+  width: 64px;
+  height: 36px;
+  border-radius: 18px;
+  border: var(--mn-line) solid var(--mn-ink);
+  background: transparent;
+  position: relative;
+}
+.mn-toggle[aria-checked='true'] {
+  background: var(--mn-ink);
+}
+.mn-toggle::after {
+  content: '';
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 27px;
+  height: 27px;
+  border-radius: 50%;
+  background: var(--mn-paper-hi);
+  transition: transform 240ms cubic-bezier(0.16, 1, 0.3, 1);
+}
+.mn-toggle[aria-checked='true']::after {
+  transform: translateX(28px);
+  background: var(--mn-accent);
+}
