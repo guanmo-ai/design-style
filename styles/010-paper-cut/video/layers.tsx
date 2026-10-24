@@ -156,32 +156,38 @@ export const worldCam = (f: number) => {
   return {x, y, s};
 };
 
-export type Cam = {x: number; y: number; s: number};
+export type Cam = {x: number; y: number; s: number; ox?: number};
 
 /**
  * 手机头图镜头：只给 App 幕用。
- * 全片镜头仍按 1920×1080 构图；这里把同一座山裁进 508×400 的窗口，
- * 再做一次横滑 + 下探，近层走得更远。
+ * 红日在世界右侧（x=1624），手机只裁中间 508px，所以 ox 先把取景拉到太阳那边，
+ * 再靠 PARA 横滑 + 下探：近层走得更远。
  */
 export const phoneCam = (f: number): Cam => {
   const x = track(f, [
-    {f: AT.app - TR, v: -4},
-    {f: AT.app, v: 16, d: 22, e: 'spring'},
-    {f: AT.app + 36, v: -88, d: 52, e: 'smooth'},
-    {f: AT.app + 118, v: 40, d: 46, e: 'smooth'},
+    {f: AT.app - TR, v: 12},
+    {f: AT.app, v: 28, d: 22, e: 'spring'},
+    {f: AT.app + 36, v: -150, d: 56, e: 'smooth'},
+    {f: AT.app + 118, v: 18, d: 46, e: 'smooth'},
   ]);
   const y = track(f, [
-    {f: AT.app - TR, v: -118},
-    {f: AT.app, v: -132, d: 22, e: 'spring'},
-    {f: AT.app + 48, v: -208, d: 44, e: 'smooth'},
-    {f: AT.app + 124, v: -146, d: 48, e: 'smooth'},
+    {f: AT.app - TR, v: -340},
+    {f: AT.app, v: -355, d: 22, e: 'spring'},
+    {f: AT.app + 48, v: -398, d: 44, e: 'smooth'},
+    {f: AT.app + 124, v: -368, d: 48, e: 'smooth'},
   ]);
   const s = track(f, [
-    {f: AT.app - TR, v: 0.94},
-    {f: AT.app, v: 0.98, d: 24, e: 'spring'},
-    {f: AT.app + 64, v: 1.06, d: 40, e: 'smooth'},
+    {f: AT.app - TR, v: 0.56},
+    {f: AT.app, v: 0.58, d: 24, e: 'spring'},
+    {f: AT.app + 64, v: 0.64, d: 40, e: 'smooth'},
   ]);
-  return {x, y, s};
+  const ox = track(f, [
+    {f: AT.app - TR, v: -430},
+    {f: AT.app, v: -456, d: 24, e: 'spring'},
+    {f: AT.app + 48, v: -510, d: 44, e: 'smooth'},
+    {f: AT.app + 124, v: -460, d: 48, e: 'smooth'},
+  ]);
+  return {x, y, s, ox};
 };
 
 /** 编辑海报：揭起某一层。0 = 贴着，1 = 揭开 */
@@ -211,7 +217,7 @@ export const World: React.FC<{f: number; mode?: WorldMode; dim?: number; cam?: C
   return (
     <g>
       <rect width={W} height={H} fill={C.sky} />
-      <g transform={`translate(960 540) scale(${cam.s.toFixed(4)}) translate(-960 ${n1(-540 + cam.y)})`}>
+      <g transform={`translate(960 540) scale(${cam.s.toFixed(4)}) translate(${n1(-960 + (cam.ox ?? 0))} ${n1(-540 + cam.y)})`}>
         {/* 红日：比山远一档 */}
         <g
           opacity={sunK}
