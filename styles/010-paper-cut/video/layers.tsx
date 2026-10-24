@@ -5,7 +5,7 @@
 import React from 'react';
 import {E, spr, track, tween} from '../../../src/lib/anim';
 import {C, HILLS, PARA, SHADOW, TREES} from '../tokens';
-import {AT, DURATION, RULE_AT, TR} from './timeline';
+import {AT, DURATION, TR} from './timeline';
 
 export const W = 1920;
 export const H = 1080;
@@ -116,42 +116,38 @@ export const LayerFilters: React.FC = () => (
 
 const shFor = (i: number, lift: number) => (lift > 0.2 ? 'url(#shLift)' : i < 2 ? 'url(#shFar)' : i < 4 ? 'url(#shMid)' : 'url(#shNear)');
 
-/** 全片镜头：同一座山在编辑器、手机、片头、规则之间连续变形 */
+/** 全片镜头：几何层叠之后，同一座山在海报、剪影、字洞、片尾之间连续变形 */
 export const worldCam = (f: number) => {
   const x = track(f, [
-    {f: 0, v: 0},
-    {f: 40, v: 8, d: 50, e: 'smooth'},
-    {f: 110, v: 36, d: 60, e: 'smooth'},
-    {f: AT.edit, v: -8, d: 22, e: 'spring'},
-    {f: AT.app, v: 10, d: 26, e: 'smooth'},
-    {f: AT.brand, v: 0, d: 24, e: 'smooth'},
-    {f: RULE_AT[3] - 6, v: 0, d: 16, e: 'smooth'},
-    {f: RULE_AT[3] + 10, v: -210, d: 28, e: 'smooth'},
-    {f: RULE_AT[3] + 36, v: 210, d: 30, e: 'smooth'},
-    {f: RULE_AT[4], v: 0, d: 24, e: 'smooth'},
-    {f: AT.pits, v: 12, d: 20, e: 'smooth'},
-    {f: AT.end, v: 20, d: 22, e: 'smooth'},
-    {f: DURATION, v: 28, d: 40, e: 'smooth'},
+    {f: AT.geo, v: 0},
+    {f: AT.geo + 20, v: 18, d: 40, e: 'smooth'},
+    {f: AT.geo + 80, v: -70, d: 70, e: 'smooth'},
+    {f: AT.dio, v: 12, d: 26, e: 'spring'},
+    {f: AT.sil, v: -20, d: 28, e: 'smooth'},
+    {f: AT.sil + 80, v: 40, d: 50, e: 'smooth'},
+    {f: AT.torn, v: 8, d: 24, e: 'smooth'},
+    {f: AT.type, v: 0, d: 26, e: 'smooth'},
+    {f: AT.take, v: 16, d: 30, e: 'smooth'},
+    {f: DURATION, v: 28, d: 50, e: 'smooth'},
   ]);
   const y = track(f, [
-    {f: 0, v: 70},
-    {f: 48, v: 0, d: 36, e: 'spring'},
-    {f: AT.edit, v: -8, d: 22, e: 'spring'},
-    {f: AT.app, v: 12, d: 26, e: 'smooth'},
-    {f: AT.brand, v: 40, d: 26, e: 'smooth'},
-    {f: AT.rules, v: 0, d: 22, e: 'smooth'},
-    {f: AT.end, v: 6, d: 22, e: 'smooth'},
+    {f: AT.geo, v: 40},
+    {f: AT.geo + 24, v: 0, d: 28, e: 'spring'},
+    {f: AT.dio, v: -8, d: 24, e: 'spring'},
+    {f: AT.sil, v: 10, d: 22, e: 'smooth'},
+    {f: AT.torn, v: 8, d: 24, e: 'smooth'},
+    {f: AT.type, v: 36, d: 28, e: 'smooth'},
+    {f: AT.take, v: 4, d: 24, e: 'smooth'},
   ]);
   const s = track(f, [
-    {f: 0, v: 1.1},
-    {f: 44, v: 1, d: 32, e: 'smooth'},
-    {f: AT.edit, v: 0.78, d: 24, e: 'spring'},
-    {f: AT.app, v: 1.02, d: 28, e: 'smooth'},
-    {f: AT.brand, v: 1.42, d: 36, e: 'smooth'},
-    {f: AT.brand + 90, v: 1.62, d: 40, e: 'smooth'},
-    {f: AT.rules, v: 1, d: 26, e: 'spring'},
-    {f: AT.pits, v: 0.96, d: 20, e: 'smooth'},
-    {f: AT.end, v: 1.02, d: 24, e: 'smooth'},
+    {f: AT.geo, v: 1.08},
+    {f: AT.geo + 20, v: 1, d: 28, e: 'smooth'},
+    {f: AT.dio, v: 0.78, d: 26, e: 'spring'},
+    {f: AT.sil, v: 1.06, d: 28, e: 'smooth'},
+    {f: AT.torn, v: 1.02, d: 24, e: 'smooth'},
+    {f: AT.type, v: 1.28, d: 36, e: 'smooth'},
+    {f: AT.type + 90, v: 1.48, d: 40, e: 'smooth'},
+    {f: AT.take, v: 1, d: 28, e: 'spring'},
   ]);
   return {x, y, s};
 };
@@ -165,86 +161,112 @@ export type Cam = {x: number; y: number; s: number; ox?: number};
  */
 export const phoneCam = (f: number): Cam => {
   const x = track(f, [
-    {f: AT.app - TR, v: 12},
-    {f: AT.app, v: 28, d: 22, e: 'spring'},
-    {f: AT.app + 36, v: -150, d: 56, e: 'smooth'},
-    {f: AT.app + 118, v: 18, d: 46, e: 'smooth'},
+    {f: AT.torn - TR, v: 12},
+    {f: AT.torn, v: 28, d: 22, e: 'spring'},
+    {f: AT.torn + 36, v: -150, d: 56, e: 'smooth'},
+    {f: AT.torn + 140, v: 18, d: 50, e: 'smooth'},
   ]);
   const y = track(f, [
-    {f: AT.app - TR, v: -340},
-    {f: AT.app, v: -355, d: 22, e: 'spring'},
-    {f: AT.app + 48, v: -398, d: 44, e: 'smooth'},
-    {f: AT.app + 124, v: -368, d: 48, e: 'smooth'},
+    {f: AT.torn - TR, v: -340},
+    {f: AT.torn, v: -355, d: 22, e: 'spring'},
+    {f: AT.torn + 48, v: -398, d: 50, e: 'smooth'},
+    {f: AT.torn + 150, v: -368, d: 48, e: 'smooth'},
   ]);
   const s = track(f, [
-    {f: AT.app - TR, v: 0.56},
-    {f: AT.app, v: 0.58, d: 24, e: 'spring'},
-    {f: AT.app + 64, v: 0.64, d: 40, e: 'smooth'},
+    {f: AT.torn - TR, v: 0.56},
+    {f: AT.torn, v: 0.58, d: 24, e: 'spring'},
+    {f: AT.torn + 70, v: 0.64, d: 44, e: 'smooth'},
   ]);
   const ox = track(f, [
-    {f: AT.app - TR, v: -430},
-    {f: AT.app, v: -456, d: 24, e: 'spring'},
-    {f: AT.app + 48, v: -510, d: 44, e: 'smooth'},
-    {f: AT.app + 124, v: -460, d: 48, e: 'smooth'},
+    {f: AT.torn - TR, v: -430},
+    {f: AT.torn, v: -456, d: 24, e: 'spring'},
+    {f: AT.torn + 48, v: -510, d: 50, e: 'smooth'},
+    {f: AT.torn + 150, v: -460, d: 48, e: 'smooth'},
   ]);
   return {x, y, s, ox};
 };
 
-/** 编辑海报：揭起某一层。0 = 贴着，1 = 揭开 */
+/** 立体纸板：揭起某一层。0 = 贴着，1 = 揭开 */
 export const peelAt = (f: number, i: number) => {
-  const up = spr(f, AT.edit + 16 + i * 16, {damping: 12, mass: 0.7, stiffness: 170});
-  const down = spr(f, AT.edit + 118 + i * 6, {damping: 14, mass: 0.8, stiffness: 150});
-  return c01(up * (1 - down));
+  const up = spr(f, AT.dio + 8 + i * 12, {damping: 12, mass: 0.7, stiffness: 170});
+  const down = spr(f, AT.dio + 108 + i * 6, {damping: 14, mass: 0.8, stiffness: 150});
+  return c01(up * (1 - down * 0.72));
 };
 
-/** 品牌片头：近层向两边让开 */
+/** 字体剪纸：近层向两边让开 */
 export const partX = (f: number, i: number) => {
-  const k = tween(f, AT.brand + 8, 70, 0, 1, E.inOut) * (1 - tween(f, AT.brand + 130, 28, 0, 1, E.inOut));
+  const k = tween(f, AT.type + 80, 70, 0, 1, E.inOut) * (1 - tween(f, AT.take - 28, 24, 0, 1, E.inOut));
   const dir = i % 2 === 0 ? -1 : 1;
   return k * dir * (40 + i * 70);
 };
 
-export type WorldMode = 'full' | 'flat' | 'lock' | 'grade';
+export type WorldMode = 'full' | 'flat' | 'dio' | 'monoInk' | 'monoPaper';
 
-export const World: React.FC<{f: number; mode?: WorldMode; dim?: number; cam?: Cam}> = ({f, mode = 'full', dim = 0, cam: given}) => {
+export const World: React.FC<{f: number; mode?: WorldMode; dim?: number; cam?: Cam; born?: number}> = ({
+  f,
+  mode = 'full',
+  dim = 0,
+  cam: given,
+  born = AT.geo,
+}) => {
   const cam = given ?? worldCam(f);
-  const enter = (i: number) => spr(f, 6 + i * 12, {damping: 11, mass: 0.65, stiffness: 180});
-  const sunK = spr(f, 34, {damping: 8, mass: 0.5, stiffness: 220});
+  const enter = (i: number) => spr(f, born + 4 + i * 10, {damping: 11, mass: 0.65, stiffness: 180});
+  const sunK = mode.startsWith('mono') ? 0 : spr(f, born + 24, {damping: 8, mass: 0.5, stiffness: 220});
   const raySpin = f * 0.08;
   const shade = mode === 'flat' ? 0 : 1;
-  const lock = mode === 'lock' ? 0 : 1;
-  const grade = mode === 'grade' ? 1 : 0;
+  const lock = 1;
+  const dio = mode === 'dio';
+  const light = dio ? tween(f, AT.dio, 90, -38, 52, E.inOut) : 90;
+  const rad = (light * Math.PI) / 180;
+  const sky = mode === 'monoInk' ? C.paper : mode === 'monoPaper' ? C.ink : C.sky;
   return (
     <g>
-      <rect width={W} height={H} fill={C.sky} />
+      <rect width={W} height={H} fill={sky} />
+      {dio && (
+        <defs>
+          {HILL_D.map((_, i) => (
+            <filter key={i} id={`shDio${i}`} x="-20%" y="-20%" width="140%" height="160%">
+              <feDropShadow
+                dx={n1(Math.cos(rad) * (10 + i * 7))}
+                dy={n1(8 + Math.sin(rad) * (12 + i * 8))}
+                stdDeviation={n1(6 + i * 2.2)}
+                floodColor={SHADOW.color}
+                floodOpacity={0.28 + i * 0.05}
+              />
+            </filter>
+          ))}
+        </defs>
+      )}
       <g transform={`translate(960 540) scale(${cam.s.toFixed(4)}) translate(${n1(-960 + (cam.ox ?? 0))} ${n1(-540 + cam.y)})`}>
-        {/* 红日：比山远一档 */}
         <g
           opacity={sunK}
-          transform={`translate(${n1(cam.x * PARA[0] * lock)} ${n1(Math.sin(f * 0.02) * 3)}) translate(${SUN.x} ${SUN.y}) scale(${sunK.toFixed(4)}) translate(${-SUN.x} ${-SUN.y})`}
+          transform={`translate(${n1(cam.x * PARA[0] * lock)} ${n1(Math.sin(f * 0.02) * 3)}) translate(${SUN.x} ${SUN.y}) scale(${Math.max(sunK, 0.001).toFixed(4)}) translate(${-SUN.x} ${-SUN.y})`}
         >
           <path d={rayD(SUN.x, SUN.y, 102, 168, 16)} fill={C.sun} opacity={0.92} transform={`rotate(${n1(raySpin)} ${SUN.x} ${SUN.y})`} />
           <circle cx={SUN.x} cy={SUN.y} r={SUN.r} fill={C.sun} filter={shade ? 'url(#shFar)' : undefined} />
         </g>
         {HILL_D.map((d, i) => {
           const k = enter(i);
-          const peel = peelAt(f, i);
-          const idleX = Math.sin(f * 0.013 + i * 0.7) * (6 + i * 5) * lock;
-          const idleY = Math.cos(f * 0.01 + i * 0.45) * (2 + i * 1.6);
-          const px = cam.x * PARA[i + 1] * lock + partX(f, i) + idleX;
-          const py = -peel * (36 + i * 6) + (1 - k) * (80 + i * 18) + idleY;
-          const fill = grade ? `url(#grade${i})` : HILLS[i];
+          const peel = mode === 'full' || dio ? peelAt(f, i) : 0;
+          const stair = tween(f, born + 8 + i * 8, 22, 1, 0, E.out);
+          const idleX = Math.sin(f * 0.016 + i * 0.7) * (8 + i * 6);
+          const idleY = Math.cos(f * 0.012 + i * 0.45) * (3 + i * 2);
+          const px = cam.x * PARA[i + 1] * lock + partX(f, i) + idleX + stair * (i - 2.5) * 36;
+          const py = -peel * (40 + i * 10) + (1 - k) * (90 + i * 20) + idleY;
+          const fill = mode === 'monoInk' ? C.ink : mode === 'monoPaper' ? C.paper : HILLS[i];
+          const tree = mode === 'monoInk' ? '#0A1014' : mode === 'monoPaper' ? C.cream : TREES[i];
+          const filt = !shade ? undefined : dio ? `url(#shDio${i})` : shFor(i, peel);
           return (
-            <g key={i} transform={`translate(${n1(px)} ${n1(py)})`} opacity={k} filter={shade ? shFor(i, peel) : undefined}>
+            <g key={i} transform={`translate(${n1(px)} ${n1(py)})`} opacity={k} filter={filt}>
               <path d={d} fill={fill} />
               {PINES.filter((p) => p.layer === i).map((p, j) => {
-                const tk = spr(f, 46 + i * 10 + j * 3, {damping: 9, mass: 0.55, stiffness: 200});
+                const tk = spr(f, born + 36 + i * 8 + j * 3, {damping: 9, mass: 0.55, stiffness: 200});
                 if (tk < 0.01) return null;
                 return (
                   <path
                     key={j}
                     d={p.kind === 'pine' ? pineD(p.x, p.y, p.h) : roundTreeD(p.x, p.y, p.h)}
-                    fill={TREES[i]}
+                    fill={tree}
                     transform={`translate(${n1(p.x)} ${n1(p.y)}) scale(${tk.toFixed(3)}) translate(${n1(-p.x)} ${n1(-p.y)})`}
                   />
                 );
@@ -253,7 +275,7 @@ export const World: React.FC<{f: number; mode?: WorldMode; dim?: number; cam?: C
           );
         })}
       </g>
-      {dim > 0.001 && <rect width={W} height={H} fill={C.sky} opacity={dim * 0.45} />}
+      {dim > 0.001 && <rect width={W} height={H} fill={sky} opacity={dim * 0.45} />}
     </g>
   );
 };

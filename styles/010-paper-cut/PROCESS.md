@@ -2,7 +2,7 @@
 
 **中文** · [English](PROCESS.en.md)
 
-> 这一期是怎么从一个想法变成 20 秒短片和 4 张图的。过程数据在 [`process/`](process)，可复现代码在 `video/` `audio/` `images/`。
+> 这一期是怎么从一个想法变成 24 秒剪纸博览和 4 张图的。过程数据在 [`process/`](process)，可复现代码在 `video/` `audio/` `images/`。
 
 🎬 视频待发布 · 📐 [风格指南](README.md) · 🧰 [从 0 到 1](MAKING.md)
 
@@ -17,8 +17,8 @@
 | 3 | 设计令牌 | 夜空青绿家族 + 红日、视差表、阴影档 | `tokens.ts / .css / .json` |
 | 4 | 层叠世界 | 同一座六层风景贯穿全片 | `video/layers.tsx` |
 | 5 | 风格图 ×4 | 海报 · 速查 · App · 四步 | `images/make_svgs.py` |
-| 6 | 分镜 | 7 段，40 拍，揭纸交叠 20 帧 | `video/timeline.ts` · `process/timeline.json` |
-| 7 | 视频 | 开场 → 编辑海报 → App → 片头 → 规则 → 坑 → 片尾 | `video/*.tsx` |
+| 6 | 分镜 | 7 段，48 拍，撕揭折剪交叠 24 帧 | `video/timeline.ts` · `process/timeline.json` |
+| 7 | 视频 | 六种剪纸博览 → 带走三句 | `video/*.tsx` |
 | 8 | 配乐 | G 大调纸工艺，−14 LUFS | `audio/make_music.py` |
 | 9 | 质检 | 关键帧、联系表、时间轴、ffprobe | `stills.mjs` 等 |
 | 10 | 预览 | draft PR，成片不进 git | `out/` |
@@ -63,7 +63,7 @@
 | 阴影 | 远 6/8 · 中 12/12 · 近 20/16 | 色 `#06141C` |
 | 视差 | 0.16 … 1.08 | 远慢近快 |
 | 字体 | Jost · Noto Sans SC · JetBrains Mono | 标题 / 中文 / 层号 |
-| 节拍 | 120 BPM，1 拍 = 30 帧 | 20 秒 = 40 拍 |
+| 节拍 | 120 BPM，1 拍 = 30 帧 | 24 秒 = 48 拍 |
 
 ## 4 · 风格图
 
@@ -71,7 +71,7 @@
 
 ## 5 · 视频
 
-- 同一座 `World` 用 `track()` 改镜头，场景只换外壳（编辑器 / 手机 / 遮幅 / 卡片）。
+- 六种剪纸各用自己的纸感运动；几何层叠的 `World` 贯穿海报、App、字洞。
 - 转场：下一幕提前 20 帧用波形纸边揭上来。
 - 禁止静帧：每层有自己的慢漂；规则第四章做一次大横移。
 - 弹簧：叠层、红日、卡片、手机，一律 `spr()`。

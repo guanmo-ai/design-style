@@ -57,7 +57,7 @@ export const Hud: React.FC<P> = ({f}) => {
     if (f >= at) k = j;
   });
   const p = tween(f, CHAPTERS[k][1], 14, 0, 1, E.out);
-  const light = f >= AT.edit && f < AT.app;
+  const light = f < AT.geo || (f >= AT.dio && f < AT.sil) || f >= AT.type;
   const ink = light ? C.ink : C.paper;
   const mut = light ? C.grey : 'rgba(246,243,235,0.55)';
   return (
@@ -67,7 +67,7 @@ export const Hud: React.FC<P> = ({f}) => {
           DESIGN STYLE  /  N°010
         </Txt>
         <Txt x={1848} y={52} size={15} font="cn" w={500} c={mut} anchor="end">
-          剪纸层叠
+          剪纸博览
         </Txt>
         <rect x={72} y={1036} width={1776} height={3} rx={1.5} fill={ink} opacity={0.12} />
         <rect x={72} y={1036} width={1776 * (f / DURATION)} height={3} rx={1.5} fill={C.sun} />
@@ -102,7 +102,7 @@ export const NoteCard: React.FC<{x: number; y: number; w: number; h: number; k: 
 
 /** 编辑海报的画板 + 图层面板 */
 export const EditorChrome: React.FC<P & {active: number}> = ({f, active}) => {
-  const k = spr(f, AT.edit - 18, {damping: 14, mass: 0.8, stiffness: 140}) * (1 - tween(f, AT.app - 18, 22, 0, 1, E.in));
+  const k = spr(f, AT.dio - 16, {damping: 14, mass: 0.8, stiffness: 140}) * (1 - tween(f, AT.sil - 18, 22, 0, 1, E.in));
   if (k <= 0.001) return null;
   const rows = ['L6  远山 FAR', 'L5  岭', 'L4  中景 MID', 'L3  树', 'L2  近山', 'L1  前景 NEAR'];
   return (
@@ -142,7 +142,7 @@ export const EditorChrome: React.FC<P & {active: number}> = ({f, active}) => {
 };
 
 export const Phone: React.FC<P> = ({f}) => {
-  const k = spr(f, AT.app - TR, {damping: 12, mass: 0.7, stiffness: 160}) * (1 - tween(f, AT.brand - 16, 20, 0, 1, E.in));
+  const k = spr(f, AT.torn - TR, {damping: 12, mass: 0.7, stiffness: 160}) * (1 - tween(f, AT.type - 16, 20, 0, 1, E.in));
   if (k <= 0.001) return null;
   return (
     <g opacity={k} filter="url(#shNear)">
@@ -179,7 +179,7 @@ export const Tag: React.FC<{f: number; t0: number; x: number; y: number; en: str
   );
 };
 
-/** 揭纸转场：下一幕用波形边缘从下往上盖住，返回 path d */
+/** 揭纸：波形边缘从下往上 */
 export const waveD = (p: number, seed: number) => {
   const y = H * (1 - c01(p));
   let d = `M0 ${H} L0 ${n1(y)}`;
@@ -189,6 +189,42 @@ export const waveD = (p: number, seed: number) => {
     d += ` L${n1(x)} ${n1(y + amp + Math.sin(i * 1.3 + seed) * 10)}`;
   }
   return `${d} L${W} ${H} Z`;
+};
+
+/** 撕开：毛边从左往右 */
+export const tearD = (p: number, seed: number) => {
+  const t = c01(p);
+  const x = W * t;
+  let d = `M0 0 H${n1(x)}`;
+  for (let i = 0; i <= 28; i++) {
+    const y = (H / 28) * i;
+    const jag = 14 * Math.sin(i * 2.4 + seed) + 32 * Math.sin(i * 0.55 + seed * 0.4) * Math.sin(t * Math.PI);
+    d += ` L${n1(x + jag)} ${n1(y)}`;
+  }
+  return `${d} L0 ${H} Z`;
+};
+
+/** 刀锋：从中缝向外劈开 */
+export const bladeD = (p: number) => {
+  const w = 16 + (W - 16) * c01(p);
+  const x0 = 960 - w / 2;
+  return `M${n1(x0)} 0 H${n1(x0 + w)} V${H} H${n1(x0)} Z`;
+};
+
+/** 折页：从右上盖过来 */
+export const foldD = (p: number) => {
+  const t = c01(p);
+  const x = W * (1 - t);
+  const dip = 70 * Math.sin(t * Math.PI);
+  return `M${n1(x - dip)} 0 H${W} V${H} H${n1(x + dip * 0.4)} Z`;
+};
+
+export type WipeKind = 'wave' | 'tear' | 'blade' | 'fold';
+export const wipeD = (kind: WipeKind, p: number, seed: number) => {
+  if (kind === 'tear') return tearD(p, seed);
+  if (kind === 'blade') return bladeD(p);
+  if (kind === 'fold') return foldD(p);
+  return waveD(p, seed);
 };
 
 export const PaperWipe: React.FC<{p: number; fill?: string}> = ({p, fill = C.paper}) => {

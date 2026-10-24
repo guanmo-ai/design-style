@@ -1,7 +1,7 @@
 /**
- * Design Style · 风格 010 · Paper Cut 剪纸层叠 —— 20 秒短片（1920×1080 · 60fps · 120 BPM）
- * 同一座层叠风景贯穿全片：开场叠层 → 编辑海报 → App 插画 → 品牌片头 → 五条规则 → 常见坑 → @guanmo_ai
- * 层移即故事。时间轴见 timeline.ts 与 ../process/timeline.json
+ * Design Style · 风格 010 · Paper Cut —— 24 秒剪纸博览（1920×1080 · 60fps · 120 BPM）
+ * 六种剪纸：民俗镂空 → 几何层叠 → 立体纸板 → 单色剪影 → 水彩毛边 → 字体剪纸 → 带走三句
+ * 交棒只用纸的招式：展开 / 撕开 / 揭层 / 刀切 / 毛边 / 折页。分镜见 timeline.ts
  */
 import React, {useEffect, useState} from 'react';
 import {AbsoluteFill, Audio, continueRender, delayRender, staticFile, useCurrentFrame} from 'remotion';
@@ -10,10 +10,10 @@ import {Grain} from '../../../src/lib/Grain';
 import {C, HILLS} from '../tokens';
 import {AT, DURATION, TR} from './timeline';
 import {H, LayerFilters, W} from './layers';
-import {Hud, PaperWipe, waveD} from './ui';
-import {Opening} from './opening';
-import {App, Brand, Edit} from './chapters';
-import {End, Pits, Rules} from './finale';
+import {Hud, WipeKind, wipeD} from './ui';
+import {Folk} from './opening';
+import {Dio, Geo, Sil, Torn, Type} from './chapters';
+import {Take} from './finale';
 
 export const PAPERCUT_DURATION = DURATION;
 
@@ -33,15 +33,15 @@ const loadFonts = () => {
   return fontsP;
 };
 
-type Scene = {at: number; end: number; C: React.FC<{f: number}>; wipe?: boolean};
+type Scene = {at: number; end: number; C: React.FC<{f: number}>; wipe?: WipeKind; fill?: string};
 const SCENES: Scene[] = [
-  {at: AT.open, end: AT.edit, C: Opening},
-  {at: AT.edit, end: AT.app, C: Edit, wipe: true},
-  {at: AT.app, end: AT.brand, C: App, wipe: true},
-  {at: AT.brand, end: AT.rules, C: Brand, wipe: true},
-  {at: AT.rules, end: AT.pits, C: Rules, wipe: true},
-  {at: AT.pits, end: AT.end, C: Pits, wipe: true},
-  {at: AT.end, end: DURATION, C: End, wipe: true},
+  {at: AT.folk, end: AT.geo, C: Folk},
+  {at: AT.geo, end: AT.dio, C: Geo, wipe: 'tear', fill: C.folk},
+  {at: AT.dio, end: AT.sil, C: Dio, wipe: 'wave', fill: C.cream},
+  {at: AT.sil, end: AT.torn, C: Sil, wipe: 'blade', fill: C.paper},
+  {at: AT.torn, end: AT.type, C: Torn, wipe: 'tear', fill: '#F0E2D2'},
+  {at: AT.type, end: AT.take, C: Type, wipe: 'wave', fill: C.paper},
+  {at: AT.take, end: DURATION, C: Take, wipe: 'fold', fill: C.wall},
 ];
 
 const ease = (p: number) => (p < 1 ? 1 - (1 - p) ** 2.4 : 1);
@@ -50,7 +50,7 @@ const Stage: React.FC = () => {
   const f = useCurrentFrame();
   const live = SCENES.filter((s) => f >= s.at - (s.wipe ? TR : 0) && f < s.end);
   return (
-    <AbsoluteFill style={{background: C.sky, overflow: 'hidden'}}>
+    <AbsoluteFill style={{background: C.wall, overflow: 'hidden'}}>
       <svg width={W} height={H} viewBox={`0 0 ${W} ${H}`} style={{position: 'absolute', inset: 0}}>
         <LayerFilters />
         <defs>
@@ -75,18 +75,17 @@ const Stage: React.FC = () => {
         {live.map((s) => {
           const raw = s.wipe && f < s.at ? (f - (s.at - TR)) / TR : 1;
           const p = ease(raw);
-          const wiping = s.wipe && p < 1;
+          const wiping = Boolean(s.wipe) && p < 1;
           return (
             <g key={s.at}>
-              {wiping && (
+              {wiping && s.wipe && (
                 <clipPath id={`wipe${s.at}`}>
-                  <path d={waveD(p, s.at)} />
+                  <path d={wipeD(s.wipe, p, s.at)} />
                 </clipPath>
               )}
               <g clipPath={wiping ? `url(#wipe${s.at})` : undefined}>
                 <s.C f={f} />
               </g>
-              {s.wipe && f < s.at && <PaperWipe p={p} />}
             </g>
           );
         })}
@@ -106,9 +105,9 @@ export const PaperCut: React.FC<{music?: boolean}> = ({music = true}) => {
       .finally(() => continueRender(handle));
   }, [handle]);
   return (
-    <AbsoluteFill style={{background: C.sky}}>
+    <AbsoluteFill style={{background: C.wall}}>
       {ok && <Stage />}
-      <Grain opacity={0.035} />
+      <Grain opacity={0.04} />
       {music && <Audio src={staticFile('010-paper-cut/music.wav')} />}
     </AbsoluteFill>
   );

@@ -9,6 +9,8 @@ export const C = {
   cream: '#EDE8DC', // 近景纸边
   white: '#FFFDF8',
   mist: '#D7E8DC', // 最浅的一层山
+  folk: '#C41A27', // 民俗红纸
+  wall: '#F3E6C8', // 窗花后面的墙
 };
 
 /** 山层：远 → 近，一层一色（不要在同一层上做渐变） */
