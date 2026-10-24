@@ -1,6 +1,7 @@
 /**
- * 007 · Minimalism —— 19.6–24.0s
- *   定妆：可当海报的一帧。片尾 @guanmo_ai
+ * 007 · 六改 16.8–24.0s —— 定妆 + 片尾
+ *   定妆可当海报：少 + 删减清单 + 47/1 在地平线下方 + 虚线圆落到橙点
+ *   片尾 @guanmo_ai
  */
 import React from 'react';
 import {E, POP, SNAP, spr, tween} from '../../../src/lib/anim';
@@ -13,10 +14,9 @@ const HZ = LAYOUT.horizon;
 const L = LAYOUT.mx;
 const R = 1920 - LAYOUT.mx;
 export const END_AT = AT.end;
-export const POSTER_AT = AT.poster;
+export const POSTER_AT = AT.hold;
 
 const GHOST = 'rgba(28,27,25,0.28)';
-/** 6×8 虚线圆全部压在地平线以上，缺一格落到橙点——和印刷海报同一构图。 */
 const GRID_X0 = 1180;
 const GRID_Y0 = 168;
 const PITCH = 46;
@@ -31,13 +31,13 @@ const STRUCK: {zh: string; dead: boolean}[] = [
 ];
 
 const PosterHold: React.FC<P> = ({f}) => {
-  if (f < AT.poster - 4 || f >= AT.end) return null;
-  const inn = spr(f, AT.poster, SNAP, 22);
+  if (f < AT.hold - 4 || f >= AT.end) return null;
+  const inn = spr(f, AT.hold, SNAP, 22);
   const leave = tween(f, AT.end - 10, 10, 0, 1, E.in);
   const o = inn * (1 - leave);
   const mx = GRID_X0 + MISSING.i * PITCH;
   const my = GRID_Y0 + MISSING.j * PITCH;
-  const drop = spr(f, AT.poster + 10, POP, 20);
+  const drop = spr(f, AT.hold + 10, POP, 20);
   return (
     <g opacity={n2(o)}>
       <Letters
@@ -47,22 +47,22 @@ const PosterHold: React.FC<P> = ({f}) => {
         k="d100"
         size={168}
         fx={(i) => {
-          const p = tween(f, AT.poster + 4 + i * 2, 16, 0, 1, E.out);
+          const p = tween(f, AT.hold + 4 + i * 2, 16, 0, 1, E.out);
           return {o: p, dy: (1 - p) * 24};
         }}
       />
-      <Txt x={L} y={286} k="sc300" size={30} ls={0.04} o={tween(f, AT.poster + 12, 12)}>
+      <Txt x={L} y={286} k="sc300" size={30} ls={0.04} o={tween(f, AT.hold + 12, 12)}>
         = 删到只剩有用的
       </Txt>
-      <Txt x={L} y={320} k="t300" size={22} c={C.greyDk} o={tween(f, AT.poster + 18, 10)}>
+      <Txt x={L} y={320} k="t300" size={22} c={C.greyDk} o={tween(f, AT.hold + 18, 10)}>
         {THESIS.en}
       </Txt>
-      <Txt x={R} y={286} k="mono" size={13} ls={0.14} c={C.greyDk} anchor="end" o={tween(f, AT.poster + 16, 10)}>
+      <Txt x={R} y={286} k="mono" size={13} ls={0.14} c={C.greyDk} anchor="end" o={tween(f, AT.hold + 16, 10)}>
         WENIGER, ABER BESSER
       </Txt>
       {STRUCK.map((row, i) => {
         const yy = 352 + i * 26;
-        const show = tween(f, AT.poster + 20 + i * 3, 8);
+        const show = tween(f, AT.hold + 20 + i * 3, 8);
         const w = row.zh.length * 20;
         return (
           <g key={row.zh} opacity={n2(show)}>
@@ -76,32 +76,32 @@ const PosterHold: React.FC<P> = ({f}) => {
           </g>
         );
       })}
-      <Txt x={L} y={HZ + 108} k="d100" size={80} o={tween(f, AT.poster + 36, 10)}>
+      <Txt x={L} y={HZ + 108} k="d100" size={80} o={tween(f, AT.hold + 36, 10)}>
         47
       </Txt>
-      <Txt x={L + 148} y={HZ + 76} k="sc300" size={16} o={tween(f, AT.poster + 40, 8)}>
+      <Txt x={L + 148} y={HZ + 76} k="sc300" size={16} o={tween(f, AT.hold + 40, 8)}>
         样东西，删掉了
       </Txt>
-      <Txt x={L + 148} y={HZ + 100} k="mono" size={11} ls={0.14} c={C.grey} o={tween(f, AT.poster + 42, 8)}>
+      <Txt x={L + 148} y={HZ + 100} k="mono" size={11} ls={0.14} c={C.grey} o={tween(f, AT.hold + 42, 8)}>
         REMOVED
       </Txt>
-      <Txt x={L + 520} y={HZ + 108} k="d100" size={80} o={tween(f, AT.poster + 44, 10)}>
+      <Txt x={L + 520} y={HZ + 108} k="d100" size={80} o={tween(f, AT.hold + 44, 10)}>
         1
       </Txt>
-      <Txt x={L + 580} y={HZ + 76} k="sc300" size={16} o={tween(f, AT.poster + 48, 8)}>
+      <Txt x={L + 580} y={HZ + 76} k="sc300" size={16} o={tween(f, AT.hold + 48, 8)}>
         个留下：有用的那一个
       </Txt>
       {Array.from({length: 8}, (_, j) =>
         Array.from({length: 6}, (_, i) => {
           if (i === MISSING.i && j === MISSING.j) return null;
-          return <circle key={`${i}-${j}`} cx={GRID_X0 + i * PITCH} cy={GRID_Y0 + j * PITCH} r={GR} fill="none" stroke={GHOST} strokeWidth={1} strokeDasharray="2.5 3.5" opacity={n2(tween(f, AT.poster + 6 + i + j, 8))} />;
+          return <circle key={`${i}-${j}`} cx={GRID_X0 + i * PITCH} cy={GRID_Y0 + j * PITCH} r={GR} fill="none" stroke={GHOST} strokeWidth={1} strokeDasharray="2.5 3.5" opacity={n2(tween(f, AT.hold + 6 + i + j, 8))} />;
         }),
       )}
       <circle cx={mx} cy={my} r={GR} fill="none" stroke={C.accent} strokeWidth={1} strokeDasharray="1 5" opacity={0.7 * (1 - drop)} />
       <line x1={mx} y1={lerp(my + GR + 6, HZ - 20, drop)} x2={mx} y2={HZ - 20} stroke={C.grey} strokeWidth={1} strokeDasharray="1 6" opacity={n2(drop)} />
-      <Hair x1={L} y1={HZ} x2={R} y2={HZ} p={tween(f, AT.poster + 8, 16, 0, 1, E.inOut)} from="center" o={0.85} />
+      <Hair x1={L} y1={HZ} x2={R} y2={HZ} p={tween(f, AT.hold + 8, 16, 0, 1, E.inOut)} from="center" o={0.85} />
       <Dot x={mx} y={HZ} r={DOT.r * drop} />
-      <Txt x={mx} y={HZ + 36} k="mono" size={11} ls={0.14} c={C.grey} anchor="middle" o={tween(f, AT.poster + 28, 8)}>
+      <Txt x={mx} y={HZ + 36} k="mono" size={11} ls={0.14} c={C.grey} anchor="middle" o={tween(f, AT.hold + 28, 8)}>
         ONE LEFT
       </Txt>
     </g>
@@ -162,7 +162,7 @@ const End: React.FC<P> = ({f}) => {
 
 export const Finale: React.FC<P> = ({f}) => (
   <g>
-    {f >= AT.poster - 4 && f < AT.end && <PosterHold f={f} />}
+    {f >= AT.hold - 4 && f < AT.end && <PosterHold f={f} />}
     {f >= END_AT && <End f={f} />}
   </g>
 );

@@ -1,84 +1,82 @@
 /**
- * 007 · Minimalism —— 17.6–19.6s 坏例对照
- *   花哨无焦点 vs 极简有焦点。两秒看懂。
+ * 007 · 六改 12.2–14.2s —— 坏例炸开再吸回
+ *   左边 12 片噪音炸开；右边一金额一按钮
+ *   然后碎片真空吸进橙点
  */
 import React from 'react';
 import {E, POP, SNAP, spr, tween} from '../../../src/lib/anim';
-import {C} from '../tokens';
+import {C, DOT} from '../tokens';
 import {AT} from './timeline';
-import {Hair, Txt, lerp, n2, P, vis} from './ui';
+import {Dot, Hair, Txt, lerp, n2, P} from './ui';
 
-export const VS_SPLIT = 1064;
-export const VS_LABEL = 1068;
+export const VS_SPLIT = AT.vs + 8;
+export const VS_BOOM = AT.vs + 14;
+export const VS_SUCK = AT.vs + 56;
+export const VS_LABEL = AT.vs + 12;
 
-const Bad: React.FC<{x: number; y: number; s: number}> = ({x, y, s}) => (
-  <g transform={`translate(${n2(x)} ${n2(y)}) scale(${n2(s)})`}>
-    <rect x={0} y={0} width={520} height={620} fill="#1a1020" rx={12} />
-    <rect x={16} y={16} width={488} height={48} fill="#C23B2E" />
-    <text x={32} y={48} fill="#fff" style={{fontFamily: "'Bangers'", fontSize: 28}}>
-      MEGA SALE!!!
-    </text>
-    {['HOT', 'NEW', 'VIP', '50%', '抢'].map((t, i) => (
-      <text key={t} x={40 + (i % 3) * 160} y={120 + Math.floor(i / 3) * 70} fill={['#C4A35A', '#2A6B7C', '#F27A1A', '#3D5A99', '#C23B2E'][i]} style={{fontFamily: "'Oswald'", fontWeight: 700, fontSize: 36}}>
-        {t}
-      </text>
-    ))}
-    {[0, 1, 2].map((i) => (
-      <rect key={i} x={24 + i * 160} y={280} width={144} height={120} fill={['#2A6B7C', '#C4A35A', '#3D5A99'][i]} />
-    ))}
-    <rect x={24} y={420} width={220} height={52} fill="#C23B2E" />
-    <rect x={260} y={420} width={220} height={52} fill="#C4A35A" />
-    <rect x={24} y={488} width={456} height={44} fill="#3D5A99" />
-    <text x={260} y={580} textAnchor="middle" fill="#fff" style={{fontFamily: "'Fredoka'", fontSize: 22}}>
-      点这里 / 也点这里 / 再点
-    </text>
-  </g>
-);
-
-const Good: React.FC<{x: number; y: number; s: number}> = ({x, y, s}) => (
-  <g transform={`translate(${n2(x)} ${n2(y)}) scale(${n2(s)})`}>
-    <rect x={0} y={0} width={520} height={620} fill={C.paperHi} stroke={C.ink} strokeWidth={1.5} />
-    <text x={40} y={80} fill={C.ink} style={{fontFamily: "'Inter Display'", fontWeight: 200, fontSize: 44}}>
-      Less, but better.
-    </text>
-    <text x={40} y={124} fill={C.greyDk} style={{fontFamily: "'Noto Sans SC'", fontWeight: 300, fontSize: 20}}>
-      一栏标题。一件事。
-    </text>
-    <text x={40} y={280} fill={C.ink} style={{fontFamily: "'Inter Display'", fontWeight: 100, fontSize: 88}}>
-      ¥12
-    </text>
-    <text x={40} y={324} fill={C.grey} style={{fontFamily: "'Noto Sans SC'", fontWeight: 300, fontSize: 16}}>
-      设计手册 · 单次
-    </text>
-    <rect x={40} y={500} width={440} height={56} fill={C.ink} />
-    <line x1={40} y1={556} x2={480} y2={556} stroke={C.accent} strokeWidth={3} />
-    <text x={260} y={536} textAnchor="middle" fill={C.paper} style={{fontFamily: "'Noto Sans SC'", fontWeight: 400, fontSize: 20}}>
-      确认支付
-    </text>
-  </g>
-);
+const SHARD = [
+  {x: 240, y: 220, w: 90, h: 36, c: '#1D4ED8', t: 'HOT'},
+  {x: 380, y: 180, w: 70, h: 70, c: '#E11D48', t: '50'},
+  {x: 200, y: 320, w: 120, h: 28, c: '#D4A017', t: 'VIP'},
+  {x: 420, y: 300, w: 48, h: 48, c: C.ink, t: ''},
+  {x: 160, y: 420, w: 160, h: 20, c: '#1D4ED8', t: ''},
+  {x: 360, y: 440, w: 80, h: 80, c: '#E11D48', t: ''},
+  {x: 220, y: 540, w: 100, h: 32, c: C.ink, t: '抢'},
+  {x: 400, y: 560, w: 56, h: 18, c: '#D4A017', t: ''},
+  {x: 180, y: 640, w: 140, h: 40, c: C.ink, t: 'NEW'},
+  {x: 360, y: 680, w: 90, h: 24, c: '#1D4ED8', t: ''},
+  {x: 260, y: 760, w: 70, h: 70, c: '#E11D48', t: ''},
+  {x: 420, y: 800, w: 50, h: 16, c: '#D4A017', t: ''},
+];
 
 export const Versus: React.FC<P> = ({f}) => {
-  if (f < AT.vs - 4 || f >= AT.poster) return null;
-  const inn = spr(f, AT.vs, SNAP, 20);
-  const leave = tween(f, AT.poster - 12, 12, 0, 1, E.inOut);
-  const split = spr(f, VS_SPLIT, POP, 16);
-  const lab = vis(f, VS_LABEL, AT.poster - 8, 8, 8);
-  const xL = lerp(700, 180, inn);
-  const xR = lerp(700, 1220, inn);
+  if (f < AT.vs - 6 || f >= AT.bone) return null;
+  const inn = spr(f, AT.vs, SNAP, 16);
+  const boom = spr(f, VS_BOOM, POP, 18);
+  const suck = spr(f, VS_SUCK, SNAP, 22);
+  const leave = tween(f, AT.bone - 12, 12, 0, 1, E.in);
+  const o = inn * (1 - leave);
+  const mid = 960;
   return (
-    <g opacity={n2(1 - leave)}>
-      <Bad x={xL} y={lerp(240, 160, inn)} s={0.92 * inn} />
-      <Good x={xR} y={lerp(240, 160, inn)} s={0.92 * inn} />
-      <Hair x1={960} y1={140} x2={960} y2={lerp(140, 820, split)} o={0.5} />
-      <g opacity={n2(lab)}>
-        <Txt x={180} y={140} k="sc500" size={22} c={C.greyDk}>
-          无焦点
-        </Txt>
-        <Txt x={1740} y={140} k="sc500" size={22} anchor="end">
-          有焦点
-        </Txt>
-      </g>
+    <g opacity={n2(o)}>
+      <Hair x1={mid} y1={120} x2={mid} y2={960} p={tween(f, VS_SPLIT, 10)} />
+      <Txt x={200} y={120} k="sc400" size={18} c={C.grey} o={tween(f, VS_LABEL, 8)}>
+        无焦点
+      </Txt>
+      <Txt x={1720} y={120} k="sc400" size={18} anchor="end" o={tween(f, VS_LABEL, 8)}>
+        有焦点
+      </Txt>
+      {SHARD.map((s, i) => {
+        const ang = (i / SHARD.length) * Math.PI * 2;
+        const ox = Math.cos(ang) * 80 * boom;
+        const oy = Math.sin(ang) * 60 * boom;
+        const tx = lerp(s.x + ox, 1480, suck);
+        const ty = lerp(s.y + oy, 540, suck);
+        const sc = (1 + 0.25 * boom) * (1 - 0.92 * suck);
+        return (
+          <g key={i} transform={`translate(${n2(tx)} ${n2(ty)}) rotate(${n2((i * 17 - 30) * boom * (1 - suck))}) scale(${n2(sc)})`} opacity={n2(1 - 0.2 * suck)}>
+            <rect x={-s.w / 2} y={-s.h / 2} width={s.w} height={s.h} fill={s.c} />
+            {s.t ? (
+              <text x={0} y={5} textAnchor="middle" fill="#fff" style={{fontFamily: "'Inter'", fontWeight: 700, fontSize: 14}}>
+                {s.t}
+              </text>
+            ) : null}
+          </g>
+        );
+      })}
+      <rect x={1240} y={220} width={520} height={620} fill={C.paperHi} stroke={C.ink} strokeWidth={1} opacity={n2(tween(f, VS_SPLIT, 10))} />
+      <Txt x={1500} y={360} k="d200" size={36} anchor="middle" o={tween(f, VS_SPLIT + 6, 8)}>
+        Less, but better.
+      </Txt>
+      <Txt x={1500} y={480} k="d100" size={72} anchor="middle" o={tween(f, VS_SPLIT + 10, 8)}>
+        ¥12
+      </Txt>
+      <rect x={1320} y={720} width={360} height={48} fill={C.ink} opacity={n2(tween(f, VS_SPLIT + 14, 8))} />
+      <rect x={1320} y={766} width={360 * spr(f, VS_SUCK, SNAP, 14)} height={3} fill={C.accent} />
+      <Txt x={1500} y={752} k="sc400" size={16} c={C.paper} anchor="middle" o={tween(f, VS_SPLIT + 16, 8)}>
+        确认支付
+      </Txt>
+      <Dot x={1480} y={540} r={DOT.r * suck} />
     </g>
   );
 };
