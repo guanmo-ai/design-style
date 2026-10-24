@@ -113,7 +113,7 @@ const Face: React.FC<{f: number; i: number; from: LayoutName; to: LayoutName}> =
   const pitKind = f >= PIT.fix ? 'fix' : f >= PIT.flat ? 'flat' : 'crowd';
   return (
     <>
-      {(from === 'HOOK' || from === 'KEY' || to === 'HOOK' || to === 'KEY') && f < 175 && <KeyFace f={f} i={i} />}
+      {(from === 'HOOK' || from === 'KEY' || to === 'HOOK' || to === 'KEY') && f < 152 && <KeyFace f={f} i={i} />}
       {(familyOf(from) === 'IOS' || familyOf(to) === 'IOS' || win(SCENE.IOS)) && f >= 145 && f < 340 && <IosFace f={f} i={i} />}
       {(familyOf(from) === 'STRIPE' || familyOf(to) === 'STRIPE' || win(SCENE.STRIPE)) && f >= 320 && f < 520 && <StripeFace f={f} i={i} />}
       {win(SCENE.DECK) && <DeckFace f={f} i={i} />}
