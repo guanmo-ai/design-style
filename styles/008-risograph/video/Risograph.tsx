@@ -24,8 +24,9 @@ import {loadFonts, mono, sc} from './ui';
 export const RISOGRAPH_DURATION = DURATION;
 
 const Hud: React.FC<{f: number}> = ({f}) => {
-  const hide = tween(f, 96, 16) * (1 - tween(f, AT.stencil + 8, 12)) + tween(f, AT.words - 4, 8) * (1 - tween(f, AT.end - 4, 10));
-  const o = (1 - hide * 0.85) * tween(f, 18, 16, 0, 1, E.out) * (1 - tween(f, 880, 16));
+  // 开场钻进 O、五个词铺满全屏时整段让开（对标瑞士 HUD；不要半透明残留「04 小志」）
+  const hide = tween(f, 96, 16) * (1 - tween(f, AT.stencil + 8, 12)) + tween(f, AT.words - 4, 8);
+  const o = (1 - Math.min(1, hide)) * tween(f, 18, 16, 0, 1, E.out);
   if (o <= 0.01) return null;
   let k = 0;
   CHAPTERS.forEach(([, , at], j) => {
