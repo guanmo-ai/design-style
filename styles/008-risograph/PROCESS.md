@@ -5,7 +5,7 @@
 > 这一期是怎么从主人选定的参考海报变成 15 秒短片和 4 张图的。
 > 过程图在 [`process/`](process)，可复现的代码在 `video/` `audio/` `images/`。
 
-📐 [风格指南](README.md)
+🎬 [看成片（Releases · day-08）](https://github.com/guanmo-ai/design-style/releases/tag/day-08) · 📐 [风格指南](README.md)
 
 ---
 
@@ -84,7 +84,7 @@ npm run render:008                        # 母版 out/008-risograph-master.mp4
 npm run images:008
 ```
 
-成片不进 git。关键静帧和分享版 MP4 放在本轮 artifacts，供主人审片。
+成片不进 git。发布时挂 [Releases · day-08](https://github.com/guanmo-ai/design-style/releases/tag/day-08)（`008-risograph.mp4`），与 002 / 005 同一套流程。
 
 ## 8 · 踩坑
 

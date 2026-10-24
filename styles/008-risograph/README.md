@@ -4,7 +4,7 @@
 
 > **一句话：** 三种油墨、一张会呼吸的纸——荧光粉印不进 CMYK，套不准不是事故，是这台机器的口音。
 
-🛠 [制作过程](PROCESS.md) · 🖼 [图片源文件](images)
+🎬 [看视频](https://github.com/guanmo-ai/design-style/releases/tag/day-08) · 🛠 [制作过程](PROCESS.md) · 🖼 [图片源文件](images)
 
 | 海报 | 速查卡 |
 |:-:|:-:|
@@ -119,6 +119,8 @@ Grain, misregistration, multiply blending, 120 bpm, 120 pages per minute.
 ## 9 · 15 秒分镜
 
 全片都是印出来的。换幕用这台机器自己的东西接力：孔 → 版 → 纸。剪辑点落在 120 BPM 的拍子上，每拍印一张（120 张/分）。
+
+<a href="https://github.com/guanmo-ai/design-style/releases/tag/day-08"><img src="video/cover.jpg" width="800" alt="短片封面（点击看视频）" /></a>
 
 | 时间 | 帧 | 章节 | 画面 | 致敬 |
 |---|---|---|---|---|
