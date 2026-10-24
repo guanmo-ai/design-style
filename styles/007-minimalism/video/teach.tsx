@@ -185,7 +185,7 @@ const Arrows: React.FC<P> = ({f}) => {
 };
 
 const AfterDot: React.FC<P> = ({f}) => {
-  const o = vis(f, AFTER_AT, SPLIT_AT + 8, 8, 8);
+  const o = vis(f, AFTER_AT, SPLIT_AT - 16, 8, 12);
   if (o <= 0.001) return null;
   const s = spr(f, AFTER_AT, POP, 18);
   return (
@@ -301,7 +301,7 @@ export const Teach: React.FC<P> = ({f}) => {
         {f >= GRID_AT - 2 && f < BEFORE_AT + 20 && <Grid f={f} />}
         {f >= BEFORE_AT - 2 && f < AFTER_AT + 8 && <JunkCloud f={f} />}
         {f >= ARROW_AT - 2 && f < AFTER_AT + 4 && <Arrows f={f} />}
-        {f >= AFTER_AT - 2 && f < SPLIT_AT + 12 && <AfterDot f={f} />}
+        {f >= AFTER_AT - 2 && f < SPLIT_AT - 2 && <AfterDot f={f} />}
         {f >= SPLIT_AT - 2 && f < ACCENT_AT + 8 && <Split f={f} />}
         {f >= ACCENT_AT - 2 && <AccentCall f={f} />}
         <Dot x={d.x} y={d.y} r={d.r} />
