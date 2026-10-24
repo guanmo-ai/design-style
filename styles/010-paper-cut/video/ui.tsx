@@ -2,7 +2,7 @@
 import React from 'react';
 import {E, spr, tween} from '../../../src/lib/anim';
 import {C, F, HILLS} from '../tokens';
-import {AT, CHAPTERS, DURATION} from './timeline';
+import {AT, CHAPTERS, DURATION, TR} from './timeline';
 import {H, LayerFilters, W, c01, n1} from './layers';
 
 export type P = {f: number};
@@ -57,7 +57,7 @@ export const Hud: React.FC<P> = ({f}) => {
     if (f >= at) k = j;
   });
   const p = tween(f, CHAPTERS[k][1], 14, 0, 1, E.out);
-  const light = f >= AT.edit && f < AT.brand + 20;
+  const light = f >= AT.edit && f < AT.app;
   const ink = light ? C.ink : C.paper;
   const mut = light ? C.grey : 'rgba(246,243,235,0.55)';
   return (
@@ -142,16 +142,22 @@ export const EditorChrome: React.FC<P & {active: number}> = ({f, active}) => {
 };
 
 export const Phone: React.FC<P> = ({f}) => {
-  const k = spr(f, AT.app - 16, {damping: 12, mass: 0.7, stiffness: 160}) * (1 - tween(f, AT.brand - 16, 20, 0, 1, E.in));
+  const k = spr(f, AT.app - TR, {damping: 12, mass: 0.7, stiffness: 160}) * (1 - tween(f, AT.brand - 16, 20, 0, 1, E.in));
   if (k <= 0.001) return null;
-  const x = 690;
-  const y = 78;
   return (
-    <g opacity={k} transform={`translate(${n1((1 - k) * 40)} 0)`} filter="url(#shNear)">
-      <rect x={x} y={y} width={540} height={924} rx={48} fill="#1A2228" />
-      <rect x={x + 16} y={y + 16} width={508} height={892} rx={36} fill="none" />
-      <rect x={x + 220} y={y + 28} width={100} height={18} rx={9} fill="#0A1218" />
-      <Txt x={x + 44} y={y + 78} size={14} font="mono" c={C.paper} o={0.7}>
+    <g opacity={k} filter="url(#shNear)">
+      <rect x={690} y={78} width={540} height={924} rx={48} fill="#1A2228" />
+    </g>
+  );
+};
+
+/** 刘海和时钟画在风景上面，避免被头图裁掉 */
+export const PhoneStatus: React.FC<{k?: number}> = ({k = 1}) => {
+  if (k <= 0.001) return null;
+  return (
+    <g opacity={k}>
+      <rect x={910} y={106} width={100} height={18} rx={9} fill="#0A1218" />
+      <Txt x={734} y={156} size={14} font="mono" c={C.paper} o={0.7}>
         09:41
       </Txt>
     </g>

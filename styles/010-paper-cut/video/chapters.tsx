@@ -3,8 +3,8 @@ import React from 'react';
 import {E, spr, tween} from '../../../src/lib/anim';
 import {C, HILLS} from '../tokens';
 import {AT} from './timeline';
-import {H, W, World, n1, peelAt} from './layers';
-import {EditorChrome, Phone, Tag, Txt} from './ui';
+import {H, W, World, n1, peelAt, phoneCam} from './layers';
+import {EditorChrome, Phone, PhoneStatus, Tag, Txt} from './ui';
 
 const peelLabel = (i: number): [string, string] => {
   if (i <= 1) return ['FAR', '远'];
@@ -18,10 +18,10 @@ export const Edit: React.FC<{f: number}> = ({f}) => {
   return (
     <g>
       <rect width={W} height={H} fill={C.cream} />
+      <EditorChrome f={f} active={active} />
       <g clipPath="url(#artboard)">
         <World f={f} />
       </g>
-      <EditorChrome f={f} active={active} />
       {Array.from({length: 6}, (_, i) => {
         const p = peelAt(f, i);
         if (p < 0.15) return null;
@@ -47,26 +47,37 @@ export const App: React.FC<{f: number}> = ({f}) => {
   const k = spr(f, AT.app - 4, {damping: 14, mass: 0.8, stiffness: 140});
   const temp = spr(f, AT.app + 16, {damping: 11, mass: 0.6, stiffness: 180});
   const card = spr(f, AT.app + 88, {damping: 12, mass: 0.7, stiffness: 160});
+  const tip = spr(f, AT.app + 108, {damping: 13, mass: 0.75, stiffness: 160});
   return (
     <g>
       <rect width={W} height={H} fill="#0A141C" />
-      <g clipPath="url(#phoneScreen)">
-        <World f={f} />
-      </g>
       <Phone f={f} />
+      <g clipPath="url(#phoneScreen)">
+        <World f={f} cam={phoneCam(f)} />
+        <rect x={706} y={448} width={508} height={540} fill="url(#phoneScrim)" />
+      </g>
+      <PhoneStatus k={k} />
       <g opacity={k}>
-        <Txt x={760} y={220} size={18} font="cn" w={500} c={C.paper} o={0.75}>
+        <Txt x={760} y={530} size={18} font="cn" w={500} c={C.paper} o={0.75}>
           今日天气
         </Txt>
         <g opacity={temp} transform={`translate(0 ${n1((1 - temp) * 20)})`}>
-          <Txt x={760} y={320} size={92} font="display" w={600} c={C.paper}>
+          <Txt x={760} y={628} size={84} font="display" w={600} c={C.paper}>
             18°
           </Txt>
-          <Txt x={760} y={368} size={22} font="cn" w={500} c={C.paper} o={0.8}>
+          <Txt x={760} y={672} size={20} font="cn" w={500} c={C.paper} o={0.8}>
             晴  ·  层在跟着你的手指走
           </Txt>
         </g>
       </g>
+      {tip > 0.01 && (
+        <g opacity={tip} transform={`translate(0 ${n1((1 - tip) * 16)})`}>
+          <rect x={728} y={800} width={464} height={72} rx={16} fill={C.paper} />
+          <Txt x={752} y={846} size={18} font="cn" w={700} c={C.ink}>
+            近层走得更远，远层几乎不动
+          </Txt>
+        </g>
+      )}
       {card > 0.01 && (
         <g opacity={card} transform={`translate(${n1((1 - card) * 24)} 0)`}>
           <rect x={164} y={780} width={420} height={148} rx={22} fill={C.paper} filter="url(#shNear)" />

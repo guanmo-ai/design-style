@@ -5,7 +5,7 @@
 import React from 'react';
 import {E, spr, track, tween} from '../../../src/lib/anim';
 import {C, HILLS, PARA, SHADOW, TREES} from '../tokens';
-import {AT, DURATION, RULE_AT} from './timeline';
+import {AT, DURATION, RULE_AT, TR} from './timeline';
 
 export const W = 1920;
 export const H = 1080;
@@ -123,7 +123,7 @@ export const worldCam = (f: number) => {
     {f: 40, v: 8, d: 50, e: 'smooth'},
     {f: 110, v: 36, d: 60, e: 'smooth'},
     {f: AT.edit, v: -8, d: 22, e: 'spring'},
-    {f: AT.app, v: 18, d: 26, e: 'spring'},
+    {f: AT.app, v: 10, d: 26, e: 'smooth'},
     {f: AT.brand, v: 0, d: 24, e: 'smooth'},
     {f: RULE_AT[3] - 6, v: 0, d: 16, e: 'smooth'},
     {f: RULE_AT[3] + 10, v: -210, d: 28, e: 'smooth'},
@@ -137,9 +137,7 @@ export const worldCam = (f: number) => {
     {f: 0, v: 70},
     {f: 48, v: 0, d: 36, e: 'spring'},
     {f: AT.edit, v: -8, d: 22, e: 'spring'},
-    {f: AT.app, v: 8, d: 26, e: 'spring'},
-    {f: AT.app + 50, v: 36, d: 40, e: 'smooth'},
-    {f: AT.app + 130, v: -8, d: 50, e: 'smooth'},
+    {f: AT.app, v: 12, d: 26, e: 'smooth'},
     {f: AT.brand, v: 40, d: 26, e: 'smooth'},
     {f: AT.rules, v: 0, d: 22, e: 'smooth'},
     {f: AT.end, v: 6, d: 22, e: 'smooth'},
@@ -148,12 +146,40 @@ export const worldCam = (f: number) => {
     {f: 0, v: 1.1},
     {f: 44, v: 1, d: 32, e: 'smooth'},
     {f: AT.edit, v: 0.78, d: 24, e: 'spring'},
-    {f: AT.app, v: 0.52, d: 28, e: 'spring'},
+    {f: AT.app, v: 1.02, d: 28, e: 'smooth'},
     {f: AT.brand, v: 1.42, d: 36, e: 'smooth'},
     {f: AT.brand + 90, v: 1.62, d: 40, e: 'smooth'},
     {f: AT.rules, v: 1, d: 26, e: 'spring'},
     {f: AT.pits, v: 0.96, d: 20, e: 'smooth'},
     {f: AT.end, v: 1.02, d: 24, e: 'smooth'},
+  ]);
+  return {x, y, s};
+};
+
+export type Cam = {x: number; y: number; s: number};
+
+/**
+ * 手机头图镜头：只给 App 幕用。
+ * 全片镜头仍按 1920×1080 构图；这里把同一座山裁进 508×400 的窗口，
+ * 再做一次横滑 + 下探，近层走得更远。
+ */
+export const phoneCam = (f: number): Cam => {
+  const x = track(f, [
+    {f: AT.app - TR, v: -4},
+    {f: AT.app, v: 16, d: 22, e: 'spring'},
+    {f: AT.app + 36, v: -88, d: 52, e: 'smooth'},
+    {f: AT.app + 118, v: 40, d: 46, e: 'smooth'},
+  ]);
+  const y = track(f, [
+    {f: AT.app - TR, v: -118},
+    {f: AT.app, v: -132, d: 22, e: 'spring'},
+    {f: AT.app + 48, v: -208, d: 44, e: 'smooth'},
+    {f: AT.app + 124, v: -146, d: 48, e: 'smooth'},
+  ]);
+  const s = track(f, [
+    {f: AT.app - TR, v: 0.94},
+    {f: AT.app, v: 0.98, d: 24, e: 'spring'},
+    {f: AT.app + 64, v: 1.06, d: 40, e: 'smooth'},
   ]);
   return {x, y, s};
 };
@@ -174,8 +200,8 @@ export const partX = (f: number, i: number) => {
 
 export type WorldMode = 'full' | 'flat' | 'lock' | 'grade';
 
-export const World: React.FC<{f: number; mode?: WorldMode; dim?: number}> = ({f, mode = 'full', dim = 0}) => {
-  const cam = worldCam(f);
+export const World: React.FC<{f: number; mode?: WorldMode; dim?: number; cam?: Cam}> = ({f, mode = 'full', dim = 0, cam: given}) => {
+  const cam = given ?? worldCam(f);
   const enter = (i: number) => spr(f, 6 + i * 12, {damping: 11, mass: 0.65, stiffness: 180});
   const sunK = spr(f, 34, {damping: 8, mass: 0.5, stiffness: 220});
   const raySpin = f * 0.08;
