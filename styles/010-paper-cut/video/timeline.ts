@@ -6,7 +6,7 @@ export const AT = {
   sil: 570, // 单色剪影：白底黑剪 / 黑底白剪对切（6 拍）
   torn: 750, // 水彩纸毛边：撕开进天气 App（7 拍）
   type: 960, // 字体剪纸：PAPER / 剪 从纸面被剪出（7 拍）
-  take: 1170, // 窗花收点盖章：开场同一朵转回收成一点，砸成红纸印章（9 拍）
+  take: 1170, // 片尾：窗花落回开场位置 + 标准信息幕（9 拍 / 4.5 秒）
 };
 export const DURATION = 1440;
 /** 下一幕提前 TR 帧用「纸」的招式盖上来；32 帧 + SNAP 过冲 */
@@ -23,5 +23,5 @@ export const CHAPTERS: [string, number][] = [
   ['单色剪影', AT.sil],
   ['水彩毛边', AT.torn],
   ['字体剪纸', AT.type],
-  ['盖章', AT.take],
+  ['片尾', AT.take],
 ];

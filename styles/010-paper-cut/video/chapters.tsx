@@ -306,10 +306,7 @@ export const Type: React.FC<{f: number}> = ({f}) => {
   const word = spr(f, AT.type + 18, POP, 28);
   const bladeX = tween(f, AT.type + 28, 56, 180, 1760, E.out);
   const cutting = f >= AT.type + 28 && f < AT.type + 90;
-  const leave = 1 - tween(f, AT.take - 32, 28, 0, 1, E.in);
-  const zi = spr(f, AT.type + 86, POP, 28) * leave;
-  const punchZi = spr(f, AT.type + 94, POP, 28);
-  const sub = spr(f, AT.type + 124, POP, 28) * leave;
+  const leave = 1 - tween(f, AT.take - 28, 24, 0, 1, E.in);
   return (
     <g>
       <rect width={W} height={H} fill={C.wall} />
@@ -375,25 +372,9 @@ export const Type: React.FC<{f: number}> = ({f}) => {
           />
         );
       })}
-      {zi > 0.01 && (
-        <g opacity={zi} transform={`translate(0 ${n1((1 - zi) * 36)})`} filter="url(#shLift)">
-          <rect x={820} y={620} width={280} height={200} rx={18} fill={C.sky} />
-          <circle cx={960} cy={718} r={36} fill={C.sun} />
-          <rect x={820} y={752} width={280} height={68} fill={HILLS[4]} />
-          <rect x={820} y={620} width={280} height={200} rx={18} fill={C.folk} mask="url(#ziSheet)" />
-          {punchZi < 0.96 && (
-            <Txt x={960} y={760} size={120} font="cn" w={900} c={C.paper} anchor="middle" o={1 - punchZi}>
-              剪
-            </Txt>
-          )}
-        </g>
-      )}
-      {sub > 0.01 && (
-        <Txt x={960} y={900} size={28} font="cn" w={500} c={C.ink} anchor="middle" o={sub}>
-          字不是写上去的，是从纸上剪下来的
-        </Txt>
-      )}
-      <Tag f={f} t0={AT.type + 8} x={72} y={96} en="06  TYPE CUT" zh="字体剪纸：把字从纸堆里剪穿" />
+      <g opacity={leave}>
+        <Tag f={f} t0={AT.type + 8} x={72} y={96} en="06  TYPE CUT" zh="字体剪纸：把字从纸堆里剪穿" />
+      </g>
       <defs>
         {SHEETS.map((s, i) => (
           <mask key={i} id={`punch${i}`} maskUnits="userSpaceOnUse" x="0" y="0" width={W} height={H}>
@@ -408,12 +389,6 @@ export const Type: React.FC<{f: number}> = ({f}) => {
             </text>
           </clipPath>
         ))}
-        <mask id="ziSheet" maskUnits="userSpaceOnUse" x="820" y="620" width="280" height="200">
-          <rect x="820" y="620" width="280" height="200" rx="18" fill="white" />
-          <text x="960" y="760" fontFamily="Noto Sans SC" fontSize="132" fontWeight="900" textAnchor="middle" fill="black">
-            剪
-          </text>
-        </mask>
       </defs>
     </g>
   );
