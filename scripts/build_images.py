@@ -47,6 +47,9 @@ FACES = [  # (family, file, weight[, style])
     ('Unbounded', 'Unbounded.ttf', '200 900'),
     ('Michroma', 'Michroma-Regular.ttf', '400'),
     ('Silkscreen', 'Silkscreen-Regular.ttf', '400'),
+    ('Archivo', 'Archivo.ttf', '100 900'),
+    ('Space Mono', 'SpaceMono-Regular.ttf', '400'),
+    ('Space Mono', 'SpaceMono-Bold.ttf', '700'),
 ]
 
 
