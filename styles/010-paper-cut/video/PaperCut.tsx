@@ -7,6 +7,7 @@ import React, {useEffect, useState} from 'react';
 import {AbsoluteFill, Audio, continueRender, delayRender, staticFile, useCurrentFrame} from 'remotion';
 import {loadFont} from '@remotion/fonts';
 import {Grain} from '../../../src/lib/Grain';
+import {SNAP, spr} from '../../../src/lib/anim';
 import {C, HILLS} from '../tokens';
 import {AT, DURATION, TR} from './timeline';
 import {H, LayerFilters, W} from './layers';
@@ -44,8 +45,6 @@ const SCENES: Scene[] = [
   {at: AT.take, end: DURATION, C: Take, wipe: 'fold', fill: C.wall},
 ];
 
-const ease = (p: number) => (p < 1 ? 1 - (1 - p) ** 2.4 : 1);
-
 const Stage: React.FC = () => {
   const f = useCurrentFrame();
   const live = SCENES.filter((s) => f >= s.at - (s.wipe ? TR : 0) && f < s.end);
@@ -73,9 +72,8 @@ const Stage: React.FC = () => {
           </linearGradient>
         </defs>
         {live.map((s) => {
-          const raw = s.wipe && f < s.at ? (f - (s.at - TR)) / TR : 1;
-          const p = ease(raw);
-          const wiping = Boolean(s.wipe) && p < 1;
+          const p = !s.wipe || f >= s.at ? 1 : Math.min(1, spr(f, s.at - TR, SNAP, TR + 6));
+          const wiping = Boolean(s.wipe) && p < 0.995;
           return (
             <g key={s.at}>
               {wiping && s.wipe && (

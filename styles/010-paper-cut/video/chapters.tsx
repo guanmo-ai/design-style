@@ -1,6 +1,6 @@
 /** 010 · 几何层叠 · 立体纸板 · 单色剪影 · 水彩毛边 · 字体剪纸 */
 import React from 'react';
-import {E, spr, tween} from '../../../src/lib/anim';
+import {E, POP, spr, tween} from '../../../src/lib/anim';
 import {C, HILLS, TREES} from '../tokens';
 import {AT} from './timeline';
 import {H, W, World, n1, peelAt, phoneCam} from './layers';
@@ -13,29 +13,29 @@ const peelLabel = (i: number): [string, string] => {
 };
 
 export const Geo: React.FC<{f: number}> = ({f}) => {
-  const card = spr(f, AT.geo + 28, {damping: 13, mass: 0.75, stiffness: 160}) * (1 - tween(f, AT.dio - 22, 18, 0, 1, E.in));
-  const line = tween(f, AT.geo + 48, 20, 0, 1, E.out);
+  const card = spr(f, AT.geo + 34, POP, 28) * (1 - tween(f, AT.dio - 22, 18, 0, 1, E.in));
+  const line = spr(f, AT.geo + 50, POP, 24);
+  const bits: {at: number; node: React.ReactNode}[] = [
+    {at: AT.geo + 38, node: <Txt x={44} y={78} size={15} font="mono" c={C.grey} ls={2.2}>02  ·  COLOR BLOCKS</Txt>},
+    {at: AT.geo + 42, node: <Txt x={44} y={132} size={40} font="display" w={700} c={C.ink} ls={2.4}>STRATA</Txt>},
+    {at: AT.geo + 46, node: <Txt x={44} y={186} size={32} font="cn" w={700} c={C.navy}>几何色块层叠</Txt>},
+    {at: AT.geo + 50, node: <rect x={44} y={206} width={160 * Math.min(1, line)} height={2} fill={C.sun} />},
+    {at: AT.geo + 54, node: <Txt x={44} y={232} size={13} font="display" w={500} c={C.grey} ls={1.2}>far slow  ·  near fast</Txt>},
+  ];
   return (
     <g>
-      <World f={f} born={AT.geo - 6} />
+      <World f={f} born={AT.geo} />
       <NoteCard x={72} y={96} w={540} h={248} k={card} />
-      {card > 0.05 && (
-        <g opacity={card} transform={`translate(${72 + (1 - card) * 16} 96)`}>
-          <Txt x={44} y={78} size={15} font="mono" c={C.grey} ls={2.2}>
-            02  ·  COLOR BLOCKS
-          </Txt>
-          <Txt x={44} y={132} size={40} font="display" w={700} c={C.ink} ls={2.4}>
-            STRATA
-          </Txt>
-          <Txt x={44} y={186} size={32} font="cn" w={700} c={C.navy}>
-            几何色块层叠
-          </Txt>
-          <rect x={44} y={206} width={160 * line} height={2} fill={C.sun} />
-          <Txt x={44} y={232} size={13} font="display" w={500} c={C.grey} ls={1.2}>
-            far slow  ·  near fast
-          </Txt>
-        </g>
-      )}
+      {card > 0.05 &&
+        bits.map((b, i) => {
+          const k = spr(f, b.at, POP, 28);
+          if (k < 0.02) return null;
+          return (
+            <g key={i} opacity={Math.min(1, k)} transform={`translate(${72 + (1 - k) * 20} 96)`}>
+              {b.node}
+            </g>
+          );
+        })}
       <Tag f={f} t0={AT.geo + 10} x={72} y={1004} en="02  STRATA" zh="一层一色，远慢近快" dark />
     </g>
   );
@@ -49,16 +49,16 @@ export const Dio: React.FC<{f: number}> = ({f}) => {
       <rect width={W} height={H} fill={C.cream} />
       <EditorChrome f={f} active={active} />
       <g clipPath="url(#artboard)">
-        <World f={f} mode="dio" born={AT.geo - 6} />
+        <World f={f} mode="dio" born={AT.geo} />
       </g>
       {Array.from({length: 6}, (_, i) => {
         const p = peelAt(f, i);
-        if (p < 0.12) return null;
+        if (p < 0.08) return null;
         const [en, zh] = peelLabel(i);
         const x = 160 + (i % 3) * 280;
         const y = 220 + Math.floor(i / 3) * 70;
         return (
-          <g key={i} opacity={p}>
+          <g key={i} opacity={Math.min(1, p)} transform={`translate(${n1((1 - p) * 16)} 0)`}>
             <rect x={x} y={y} width={132} height={36} rx={8} fill={C.paper} />
             <rect x={x} y={y} width={8} height={36} rx={4} fill={HILLS[i]} />
             <Txt x={x + 18} y={y + 24} size={16} font="mono" c={C.ink}>
@@ -73,25 +73,27 @@ export const Dio: React.FC<{f: number}> = ({f}) => {
 };
 
 export const Sil: React.FC<{f: number}> = ({f}) => {
-  const cut = spr(f, AT.sil, {damping: 12, mass: 0.7, stiffness: 150});
-  const gap = spr(f, AT.sil + 48, {damping: 14, mass: 0.8, stiffness: 140}) * (1 - spr(f, AT.sil + 96, {damping: 11, mass: 0.65, stiffness: 190}));
-  const g = 36 * gap;
-  const bladeY = tween(f, AT.sil - 8, 18, -40, 1120, E.in);
+  const cut = spr(f, AT.sil, POP, 28);
+  const leftIn = spr(f, AT.sil - 2, POP, 28);
+  const rightIn = spr(f, AT.sil + 2, POP, 28);
+  const gap = spr(f, AT.sil + 52, POP, 28) * (1 - spr(f, AT.sil + 88, POP, 28));
+  const g = 40 * gap;
+  const bladeY = tween(f, AT.sil - 24, 28, -40, 1120, E.in);
   return (
     <g>
       <rect width={W} height={H} fill={C.cream} />
       <g clipPath="url(#silLeft)">
-        <g transform={`translate(${n1(-g)} 0)`}>
-          <World f={f} mode="monoInk" born={AT.geo - 6} />
+        <g transform={`translate(${n1(-g + (1 - leftIn) * -80)} 0)`}>
+          <World f={f} mode="monoInk" born={AT.sil + 2} />
         </g>
       </g>
       <g clipPath="url(#silRight)">
-        <g transform={`translate(${n1(g)} 0)`}>
-          <World f={f} mode="monoPaper" born={AT.geo - 6} />
+        <g transform={`translate(${n1(g + (1 - rightIn) * 80)} 0)`}>
+          <World f={f} mode="monoPaper" born={AT.sil + 18} />
         </g>
       </g>
-      <rect x={n1(956 - g / 2)} y={0} width={n1(8 + g)} height={H} fill={C.folk} opacity={0.85 * cut} />
-      <rect x={950} y={n1(bladeY)} width={20} height={80} rx={4} fill={C.paper} opacity={tween(f, AT.sil - 10, 16, 1, 0, E.in)} />
+      <rect x={n1(956 - g / 2)} y={0} width={n1(8 + g)} height={H} fill={C.folk} opacity={0.85 * Math.min(1, cut)} />
+      <rect x={950} y={n1(bladeY)} width={20} height={80} rx={4} fill={C.paper} opacity={tween(f, AT.sil - 26, 28, 1, 0, E.in)} />
       <Tag f={f} t0={AT.sil + 8} x={72} y={96} en="04  SILHOUETTE" zh="单色剪影：一刀切成正负形" />
       <defs>
         <clipPath id="silLeft">
@@ -128,44 +130,52 @@ const deckleRight = (f: number, inset: number) => {
 };
 
 export const Torn: React.FC<{f: number}> = ({f}) => {
-  const k = spr(f, AT.torn - 4, {damping: 14, mass: 0.8, stiffness: 140});
-  const temp = spr(f, AT.torn + 16, {damping: 11, mass: 0.6, stiffness: 180});
-  const card = spr(f, AT.torn + 88, {damping: 12, mass: 0.7, stiffness: 160});
-  const sheet = spr(f, AT.torn - 10, {damping: 13, mass: 0.85, stiffness: 130});
+  const left = spr(f, AT.torn - 20, POP, 28);
+  const right = spr(f, AT.torn + 6, POP, 28);
+  const weather = spr(f, AT.torn + 12, POP, 28);
+  const temp = spr(f, AT.torn + 22, POP, 28);
+  const line = spr(f, AT.torn + 26, POP, 28);
+  const cardL = spr(f, AT.torn + 88, POP, 28);
+  const cardR = spr(f, AT.torn + 92, POP, 28);
+  const stain = (i: number) => spr(f, AT.torn - 12 + i * 4, POP, 24);
   return (
     <g>
       <rect width={W} height={H} fill="#1A1410" />
       <Phone f={f} />
       <g clipPath="url(#phoneScreen)">
-        <World f={f} cam={phoneCam(f)} born={AT.geo - 6} />
+        <World f={f} cam={phoneCam(f)} born={AT.geo} />
         <rect x={706} y={448} width={508} height={540} fill="url(#phoneScrim)" />
       </g>
-      <PhoneStatus k={k} />
-      <g opacity={k}>
+      <PhoneStatus k={spr(f, AT.torn + 8, POP, 28)} />
+      <g opacity={Math.min(1, weather)} transform={`translate(0 ${n1((1 - weather) * 16)})`}>
         <Txt x={760} y={530} size={18} font="cn" w={500} c={C.paper} o={0.75}>
           今日天气
         </Txt>
-        <g opacity={temp} transform={`translate(0 ${n1((1 - temp) * 20)})`}>
-          <Txt x={760} y={628} size={84} font="display" w={600} c={C.paper}>
-            18°
-          </Txt>
-          <Txt x={760} y={672} size={20} font="cn" w={500} c={C.paper} o={0.8}>
-            晴  ·  同一座山，换一种纸
-          </Txt>
-        </g>
       </g>
-      <g opacity={sheet} filter="url(#shNear)">
+      <g opacity={Math.min(1, temp)} transform={`translate(0 ${n1((1 - temp) * 22)})`}>
+        <Txt x={760} y={628} size={84} font="display" w={600} c={C.paper}>
+          18°
+        </Txt>
+      </g>
+      <g opacity={Math.min(1, line)} transform={`translate(0 ${n1((1 - line) * 14)})`}>
+        <Txt x={760} y={672} size={20} font="cn" w={500} c={C.paper} o={0.8}>
+          晴  ·  同一座山，换一种纸
+        </Txt>
+      </g>
+      <g opacity={Math.min(1, left)} transform={`translate(${n1((1 - left) * -40)} 0)`} filter="url(#shNear)">
         <path d={deckleLeft(f, 428)} fill="#E8D4C4" />
         <path d={deckleLeft(f - 4, 392)} fill="#F3E3D4" opacity={0.92} />
-        <ellipse cx={150} cy={220} rx={160} ry={110} fill="#C9A28A" opacity={0.38} />
-        <ellipse cx={240} cy={620} rx={130} ry={160} fill="#8FA98C" opacity={0.28} />
-        <ellipse cx={90} cy={880} rx={140} ry={90} fill="#D9B48A" opacity={0.32} />
+        <ellipse cx={150} cy={220} rx={160} ry={110} fill="#C9A28A" opacity={0.38 * stain(0)} />
+        <ellipse cx={240} cy={620} rx={130} ry={160} fill="#8FA98C" opacity={0.28 * stain(1)} />
+        <ellipse cx={90} cy={880} rx={140} ry={90} fill="#D9B48A" opacity={0.32 * stain(2)} />
+      </g>
+      <g opacity={Math.min(1, right)} transform={`translate(${n1((1 - right) * 40)} 0)`} filter="url(#shNear)">
         <path d={deckleRight(f, 268)} fill="#E8D4C4" />
         <ellipse cx={1780} cy={260} rx={120} ry={90} fill="#C9A28A" opacity={0.34} />
         <ellipse cx={1820} cy={820} rx={140} ry={120} fill="#8FA98C" opacity={0.26} />
       </g>
-      {card > 0.01 && (
-        <g opacity={card} transform={`translate(${n1((1 - card) * 24)} 0)`}>
+      {cardL > 0.01 && (
+        <g opacity={Math.min(1, cardL)} transform={`translate(${n1((1 - cardL) * -24)} 0)`}>
           <rect x={48} y={780} width={360} height={148} rx={22} fill="#F3E3D4" filter="url(#shNear)" />
           <Txt x={76} y={836} size={14} font="mono" c={C.sun} ls={1.4}>
             DECKLE EDGE
@@ -173,6 +183,10 @@ export const Torn: React.FC<{f: number}> = ({f}) => {
           <Txt x={76} y={882} size={26} font="cn" w={700} c={C.ink}>
             毛边是撕出来的
           </Txt>
+        </g>
+      )}
+      {cardR > 0.01 && (
+        <g opacity={Math.min(1, cardR)} transform={`translate(${n1((1 - cardR) * 24)} 0)`}>
           <rect x={1512} y={780} width={360} height={148} rx={22} fill="#F3E3D4" filter="url(#shNear)" />
           <Txt x={1540} y={836} size={14} font="mono" c={C.sun} ls={1.4}>
             APP HERO
@@ -280,49 +294,57 @@ const rayDType = (cx: number, cy: number, r0: number, r1: number, n: number) => 
   return d;
 };
 
+const GLYPHS = [
+  {ch: 'P', x: 604},
+  {ch: 'A', x: 782},
+  {ch: 'P', x: 960},
+  {ch: 'E', x: 1128},
+  {ch: 'R', x: 1296},
+];
+
 export const Type: React.FC<{f: number}> = ({f}) => {
-  const stack = spr(f, AT.type + 2, {damping: 12, mass: 0.7, stiffness: 160});
-  const word = spr(f, AT.type + 18, {damping: 10, mass: 0.6, stiffness: 170});
-  const bladeX = tween(f, AT.type + 28, 48, 180, 1760, E.inOut);
-  const cutting = f >= AT.type + 28 && f < AT.type + 86;
-  const zi = spr(f, AT.type + 86, {damping: 12, mass: 0.7, stiffness: 160});
-  const punchZi = spr(f, AT.type + 102, {damping: 11, mass: 0.55, stiffness: 190});
-  const sub = spr(f, AT.type + 124, {damping: 14, mass: 0.8, stiffness: 140});
+  const word = spr(f, AT.type + 18, POP, 28);
+  const bladeX = tween(f, AT.type + 28, 56, 180, 1760, E.out);
+  const cutting = f >= AT.type + 28 && f < AT.type + 90;
+  const zi = spr(f, AT.type + 86, POP, 28);
+  const punchZi = spr(f, AT.type + 94, POP, 28);
+  const sub = spr(f, AT.type + 124, POP, 28);
   return (
     <g>
       <rect width={W} height={H} fill={C.wall} />
       <UnderCut f={f} />
-      <g opacity={stack}>
-        <g clipPath="url(#typeUncut)">
-          {SHEETS.map((s, i) => {
-            const enter = spr(f, AT.type + 2 + i * 5, {damping: 12, mass: 0.7, stiffness: 170});
-            return (
-              <rect
-                key={`s${i}`}
-                x={n1(s.dx)}
-                y={n1(s.dy + (1 - enter) * 70)}
-                width={W}
-                height={H}
-                fill={s.fill}
-                filter="url(#shMid)"
-                opacity={enter}
-              />
-            );
-          })}
-        </g>
-        <g clipPath="url(#typeCut)">
-          {SHEETS.map((s, i) => {
-            const enter = spr(f, AT.type + 2 + i * 5, {damping: 12, mass: 0.7, stiffness: 170});
-            return (
-              <g key={`p${i}`} mask={`url(#punch${i})`} opacity={enter} filter="url(#shNear)">
-                <rect x={n1(s.dx)} y={n1(s.dy)} width={W} height={H} fill={s.fill} />
-              </g>
-            );
-          })}
-        </g>
-      </g>
+      {SHEETS.map((s, i) => {
+        const enter = spr(f, AT.type + 2 + i * 4, POP, 28);
+        if (enter < 0.02) return null;
+        return (
+          <rect
+            key={`s${i}`}
+            x={n1(s.dx)}
+            y={n1(s.dy + (1 - enter) * 70)}
+            width={W}
+            height={H}
+            fill={s.fill}
+            opacity={Math.min(1, enter)}
+            filter="url(#shNear)"
+          />
+        );
+      })}
+      {GLYPHS.map((g, i) => {
+        const k = spr(f, AT.type + 32 + i * 4, POP, 28);
+        if (k < 0.02) return null;
+        return (
+          <g
+            key={`g${i}`}
+            clipPath={`url(#gly${i})`}
+            transform={`translate(${g.x} 400) scale(${k.toFixed(3)}) translate(${-g.x} -400)`}
+            filter="url(#shLift)"
+          >
+            <UnderCut f={f} />
+          </g>
+        );
+      })}
       {word > 0.01 && (
-        <g opacity={word * (1 - tween(f, AT.type + 28, 48, 0, 1, E.out))}>
+        <g opacity={word * (1 - tween(f, AT.type + 32, 40, 0, 1, E.out))}>
           <PaperWord fill="none" stroke={C.ink} sw={3} />
         </g>
       )}
@@ -372,17 +394,18 @@ export const Type: React.FC<{f: number}> = ({f}) => {
       )}
       <Tag f={f} t0={AT.type + 8} x={72} y={96} en="06  TYPE CUT" zh="字体剪纸：把字从纸堆里剪穿" />
       <defs>
-        <clipPath id="typeCut">
-          <rect x={0} y={0} width={n1(bladeX)} height={H} />
-        </clipPath>
-        <clipPath id="typeUncut">
-          <rect x={n1(bladeX)} y={0} width={n1(W - bladeX + 8)} height={H} />
-        </clipPath>
         {SHEETS.map((s, i) => (
           <mask key={i} id={`punch${i}`} maskUnits="userSpaceOnUse" x="0" y="0" width={W} height={H}>
             <rect width={W} height={H} fill="white" />
             <PaperWord x={960 + s.ox} fill="#000" />
           </mask>
+        ))}
+        {GLYPHS.map((g, i) => (
+          <clipPath key={i} id={`gly${i}`}>
+            <text x={g.x} y={488} fontFamily="Jost" fontSize={248} fontWeight={800} textAnchor="middle">
+              {g.ch}
+            </text>
+          </clipPath>
         ))}
         <mask id="ziSheet" maskUnits="userSpaceOnUse" x="820" y="620" width="280" height="200">
           <rect x="820" y="620" width="280" height="200" rx="18" fill="white" />

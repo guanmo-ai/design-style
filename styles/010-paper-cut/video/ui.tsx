@@ -1,6 +1,6 @@
 /** 010 · Paper Cut —— 公共零件：页眉页脚、编辑器、手机、标签、揭纸转场 */
 import React from 'react';
-import {E, spr, tween} from '../../../src/lib/anim';
+import {E, POP, spr, tween} from '../../../src/lib/anim';
 import {C, F, HILLS} from '../tokens';
 import {AT, CHAPTERS, DURATION, TR} from './timeline';
 import {H, LayerFilters, W, c01, n1} from './layers';
@@ -102,21 +102,28 @@ export const NoteCard: React.FC<{x: number; y: number; w: number; h: number; k: 
 
 /** 编辑海报的画板 + 图层面板 */
 export const EditorChrome: React.FC<P & {active: number}> = ({f, active}) => {
-  const k = spr(f, AT.dio - 16, {damping: 14, mass: 0.8, stiffness: 140}) * (1 - tween(f, AT.sil - 18, 22, 0, 1, E.in));
-  if (k <= 0.001) return null;
+  const shell = spr(f, AT.dio - 28, POP, 28) * (1 - tween(f, AT.sil - 18, 22, 0, 1, E.in));
+  const bar = spr(f, AT.dio - 24, POP, 28);
+  const board = spr(f, AT.dio - 20, POP, 28);
+  const panel = spr(f, AT.dio - 16, POP, 28);
+  if (shell <= 0.001) return null;
   const rows = ['L6  远山 FAR', 'L5  岭', 'L4  中景 MID', 'L3  树', 'L2  近山', 'L1  前景 NEAR'];
   return (
-    <g opacity={k}>
-      <rect x={48} y={78} width={1824} height={924} rx={22} fill={C.paper} filter="url(#shNear)" />
-      <rect x={64} y={94} width={1788} height={52} rx={12} fill={C.cream} />
-      <Txt x={86} y={128} size={20} font="cn" w={700} c={C.ink}>
-        编辑海报
-      </Txt>
-      <Txt x={186} y={128} size={13} font="mono" c={C.grey} ls={1}>
-        POSTER  ·  1920×1080  ·  6 SHEETS
-      </Txt>
-      <rect x={80} y={168} width={1320} height={800} rx={14} fill="none" stroke={C.cream} strokeWidth={2} />
-      <g transform={`translate(${n1(1448 + (1 - k) * 40)} 168)`}>
+    <g>
+      <g opacity={Math.min(1, shell)} transform={`translate(0 ${n1((1 - shell) * 28)})`} filter="url(#shNear)">
+        <rect x={48} y={78} width={1824} height={924} rx={22} fill={C.paper} />
+      </g>
+      <g opacity={Math.min(1, bar)} transform={`translate(0 ${n1((1 - bar) * 12)})`}>
+        <rect x={64} y={94} width={1788} height={52} rx={12} fill={C.cream} />
+        <Txt x={86} y={128} size={20} font="cn" w={700} c={C.ink}>
+          编辑海报
+        </Txt>
+        <Txt x={186} y={128} size={13} font="mono" c={C.grey} ls={1}>
+          POSTER  ·  1920×1080  ·  6 SHEETS
+        </Txt>
+      </g>
+      <rect x={80} y={168} width={1320} height={800} rx={14} fill="none" stroke={C.cream} strokeWidth={2} opacity={Math.min(1, board)} />
+      <g opacity={Math.min(1, panel)} transform={`translate(${n1(1448 + (1 - panel) * 40)} 168)`}>
         <rect width={388} height={800} rx={14} fill={C.cream} />
         <Txt x={24} y={42} size={16} font="cn" w={700} c={C.ink}>
           图层
@@ -125,9 +132,11 @@ export const EditorChrome: React.FC<P & {active: number}> = ({f, active}) => {
           LAYERS
         </Txt>
         {rows.map((row, i) => {
+          const rk = spr(f, AT.dio - 12 + i * 4, POP, 28);
+          if (rk < 0.02) return null;
           const on = active === i;
           return (
-            <g key={i} transform={`translate(16 ${n1(64 + i * 88)})`}>
+            <g key={i} opacity={Math.min(1, rk)} transform={`translate(${n1(16 + (1 - rk) * 18)} ${n1(64 + i * 88)})`}>
               <rect width={356} height={76} rx={12} fill={on ? C.white : 'transparent'} stroke={on ? HILLS[i] : 'rgba(20,32,40,0.08)'} strokeWidth={on ? 2 : 1} />
               <rect x={14} y={22} width={32} height={32} rx={6} fill={HILLS[i]} />
               <Txt x={58} y={46} size={18} font="cn" w={on ? 700 : 500} c={C.ink}>
@@ -142,10 +151,10 @@ export const EditorChrome: React.FC<P & {active: number}> = ({f, active}) => {
 };
 
 export const Phone: React.FC<P> = ({f}) => {
-  const k = spr(f, AT.torn - TR, {damping: 12, mass: 0.7, stiffness: 160}) * (1 - tween(f, AT.type - 16, 20, 0, 1, E.in));
+  const k = spr(f, AT.torn + 2, POP, 28) * (1 - tween(f, AT.type - 16, 20, 0, 1, E.in));
   if (k <= 0.001) return null;
   return (
-    <g opacity={k} filter="url(#shNear)">
+    <g opacity={Math.min(1, k)} transform={`translate(0 ${n1((1 - k) * 36)})`} filter="url(#shNear)">
       <rect x={690} y={78} width={540} height={924} rx={48} fill="#1A2228" />
     </g>
   );
@@ -165,7 +174,7 @@ export const PhoneStatus: React.FC<{k?: number}> = ({k = 1}) => {
 };
 
 export const Tag: React.FC<{f: number; t0: number; x: number; y: number; en: string; zh: string; dark?: boolean}> = ({f, t0, x, y, en, zh, dark}) => {
-  const k = spr(f, t0, {damping: 12, mass: 0.65, stiffness: 180});
+  const k = spr(f, t0, POP, 28);
   if (k <= 0.001) return null;
   return (
     <g opacity={k} transform={`translate(${n1(x)} ${n1(y + (1 - k) * 16)})`}>

@@ -9,8 +9,8 @@ export const AT = {
   take: 1170, // 带走三句 + 六格定妆 + @guanmo_ai（9 拍）
 };
 export const DURATION = 1440;
-/** 下一幕提前 TR 帧用「纸」的招式盖上来 */
-export const TR = 24;
+/** 下一幕提前 TR 帧用「纸」的招式盖上来；32 帧 + SNAP 过冲 */
+export const TR = 32;
 export const LINES = [
   '对折是民俗剪纸的骨架，旋转展开就是它的入场',
   '一层一色，影子落在下一张上——没有影子就只是贴纸',

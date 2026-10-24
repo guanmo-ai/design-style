@@ -1,6 +1,6 @@
 /** 010 · 民俗红纸镂空：对折展开，窗花被一圈圈剪开 */
 import React from 'react';
-import {E, spr, tween} from '../../../src/lib/anim';
+import {E, POP, spr, tween} from '../../../src/lib/anim';
 import {C} from '../tokens';
 import {AT} from './timeline';
 import {n1} from './layers';
@@ -18,19 +18,19 @@ for (let i = 0; i < 12; i++) {
 }
 for (let i = 0; i < 8; i++) {
   const a = (i / 8) * Math.PI * 2 + Math.PI / 8;
-  HOLES.push({k: 'coin', x: Math.cos(a) * 198, y: Math.sin(a) * 198, r: 34, rot: 0, t: 52 + i * 3});
+  HOLES.push({k: 'coin', x: Math.cos(a) * 198, y: Math.sin(a) * 198, r: 34, rot: 0, t: 62 + i * 3});
 }
 for (let i = 0; i < 6; i++) {
   const a = (i / 6) * Math.PI * 2 - Math.PI / 2;
-  HOLES.push({k: 'petal', x: Math.cos(a) * 72, y: Math.sin(a) * 72, r: 34, rot: (a * 180) / Math.PI + 90, t: 78 + i * 2});
+  HOLES.push({k: 'petal', x: Math.cos(a) * 72, y: Math.sin(a) * 72, r: 34, rot: (a * 180) / Math.PI + 90, t: 84 + i * 3});
 }
 for (let i = 0; i < 16; i++) {
   const a = (i / 16) * Math.PI * 2;
-  HOLES.push({k: 'dot', x: Math.cos(a) * 258, y: Math.sin(a) * 258, r: 9, rot: 0, t: 64 + (i % 8) * 2});
+  HOLES.push({k: 'dot', x: Math.cos(a) * 258, y: Math.sin(a) * 258, r: 9, rot: 0, t: 64 + i * 2});
 }
 for (let i = 0; i < 4; i++) {
   const a = (i / 4) * Math.PI * 2 + Math.PI / 4;
-  HOLES.push({k: 'fan', x: Math.cos(a) * 140, y: Math.sin(a) * 140, r: 42, rot: (a * 180) / Math.PI, t: 88 + i * 3});
+  HOLES.push({k: 'fan', x: Math.cos(a) * 140, y: Math.sin(a) * 140, r: 42, rot: (a * 180) / Math.PI, t: 102 + i * 3});
 }
 
 const petalD = (r: number) =>
@@ -59,29 +59,30 @@ const HoleShape: React.FC<{h: Hole; k: number}> = ({h, k}) => {
 };
 
 export const Folk: React.FC<{f: number}> = ({f}) => {
-  const unfold = spr(f, 8, {damping: 13, mass: 0.85, stiffness: 120});
-  const disk = spr(f, 18, {damping: 12, mass: 0.7, stiffness: 160});
+  const unfoldL = spr(f, 8, POP, 32);
+  const unfoldR = spr(f, 12, POP, 32);
+  const disk = spr(f, 22, POP, 28);
   const sway = Math.sin(f * 0.045) * 3.2;
   const spin = tween(f, 86, 90, 0, 11, E.inOut) + f * 0.035;
-  const leftR = -82 * (1 - unfold);
-  const rightR = 82 * (1 - unfold);
+  const leftR = -88 * (1 - unfoldL);
+  const rightR = 88 * (1 - unfoldR);
   return (
     <g>
       <rect width={1920} height={1080} fill={WALL} />
       <rect x={956} y={40} width={8} height={1000} rx={3} fill={RED} opacity={tween(f, 2, 12, 0, 0.55, E.out)} />
-      <g transform={`translate(960 540) rotate(${n1(leftR)})`} opacity={0.35 + 0.65 * unfold}>
+      <g transform={`translate(960 540) rotate(${n1(leftR)})`} opacity={0.35 + 0.65 * Math.min(1, unfoldL)}>
         <rect x={-520} y={-460} width={520} height={920} rx={28} fill={RED} filter="url(#shNear)" />
       </g>
-      <g transform={`translate(960 540) rotate(${n1(rightR)})`} opacity={0.35 + 0.65 * unfold}>
+      <g transform={`translate(960 540) rotate(${n1(rightR)})`} opacity={0.35 + 0.65 * Math.min(1, unfoldR)}>
         <rect x={0} y={-460} width={520} height={920} rx={28} fill={RED} filter="url(#shNear)" />
       </g>
-      <g transform={`translate(960 508) rotate(${n1(spin + sway)}) scale(${disk.toFixed(3)})`} opacity={disk} filter="url(#shLift)">
+      <g transform={`translate(960 508) rotate(${n1(spin + sway)}) scale(${disk.toFixed(3)})`} opacity={Math.min(1, disk)} filter="url(#shLift)">
         <circle r={430} fill="#F7E2A8" opacity={0.42} />
         <circle r={412} fill={RED} />
         <circle r={388} fill="none" stroke={WALL} strokeWidth={6} opacity={0.35} />
         <circle r={6} fill={WALL} />
         {HOLES.map((h, i) => (
-          <HoleShape key={i} h={h} k={spr(f, h.t, {damping: 10, mass: 0.55, stiffness: 220})} />
+          <HoleShape key={i} h={h} k={spr(f, h.t, POP, 24)} />
         ))}
       </g>
       <rect x={956} y={80} width={8} height={140} rx={4} fill={RED} opacity={disk} />
