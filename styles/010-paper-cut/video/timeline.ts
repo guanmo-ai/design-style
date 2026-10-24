@@ -20,4 +20,5 @@ export const CHAPTERS: [string, number][] = [
   ['品牌片头', AT.brand],
   ['五条规则', AT.rules],
   ['常见坑', AT.pits],
+  ['片尾', AT.end],
 ];

@@ -99,7 +99,7 @@ export const Pits: React.FC<{f: number}> = ({f}) => {
 
 export const End: React.FC<{f: number}> = ({f}) => {
   const k = spr(f, AT.end + 8, {damping: 12, mass: 0.7, stiffness: 160});
-  const handle = spr(f, AT.end + 48, {damping: 14, mass: 0.8, stiffness: 140});
+  const handle = spr(f, AT.end + 22, {damping: 14, mass: 0.8, stiffness: 140});
   const pulse = 1 + 0.04 * Math.sin((f - AT.end) * 0.18);
   return (
     <g>

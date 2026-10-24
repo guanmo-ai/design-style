@@ -66,6 +66,11 @@ const Stage: React.FC = () => {
           <clipPath id="phoneScreen">
             <rect x={706} y={94} width={508} height={892} rx={36} />
           </clipPath>
+          <linearGradient id="phoneScrim" x1="0" y1="448" x2="0" y2="720" gradientUnits="userSpaceOnUse">
+            <stop offset="0" stopColor="#0A141C" stopOpacity="0" />
+            <stop offset="0.22" stopColor="#0A141C" stopOpacity="0.72" />
+            <stop offset="0.5" stopColor="#0A141C" stopOpacity="1" />
+          </linearGradient>
         </defs>
         {live.map((s) => {
           const raw = s.wipe && f < s.at ? (f - (s.at - TR)) / TR : 1;
