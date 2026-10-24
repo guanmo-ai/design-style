@@ -187,7 +187,7 @@ for b0 in range(0, 40, 2):
 
 for b in range(1, 40):
     r = CH[PLAN[min(b, 39)]][0]
-    s = sine(note(r), 0.28, 0.18) * 0.55 + sine(note(r + 12), 0.2, 0.1) * 0.15
+    s = sine(note(r), 0.28, 0.18) * 0.7
     place(lp(s, 700), (b + 0.5) * BEAT, 0.28, 0, 0, PUMP)
 
 for b in range(0, 40):
