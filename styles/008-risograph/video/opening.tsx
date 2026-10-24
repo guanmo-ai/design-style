@@ -10,7 +10,7 @@ import {E, spr, tween} from '../../../src/lib/anim';
 import {C, GRID, INK_NAME, Ink} from '../tokens';
 import {Plate, Reg, RegMark, addReg, jitter} from './riso';
 import {AT} from './timeline';
-import {ADV, CAP, CJK, Show, T, advances, c01, disp, lerp, mono, sc} from './ui';
+import {CAP, Show, T, advances, disp, lerp, mono, sc} from './ui';
 
 type P = {f: number};
 const TITLE = 'RISOGRAPH';
@@ -117,7 +117,7 @@ const FLY: Record<Exclude<Ink, 'black'>, {from: Reg; to: Reg}> = {
   yellow: {from: {x: 40, y: 210, r: 4.2}, to: {x: 3, y: 4, r: 0.25}},
 };
 export const flyReg = (f: number, ink: Exclude<Ink, 'black'>): Reg => {
-  const p = spr(f, 8, {damping: 13, mass: 0.75, stiffness: 160}, 28);
+  const p = spr(f, 4, {damping: 20, mass: 0.95, stiffness: 108}, 40);
   const a = FLY[ink];
   return {x: lerp(a.from.x, a.to.x, p), y: lerp(a.from.y, a.to.y, p), r: lerp(a.from.r ?? 0, a.to.r ?? 0, p)};
 };
@@ -135,7 +135,7 @@ export const TitleWord: React.FC<{f: number; at?: number; size?: number; x?: num
       {TITLE_INK.map((ink) => (
         <Plate key={ink} ink={ink} f={f} reg={{x: TITLE_OFF[ink][0], y: TITLE_OFF[ink][1]}} origin={`${x}px ${y}px`} style={{opacity: fade}}>
           {TITLE.split('').map((ch, i) => {
-            const p = tween(f, at + i * 2.2, 14, 0, 1, E.out);
+            const p = spr(f, at + i * 2, {damping: 18, mass: 0.85, stiffness: 120}, 22);
             if (p <= 0.001) return null;
             return (
               <div
@@ -148,7 +148,7 @@ export const TitleWord: React.FC<{f: number; at?: number; size?: number; x?: num
                   overflow: 'hidden',
                   ...disp(size, 900, 100, TLS),
                   lineHeight: `${size}px`,
-                  transform: `translateY(${(1 - p) * size * 0.85}px)`,
+                  transform: `translateY(${(1 - p) * size * 0.72}px)`,
                 }}
               >
                 {ch}
@@ -162,16 +162,16 @@ export const TitleWord: React.FC<{f: number; at?: number; size?: number; x?: num
 };
 
 /* ═══════════════ 镜头：扎进 O 的孔 ═══════════════ */
-export const ZOOM = {at: 96, dur: 24, max: 36};
+export const ZOOM = {at: 96, dur: 32, max: 36};
 export const zoomScale = (f: number) => {
-  if (f < ZOOM.at - 8) return 1;
+  if (f < ZOOM.at - 10) return 1;
   if (f >= AT.stencil) return ZOOM.max;
-  const back = 1 - 0.025 * tween(f, ZOOM.at - 8, 6, 0, 1, E.out);
-  const p = c01((f - ZOOM.at) / ZOOM.dur);
+  const back = 1 - 0.02 * tween(f, ZOOM.at - 10, 10, 0, 1, E.soft);
+  const p = tween(f, ZOOM.at, ZOOM.dur, 0, 1, E.inOut);
   return back * Math.exp(Math.log(ZOOM.max) * p * p);
 };
 export const zoomPan = (f: number) => {
-  const p = f >= AT.stencil ? 1 : tween(f, ZOOM.at, ZOOM.dur, 0, 1, E.inOut);
+  const p = f >= AT.stencil ? 1 : tween(f, ZOOM.at, ZOOM.dur, 0, 1, E.soft);
   return {x: (960 - HOLE.x) * p, y: (540 - HOLE.y) * p};
 };
 
@@ -180,9 +180,9 @@ const SLAM = 30;
 export const Opening: React.FC<P> = ({f}) => {
   const z = zoomScale(f);
   const pan = zoomPan(f);
-  const hit = f >= SLAM && f < SLAM + 14 ? Math.exp(-(f - SLAM) / 5) : 0;
-  const shakeX = hit * 7 * Math.sin(f * 2.1);
-  const shakeY = hit * 5 * Math.cos(f * 1.7);
+  const hit = f >= SLAM && f < SLAM + 20 ? Math.exp(-(f - SLAM) / 8) : 0;
+  const shakeX = hit * 3.6 * Math.sin(f * 1.6);
+  const shakeY = hit * 2.4 * Math.cos(f * 1.3);
   return (
     <div style={{position: 'absolute', inset: 0, transform: z !== 1 ? `translate(${pan.x + shakeX}px, ${pan.y + shakeY}px) scale(${z})` : `translate(${shakeX}px, ${shakeY}px)`, transformOrigin: `${HOLE.x}px ${HOLE.y}px`}}>
       {(['pink', 'teal', 'yellow'] as const).map((ink) => (

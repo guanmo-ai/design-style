@@ -60,13 +60,13 @@ const Stage: React.FC = () => {
     <AbsoluteFill style={{background: C.paper, overflow: 'hidden'}}>
       <TextureStyles />
       <Paper>
-        {on(0, AT.stencil + 6) && <Opening f={f} />}
-        {on(AT.stencil - 2, AT.passes + 4) && <Stencil f={f} />}
-        {on(AT.passes - 2, AT.overprint + 4) && <Passes f={f} />}
-        {on(AT.overprint - 2, AT.zine + 4) && <Overprint f={f} />}
-        {on(AT.zine - 2, AT.words + 2) && <Zine f={f} />}
-        {on(AT.words - 4, AT.end + 8) && <Words f={f} />}
-        {on(AT.end - 10, 1e9) && <End f={f} />}
+        {on(0, AT.stencil + 10) && <Opening f={f} />}
+        {on(AT.stencil - 4, AT.passes + 12) && <Stencil f={f} />}
+        {on(AT.passes - 8, AT.overprint + 12) && <Passes f={f} />}
+        {on(AT.overprint - 10, AT.zine + 12) && <Overprint f={f} />}
+        {on(AT.zine - 8, AT.words + 10) && <Zine f={f} />}
+        {on(AT.words - 10, AT.end + 14) && <Words f={f} />}
+        {on(AT.end - 18, 1e9) && <End f={f} />}
         <Hud f={f} />
       </Paper>
     </AbsoluteFill>
