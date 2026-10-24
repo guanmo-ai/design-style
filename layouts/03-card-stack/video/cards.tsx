@@ -1,6 +1,6 @@
 /** 布局 03 · Card Stack —— 四个世界里，同一叠 4 张卡各自装真实内容 */
 import React from 'react';
-import {E, POP, spr, tween} from '../../../src/lib/anim';
+import {E, POP, SNAP, SMOOTH, spr, tween} from '../../../src/lib/anim';
 import {C} from '../tokens';
 import {BEATS, RULES_AT, SCENE} from './layout';
 import {count, disp, mono, sc, ui} from './ui';
@@ -18,9 +18,10 @@ const PEOPLE = [
 
 const Bars: React.FC<{accent: string; f: number; at: number; h?: number}> = ({accent, f, at, h = 78}) => (
   <div style={{position: 'absolute', left: 28, right: 28, bottom: 22, height: h, display: 'flex', alignItems: 'flex-end', gap: 8}}>
-    {BARS.map((v, i) => (
-      <div key={i} style={{flex: 1, height: v * (0.18 + 0.82 * tween(f, at + i * 3, 18, 0, 1, E.out)), borderRadius: 5, background: i === 5 ? accent : '#D9DEE7'}} />
-    ))}
+    {BARS.map((v, i) => {
+      const p = spr(f, at + i * 3, POP, 26);
+      return <div key={i} style={{flex: 1, height: v * (0.12 + 0.88 * p), borderRadius: 5, background: i === 5 ? accent : '#D9DEE7', transform: `scaleY(${0.2 + 0.8 * p})`, transformOrigin: 'bottom'}} />;
+    })}
   </div>
 );
 
@@ -61,16 +62,19 @@ export const KeyFace: React.FC<P> = ({f, i}) => {
           <div style={cap()}>Inbox · 12 waiting</div>
           <div style={{position: 'absolute', left: 28, top: 48, ...sc(26, 700), color: C.ink}}>先回最先等的人</div>
           <div style={{position: 'absolute', left: 28, right: 28, top: 96, display: 'flex', flexDirection: 'column', gap: 8}}>
-            {PEOPLE.map((p) => (
-              <div key={p.name} style={{display: 'flex', alignItems: 'center', height: 36}}>
-                <div style={{width: 26, height: 26, borderRadius: 13, background: p.color, marginRight: 10}} />
-                <div>
-                  <div style={{...sc(15, 600), color: C.ink}}>{p.name}</div>
-                  <div style={{...ui(11, 500), color: C.ink3, marginTop: 3}}>{p.role}</div>
+            {PEOPLE.map((p, k) => {
+              const s = spr(f, at + 6 + k * 5, POP, 26);
+              return (
+                <div key={p.name} style={{display: 'flex', alignItems: 'center', height: 36, opacity: Math.min(1, s * 1.4), transform: `translateX(${(1 - s) * 28}px)`}}>
+                  <div style={{width: 26, height: 26, borderRadius: 13, background: p.color, marginRight: 10}} />
+                  <div>
+                    <div style={{...sc(15, 600), color: C.ink}}>{p.name}</div>
+                    <div style={{...ui(11, 500), color: C.ink3, marginTop: 3}}>{p.role}</div>
+                  </div>
+                  <span style={{...mono(12), color: C.ink3, marginLeft: 'auto'}}>{p.wait}</span>
                 </div>
-                <span style={{...mono(12), color: C.ink3, marginLeft: 'auto'}}>{p.wait}</span>
-              </div>
-            ))}
+              );
+            })}
           </div>
         </>
       );
@@ -81,7 +85,7 @@ export const KeyFace: React.FC<P> = ({f, i}) => {
           <div style={{position: 'absolute', left: 28, top: 48, ...sc(26, 700), color: C.ink}}>这一周的进度</div>
           <div style={{position: 'absolute', left: 28, top: 100, ...disp(56, 600, -0.04), color: C.ink}}>{count(f, at, 36, 57)}%</div>
           <div style={{position: 'absolute', left: 28, right: 28, bottom: 36, height: 10, borderRadius: 5, background: '#E6EAF0', overflow: 'hidden'}}>
-            <div style={{width: '57%', height: '100%', background: C.accent, borderRadius: 5}} />
+            <div style={{width: `${57 * spr(f, at + 8, SMOOTH, 32)}%`, height: '100%', background: C.accent, borderRadius: 5}} />
           </div>
           <div style={{position: 'absolute', right: 28, top: 112, textAlign: 'right'}}>
             <div style={{...mono(13), color: C.ink3}}>8 of 14</div>
@@ -137,9 +141,9 @@ export const IosFace: React.FC<P> = ({f, i}) => {
             })}
           </div>
           <div style={{position: 'absolute', left: 22, right: 22, bottom: 28, height: 56, borderRadius: 8, background: 'repeating-linear-gradient(90deg,#fff 0 2px, transparent 2px 6px)', overflow: 'hidden'}}>
-            <div style={{position: 'absolute', left: 0, right: 0, top: ((f * 2.4) % 56), height: 3, background: 'rgba(255,255,255,.95)', boxShadow: '0 0 12px rgba(255,255,255,.8)'}} />
+            <div style={{position: 'absolute', left: 0, right: 0, top: 56 * spr(f, BEATS.zoom, SMOOTH, 20), height: 3, background: 'rgba(255,255,255,.95)', boxShadow: '0 0 12px rgba(255,255,255,.8)', opacity: tween(f, BEATS.zoom, 4, 0, 1) * (1 - tween(f, BEATS.zoom + 22, 8, 0, 1, E.inOut))}} />
           </div>
-          <div style={{position: 'absolute', left: 22, bottom: 92, ...ui(12, 500), color: 'rgba(255,255,255,.7)'}}>Boarding Pass · Oct 24</div>
+          <div style={{position: 'absolute', left: 22, bottom: 92, ...ui(12, 500), color: 'rgba(255,255,255,.7)'}}>{f >= BEATS.zoom + 16 ? 'Checked in · Gate B12' : 'Boarding Pass · Oct 24'}</div>
         </>
       );
     case 1:
@@ -164,7 +168,9 @@ export const IosFace: React.FC<P> = ({f, i}) => {
               <div style={{...ui(11, 500), color: C.ink3, marginTop: 3}}>现在</div>
             </div>
           </div>
-          <div style={{position: 'absolute', left: 20, top: 78, right: 20, ...sc(18, 500), color: C.ink, lineHeight: 1.45}}>林可：设计稿发你了，顶层那张先看。</div>
+          <div style={{position: 'absolute', left: 20, top: 78, right: 20, ...sc(18, 500), color: C.ink, lineHeight: 1.45, opacity: Math.min(1, spr(f, BEATS.note + 4, POP, 22) * 1.5)}}>
+            {f >= BEATS.sheet - 8 ? '共享登机牌？点下面那层。' : '林可：设计稿发你了，顶层那张先看。'}
+          </div>
           <div style={{position: 'absolute', left: 20, top: 150, ...ui(13, 500), color: C.ink3}}>iOS Notification Stack · 2 more below</div>
         </>
       );
@@ -221,9 +227,14 @@ export const StripeFace: React.FC<P> = ({f, i}) => {
           </div>
           <div style={{position: 'absolute', left: 24, top: 86, right: 24, ...sc(22, 700), color: C.ink, lineHeight: 1.3}}>Card Stack 成片重做：A-roll + B-roll</div>
           <div style={{position: 'absolute', left: 24, top: 160, display: 'flex', gap: 8}}>
-            {['layout', 'motion', 'film'].map((t) => (
-              <span key={t} style={{...ui(12, 500), color: C.ink2, padding: '5px 9px', borderRadius: 8, background: C.chip}}>{t}</span>
-            ))}
+            {['layout', 'motion', 'film'].map((t, k) => {
+              const s = spr(f, BEATS.issue + 8 + k * 4, POP, 22);
+              return (
+                <span key={t} style={{...ui(12, 500), color: C.ink2, padding: '5px 9px', borderRadius: 8, background: C.chip, transform: `scale(${0.6 + 0.4 * s})`, opacity: Math.min(1, s * 1.5)}}>
+                  {t}
+                </span>
+              );
+            })}
           </div>
           <div style={{position: 'absolute', left: 24, bottom: 28, ...ui(13, 500), color: C.ink3}}>Assignee 观默 · Cycle 42 · 8 comments</div>
         </>
@@ -236,8 +247,14 @@ export const StripeFace: React.FC<P> = ({f, i}) => {
             <path d="M40 420 C120 300 220 340 300 250 C380 160 460 220 660 120" fill="none" stroke="#64748B" strokeWidth="3" />
             <path d="M80 500 C200 440 280 480 400 380 C520 280 600 340 680 260" fill="none" stroke="#94A3B8" strokeWidth="2" />
           </svg>
-          <div style={{position: 'absolute', left: 48, top: 210, width: 22, height: 22, borderRadius: 11, background: C.accent, boxShadow: `0 0 0 ${8 + 6 * (0.5 + 0.5 * Math.sin(f / 8))}px rgba(37,99,235,.28)`, transform: `scale(${1 + 0.12 * Math.sin(f / 9)})`}} />
-          <div style={{position: 'absolute', left: 24, bottom: 24, right: 24, padding: 16, borderRadius: 14, background: '#fff', boxShadow: '0 10px 24px rgba(15,23,42,.12)'}}>
+          {(() => {
+            const drop = spr(f, at + 8, POP, 28);
+            const pick = spr(f, at + 36, POP, 22);
+            return (
+              <div style={{position: 'absolute', left: 48, top: 210 - (1 - drop) * 80, width: 22, height: 22, borderRadius: 11, background: C.accent, boxShadow: `0 0 0 ${6 + 10 * pick}px rgba(37,99,235,.28)`, transform: `scale(${0.2 + 0.8 * drop})`}} />
+            );
+          })()}
+          <div style={{position: 'absolute', left: 24, bottom: 24, right: 24, padding: 16, borderRadius: 14, background: '#fff', boxShadow: '0 10px 24px rgba(15,23,42,.12)', opacity: Math.min(1, spr(f, at + 20, POP, 24) * 1.4), transform: `translateY(${(1 - spr(f, at + 20, POP, 26)) * 24}px)`}}>
             <div style={{...sc(16, 700), color: C.ink}}>选这个点</div>
             <div style={{...ui(13, 500), color: C.ink2, marginTop: 6}}>Folsom St · San Francisco · 0.3 km</div>
           </div>
@@ -252,12 +269,15 @@ export const StripeFace: React.FC<P> = ({f, i}) => {
             ['Storyboards', '$1,200'],
             ['Motion pass', '$880'],
             ['Master render', '$400'],
-          ].map(([a, b], k) => (
-            <div key={a} style={{position: 'absolute', left: 24, right: 24, top: 110 + k * 42, display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid #E2E8F0', paddingBottom: 10}}>
-              <span style={{...ui(14, 500), color: C.ink2}}>{a}</span>
-              <span style={{...mono(14), color: C.ink}}>{b}</span>
-            </div>
-          ))}
+          ].map(([a, b], k) => {
+            const s = spr(f, at + 8 + k * 6, POP, 24);
+            return (
+              <div key={a} style={{position: 'absolute', left: 24, right: 24, top: 110 + k * 42, display: 'flex', justifyContent: 'space-between', borderBottom: '1px solid #E2E8F0', paddingBottom: 10, opacity: Math.min(1, s * 1.5), transform: `translateY(${(1 - s) * 16}px)`}}>
+                <span style={{...ui(14, 500), color: C.ink2}}>{a}</span>
+                <span style={{...mono(14), color: C.ink}}>{b}</span>
+              </div>
+            );
+          })}
           <div style={{position: 'absolute', left: 24, bottom: 28, ...sc(18, 700), color: C.ink}}>Due Oct 31</div>
           <div style={{position: 'absolute', right: 24, bottom: 28, ...disp(28, 600, -0.03), color: C.ink}}>$2,480</div>
         </>
@@ -299,7 +319,7 @@ export const DeckFace: React.FC<P> = ({f, i}) => {
     case 1:
       return (
         <>
-          <div style={{position: 'absolute', inset: 8, borderRadius: 12, boxShadow: 'inset 0 0 0 2px #111827', transform: `rotateY(${16 * Math.sin(f / 14)}deg)`}} />
+          <div style={{position: 'absolute', inset: 8, borderRadius: 12, boxShadow: 'inset 0 0 0 2px #111827', transform: `rotateY(${90 * (1 - spr(f, SCENE.DECK.in + 18, SNAP, 32))}deg)`, transformOrigin: 'center'}} />
           <div style={{position: 'absolute', left: 18, top: 16, ...disp(42, 700, -0.04), color: '#111827'}}>A</div>
           <div style={{position: 'absolute', left: 20, top: 62}}>
             <Suit kind="S" size={26} />
@@ -318,11 +338,14 @@ export const DeckFace: React.FC<P> = ({f, i}) => {
           <div style={{position: 'absolute', left: 18, top: 8, ...ui(12, 700), color: '#44403C', letterSpacing: '0.12em'}}>PROJECTS</div>
           <div style={{position: 'absolute', left: 18, top: 64, ...sc(20, 700), color: '#292524'}}>档案袋</div>
           <div style={{position: 'absolute', left: 18, top: 100, right: 18, ...ui(13, 500), color: '#57534E', lineHeight: 1.5}}>Folder stack · 一次只抽出最上面那份。</div>
-          {['L01 Bento', 'L02 Masonry', 'L03 Card Stack'].map((t, k) => (
-            <div key={t} style={{position: 'absolute', left: 18, right: 18, top: 168 + k * 40, height: 32, borderRadius: 6, background: 'rgba(255,255,255,.35)', display: 'flex', alignItems: 'center', padding: '0 10px', ...ui(13, 500), color: '#44403C'}}>
-              {t}
-            </div>
-          ))}
+          {['L01 Bento', 'L02 Masonry', 'L03 Card Stack'].map((t, k) => {
+            const s = spr(f, SCENE.DECK.in + 22 + k * 6, POP, 24);
+            return (
+              <div key={t} style={{position: 'absolute', left: 18, right: 18, top: 168 + k * 40, height: 32, borderRadius: 6, background: 'rgba(255,255,255,.35)', display: 'flex', alignItems: 'center', padding: '0 10px', ...ui(13, 500), color: '#44403C', opacity: Math.min(1, s * 1.5), transform: `translateX(${(1 - s) * 20}px)`}}>
+                {t}
+              </div>
+            );
+          })}
         </>
       );
     default:
@@ -351,7 +374,7 @@ const ZINFO: [string, string, string][] = [
   ['z-index 20', 'WAIT', 'scale 0.964'],
   ['z-index 10', 'BACK', 'dim 33%'],
 ];
-export const ExplodeFace: React.FC<P> = ({i}) => {
+export const ExplodeFace: React.FC<{i: number}> = ({i}) => {
   const [z, role, rule] = ZINFO[i];
   return (
     <>

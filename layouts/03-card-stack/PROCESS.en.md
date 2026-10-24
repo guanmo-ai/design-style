@@ -6,7 +6,7 @@
 
 ## Design constraint
 
-Show 3–4 rounded cards in a stack. Only the top sheet is in focus: a light lift, a 1–2° rotation, and quieter layers behind it. v1 (one dashboard stack re-skinned) was vetoed for low density; v2 walks the same four cards through iOS Wallet, Stripe / Linear, a paper-stack metaphor, an exploded z-axis, five bilingual rules, and a bad→good pit.
+Show 3–4 rounded cards in a stack. Only the top sheet is in focus: a light lift, a 1–2° rotation, and quieter layers behind it. v1 was vetoed for low density; v2 kept the worlds but sat still; v3 added breathing and was vetoed as ordinary. v4 throws the motion away: SNAP overshoot, SMOOTH camera handoffs, iOS as a product demo, shared-element REFLOW with 12–24 frame overlaps, and one-shot springs instead of loops.
 
 The film and four reference sheets share the values in `tokens.ts`, `tokens.css`, and `tokens.json`. Typography uses Inter / Inter Display, Noto Sans SC, and Geist Mono.
 

@@ -157,7 +157,7 @@ brightness(0.92)，第 5 张 display:none。换页时顶卡沿弧线离开，其
 | 时间 | 帧 | 章节 | 画面 |
 |---|---|---|---|
 | 0:00—2.5 | 0—150 | 01 钩子 | 四张卡弹进层叠：顶卡可读、后层压暗。「Card Stack / 卡片层叠」 |
-| 2.5—5.5 | 150—330 | 02 iOS | 登机牌滑入 → 通知叠入 → sheet 上推 → 镜头推近条码再拉开 → Apple Card 顶上 |
+| 2.5—5.5 | 150—330 | 02 iOS | 产品 demo：点 Gate → 通知压下 → 上滑 Sheet → 扫条码（镜头跟上）→ 抽出 Apple Card |
 | 5.5—8.5 | 330—510 | 03 后台 | Stripe 支付抽屉 · Linear 详情 · 地图选点——同一叠拓扑 |
 | 8.5—11.5 | 510—690 | 04 隐喻 | 名片 / 黑桃 A / 档案袋 / 索引卡：层叠从「抽最上面一张」来 |
 | 11.5—14.5 | 690—870 | 05 拆解 | 爆炸视图 + 深度轴 + z-index：offset / scale / dim / blur |
@@ -177,7 +177,7 @@ brightness(0.92)，第 5 张 display:none。换页时顶卡沿弧线离开，其
 ├─ process/                               # 过程图：分镜 · 动效 · 时间轴
 ├─ tokens.ts / tokens.css / tokens.json   # 同一份设计令牌（tokens.css 附可直接用的 .card-stack）
 ├─ video/CardStack.tsx                    # 短片主合成（22s · 九种世界）
-├─ video/layout.ts                        # 4 张卡片、世界几何、REFLOW 交棒
+├─ video/layout.ts                        # 4 张卡片、世界几何、SNAP 过冲 + SMOOTH 运镜
 ├─ video/cards.tsx                        # 卡面：队列 / Wallet / Stripe / 扑克 / 线框
 ├─ video/chrome.tsx                       # B-roll：手机、后台、毡面、深度轴
 ├─ video/scenes.tsx                       # 各章标题、规则、测量、片尾
