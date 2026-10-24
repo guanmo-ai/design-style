@@ -1,0 +1,51 @@
+/* 008 · 孔版印刷 Risograph — CSS 设计令牌（与 tokens.ts / tokens.json 同源） */
+:root {
+  /* 油墨：Riso 专色的屏幕近似。叠印用 mix-blend-mode: multiply */
+  --rs-paper: #F3ECDB;     /* 米白道林纸（未涂布） */
+  --rs-pink: #FF48B0;      /* 荧光粉 Fluorescent Pink · 806 U */
+  --rs-teal: #00838A;      /* 青绿 Teal · 321 U */
+  --rs-yellow: #FFB511;    /* 芥末黄 Sunflower · 116 U */
+  --rs-black: #000000;     /* 黑 */
+  --rs-ink: #1C1A17;       /* 印在纸上的黑字 */
+  --rs-grey: #8A8478;      /* 次要文字 */
+  --rs-master: #DCE0DA;    /* 版纸 */
+  --rs-hot: #FFE36E;       /* 热敏头 */
+
+  /* 字体：粗标题 + 等宽工单 + 中文黑体 */
+  --rs-font: 'Archivo', 'Helvetica Neue', Arial, 'Noto Sans SC', sans-serif;
+  --rs-font-mono: 'Space Mono', 'JetBrains Mono', ui-monospace, monospace;
+  --rs-font-cjk: 'Noto Sans SC', 'Source Han Sans SC', 'PingFang SC', sans-serif;
+
+  --rs-cols: 6;
+  --rs-module: 135px;
+  --rs-gutter: 18px;
+  --rs-margin-x: 90px;
+  --rs-margin-y: 72px;
+}
+
+.rs-paper {
+  background: var(--rs-paper);
+  color: var(--rs-ink);
+  font-family: var(--rs-font);
+}
+
+.rs-plate {
+  mix-blend-mode: multiply;
+}
+
+.rs-pink { color: var(--rs-pink); }
+.rs-teal { color: var(--rs-teal); }
+.rs-yellow { color: var(--rs-yellow); }
+
+.rs-display {
+  font: 900 120px/0.88 var(--rs-font);
+  font-variation-settings: 'wght' 900, 'wdth' 100;
+  letter-spacing: -0.03em;
+  margin: 0;
+}
+
+.rs-ticket {
+  font: 700 13px/1.4 var(--rs-font-mono);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
