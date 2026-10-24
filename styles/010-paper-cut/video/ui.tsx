@@ -50,7 +50,7 @@ export const Defs: React.FC = () => (
 );
 
 export const Hud: React.FC<P> = ({f}) => {
-  const o = tween(f, 18, 16) * (1 - tween(f, DURATION - 56, 36));
+  const o = tween(f, 18, 16) * (1 - tween(f, AT.take - 10, 18));
   if (o <= 0.001) return null;
   let k = 0;
   CHAPTERS.forEach(([, at], j) => {

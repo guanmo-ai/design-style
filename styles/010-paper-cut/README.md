@@ -135,7 +135,7 @@ then a brand title sequence flying through the paper strata. Soft paper shadows,
 | 9.5—12.5 | 570—750 | 单色剪影 | 刀锋对切：左白底黑剪 / 右黑底白剪；两半拉开再拍合 |
 | 12.5—16.0 | 750—960 | 水彩纸毛边 | 毛边撕开，露出天气 App；同一座山在手机里 parallax |
 | 16.0—19.5 | 960—1170 | 字体剪纸 | PAPER 从纸堆剪穿；汉字「剪」落下 |
-| 19.5—24.0 | 1170—1440 | 盖章 | 开场同一朵窗花旋转收成一点，砸成红纸印章；三句改成门笺挖空；**@guanmo_ai** 横批挖穿 |
+| 19.5—24.0 | 1170—1440 | 片尾 | 开场窗花落回；**Paper Cut / 剪纸层叠**；一句带走；底栏 `DESIGN STYLE  010` · `@guanmo_ai` · github |
 
 ## 10 · 文件
 
