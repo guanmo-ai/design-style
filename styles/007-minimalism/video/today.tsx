@@ -45,11 +45,18 @@ const Toggle: React.FC<{y: number; on: number; grey?: boolean}> = ({y, on, grey}
 };
 
 /** 手机本身（回顾里会把它缩小成一个小图标，所以单独导出） */
-export const Phone: React.FC<{f: number; dot?: boolean}> = ({f, dot = true}) => {
+export const Phone: React.FC<{f: number; dot?: boolean; id?: string}> = ({f, dot = true, id = 'scr05'}) => {
   const m = spr(f, PHONE_AT, SMOOTH, 30);
   const k = keepFront();
   const body = mixBox({...k, r: 0}, PHONE, m);
-  const scr = tween(f, PHONE_AT + 12, 16, 0, 1, E.out);
+  // 屏幕跟着机身走（内缩 12），从中线往上下打开，始终不透明：墨色机身里亮起一块纸白，不经过灰
+  const scr = tween(f, PHONE_AT + 8, 18, 0, 1, E.out);
+  const inset = 12 * Math.min(1, body.w / PHONE.w + 0.2);
+  const sw = Math.max(0, body.w - 2 * inset);
+  const shFull = Math.max(0, body.h - 2 * inset);
+  const sh = shFull * scr;
+  const sy = body.y + inset + (shFull - sh) / 2;
+  const sr = Math.min(SCR.r ?? 0, sw / 2, sh / 2);
   const ui = (at: number) => tween(f, at, 12, 0, 1, E.out);
   const dy = rowDY(f);
   const on = tapOn(f);
@@ -71,9 +78,15 @@ export const Phone: React.FC<{f: number; dot?: boolean}> = ({f, dot = true}) => 
   return (
     <g>
       <rect x={n2(body.x)} y={n2(body.y)} width={n2(body.w)} height={n2(body.h)} rx={n2(body.r ?? 0)} fill={C.ink} />
-      {scr > 0.001 && (
-        <g opacity={scr < 1 ? n2(scr) : undefined}>
-          <rect x={SCR.x} y={n2(SCR.y + (1 - scr) * 20)} width={SCR.w} height={n2(SCR.h - (1 - scr) * 40)} rx={SCR.r} fill={C.paperHi} />
+      {scr > 0.001 && sh > 0.5 && (
+        <g>
+          <defs>
+            <clipPath id={id}>
+              <rect x={n2(body.x + inset)} y={n2(sy)} width={n2(sw)} height={n2(sh)} rx={n2(sr)} />
+            </clipPath>
+          </defs>
+          <rect x={n2(body.x + inset)} y={n2(sy)} width={n2(sw)} height={n2(sh)} rx={n2(sr)} fill={C.paperHi} />
+          <g clipPath={scr < 1 || m < 0.999 ? `url(#${id})` : undefined}>
           {/* 状态栏 + 标题 */}
           <Scale s={del(f, CUT05[0]) * ui(620)} cx={(SX + SR) / 2} cy={190}>
             <Txt x={SX} y={176} k="t500" size={16}>
@@ -103,6 +116,7 @@ export const Phone: React.FC<{f: number; dot?: boolean}> = ({f, dot = true}) => 
             <circle cx={(SX + SR) / 2} cy={870} r={28} fill="none" stroke={C.ink} strokeWidth={LINE.main} />
             <path d={`M${(SX + SR) / 2 - 10} 870H${(SX + SR) / 2 + 10}M${(SX + SR) / 2} 860V880`} stroke={C.ink} strokeWidth={LINE.main} />
           </Scale>
+          </g>
         </g>
       )}
     </g>
