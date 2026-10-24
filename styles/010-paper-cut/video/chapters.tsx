@@ -306,6 +306,7 @@ export const Type: React.FC<{f: number}> = ({f}) => {
   const word = spr(f, AT.type + 18, POP, 28);
   const bladeX = tween(f, AT.type + 28, 56, 180, 1760, E.out);
   const cutting = f >= AT.type + 28 && f < AT.type + 90;
+  const peel = tween(f, AT.type + 86, 92, 0, 1, E.out);
   const leave = 1 - tween(f, AT.take - 28, 24, 0, 1, E.in);
   return (
     <g>
@@ -315,16 +316,14 @@ export const Type: React.FC<{f: number}> = ({f}) => {
         const enter = spr(f, AT.type + 2 + i * 4, POP, 28);
         if (enter < 0.02) return null;
         return (
-          <rect
+          <g
             key={`s${i}`}
-            x={n1(s.dx)}
-            y={n1(s.dy + (1 - enter) * 70)}
-            width={W}
-            height={H}
-            fill={s.fill}
+            transform={`translate(${n1(s.dx + peel * (i - 1) * 36)} ${n1(s.dy + (1 - enter) * 70 - peel * (70 + i * 90))}) rotate(${n1(peel * (i - 1) * 7)} 960 540)`}
             opacity={Math.min(1, enter)}
             filter="url(#shNear)"
-          />
+          >
+            <rect width={W} height={H} fill={s.fill} />
+          </g>
         );
       })}
       {GLYPHS.map((g, i) => {
@@ -334,7 +333,7 @@ export const Type: React.FC<{f: number}> = ({f}) => {
           <g
             key={`g${i}`}
             clipPath={`url(#gly${i})`}
-            transform={`translate(${g.x} 400) scale(${k.toFixed(3)}) translate(${-g.x} -400)`}
+            transform={`translate(${g.x} ${400 - peel * 36}) scale(${k.toFixed(3)}) translate(${-g.x} -400)`}
             filter="url(#shLift)"
           >
             <UnderCut f={f} />
@@ -368,6 +367,26 @@ export const Type: React.FC<{f: number}> = ({f}) => {
             fill={C.paper}
             transform={`translate(${n1(px)} ${n1(py)}) rotate(${n1(r)})`}
             opacity={Math.max(0, 1 - age / 88)}
+            filter="url(#shFar)"
+          />
+        );
+      })}
+      {SCRAPS.map((s, i) => {
+        const age = f - (AT.type + 86 + i * 5);
+        if (age < 0 || age > 80) return null;
+        const py = s.y + 40 + age * 4.2 + age * age * 0.08;
+        const px = s.x + s.vx * age * 1.2;
+        const r = s.rot + age * 3.2;
+        return (
+          <rect
+            key={`peel${i}`}
+            x={n1(-s.w / 2)}
+            y={n1(-s.h / 2)}
+            width={s.w}
+            height={s.h}
+            fill={C.paper}
+            transform={`translate(${n1(px)} ${n1(py)}) rotate(${n1(r)})`}
+            opacity={Math.max(0, 1 - age / 76)}
             filter="url(#shFar)"
           />
         );

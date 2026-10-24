@@ -100,7 +100,7 @@ export const Folk: React.FC<{f: number}> = ({f}) => {
   );
 };
 
-/** 开场同一朵窗花：片尾旋转收点、砸成印章时原样回来（Swiss：同一元素接下幕） */
+/** 开场同一朵窗花：片尾落回挂起，接在门笺信息幕上（Swiss：同一元素回位） */
 export const FolkFlower: React.FC<{
   f: number;
   scale: number;
