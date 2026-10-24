@@ -112,9 +112,10 @@ precise hairlines, no texture, no gradients, no shadows, no ornaments --ar 4:5
 **视频（Runway / 可灵 / Sora）**
 
 ```
-Minimalist motion graphics on warm off-white paper: a noisy screen deletes to one orange dot and a horizon line;
-the line grows into a phone — press-scale, page-push, sheet, orange toggle; the phone becomes a handbook browser
-with hover underline, scroll and anchor; a checkout card confirms then empties. Hairlines, ultra-light type,
+Minimalist motion graphics on warm off-white paper: a noisy screen deletes to one orange dot; a teaching reel
+with measure lines, type-weight contrast, whitespace flash, fly-off junk, a grid and before/after split;
+then a phone — press-scale, page-push, sheet, orange toggle, toast; a handbook browser with hover underline,
+scroll, anchor and hash; a checkout card confirms, empties, a draft folds away. Hairlines, ultra-light type,
 one accent, silky springs and motion blur, no gradients, no clutter.
 ```
 
@@ -127,22 +128,24 @@ one accent, silky springs and motion blur, no gradients, no clutter.
 间距只用 8 / 16 / 32 / 64 / 128，留白比你觉得够的再多一倍。设计令牌见 tokens.css。
 ```
 
-## 9 · 22 秒分镜
+## 9 · 24 秒分镜
 
-极简主义最难拍的地方是：“少”本身不会动。所以短片不讲收音机史，只看它在真实产品里长什么样、怎么丝滑动。开场仍用 2 秒噪音→点当钩子；剩下的时长给 App / HTML / 确认。橙点还在，但它变成指针、开关和 CTA。
+极简主义最难拍的地方是：“少”本身不会动。四改把片子拆成两层：**产品 UI 保持极简，但每个交互必须看得见**；**讲解 / 示意幕故意不极简**——测量线、字重对比、留白闪、删减飞走、网格、before→after，用动效把「少即是多」讲清楚。历史仍只留 1.8 秒钩子。橙点还在，变成指针、开关和 CTA。
 
 <a href="https://github.com/guanmo-ai/design-style/releases/tag/day-07"><img src="video/cover.jpg" width="800" alt="短片封面（点击看视频）" /></a>
 
-| 时间 | 帧 | 章节 | 画面 | 产品语言 |
+| 时间 | 帧 | 层 | 章节 | 画面 |
 |---|---|---|---|---|
-| 0:00—0.5 | 0—30 | 开场 · 噪音 | 满屏 147 样贴纸、星爆、价签，一个十六分音符删一批，删到只剩一个点 | 先满后空 |
-| 0.5—2.0 | 30—120 | 开场 · 标题 | 点里拉出一条地平线；MINIMALISM / 极简主义；线交给下一幕 | 短钩子 |
-| **2.0—10.0** | **120—600** | **App UI** | 线长成手机；多余闹钟删到一行；**按压缩放 → 推页 → sheet 拉起 → 拨橙点开关** | 留白、字重、一主按钮、列表 |
-| **10.0—15.5** | **600—930** | **HTML / Web** | 手机退成浏览器；手册站大标题 + 细线栏；**hover 下划线 → 滚动 → 锚点落到原则** | 少色、网格、一个 CTA |
-| **15.5—19.0** | **930—1140** | **确认 / 空状态** | 同一套语言换容器：一张纸、一个金额、一个按钮；按下勾上，做完了就空着 | 支付确认 + 空状态 |
-| 19.0—22.0 | 1140—1320 | 片尾 | 点落回正中——「少即是多。」`@guanmo_ai` | — |
+| 0:00—0.5 | 0—30 | 钩子 | 开场 · 噪音 | 满屏 147 样贴纸、星爆、价签，一个十六分音符删一批，删到只剩一个点 |
+| 0.5—1.8 | 30—108 | 钩子 | 开场 · 标题 | 点里拉出一条地平线；MINIMALISM / 极简主义 |
+| **1.8—6.0** | **108—360** | **非极简讲解** | **示意** | 三档字重 + 测量线 → 留白填色闪退 → 4×4 网格 → 噪音弹入 → 箭头「删」→ 飞走 → 只剩一处 → before/after → 一处强调 |
+| **6.0—10.4** | **360—624** | **极简产品** | **App** | 线长成手机；删多余行；**按压缩放 → 推页 → 滑动 → sheet → 拨开关 → toast → 加号**。同一屏不晾 >0.8s |
+| **10.4—15.0** | **624—900** | **极简产品** | **HTML** | 手机退成浏览器；**hover 下划线 → CTA → 滚动 → 锚点 → 行 hover → 地址栏 #01** |
+| **15.0—18.4** | **900—1104** | **极简产品** | **确认** | 一张纸、一个金额、一个按钮；**按下 → 勾上 → 空着 → 草稿飞入再折走** |
+| **18.4—21.0** | **1104—1260** | **非极简讲解** | **对照** | App / HTML / 确认三容器并排，箭头标「同一套语言」，收成一个点 |
+| 21.0—24.0 | 1260—1440 | 片尾 | 片尾 | 点落回正中——「少即是多。」`@guanmo_ai` |
 
-> App 闹钟、手册站和付款页都是代码画的虚构界面，不是某个真实产品的截图；参考图一律代码渲染，不用 AI 生图。
+> App 闹钟、手册站和付款页都是代码画的虚构界面，不是某个真实产品的截图；参考图一律代码渲染，不用 AI 生图。讲解幕的测量线 / 网格 / 对照只出现在「讲它」的地方，不进产品 UI。
 
 ## 10 · 文件
 
@@ -151,12 +154,13 @@ one accent, silky springs and motion blur, no gradients, no clutter.
 ├─ PROCESS.md                             # 制作过程（含被否的第一版、为什么推倒重来）
 ├─ process/                               # 过程图：橙点接力 · 每拍联系表 · 开场拆解 · 节拍时间轴
 ├─ tokens.ts / tokens.css / tokens.json   # 同一份设计令牌（颜色、字体、版式、线宽、节拍）
-├─ video/Minimalism.tsx                   # 主合成：开场 / App / Web / 确认 / 片尾、章节条、运动模糊、颗粒、配乐
-├─ video/opening.tsx                      # 0—2 秒：噪音删到一个点、地平线、标题（全片唯一的历史钩子）
-├─ video/app.tsx                          # 2—10 秒：极简闹钟 App（按 / 推页 / sheet / 开关）
-├─ video/web.tsx                          # 10—15.5 秒：极简手册站（hover / 滚动 / 锚点）
-├─ video/pay.tsx                          # 15.5—19 秒：确认支付 → 空状态
-├─ video/finale.tsx                       # 19—22 秒：回到那个点 · @guanmo_ai
+├─ video/Minimalism.tsx                   # 主合成：开场 / 讲解 / App / Web / 确认 / 对照 / 片尾
+├─ video/opening.tsx                      # 0—1.8 秒：噪音删到一个点、地平线、标题（全片唯一的历史钩子）
+├─ video/teach.tsx                        # 1.8—6.0 + 18.4—21.0：非极简讲解（测量 / 闪 / 网格 / 飞走 / 对照）
+├─ video/app.tsx                          # 6.0—10.4：极简闹钟 App（按 / 推 / 滑 / sheet / 开关 / toast / plus）
+├─ video/web.tsx                          # 10.4—15.0：极简手册站（hover / CTA / 滚动 / 锚点 / hash）
+├─ video/pay.tsx                          # 15.0—18.4：确认支付 → 空状态 → 草稿折走
+├─ video/finale.tsx                       # 21.0—24.0：回到那个点 · @guanmo_ai
 ├─ video/ui.tsx                           # 按基线定位的文字、逐字母动画、发丝线、引线、点、涟漪
 ├─ video/timeline.ts · cues.ts            # 所有帧号；cues.ts 汇总给配乐用
 ├─ video/metrics.py → metrics.ts          # 从字体文件读出的字宽（右对齐、字距修正用）

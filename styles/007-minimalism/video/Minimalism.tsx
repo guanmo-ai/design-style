@@ -1,12 +1,13 @@
 /**
- * Design Style · 风格 007 · 极简主义 Minimalism —— 22 秒短片（1920×1080 · 60fps · 120 BPM · 1320 帧）
+ * Design Style · 风格 007 · 极简主义 Minimalism —— 24 秒短片（1920×1080 · 60fps · 120 BPM · 1440 帧）
  *
- * 不讲收音机史。只看极简在真实产品里长什么样、怎么丝滑动。
- *   0.0–2.0s   开场    噪音删到一个点；MINIMALISM / 极简主义
- *   2.0–10.0s  App     线长成手机；删掉多余闹钟；按压缩放 → 推页 → sheet → 拨橙点开关
- *  10.0–15.5s  Web     极简手册站：大标题、细线栏；hover / 滚动 / 锚点
- *  15.5–19.0s  确认    一张纸：一个金额、一个按钮；做完了就空着
- *  19.0–22.0s  片尾    回到那个点；少即是多。@guanmo_ai
+ *   0.0–1.8s   开场钩子
+ *   1.8–6.0s   非极简讲解：字重 / 测量 / 留白闪 / 删走 / 网格 / 前后对比
+ *   6.0–10.4s  极简产品 App
+ *  10.4–15.0s  极简产品 Web
+ *  15.0–18.4s  极简产品 确认
+ *  18.4–21.0s  非极简讲解：三容器对照
+ *  21.0–24.0s  片尾 @guanmo_ai
  */
 import React from 'react';
 import {AbsoluteFill, Audio, staticFile, useCurrentFrame} from 'remotion';
@@ -18,6 +19,7 @@ import {C} from '../tokens';
 import {AT, CHAPTERS, DURATION} from './timeline';
 import {font} from './ui';
 import {Opening} from './opening';
+import {Recap, Teach} from './teach';
 import {App} from './app';
 import {Web} from './web';
 import {Pay} from './pay';
@@ -53,14 +55,14 @@ const loadFonts = () => {
 };
 
 const Hud: React.FC<{f: number}> = ({f}) => {
-  const o = tween(f, AT.app, 16) * (1 - tween(f, AT.end, 12));
+  const o = tween(f, AT.teach, 12) * (1 - tween(f, AT.end, 12));
   if (o <= 0.001) return null;
   let k = 0;
   CHAPTERS.forEach(([, , at], j) => {
     if (f >= at) k = j;
   });
   const p = tween(f, CHAPTERS[k][2], 16, 0, 1, E.out);
-  const prog = (f - AT.app) / (AT.end - AT.app);
+  const prog = (f - AT.teach) / (AT.end - AT.teach);
   return (
     <div style={{position: 'absolute', left: 120, right: 120, top: 990, height: 40, opacity: o}}>
       <div style={{position: 'absolute', left: 0, right: 0, top: 0, height: 1, background: C.hair}} />
@@ -84,11 +86,13 @@ const Stage: React.FC = () => {
   return (
     <AbsoluteFill style={{background: `radial-gradient(ellipse 70% 80% at 50% 46%, ${C.paperHi} 0%, ${C.paper} 62%, #E8E4DD 100%)`, overflow: 'hidden'}}>
       <svg width={1920} height={1080} viewBox="0 0 1920 1080" style={{position: 'absolute', inset: 0}}>
-        {on(0, 124) && <Opening f={f} />}
-        {on(104, 612) && <App f={f} />}
-        {on(592, 942) && <Web f={f} />}
-        {on(922, 1152) && <Pay f={f} />}
-        {on(1140, DURATION) && <Finale f={f} />}
+        {on(0, 120) && <Opening f={f} />}
+        {on(104, 368) && <Teach f={f} />}
+        {on(348, 640) && <App f={f} />}
+        {on(608, 916) && <Web f={f} />}
+        {on(884, 1120) && <Pay f={f} />}
+        {on(1096, 1268) && <Recap f={f} />}
+        {on(1260, DURATION) && <Finale f={f} />}
       </svg>
       <Hud f={f} />
     </AbsoluteFill>

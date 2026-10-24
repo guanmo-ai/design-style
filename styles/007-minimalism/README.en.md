@@ -8,7 +8,7 @@
 
 One dot, one line, a lot of space. Remove until nothing more can be removed; everything that is left has a reason to be there. Less is more.
 
-The 22-second film keeps a two-second noise→dot hook, then spends the rest of the runtime on how minimalism looks and moves in real products: an App UI (press, page push, sheet, toggle), an HTML handbook (hover, scroll, anchor), and a checkout card that empties. The orange dot is the pointer, the switch, and the CTA.
+The 24-second film keeps a 1.8-second noise→dot hook, then splits the rest into two layers. **Teaching scenes are deliberately not minimal** — measure lines, type-weight contrast, whitespace flash, fly-off, grid, before→after. **Product UI stays minimal**, but every interaction is visible (press-scale, page push, sheet, toggle, hover underline, scroll, anchor, confirm check) and the same screen never idles longer than 0.8s. The orange dot is the pointer, the switch, and the CTA.
 
 Series: **Design styles**. Period shown in this episode: **1929—today**.
 

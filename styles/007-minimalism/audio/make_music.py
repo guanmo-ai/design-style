@@ -1,14 +1,16 @@
 """
 Design Style · 风格 007 · 极简主义 Minimalism —— 配乐与音效（纯代码合成，无外部音源）
 
-一首完整的 22 秒小曲：120 BPM（1 拍 = 0.5 秒 = 30 帧）· D 大调。整首曲子也在做“减法”：
-先是一墙被捂暖的噪音，删到只剩一个音；然后跟着真实产品幕一层一层加回来；最后再一层一层删掉，回到那一个音。
+一首完整的 24 秒小曲：120 BPM（1 拍 = 0.5 秒 = 30 帧）· D 大调。整首曲子也在做“减法”：
+先是一墙被捂暖的噪音，删到只剩一个音；讲解幕用测量/删走的对位；产品幕一层一层加回来；对照后再删掉，回到那一个音。
   0–0.5s     噪音：147 样东西被删，每删一样一声软“噗”（低通），底下是一层暖的纸噪而不是刺耳乱码 → 0.5s 一个点：一声纯音
-  0.5–2s     一个音：D 的八分音符脉冲（Reich 式），每过一拍加一个音；标题十个字母十声细响；上升 → 2s
-  2–10s      App：线长成手机；多余闹钟每删一样一声 tick；按压缩放 / 推页 / sheet / 拨橙点开关各一对位
-  10–15.5s   Web：手册站 hover 细响、滚动一阵空气、锚点落地一声 ping
-  15.5–19s   确认：卡片弹出；按下 → 勾上 → 空状态，乐队一件一件退出
-  19–22s     片尾：一个点 = 那一声纯音；Dmaj9 的长和弦慢慢散掉
+  0.5–1.8s   一个音：D 的八分音符脉冲（Reich 式），每过一拍加一个音；标题十个字母十声细响
+  1.8–6s     讲解：字重钢琴、留白闪 swell、网格 tink、飞走 tick、前后对照 thock
+  6–10.4s    App：多余闹钟 tick；按 / 推 / sheet / 拨 / toast / plus 各一对位
+  10.4–15s   Web：hover tink、滚动空气、锚点 ping、行 hover、hash
+  15–18.4s   确认：按下 → 勾上 → 空 → 草稿飞入再折走，乐队一件一件退出
+  18.4–21s   对照：三容器马林巴
+  21–24s     片尾：一个点 = 那一声纯音；Dmaj9 的长和弦慢慢散掉
 所有时间点读自 cues.json（由 export_cues.mjs 从 video/cues.ts 导出），与画面逐帧对齐（帧 / 60 = 秒）。
 
 用法：python3 styles/007-minimalism/audio/make_music.py
@@ -304,24 +306,24 @@ CYM = cymbal()
 BEAT, S16 = 30, 7.5
 # [起始帧, 名字, 贝斯根音, Pad 声部, 马林巴用的四个音]
 PROG = [
-    (120, 'Dmaj7', 38, [50, 57, 61, 66], [62, 66, 69, 73]),
+    (108, 'Dmaj7', 38, [50, 57, 61, 66], [62, 66, 69, 73]),
     (180, 'Bm7', 35, [47, 54, 57, 62], [59, 62, 66, 69]),
     (240, 'Gmaj7', 31, [50, 55, 59, 66], [67, 71, 74, 78]),
-    (270, 'A', 33, [52, 57, 61, 64], [69, 73, 76, 81]),
+    (300, 'A', 33, [52, 57, 61, 64], [69, 73, 76, 81]),
     (360, 'Em9', 40, [52, 55, 59, 66], [64, 67, 71, 74]),
-    (420, 'D/F#', 42, [50, 57, 62, 66], [74, 78, 81, 85]),
+    (432, 'D/F#', 42, [50, 57, 62, 66], [74, 78, 81, 85]),
     (480, 'Gmaj7', 31, [50, 55, 59, 66], [67, 71, 74, 78]),
     (540, 'A6', 33, [52, 57, 61, 66], [69, 73, 76, 78]),
-    (600, 'Bm9', 35, [50, 54, 57, 61], [71, 74, 78, 73]),
-    (660, 'Gmaj9', 31, [50, 55, 59, 64], [67, 71, 74, 76]),
-    (720, 'D/F#', 42, [50, 57, 62, 66], [74, 78, 81, 85]),
-    (810, 'A6', 33, [52, 57, 61, 66], [69, 73, 76, 81]),
-    (846, 'Gmaj9', 31, [50, 55, 59, 64], [67, 71, 74, 78]),
-    (930, 'Dmaj7', 38, [50, 57, 61, 66], [62, 66, 69, 73]),
-    (1008, 'A6', 33, [52, 57, 61, 66], [69, 73, 76, 81]),
-    (1056, 'Bm9', 35, [50, 54, 57, 61], [71, 74, 78, 73]),
+    (624, 'Bm9', 35, [50, 54, 57, 61], [71, 74, 78, 73]),
+    (690, 'Gmaj9', 31, [50, 55, 59, 64], [67, 71, 74, 76]),
+    (756, 'D/F#', 42, [50, 57, 62, 66], [74, 78, 81, 85]),
+    (822, 'A6', 33, [52, 57, 61, 66], [69, 73, 76, 81]),
+    (900, 'Dmaj7', 38, [50, 57, 61, 66], [62, 66, 69, 73]),
+    (972, 'Bm9', 35, [50, 54, 57, 61], [71, 74, 78, 73]),
+    (1104, 'Gmaj9', 31, [50, 55, 59, 64], [67, 71, 74, 78]),
+    (1260, 'Dmaj7', 38, [50, 57, 61, 66], [62, 66, 69, 73]),
 ]
-APP, WEB, PAY = CUE['app'], CUE['web'], CUE['pay']
+TEACH, APP, WEB, PAY, REC = CUE['teach'], CUE['app'], CUE['web'], CUE['pay'], CUE['recap']
 END = CUE['finale']['end']
 EMPTY = PAY['empty']
 DRUM_END, BASS_END, MAR_END, PAD_END = EMPTY, EMPTY + 24, END - 24, END
@@ -411,13 +413,29 @@ place(sub(midi(38), 2.0, 0.05), fr(60))
 place(riser(fr(24), 0.16, 294), fr(96), send=0.3)
 place(swell(fr(12), 0.08), fr(108))
 
-# ================= App 120–600：线长成手机，按 / 推 / 拉 / 拨 =================
-place(air(fr(28), 400, 5200, 0.07, 0.45), fr(104), send=0.22)  # 地平线长成机身
+# ================= 讲解 108–360：测量 / 闪 / 网格 / 飞走 / 对照 =================
+place(air(fr(16), 500, 4000, 0.06, 0.4), fr(108), send=0.2)
+for i, m in enumerate((62, 66, 74)):
+    place(piano(midi(m), 0.7, 0.07), fr(TEACH['weights'] + i * 8), pan=-0.3 + 0.2 * i, send=0.35, bus=KEYS)
+    place(tick(0.04, 2100 + 120 * i, 0.008), fr(TEACH['weights'] + i * 8), pan=-0.2)
+for i in range(4):
+    place(swell(fr(8), 0.05), fr(TEACH['flash'] + i * 5))
+    place(pop(280 + 40 * i, 0.07), fr(TEACH['flash'] + i * 5), pan=-0.4 + 0.25 * i)
+for i in range(4):
+    place(tink(midi(81 + i * 2), 0.02, 0.22), fr(TEACH['grid'] + i * 3), pan=-0.4 + 0.2 * i, send=0.3, bus=KEYS)
+for i in range(8):
+    place(knock(220 + 18 * i, 0.06), fr(TEACH['before'] + i * 2), pan=-0.5 + 0.12 * i, send=0.12)
+place(tick(0.08, 1800, 0.01), fr(TEACH['arrow']), send=0.15)
+for i in range(8):
+    place(tick(0.055, 2600 - 80 * i, 0.007), fr(TEACH['cut'] + i * 2), pan=-0.4 + 0.1 * i, send=0.1)
+place(ping(midi(86), 0.16, 1.0), fr(TEACH['after']), send=0.4, bus=KEYS)
+place(thock(0.22, 180, 55, 0.08), fr(TEACH['split']), send=0.15)
+place(ping(midi(93), 0.12, 0.9), fr(TEACH['accent']), pan=0.25, send=0.4, bus=KEYS)
+
+# ================= App：按 / 推 / 拉 / 拨 =================
+place(air(fr(20), 400, 4800, 0.06, 0.4), fr(CUE['at']['app'] - 8), send=0.2)
 for m in (38, 50, 57, 62, 66):
-    place(piano(midi(m), 1.2, 0.055), fr(120), send=0.35, bus=KEYS)
-STEP_MEL = [78, 81, 83, 81, 86, 85, 81, 78]
-for k, m in enumerate(STEP_MEL):
-    place(marimba(midi(m), 0.13, 0.32), fr(138 + k * 7.5), pan=-0.25 + 0.07 * k, send=0.28, bus=KEYS)
+    place(piano(midi(m), 1.0, 0.05), fr(CUE['at']['app']), send=0.32, bus=KEYS)
 for k, fm in enumerate(APP['cuts']):
     place(tick(0.07, 2400 - 120 * k, 0.008), fr(fm), pan=0.35 - 0.08 * k, send=0.1)
     place(marimba(midi([81, 78, 76, 74, 73][k]), 0.1, 0.22), fr(fm), pan=0.3, send=0.25, bus=KEYS)
@@ -436,29 +454,34 @@ place(air(fr(14), 600, 2800, 0.04, 0.4), fr(APP['sheetOut']), send=0.15)
 place(click(0.22, 2600), fr(APP['tog']), pan=0.35, send=0.1)  # 橙点开关
 place(click(0.1, 1900), fr(APP['tog'] + 3), pan=0.35)
 place(ping(midi(86), 0.2, 1.2), fr(APP['tog']), pan=0.35, send=0.45, bus=KEYS)
-for fm, m, d in ((510, 78, 0.45), (525, 76, 0.25), (532.5, 74, 0.25), (540, 73, 0.55), (564, 76, 0.4), (582, 74, 0.5)):
-    place(piano(midi(m), d, 0.1), fr(fm), pan=-0.12, send=0.38, bus=KEYS)
+place(thock(0.16, 150, 50, 0.08), fr(APP['toast']), send=0.12)
+place(marimba(midi(74), 0.1, 0.24), fr(APP['toast']), pan=0.2, send=0.25, bus=KEYS)
+place(tick(0.05, 2000, 0.008), fr(APP['plusBack']), send=0.1)
+place(click(0.16, 2400), fr(APP['plusTap']), send=0.08)
 
-# ================= Web 600–930：hover / 滚动 / 锚点 =================
-place(air(fr(22), 350, 5000, 0.075, 0.4), fr(592), send=0.22)
-for m in (47, 54, 61, 66, 69, 73):
-    place(piano(midi(m), 1.3, 0.055), fr(600), send=0.38, bus=KEYS)
+# ================= Web：hover / CTA / 滚动 / 锚点 =================
+place(air(fr(18), 350, 4800, 0.06, 0.4), fr(CUE['at']['web'] - 8), send=0.2)
+for m in (47, 54, 61, 66, 69):
+    place(piano(midi(m), 1.1, 0.05), fr(CUE['at']['web']), send=0.34, bus=KEYS)
 place(tink(midi(90), 0.028, 0.28), fr(WEB['hover']), pan=0.45, send=0.4, bus=KEYS)
-place(tink(midi(93), 0.02, 0.22), fr(WEB['hover'] + 6), pan=0.5, send=0.35, bus=KEYS)
+place(tink(midi(93), 0.022, 0.22), fr(WEB['cta']), pan=0.35, send=0.35, bus=KEYS)
 place(air(fr(36), 240, 6200, 0.09, 0.65), fr(WEB['scroll'] - 4), send=0.28)  # 整页上滚
 place(riser(fr(18), 0.08, 330), fr(WEB['scroll']))
 for k, m in enumerate((74, 78, 81, 86)):
     place(tink(midi(m + 12), 0.018, 0.28), fr(WEB['scroll'] + 12 + k * 10), pan=-0.35 + 0.2 * k, send=0.35, bus=KEYS)
 place(ping(midi(86), 0.16, 1.1), fr(WEB['anchor']), pan=-0.15, send=0.42, bus=KEYS)
 place(thock(0.18, 180, 60, 0.08), fr(WEB['anchor']), send=0.14)
+place(tink(midi(88), 0.024, 0.24), fr(WEB['row']), pan=-0.2, send=0.35, bus=KEYS)
+place(tick(0.05, 2200, 0.008), fr(WEB['hash']), send=0.12)
+place(tink(midi(93), 0.02, 0.2), fr(WEB['hash']), pan=0.25, send=0.3, bus=KEYS)
 for k, m in enumerate((67, 71, 74)):
     place(marimba(midi(m), 0.11, 0.3), fr(WEB['anchor'] + 8 + k * 8), pan=-0.2 + 0.12 * k, send=0.28, bus=KEYS)
 
-# ================= 确认 930–1140：按下 → 勾上 → 空着 =================
-place(air(fr(16), 400, 3600, 0.06, 0.5), fr(922), send=0.2)
-place(thock(0.28, 190, 58, 0.09), fr(930), send=0.16)
-for m in (38, 50, 57, 62, 66, 69):
-    place(piano(midi(m), 1.1, 0.06), fr(930), send=0.4, bus=KEYS)
+# ================= 确认：按下 → 勾上 → 空着 =================
+place(air(fr(14), 400, 3400, 0.055, 0.45), fr(CUE['at']['pay'] - 8), send=0.18)
+place(thock(0.26, 190, 58, 0.09), fr(CUE['at']['pay']), send=0.15)
+for m in (38, 50, 57, 62, 66):
+    place(piano(midi(m), 1.0, 0.055), fr(CUE['at']['pay']), send=0.36, bus=KEYS)
 place(click(0.2, 2400), fr(PAY['press']), pan=0.0, send=0.08)
 place(click(0.08, 1700), fr(PAY['press'] + 3))
 place(ping(midi(86), 0.22, 1.3), fr(PAY['ok']), send=0.45, bus=KEYS)
@@ -469,6 +492,18 @@ for m in (57, 61, 66, 73):
 place(air(fr(18), 500, 2800, 0.05, 0.45), fr(EMPTY - 6), send=0.18)
 place(tick(0.06, 1600, 0.012), fr(EMPTY), send=0.12)
 place(pop(380, 0.08), fr(EMPTY))
+place(click(0.14, 2200), fr(PAY['plus']), send=0.08)
+place(knock(240, 0.08), fr(PAY['draft']), send=0.1)
+place(marimba(midi(78), 0.1, 0.22), fr(PAY['draft']), pan=-0.15, send=0.25, bus=KEYS)
+place(tick(0.06, 2400, 0.008), fr(PAY['fold']), pan=0.3, send=0.1)
+place(pop(320, 0.07), fr(PAY['fold']))
+
+# ================= 对照：三容器 =================
+place(air(fr(16), 300, 4200, 0.06, 0.5), fr(REC['in'] - 4), send=0.2)
+for i, m in enumerate((67, 71, 74)):
+    place(marimba(midi(m), 0.12, 0.28), fr(REC['in'] + i * 6), pan=-0.3 + 0.3 * i, send=0.28, bus=KEYS)
+place(tink(midi(90), 0.03, 0.3), fr(REC['arrows']), send=0.35, bus=KEYS)
+place(ping(midi(86), 0.14, 1.0), fr(REC['pulse']), send=0.4, bus=KEYS)
 place(swell(fr(16), 0.1), fr(END - 16))
 
 # ================= 片尾：回到那一个音 =================
@@ -548,7 +583,7 @@ def ostinato(start, end, offset=0, pan=0.35, level=0.1, oct_=0):
 
 
 ostinato(204, MAR_END)
-ostinato(600 + S16, MAR_END, offset=1, pan=-0.55, level=0.07, oct_=12)
+ostinato(CUE['at']['web'] + S16, MAR_END, offset=1, pan=-0.55, level=0.07, oct_=12)
 
 # ================= 侧链 =================
 ks = np.array(sorted(KICKS))
