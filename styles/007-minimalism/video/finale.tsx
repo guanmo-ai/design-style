@@ -79,7 +79,7 @@ const Recap: React.FC<P> = ({f}) => {
           const art =
             i === 3 ? (
               <g transform={`translate(${VC.x} ${n2(VC.y)}) scale(${SV}) translate(${-PC.x} ${-PC.y})`}>
-                <Phone f={Math.min(f, 712)} dot={false} />
+                <Phone f={Math.min(f, 712)} dot={false} id="scr-recap" />
               </g>
             ) : (
               e.draw
