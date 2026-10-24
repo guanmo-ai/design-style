@@ -6,7 +6,7 @@
 
 ## Overview
 
-The rule is still 3–4 sheets; only the front one is in focus. The film teaches that with **16 distinct cards** moving at once, then eight application layouts (magazine, layers, proofs, kanban, album, notifications, payment deck, portfolio) in 2-second morphs. 22 seconds, no dead frames.
+The rule is still 3–4 sheets; only the front one is in focus. The film proves it on a photo-edit table with **six real prints**: pull, lift, press. 22 seconds, no dead frames.
 
 Series: **Layouts**. Period shown in this episode: **2013—**.
 
