@@ -127,7 +127,7 @@ npm run render:L03          # → out/03-card-stack-master.mp4
 npm run images:L03
 ```
 
-封面：iOS Wallet 幕里登机牌在顶层的一帧 → `video/cover.jpg`。成片不进 git。
+封面：iOS 通知压上登机牌那一帧 → `video/cover.jpg`。成片不进 git。v4 母版 22.02s · 1920×1080 · 60fps · H.264+AAC · 约 27MB · 成片响度 −14.5 LUFS。
 
 ## 10 · 下期沿用
 
