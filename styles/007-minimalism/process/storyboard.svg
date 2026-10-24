@@ -1,0 +1,69 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1920" height="1080" viewBox="0 0 1920 1080">
+  <!-- 007 过程分镜：每格一句原则 -->
+  <rect width="1920" height="1080" fill="#EFECE6"/>
+  <text x="36.0" y="40.0" font-family="'Geist Mono', ui-monospace, 'SF Mono', Menlo, monospace" font-weight="400" font-size="13" letter-spacing="1.56" fill="#8F8C86">DESIGN STYLE · 007  ·  PROCESS STORYBOARD</text>
+  <text x="1884.0" y="40.0" font-family="'Inter', 'Helvetica Neue', Arial, 'Noto Sans SC', sans-serif" font-weight="400" font-size="16" text-anchor="end" fill="#1C1B19">@guanmo_ai</text>
+  <rect x="36.0" y="64.0" width="450.0" height="460.0" fill="#F6F4EF" stroke="#1C1B19" stroke-width="1"/>
+  <text x="54.0" y="100.0" font-family="'Geist Mono', ui-monospace, 'SF Mono', Menlo, monospace" font-weight="400" font-size="13" letter-spacing="1.56" fill="#5F5C57">01  堆满</text>
+  <text x="54.0" y="152.0" font-family="'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif" font-weight="300" font-size="22" fill="#1C1B19">先看见多余的，才知道要删什么。</text>
+  <text x="54.0" y="500.0" font-family="'Geist Mono', ui-monospace, 'SF Mono', Menlo, monospace" font-weight="400" font-size="11" letter-spacing="1.32" fill="#8F8C86">SEE THE EXCESS</text>
+  <circle cx="76.0" cy="214.0" r="8.0" fill="#CFCAC1"/>
+  <circle cx="104.0" cy="214.0" r="8.0" fill="#CFCAC1"/>
+  <circle cx="132.0" cy="214.0" r="8.0" fill="#CFCAC1"/>
+  <circle cx="160.0" cy="214.0" r="8.0" fill="#CFCAC1"/>
+  <circle cx="188.0" cy="214.0" r="8.0" fill="#CFCAC1"/>
+  <circle cx="216.0" cy="214.0" r="8.0" fill="#CFCAC1"/>
+  <circle cx="76.0" cy="242.0" r="8.0" fill="#CFCAC1"/>
+  <circle cx="104.0" cy="242.0" r="8.0" fill="#CFCAC1"/>
+  <circle cx="132.0" cy="242.0" r="8.0" fill="#CFCAC1"/>
+  <circle cx="160.0" cy="242.0" r="8.0" fill="#CFCAC1"/>
+  <circle cx="188.0" cy="242.0" r="8.0" fill="#CFCAC1"/>
+  <circle cx="216.0" cy="242.0" r="8.0" fill="#CFCAC1"/>
+  <rect x="502.0" y="64.0" width="450.0" height="460.0" fill="#F6F4EF" stroke="#1C1B19" stroke-width="1"/>
+  <text x="520.0" y="100.0" font-family="'Geist Mono', ui-monospace, 'SF Mono', Menlo, monospace" font-weight="400" font-size="13" letter-spacing="1.56" fill="#5F5C57">02  一次删一个</text>
+  <text x="520.0" y="152.0" font-family="'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif" font-weight="300" font-size="22" fill="#1C1B19">每删一下，必须说清为什么。</text>
+  <text x="520.0" y="500.0" font-family="'Geist Mono', ui-monospace, 'SF Mono', Menlo, monospace" font-weight="400" font-size="11" letter-spacing="1.32" fill="#8F8C86">CUT WITH A REASON</text>
+  <line x1="538.0" y1="224.0" x2="916.0" y2="224.0" stroke="#1C1B19" stroke-width="1.5"/>
+  <text x="538.0" y="254.0" font-family="'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif" font-weight="400" font-size="16" fill="#1C1B19">不是功能，是噪音</text>
+  <rect x="968.0" y="64.0" width="450.0" height="460.0" fill="#F6F4EF" stroke="#1C1B19" stroke-width="1"/>
+  <text x="986.0" y="100.0" font-family="'Geist Mono', ui-monospace, 'SF Mono', Menlo, monospace" font-weight="400" font-size="13" letter-spacing="1.56" fill="#5F5C57">03  留下骨架</text>
+  <text x="986.0" y="152.0" font-family="'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif" font-weight="300" font-size="22" fill="#1C1B19">删完之后，网格、字重、留白才露出来。</text>
+  <text x="986.0" y="500.0" font-family="'Geist Mono', ui-monospace, 'SF Mono', Menlo, monospace" font-weight="400" font-size="11" letter-spacing="1.32" fill="#8F8C86">THE SKELETON</text>
+  <line x1="1008.0" y1="204.0" x2="1008.0" y2="304.0" stroke="rgba(28,27,25,0.16)" stroke-width="1"/>
+  <line x1="1056.0" y1="204.0" x2="1056.0" y2="304.0" stroke="rgba(28,27,25,0.16)" stroke-width="1"/>
+  <line x1="1104.0" y1="204.0" x2="1104.0" y2="304.0" stroke="rgba(28,27,25,0.16)" stroke-width="1"/>
+  <line x1="1152.0" y1="204.0" x2="1152.0" y2="304.0" stroke="rgba(28,27,25,0.16)" stroke-width="1"/>
+  <circle cx="1104.0" cy="254.0" r="6.0" fill="#F27A1A"/>
+  <rect x="1434.0" y="64.0" width="450.0" height="460.0" fill="#F6F4EF" stroke="#1C1B19" stroke-width="1"/>
+  <text x="1452.0" y="100.0" font-family="'Geist Mono', ui-monospace, 'SF Mono', Menlo, monospace" font-weight="400" font-size="13" letter-spacing="1.56" fill="#5F5C57">04  App</text>
+  <text x="1452.0" y="152.0" font-family="'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif" font-weight="300" font-size="22" fill="#1C1B19">同一条原则：列表删成一行、一主按钮。</text>
+  <text x="1452.0" y="500.0" font-family="'Geist Mono', ui-monospace, 'SF Mono', Menlo, monospace" font-weight="400" font-size="11" letter-spacing="1.32" fill="#8F8C86">ONE ROW</text>
+  <text x="1470.0" y="264.0" font-family="'Inter Display', 'Helvetica Neue', Arial, 'Noto Sans SC', sans-serif" font-weight="100" font-size="40" fill="#1C1B19">07:00</text>
+  <rect x="1794.0" y="232.0" width="48.0" height="26.0" rx="13" fill="#1C1B19"/>
+  <circle cx="1829.0" cy="245.0" r="9.0" fill="#F27A1A"/>
+  <rect x="36.0" y="540.0" width="450.0" height="460.0" fill="#F6F4EF" stroke="#1C1B19" stroke-width="1"/>
+  <text x="54.0" y="576.0" font-family="'Geist Mono', ui-monospace, 'SF Mono', Menlo, monospace" font-weight="400" font-size="13" letter-spacing="1.56" fill="#5F5C57">05  Web</text>
+  <text x="54.0" y="628.0" font-family="'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif" font-weight="300" font-size="22" fill="#1C1B19">同一条原则：一栏标题、一个 CTA。</text>
+  <text x="54.0" y="976.0" font-family="'Geist Mono', ui-monospace, 'SF Mono', Menlo, monospace" font-weight="400" font-size="11" letter-spacing="1.32" fill="#8F8C86">ONE CTA</text>
+  <text x="72.0" y="720.0" font-family="'Inter Display', 'Helvetica Neue', Arial, 'Noto Sans SC', sans-serif" font-weight="200" font-size="22" fill="#1C1B19">Less, but better.</text>
+  <rect x="72.0" y="750.0" width="120.0" height="32.0" fill="#1C1B19"/>
+  <line x1="72.0" y1="782.0" x2="192.0" y2="782.0" stroke="#F27A1A" stroke-width="3"/>
+  <rect x="502.0" y="540.0" width="450.0" height="460.0" fill="#F6F4EF" stroke="#1C1B19" stroke-width="1"/>
+  <text x="520.0" y="576.0" font-family="'Geist Mono', ui-monospace, 'SF Mono', Menlo, monospace" font-weight="400" font-size="13" letter-spacing="1.56" fill="#5F5C57">06  确认</text>
+  <text x="520.0" y="628.0" font-family="'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif" font-weight="300" font-size="22" fill="#1C1B19">同一条原则：一金额、一按钮。</text>
+  <text x="520.0" y="976.0" font-family="'Geist Mono', ui-monospace, 'SF Mono', Menlo, monospace" font-weight="400" font-size="11" letter-spacing="1.32" fill="#8F8C86">ONE BUTTON</text>
+  <text x="538.0" y="730.0" font-family="'Inter Display', 'Helvetica Neue', Arial, 'Noto Sans SC', sans-serif" font-weight="100" font-size="48" fill="#1C1B19">¥12</text>
+  <rect x="538.0" y="760.0" width="160.0" height="32.0" fill="#1C1B19"/>
+  <rect x="968.0" y="540.0" width="450.0" height="460.0" fill="#F6F4EF" stroke="#1C1B19" stroke-width="1"/>
+  <text x="986.0" y="576.0" font-family="'Geist Mono', ui-monospace, 'SF Mono', Menlo, monospace" font-weight="400" font-size="13" letter-spacing="1.56" fill="#5F5C57">07  坏例对照</text>
+  <text x="986.0" y="628.0" font-family="'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif" font-weight="300" font-size="22" fill="#1C1B19">花哨无焦点，极简有焦点。</text>
+  <text x="986.0" y="976.0" font-family="'Geist Mono', ui-monospace, 'SF Mono', Menlo, monospace" font-weight="400" font-size="11" letter-spacing="1.32" fill="#8F8C86">FOCUS VS NOISE</text>
+  <rect x="996.0" y="680.0" width="189.0" height="140.0" fill="#1a1020"/>
+  <rect x="1201.0" y="680.0" width="189.0" height="140.0" fill="#F6F4EF" stroke="#1C1B19" stroke-width="1"/>
+  <rect x="1434.0" y="540.0" width="450.0" height="460.0" fill="#F6F4EF" stroke="#1C1B19" stroke-width="1"/>
+  <text x="1452.0" y="576.0" font-family="'Geist Mono', ui-monospace, 'SF Mono', Menlo, monospace" font-weight="400" font-size="13" letter-spacing="1.56" fill="#F27A1A">08  定妆</text>
+  <text x="1452.0" y="628.0" font-family="'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif" font-weight="300" font-size="22" fill="#1C1B19">少 = 删到只剩有用的。</text>
+  <text x="1452.0" y="976.0" font-family="'Geist Mono', ui-monospace, 'SF Mono', Menlo, monospace" font-weight="400" font-size="11" letter-spacing="1.32" fill="#8F8C86">LESS, BUT BETTER</text>
+  <text x="1470.0" y="740.0" font-family="'Inter Display', 'Helvetica Neue', Arial, 'Noto Sans SC', sans-serif" font-weight="100" font-size="64" fill="#1C1B19">少</text>
+  <circle cx="1836.0" cy="750.0" r="10.0" fill="#F27A1A"/>
+</svg>

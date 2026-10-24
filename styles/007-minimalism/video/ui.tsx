@@ -196,3 +196,25 @@ export const toScreen = (c: Cam2, x: number, y: number) => ({x: 960 + (x - c.ox)
 export const World: React.FC<{c: Cam2; children: React.ReactNode}> = ({c, children}) => (
   <g transform={`translate(960 540) scale(${n2(c.s)}) translate(${n2(-c.ox)} ${n2(-c.oy)})`}>{children}</g>
 );
+
+/** 原则字幕：每幕一句，先读懂再看删。底栏压在纸上，不被堆里的东西抢走。 */
+export const Why: React.FC<{o: number; kicker: string; line: string; en?: string; y?: number}> = ({o, kicker, line, en, y = 900}) => {
+  if (o <= 0.001) return null;
+  return (
+    <g opacity={n2(o)}>
+      <rect x={0} y={y - 48} width={1920} height={108} fill={C.paper} opacity={0.92} />
+      <Hair x1={120} y1={y - 48} x2={1800} y2={y - 48} o={0.35} />
+      <Txt x={120} y={y - 14} k="mono" size={14} ls={0.16} c={C.greyDk}>
+        {kicker}
+      </Txt>
+      <Txt x={120} y={y + 28} k="sc300" size={36}>
+        {line}
+      </Txt>
+      {en ? (
+        <Txt x={1800} y={y + 24} k="t300" size={18} ls={0.04} c={C.grey} anchor="end">
+          {en}
+        </Txt>
+      ) : null}
+    </g>
+  );
+};

@@ -5,75 +5,86 @@
   <rect width="1080" height="1350" fill="#EFECE6"/>
   <text x="96.0" y="72.0" font-family="'Geist Mono', ui-monospace, 'SF Mono', Menlo, monospace" font-weight="400" font-size="13" letter-spacing="1.56" fill="#8F8C86">DESIGN STYLE · 007</text>
   <text x="985.6" y="72.0" font-family="'Geist Mono', ui-monospace, 'SF Mono', Menlo, monospace" font-weight="400" font-size="13" letter-spacing="1.56" text-anchor="end" fill="#8F8C86">1929 — TODAY</text>
-  <text x="86.7" y="252.0" font-family="'Inter Display', 'Helvetica Neue', Arial, 'Noto Sans SC', sans-serif" font-weight="200" font-size="118" letter-spacing="-2.36" fill="#1C1B19">Less is more.</text>
-  <text x="96.0" y="318.0" font-family="'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif" font-weight="300" font-size="30" letter-spacing="7.20" fill="#1C1B19">少即是多</text>
-  <text x="985.6" y="318.0" font-family="'Geist Mono', ui-monospace, 'SF Mono', Menlo, monospace" font-weight="400" font-size="13" letter-spacing="1.56" text-anchor="end" fill="#8F8C86">LUDWIG MIES VAN DER ROHE</text>
-  <circle cx="456.0" cy="430.0" r="22.0" fill="none" stroke="rgba(28,27,25,0.28)" stroke-width="1" stroke-dasharray="2.5 3.5"/>
-  <circle cx="528.0" cy="430.0" r="22.0" fill="none" stroke="rgba(28,27,25,0.28)" stroke-width="1" stroke-dasharray="2.5 3.5"/>
-  <circle cx="600.0" cy="430.0" r="22.0" fill="none" stroke="rgba(28,27,25,0.28)" stroke-width="1" stroke-dasharray="2.5 3.5"/>
-  <circle cx="672.0" cy="430.0" r="22.0" fill="none" stroke="rgba(28,27,25,0.28)" stroke-width="1" stroke-dasharray="2.5 3.5"/>
-  <circle cx="744.0" cy="430.0" r="22.0" fill="none" stroke="rgba(28,27,25,0.28)" stroke-width="1" stroke-dasharray="2.5 3.5"/>
-  <circle cx="816.0" cy="430.0" r="22.0" fill="none" stroke="rgba(28,27,25,0.28)" stroke-width="1" stroke-dasharray="2.5 3.5"/>
-  <circle cx="456.0" cy="502.0" r="22.0" fill="none" stroke="rgba(28,27,25,0.28)" stroke-width="1" stroke-dasharray="2.5 3.5"/>
-  <circle cx="528.0" cy="502.0" r="22.0" fill="none" stroke="rgba(28,27,25,0.28)" stroke-width="1" stroke-dasharray="2.5 3.5"/>
-  <circle cx="600.0" cy="502.0" r="22.0" fill="none" stroke="rgba(28,27,25,0.28)" stroke-width="1" stroke-dasharray="2.5 3.5"/>
-  <circle cx="672.0" cy="502.0" r="22.0" fill="none" stroke="rgba(28,27,25,0.28)" stroke-width="1" stroke-dasharray="2.5 3.5"/>
-  <circle cx="744.0" cy="502.0" r="22.0" fill="none" stroke="rgba(28,27,25,0.28)" stroke-width="1" stroke-dasharray="2.5 3.5"/>
-  <circle cx="816.0" cy="502.0" r="22.0" fill="none" stroke="rgba(28,27,25,0.28)" stroke-width="1" stroke-dasharray="2.5 3.5"/>
-  <circle cx="456.0" cy="574.0" r="22.0" fill="none" stroke="rgba(28,27,25,0.28)" stroke-width="1" stroke-dasharray="2.5 3.5"/>
-  <circle cx="528.0" cy="574.0" r="22.0" fill="none" stroke="rgba(28,27,25,0.28)" stroke-width="1" stroke-dasharray="2.5 3.5"/>
-  <circle cx="600.0" cy="574.0" r="22.0" fill="none" stroke="rgba(28,27,25,0.28)" stroke-width="1" stroke-dasharray="2.5 3.5"/>
-  <circle cx="672.0" cy="574.0" r="22.0" fill="none" stroke="rgba(28,27,25,0.28)" stroke-width="1" stroke-dasharray="2.5 3.5"/>
-  <circle cx="744.0" cy="574.0" r="22.0" fill="none" stroke="rgba(28,27,25,0.28)" stroke-width="1" stroke-dasharray="2.5 3.5"/>
-  <circle cx="816.0" cy="574.0" r="22.0" fill="none" stroke="rgba(28,27,25,0.28)" stroke-width="1" stroke-dasharray="2.5 3.5"/>
-  <circle cx="456.0" cy="646.0" r="22.0" fill="none" stroke="rgba(28,27,25,0.28)" stroke-width="1" stroke-dasharray="2.5 3.5"/>
-  <circle cx="528.0" cy="646.0" r="22.0" fill="none" stroke="rgba(28,27,25,0.28)" stroke-width="1" stroke-dasharray="2.5 3.5"/>
-  <circle cx="600.0" cy="646.0" r="22.0" fill="none" stroke="rgba(28,27,25,0.28)" stroke-width="1" stroke-dasharray="2.5 3.5"/>
-  <circle cx="672.0" cy="646.0" r="22.0" fill="none" stroke="rgba(28,27,25,0.28)" stroke-width="1" stroke-dasharray="2.5 3.5"/>
-  <circle cx="744.0" cy="646.0" r="22.0" fill="none" stroke="rgba(28,27,25,0.28)" stroke-width="1" stroke-dasharray="2.5 3.5"/>
-  <circle cx="816.0" cy="646.0" r="22.0" fill="none" stroke="rgba(28,27,25,0.28)" stroke-width="1" stroke-dasharray="2.5 3.5"/>
-  <circle cx="456.0" cy="718.0" r="22.0" fill="none" stroke="rgba(28,27,25,0.28)" stroke-width="1" stroke-dasharray="2.5 3.5"/>
-  <circle cx="528.0" cy="718.0" r="22.0" fill="none" stroke="rgba(28,27,25,0.28)" stroke-width="1" stroke-dasharray="2.5 3.5"/>
-  <circle cx="600.0" cy="718.0" r="22.0" fill="none" stroke="rgba(28,27,25,0.28)" stroke-width="1" stroke-dasharray="2.5 3.5"/>
-  <circle cx="672.0" cy="718.0" r="22.0" fill="none" stroke="rgba(28,27,25,0.28)" stroke-width="1" stroke-dasharray="2.5 3.5"/>
-  <circle cx="744.0" cy="718.0" r="22.0" fill="none" stroke="rgba(28,27,25,0.28)" stroke-width="1" stroke-dasharray="2.5 3.5"/>
-  <circle cx="816.0" cy="718.0" r="22.0" fill="none" stroke="rgba(28,27,25,0.28)" stroke-width="1" stroke-dasharray="2.5 3.5"/>
-  <circle cx="456.0" cy="790.0" r="22.0" fill="none" stroke="rgba(28,27,25,0.28)" stroke-width="1" stroke-dasharray="2.5 3.5"/>
-  <circle cx="528.0" cy="790.0" r="22.0" fill="none" stroke="rgba(28,27,25,0.28)" stroke-width="1" stroke-dasharray="2.5 3.5"/>
-  <circle cx="600.0" cy="790.0" r="22.0" fill="none" stroke="rgba(28,27,25,0.28)" stroke-width="1" stroke-dasharray="2.5 3.5"/>
-  <circle cx="672.0" cy="790.0" r="22.0" fill="none" stroke="rgba(28,27,25,0.28)" stroke-width="1" stroke-dasharray="2.5 3.5"/>
-  <circle cx="744.0" cy="790.0" r="22.0" fill="none" stroke="rgba(28,27,25,0.28)" stroke-width="1" stroke-dasharray="2.5 3.5"/>
-  <circle cx="816.0" cy="790.0" r="22.0" fill="none" stroke="rgba(28,27,25,0.28)" stroke-width="1" stroke-dasharray="2.5 3.5"/>
-  <circle cx="456.0" cy="862.0" r="22.0" fill="none" stroke="rgba(28,27,25,0.28)" stroke-width="1" stroke-dasharray="2.5 3.5"/>
-  <circle cx="528.0" cy="862.0" r="22.0" fill="none" stroke="rgba(28,27,25,0.28)" stroke-width="1" stroke-dasharray="2.5 3.5"/>
-  <circle cx="600.0" cy="862.0" r="22.0" fill="none" stroke="rgba(28,27,25,0.28)" stroke-width="1" stroke-dasharray="2.5 3.5"/>
-  <circle cx="672.0" cy="862.0" r="22.0" fill="none" stroke="rgba(28,27,25,0.28)" stroke-width="1" stroke-dasharray="2.5 3.5"/>
-  <circle cx="744.0" cy="862.0" r="22.0" fill="none" stroke="rgba(28,27,25,0.28)" stroke-width="1" stroke-dasharray="2.5 3.5"/>
-  <circle cx="816.0" cy="862.0" r="22.0" fill="none" stroke="rgba(28,27,25,0.28)" stroke-width="1" stroke-dasharray="2.5 3.5"/>
-  <circle cx="456.0" cy="934.0" r="22.0" fill="none" stroke="rgba(28,27,25,0.28)" stroke-width="1" stroke-dasharray="2.5 3.5"/>
-  <circle cx="528.0" cy="934.0" r="22.0" fill="none" stroke="rgba(28,27,25,0.28)" stroke-width="1" stroke-dasharray="2.5 3.5"/>
-  <circle cx="600.0" cy="934.0" r="22.0" fill="none" stroke="rgba(28,27,25,0.28)" stroke-width="1" stroke-dasharray="2.5 3.5"/>
-  <circle cx="672.0" cy="934.0" r="22.0" fill="none" stroke="rgba(28,27,25,0.28)" stroke-width="1" stroke-dasharray="2.5 3.5"/>
-  <circle cx="816.0" cy="934.0" r="22.0" fill="none" stroke="rgba(28,27,25,0.28)" stroke-width="1" stroke-dasharray="2.5 3.5"/>
-  <circle cx="744.0" cy="934.0" r="22.0" fill="none" stroke="#F27A1A" stroke-width="1" stroke-dasharray="1 5" stroke-linecap="round" opacity="0.7"/>
-  <line x1="744.0" y1="964.0" x2="744.0" y2="1000.0" stroke="#8F8C86" stroke-width="1" stroke-dasharray="1 6" stroke-linecap="round"/>
-  <text x="91.3" y="517.0" font-family="'Inter Display', 'Helvetica Neue', Arial, 'Noto Sans SC', sans-serif" font-weight="100" font-size="150" letter-spacing="-3.00" fill="#1C1B19">47</text>
-  <text x="96.0" y="558.0" font-family="'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif" font-weight="300" font-size="18" fill="#1C1B19">样东西，删掉了</text>
-  <text x="96.0" y="584.0" font-family="'Geist Mono', ui-monospace, 'SF Mono', Menlo, monospace" font-weight="400" font-size="13" letter-spacing="1.56" fill="#8F8C86">47 THINGS REMOVED</text>
-  <text x="90.0" y="1016.0" font-family="'Inter Display', 'Helvetica Neue', Arial, 'Noto Sans SC', sans-serif" font-weight="100" font-size="150" fill="#1C1B19">1</text>
-  <text x="160.0" y="990.0" font-family="'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif" font-weight="300" font-size="18" fill="#1C1B19">个留下：</text>
-  <text x="160.0" y="1016.0" font-family="'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif" font-weight="300" font-size="18" fill="#1C1B19">有用的那一个</text>
-  <line x1="96.0" y1="1030.0" x2="984.0" y2="1030.0" stroke="#1C1B19" stroke-width="1.5"/>
-  <circle cx="744.0" cy="1030.0" r="18.0" fill="#F27A1A"/>
-  <text x="744.8" y="1074.0" font-family="'Geist Mono', ui-monospace, 'SF Mono', Menlo, monospace" font-weight="400" font-size="13" letter-spacing="1.56" text-anchor="middle" fill="#8F8C86">ONE LEFT</text>
-  <line x1="96.0" y1="1142.0" x2="984.0" y2="1142.0" stroke="rgba(28,27,25,0.16)" stroke-width="1"/>
-  <text x="96.0" y="1182.0" font-family="'Inter', 'Helvetica Neue', Arial, 'Noto Sans SC', sans-serif" font-weight="500" font-size="18" fill="#1C1B19">Minimalism</text>
-  <text x="96.0" y="1210.0" font-family="'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif" font-weight="300" font-size="18" fill="#1C1B19">极简主义</text>
-  <text x="96.0" y="1238.0" font-family="'Inter', 'Helvetica Neue', Arial, 'Noto Sans SC', sans-serif" font-weight="300" font-size="18" fill="#8F8C86">1929 — today</text>
-  <text x="408.0" y="1182.0" font-family="'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif" font-weight="300" font-size="18" fill="#1C1B19">一个点，一条线，</text>
-  <text x="408.0" y="1210.0" font-family="'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif" font-weight="300" font-size="18" fill="#1C1B19">其余全是空间。</text>
-  <text x="408.0" y="1238.0" font-family="'Inter', 'Helvetica Neue', Arial, 'Noto Sans SC', sans-serif" font-weight="300" font-size="18" fill="#8F8C86">Weniger, aber besser.</text>
-  <text x="720.0" y="1182.0" font-family="'Inter', 'Helvetica Neue', Arial, 'Noto Sans SC', sans-serif" font-weight="500" font-size="18" fill="#1C1B19">Design Style 风格 007</text>
-  <text x="720.0" y="1210.0" font-family="'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif" font-weight="300" font-size="18" fill="#1C1B19">每天一个设计风格</text>
-  <text x="720.0" y="1238.0" font-family="'Inter', 'Helvetica Neue', Arial, 'Noto Sans SC', sans-serif" font-weight="400" font-size="18" fill="#8F8C86">@guanmo_ai</text>
+  <text x="96.0" y="268.0" font-family="'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif" font-weight="300" font-size="210" fill="#1C1B19">少</text>
+  <text x="96.0" y="348.0" font-family="'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif" font-weight="300" font-size="36" letter-spacing="1.44" fill="#1C1B19">= 删到只剩有用的</text>
+  <text x="96.0" y="390.0" font-family="'Inter Display', 'Helvetica Neue', Arial, 'Noto Sans SC', sans-serif" font-weight="200" font-size="26" letter-spacing="-0.26" fill="#5F5C57">Less, but better.</text>
+  <text x="985.6" y="348.0" font-family="'Geist Mono', ui-monospace, 'SF Mono', Menlo, monospace" font-weight="400" font-size="13" letter-spacing="1.56" text-anchor="end" fill="#8F8C86">WENIGER, ABER BESSER</text>
+  <text x="96.0" y="460.0" font-family="'Geist Mono', ui-monospace, 'SF Mono', Menlo, monospace" font-weight="400" font-size="13" letter-spacing="1.56" fill="#8F8C86">01</text>
+  <text x="136.0" y="460.0" font-family="'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif" font-weight="300" font-size="22" fill="#8F8C86">促销字</text>
+  <line x1="134.0" y1="453.0" x2="204.0" y2="453.0" stroke="#8F8C86" stroke-width="1"/>
+  <text x="96.0" y="504.0" font-family="'Geist Mono', ui-monospace, 'SF Mono', Menlo, monospace" font-weight="400" font-size="13" letter-spacing="1.56" fill="#8F8C86">02</text>
+  <text x="136.0" y="504.0" font-family="'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif" font-weight="300" font-size="22" fill="#8F8C86">第二色</text>
+  <line x1="134.0" y1="497.0" x2="204.0" y2="497.0" stroke="#8F8C86" stroke-width="1"/>
+  <text x="96.0" y="548.0" font-family="'Geist Mono', ui-monospace, 'SF Mono', Menlo, monospace" font-weight="400" font-size="13" letter-spacing="1.56" fill="#8F8C86">03</text>
+  <text x="136.0" y="548.0" font-family="'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif" font-weight="300" font-size="22" fill="#8F8C86">重复入口</text>
+  <line x1="134.0" y1="541.0" x2="226.0" y2="541.0" stroke="#8F8C86" stroke-width="1"/>
+  <text x="96.0" y="592.0" font-family="'Geist Mono', ui-monospace, 'SF Mono', Menlo, monospace" font-weight="400" font-size="13" letter-spacing="1.56" fill="#8F8C86">04</text>
+  <text x="136.0" y="592.0" font-family="'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif" font-weight="300" font-size="22" fill="#8F8C86">装饰</text>
+  <line x1="134.0" y1="585.0" x2="182.0" y2="585.0" stroke="#8F8C86" stroke-width="1"/>
+  <text x="96.0" y="636.0" font-family="'Geist Mono', ui-monospace, 'SF Mono', Menlo, monospace" font-weight="400" font-size="13" letter-spacing="1.56" fill="#F27A1A">05</text>
+  <text x="136.0" y="636.0" font-family="'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif" font-weight="400" font-size="22" fill="#F27A1A">有用的</text>
+  <circle cx="620.0" cy="430.0" r="20.0" fill="none" stroke="rgba(28,27,25,0.28)" stroke-width="1" stroke-dasharray="2.5 3.5"/>
+  <circle cx="688.0" cy="430.0" r="20.0" fill="none" stroke="rgba(28,27,25,0.28)" stroke-width="1" stroke-dasharray="2.5 3.5"/>
+  <circle cx="756.0" cy="430.0" r="20.0" fill="none" stroke="rgba(28,27,25,0.28)" stroke-width="1" stroke-dasharray="2.5 3.5"/>
+  <circle cx="824.0" cy="430.0" r="20.0" fill="none" stroke="rgba(28,27,25,0.28)" stroke-width="1" stroke-dasharray="2.5 3.5"/>
+  <circle cx="892.0" cy="430.0" r="20.0" fill="none" stroke="rgba(28,27,25,0.28)" stroke-width="1" stroke-dasharray="2.5 3.5"/>
+  <circle cx="960.0" cy="430.0" r="20.0" fill="none" stroke="rgba(28,27,25,0.28)" stroke-width="1" stroke-dasharray="2.5 3.5"/>
+  <circle cx="620.0" cy="498.0" r="20.0" fill="none" stroke="rgba(28,27,25,0.28)" stroke-width="1" stroke-dasharray="2.5 3.5"/>
+  <circle cx="688.0" cy="498.0" r="20.0" fill="none" stroke="rgba(28,27,25,0.28)" stroke-width="1" stroke-dasharray="2.5 3.5"/>
+  <circle cx="756.0" cy="498.0" r="20.0" fill="none" stroke="rgba(28,27,25,0.28)" stroke-width="1" stroke-dasharray="2.5 3.5"/>
+  <circle cx="824.0" cy="498.0" r="20.0" fill="none" stroke="rgba(28,27,25,0.28)" stroke-width="1" stroke-dasharray="2.5 3.5"/>
+  <circle cx="892.0" cy="498.0" r="20.0" fill="none" stroke="rgba(28,27,25,0.28)" stroke-width="1" stroke-dasharray="2.5 3.5"/>
+  <circle cx="960.0" cy="498.0" r="20.0" fill="none" stroke="rgba(28,27,25,0.28)" stroke-width="1" stroke-dasharray="2.5 3.5"/>
+  <circle cx="620.0" cy="566.0" r="20.0" fill="none" stroke="rgba(28,27,25,0.28)" stroke-width="1" stroke-dasharray="2.5 3.5"/>
+  <circle cx="688.0" cy="566.0" r="20.0" fill="none" stroke="rgba(28,27,25,0.28)" stroke-width="1" stroke-dasharray="2.5 3.5"/>
+  <circle cx="756.0" cy="566.0" r="20.0" fill="none" stroke="rgba(28,27,25,0.28)" stroke-width="1" stroke-dasharray="2.5 3.5"/>
+  <circle cx="824.0" cy="566.0" r="20.0" fill="none" stroke="rgba(28,27,25,0.28)" stroke-width="1" stroke-dasharray="2.5 3.5"/>
+  <circle cx="892.0" cy="566.0" r="20.0" fill="none" stroke="rgba(28,27,25,0.28)" stroke-width="1" stroke-dasharray="2.5 3.5"/>
+  <circle cx="960.0" cy="566.0" r="20.0" fill="none" stroke="rgba(28,27,25,0.28)" stroke-width="1" stroke-dasharray="2.5 3.5"/>
+  <circle cx="620.0" cy="634.0" r="20.0" fill="none" stroke="rgba(28,27,25,0.28)" stroke-width="1" stroke-dasharray="2.5 3.5"/>
+  <circle cx="688.0" cy="634.0" r="20.0" fill="none" stroke="rgba(28,27,25,0.28)" stroke-width="1" stroke-dasharray="2.5 3.5"/>
+  <circle cx="756.0" cy="634.0" r="20.0" fill="none" stroke="rgba(28,27,25,0.28)" stroke-width="1" stroke-dasharray="2.5 3.5"/>
+  <circle cx="824.0" cy="634.0" r="20.0" fill="none" stroke="rgba(28,27,25,0.28)" stroke-width="1" stroke-dasharray="2.5 3.5"/>
+  <circle cx="892.0" cy="634.0" r="20.0" fill="none" stroke="rgba(28,27,25,0.28)" stroke-width="1" stroke-dasharray="2.5 3.5"/>
+  <circle cx="960.0" cy="634.0" r="20.0" fill="none" stroke="rgba(28,27,25,0.28)" stroke-width="1" stroke-dasharray="2.5 3.5"/>
+  <circle cx="620.0" cy="702.0" r="20.0" fill="none" stroke="rgba(28,27,25,0.28)" stroke-width="1" stroke-dasharray="2.5 3.5"/>
+  <circle cx="688.0" cy="702.0" r="20.0" fill="none" stroke="rgba(28,27,25,0.28)" stroke-width="1" stroke-dasharray="2.5 3.5"/>
+  <circle cx="756.0" cy="702.0" r="20.0" fill="none" stroke="rgba(28,27,25,0.28)" stroke-width="1" stroke-dasharray="2.5 3.5"/>
+  <circle cx="824.0" cy="702.0" r="20.0" fill="none" stroke="rgba(28,27,25,0.28)" stroke-width="1" stroke-dasharray="2.5 3.5"/>
+  <circle cx="892.0" cy="702.0" r="20.0" fill="none" stroke="rgba(28,27,25,0.28)" stroke-width="1" stroke-dasharray="2.5 3.5"/>
+  <circle cx="960.0" cy="702.0" r="20.0" fill="none" stroke="rgba(28,27,25,0.28)" stroke-width="1" stroke-dasharray="2.5 3.5"/>
+  <circle cx="620.0" cy="770.0" r="20.0" fill="none" stroke="rgba(28,27,25,0.28)" stroke-width="1" stroke-dasharray="2.5 3.5"/>
+  <circle cx="688.0" cy="770.0" r="20.0" fill="none" stroke="rgba(28,27,25,0.28)" stroke-width="1" stroke-dasharray="2.5 3.5"/>
+  <circle cx="756.0" cy="770.0" r="20.0" fill="none" stroke="rgba(28,27,25,0.28)" stroke-width="1" stroke-dasharray="2.5 3.5"/>
+  <circle cx="824.0" cy="770.0" r="20.0" fill="none" stroke="rgba(28,27,25,0.28)" stroke-width="1" stroke-dasharray="2.5 3.5"/>
+  <circle cx="892.0" cy="770.0" r="20.0" fill="none" stroke="rgba(28,27,25,0.28)" stroke-width="1" stroke-dasharray="2.5 3.5"/>
+  <circle cx="960.0" cy="770.0" r="20.0" fill="none" stroke="rgba(28,27,25,0.28)" stroke-width="1" stroke-dasharray="2.5 3.5"/>
+  <circle cx="620.0" cy="838.0" r="20.0" fill="none" stroke="rgba(28,27,25,0.28)" stroke-width="1" stroke-dasharray="2.5 3.5"/>
+  <circle cx="688.0" cy="838.0" r="20.0" fill="none" stroke="rgba(28,27,25,0.28)" stroke-width="1" stroke-dasharray="2.5 3.5"/>
+  <circle cx="756.0" cy="838.0" r="20.0" fill="none" stroke="rgba(28,27,25,0.28)" stroke-width="1" stroke-dasharray="2.5 3.5"/>
+  <circle cx="824.0" cy="838.0" r="20.0" fill="none" stroke="rgba(28,27,25,0.28)" stroke-width="1" stroke-dasharray="2.5 3.5"/>
+  <circle cx="960.0" cy="838.0" r="20.0" fill="none" stroke="rgba(28,27,25,0.28)" stroke-width="1" stroke-dasharray="2.5 3.5"/>
+  <circle cx="620.0" cy="906.0" r="20.0" fill="none" stroke="rgba(28,27,25,0.28)" stroke-width="1" stroke-dasharray="2.5 3.5"/>
+  <circle cx="688.0" cy="906.0" r="20.0" fill="none" stroke="rgba(28,27,25,0.28)" stroke-width="1" stroke-dasharray="2.5 3.5"/>
+  <circle cx="756.0" cy="906.0" r="20.0" fill="none" stroke="rgba(28,27,25,0.28)" stroke-width="1" stroke-dasharray="2.5 3.5"/>
+  <circle cx="824.0" cy="906.0" r="20.0" fill="none" stroke="rgba(28,27,25,0.28)" stroke-width="1" stroke-dasharray="2.5 3.5"/>
+  <circle cx="892.0" cy="906.0" r="20.0" fill="none" stroke="rgba(28,27,25,0.28)" stroke-width="1" stroke-dasharray="2.5 3.5"/>
+  <circle cx="960.0" cy="906.0" r="20.0" fill="none" stroke="rgba(28,27,25,0.28)" stroke-width="1" stroke-dasharray="2.5 3.5"/>
+  <circle cx="892.0" cy="838.0" r="20.0" fill="none" stroke="#F27A1A" stroke-width="1" stroke-dasharray="1 5" stroke-linecap="round" opacity="0.7"/>
+  <line x1="892.0" y1="866.0" x2="892.0" y2="1012.0" stroke="#8F8C86" stroke-width="1" stroke-dasharray="1 6" stroke-linecap="round"/>
+  <text x="92.2" y="860.0" font-family="'Inter Display', 'Helvetica Neue', Arial, 'Noto Sans SC', sans-serif" font-weight="100" font-size="120" letter-spacing="-2.40" fill="#1C1B19">47</text>
+  <text x="296.0" y="820.0" font-family="'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif" font-weight="300" font-size="18" fill="#1C1B19">样东西，删掉了</text>
+  <text x="296.0" y="848.0" font-family="'Geist Mono', ui-monospace, 'SF Mono', Menlo, monospace" font-weight="400" font-size="13" letter-spacing="1.56" fill="#8F8C86">REMOVED</text>
+  <text x="91.2" y="1024.0" font-family="'Inter Display', 'Helvetica Neue', Arial, 'Noto Sans SC', sans-serif" font-weight="100" font-size="120" fill="#1C1B19">1</text>
+  <text x="186.0" y="1000.0" font-family="'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif" font-weight="300" font-size="18" fill="#1C1B19">个留下：</text>
+  <text x="186.0" y="1026.0" font-family="'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif" font-weight="300" font-size="18" fill="#1C1B19">有用的那一个</text>
+  <line x1="96.0" y1="1040.0" x2="984.0" y2="1040.0" stroke="#1C1B19" stroke-width="1.5"/>
+  <circle cx="892.0" cy="1040.0" r="16.0" fill="#F27A1A"/>
+  <text x="892.8" y="1080.0" font-family="'Geist Mono', ui-monospace, 'SF Mono', Menlo, monospace" font-weight="400" font-size="13" letter-spacing="1.56" text-anchor="middle" fill="#8F8C86">ONE LEFT</text>
+  <line x1="96.0" y1="1190.0" x2="984.0" y2="1190.0" stroke="rgba(28,27,25,0.16)" stroke-width="1"/>
+  <text x="96.0" y="1226.0" font-family="'Inter', 'Helvetica Neue', Arial, 'Noto Sans SC', sans-serif" font-weight="500" font-size="18" fill="#1C1B19">Minimalism</text>
+  <text x="96.0" y="1254.0" font-family="'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif" font-weight="300" font-size="16" fill="#5F5C57">极简主义 · 007</text>
+  <text x="540.0" y="1226.0" font-family="'Inter', 'Helvetica Neue', Arial, 'Noto Sans SC', sans-serif" font-weight="400" font-size="18" text-anchor="middle" fill="#1C1B19">@guanmo_ai</text>
+  <text x="985.6" y="1226.0" font-family="'Geist Mono', ui-monospace, 'SF Mono', Menlo, monospace" font-weight="400" font-size="13" letter-spacing="1.56" text-anchor="end" fill="#8F8C86">DESIGN STYLE</text>
+  <text x="984.0" y="1254.0" font-family="'Inter', 'Helvetica Neue', Arial, 'Noto Sans SC', sans-serif" font-weight="300" font-size="14" text-anchor="end" fill="#8F8C86">Weniger, aber besser.</text>
 </svg>

@@ -18,7 +18,7 @@ The first draft was rejected: centered text cards on empty paper, no protagonist
 
 1. Research the timeline (Browning, Sullivan, Loos, Mies, Rams, Judd, Reich, flat UI) and reduce it to five rules.
 2. Write all frame numbers in `video/timeline.ts` and the scene files; `video/cues.ts` gathers them and `audio/export_cues.mjs` writes `audio/cues.json`, so the music reads the same numbers as the picture.
-3. Build two layers in Remotion: a non-minimal teaching reel (measures, weights, flash, fly-off, grid, before→after, three-container recap) and dense product UIs (App press/push/sheet/toggle/toast, handbook hover/scroll/anchor/hash, checkout press/check/empty/fold). History (radio / Judd) is only a 1.8-second opening hook. Product screens never idle longer than 0.8s.
+3. Write eight storyboard sentences in `video/script.ts` first. The film tells one thesis — less = remove until only the useful remains. Motion is causal (cut, collapse, align, emphasize). Product beats apply that same cut: one row, one column, one amount. No interaction tourism.
 4. Synthesize the score with NumPy (`audio/make_music.py`): soft opening bed, UI-aligned clicks and whooshes, a marimba ostinato that loses voices into the empty state; mastered to −14 LUFS with a −2 dBTP ceiling.
 5. Generate the four sheets with `images/make_svgs.py` and embed font subsets with `scripts/build_images.py`.
 6. Check stills, contact sheets, the beat chart, loudness and the encoded files.
