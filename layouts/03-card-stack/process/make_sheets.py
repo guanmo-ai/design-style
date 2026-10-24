@@ -12,33 +12,33 @@ STILLS = os.path.join(REPO, 'out', 'l03-stills')
 FONT_DIR = os.path.join(REPO, 'public', 'fonts')
 
 BOARD = [
-    (30, '01 砸进', '四张刊落成叠'),
-    (90, '02 刊·抽', '巨字扎进封面'),
-    (120, '抽出朱红刊', '换层 = 抽'),
-    (150, '奶油刊接手', '下一本到最前'),
-    (210, '再抽一次', '动作可重复'),
-    (240, '墨刊到顶', '同一叠换封面'),
-    (300, '03 层·提', '压扁成图层板'),
-    (330, '点名 L4', '后层被选中'),
-    (360, 'L4 穿过', '换层 = 提'),
-    (480, '04 样·压', '扇开印刷样'),
-    (540, '选定第二张', '推到交互面'),
-    (570, '其余压回', '换层 = 压'),
-    (630, '05 拆解', '沿 z 炸开'),
-    (720, '规则在动', '3–4 / 一张 / 抽提压'),
-    (840, '叠太多', '八张杂刊在动'),
-    (960, '这样就对了', '弹簧叠回'),
+    (18, '风暴 n=16', 'slam + 错峰'),
+    (60, '风暴 4×4', '落格'),
+    (102, '乱叠', '16 压成一堆'),
+    (180, '刊 · 抽', '4 大 + 12 脊'),
+    (300, '层 · 提', '16 条穿过 z'),
+    (420, '样 · 扇', '弧形扇开'),
+    (480, '选定+压', '一张放大'),
+    (540, '看板', '发牌进泳道'),
+    (600, '跨列', 'To → Doing'),
+    (660, '相册 · 洗', '宝丽来洗牌'),
+    (780, '通知 · 压', '新层压下'),
+    (900, '支付 · 扇', '手牌抽出'),
+    (1020, '作品集', '三叠 3–4'),
+    (1080, 'z 炸开', '看见深度'),
+    (1140, '坏例 n=24', '挤乱'),
+    (1206, '吸入 n=4', '弹簧叠回'),
 ]
 
 PAIRS = [
-    (18, 40, '砸进过冲落拍'),
-    (108, 150, '朱红刊抽出'),
-    (198, 240, '再抽，墨刊接手'),
-    (318, 378, 'L4 提到最前'),
-    (468, 540, '扇开并选定'),
-    (558, 600, '其余压回'),
-    (828, 870, '杂刊弹入'),
-    (948, 990, '弹簧叠回'),
+    (12, 36, '16 张错峰砸进'),
+    (48, 72, '散射 → 4×4'),
+    (210, 250, '抽走顶刊'),
+    (330, 370, '后层提起'),
+    (420, 460, '扇开样张'),
+    (570, 610, '看板跨列'),
+    (690, 726, '相册洗牌'),
+    (1190, 1220, '24 → 4 吸入'),
 ]
 
 
@@ -75,8 +75,8 @@ def storyboard():
     sub = font('Inter-Medium.ttf', 18)
     cap = font('NotoSansSC-Medium.otf', 20)
     why = font('NotoSansSC-Regular.otf', 15)
-    draw.text((pad, 28), '布局 03 · Card Stack v6 分镜', font=title, fill='#F5F5F7')
-    draw.text((pad, 74), '22s · 刊 / 层 / 样 · 每拍一件有因果的事', font=sub, fill='#94A3B8')
+    draw.text((pad, 28), '布局 03 · Card Stack v7 分镜', font=title, fill='#F5F5F7')
+    draw.text((pad, 74), '22s · 16 卡同屏 · 8 方案 · 14 招', font=sub, fill='#94A3B8')
     for i, (fr, name, cause) in enumerate(BOARD):
         r, c = divmod(i, cols)
         x = pad + c * (tw + pad)
@@ -107,7 +107,7 @@ def motion():
     title = font('NotoSansSC-Bold.otf', 36)
     sub = font('Inter-Medium.ttf', 18)
     cap = font('NotoSansSC-Medium.otf', 18)
-    draw.text((pad, 28), '布局 03 · v6 运动证据', font=title, fill='#F5F5F7')
+    draw.text((pad, 28), '布局 03 · v7 运动证据', font=title, fill='#F5F5F7')
     draw.text((pad, 74), '同一机位相隔约 0.3s · 必须看出位移或形变', font=sub, fill='#94A3B8')
     for i, (a, b, name) in enumerate(PAIRS):
         y = head + i * (th + 48)
@@ -137,7 +137,7 @@ def timeline():
     title = font('NotoSansSC-Bold.otf', 32)
     sub = font('Inter-Medium.ttf', 16)
     small = font('NotoSansSC-Regular.otf', 14)
-    draw.text((32, 24), '布局 03 · v6 时间轴  1320f / 22s / 120 BPM', font=title, fill='#F5F5F7')
+    draw.text((32, 24), '布局 03 · v7 时间轴  1320f / 22s · 16 卡 / 8 方案', font=title, fill='#F5F5F7')
     draw.text((32, 68), '每一格都能说出为什么动', font=sub, fill='#94A3B8')
     x0, x1, y = 32, W - 32, 160
     frames = data['frames']

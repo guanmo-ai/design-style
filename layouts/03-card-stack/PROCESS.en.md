@@ -6,7 +6,7 @@
 
 ## Design constraint
 
-Show 3–4 posters in a stack. Only the front sheet is in focus. v5 was still trapped in phone chrome and white UI. v6 is a greenfield remake: magazine / layer / proof, three verbs (pull / lift / press), Swiss type, no Wallet assets. 22 seconds.
+The takeaway is still 3–4 sheets in a stack. v6 looped four vertical posters and was vetoed. v7 is a density remake: 16 cards on screen, eight application layouts, fourteen motion moves. 22 seconds.
 
 The film shares the values in `tokens.ts`, `tokens.css`, and `tokens.json`. Typography uses TeX Gyre Heros, Noto Sans SC, and Geist Mono.
 
@@ -14,7 +14,7 @@ The film shares the values in `tokens.ts`, `tokens.css`, and `tokens.json`. Typo
 
 1. Read the [English guide](README.en.md) and choose one visual idea for each chapter.
 2. Use `process/timeline.json` as the chapter timing reference.
-3. Build the animation in `video/` with Remotion and React. The four cards persist for the whole film.
+3. Build the animation in `video/` with Remotion and React. Sixteen cards persist for the whole film.
 4. Generate the soundtrack with `audio/make_music.py` (NumPy only, no external samples).
 5. Build the four reference sheets from `images/`. Preview SVGs embed font subsets.
 6. Inspect affected frames, a contact sheet, the timing chart, and the encoded video.

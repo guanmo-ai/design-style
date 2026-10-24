@@ -6,7 +6,7 @@
 
 ## Overview
 
-3–4 posters in a stack; only the front sheet is in focus. The same four vertical covers travel through pull / lift / press — magazine, layers, print proofs — then an exploded z-axis and an animated bad→good pit. 22 seconds, no dead frames.
+The rule is still 3–4 sheets; only the front one is in focus. The film teaches that with **16 distinct cards** moving at once, then eight application layouts (magazine, layers, proofs, kanban, album, notifications, payment deck, portfolio) in 2-second morphs. 22 seconds, no dead frames.
 
 Series: **Layouts**. Period shown in this episode: **2013—**.
 

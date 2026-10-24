@@ -1,14 +1,11 @@
 """
-Design Style · 布局 03 · Card Stack v6 —— 配乐（纯 numpy，无外部采样）
+Design Style · 布局 03 · Card Stack v7 —— 配乐（纯 numpy，无外部采样）
 
-22 秒 · 120 BPM · A 小调 / C 大调（对齐 Swiss 气质，不是产品发布会玻璃垫乐）
-  0–1.5s    砸进：钟表嘀嗒 + 四记刊落
-  1.5–5.3s  刊·抽：干底鼓、抽走时 swipe
-  4.8–8.3s  层·提：垫乐变暗，提起时上行
-  7.8–10.6s 样·压：打开，选定一记钟
-  10.3–14.2s 拆解：低通变薄，规则上行钟琴
-  13.8–17.8s 坏→好：闷响 → 铺平空 → 弹簧叠回
-  17.8–22s  片尾：C 大和弦收束
+22 秒 · 120 BPM · A 小调 / C 大调（对齐 Swiss / Bento 气质）
+  0–3s     风暴：16 张卡错峰砸进
+  3–19s    八种方案每 2s 换一次和弦与音色
+  19–21s   坏例挤乱 → 吸入
+  21–22s   片尾收束
 时间点与 video/layout.ts 的 TRANS / BEATS 对齐（帧 / 60 = 秒）。
 
 用法：python3 layouts/03-card-stack/audio/make_music.py
@@ -24,7 +21,7 @@ import numpy as np
 SR = 48000
 DUR = 22.0
 N = int(SR * DUR)
-rng = np.random.default_rng(1960)
+rng = np.random.default_rng(1967)
 
 MUS = np.zeros((2, N))
 SFX = np.zeros((2, N))
@@ -179,16 +176,24 @@ def tick(level=1.0):
     return hp(noise(0.06), 6000) * np.exp(-t / 0.008) * level
 
 
-# —— 与 layout.ts BEATS 对齐 ——
+# —— 与 layout.ts v7 BEATS 对齐：16 卡、8 方案 ——
 BEAT = 30
-SLAM, LIFT, COVER = 30, 60, 90
-PULL1, LAND2, PULL2, LAND3 = 120, 150, 210, 240
-LAYER, MARK, RISE, FRONT = 300, 330, 360, 390
-FAN, PICK, PRESS = 480, 540, 570
-EXPLODE, R1, R2, R3, R4 = 630, 690, 720, 750, 780
-NOISE, FLAT, FIX, END = 840, 930, 960, 1080
-HITS = [SLAM, COVER, PULL1, LAND2, PULL2, LAND3, LAYER, MARK, RISE, FAN, PICK, PRESS, EXPLODE, NOISE, FIX, END]
-RULES_AT = [R1, R2, R3, R4]
+HITS = [
+    30, 54, 102, 174, 222, 258, 294, 342, 414, 462,
+    534, 582, 654, 702, 774, 822, 894, 942, 1014, 1062,
+    1134, 1182, 1206, 1254,
+]
+TEACH_AT = [1062, 1086, 1134]
+STORM, CASCADE, PILE = 18, 54, 102
+MAG, PULL, LAND = 174, 222, 258
+LAYER, LIFT = 294, 342
+FAN, PICK, PRESS = 414, 462, 486
+BOARD, MOVE = 534, 582
+ALBUM, SHUFFLE = 654, 702
+NOTE, PUSH = 774, 822
+PAY, DRAW = 894, 942
+FOLIO, EXPLODE = 1014, 1062
+NOISE, FLAT, FIX, END = 1134, 1182, 1206, 1254
 
 CH = {
     'Am': (33, [57, 60, 64, 67]),
@@ -199,13 +204,17 @@ CH = {
 }
 PROG = [
     (0, 'Am'),
-    (90, 'F'),
-    (288, 'Am'),
-    (468, 'C'),
-    (618, 'G'),
-    (828, 'Dm'),
-    (948, 'F'),
-    (1068, 'C'),
+    (162, 'F'),
+    (282, 'Am'),
+    (402, 'C'),
+    (522, 'G'),
+    (642, 'F'),
+    (762, 'Am'),
+    (882, 'Dm'),
+    (1002, 'G'),
+    (1122, 'Dm'),
+    (1194, 'F'),
+    (1242, 'C'),
 ]
 
 
@@ -221,85 +230,98 @@ PENTA = [69, 72, 76, 79, 81, 84, 88, 91]
 
 for k, (s, n) in enumerate(PROG):
     e = PROG[k + 1][0] if k + 1 < len(PROG) else 1320
-    lvl = 0.38 if s < 1068 else 0.62
-    att = 0.65 if s == 0 else 0.24
-    place(pad([midi(m) for m in CH[n][1]], fr(e - s) + 0.06, lvl, att=att, rel=0.5, bright=0.72), fr(s), send=0.42, bus=PUMP)
+    lvl = 0.36 if 1122 <= s < 1194 else (0.58 if s >= 1194 else 0.4)
+    att = 0.55 if s == 0 else 0.22
+    bright = 0.58 if 1122 <= s < 1194 else 0.74
+    place(pad([midi(m) for m in CH[n][1]], fr(e - s) + 0.06, lvl, att=att, rel=0.5, bright=bright), fr(s), send=0.4, bus=PUMP)
 
-# 开场嘀嗒 + 四张刊
-for i in range(8):
-    sfx(tick(0.09), fr(2 + i * 3), pan=-0.4 + 0.1 * i, send=0.1)
-for i in range(4):
-    sfx(bell(midi(PENTA[i + 1]), 0.2, 0.55), fr(6 + i * 5), pan=-0.32 + 0.2 * i, send=0.58)
-    sfx(thock(0.22 + 0.04 * i, 190 - 12 * i, 58), fr(8 + i * 5), send=0.12)
-sfx(riser(fr(22), 0.14), fr(8), send=0.16)
-place(kick(0.62), fr(SLAM))
-sfx(thock(0.55, 200, 50), fr(SLAM), send=0.2)
+# 开场：16 张卡错峰砸进（对齐 enter stagger i*1.2）
+for i in range(16):
+    t0 = 2 + i * 1.2
+    sfx(tick(0.08 + 0.01 * (i % 3)), fr(t0), pan=-0.55 + i * 0.07, send=0.08)
+    sfx(thock(0.16 + 0.02 * (i % 4), 188 - 6 * (i % 5), 56), fr(t0 + 1.5), pan=-0.4 + i * 0.05, send=0.1)
+    if i % 2 == 0:
+        sfx(bell(midi(PENTA[i // 2 % len(PENTA)]), 0.11, 0.42), fr(t0 + 2), pan=-0.3 + 0.04 * i, send=0.42)
+sfx(riser(fr(16), 0.16), fr(4), send=0.16)
+place(kick(0.68), fr(STORM))
+sfx(thock(0.52, 204, 50), fr(STORM), send=0.18)
 
-GROOVE = [(60, 618), (960, 1068)]
+# 全片律动，坏例段鼓变薄但不停
+THIN = (1122, 1194)
 
 
-def in_groove(fm):
-    return any(a <= fm < b for a, b in GROOVE)
+def thin_at(fm):
+    return THIN[0] <= fm < THIN[1]
 
 
 for b in range(0, 1320 // BEAT + 1):
     fm = b * BEAT
     root, notes = chord_at(fm)
-    if in_groove(fm) and fm >= 60:
-        place(kick(0.5 if fm < 288 else 0.42), fr(fm))
-        place(hat(0.1), fr(fm + 15), pan=0.3)
-        if 468 <= fm < 618:
-            place(clap(0.12), fr(fm + 15), pan=-0.1, send=0.08)
-            place(hat(0.06, 0.014), fr(fm + 7.5), pan=-0.22)
+    k_lvl = 0.22 if thin_at(fm) else (0.5 if fm < 180 else 0.42)
+    if fm >= 30:
+        place(kick(k_lvl), fr(fm))
+        place(hat(0.07 if thin_at(fm) else 0.1), fr(fm + 15), pan=0.28)
+    if 180 <= fm < 1122 and fm % 60 == 30:
+        place(clap(0.1), fr(fm + 15), pan=-0.08, send=0.08)
+        place(hat(0.05, 0.014), fr(fm + 7.5), pan=-0.2)
     if 30 <= fm < 1320:
-        place(bass(midi(root), 0.2, 0.4 if fm % 60 == 0 else 0.26), fr(fm))
-        if not (618 <= fm < 960):
+        place(bass(midi(root), 0.2, 0.22 if thin_at(fm) else (0.4 if fm % 60 == 0 else 0.26)), fr(fm))
+        if not thin_at(fm):
             for q in range(2):
                 m = notes[(b + q) % len(notes)] + 12
-                place(pluck(midi(m), 0.09 if q else 0.13, 0.12), fr(fm + q * 15), pan=0.2 * (1 if q else -1), send=0.28, bus=PUMP)
+                place(pluck(midi(m), 0.09 if q else 0.13, 0.12), fr(fm + q * 15), pan=0.2 * (1 if q else -1), send=0.26, bus=PUMP)
 
 for k, h in enumerate(HITS):
     pan = 0.16 if k % 2 == 0 else -0.16
-    sfx(whoosh(fr(22), 240, 5200, 0.2, 0.5), fr(max(0, h - 12)), pan=pan)
-    sfx(thock(0.34), fr(h), send=0.12)
+    sfx(whoosh(fr(18), 240, 5200, 0.18, 0.5), fr(max(0, h - 10)), pan=pan)
+    sfx(thock(0.3), fr(h), send=0.1)
 
-# 抽 / 提 / 压 音色
-sfx(swipe(0.15, 0.24), fr(PULL1 - 2), pan=-0.22, send=0.2)
-sfx(bell(midi(81), 0.16, 0.7), fr(LAND2), pan=0.12, send=0.5)
-sfx(swipe(0.14, 0.22), fr(PULL2 - 2), pan=0.18, send=0.18)
-sfx(bell(midi(76), 0.15, 0.65), fr(LAND3), pan=-0.1, send=0.48)
-sfx(riser(fr(16), 0.12), fr(RISE - 12), send=0.14)
-sfx(bell(midi(84), 0.18, 0.7), fr(RISE), pan=0.08, send=0.55)
-sfx(whoosh(fr(18), 300, 4000, 0.16, 0.45), fr(FAN - 10), pan=0)
-sfx(bell(midi(79), 0.16, 0.6), fr(PICK), pan=0.14, send=0.5)
-sfx(thock(0.4, 160, 52), fr(PRESS), send=0.16)
+# 十四种招式的音色：抽 / 提 / 压 / 扇 / 洗 / 叠回 / 炸 / 吸入 / snap
+sfx(whoosh(fr(16), 400, 3600, 0.14, 0.4), fr(CASCADE - 8), pan=0.1)
+sfx(thock(0.36, 168, 54), fr(PILE), send=0.14)
+sfx(swipe(0.15, 0.26), fr(PULL - 2), pan=-0.24, send=0.22)
+sfx(bell(midi(81), 0.16, 0.7), fr(LAND), pan=0.12, send=0.5)
+sfx(riser(fr(14), 0.12), fr(LIFT - 12), send=0.14)
+sfx(bell(midi(84), 0.17, 0.65), fr(LIFT), pan=0.06, send=0.52)
+sfx(whoosh(fr(16), 300, 4200, 0.16, 0.45), fr(FAN - 8), pan=0)
+sfx(bell(midi(79), 0.15, 0.55), fr(PICK), pan=0.14, send=0.48)
+sfx(thock(0.4, 158, 50), fr(PRESS), send=0.16)
+sfx(swipe(0.12, 0.18), fr(MOVE - 2), pan=0.2, send=0.16)
+sfx(whoosh(fr(14), 500, 3800, 0.15, 0.4), fr(SHUFFLE - 8), pan=-0.08)
+sfx(thock(0.34, 176, 58), fr(ALBUM + 12), send=0.1)
+sfx(thock(0.38, 150, 48), fr(PUSH), send=0.14)
+sfx(whoosh(fr(14), 280, 3400, 0.14, 0.42), fr(PAY - 8), pan=0.12)
+sfx(swipe(0.14, 0.22), fr(DRAW - 2), pan=-0.16, send=0.18)
+sfx(bell(midi(76), 0.14, 0.6), fr(FOLIO), pan=-0.1, send=0.46)
+sfx(riser(fr(18), 0.16), fr(EXPLODE - 14), send=0.16)
+sfx(bell(midi(88), 0.16, 0.55), fr(EXPLODE), pan=0.08, send=0.5)
 
-for k, fm in enumerate(RULES_AT):
-    sfx(bell(midi(PENTA[k] + 12), 0.2, 0.5), fr(fm), pan=-0.16 + 0.08 * k, send=0.52)
-    sfx(pluck(midi(PENTA[k] + 24), 0.05, 0.05), fr(fm + 3), pan=0.12, send=0.2)
+for k, fm in enumerate(TEACH_AT):
+    sfx(bell(midi(PENTA[k] + 12), 0.18, 0.48), fr(fm), pan=-0.16 + 0.08 * k, send=0.5)
+    sfx(pluck(midi(PENTA[k] + 24), 0.05, 0.05), fr(fm + 3), pan=0.12, send=0.18)
 
-for g in range(4):
-    sfx(thock(0.2 + 0.04 * g, 148 - 8 * g, 48), fr(NOISE + 4 + g * 5), pan=-0.24 + 0.16 * g, send=0.12)
-sfx(whoosh(fr(18), 700, 2200, 0.14, 0.4), fr(FLAT - 8), pan=0)
+for g in range(8):
+    sfx(thock(0.16 + 0.03 * (g % 4), 146 - 6 * (g % 5), 48), fr(NOISE + 3 + g * 3), pan=-0.3 + 0.08 * g, send=0.1)
+sfx(whoosh(fr(16), 700, 2200, 0.14, 0.4), fr(FLAT - 8), pan=0)
 sfx(thock(0.58, 210, 50), fr(FIX), send=0.22)
 sfx(bell(midi(84), 0.18, 0.75), fr(FIX + 2), pan=0.08, send=0.55)
 
-sfx(riser(fr(26), 0.2), fr(END - 28), send=0.18)
+sfx(riser(fr(22), 0.18), fr(END - 22), send=0.16)
 place(kick(0.72), fr(END))
-sfx(thock(0.68, 220, 46), fr(END), send=0.24)
+sfx(thock(0.66, 220, 46), fr(END), send=0.24)
 for k, m in enumerate([72, 76, 79, 84]):
-    sfx(bell(midi(m), 0.15, 0.85), fr(END + 6 + k * 8), pan=-0.18 + 0.12 * k, send=0.6)
-place(bass(midi(36), 1.6, 0.48), fr(END))
+    sfx(bell(midi(m), 0.14, 0.8), fr(END + 6 + k * 8), pan=-0.18 + 0.12 * k, send=0.58)
+place(bass(midi(36), 1.5, 0.46), fr(END))
 
-# 拆解 + 坏例：音乐变薄
+# 坏例：音乐变薄，吸入时冲开
 tsec = np.arange(N) / SR
 c = np.full(N, 14000.0)
-a, b = fr(610), fr(650)
-c = np.where((tsec >= a) & (tsec < b), 14000 * (800 / 14000) ** np.clip((tsec - a) / (b - a), 0, 1), c)
-c = np.where((tsec >= b) & (tsec < fr(954)), 800, c)
-a2, b2 = fr(954), fr(978)
-c = np.where((tsec >= a2) & (tsec < b2), 800 * (14000 / 800) ** (np.clip((tsec - a2) / (b2 - a2), 0, 1) ** 2), c)
-seg = slice(int(fr(600) * SR), int(fr(986) * SR))
+a, b = fr(1110), fr(1134)
+c = np.where((tsec >= a) & (tsec < b), 14000 * (900 / 14000) ** np.clip((tsec - a) / (b - a), 0, 1), c)
+c = np.where((tsec >= b) & (tsec < fr(1190)), 900, c)
+a2, b2 = fr(1190), fr(1212)
+c = np.where((tsec >= a2) & (tsec < b2), 900 * (14000 / 900) ** (np.clip((tsec - a2) / (b2 - a2), 0, 1) ** 2), c)
+seg = slice(int(fr(1104) * SR), int(fr(1220) * SR))
 for ch in range(2):
     MUS[ch, seg] = onepole_lp(onepole_lp(MUS[ch, seg], c[seg]), c[seg])
     PUMP[ch, seg] = onepole_lp(onepole_lp(PUMP[ch, seg], c[seg]), c[seg])
@@ -316,11 +338,10 @@ def reverb(x, seed, dec=0.62, length=2.2):
     return np.fft.irfft(np.fft.rfft(x, nfft) * np.fft.rfft(ir, nfft), nfft)[: len(x)]
 
 
-# 轻侧链：底鼓处压一点 pad
 pump = np.ones(N)
 for b in range(0, 1320 // BEAT + 1):
     fm = b * BEAT
-    if in_groove(fm) and fm >= 60:
+    if fm >= 30 and not thin_at(fm):
         i0 = int(fr(fm) * SR)
         span = int(0.18 * SR)
         if i0 + span < N:
@@ -334,7 +355,7 @@ mix = mix.T
 mix /= np.abs(mix).max() + 1e-9
 mix = np.tanh(mix * 1.06) / np.tanh(1.06)
 fade = np.ones(N)
-fo = int(0.75 * SR)
+fo = int(0.7 * SR)
 fade[-fo:] = np.linspace(1, 0, fo) ** 2
 mix *= fade[:, None] * 0.88
 

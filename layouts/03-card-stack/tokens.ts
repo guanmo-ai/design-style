@@ -1,4 +1,4 @@
-// 布局 03 · Card Stack v6 — 刊 / 层 / 样。奶油纸、朱红、墨、青绿。不是冷灰白卡。
+// 布局 03 · Card Stack v7 — 16 张异形卡。开场密度对齐 Swiss 波，方案种类对齐 Bento。
 export const C = {
   paper: '#EDE6D6',
   cream: '#F6F0E4',
@@ -9,21 +9,28 @@ export const C = {
   sand: '#C8B89A',
   bone: '#E8DFD0',
   night: '#0C0C0E',
+  rust: '#9A3B2F',
+  olive: '#3D4A2C',
+  blush: '#D4A59A',
+  mustard: '#C4A35A',
+  slate: '#3A3F4B',
+  moss: '#2F4F3E',
+  coral: '#E36A4A',
   t1: 'rgba(246,240,228,0.96)',
   t2: 'rgba(246,240,228,0.62)',
 };
 
 export const STACK = {
   count: 4,
-  width: 520,
-  height: 740,
+  width: 360,
+  height: 480,
   radius: 8,
-  stepY: 30,
-  stepX: 40,
-  stepZ: 36,
-  lift: 18,
+  stepY: 18,
+  stepX: 22,
+  stepZ: 20,
+  lift: 16,
   rotate: -1.4,
-  dimPer: 0.12,
+  dimPer: 0.08,
 };
 
 export const FONT = {

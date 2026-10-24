@@ -1,5 +1,5 @@
 /** 任意 18 帧窗口里，镜头或主体必须在动。同布局 TRANS 禁止。 */
-import {DURATION, EXTRAS, TRANS, camAt, cardState, extraState} from './layout';
+import {CARDS, DURATION, EXTRAS, TRANS, camAt, cardState, extraState} from './layout';
 
 const WIN = 18;
 const EPS = 0.35;
@@ -12,7 +12,7 @@ const camDelta = (f: number) => {
 
 const cardDelta = (f: number) => {
   let d = 0;
-  for (let i = 0; i < 4; i++) {
+  for (let i = 0; i < CARDS; i++) {
     const a = cardState(f, i).pose;
     const b = cardState(f + 1, i).pose;
     d += Math.hypot(a.x - b.x, a.y - b.y) + Math.abs(a.z - b.z) + Math.abs(a.rot - b.rot) * 3 + Math.abs(a.sc - b.sc) * 80;
@@ -54,4 +54,4 @@ if (dead.length) {
   process.exit(1);
 }
 
-console.log(`ok · ${DURATION}f · ${TRANS.length} trans · no 0.3s dead zone`);
+console.log(`ok · ${DURATION}f · ${TRANS.length} trans · ${CARDS} cards · no 0.3s dead zone`);
