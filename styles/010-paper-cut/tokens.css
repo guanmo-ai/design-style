@@ -1,0 +1,62 @@
+/* 010 · Paper Cut 剪纸层叠 —— 设计令牌（CSS 版） */
+:root {
+  --cut-sky: #071820;
+  --cut-navy: #0B2430;
+  --cut-sun: #E23A2B;
+  --cut-ink: #142028;
+  --cut-grey: #5C6E72;
+  --cut-paper: #F6F3EB;
+  --cut-cream: #EDE8DC;
+  --cut-white: #FFFDF8;
+  --cut-mist: #D7E8DC;
+
+  --cut-hill-6: #134A5C;
+  --cut-hill-5: #1B6572;
+  --cut-hill-4: #287E7C;
+  --cut-hill-3: #3D9884;
+  --cut-hill-2: #6BB894;
+  --cut-hill-1: #B8DCC8;
+
+  --cut-font-display: 'Jost', 'Futura', 'Avenir Next', sans-serif;
+  --cut-font-cn: 'Noto Sans SC', 'PingFang SC', sans-serif;
+  --cut-font-mono: 'JetBrains Mono', ui-monospace, monospace;
+
+  /* 规则 02：层间阴影 = 深度。没有它就是贴纸 */
+  --cut-shadow-far: 0 6px 8px rgba(6, 20, 28, 0.28);
+  --cut-shadow-mid: 0 12px 12px rgba(6, 20, 28, 0.34);
+  --cut-shadow-near: 0 20px 16px rgba(6, 20, 28, 0.42);
+}
+
+.cut-page {
+  background: var(--cut-sky);
+  color: var(--cut-ink);
+  font: 500 16px/1.6 var(--cut-font-cn);
+}
+
+/* 一张纸：平涂 + 软投影。不要在同一层上画渐变 */
+.cut-sheet {
+  background: var(--cut-hill-3);
+  box-shadow: var(--cut-shadow-mid);
+}
+
+/* 红日：全片唯一的暖色 */
+.cut-sun {
+  width: 88px;
+  height: 88px;
+  border-radius: 50%;
+  background: var(--cut-sun);
+  box-shadow: var(--cut-shadow-far);
+}
+
+/* 笔记本卡片：螺旋装订 + 暖白纸 */
+.cut-card {
+  background: var(--cut-paper);
+  border-radius: 18px;
+  box-shadow: var(--cut-shadow-near);
+  font: 600 28px/1.15 var(--cut-font-display);
+  letter-spacing: 0.08em;
+}
+
+/* 视差：远层几乎不动，近层跟手走 */
+.cut-parallax-far { transform: translateX(calc(var(--pan, 0px) * 0.16)); }
+.cut-parallax-near { transform: translateX(calc(var(--pan, 0px) * 1.08)); }
