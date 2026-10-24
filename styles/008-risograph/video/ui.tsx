@@ -85,10 +85,10 @@ export const advances = (word: string, size: number, ls: number) => {
   return {xs, w: x - ls * size};
 };
 
-/** 出现：从下方 dy 处滑到位，退场淡出 */
+/** 出现：从下方 dy 处滑到位，退场淡出（E.soft，比硬 ease-out 少一截顿） */
 export const Show: React.FC<{f: number; at: number; out?: number; dy?: number; dx?: number; style?: CSS; children: React.ReactNode}> = ({f, at, out = 1e9, dy = 18, dx = 0, style, children}) => {
-  const o = tween(f, at, 14, 0, 1, E.out) * (1 - tween(f, out, 8, 0, 1, E.inOut));
+  const o = tween(f, at, 18, 0, 1, E.soft) * (1 - tween(f, out, 14, 0, 1, E.soft));
   if (o <= 0.001) return null;
-  const p = 1 - tween(f, at, 22, 0, 1, E.out);
+  const p = 1 - tween(f, at, 26, 0, 1, E.soft);
   return <div style={{position: 'absolute', inset: 0, opacity: o, transform: `translate(${p * dx}px, ${p * dy}px)`, ...style}}>{children}</div>;
 };
