@@ -20,85 +20,100 @@ export const EXTRA_DECK = [
   {bg: C.teal, fg: C.cream, mark: '多'},
 ] as const;
 
+const Vignette = () => (
+  <div style={{position: 'absolute', inset: 0, background: 'radial-gradient(ellipse at 50% 42%, transparent 42%, rgba(8,8,10,0.42) 100%)', pointerEvents: 'none'}} />
+);
+
 const Shot: React.FC<{i: number}> = ({i}) => {
   if (i === 0) {
     return (
-      <div style={{position: 'absolute', inset: 0, background: 'linear-gradient(180deg,#1B2A38 0%,#2A4154 46%,#0C1418 47%,#070B0E 100%)'}}>
-        <div style={{position: 'absolute', left: '64%', top: '20%', width: '14%', aspectRatio: '1', borderRadius: 999, background: '#E36A4A'}} />
-        <div style={{position: 'absolute', left: '10%', right: '18%', top: '58%', height: 7, background: '#0A0A0C'}} />
-        <div style={{position: 'absolute', left: '22%', top: '58%', width: '8%', height: '18%', background: '#151518'}} />
+      <div style={{position: 'absolute', inset: 0, background: 'linear-gradient(180deg,#243548 0%,#3A5368 38%,#1A2834 46%,#0B1014 47%,#141C22 70%,#07090B 100%)'}}>
+        <div style={{position: 'absolute', left: '61%', top: '18%', width: '11%', aspectRatio: '1', borderRadius: 999, background: 'radial-gradient(circle at 40% 40%,#F0C27A,#E36A4A 55%,#9A3B2F)'}} />
+        <div style={{position: 'absolute', left: '58%', top: '48%', width: '18%', height: '10%', background: 'radial-gradient(ellipse, rgba(227,106,74,0.35), transparent 70%)'}} />
+        <div style={{position: 'absolute', left: '8%', right: '22%', top: '62%', height: 5, background: '#0A0A0C', transform: 'rotate(-1deg)'}} />
+        <div style={{position: 'absolute', left: '20%', top: '61%', width: '7%', height: '16%', background: '#15181C'}} />
+        <div style={{position: 'absolute', left: '36%', top: '64%', width: '4%', height: '9%', background: '#1A1E22'}} />
+        <Vignette />
       </div>
     );
   }
   if (i === 1) {
     return (
-      <div style={{position: 'absolute', inset: 0, background: 'linear-gradient(160deg,#E8DFD0 0%,#C8B89A 40%,#8A7A62 100%)'}}>
-        {[0, 1, 2, 3, 4].map((k) => (
-          <div key={k} style={{position: 'absolute', left: `${8 + k * 14}%`, top: `${12 + k * 14}%`, width: `${70 - k * 8}%`, height: 10, background: k % 2 ? '#5C5346' : '#3A342C', transform: 'skewX(-28deg)'}} />
+      <div style={{position: 'absolute', inset: 0, background: 'linear-gradient(155deg,#EDE4D4 0%,#C8B89A 36%,#8A7A62 78%,#3A3228 100%)'}}>
+        {[0, 1, 2, 3, 4, 5].map((k) => (
+          <div key={k}>
+            <div style={{position: 'absolute', left: `${6 + k * 12}%`, top: `${10 + k * 13}%`, width: `${78 - k * 7}%`, height: 14, background: k % 2 ? '#4A4338' : '#2E2922', transform: 'skewX(-26deg)', boxShadow: '0 8px 0 rgba(0,0,0,0.12)'}} />
+          </div>
         ))}
-        <div style={{position: 'absolute', right: '12%', top: '18%', width: 18, height: '54%', background: '#2A241C'}} />
+        <div style={{position: 'absolute', right: '10%', top: '12%', width: 22, height: '62%', background: 'linear-gradient(180deg,#2A241C,#16130F)'}} />
+        <div style={{position: 'absolute', left: '18%', top: '70%', width: '10%', height: '18%', background: 'rgba(17,17,17,0.28)'}} />
+        <Vignette />
       </div>
     );
   }
   if (i === 2) {
     return (
-      <div style={{position: 'absolute', inset: 0, background: '#121214'}}>
-        <div style={{position: 'absolute', left: '18%', top: '28%', right: '14%', height: '32%', display: 'grid', gridTemplateColumns: 'repeat(5,1fr)', gap: 5}}>
+      <div style={{position: 'absolute', inset: 0, background: 'linear-gradient(180deg,#1A1A1E 0%,#0C0C0E 100%)'}}>
+        <div style={{position: 'absolute', left: 0, right: 0, top: '58%', height: '42%', background: 'linear-gradient(180deg,#16181C,#07080A)'}} />
+        <div style={{position: 'absolute', left: '12%', top: '22%', right: '10%', height: '38%', display: 'grid', gridTemplateColumns: 'repeat(5,1fr)', gap: 4, padding: 6, background: '#0A0A0C'}}>
           {Array.from({length: 10}, (_, k) => (
-            <div key={k} style={{background: k === 3 ? '#E31C23' : '#C4A35A', opacity: 0.85}} />
+            <div key={k} style={{background: k === 3 ? '#E31C23' : k === 7 ? '#C4A35A' : '#D7B56A', opacity: 0.55 + (k % 3) * 0.12}} />
           ))}
         </div>
-        <div style={{position: 'absolute', left: 0, right: 0, bottom: 0, height: '18%', background: '#0A0A0C'}} />
+        <div style={{position: 'absolute', left: '8%', right: '8%', bottom: '8%', height: 3, background: 'rgba(196,163,90,0.35)'}} />
+        <Vignette />
       </div>
     );
   }
   if (i === 3) {
     return (
-      <div style={{position: 'absolute', inset: 0, background: 'linear-gradient(180deg,#D4E2EA 0%,#A8BCC8 100%)'}}>
-        <div style={{position: 'absolute', left: '18%', top: '10%', right: '18%', bottom: '10%', border: '3px solid rgba(246,240,228,0.7)'}} />
-        <div style={{position: 'absolute', left: '49%', top: '10%', bottom: '10%', width: 3, background: 'rgba(246,240,228,0.7)'}} />
-        <div style={{position: 'absolute', left: '18%', right: '18%', top: '49%', height: 3, background: 'rgba(246,240,228,0.7)'}} />
-        <div style={{position: 'absolute', right: '22%', top: '16%', width: '20%', height: '20%', background: 'rgba(227,28,35,0.35)'}} />
+      <div style={{position: 'absolute', inset: 0, background: 'linear-gradient(180deg,#E4EEF3 0%,#9BB0BC 55%,#6A7E8A 100%)'}}>
+        <div style={{position: 'absolute', inset: '8% 14%', display: 'grid', gridTemplateColumns: '1fr 1fr', gridTemplateRows: '1fr 1fr', gap: 5}}>
+          <div style={{background: 'linear-gradient(160deg,#F6F0E4 0%,#C8D6DE 100%)'}} />
+          <div style={{background: 'linear-gradient(200deg,#D4A59A 0%,#8A9AA4 100%)'}} />
+          <div style={{background: 'linear-gradient(20deg,#A8BCC8,#6A7E8A)'}} />
+          <div style={{background: 'linear-gradient(200deg,#F6F0E4,#B8C6CE)'}} />
+        </div>
+        <div style={{position: 'absolute', left: '14%', right: '14%', top: '49%', height: 4, background: 'rgba(246,240,228,0.55)'}} />
+        <div style={{position: 'absolute', left: '49%', top: '8%', bottom: '8%', width: 4, background: 'rgba(246,240,228,0.55)'}} />
+        <Vignette />
       </div>
     );
   }
   if (i === 4) {
     return (
-      <div style={{position: 'absolute', inset: 0, background: 'linear-gradient(180deg,#F2C9A0 0%,#C45C26 55%,#5A2418 100%)'}}>
-        <div style={{position: 'absolute', left: 0, right: 0, top: '22%', height: '16%', background: '#9A3B2F'}} />
-        {[0, 1, 2, 3, 4, 5].map((k) => (
-          <div key={k} style={{position: 'absolute', left: `${10 + (k % 3) * 28}%`, top: `${48 + Math.floor(k / 3) * 18}%`, width: '12%', aspectRatio: '1', borderRadius: 999, background: ['#E31C23', '#C4A35A', '#2F4F3E', '#EDE6D6', '#163A3A', '#E36A4A'][k]}} />
+      <div style={{position: 'absolute', inset: 0, background: 'linear-gradient(180deg,#F4D2B0 0%,#C45C26 48%,#5A2418 100%)'}}>
+        <div style={{position: 'absolute', left: 0, right: 0, top: '18%', height: '20%', background: 'linear-gradient(180deg,#B84332,#7A241C)'}} />
+        {[0, 1, 2, 3, 4, 5, 6, 7].map((k) => (
+          <div key={k} style={{position: 'absolute', left: `${8 + (k % 4) * 22}%`, top: `${46 + Math.floor(k / 4) * 20}%`, width: `${10 + (k % 3)}%`, aspectRatio: '1', borderRadius: 999, background: ['#E31C23', '#C4A35A', '#2F4F3E', '#EDE6D6', '#163A3A', '#E36A4A', '#9A3B2F', '#F6F0E4'][k], boxShadow: 'inset 0 -6px 10px rgba(0,0,0,0.2)'}} />
         ))}
+        <Vignette />
       </div>
     );
   }
   return (
-    <div style={{position: 'absolute', inset: 0, background: 'linear-gradient(180deg,#C8CCCE 0%,#8A8E92 50%,#4A4E52 100%)'}}>
-      <div style={{position: 'absolute', left: '42%', top: '38%', width: '8%', height: '28%', background: '#1A1A1E', opacity: 0.55}} />
-      <div style={{position: 'absolute', left: 0, right: 0, top: '62%', height: '20%', background: 'rgba(246,240,228,0.12)'}} />
+    <div style={{position: 'absolute', inset: 0, background: 'linear-gradient(180deg,#D5D8DA 0%,#9A9EA2 42%,#5A5E62 78%,#2A2E32 100%)'}}>
+      <div style={{position: 'absolute', left: 0, right: 0, top: '58%', height: '30%', background: 'rgba(246,240,228,0.08)'}} />
+      <div style={{position: 'absolute', left: '40%', top: '36%', width: '7%', height: '26%', background: '#1A1A1E', opacity: 0.45}} />
+      <div style={{position: 'absolute', left: '48%', top: '42%', width: '3%', height: '12%', background: '#111', opacity: 0.35}} />
+      <Vignette />
     </div>
   );
 };
 
-const Stars: React.FC<{n: number; color: string}> = ({n, color}) => (
-  <span style={{letterSpacing: '0.12em'}}>{'★'.repeat(n)}{'☆'.repeat(Math.max(0, 5 - n)).slice(0, Math.max(0, 5 - n))}</span>
-);
-
-const Caption: React.FC<{i: number; compact?: boolean}> = ({i, compact}) => {
+const Caption: React.FC<{i: number}> = ({i}) => {
   const d = DECK[i];
   return (
-    <div style={{position: 'absolute', left: 0, right: 0, bottom: 0, height: compact ? '28%' : '24%', background: C.cream, color: C.ink, padding: compact ? '6px 8px' : '10px 12px'}}>
+    <div style={{position: 'absolute', left: 0, right: 0, bottom: 0, height: '24%', background: C.cream, color: C.ink, padding: '10px 12px'}}>
       <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'baseline'}}>
-        <span style={{...gro(compact ? 16 : 22, 700, -0.04)}}>{d.title}</span>
-        <span style={{...mono(compact ? 9 : 11), opacity: 0.55}}>{d.id}</span>
+        <span style={{...gro(22, 700, -0.04)}}>{d.title}</span>
+        <span style={{...mono(11), opacity: 0.5}}>{d.id}</span>
       </div>
-      <div style={{...sc(compact ? 11 : 13, 500), marginTop: 3}}>{d.zh}</div>
-      {!compact ? (
-        <div style={{...mono(10), opacity: 0.55, marginTop: 6, display: 'flex', justifyContent: 'space-between'}}>
-          <span>{d.lens}  ·  {d.expo}</span>
-          <span style={{color: C.red}}><Stars n={d.stars} color={C.red} /></span>
-        </div>
-      ) : null}
+      <div style={{...sc(13, 500), marginTop: 3}}>{d.zh}</div>
+      <div style={{...mono(10), opacity: 0.55, marginTop: 6, display: 'flex', justifyContent: 'space-between'}}>
+        <span>{d.lens}  ·  {d.expo}</span>
+        <span style={{color: C.red}}>{'★'.repeat(d.stars)}</span>
+      </div>
     </div>
   );
 };
@@ -116,44 +131,30 @@ const Crop: React.FC<{fg?: string}> = ({fg = C.ink}) => {
   );
 };
 
-export const Face: React.FC<{i: number; fam: Family; w: number; h: number}> = ({i, fam, w, h}) => {
+export const Face: React.FC<{i: number; fam: Family; w: number; h: number; front: boolean}> = ({i, fam, w, h, front}) => {
   const d = DECK[i];
-  const thin = w < 90;
-  const short = h < 160;
-  const wide = w > h * 1.35;
+  const thin = w < 100;
+  const showMeta = front && w > 220 && h > 240;
 
   if (thin) {
     return (
       <div style={{position: 'absolute', inset: 0, overflow: 'hidden'}}>
         <Shot i={i} />
-        <div style={{position: 'absolute', inset: 6, writingMode: 'vertical-rl', color: C.cream, mixBlendMode: 'difference', ...gro(16, 700)}}>{d.zh}</div>
       </div>
     );
   }
 
-  if (fam === 'BOARD' || wide) {
+  if (fam === 'BOARD') {
     return (
       <div style={{position: 'absolute', inset: 0, overflow: 'hidden', background: C.cream, color: C.ink, display: 'flex'}}>
-        <div style={{width: Math.min(160, w * 0.36), position: 'relative', flex: '0 0 auto'}}>
+        <div style={{width: Math.min(168, w * 0.34), position: 'relative', flex: '0 0 auto'}}>
           <Shot i={i} />
         </div>
-        <div style={{flex: 1, padding: '16px 18px', minWidth: 0}}>
-          <div style={{...mono(11), color: C.red, marginBottom: 6}}>{d.lane}</div>
-          <div style={{...gro(28, 700, -0.04)}}>{d.task}</div>
-          <div style={{...sc(16, 500), marginTop: 8, opacity: 0.7}}>{d.title}  ·  {d.zh}</div>
-          <div style={{...mono(11), marginTop: 10, opacity: 0.5}}>{d.lens}</div>
-        </div>
-      </div>
-    );
-  }
-
-  if (short) {
-    return (
-      <div style={{position: 'absolute', inset: 0, overflow: 'hidden', display: 'flex'}}>
-        <div style={{width: 120, position: 'relative'}}><Shot i={i} /></div>
-        <div style={{flex: 1, background: C.cream, color: C.ink, padding: '10px 14px'}}>
-          <div style={{...gro(22, 700)}}>{d.title}</div>
-          <div style={{...sc(13, 500), marginTop: 4}}>{d.zh}  ·  {d.lens}</div>
+        <div style={{flex: 1, padding: '18px 20px', minWidth: 0}}>
+          <div style={{...mono(11), color: C.red, marginBottom: 8}}>{d.lane}</div>
+          <div style={{...gro(30, 700, -0.04)}}>{d.task}</div>
+          <div style={{...sc(16, 500), marginTop: 10, opacity: 0.7}}>{d.title}  ·  {d.zh}</div>
+          <div style={{...mono(11), marginTop: 12, opacity: 0.45}}>{d.lens}  ·  ISO {d.iso}</div>
         </div>
       </div>
     );
@@ -161,17 +162,17 @@ export const Face: React.FC<{i: number; fam: Family; w: number; h: number}> = ({
 
   return (
     <div style={{position: 'absolute', inset: 0, overflow: 'hidden', background: C.ink}}>
-      <div style={{position: 'absolute', left: 0, right: 0, top: 0, bottom: '24%'}}>
+      <div style={{position: 'absolute', inset: 0, bottom: showMeta ? '24%' : 0}}>
         <Shot i={i} />
       </div>
-      <Caption i={i} />
-      {fam === 'PROOF' || fam === 'PRESS' ? <Crop fg={C.cream} /> : null}
-      {fam === 'FOLIO' ? (
+      {showMeta ? <Caption i={i} /> : null}
+      {(fam === 'PROOF' || fam === 'PRESS') && showMeta ? <Crop fg={C.cream} /> : null}
+      {fam === 'FOLIO' && showMeta ? (
         <div style={{position: 'absolute', left: 10, top: 10, background: C.red, color: C.cream, ...mono(11), padding: '4px 7px'}}>
           {i === 1 ? 'COVER' : `P.${d.id}`}
         </div>
       ) : null}
-      {fam === 'PROOF' && i === 1 ? (
+      {fam === 'PROOF' && i === 1 && showMeta ? (
         <div style={{position: 'absolute', right: 12, top: 12, ...mono(12), color: C.cream, background: C.red, padding: '4px 7px'}}>GRADE A</div>
       ) : null}
     </div>
