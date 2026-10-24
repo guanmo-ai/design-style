@@ -22,7 +22,7 @@ export const camApp = (f: number): Cam2 =>
     [PRESS_AT, {ox: 920, oy: 420, s: 1.14}],
     [PUSH_AT + 24, {ox: 960, oy: 470, s: 1.08}],
     [SHEET_AT + 8, {ox: 960, oy: 610, s: 1.16}],
-    [TOG_AT, {ox: 1004, oy: 392, s: 1.2}],
+    [TOG_AT, {ox: 960, oy: 430, s: 1.1}],
     [WEB_GO - 4, {ox: 960, oy: 540, s: 1.02}],
   ]);
 
@@ -258,8 +258,8 @@ export const App: React.FC<P> = ({f}) => {
             </defs>
             <rect x={n2(body.x + inset)} y={n2(sy)} width={n2(sw)} height={n2(shOpen)} rx={n2(sr)} fill={C.paperHi} />
             <g clipPath="url(#app-scr)">
-              {f < SHEET_OUT + 24 && <List f={f} push={push} />}
-              {f >= PUSH_AT && f < SHEET_OUT + 24 && <Ringing f={f} push={push} />}
+              {f < WEB_GO && <List f={f} push={push} />}
+              {f >= PUSH_AT && f < SHEET_OUT + 28 && <Ringing f={f} push={push} />}
               {f >= SHEET_AT - 2 && f < SHEET_OUT + 18 && <Sheet f={f} />}
               {f < WEB_GO && <Dot x={d.x} y={d.y} r={d.r} />}
             </g>
