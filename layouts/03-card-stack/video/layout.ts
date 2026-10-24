@@ -187,8 +187,8 @@ const NOISE2 = bump(NOISE, (p, i) => ({rot: p.rot * 1.35, x: p.x + (i - 1.5) * 2
 const FLAT = [0, 1, 2, 3].map((i) => P(760 + i * 6, 340 + i * 4, 560, 380, 6, {z: -i * 2}));
 const FIX = posters(700, 160, 18);
 const FIX_UP = posters(700, 146, 28);
-const END = STACK.map((p) => shrink(p, 0.18, 960, 280));
-const END2 = STACK.map((p) => shrink(p, 0.14, 960, 256));
+const END = STACK.map((p) => shrink(p, 0.24, 960, 300));
+const END2 = STACK.map((p) => shrink(p, 0.2, 960, 276));
 
 export const LAYOUTS: Record<LayoutName, Pose[]> = {
   SLAM, STACK, STACK_UP,
