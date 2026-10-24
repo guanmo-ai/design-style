@@ -1,4 +1,4 @@
-/** 布局 03 · Card Stack —— B-roll 环境：手机、后台、毡面、深度轴、iOS 触点 */
+/** 布局 03 · Card Stack —— B-roll：手机、后台、深度轴、iOS 触点。字幕钉死在画布上。 */
 import React from 'react';
 import {E, POP, SNAP, SMOOTH, spr, tween} from '../../../src/lib/anim';
 import {C} from '../tokens';
@@ -6,10 +6,9 @@ import {BEATS, BROWSER, OVERLAP, PHONE, SCENE, T} from './layout';
 import {RiseBox, Swap, disp, mono, sc, Show, ui} from './ui';
 
 type P = {f: number};
-const HIT_OFF = 14;
 
 export const PhoneBack: React.FC<P> = ({f}) => {
-  const t0 = T('IOS') - HIT_OFF;
+  const t0 = T('IOS') - 12;
   const p = spr(f, t0, SNAP, 32);
   const o = tween(f, t0, 12) * (1 - tween(f, T('STRIPE'), 14, 0, 1, E.inOut));
   if (o <= 0.001) return null;
@@ -32,6 +31,14 @@ export const PhoneBack: React.FC<P> = ({f}) => {
   );
 };
 
+const phoneLabel = (f: number) => {
+  if (f >= BEATS.wallet) return 'Wallet · 抽下一张';
+  if (f >= BEATS.scan) return 'Wallet · 扫码';
+  if (f >= BEATS.sheet) return 'Wallet · Sheet';
+  if (f >= BEATS.note) return 'Wallet · 通知';
+  return 'Wallet · 登机牌';
+};
+
 export const PhoneFront: React.FC<P> = ({f}) => {
   const o = tween(f, T('IOS') - 6, 12) * (1 - tween(f, T('STRIPE'), 14, 0, 1, E.inOut));
   if (o <= 0.001) return null;
@@ -46,13 +53,13 @@ export const PhoneFront: React.FC<P> = ({f}) => {
         <rect x={28} y={3} width={22} height={11} rx={3} fill="none" stroke="rgba(255,255,255,.5)" strokeWidth={1.2} />
         <rect x={30} y={5} width={15} height={7} rx={2} fill="#fff" />
       </svg>
-      <div style={{position: 'absolute', left: PHONE.x + 28, top: PHONE.y + 56, ...sc(13, 500), color: 'rgba(255,255,255,.72)'}}>Wallet · 通知 · Sheet</div>
+      <div style={{position: 'absolute', left: PHONE.x + 28, top: PHONE.y + 56, ...sc(13, 500), color: 'rgba(255,255,255,.72)'}}>{phoneLabel(f)}</div>
       <div style={{position: 'absolute', left: PHONE.x + PHONE.w / 2 - 64, top: PHONE.y + PHONE.h - 22, width: 128, height: 5, borderRadius: 3, background: 'rgba(255,255,255,.45)'}} />
     </div>
   );
 };
 
-/** iOS 产品 demo 触点：点 Gate → 上滑 Sheet → 按住条码 → 抽出下一张。镜头跟这些点走。 */
+/** 点 Gate → 通知压下 → 上滑 Sheet → 按住条码 → 抽出下一张 */
 export const IosTouch: React.FC<P> = ({f}) => {
   const ring = (at: number, x: number, y: number) => {
     const p = spr(f, at, POP, 22);
@@ -70,7 +77,7 @@ export const IosTouch: React.FC<P> = ({f}) => {
   };
   return (
     <div style={{position: 'absolute', inset: 0, pointerEvents: 'none', zIndex: 90}}>
-      {ring(176, PHONE.x + 86, PHONE.y + 250)}
+      {ring(BEATS.gate, PHONE.x + 86, PHONE.y + 250)}
       {ring(BEATS.note + 2, PHONE.x + 196, PHONE.y + 80)}
       {swipe(BEATS.sheet - 8, PHONE.x + PHONE.w / 2, PHONE.y + 780, PHONE.y + 430)}
       {ring(BEATS.zoom, PHONE.x + 196, PHONE.y + 720)}
@@ -89,7 +96,7 @@ const ROWS: [string, string, string, string][] = [
 
 export const StripeDesk: React.FC<P> = ({f}) => {
   const t0 = T('STRIPE') - 16;
-  const o = tween(f, t0, 14) * (1 - tween(f, T('DECK'), 14, 0, 1, E.inOut));
+  const o = tween(f, t0, 14) * (1 - tween(f, T('EXPLODE'), 14, 0, 1, E.inOut));
   if (o <= 0.001) return null;
   const p = spr(f, t0, SNAP, 32);
   const hi = spr(f, T('STRIPE') + 8, POP, 22) * (1 - spr(f, BEATS.issue - 8, SMOOTH, 16));
@@ -131,27 +138,10 @@ export const StripeDesk: React.FC<P> = ({f}) => {
   );
 };
 
-export const Felt: React.FC<P> = ({f}) => {
-  const t0 = T('DECK') - 16;
-  const o = tween(f, t0, 14) * (1 - tween(f, T('EXPLODE'), 14, 0, 1, E.inOut));
-  if (o <= 0.001) return null;
-  const p = spr(f, t0, SMOOTH, 32);
-  return (
-    <div style={{position: 'absolute', inset: 0, opacity: o, transform: `scale(${0.94 + 0.06 * p})`, transformOrigin: '1240px 540px'}}>
-      <div style={{position: 'absolute', left: 640, top: 160, width: 1180, height: 780, borderRadius: 40, background: 'radial-gradient(60% 50% at 50% 45%, #147A58 0%, #0C3B2E 62%, #07261D 100%)', boxShadow: 'inset 0 0 0 10px #0A2F24, inset 0 0 80px rgba(0,0,0,.35)'}} />
-      <div style={{position: 'absolute', left: 700, top: 200, ...mono(12), color: 'rgba(255,255,255,.28)', letterSpacing: '0.18em'}}>POKER · CARD · FOLDER · PAPER</div>
-      {[0, 1, 2].map((k) => {
-        const s = spr(f, T('DECK') + 8 + k * 5, POP, 24);
-        return <div key={k} style={{position: 'absolute', left: 720 + k * 18, top: 820 - k * 4, width: 36, height: 36, borderRadius: 18, background: k === 1 ? '#F59E0B' : '#E5E7EB', boxShadow: '0 6px 12px rgba(0,0,0,.25)', transform: `scale(${s})`}} />;
-      })}
-    </div>
-  );
-};
-
 export const ExplodeAxis: React.FC<P> = ({f}) => {
-  const o = tween(f, SCENE.EXPLODE.in - OVERLAP, 12) * (1 - tween(f, SCENE.EXPLODE.out, 10, 0, 1, E.inOut));
+  const o = tween(f, SCENE.TEACH.in - OVERLAP, 12) * (1 - tween(f, SCENE.TEACH.out, 10, 0, 1, E.inOut));
   if (o <= 0.001) return null;
-  const draw = spr(f, SCENE.EXPLODE.in, SMOOTH, 32);
+  const draw = spr(f, SCENE.TEACH.in, SMOOTH, 32);
   return (
     <svg width={1920} height={1080} style={{position: 'absolute', inset: 0, opacity: o}}>
       <defs>
@@ -167,16 +157,16 @@ export const ExplodeAxis: React.FC<P> = ({f}) => {
 
 export const DepthTicks: React.FC<P> = ({f}) => {
   const labels: [number, number, string][] = [
-    [1260, 140, 'z 40'],
-    [1440, 310, 'z 30'],
-    [1620, 480, 'z 20'],
-    [1800, 650, 'z 10'],
+    [720, 120, 'z 40'],
+    [900, 300, 'z 30'],
+    [1080, 480, 'z 20'],
+    [1260, 660, 'z 10'],
   ];
   return (
     <>
       {labels.map(([x, y, t], k) => {
-        const s = spr(f, SCENE.EXPLODE.in + 8 + k * 6, POP, 28);
-        const o = Math.min(1, s * 2) * (1 - tween(f, SCENE.EXPLODE.out, 8));
+        const s = spr(f, SCENE.TEACH.in + 72 + k * 6, POP, 28);
+        const o = Math.min(1, s * 2) * (1 - tween(f, SCENE.TEACH.out, 8));
         if (o <= 0.001) return null;
         return (
           <div key={t} style={{position: 'absolute', left: x, top: y, opacity: o, transform: `scale(${0.7 + 0.3 * s})`, background: C.pink, color: '#fff', ...mono(13), padding: '6px 8px', borderRadius: 7}}>
@@ -189,11 +179,12 @@ export const DepthTicks: React.FC<P> = ({f}) => {
 };
 
 const IOS_COPY: {at: number; kicker: string; title: string; body: string; en: string}[] = [
-  {at: 150, kicker: 'A-roll · 产品', title: 'Wallet', body: '登机牌压在最上面。\n点 Gate，镜头跟过去。', en: 'Boarding pass on top · tap Gate B12'},
-  {at: 198, kicker: '通知压下来', title: 'Notify', body: '同一叠拓扑：新的一层\n从顶上弹入，旧的退暗。', en: 'Notification stack · 2 more below'},
-  {at: 232, kicker: '从底下抽出', title: 'Sheet', body: '上滑，操作层盖住票面。\n三个按钮逐个 POP。', en: 'Share sheet · Messages / Mail / Wallet'},
-  {at: 258, kicker: '扫登机牌', title: 'Scan', body: 'Sheet 让开，镜头扎进条码。\n扫完一行，状态改成 Checked in。', en: 'Barcode punch · then pull back'},
-  {at: 288, kicker: '抽出下一张', title: 'Card', body: '顶卡让位，Apple Card\n弹到最前面。', en: 'Wallet swap · same four cards'},
+  {at: 90, kicker: '同一叠飞进手机', title: 'Wallet', body: '去看产品里怎么用。\n登机牌压在最上面。', en: 'Same four cards · boarding pass on top'},
+  {at: 120, kicker: '点 Gate', title: 'Gate', body: '兴趣点在 B12。\n镜头跟过去。', en: 'Tap Gate B12 · camera follows'},
+  {at: 150, kicker: '系统打断', title: 'Notify', body: '新的一层从顶上压下来。\n旧的退暗——还是同一叠。', en: 'New layer covers · old layer dims'},
+  {at: 210, kicker: '用户要分享', title: 'Sheet', body: '上推，操作层盖住票面。\n三个按钮只发生在最上层。', en: 'Share sheet · actions stay on top'},
+  {at: 270, kicker: '做完就回去', title: 'Scan', body: 'Sheet 退下，票面回来。\n镜头扎进条码，Checked in。', en: 'Sheet down · barcode punch'},
+  {at: 330, kicker: '抽最上面一张', title: 'Card', body: '顶卡让位，Apple Card\n弹到最前面。', en: 'Pull the top card · next comes forward'},
 ];
 
 export const IosCaption: React.FC<P> = ({f}) => {
@@ -206,13 +197,13 @@ export const IosCaption: React.FC<P> = ({f}) => {
   const prev = IOS_COPY[Math.max(0, k - 1)];
   return (
     <>
-      <Show f={f} at={150} out={out} style={{left: 88, top: 168}}>
+      <Show f={f} at={90} out={out} style={{left: 88, top: 168}}>
         <div style={{...disp(22, 500, 0), color: C.t2}}>{cur.kicker}</div>
       </Show>
       <div style={{position: 'absolute', left: 88, top: 210, width: 560}}>
         <Swap
           f={f}
-          at={k === 0 ? 152 : cur.at}
+          at={k === 0 ? 92 : cur.at}
           h={110}
           a={<div style={{...disp(92, 600, -0.045), color: C.t1}}>{k === 0 ? 'iOS' : prev.title}</div>}
           b={<div style={{...disp(92, 600, -0.045), color: C.t1}}>{cur.title}</div>}
@@ -230,31 +221,10 @@ export const IosCaption: React.FC<P> = ({f}) => {
 
 export const StripeCaption: React.FC<P> = ({f}) => {
   const {in: a, out: o} = SCENE.STRIPE;
-  const issue = f >= BEATS.issue;
+  const copy = f >= BEATS.map ? '选点也是一层盖一层 · 同一叠拓扑' : f >= BEATS.issue ? '队列：最紧急的挤到顶 · 同一交互面' : 'Stripe 抽屉滑入 · 拓扑不变，语境变';
   return (
     <Show f={f} at={a} out={o} style={{left: 320, top: 900}}>
-      <div style={{...sc(18, 500, 0.04), color: 'rgba(255,255,255,.55)'}}>
-        {issue ? 'B-roll · Linear 详情弹到顶层 · 同一叠拓扑' : 'B-roll · Stripe 支付抽屉滑入 · 同一叠拓扑'}
-      </div>
+      <div style={{...sc(18, 500, 0.04), color: 'rgba(255,255,255,.55)'}}>{copy}</div>
     </Show>
-  );
-};
-
-export const DeckCaption: React.FC<P> = ({f}) => {
-  const {in: a, out: o} = SCENE.DECK;
-  return (
-    <>
-      <Show f={f} at={a} out={o} style={{left: 88, top: 180}}>
-        <div style={{...disp(22, 500, 0), color: 'rgba(255,255,255,.55)'}}>B-roll · 隐喻从哪来</div>
-      </Show>
-      <Show f={f} at={a + 2} out={o} dy={22} style={{left: 88, top: 220}}>
-        <div style={{...sc(56, 800, 0.02), color: '#F7F7F2'}}>先有一叠纸</div>
-      </Show>
-      <Show f={f} at={a + 8} out={o} style={{left: 88, top: 310, width: 520}}>
-        <div style={{...sc(22, 400, 0.02), lineHeight: 1.7, color: 'rgba(247,247,242,.7)'}}>
-          名片、扑克、档案袋、索引卡：人本来就会抽最上面一张。界面只是把这件身体记忆做成了层。
-        </div>
-      </Show>
-    </>
   );
 };

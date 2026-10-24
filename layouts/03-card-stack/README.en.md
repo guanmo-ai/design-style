@@ -6,7 +6,7 @@
 
 ## Overview
 
-3–4 rounded cards in a stack; only the top sheet is in focus. The same four cards travel through iOS Wallet, Stripe / Linear, a poker-table metaphor, an exploded z-axis, five measurable rules, and a bad→good pit — 22 seconds.
+3–4 rounded cards in a stack; only the top sheet is in focus. The same four cards travel through an iOS Wallet chain, Stripe / Linear / map, an exploded z-axis with takeaway rules, and a bad→good pit — 21 seconds, no dead frames.
 
 Series: **Layouts**. Period shown in this episode: **2013—**.
 
