@@ -1,19 +1,14 @@
 """
 Design Style · 风格 007 · 极简主义 Minimalism —— 配乐与音效（纯代码合成，无外部音源）
 
-一首完整的 18 秒小曲：120 BPM（1 拍 = 0.5 秒 = 30 帧）· D 大调。整首曲子也在做“减法”：
-先是一墙被捂暖的噪音，删到只剩一个音；然后一层一层加回来（只加必要的）；最后再一层一层删掉，回到那一个音。
+一首完整的 22 秒小曲：120 BPM（1 拍 = 0.5 秒 = 30 帧）· D 大调。整首曲子也在做“减法”：
+先是一墙被捂暖的噪音，删到只剩一个音；然后跟着真实产品幕一层一层加回来；最后再一层一层删掉，回到那一个音。
   0–0.5s     噪音：147 样东西被删，每删一样一声软“噗”（低通），底下是一层暖的纸噪而不是刺耳乱码 → 0.5s 一个点：一声纯音
   0.5–2s     一个音：D 的八分音符脉冲（Reich 式），每过一拍加一个音；标题十个字母十声细响；上升 → 2s
-  2–4s       01 负空间：毡槌底鼓 + 正弦贝斯进来；八面墙八声木头“咚”；点走八步 = 八个马林巴音（全片的主题句）；
-             平面立起来时一阵上扬，八根柱子八声玻璃“嘀”，3.5s 屋顶板落下一记和弦
-  4–6s       02 删减：收音机一冒出来，47 个声部同时响成一团不协和的音簇——每删掉一样东西，它的那个声部就停（外加一声“嗒”）；
-             删到最后只剩旋钮的纯五度 G–D
-  6–8s       03 功能：整首曲子先像从小喇叭里出来（带通）；旋钮六个凹槽六声“咔”→ 7s 开机：全频段打开，主题句回一次
-  8–10s      04 重复：十个盒子 = 十个上行的马林巴音；第二支马林巴晚一个十六分音符进来（相位）；点往回跳 = 下行的应答
-  10–12s     05 今天：手机亮起；10.5s 开关“咔哒”+ 点的纯音；删四样东西四个下行音；毡钢琴把主题句再唱一遍
-  12–14s     回顾：镜头拉远时垫一层 Dmaj7；四个年代每删一个，乐队就少一件：鼓 → 贝斯 → 马林巴 → Pad
-  14–18s     片尾：一个点 = 那一声纯音；Dmaj9 的长和弦慢慢散掉
+  2–10s      App：线长成手机；多余闹钟每删一样一声 tick；按压缩放 / 推页 / sheet / 拨橙点开关各一对位
+  10–15.5s   Web：手册站 hover 细响、滚动一阵空气、锚点落地一声 ping
+  15.5–19s   确认：卡片弹出；按下 → 勾上 → 空状态，乐队一件一件退出
+  19–22s     片尾：一个点 = 那一声纯音；Dmaj9 的长和弦慢慢散掉
 所有时间点读自 cues.json（由 export_cues.mjs 从 video/cues.ts 导出），与画面逐帧对齐（帧 / 60 = 秒）。
 
 用法：python3 styles/007-minimalism/audio/make_music.py
@@ -311,22 +306,25 @@ BEAT, S16 = 30, 7.5
 PROG = [
     (120, 'Dmaj7', 38, [50, 57, 61, 66], [62, 66, 69, 73]),
     (180, 'Bm7', 35, [47, 54, 57, 62], [59, 62, 66, 69]),
-    (240, 'cluster', None, [], []),
-    (330, 'G5', 31, [43, 50, 55, 62], [67, 74, 79, 74]),
+    (240, 'Gmaj7', 31, [50, 55, 59, 66], [67, 71, 74, 78]),
+    (270, 'A', 33, [52, 57, 61, 64], [69, 73, 76, 81]),
     (360, 'Em9', 40, [52, 55, 59, 66], [64, 67, 71, 74]),
-    (420, 'A', 33, [52, 57, 61, 64], [69, 73, 76, 81]),
+    (420, 'D/F#', 42, [50, 57, 62, 66], [74, 78, 81, 85]),
     (480, 'Gmaj7', 31, [50, 55, 59, 66], [67, 71, 74, 78]),
     (540, 'A6', 33, [52, 57, 61, 66], [69, 73, 76, 78]),
     (600, 'Bm9', 35, [50, 54, 57, 61], [71, 74, 78, 73]),
     (660, 'Gmaj9', 31, [50, 55, 59, 64], [67, 71, 74, 76]),
-    (690, 'Asus4', 33, [52, 57, 62, 64], [69, 74, 76, 81]),
     (720, 'D/F#', 42, [50, 57, 62, 66], [74, 78, 81, 85]),
-    (780, 'Gmaj9', 31, [50, 55, 59, 64], [67, 71, 74, 78]),
     (810, 'A6', 33, [52, 57, 61, 66], [69, 73, 76, 81]),
+    (846, 'Gmaj9', 31, [50, 55, 59, 64], [67, 71, 74, 78]),
+    (930, 'Dmaj7', 38, [50, 57, 61, 66], [62, 66, 69, 73]),
+    (1008, 'A6', 33, [52, 57, 61, 66], [69, 73, 76, 81]),
+    (1056, 'Bm9', 35, [50, 54, 57, 61], [71, 74, 78, 73]),
 ]
-ERA = CUE['finale']['eraCuts']  # 回顾：每删一个年代，乐队少一件
-DRUM_END, BASS_END, MAR_END, PAD_END = ERA
+APP, WEB, PAY = CUE['app'], CUE['web'], CUE['pay']
 END = CUE['finale']['end']
+EMPTY = PAY['empty']
+DRUM_END, BASS_END, MAR_END, PAD_END = EMPTY, EMPTY + 24, END - 24, END
 
 
 def chord_at(fm):
@@ -413,131 +411,65 @@ place(sub(midi(38), 2.0, 0.05), fr(60))
 place(riser(fr(24), 0.16, 294), fr(96), send=0.3)
 place(swell(fr(12), 0.08), fr(108))
 
-# ================= 01 负空间 120–240 =================
-SP = CUE['space']
-# 八面墙：八声木头“咚”，音高落在和弦音上
-for k, (fm, m) in enumerate(zip(SP['walls'], [38, 45, 42, 50, 47, 45, 52, 49])):
-    place(thock(0.32, midi(m) * 3.2, midi(m), 0.09), fr(fm), pan=-0.5 + k * 0.14, send=0.15)
-# 两个水池：水滴般的“咕”
-for fm, f0 in ((132, 520), (146, 700)):
-    t = tt(0.12)
-    place(np.sin(glide(f0 * (1 + 1.2 * (1 - np.exp(-t / 0.03))))) * np.exp(-t / 0.035) * 0.06, fr(fm), pan=-0.4 if f0 < 600 else 0.6, send=0.4)
-# 点走八步：八个马林巴音（全片第一句旋律）
+# ================= App 120–600：线长成手机，按 / 推 / 拉 / 拨 =================
+place(air(fr(28), 400, 5200, 0.07, 0.45), fr(104), send=0.22)  # 地平线长成机身
+for m in (38, 50, 57, 62, 66):
+    place(piano(midi(m), 1.2, 0.055), fr(120), send=0.35, bus=KEYS)
 STEP_MEL = [78, 81, 83, 81, 86, 85, 81, 78]
-for k, (fm, m) in enumerate(zip(SP['steps'], STEP_MEL)):
-    place(marimba(midi(m), 0.16, 0.35), fr(fm), pan=-0.3 + 0.08 * k, send=0.3, bus=KEYS)
-    place(marimba(midi(m - 12), 0.06, 0.3), fr(fm), pan=0.2, send=0.2, bus=KEYS)
-# 平面立起来：一阵上扬；八根柱子八声玻璃“嘀”往上爬
-place(air(fr(34), 300, 5000, 0.07, 0.7), fr(174), send=0.3)
-for k, fm in enumerate(SP['columns']):
-    place(tink(midi(81 + [0, 2, 4, 7, 9, 12, 14, 16][k]), 0.03, 0.3), fr(fm), pan=-0.4 + 0.11 * k, send=0.4, bus=KEYS)
-# 屋顶板落下（210）：一记低音 + Bm9 毡钢琴和弦
-place(thock(0.45, 160, 48, 0.12), fr(SP['roofLand']), send=0.25)
-for m in (47, 54, 61, 66, 69):
-    place(piano(midi(m), 1.0, 0.07), fr(SP['roofLand']), send=0.4, bus=KEYS)
-# 交棒：屋顶板转正成收音机，点划一道弧 —— 一声往上滑的纯音
-place(air(fr(16), 400, 6000, 0.08, 0.6), fr(SP['pass']), pan=0.2, send=0.2)
-t = tt(fr(16))
-place(np.sin(glide(midi(74) * 2 ** (t / t[-1] * 5 / 12 + 0.0))) * np.sin(np.pi * t / t[-1]) * 0.05, fr(SP['pass']), send=0.4, bus=KEYS)
+for k, m in enumerate(STEP_MEL):
+    place(marimba(midi(m), 0.13, 0.32), fr(138 + k * 7.5), pan=-0.25 + 0.07 * k, send=0.28, bus=KEYS)
+for k, fm in enumerate(APP['cuts']):
+    place(tick(0.07, 2400 - 120 * k, 0.008), fr(fm), pan=0.35 - 0.08 * k, send=0.1)
+    place(marimba(midi([81, 78, 76, 74, 73][k]), 0.1, 0.22), fr(fm), pan=0.3, send=0.25, bus=KEYS)
+place(click(0.2, 2500), fr(APP['press']), pan=-0.15, send=0.08)  # 按压缩放
+place(click(0.08, 1800), fr(APP['press'] + 3), pan=-0.1)
+place(air(fr(18), 500, 4800, 0.07, 0.55), fr(APP['push'] - 2), send=0.22)  # 推页
+place(thock(0.22, 200, 70, 0.07), fr(APP['push']), send=0.15)
+for k, m in enumerate((78, 81, 83, 86)):
+    place(marimba(midi(m), 0.1, 0.28), fr(APP['push'] + 6 + k * 6), pan=-0.1 + 0.08 * k, send=0.28, bus=KEYS)
+place(air(fr(16), 280, 3600, 0.06, 0.7), fr(APP['sheet'] - 4), send=0.25)  # sheet 拉起
+place(thock(0.2, 160, 55, 0.1), fr(APP['sheet']), send=0.18)
+for m in (52, 59, 64, 71):
+    place(piano(midi(m), 0.9, 0.05), fr(APP['sheet']), send=0.35, bus=KEYS)
+place(click(0.16, 2300), fr(APP['sheetTap']), pan=0.05, send=0.08)
+place(air(fr(14), 600, 2800, 0.04, 0.4), fr(APP['sheetOut']), send=0.15)
+place(click(0.22, 2600), fr(APP['tog']), pan=0.35, send=0.1)  # 橙点开关
+place(click(0.1, 1900), fr(APP['tog'] + 3), pan=0.35)
+place(ping(midi(86), 0.2, 1.2), fr(APP['tog']), pan=0.35, send=0.45, bus=KEYS)
+for fm, m, d in ((510, 78, 0.45), (525, 76, 0.25), (532.5, 74, 0.25), (540, 73, 0.55), (564, 76, 0.4), (582, 74, 0.5)):
+    place(piano(midi(m), d, 0.1), fr(fm), pan=-0.12, send=0.38, bus=KEYS)
 
-# ================= 02 删减 240–360：音簇 =================
-RA = CUE['radio']
-cuts = RA['cuts']
-POP_IN = 240
-# 47 个声部，从 G2 到 G5 随机分（不协和）；每个声部活到它对应的那样东西被删掉为止
-pitches = rng.permutation(np.arange(43, 92))[: len(cuts)]
-for k, (tc, m) in enumerate(zip(cuts, pitches)):
-    st = POP_IN - 1 + rng.random() * 10
-    d = fr(tc) - fr(st)
-    place(voice(midi(m), d, 0.04, nh=6), fr(st), pan=rng.uniform(-0.8, 0.8), send=0.12, bus=CLU)
-    place(tick(0.05, 1800 + 30 * (m - 43), 0.008), fr(tc), pan=rng.uniform(-0.5, 0.5), send=0.1)
-# 冒出来的那一下：弹簧似的“嘣”+ 一记重音
-t = tt(0.4)
-place(np.sin(glide(180 + 220 * np.exp(-t / 0.05) * (1 + 0.3 * np.sin(2 * np.pi * 14 * t)))) * np.exp(-t / 0.12) * 0.18, fr(POP_IN), send=0.2)
-place(thock(0.4, 220, 60, 0.1), fr(POP_IN), send=0.2)
-# 最后两下慢下来：纸盆拆到底
-place(thock(0.3, 300, 90, 0.06), fr(RA['lastRing']), send=0.2)
-place(thock(0.38, 260, 70, 0.08), fr(RA['lastCut']), send=0.25)
-# 剩下的那个旋钮：纯五度 G–D，从 240 一直在音簇里，最后只剩它
-for m, pn in ((55, -0.2), (62, 0.2)):
-    t = tt(fr(130))
-    y = (np.sin(2 * np.pi * midi(m) * t) + 0.15 * np.sin(4 * np.pi * midi(m) * t)) * np.minimum(1, t / 0.02) * np.minimum(1, (t[-1] - t) / 0.1)
-    place(y * 0.06, fr(POP_IN), pan=pn, send=0.3, bus=KEYS)
-# 点落在旋钮上
-place(ping(midi(86), 0.14, 0.9), fr(POP_IN), pan=0.3, send=0.4, bus=KEYS)
-
-# ================= 03 功能 360–480 =================
-for k, fm in enumerate((362, 376, 394)):  # 三根引线：孔 / 圆 / 橙（一次一根，橙 = 点的那一声）
-    if k < 2:
-        place(tink(midi([81, 86][k]), 0.045, 0.45), fr(fm + 6), pan=0.45, send=0.45, bus=KEYS)
-    else:
-        place(ping(midi(86), 0.12, 1.0), fr(fm + 6), pan=0.45, send=0.4, bus=KEYS)
-    place(air(fr(12), 800, 4200, 0.018, 0.35), fr(fm), pan=0.45)
-for k, fm in enumerate(RA['detents']):  # 旋钮六个凹槽
-    place(click(0.1, 1200 + 90 * k), fr(fm), pan=0.25, send=0.1)
-    place(tick(0.04, 2400, 0.005), fr(fm + 0.5), pan=0.3)
-ON = RA['on']
-place(thock(0.5, 140, 42, 0.16), fr(ON), send=0.2)  # 开机
-place(CYM * 0.16, fr(ON), send=0.3)
-place(sub(midi(33), 1.0, 0.25), fr(ON))
-for k, m in enumerate((78, 81, 83, 81)):
-    place(marimba(midi(m), 0.07, 0.3), fr(ON + 8 + k * 7.5), pan=-0.15 + 0.08 * k, send=0.3, bus=KEYS)
-# 452–468：孔一排一排删掉，像一阵小雨；旋钮缩没；机身压扁成盒子
-OUT3 = RA['out']
-for i in range(11):
-    for j in range(7):
-        if rng.random() < 0.5:
-            place(tick(0.018, 3000 + 200 * rng.random(), 0.004), fr(OUT3 + 2 + (i + j) * 0.6 + 2), pan=-0.6 + i * 0.12)
-place(thock(0.25, 400, 120, 0.05), fr(OUT3 + 8), pan=0.2)
-place(air(fr(24), 300, 3000, 0.07, 0.3), fr(OUT3 + 4), send=0.2)
-
-# ================= 04 重复 480–600 =================
-JU = CUE['judd']
-SCALE = [62, 64, 66, 67, 69, 71, 73, 74, 76, 78]
-for k, fm in enumerate(JU['units']):  # 十个盒子 = 十个上行的音
-    place(marimba(midi(SCALE[k] + 12), 0.15, 0.3), fr(fm), pan=0.15, send=0.3, bus=KEYS)
-    place(knock(240 + 12 * k, 0.07), fr(fm), pan=0.1, send=0.15)
-for k, (fm, m) in enumerate(zip(JU['down'], [85, 83, 81, 78, 76])):  # 点往回跳：下行的应答
-    place(marimba(midi(m), 0.14, 0.32), fr(fm), pan=-0.2, send=0.3, bus=KEYS)
-    place(tink(midi(m + 12), 0.02, 0.25), fr(fm), pan=-0.3, send=0.4, bus=KEYS)
-for k in range(9):  # 九个盒子缩回墙里
-    place(knock(420 - 25 * k, 0.04), fr(JU['retract'] + 2 + k * 1.5), pan=-0.4 + 0.1 * k)
-place(air(fr(20), 600, 4000, 0.05, 0.8), fr(JU['retract']), send=0.2)
-
-# ================= 05 今天 600–720 =================
-TO = CUE['today']
-place(air(fr(26), 300, 5000, 0.08, 0.4), fr(JU['phone'] - 4), send=0.25)  # 盒子立起来变成手机
+# ================= Web 600–930：hover / 滚动 / 锚点 =================
+place(air(fr(22), 350, 5000, 0.075, 0.4), fr(592), send=0.22)
 for m in (47, 54, 61, 66, 69, 73):
-    place(piano(midi(m), 1.4, 0.06), fr(JU['phone']), send=0.4, bus=KEYS)
-for k, fm in enumerate((612, 620, 624, 628, 632, 636)):  # 屏幕亮起、界面一样一样出来
-    place(tink(midi(90 + [0, 2, 4, 7, 9, 12][k]), 0.015, 0.2), fr(fm), pan=0.4, send=0.35, bus=KEYS)
-TAP = TO['tap']
-place(click(0.22, 2600), fr(TAP), pan=0.35, send=0.1)  # 开关“咔哒”
-place(click(0.1, 1900), fr(TAP + 3), pan=0.35)
-place(ping(midi(86), 0.2, 1.2), fr(TAP), pan=0.35, send=0.45, bus=KEYS)
-for k, (fm, m) in enumerate(zip(TO['cuts'], [81, 78, 76, 74])):  # 删四样东西
-    place(tick(0.07, 2400 - 150 * k, 0.008), fr(fm), pan=0.4, send=0.1)
-    place(marimba(midi(m), 0.1, 0.25), fr(fm), pan=0.35, send=0.3, bus=KEYS)
-place(air(fr(22), 500, 3000, 0.04, 0.5), fr(684), pan=0.3)  # 剩下的居中
-# 一句毡钢琴旋律（左手是和弦，右手四个音）
-for fm, m, d in ((642, 78, 0.5), (657, 76, 0.25), (664.5, 74, 0.25), (672, 73, 0.6), (690, 76, 0.4), (705, 74, 0.6)):
-    place(piano(midi(m), d, 0.12), fr(fm), pan=-0.15, send=0.4, bus=KEYS)
+    place(piano(midi(m), 1.3, 0.055), fr(600), send=0.38, bus=KEYS)
+place(tink(midi(90), 0.028, 0.28), fr(WEB['hover']), pan=0.45, send=0.4, bus=KEYS)
+place(tink(midi(93), 0.02, 0.22), fr(WEB['hover'] + 6), pan=0.5, send=0.35, bus=KEYS)
+place(air(fr(36), 240, 6200, 0.09, 0.65), fr(WEB['scroll'] - 4), send=0.28)  # 整页上滚
+place(riser(fr(18), 0.08, 330), fr(WEB['scroll']))
+for k, m in enumerate((74, 78, 81, 86)):
+    place(tink(midi(m + 12), 0.018, 0.28), fr(WEB['scroll'] + 12 + k * 10), pan=-0.35 + 0.2 * k, send=0.35, bus=KEYS)
+place(ping(midi(86), 0.16, 1.1), fr(WEB['anchor']), pan=-0.15, send=0.42, bus=KEYS)
+place(thock(0.18, 180, 60, 0.08), fr(WEB['anchor']), send=0.14)
+for k, m in enumerate((67, 71, 74)):
+    place(marimba(midi(m), 0.11, 0.3), fr(WEB['anchor'] + 8 + k * 8), pan=-0.2 + 0.12 * k, send=0.28, bus=KEYS)
 
-# ================= 回顾 704–840 =================
-RC = TO['recap']
-place(air(fr(40), 200, 5600, 0.12, 0.55), fr(RC), send=0.25)  # 往后拉
-place(riser(fr(22), 0.1, 392), fr(RC))
-place(CYM * 0.26, fr(720), send=0.35)
-place(sub(midi(30), 1.4, 0.26), fr(720))
-for m in (42, 50, 57, 62, 66, 69, 74):
-    place(piano(midi(m), 1.6, 0.068), fr(720), send=0.4, bus=KEYS)
-place(ping(midi(90), 0.07, 1.2), fr(720), send=0.5, bus=KEYS)
-for k, m in enumerate((74, 78, 81, 86)):  # 四个年份，跟着拉镜慢慢出来
-    place(tink(midi(m + 12), 0.028, 0.35), fr(RC + 36 + k * 3), pan=-0.6 + 0.4 * k, send=0.4, bus=KEYS)
-for k, fm in enumerate(ERA):  # 每删一个年代：一声软“嗒”
-    place(tick(0.07, 1600 - 140 * k, 0.012), fr(fm), pan=-0.6 + 0.4 * k, send=0.15)
-    place(pop(420 - 40 * k, 0.1), fr(fm), pan=-0.6 + 0.4 * k)
-place(swell(fr(16), 0.11), fr(END - 16))
+# ================= 确认 930–1140：按下 → 勾上 → 空着 =================
+place(air(fr(16), 400, 3600, 0.06, 0.5), fr(922), send=0.2)
+place(thock(0.28, 190, 58, 0.09), fr(930), send=0.16)
+for m in (38, 50, 57, 62, 66, 69):
+    place(piano(midi(m), 1.1, 0.06), fr(930), send=0.4, bus=KEYS)
+place(click(0.2, 2400), fr(PAY['press']), pan=0.0, send=0.08)
+place(click(0.08, 1700), fr(PAY['press'] + 3))
+place(ping(midi(86), 0.22, 1.3), fr(PAY['ok']), send=0.45, bus=KEYS)
+place(CYM * 0.14, fr(PAY['ok']), send=0.28)
+place(sub(midi(38), 1.1, 0.16), fr(PAY['ok']))
+for m in (57, 61, 66, 73):
+    place(piano(midi(m), 1.0, 0.055), fr(PAY['ok']), send=0.38, bus=KEYS)
+place(air(fr(18), 500, 2800, 0.05, 0.45), fr(EMPTY - 6), send=0.18)
+place(tick(0.06, 1600, 0.012), fr(EMPTY), send=0.12)
+place(pop(380, 0.08), fr(EMPTY))
+place(swell(fr(16), 0.1), fr(END - 16))
 
 # ================= 片尾：回到那一个音 =================
 FRAMES = CUE['frames']
@@ -564,36 +496,33 @@ for k in range(int((FRAMES - 60 - END - 30) / 15)):
     place(marimba(midi(62), 0.08 * (1 - k / 10) ** 1.4 * (1.0 if k % 2 == 0 else 0.7), 0.24), fr(fm), send=0.3, bus=KEYS)
 place(ping(midi(93), 0.045, 1.8), fr(END + 150), pan=0.25, send=0.55, bus=KEYS)
 
-# ================= 律动 120–765：一层一层加，最后一层一层删 =================
-# 毡槌底鼓：每拍；02 的音簇里也不停（脉搏不断）
+# ================= 律动 120–空状态：一层一层加，最后一层一层删 =================
+HAT_IN = APP['push']
 for b in range(4, int(DRUM_END // BEAT) + 1):
     fm = b * BEAT
     if fm >= DRUM_END:
         break
-    kick_at(fm, 0.85 if 240 <= fm < 330 else 1.0)
-# 沙锤：十六分音符，150 起；开机（420）后加反拍开镲和 2 / 4 拍边击
+    kick_at(fm, 1.0)
 for k in range(int((DRUM_END - 150) / S16)):
     fm = 150 + k * S16
     s = k % 4
     if s == 0:
         continue
     place(SHK * (0.07 if s == 2 else 0.045), fr(fm), pan=0.3 if s == 1 else -0.3, bus=DRUM)
-for b in range(int(ON // BEAT), int(DRUM_END // BEAT) + 1):
+for b in range(int(HAT_IN // BEAT), int(DRUM_END // BEAT) + 1):
     fm = b * BEAT
     if fm >= DRUM_END:
         break
     place(OHAT * 0.1, fr(fm + 15), pan=0.25, send=0.05, bus=DRUM)
     if b % 2 == 1:
-        place(RIM * 0.13, fr(fm), pan=-0.1, send=0.12, bus=DRUM)
-# 贝斯：八分音符（根音 / 根音 / 五度 / 八度），音簇时休息
+        place(RIM * 0.12, fr(fm), pan=-0.1, send=0.12, bus=DRUM)
 for k in range(int((BASS_END - 120) / 15)):
     fm = 120 + k * 15
-    if fm >= BASS_END or 240 <= fm < 330:
+    if fm >= BASS_END:
         continue
     c = chord_at(fm)
     r = c[2] + [0, 0, 7, 12][k % 4]
-    place(sine_bass(midi(r), 0.2, 0.34 if fm >= ON else 0.28), fr(fm), bus=GROOVE)
-# Pad：每个和弦一段，音簇时休息
+    place(sine_bass(midi(r), 0.2, 0.32 if fm >= HAT_IN else 0.26), fr(fm), bus=GROOVE)
 for k, (s, name, root, pv, mv) in enumerate(PROG):
     if not pv:
         continue
@@ -602,16 +531,15 @@ for k, (s, name, root, pv, mv) in enumerate(PROG):
     if s >= PAD_END:
         break
     for pn in (-0.6, 0.6):
-        place(pad([midi(m) for m in pv], fr(e - s), 0.3 if s < 600 else 0.36, att=0.05 if s > 120 else 0.3, rel=0.3,
-                  bright=0.8 if s < ON else 1.1), fr(s), pan=pn, send=0.3, bus=GROOVE)
-# 马林巴：十二个十六分音符一圈的固定音型（Reich 式，和四拍错开）；04 起第二支晚一个十六分音符（相位）
+        place(pad([midi(m) for m in pv], fr(e - s), 0.3 if s < 600 else 0.34, att=0.05 if s > 120 else 0.3, rel=0.3,
+                  bright=0.85 if s < 600 else 1.05), fr(s), pan=pn, send=0.3, bus=GROOVE)
 PAT = [0, 1, 3, 1, 2, 0, 3, 1, 2, 3, 0, 2]
 
 
 def ostinato(start, end, offset=0, pan=0.35, level=0.1, oct_=0):
     for k in range(int((end - start) / S16)):
         fm = start + k * S16
-        if fm >= end or 240 <= fm < 330:
+        if fm >= end:
             continue
         c = chord_at(fm)
         m = c[4][PAT[(k + offset) % 12]] + oct_
@@ -620,9 +548,9 @@ def ostinato(start, end, offset=0, pan=0.35, level=0.1, oct_=0):
 
 
 ostinato(204, MAR_END)
-ostinato(JU['units'][0] + S16, MAR_END, offset=1, pan=-0.55, level=0.07, oct_=12)
+ostinato(600 + S16, MAR_END, offset=1, pan=-0.55, level=0.07, oct_=12)
 
-# ================= 侧链 + 03 的“小喇叭” =================
+# ================= 侧链 =================
 ks = np.array(sorted(KICKS))
 idx = np.searchsorted(ks, tsec, side='right') - 1
 since = np.where(idx >= 0, tsec - ks[np.clip(idx, 0, None)], 9.0)
@@ -630,17 +558,6 @@ x = np.clip(since / 0.22, 0, 1)
 duck = 1 - 0.45 * (1 - x) ** 2
 duck = np.where(since < 0.004, 1 - 0.45 * since / 0.004, duck)
 GROOVE *= duck[None, :]
-
-# 03：开机之前，律动像从一个小喇叭里出来（带通 300–2800Hz + 饱和 + 一点底噪）；开机那一帧全部打开
-w = np.clip((tsec - fr(344)) / fr(12), 0, 1) * (tsec < fr(ON))
-for bus in (GROOVE, DRUM):
-    for ch in range(2):
-        band = onepole_lp(hp(hp(bus[ch], 320), 320), 2800)
-        band = np.tanh(band * 3.0) / 1.5
-        bus[ch] = bus[ch] * (1 - w) + band * w
-crackle = hp(noise(DUR), 3000) * 0.012 * (rng.random(N) < 0.004) * 20 + hp(noise(DUR), 4000) * 0.006
-for ch in range(2):
-    SFX[ch] += crackle * w
 
 
 # ---------------- 混响 + 母带 ----------------

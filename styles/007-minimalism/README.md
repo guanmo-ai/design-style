@@ -112,11 +112,10 @@ precise hairlines, no texture, no gradients, no shadows, no ornaments --ar 4:5
 **视频（Runway / 可灵 / Sora）**
 
 ```
-Minimalist motion graphics on warm off-white paper: a screen crowded with stickers and badges is deleted item by item
-on a 120 bpm sixteenth-note grid until one orange dot remains; the dot draws a thin horizon line, walks into a
-Mies-style floor plan that rises into an axonometric pavilion, becomes the single knob of a Braun-style radio while
-47 other parts disappear, turns into identical Judd-like stacked boxes, then becomes the toggle of a phone alarm.
-Hairlines, ultra-light type, one accent color, smooth camera moves with motion blur, no gradients, no clutter.
+Minimalist motion graphics on warm off-white paper: a noisy screen deletes to one orange dot and a horizon line;
+the line grows into a phone — press-scale, page-push, sheet, orange toggle; the phone becomes a handbook browser
+with hover underline, scroll and anchor; a checkout card confirms then empties. Hairlines, ultra-light type,
+one accent, silky springs and motion blur, no gradients, no clutter.
 ```
 
 **代码（让 AI 写网页 / 组件）**
@@ -128,25 +127,22 @@ Hairlines, ultra-light type, one accent color, smooth camera moves with motion b
 间距只用 8 / 16 / 32 / 64 / 128，留白比你觉得够的再多一倍。设计令牌见 tokens.css。
 ```
 
-## 9 · 18 秒分镜
+## 9 · 22 秒分镜
 
-极简主义最难拍的地方是：“少”本身不会动。所以短片不讲概念，只演一个动作——删。全片只有一个主角：一个信号橙的点。每一幕都删到只剩最后一样东西，这样东西直接变成下一幕的开头（橙点接力）：噪音 → 点 → 地平线 → 德国馆的平面 → 屋顶板 → 收音机 → 旋钮 → 盒子 → 手机 → 时间线 → 点。每一次删都落在 120 BPM 的十六分音符上，配乐也跟着一个声部一个声部地减。
+极简主义最难拍的地方是：“少”本身不会动。所以短片不讲收音机史，只看它在真实产品里长什么样、怎么丝滑动。开场仍用 2 秒噪音→点当钩子；剩下的时长给 App / HTML / 确认。橙点还在，但它变成指针、开关和 CTA。
 
 <a href="https://github.com/guanmo-ai/design-style/releases/tag/day-07"><img src="video/cover.jpg" width="800" alt="短片封面（点击看视频）" /></a>
 
-| 时间 | 帧 | 章节 | 画面 | 致敬 |
+| 时间 | 帧 | 章节 | 画面 | 产品语言 |
 |---|---|---|---|---|
-| 0:00—0.5 | 0—30 | 开场 · 噪音 | 满屏 147 样贴纸、星爆、价签、“限时特惠”，一个十六分音符删一批，删到只剩一个点（重击） | — |
-| 0.5—2.0 | 30—120 | 开场 · 标题 | 点里拉出一条地平线；MINIMALISM / 极简主义 逐字母落下；线收短，成了台基的前沿 | — |
-| 2.0—4.0 | 104—240 | 01 负空间 | 台基从线上长出，八面墙一个十六分音符一面；点在平面里走八步；平面升成轴测，十字柱立起，屋顶落下——「八面墙，其余全是空间。」 | 密斯 · 巴塞罗那德国馆（1929） |
-| 4.0—6.0 | 224—360 | 02 删减 | 屋顶板变成一台塞满 48 样东西的收音机（喇叭、贴纸、VU 表、均衡器……），按三十二分音符一样一样删，计数 48 → 1——「删到不能再删。」 | 拉姆斯 · 十条原则之十 |
-| 6.0—8.0 | 360—480 | 03 形式追随功能 | 镜头推进格栅再摇到旋钮；引线一次只出一根；旋钮转到底，开机，立刻压扁成盒子 | 致敬博朗 T3（1958） |
-| 8.0—10.0 | 452—600 | 04 重复 | 收音机缩成一个盒子，镜头钉着往上码到十个；拉开看整摞，点跳下来，推进留下的那一个 | 唐纳德·贾德 · 堆叠 · 弗兰克·斯特拉 |
-| 10.0—12.0 | 600—720 | 05 今天 | 盒子立起来变成手机，屏幕亮起一个闹钟；点跳进开关：开。状态栏、另外两个闹钟、加号一样一样删掉——「一个屏幕，只做一件事。」 | 扁平界面（2013—） |
-| 12.0—14.0 | 704—840 | 回顾 | 镜头拉远：手机成了时间线上的 2013，左边是 1929 / 1958 / 1967——「近一百年，同一个动作：删。」四个年代一个一个删掉，线收成一点 | — |
-| 14.0—18.0 | 840—1080 | 片尾 | 点落回正中，和开场同一个位置——「少即是多。」 | 密斯 · Less is more |
+| 0:00—0.5 | 0—30 | 开场 · 噪音 | 满屏 147 样贴纸、星爆、价签，一个十六分音符删一批，删到只剩一个点 | 先满后空 |
+| 0.5—2.0 | 30—120 | 开场 · 标题 | 点里拉出一条地平线；MINIMALISM / 极简主义；线交给下一幕 | 短钩子 |
+| **2.0—10.0** | **120—600** | **App UI** | 线长成手机；多余闹钟删到一行；**按压缩放 → 推页 → sheet 拉起 → 拨橙点开关** | 留白、字重、一主按钮、列表 |
+| **10.0—15.5** | **600—930** | **HTML / Web** | 手机退成浏览器；手册站大标题 + 细线栏；**hover 下划线 → 滚动 → 锚点落到原则** | 少色、网格、一个 CTA |
+| **15.5—19.0** | **930—1140** | **确认 / 空状态** | 同一套语言换容器：一张纸、一个金额、一个按钮；按下勾上，做完了就空着 | 支付确认 + 空状态 |
+| 19.0—22.0 | 1140—1320 | 片尾 | 点落回正中——「少即是多。」`@guanmo_ai` | — |
 
-> 画面里的德国馆、收音机、堆叠和手机都是按原作手法重新画的“致敬”，不是原作复刻：德国馆的平面经过简化，收音机不对应任何一款博朗产品，闹钟界面是虚构的。
+> App 闹钟、手册站和付款页都是代码画的虚构界面，不是某个真实产品的截图；参考图一律代码渲染，不用 AI 生图。
 
 ## 10 · 文件
 
@@ -155,13 +151,12 @@ Hairlines, ultra-light type, one accent color, smooth camera moves with motion b
 ├─ PROCESS.md                             # 制作过程（含被否的第一版、为什么推倒重来）
 ├─ process/                               # 过程图：橙点接力 · 每拍联系表 · 开场拆解 · 节拍时间轴
 ├─ tokens.ts / tokens.css / tokens.json   # 同一份设计令牌（颜色、字体、版式、线宽、节拍）
-├─ video/Minimalism.tsx                   # 主合成：按时间窗挂载六幕、章节条、运动模糊、颗粒、配乐（Remotion，React）
-├─ video/opening.tsx                      # 0—2 秒：噪音删到一个点、地平线、标题
-├─ video/space.tsx                        # 01 负空间：德国馆平面 → 轴测（自写的轴测投影 + 画家算法）
-├─ video/radio.tsx                        # 02 删减 + 03 功能：48 样东西删到一个旋钮、引线注释、开机
-├─ video/judd.tsx                         # 04 重复：一点透视的贾德堆叠
-├─ video/today.tsx                        # 05 今天：手机闹钟，一个开关
-├─ video/finale.tsx                       # 回顾时间线 + 片尾
+├─ video/Minimalism.tsx                   # 主合成：开场 / App / Web / 确认 / 片尾、章节条、运动模糊、颗粒、配乐
+├─ video/opening.tsx                      # 0—2 秒：噪音删到一个点、地平线、标题（全片唯一的历史钩子）
+├─ video/app.tsx                          # 2—10 秒：极简闹钟 App（按 / 推页 / sheet / 开关）
+├─ video/web.tsx                          # 10—15.5 秒：极简手册站（hover / 滚动 / 锚点）
+├─ video/pay.tsx                          # 15.5—19 秒：确认支付 → 空状态
+├─ video/finale.tsx                       # 19—22 秒：回到那个点 · @guanmo_ai
 ├─ video/ui.tsx                           # 按基线定位的文字、逐字母动画、发丝线、引线、点、涟漪
 ├─ video/timeline.ts · cues.ts            # 所有帧号；cues.ts 汇总给配乐用
 ├─ video/metrics.py → metrics.ts          # 从字体文件读出的字宽（右对齐、字距修正用）

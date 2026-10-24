@@ -1,21 +1,16 @@
-/** 007 · Minimalism —— 时间轴（帧）。120 BPM @ 60fps → 1 拍 = 30 帧；每次换幕都落在小节线上 */
+/** 007 · Minimalism —— 时间轴（帧）。120 BPM @ 60fps → 1 拍 = 30 帧 */
 export const BEAT = 30;
-export const S16 = 7.5; // 十六分音符
+export const S16 = 7.5;
 export const AT = {
-  open: 0, // 开场：噪音删到只剩一个点 → 标题（4 拍）
-  space: 120, // 01 负空间：点走进密斯的自由平面，平面升成轴测（4 拍）
-  subtract: 240, // 02 删减：48 个按键删到 1 个（4 拍）
-  function: 360, // 03 功能：镜头推进格栅、摇到旋钮，开机那一拍猛地拉开（4 拍）
-  repeat: 480, // 04 重复：机身压成一个盒子 → 十个（贾德）；镜头跟着往上升，再拉开看全貌（4 拍）
-  today: 600, // 05 今天：中间那个盒子立成手机，一个屏幕，一个开关（4 拍）
-  recap: 720, // 回顾：镜头继续往后拉，四个年代一件一件删（4 拍）
-  end: 840, // 片尾：回到那一个点（8 拍，18.0s）
+  open: 0, // 开场：噪音删到一个点，地平线，标题（4 拍）
+  app: 120, // App：线长成手机；先删掉多余闹钟，再按、推页、拉 sheet、拨开关
+  web: 600, // Web：极简手册站，滚动 / hover / 锚点
+  pay: 930, // 确认支付 → 空状态（同一套语言换容器）
+  end: 1140, // 片尾：回到那个点 · @guanmo_ai
 };
-export const DURATION = 1080;
+export const DURATION = 1320; // 22.0s
 export const CHAPTERS: [string, string, number][] = [
-  ['负空间', 'Negative space', AT.space],
-  ['删减', 'Reduce', AT.subtract],
-  ['形式追随功能', 'Form follows function', AT.function],
-  ['重复', 'Repetition', AT.repeat],
-  ['今天', 'Today', AT.today],
+  ['App', 'Alarm', AT.app],
+  ['Web', 'Docs', AT.web],
+  ['确认', 'Pay', AT.pay],
 ];
