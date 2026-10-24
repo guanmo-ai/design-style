@@ -196,10 +196,10 @@ export const CardStack: React.FC<{music?: boolean}> = ({music = true}) => {
         </AbsoluteFill>
       </AbsoluteFill>
       <AbsoluteFill style={{zIndex: 90, pointerEvents: 'none'}}>
-        {f >= SCENE.KEY.in - 8 && f < SCENE.KEY.out + 12 && <KeyCaption f={f} />}
-        {f >= SCENE.IOS.in - 8 && f < SCENE.IOS.out + 10 && <IosCaption f={f} />}
-        {f >= SCENE.STRIPE.in - 8 && f < SCENE.STRIPE.out + 10 && <StripeCaption f={f} />}
-        {f >= SCENE.TEACH.in - 8 && f < SCENE.TEACH.out + 10 && <TeachCaption f={f} />}
+        {f >= SCENE.KEY.in - 8 && f < SCENE.KEY.out && <KeyCaption f={f} />}
+        {f >= SCENE.IOS.in - 4 && f < 362 && <IosCaption f={f} />}
+        {f >= SCENE.STRIPE.in - 4 && f < 558 && <StripeCaption f={f} />}
+        {f >= SCENE.TEACH.in - 4 && f < SCENE.TEACH.out && <TeachCaption f={f} />}
         {f >= SCENE.PIT.in - 8 && f < SCENE.PIT.out + 8 && <PitCaption f={f} />}
         {f >= SCENE.END.in - 8 && <EndTitle f={f} />}
         <Hud f={f} />

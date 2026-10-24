@@ -16,7 +16,7 @@ export const KeyCaption: React.FC<P> = ({f}) => {
         <Kicker>Design Style · 布局 03</Kicker>
       </Show>
       <div style={{position: 'absolute', left: L - 4, top: 214}}>
-        <Rise f={f} at={a + 2} out={o} text="Card Stack" d={2} style={{...disp(88, 600, -0.045), color: C.ink}} />
+        <Rise f={f} at={a} out={o} text="Card Stack" d={1} style={{...disp(88, 600, -0.045), color: C.ink}} />
       </div>
       <Show f={f} at={a + 10} out={o} dy={18} style={{left: L, top: 330}}>
         <div style={{...sc(44, 700, 0.04), color: C.ink}}>卡片层叠</div>
@@ -58,7 +58,7 @@ export const TeachCaption: React.FC<P> = ({f}) => {
       <div style={{position: 'absolute', left: L, top: 150, width: 560}}>
         <Swap
           f={f}
-          at={k === 0 ? 560 : cur.at}
+          at={k === 0 ? 558 : cur.at - 10}
           h={80}
           a={<div style={{...sc(52, 800, 0.02), color: C.t1}}>{k === 0 ? '拆开' : prev.title}</div>}
           b={<div style={{...sc(52, 800, 0.02), color: C.t1}}>{cur.title}</div>}
@@ -112,7 +112,7 @@ export const PitCaption: React.FC<P> = ({f}) => {
     '不抬、不旋、不压暗，就只是一沓打印纸，不是界面。',
     '坏 → 好：收回来，顶卡重新成为唯一可读的一层。',
   ];
-  const swapAt = phase === 0 ? a : phase === 1 ? PIT.flat : PIT.fix;
+  const swapAt = (phase === 0 ? a : phase === 1 ? PIT.flat : PIT.fix) - 10;
   return (
     <>
       <Show f={f} at={a} out={o} style={{left: L, top: 88}}>
