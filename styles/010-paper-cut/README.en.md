@@ -6,7 +6,7 @@
 
 ## Overview
 
-Paper cut is more than one look. A 24-second expo of six named variants — folk red cutouts, color-block strata, cardboard diorama, monochrome silhouette, deckle-edge wash, and type cut from stacked sheets — handed off with unfold, tear, peel, blade, and fold. Strata lands in a weather app and an editor poster. End card: three takeaways, six code-rendered stills, **@guanmo_ai**.
+Paper cut is more than one look. A 24-second expo of six named variants — folk red cutouts, color-block strata, cardboard diorama, monochrome silhouette, deckle-edge wash, and type cut from stacked sheets — handed off with unfold, tear, peel, blade, and fold. Strata lands in a weather app and an editor poster. The ending stays in the paper language: the opening window flower spins down to a point and slams as a red seal; the three lines are punched 门笺, plus **@guanmo_ai**.
 
 Series: **Design styles**. Period shown: **folk tradition — today**.
 

@@ -3,7 +3,7 @@ Design Style · 风格 010 · Paper Cut 剪纸层叠 —— 配乐与音效（�
 
 24 秒 · 120 BPM（1 拍 = 0.5 秒 = 30 帧）· G 大调
 暖的纸工艺：软垫、卡林巴式玻璃钟、轻底鼓 + 沙锤；音效是展开、撕开、揭层、剪刀、落纸。
-和弦：C 民俗 6 · G 几何 7 · Em 纸板 6 · C 剪影 6 · G–Em 毛边 7 · D 字体 7 · G 带走 9
+和弦：C 民俗 6 · G 几何 7 · Em 纸板 6 · C 剪影 6 · G–Em 毛边 7 · D 字体 7 · G 盖章 9
 时间点与 video/timeline.ts 对齐（帧 / 60 = 秒）。
 
 用法：python3 styles/010-paper-cut/audio/make_music.py
@@ -273,16 +273,34 @@ for i in range(5):
 place(kalimba(note(86), 1.2), fr(1000), 0.14, 0.1, 0.35, LEAD)
 sfx(snip(0.08), fr(1062), 0.16, 0.1)
 sfx(rustle(0.12), fr(1062), 0.12, 0.2)
-# 带走：三句砸拍 + 六格 + handle
-sfx(whoosh(0.34, 450, 1600), fr(1138), 0.14, 0, 0.18)
-for i, frn in enumerate([1200, 1230, 1260]):
+def stamp(d=0.24):
+    t = tt(d)
+    s = lp(noise(d), 700) * env(d, 0.002, None, 0.05)
+    s += 0.7 * np.sin(2 * np.pi * 86 * t) * np.exp(-t / 0.055)
+    s += hp(noise(d), 2800, 2) * np.exp(-t / 0.01) * 0.45
+    return np.tanh(s * 1.3)
+
+
+# 盖章：三张纸落匣 → 窗花收点 → 砸章 → 镂空 → 门笺
+sfx(whoosh(0.36, 420, 1800), fr(1138), 0.16, 0, 0.2)
+for i in range(3):
+    sfx(rustle(0.12), fr(1180 + i * 4), 0.13, -0.3 + i * 0.2, 0.14)
+    sfx(tick(), fr(1180 + i * 4), 0.08, -0.3 + i * 0.2)
+sfx(whoosh(0.4, 900, 2400), fr(1170), 0.12, 0.1, 0.16)
+sfx(stamp(), fr(1230), 0.34, 0, 0.2)
+sfx(rustle(0.16), fr(1230), 0.16, 0, 0.18)
+place(kick(), fr(1230), 0.55)
+for i in range(12):
+    sfx(snip(0.05), fr(1240 + i * 3), 0.1, -0.4 + (i % 6) * 0.14)
+    sfx(tick(), fr(1240 + i * 3), 0.06, -0.35 + (i % 6) * 0.12)
+sfx(snip(0.08), fr(1290), 0.18, 0)
+place(kalimba(note(83), 0.7), fr(1290), 0.12, 0, 0.28, LEAD)
+sfx(tick(), fr(1320), 0.1, 0.1)
+sfx(rustle(0.1), fr(1320), 0.12, 0.15, 0.12)
+for i, frn in enumerate([1350, 1380, 1410]):
     sfx(rustle(0.12), fr(frn), 0.14, -0.3 + i * 0.25, 0.16)
     sfx(tick(), fr(frn), 0.09, -0.3 + i * 0.25)
     sfx(kalimba(note([71, 76, 83][i]), 0.55), fr(frn), 0.1, -0.3 + i * 0.25, 0.25)
-for k, n in enumerate([67, 71, 74, 79, 83, 86]):
-    place(kalimba(note(n), 1.0), fr(1296) + k * 0.04, 0.1, -0.5 + k * 0.18, 0.35, LEAD)
-    sfx(tick(), fr(1296 + k * 4), 0.07, -0.45 + k * 0.15)
-sfx(rustle(0.14), fr(1350), 0.12, 0, 0.15)
 end = pad_tone([55, 67, 71, 74, 79], 2.0)
 for ch in range(2):
     place(lp(end[ch], 2400), fr(1320), 0.18, -1 if ch == 0 else 1, 0.45, PUMP)
@@ -308,7 +326,7 @@ mix = mix.T
 mix /= np.abs(mix).max() + 1e-9
 mix = np.tanh(mix * 1.25) / np.tanh(1.25)
 fade = np.ones(N)
-f0 = int(fr(1380) * SR)
+f0 = int(fr(1420) * SR)
 fade[f0:] = np.linspace(1, 0, N - f0) ** 2
 mix *= fade[:, None]
 

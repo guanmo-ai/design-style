@@ -306,9 +306,10 @@ export const Type: React.FC<{f: number}> = ({f}) => {
   const word = spr(f, AT.type + 18, POP, 28);
   const bladeX = tween(f, AT.type + 28, 56, 180, 1760, E.out);
   const cutting = f >= AT.type + 28 && f < AT.type + 90;
-  const zi = spr(f, AT.type + 86, POP, 28);
+  const leave = 1 - tween(f, AT.take - 32, 28, 0, 1, E.in);
+  const zi = spr(f, AT.type + 86, POP, 28) * leave;
   const punchZi = spr(f, AT.type + 94, POP, 28);
-  const sub = spr(f, AT.type + 124, POP, 28);
+  const sub = spr(f, AT.type + 124, POP, 28) * leave;
   return (
     <g>
       <rect width={W} height={H} fill={C.wall} />

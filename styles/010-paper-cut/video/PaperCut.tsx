@@ -1,7 +1,7 @@
 /**
  * Design Style · 风格 010 · Paper Cut —— 24 秒剪纸博览（1920×1080 · 60fps · 120 BPM）
- * 六种剪纸：民俗镂空 → 几何层叠 → 立体纸板 → 单色剪影 → 水彩毛边 → 字体剪纸 → 带走三句
- * 交棒只用纸的招式：展开 / 撕开 / 揭层 / 刀切 / 毛边 / 折页。分镜见 timeline.ts
+ * 六种剪纸：民俗镂空 → 几何层叠 → 立体纸板 → 单色剪影 → 水彩毛边 → 字体剪纸 → 窗花收点盖章
+ * 交棒只用纸的招式：展开 / 撕开 / 揭层 / 刀切 / 毛边 / 折页。片尾是开场同一朵窗花转回收点再砸章。分镜见 timeline.ts
  */
 import React, {useEffect, useState} from 'react';
 import {AbsoluteFill, Audio, continueRender, delayRender, staticFile, useCurrentFrame} from 'remotion';
@@ -42,7 +42,7 @@ const SCENES: Scene[] = [
   {at: AT.sil, end: AT.torn, C: Sil, wipe: 'blade', fill: C.paper},
   {at: AT.torn, end: AT.type, C: Torn, wipe: 'tear', fill: '#F0E2D2'},
   {at: AT.type, end: AT.take, C: Type, wipe: 'wave', fill: C.paper},
-  {at: AT.take, end: DURATION, C: Take, wipe: 'fold', fill: C.wall},
+  {at: AT.take, end: DURATION, C: Take, wipe: 'fold', fill: C.folk},
 ];
 
 const Stage: React.FC = () => {

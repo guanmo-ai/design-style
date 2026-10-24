@@ -1,198 +1,147 @@
-/** 010 · 片尾：三句可带走的话 + 六格代码渲定妆 + @guanmo_ai */
+/**
+ * 010 · 片尾：窗花收点盖章。
+ * 学 Swiss：开场同一朵窗花回来，不是换一张字幕卡。
+ * 学 Bento：整朵缩成一点再落成印章，像七张卡缩回图标。
+ * 学两者：元素一个个 POP，过冲砸拍，章重叠 32 帧。
+ */
 import React from 'react';
-import {POP, spr} from '../../../src/lib/anim';
+import {E, POP, shake, spr, tween} from '../../../src/lib/anim';
 import {C, HILLS} from '../tokens';
-import {AT, LINES} from './timeline';
+import {AT} from './timeline';
 import {W, n1} from './layers';
-import {Txt} from './ui';
+import {FolkFlower} from './opening';
 
-const TW = 276;
-const TH = 168;
+const STACK = [
+  {fill: HILLS[1], rot: -7.5, dx: -22, dy: 16},
+  {fill: HILLS[4], rot: 5.5, dx: 14, dy: 7},
+  {fill: C.paper, rot: -1.2, dx: 0, dy: 0},
+] as const;
 
-const MiniFolk: React.FC<{t: number}> = ({t}) => (
-  <g>
-    <rect width={TW} height={TH} fill={C.wall} />
-    <g transform={`translate(138 84) rotate(${n1(t * 0.55)})`}>
-      <circle r={58} fill="#F7E2A8" opacity={0.45} />
-      <circle r={52} fill={C.folk} />
-      {[0, 45, 90, 135, 180, 225, 270, 315].map((a) => (
-        <ellipse key={a} cx={0} cy={-34} rx={7} ry={13} fill={C.wall} transform={`rotate(${a})`} />
-      ))}
-      <circle r={11} fill={C.wall} />
-      <circle r={4} fill={C.folk} />
-    </g>
-  </g>
-);
+const SLIPS = [
+  {a: '对折是民俗剪纸的骨架', b: '旋转展开就是它的入场', rot: -3.2},
+  {a: '一层一色，影子落在下一张上', b: '没有影子就只是贴纸', rot: 1.4},
+  {a: '换一种剪纸', b: '就换一种纸的运动', rot: 2.8},
+] as const;
 
-const MiniStrata: React.FC<{t: number}> = ({t}) => (
-  <g>
-    <rect width={TW} height={TH} fill={C.sky} />
-    <circle cx={n1(214 + Math.sin(t * 0.04) * 6)} cy={32} r={16} fill={C.sun} />
-    {HILLS.map((c, i) => {
-      const y = 48 + i * 22 + Math.sin(t * 0.05 + i) * (2 + i);
-      return (
-        <path
-          key={i}
-          d={`M-8 ${n1(y)} C 50 ${n1(y - 10)} 110 ${n1(y + 12)} 170 ${n1(y)} S 240 ${n1(y - 8)} 284 ${n1(y + 4)} V${TH + 4} H-8 Z`}
-          fill={c}
-        />
-      );
-    })}
-  </g>
-);
-
-const MiniDio: React.FC<{t: number}> = ({t}) => (
-  <g>
-    <rect width={TW} height={TH} fill={C.cream} />
-    <rect x={16} y={18} width={200} height={132} rx={8} fill={C.sky} />
-    {HILLS.map((c, i) => {
-      const lift = 4 + i * 5 + Math.sin(t * 0.06 + i) * 3;
-      const y = 52 + i * 18 - lift;
-      return (
-        <path
-          key={i}
-          d={`M20 ${n1(y)} C 70 ${n1(y - 8)} 120 ${n1(y + 10)} 168 ${n1(y)} S 210 ${n1(y - 6)} 212 ${n1(y + 3)} V148 H20 Z`}
-          fill={c}
-          filter="url(#shMid)"
-        />
-      );
-    })}
-    {[0, 1, 2, 3, 4, 5].map((i) => (
-      <rect key={i} x={226} y={n1(22 + i * 20)} width={36} height={16} rx={3} fill={HILLS[i]} />
-    ))}
-  </g>
-);
-
-const MiniSil: React.FC<{t: number}> = ({t}) => {
-  const g = 4 + Math.sin(t * 0.08) * 3;
-  return (
-    <g>
-      <rect width={TW / 2 - g / 2} height={TH} fill={C.paper} />
-      <path d={`M-4 78 C 40 62 80 96 138 78 V${TH} H-4 Z`} fill={C.ink} />
-      <rect x={n1(TW / 2 + g / 2)} width={TW / 2 - g / 2} height={TH} fill={C.ink} />
-      <path d={`M${n1(TW / 2 + g / 2)} 78 C 180 62 230 96 280 78 V${TH} H${n1(TW / 2 + g / 2)} Z`} fill={C.paper} />
-      <rect x={n1(TW / 2 - 2 - g / 2)} width={n1(4 + g)} height={TH} fill={C.folk} />
-    </g>
-  );
+const tornTop = (w: number, seed: number) => {
+  let d = `M0 18`;
+  for (let i = 0; i <= 14; i++) {
+    const x = (w / 14) * i;
+    const y = 10 + 9 * Math.sin(i * 1.7 + seed) + 5 * Math.sin(i * 0.6 + seed * 2);
+    d += ` L${n1(x)} ${n1(y)}`;
+  }
+  d += ` L${w} 18 L${w} 148`;
+  for (let i = 14; i >= 0; i--) {
+    const x = (w / 14) * i;
+    const y = 148 + 7 * Math.sin(i * 2.1 + seed + 1);
+    d += ` L${n1(x)} ${n1(y)}`;
+  }
+  return `${d} Z`;
 };
-
-const MiniTorn: React.FC<{t: number}> = ({t}) => {
-  const jag = (i: number) => 72 + 8 * Math.sin(i * 1.6 + t * 0.05);
-  return (
-    <g>
-      <rect width={TW} height={TH} fill="#1A1410" />
-      <path d={`M90 36 C 140 28 190 52 250 40 V130 H80 Z`} fill={HILLS[2]} />
-      <path d={`M90 78 C 150 68 200 92 250 80 V168 H80 Z`} fill={HILLS[4]} />
-      <circle cx={208} cy={40} r={13} fill={C.sun} />
-      <rect x={118} y={18} width={52} height={88} rx={10} fill="#1A2228" />
-      <path
-        d={`M0 0 H${n1(jag(0))} ${[1, 2, 3, 4, 5, 6, 7, 8]
-          .map((i) => `L${n1(jag(i))} ${n1((TH / 8) * i)}`)
-          .join(' ')} L0 ${TH} Z`}
-        fill="#E8D4C4"
-      />
-      <ellipse cx={28} cy={46} rx={30} ry={20} fill="#C9A28A" opacity={0.5} />
-    </g>
-  );
-};
-
-const MiniType: React.FC<{t: number}> = ({t}) => (
-  <g>
-    <rect width={TW} height={TH} fill={C.sky} />
-    <rect y={n1(70 + Math.sin(t * 0.05) * 3)} width={TW} height={40} fill={HILLS[2]} />
-    <rect y={n1(108 + Math.sin(t * 0.04) * 2)} width={TW} height={70} fill={HILLS[4]} />
-    <circle cx={n1(210 + Math.sin(t * 0.03) * 5)} cy={40} r={16} fill={C.sun} />
-    <rect width={TW} height={TH} fill={C.paper} mask="url(#miniTypePunch)" />
-    <defs>
-      <mask id="miniTypePunch" maskUnits="userSpaceOnUse" x="0" y="0" width={TW} height={TH}>
-        <rect width={TW} height={TH} fill="white" />
-        <text x={138} y={104} fontFamily="Jost" fontSize={54} fontWeight={800} textAnchor="middle" fill="black" letterSpacing={2}>
-          PAPER
-        </text>
-      </mask>
-    </defs>
-  </g>
-);
-
-const THUMBS: {en: string; zh: string; Art: React.FC<{t: number}>}[] = [
-  {en: 'FOLK', zh: '镂空', Art: MiniFolk},
-  {en: 'STRATA', zh: '层叠', Art: MiniStrata},
-  {en: 'DIORAMA', zh: '纸板', Art: MiniDio},
-  {en: 'SILHOUETTE', zh: '剪影', Art: MiniSil},
-  {en: 'TORN', zh: '毛边', Art: MiniTorn},
-  {en: 'TYPE', zh: '剪字', Art: MiniType},
-];
 
 export const Take: React.FC<{f: number}> = ({f}) => {
-  const t = f - AT.take;
-  const sway = Math.sin(t * 0.05) * 4;
+  const t0 = AT.take;
+  const t = f - t0;
+  const hit = shake(f, [[t0 + 60, 16]]);
+  const enter = spr(f, t0 - 22, POP, 32);
+  const shrink = tween(f, t0, 52, 0, 1, E.in);
+  const slam = spr(f, t0 + 52, POP, 28);
+  const scale = (1.18 - 1.1 * shrink) * (1 - slam) + slam * 0.72;
+  const spin = 24 + t * 2.4 + shrink * 380 + slam * 18;
+  const idle = slam * Math.sin(t * 0.045) * 2.2;
+  const punchAt = t0 + 62;
+  const zi = spr(f, t0 + 112, POP, 28);
+  const handle = spr(f, t0 + 142, POP, 28);
+
   return (
-    <g>
+    <g transform={`translate(${n1(hit.x)} ${n1(hit.y)})`}>
       <rect width={W} height={1080} fill={C.wall} />
-      <g transform={`translate(${n1(sway)} 0)`}>
-        <circle cx={1680} cy={180} r={90} fill={C.folk} opacity={0.9} />
-        <circle cx={1680} cy={180} r={62} fill={C.wall} />
-        <circle cx={1680} cy={180} r={18} fill={C.folk} />
-      </g>
-      {LINES.map((line, i) => {
-        const k = spr(f, AT.take + 22 + i * 30, POP, 28);
-        if (k < 0.01) return null;
-        const num = spr(f, AT.take + 25 + i * 30, POP, 24);
-        const body = spr(f, AT.take + 28 + i * 30, POP, 24);
-        const flutter = Math.sin(t * 0.07 + i) * 3;
+      {STACK.map((s, i) => {
+        const k = spr(f, t0 + 2 + i * 4, POP, 28);
+        if (k < 0.02) return null;
         return (
-          <g key={i} opacity={Math.min(1, k)} transform={`translate(${n1((1 - k) * -40 + flutter)} ${n1(72 + i * 188)})`} filter="url(#shNear)">
-            <rect x={72} width={1180} height={164} rx={22} fill={C.paper} />
-            <rect x={72} width={14} height={164} rx={8} fill={i === 0 ? C.folk : i === 1 ? HILLS[3] : C.sun} />
-            <g opacity={Math.min(1, num)}>
-              <Txt x={114} y={66} size={18} font="mono" c={C.sun} ls={1.4}>
-                {`0${i + 1}  TAKE AWAY`}
-              </Txt>
-            </g>
-            <g opacity={Math.min(1, body)} transform={`translate(${n1((1 - body) * 12)} 0)`}>
-              <Txt x={114} y={118} size={30} font="cn" w={900} c={C.ink}>
-                {line}
-              </Txt>
-            </g>
+          <g
+            key={i}
+            opacity={Math.min(1, k)}
+            transform={`translate(960 ${n1(428 + (1 - k) * 70)}) rotate(${n1(s.rot)}) translate(${n1(-270 + s.dx)} ${n1(-176 + s.dy)})`}
+            filter="url(#shNear)"
+          >
+            <rect width={540} height={352} rx={10} fill={s.fill} />
           </g>
         );
       })}
-      {THUMBS.map((thumb, i) => {
-        const k = spr(f, AT.take + 118 + i * 4, POP, 28);
-        if (k < 0.01) return null;
-        const x = 72 + i * 296;
-        const bob = Math.sin(t * 0.09 + i * 0.7) * 4;
+      {enter > 0.02 && (
+        <g transform={`translate(960 ${n1(388 + idle)})`} opacity={Math.min(1, enter)}>
+          <FolkFlower f={f} scale={scale} spin={spin} punchAt={slam > 0.35 ? punchAt : false} compact={0.55} />
+        </g>
+      )}
+      {slam > 0.4 && (
+        <g opacity={slam}>
+          <rect x={956} y={0} width={8} height={n1(Math.max(8, 388 - 412 * scale))} rx={3} fill={C.folk} />
+          <circle cx={960} cy={16} r={9} fill={C.folk} />
+        </g>
+      )}
+      {zi > 0.02 && (
+        <text
+          x={960}
+          y={n1(408 + idle)}
+          fontFamily="Noto Sans SC"
+          fontSize={100}
+          fontWeight={900}
+          textAnchor="middle"
+          fill={C.wall}
+          opacity={Math.min(1, zi)}
+          transform={`translate(960 ${n1(388 + idle)}) scale(${zi.toFixed(3)}) translate(-960 ${n1(-388 - idle)})`}
+        >
+          剪
+        </text>
+      )}
+      {handle > 0.02 && (
+        <g
+          opacity={Math.min(1, handle)}
+          transform={`translate(960 ${n1(718 + (1 - handle) * 24 + idle)})`}
+          filter="url(#shMid)"
+        >
+          <rect x={-200} y={-28} width={400} height={56} rx={6} fill={C.folk} mask="url(#handleCut)" />
+        </g>
+      )}
+      {SLIPS.map((s, i) => {
+        const k = spr(f, t0 + 172 + i * 30, POP, 28);
+        if (k < 0.02) return null;
+        const flutter = Math.sin(t * 0.07 + i * 1.3) * 3.4;
+        const x = 140 + i * 560;
         return (
-          <g key={thumb.en} opacity={k} transform={`translate(${n1(x)} ${n1(656 + (1 - k) * 24 + bob)})`} filter="url(#shMid)">
-            <clipPath id={`thumb${i}`}>
-              <rect width={TW} height={TH} rx={18} />
-            </clipPath>
-            <g clipPath={`url(#thumb${i})`}>
-              <thumb.Art t={t} />
-            </g>
-            <rect width={TW} height={TH} rx={18} fill="none" stroke={C.paper} strokeWidth={2} opacity={0.35} />
-            <rect y={118} width={TW} height={50} rx={0} fill="rgba(10,16,20,0.46)" />
-            <Txt x={16} y={138} size={12} font="mono" c={C.paper} ls={1.1}>
-              {thumb.en}
-            </Txt>
-            <Txt x={16} y={158} size={20} font="cn" w={700} c={C.paper}>
-              {thumb.zh}
-            </Txt>
+          <g
+            key={i}
+            opacity={Math.min(1, k)}
+            transform={`translate(${n1(x + flutter)} ${n1(760 + (1 - k) * -72)}) rotate(${n1(s.rot + flutter * 0.2)})`}
+            filter="url(#shMid)"
+          >
+            <path d={tornTop(480, i * 2.2)} fill={C.folk} mask={`url(#slip${i})`} />
+            <circle cx={36} cy={22} r={7} fill={C.wall} />
+            <circle cx={444} cy={22} r={7} fill={C.wall} />
           </g>
         );
       })}
-      {(() => {
-        const handle = spr(f, AT.take + 172, POP, 28);
-        if (handle < 0.01) return null;
-        return (
-          <g opacity={handle} transform={`translate(0 ${n1((1 - handle) * 16)})`}>
-            <rect x={760} y={852} width={400} height={64} rx={18} fill={C.paper} filter="url(#shNear)" />
-            <Txt x={960} y={894} size={26} font="display" w={600} c={C.ink} anchor="middle" ls={1.2}>
-              @guanmo_ai
-            </Txt>
-          </g>
-        );
-      })()}
+      <defs>
+        <mask id="handleCut" maskUnits="userSpaceOnUse" x="-200" y="-28" width="400" height="56">
+          <rect x="-200" y="-28" width="400" height="56" rx="6" fill="white" />
+          <text x="0" y="10" fontFamily="Jost" fontSize="26" fontWeight="600" textAnchor="middle" fill="black" letterSpacing="1.4">
+            @guanmo_ai
+          </text>
+        </mask>
+        {SLIPS.map((s, i) => (
+          <mask key={i} id={`slip${i}`} maskUnits="userSpaceOnUse" x="0" y="0" width="480" height="160">
+            <rect width="480" height="160" fill="white" />
+            <text x="240" y="78" fontFamily="Noto Sans SC" fontSize="24" fontWeight="700" textAnchor="middle" fill="black">
+              {s.a}
+            </text>
+            <text x="240" y="112" fontFamily="Noto Sans SC" fontSize="22" fontWeight="500" textAnchor="middle" fill="black">
+              {s.b}
+            </text>
+          </mask>
+        ))}
+      </defs>
     </g>
   );
 };

@@ -44,7 +44,7 @@ const coinD = (r: number) => {
 const fanD = (r: number) =>
   `M0 0 L${n1(r)} ${n1(-r * 0.28)} A${n1(r)} ${n1(r)} 0 0 1 ${n1(r)} ${n1(r * 0.28)} Z`;
 
-const HoleShape: React.FC<{h: Hole; k: number}> = ({h, k}) => {
+export const HoleShape: React.FC<{h: Hole; k: number}> = ({h, k}) => {
   if (k < 0.02) return null;
   const d = h.k === 'petal' ? petalD(h.r) : h.k === 'coin' ? coinD(h.r) : h.k === 'fan' ? fanD(h.r) : `M${n1(-h.r)} 0 a${n1(h.r)} ${n1(h.r)} 0 1 0 ${n1(2 * h.r)} 0 a${n1(h.r)} ${n1(h.r)} 0 1 0 ${n1(-2 * h.r)} 0 Z`;
   return (
@@ -96,6 +96,29 @@ export const Folk: React.FC<{f: number}> = ({f}) => {
           窗花的骨架是中缝。运动也从中缝开始。
         </Txt>
       </g>
+    </g>
+  );
+};
+
+/** 开场同一朵窗花：片尾旋转收点、砸成印章时原样回来（Swiss：同一元素接下幕） */
+export const FolkFlower: React.FC<{
+  f: number;
+  scale: number;
+  spin: number;
+  punchAt?: number | false;
+  compact?: number;
+}> = ({f, scale, spin, punchAt = false, compact = 1}) => {
+  if (scale < 0.02) return null;
+  return (
+    <g transform={`rotate(${n1(spin)}) scale(${scale.toFixed(3)})`} filter="url(#shLift)">
+      <circle r={430} fill="#F7E2A8" opacity={0.42} />
+      <circle r={412} fill={RED} />
+      <circle r={388} fill="none" stroke={WALL} strokeWidth={6} opacity={0.35} />
+      <circle r={6} fill={WALL} />
+      {punchAt !== false &&
+        HOLES.map((h, i) => (
+          <HoleShape key={i} h={h} k={spr(f, punchAt + Math.round((h.t - 26) * compact), POP, 24)} />
+        ))}
     </g>
   );
 };
