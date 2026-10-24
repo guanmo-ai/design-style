@@ -76,6 +76,7 @@ export const Folk: React.FC<{f: number}> = ({f}) => {
         <rect x={0} y={-460} width={520} height={920} rx={28} fill={RED} filter="url(#shNear)" />
       </g>
       <g transform={`translate(960 508) rotate(${n1(spin + sway)}) scale(${disk.toFixed(3)})`} opacity={disk} filter="url(#shLift)">
+        <circle r={430} fill="#F7E2A8" opacity={0.42} />
         <circle r={412} fill={RED} />
         <circle r={388} fill="none" stroke={WALL} strokeWidth={6} opacity={0.35} />
         <circle r={6} fill={WALL} />

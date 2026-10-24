@@ -6,9 +6,9 @@
 
 ## Overview
 
-Layered paper silhouettes, one flat color per sheet, depth made only by the shadow in the gap. When the layers move at different speeds, the story starts. A 20-second film: the same landscape stacks itself, becomes a poster on an editor artboard, a weather-app illustration with scroll parallax, a brand title flying through paper strata, then five rules and three pitfalls. End card: **@guanmo_ai**.
+Paper cut is more than one look. A 24-second expo of six named variants — folk red cutouts, color-block strata, cardboard diorama, monochrome silhouette, deckle-edge wash, and type cut from stacked sheets — handed off with unfold, tear, peel, blade, and fold. Strata lands in a weather app and an editor poster. End card: three takeaways, six code-rendered stills, **@guanmo_ai**.
 
-Series: **Design styles**. Period shown: **folk tradition — today** (this episode teaches modern papercutout / paper diorama, not festival window-flower motifs).
+Series: **Design styles**. Period shown: **folk tradition — today**.
 
 ## Five practical rules
 
@@ -50,7 +50,7 @@ Series: **Design styles**. Period shown: **folk tradition — today** (this epis
 |---|---|
 | Canvas | 1920 × 1080 |
 | Frame rate | 60 fps |
-| Duration | 20 seconds / 1200 frames |
+| Duration | 24 seconds / 1440 frames |
 | Tempo | 120 BPM (one beat = 30 frames) |
 
 When sharing the film or artwork, credit **Guanmo / @guanmo_ai**.

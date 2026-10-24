@@ -244,11 +244,15 @@ sfx(whoosh(0.36, 500, 2200), fr(726), 0.2, 0.2, 0.2)
 sfx(rustle(0.18), fr(750), 0.16, 0.1, 0.15)
 for i in range(6):
     sfx(shaker(0.05), fr(790 + i * 14), 0.07, 0.25)
-# → 字体剪纸
+# → 字体剪纸：揭走手机，再一刀一字母剪穿
 sfx(whoosh(0.34, 300, 3800), fr(936), 0.2, 0, 0.22)
-sfx(snip(0.09), fr(988), 0.2, 0.05)
-place(kalimba(note(86), 1.2), fr(988), 0.14, 0.1, 0.35, LEAD)
-sfx(rustle(0.12), fr(1040), 0.12, 0.2)
+sfx(rustle(0.14), fr(962), 0.12, -0.15, 0.15)
+for i, frn in enumerate([996, 1004, 1012, 1020, 1028]):
+    sfx(snip(0.07), fr(frn), 0.16, -0.35 + i * 0.16)
+    sfx(rustle(0.07), fr(frn), 0.08, -0.3 + i * 0.14, 0.1)
+place(kalimba(note(86), 1.2), fr(996), 0.14, 0.1, 0.35, LEAD)
+sfx(snip(0.08), fr(1062), 0.16, 0.1)
+sfx(rustle(0.12), fr(1062), 0.12, 0.2)
 # 带走
 sfx(whoosh(0.3, 450, 1600), fr(1146), 0.14, 0, 0.18)
 for i, frn in enumerate([1178, 1218, 1258]):

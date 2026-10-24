@@ -57,7 +57,7 @@ export const Hud: React.FC<P> = ({f}) => {
     if (f >= at) k = j;
   });
   const p = tween(f, CHAPTERS[k][1], 14, 0, 1, E.out);
-  const light = f < AT.geo || (f >= AT.dio && f < AT.sil) || f >= AT.type;
+  const light = f < AT.geo || f >= AT.dio;
   const ink = light ? C.ink : C.paper;
   const mut = light ? C.grey : 'rgba(246,243,235,0.55)';
   return (
