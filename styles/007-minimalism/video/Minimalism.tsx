@@ -105,7 +105,7 @@ const Hud: React.FC<{f: number}> = ({f}) => {
   );
 };
 
-const Stage: React.FC = () => {
+const Stage: React.FC<{hud?: boolean}> = ({hud = true}) => {
   const f = useCurrentFrame();
   const cam = camAt(f);
   return (
@@ -119,21 +119,21 @@ const Stage: React.FC = () => {
         </World>
         {f >= AT.hold - 4 && <Finale f={f} />}
       </svg>
-      <Hud f={f} />
+      {hud !== false && <Hud f={f} />}
     </AbsoluteFill>
   );
 };
 
-export const Minimalism: React.FC<{music?: boolean; blur?: number}> = ({music = true, blur = 6}) => {
+export const Minimalism: React.FC<{music?: boolean; blur?: number; hud?: boolean}> = ({music = true, blur = 6, hud = true}) => {
   loadFonts();
   return (
     <AbsoluteFill style={{background: C.paper}}>
       {blur > 1 ? (
         <CameraMotionBlur shutterAngle={180} samples={blur}>
-          <Stage />
+          <Stage hud={hud} />
         </CameraMotionBlur>
       ) : (
-        <Stage />
+        <Stage hud={hud} />
       )}
       <Grain opacity={0.035} />
       {music && <Audio src={staticFile('007-minimalism/music.wav')} />}
