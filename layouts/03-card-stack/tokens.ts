@@ -1,4 +1,4 @@
-// 布局 03 · Card Stack v7 — 16 张异形卡。开场密度对齐 Swiss 波，方案种类对齐 Bento。
+// 布局 03 · Card Stack v8 — 6 张真作品。层叠 = 深度排序 + 只读一张 + 抽/提/压。
 export const C = {
   paper: '#EDE6D6',
   cream: '#F6F0E4',

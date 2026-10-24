@@ -1,161 +1,179 @@
-/** 16 张异形卡的脸。身份色不换；世界只加小零件，不换皮成白 UI。 */
+/** 6 张真作品：选片台上的样片，不是抽象色块。 */
 import React from 'react';
 import {C} from '../tokens';
 import {Family} from './layout';
 import {gro, mono, sc} from './ui';
 
 export const DECK = [
-  {bg: C.red, bg2: '#C4161C', fg: C.cream, mark: '刊', en: '01', sub: 'VOL.03'},
-  {bg: C.cream, bg2: '#E4D8C4', fg: C.ink, mark: '提', en: '02', sub: 'LIFT'},
-  {bg: C.night, bg2: '#1A1A1E', fg: C.cream, mark: '压', en: '03', sub: 'PRESS'},
-  {bg: C.teal, bg2: '#0F2C2C', fg: C.cream, mark: '叠', en: '04', sub: 'STACK'},
-  {bg: C.sand, bg2: '#B5A384', fg: C.ink, mark: '甲', en: '05', sub: 'PROOF A'},
-  {bg: C.rust, bg2: '#7A2E24', fg: C.cream, mark: '乙', en: '06', sub: 'PROOF B'},
-  {bg: C.olive, bg2: '#2A331E', fg: C.cream, mark: '丙', en: '07', sub: 'LANE'},
-  {bg: C.blush, bg2: '#C08E84', fg: C.ink, mark: '丁', en: '08', sub: 'MAIL'},
-  {bg: C.coral, bg2: '#C45438', fg: C.cream, mark: 'A', en: '09', sub: 'SHOT 09'},
-  {bg: C.slate, bg2: '#2A2E38', fg: C.cream, mark: 'B', en: '10', sub: 'SHOT 10'},
-  {bg: C.mustard, bg2: '#A8883E', fg: C.ink, mark: 'C', en: '11', sub: 'CARD'},
-  {bg: C.moss, bg2: '#1F362A', fg: C.cream, mark: 'D', en: '12', sub: 'FOLIO'},
-  {bg: '#2B4C7E', bg2: '#1C3558', fg: C.cream, mark: '子', en: '13', sub: 'SET 子'},
-  {bg: '#6B3FA0', bg2: '#4E2C78', fg: C.cream, mark: '丑', en: '14', sub: 'SET 丑'},
-  {bg: '#C45C26', bg2: '#9A471C', fg: C.cream, mark: '寅', en: '15', sub: 'SET 寅'},
-  {bg: '#1F6B6B', bg2: '#154B4B', fg: C.cream, mark: '卯', en: '16', sub: 'SET 卯'},
+  {id: '04', title: 'Harbor', zh: '港口', lens: '85mm', expo: '1/250  f/2.8', iso: '200', stars: 3, task: '已看过', lane: 'TO'},
+  {id: '11', title: 'Stairwell', zh: '楼梯', lens: '35mm', expo: '1/125  f/4', iso: '400', stars: 5, task: '定封面', lane: 'DO'},
+  {id: '18', title: 'Night Bus', zh: '夜班车', lens: '50mm', expo: '1/60  f/1.8', iso: '800', stars: 4, task: '核对', lane: 'DO'},
+  {id: '23', title: 'Glass', zh: '玻璃', lens: '85mm', expo: '1/200  f/2', iso: '250', stars: 3, task: '备选', lane: 'TO'},
+  {id: '07', title: 'Market', zh: '早市', lens: '28mm', expo: '1/250  f/5.6', iso: '200', stars: 3, task: '修色', lane: 'OK'},
+  {id: '31', title: 'Fog', zh: '雾', lens: '50mm', expo: '1/80  f/2.8', iso: '500', stars: 2, task: '归档', lane: 'OK'},
 ] as const;
-
-const WORLD: Record<Family, string[]> = {
-  OPEN: DECK.map((d) => d.sub),
-  MAG: ['VOL', 'KAN', 'INK', 'LAY', '脊', '脊', '脊', '脊', '脊', '脊', '脊', '脊', '脊', '脊', '脊', '脊'],
-  LAYER: I16('L'),
-  PROOF: ['MK', 'CU', 'FE', 'CP', 'GF', 'MO', 'AR', 'NT', 'SK', 'BI', 'RH', 'VE', 'SA', 'TO', 'PL', 'OK'],
-  BOARD: ['TO', 'TO', 'TO', 'TO', 'TO', 'TO', 'DO', 'DO', 'DO', 'DO', 'DO', 'OK', 'OK', 'OK', 'OK', 'OK'],
-  ALBUM: ['9.12', '9.14', '10.01', '10.03', '10.08', '10.11', '10.18', '10.22', '11.02', '11.04', '11.09', '11.16', '11.20', '12.01', '12.08', '12.14'],
-  NOTE: ['Mail', 'Cal', 'Pay', 'Map', 'Air', 'Bus', 'Git', 'Fig', 'Lin', 'Not', 'X', 'Sl', 'Tg', 'Dc', 'Ig', 'Yt'],
-  PAY: ['8821', '4402', '1190', '7734', '2208', '5516', '9088', '3310', '6671', '1044', '2890', '7455', '0126', '3988', '5601', '8143'],
-  FOLIO: ['P01', 'P02', 'P03', 'P04', 'P05', 'P06', 'P07', 'P08', 'P09', 'P10', 'P11', 'P12', 'P13', 'P14', 'P15', 'P16'],
-  PIT: I16('!'),
-  END: I16(''),
-};
-
-function I16(p: string) {
-  return Array.from({length: 16}, (_, i) => `${p}${i + 1}`);
-}
 
 export const EXTRA_DECK = [
-  {bg: C.sand, fg: C.ink, mark: '杂'},
-  {bg: C.red, fg: C.cream, mark: '噪'},
-  {bg: C.ink2, fg: C.cream, mark: '声'},
+  {bg: '#5C564C', fg: C.cream, mark: '废'},
+  {bg: C.red, fg: C.cream, mark: '重'},
+  {bg: C.sand, fg: C.ink, mark: '糊'},
   {bg: C.teal, fg: C.cream, mark: '多'},
-  {bg: C.mustard, fg: C.ink, mark: '乱'},
-  {bg: C.coral, fg: C.cream, mark: '挤'},
-  {bg: C.olive, fg: C.cream, mark: '叠'},
-  {bg: C.slate, fg: C.cream, mark: '糊'},
 ] as const;
 
-const Ornament: React.FC<{i: number; fg: string; w: number; h: number}> = ({i, fg, w, h}) => {
-  const kind = i % 5;
-  if (kind === 0) {
+const Shot: React.FC<{i: number}> = ({i}) => {
+  if (i === 0) {
     return (
-      <>
-        {[0, 1, 2].map((k) => (
-          <div key={k} style={{position: 'absolute', left: 12, right: 12, top: h * 0.62 + k * 10, height: 2, background: fg, opacity: 0.28}} />
-        ))}
-      </>
-    );
-  }
-  if (kind === 1) {
-    return <div style={{position: 'absolute', right: 12, top: 28, width: Math.min(54, w * 0.28), height: Math.min(54, w * 0.28), borderRadius: 999, border: `2px solid ${fg}`, opacity: 0.35}} />;
-  }
-  if (kind === 2) {
-    return <div style={{position: 'absolute', left: -20, top: h * 0.55, width: w * 1.4, height: 18, background: fg, opacity: 0.16, transform: 'rotate(-18deg)'}} />;
-  }
-  if (kind === 3) {
-    return (
-      <div style={{position: 'absolute', right: 10, bottom: 28, display: 'grid', gridTemplateColumns: 'repeat(3,7px)', gap: 5, opacity: 0.35}}>
-        {Array.from({length: 9}, (_, k) => (
-          <div key={k} style={{width: 7, height: 7, borderRadius: 7, background: fg}} />
-        ))}
+      <div style={{position: 'absolute', inset: 0, background: 'linear-gradient(180deg,#1B2A38 0%,#2A4154 46%,#0C1418 47%,#070B0E 100%)'}}>
+        <div style={{position: 'absolute', left: '64%', top: '20%', width: '14%', aspectRatio: '1', borderRadius: 999, background: '#E36A4A'}} />
+        <div style={{position: 'absolute', left: '10%', right: '18%', top: '58%', height: 7, background: '#0A0A0C'}} />
+        <div style={{position: 'absolute', left: '22%', top: '58%', width: '8%', height: '18%', background: '#151518'}} />
       </div>
     );
   }
-  return <div style={{position: 'absolute', left: 0, right: 0, bottom: 0, height: 14, background: fg, opacity: 0.22}} />;
-};
-
-const WorldBits: React.FC<{fam: Family; i: number; fg: string; w: number; h: number}> = ({fam, i, fg, w, h}) => {
-  if (fam === 'MAG' && w > 80) {
+  if (i === 1) {
     return (
-      <div style={{position: 'absolute', left: 12, right: 12, bottom: 28, display: 'flex', gap: 3, height: 18, alignItems: 'flex-end'}}>
-        {Array.from({length: 18}, (_, k) => (
-          <div key={k} style={{width: 3, height: 6 + ((i + k) % 5) * 3, background: fg, opacity: 0.35}} />
+      <div style={{position: 'absolute', inset: 0, background: 'linear-gradient(160deg,#E8DFD0 0%,#C8B89A 40%,#8A7A62 100%)'}}>
+        {[0, 1, 2, 3, 4].map((k) => (
+          <div key={k} style={{position: 'absolute', left: `${8 + k * 14}%`, top: `${12 + k * 14}%`, width: `${70 - k * 8}%`, height: 10, background: k % 2 ? '#5C5346' : '#3A342C', transform: 'skewX(-28deg)'}} />
         ))}
+        <div style={{position: 'absolute', right: '12%', top: '18%', width: 18, height: '54%', background: '#2A241C'}} />
       </div>
     );
   }
-  if (fam === 'PROOF') {
-    const s = 10;
-    const b = `1px solid ${fg}`;
+  if (i === 2) {
     return (
-      <>
-        <div style={{position: 'absolute', left: 6, top: 6, width: s, height: s, borderLeft: b, borderTop: b, opacity: 0.45}} />
-        <div style={{position: 'absolute', right: 6, top: 6, width: s, height: s, borderRight: b, borderTop: b, opacity: 0.45}} />
-        <div style={{position: 'absolute', left: 6, bottom: 6, width: s, height: s, borderLeft: b, borderBottom: b, opacity: 0.45}} />
-        <div style={{position: 'absolute', right: 6, bottom: 6, width: s, height: s, borderRight: b, borderBottom: b, opacity: 0.45}} />
-      </>
-    );
-  }
-  if (fam === 'PAY' && w > 120 && h > 140) {
-    return (
-      <>
-        <div style={{position: 'absolute', left: 16, top: 44, width: 36, height: 28, borderRadius: 5, background: fg, opacity: 0.28}} />
-        <div style={{position: 'absolute', left: 16, bottom: 36, ...mono(14), opacity: 0.55}}>{'••••'}</div>
-      </>
-    );
-  }
-  if (fam === 'ALBUM' && h > 160) {
-    return <div style={{position: 'absolute', left: 0, right: 0, bottom: 0, height: 28, background: fg, opacity: 0.14}} />;
-  }
-  if (fam === 'BOARD' && w > 160) {
-    const col = i < 6 ? C.red : i < 11 ? C.mustard : C.moss;
-    return <div style={{position: 'absolute', left: 0, top: 0, bottom: 0, width: 8, background: col}} />;
-  }
-  return null;
-};
-
-export const Face: React.FC<{i: number; fam: Family; w: number; h: number}> = ({i, fam, w, h}) => {
-  const d = DECK[i];
-  const tag = WORLD[fam][i];
-  const thin = w < 80;
-  const short = h < 120;
-  const big = thin ? 18 : short ? Math.min(36, h * 0.42) : w < 140 ? 28 : w < 220 ? 42 : w < 360 ? 64 : 88;
-  if (thin) {
-    return (
-      <div style={{position: 'absolute', inset: 0, color: d.fg, overflow: 'hidden'}}>
-        <div style={{position: 'absolute', inset: 8, writingMode: 'vertical-rl', ...gro(18, 700, -0.04)}}>{d.mark}</div>
-        <div style={{position: 'absolute', left: 6, bottom: 8, ...mono(9), opacity: 0.65}}>{d.en}</div>
-      </div>
-    );
-  }
-  if (short) {
-    return (
-      <div style={{position: 'absolute', inset: 0, color: d.fg, overflow: 'hidden', display: 'flex', alignItems: 'center', padding: '0 16px', gap: 12}}>
-        <div style={{...gro(big, 700, -0.05), flex: '0 0 auto'}}>{d.mark}</div>
-        <div style={{flex: 1, minWidth: 0}}>
-          <div style={{...mono(11), opacity: 0.6}}>{d.en}</div>
-          {tag ? <div style={{...sc(14, 700, 0.04), opacity: 0.85, marginTop: 2}}>{tag}</div> : null}
+      <div style={{position: 'absolute', inset: 0, background: '#121214'}}>
+        <div style={{position: 'absolute', left: '18%', top: '28%', right: '14%', height: '32%', display: 'grid', gridTemplateColumns: 'repeat(5,1fr)', gap: 5}}>
+          {Array.from({length: 10}, (_, k) => (
+            <div key={k} style={{background: k === 3 ? '#E31C23' : '#C4A35A', opacity: 0.85}} />
+          ))}
         </div>
-        <WorldBits fam={fam} i={i} fg={d.fg} w={w} h={h} />
+        <div style={{position: 'absolute', left: 0, right: 0, bottom: 0, height: '18%', background: '#0A0A0C'}} />
+      </div>
+    );
+  }
+  if (i === 3) {
+    return (
+      <div style={{position: 'absolute', inset: 0, background: 'linear-gradient(180deg,#D4E2EA 0%,#A8BCC8 100%)'}}>
+        <div style={{position: 'absolute', left: '18%', top: '10%', right: '18%', bottom: '10%', border: '3px solid rgba(246,240,228,0.7)'}} />
+        <div style={{position: 'absolute', left: '49%', top: '10%', bottom: '10%', width: 3, background: 'rgba(246,240,228,0.7)'}} />
+        <div style={{position: 'absolute', left: '18%', right: '18%', top: '49%', height: 3, background: 'rgba(246,240,228,0.7)'}} />
+        <div style={{position: 'absolute', right: '22%', top: '16%', width: '20%', height: '20%', background: 'rgba(227,28,35,0.35)'}} />
+      </div>
+    );
+  }
+  if (i === 4) {
+    return (
+      <div style={{position: 'absolute', inset: 0, background: 'linear-gradient(180deg,#F2C9A0 0%,#C45C26 55%,#5A2418 100%)'}}>
+        <div style={{position: 'absolute', left: 0, right: 0, top: '22%', height: '16%', background: '#9A3B2F'}} />
+        {[0, 1, 2, 3, 4, 5].map((k) => (
+          <div key={k} style={{position: 'absolute', left: `${10 + (k % 3) * 28}%`, top: `${48 + Math.floor(k / 3) * 18}%`, width: '12%', aspectRatio: '1', borderRadius: 999, background: ['#E31C23', '#C4A35A', '#2F4F3E', '#EDE6D6', '#163A3A', '#E36A4A'][k]}} />
+        ))}
       </div>
     );
   }
   return (
-    <div style={{position: 'absolute', inset: 0, color: d.fg, overflow: 'hidden'}}>
-      <div style={{position: 'absolute', left: 0, top: 0, bottom: 0, width: 10, background: d.fg, opacity: 0.18}} />
-      <div style={{position: 'absolute', left: 12, top: 10, ...mono(Math.max(9, w * 0.042)), opacity: 0.7}}>{d.en}</div>
-      <div style={{position: 'absolute', right: 12, top: 10, ...mono(Math.max(9, w * 0.036)), opacity: 0.5}}>{d.sub}</div>
-      <div style={{position: 'absolute', left: 10, top: '22%', right: 8, ...gro(big, 700, -0.06), lineHeight: 0.85}}>{d.mark}</div>
-      {tag ? <div style={{position: 'absolute', left: 12, bottom: 10, ...sc(Math.max(10, w * 0.048), 700, 0.06), opacity: 0.8}}>{tag}</div> : null}
-      <Ornament i={i} fg={d.fg} w={w} h={h} />
-      <WorldBits fam={fam} i={i} fg={d.fg} w={w} h={h} />
+    <div style={{position: 'absolute', inset: 0, background: 'linear-gradient(180deg,#C8CCCE 0%,#8A8E92 50%,#4A4E52 100%)'}}>
+      <div style={{position: 'absolute', left: '42%', top: '38%', width: '8%', height: '28%', background: '#1A1A1E', opacity: 0.55}} />
+      <div style={{position: 'absolute', left: 0, right: 0, top: '62%', height: '20%', background: 'rgba(246,240,228,0.12)'}} />
+    </div>
+  );
+};
+
+const Stars: React.FC<{n: number; color: string}> = ({n, color}) => (
+  <span style={{letterSpacing: '0.12em'}}>{'★'.repeat(n)}{'☆'.repeat(Math.max(0, 5 - n)).slice(0, Math.max(0, 5 - n))}</span>
+);
+
+const Caption: React.FC<{i: number; compact?: boolean}> = ({i, compact}) => {
+  const d = DECK[i];
+  return (
+    <div style={{position: 'absolute', left: 0, right: 0, bottom: 0, height: compact ? '28%' : '24%', background: C.cream, color: C.ink, padding: compact ? '6px 8px' : '10px 12px'}}>
+      <div style={{display: 'flex', justifyContent: 'space-between', alignItems: 'baseline'}}>
+        <span style={{...gro(compact ? 16 : 22, 700, -0.04)}}>{d.title}</span>
+        <span style={{...mono(compact ? 9 : 11), opacity: 0.55}}>{d.id}</span>
+      </div>
+      <div style={{...sc(compact ? 11 : 13, 500), marginTop: 3}}>{d.zh}</div>
+      {!compact ? (
+        <div style={{...mono(10), opacity: 0.55, marginTop: 6, display: 'flex', justifyContent: 'space-between'}}>
+          <span>{d.lens}  ·  {d.expo}</span>
+          <span style={{color: C.red}}><Stars n={d.stars} color={C.red} /></span>
+        </div>
+      ) : null}
+    </div>
+  );
+};
+
+const Crop: React.FC<{fg?: string}> = ({fg = C.ink}) => {
+  const s = 11;
+  const b = `1.5px solid ${fg}`;
+  return (
+    <>
+      <div style={{position: 'absolute', left: 6, top: 6, width: s, height: s, borderLeft: b, borderTop: b, opacity: 0.5}} />
+      <div style={{position: 'absolute', right: 6, top: 6, width: s, height: s, borderRight: b, borderTop: b, opacity: 0.5}} />
+      <div style={{position: 'absolute', left: 6, bottom: 6, width: s, height: s, borderLeft: b, borderBottom: b, opacity: 0.5}} />
+      <div style={{position: 'absolute', right: 6, bottom: 6, width: s, height: s, borderRight: b, borderBottom: b, opacity: 0.5}} />
+    </>
+  );
+};
+
+export const Face: React.FC<{i: number; fam: Family; w: number; h: number}> = ({i, fam, w, h}) => {
+  const d = DECK[i];
+  const thin = w < 90;
+  const short = h < 160;
+  const wide = w > h * 1.35;
+
+  if (thin) {
+    return (
+      <div style={{position: 'absolute', inset: 0, overflow: 'hidden'}}>
+        <Shot i={i} />
+        <div style={{position: 'absolute', inset: 6, writingMode: 'vertical-rl', color: C.cream, mixBlendMode: 'difference', ...gro(16, 700)}}>{d.zh}</div>
+      </div>
+    );
+  }
+
+  if (fam === 'BOARD' || wide) {
+    return (
+      <div style={{position: 'absolute', inset: 0, overflow: 'hidden', background: C.cream, color: C.ink, display: 'flex'}}>
+        <div style={{width: Math.min(160, w * 0.36), position: 'relative', flex: '0 0 auto'}}>
+          <Shot i={i} />
+        </div>
+        <div style={{flex: 1, padding: '16px 18px', minWidth: 0}}>
+          <div style={{...mono(11), color: C.red, marginBottom: 6}}>{d.lane}</div>
+          <div style={{...gro(28, 700, -0.04)}}>{d.task}</div>
+          <div style={{...sc(16, 500), marginTop: 8, opacity: 0.7}}>{d.title}  ·  {d.zh}</div>
+          <div style={{...mono(11), marginTop: 10, opacity: 0.5}}>{d.lens}</div>
+        </div>
+      </div>
+    );
+  }
+
+  if (short) {
+    return (
+      <div style={{position: 'absolute', inset: 0, overflow: 'hidden', display: 'flex'}}>
+        <div style={{width: 120, position: 'relative'}}><Shot i={i} /></div>
+        <div style={{flex: 1, background: C.cream, color: C.ink, padding: '10px 14px'}}>
+          <div style={{...gro(22, 700)}}>{d.title}</div>
+          <div style={{...sc(13, 500), marginTop: 4}}>{d.zh}  ·  {d.lens}</div>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div style={{position: 'absolute', inset: 0, overflow: 'hidden', background: C.ink}}>
+      <div style={{position: 'absolute', left: 0, right: 0, top: 0, bottom: '24%'}}>
+        <Shot i={i} />
+      </div>
+      <Caption i={i} />
+      {fam === 'PROOF' || fam === 'PRESS' ? <Crop fg={C.cream} /> : null}
+      {fam === 'FOLIO' ? (
+        <div style={{position: 'absolute', left: 10, top: 10, background: C.red, color: C.cream, ...mono(11), padding: '4px 7px'}}>
+          {i === 1 ? 'COVER' : `P.${d.id}`}
+        </div>
+      ) : null}
+      {fam === 'PROOF' && i === 1 ? (
+        <div style={{position: 'absolute', right: 12, top: 12, ...mono(12), color: C.cream, background: C.red, padding: '4px 7px'}}>GRADE A</div>
+      ) : null}
     </div>
   );
 };
@@ -164,8 +182,8 @@ export const ExtraFace: React.FC<{g: number}> = ({g}) => {
   const e = EXTRA_DECK[g];
   return (
     <div style={{position: 'absolute', inset: 0, background: e.bg, color: e.fg, overflow: 'hidden'}}>
-      <div style={{position: 'absolute', left: 14, top: 12, ...gro(48, 700)}}>{e.mark}</div>
-      <div style={{position: 'absolute', left: 16, bottom: 14, ...mono(13), opacity: 0.7}}>{`X${g + 1}`}</div>
+      <div style={{position: 'absolute', left: 14, top: 12, ...gro(40, 700)}}>{e.mark}</div>
+      <div style={{position: 'absolute', left: 14, bottom: 12, ...sc(14, 500), opacity: 0.7}}>不该出现</div>
     </div>
   );
 };

@@ -1,30 +1,46 @@
-/** 取景框：小字 HUD，不用大字干晾。规则用 16→4 的画面教。 */
+/** 取景框：每动一句因果。规则用画面证明，字幕只点破。 */
 import React from 'react';
 import {E, tween} from '../../../src/lib/anim';
 import {C} from '../tokens';
 import {BEATS, DURATION, SCENE} from './layout';
-import {gro, mono, Rise, RiseBox, sc, Show} from './ui';
+import {gro, mono, Rise, RiseBox, sc, Show, Swap} from './ui';
 
 const CHAPTERS: [string, number][] = [
-  ['风暴 16', SCENE.OPEN.in],
-  ['刊 · 抽', SCENE.MAG.in],
-  ['层 · 提', SCENE.LAYER.in],
-  ['样 · 扇', SCENE.PROOF.in],
-  ['看板', SCENE.BOARD.in],
-  ['相册 · 洗', SCENE.ALBUM.in],
-  ['通知 · 压', SCENE.NOTE.in],
-  ['支付 · 抽', SCENE.PAY.in],
+  ['选片台', SCENE.HOOK.in],
+  ['抽', SCENE.PULL.in],
+  ['提', SCENE.LIFT.in],
+  ['压', SCENE.PRESS.in],
   ['作品集', SCENE.FOLIO.in],
-  ['16 → 4', SCENE.PIT.in],
+  ['看板', SCENE.BOARD.in],
+  ['样张', SCENE.PROOF.in],
+  ['3–4 张', SCENE.PIT.in],
+];
+
+type Line = {at: number; out: number; en: string; zh: string};
+
+const LINES: Line[] = [
+  {at: 8, out: 86, en: 'Six prints, none readable.', zh: '六张一样亮，一张都读不了'},
+  {at: 92, out: 168, en: 'Keep 3–4. Read the top.', zh: '只留四张，读最上面'},
+  {at: 176, out: 226, en: 'Pull the one you finished.', zh: '抽走已经看过的'},
+  {at: 228, out: 324, en: 'The next sheet takes the job.', zh: '下一张接手交互面'},
+  {at: 334, out: 396, en: 'A stack is front-to-back.', zh: '层叠是前后，不是平铺'},
+  {at: 404, out: 528, en: 'Lift a buried sheet to read it.', zh: '后层提到最前，才轮到它'},
+  {at: 536, out: 648, en: 'Fan to compare — not to focus all.', zh: '可以比较，还没有决定'},
+  {at: 656, out: 732, en: 'Press the cover. The rest recede.', zh: '选定封面，其余压回'},
+  {at: 742, out: 864, en: 'One cover decision at a time.', zh: '选封面：一次只定一张'},
+  {at: 874, out: 1044, en: 'Moving a card = that card is in focus.', zh: '跨列：只处理这一张'},
+  {at: 1054, out: 1164, en: 'Commit is a press.', zh: '定稿：压下去'},
+  {at: 1172, out: 1204, en: 'Too many sheets is noise.', zh: '叠太多'},
+  {at: 1208, out: 1238, en: '3–4. Hide the fifth.', zh: '3–4 张'},
 ];
 
 const inkOn = (f: number) => {
-  if (f < 162 || (f >= 282 && f < 402) || (f >= 522 && f < 642) || (f >= 762 && f < 882) || f >= 1242) return C.cream;
+  if (f < 90 || (f >= 330 && f < 510) || (f >= 870 && f < 1050) || f >= 1242) return C.cream;
   return C.ink;
 };
 
 export const Hud: React.FC<{f: number}> = ({f}) => {
-  const o = tween(f, 20, 10) * (1 - tween(f, SCENE.END.in + 8, 12, 0, 1, E.in));
+  const o = tween(f, 16, 10) * (1 - tween(f, SCENE.END.in + 6, 12, 0, 1, E.in));
   if (o <= 0.001) return null;
   let k = 0;
   CHAPTERS.forEach(([, at], j) => {
@@ -35,21 +51,22 @@ export const Hud: React.FC<{f: number}> = ({f}) => {
     <div style={{position: 'absolute', left: 48, right: 48, top: 1028, height: 28, opacity: o, display: 'flex', justifyContent: 'space-between', color}}>
       <span style={{...gro(16, 700)}}>Card Stack</span>
       <span>
-        <span style={{...gro(15, 700), color: C.red, marginRight: 10}}>{`${String(k + 1).padStart(2, '0')} / 10`}</span>
+        <span style={{...gro(15, 700), color: C.red, marginRight: 10}}>{`${String(k + 1).padStart(2, '0')} / 08`}</span>
         <span style={{...sc(15, 500)}}>{CHAPTERS[k][0]}</span>
       </span>
     </div>
   );
 };
 
-export const Count: React.FC<{f: number}> = ({f}) => {
-  const n = f >= BEATS.fix ? 4 : f >= BEATS.noise ? 24 : 16;
-  const o = tween(f, 12, 8) * (1 - tween(f, SCENE.END.in, 10));
-  if (o <= 0.001) return null;
+export const Meaning: React.FC<{f: number}> = ({f}) => {
+  const line = [...LINES].reverse().find((l) => f >= l.at && f < l.out);
+  if (!line) return null;
+  const color = inkOn(f);
   return (
-    <div style={{position: 'absolute', left: 48, top: 36, opacity: o, color: inkOn(f), ...mono(13)}}>
-      {n} on screen
-    </div>
+    <Show f={f} at={line.at} out={line.out} style={{left: 48, top: 36, color, width: 820}}>
+      <div style={{...mono(12), opacity: 0.62, marginBottom: 6}}>{line.en}</div>
+      <Rise f={f} at={line.at + 2} out={line.out} text={line.zh} style={{...sc(28, 700, 0.02)}} />
+    </Show>
   );
 };
 
@@ -57,31 +74,44 @@ export const EndTitle: React.FC<{f: number}> = ({f}) => {
   if (f < SCENE.END.in - 2) return null;
   return (
     <>
-      <RiseBox f={f} at={SCENE.END.in} out={DURATION} h={70} style={{left: 56, top: 760}}>
+      <RiseBox f={f} at={SCENE.END.in} out={DURATION} h={70} style={{left: 56, top: 700}}>
         <div style={{...gro(64, 700, -0.05), color: C.cream}}>Card Stack</div>
       </RiseBox>
-      <Show f={f} at={SCENE.END.in + 8} out={DURATION} style={{left: 58, top: 838, color: C.cream, display: 'flex', gap: 22}}>
-        {['3–4 张', '只读一张', '抽提压扇洗'].map((t) => (
-          <span key={t} style={{...sc(16, 500)}}>{t}</span>
+      <Show f={f} at={SCENE.END.in + 8} out={DURATION} style={{left: 58, top: 780, color: C.cream, display: 'flex', flexDirection: 'column', gap: 8}}>
+        {['3–4 张，第五张是噪声', '同时只读一张', '换层用抽 / 提 / 压'].map((t) => (
+          <span key={t} style={{...sc(18, 500)}}>{t}</span>
         ))}
       </Show>
-      <Show f={f} at={SCENE.END.in + 18} out={DURATION} style={{left: 58, top: 878, color: C.red, ...gro(18, 700)}}>
+      <Show f={f} at={SCENE.END.in + 18} out={DURATION} style={{left: 58, top: 890, color: C.red, ...gro(18, 700)}}>
         @guanmo_ai
       </Show>
     </>
   );
 };
 
-export const PitMark: React.FC<{f: number}> = ({f}) => (
-  <>
-    <Show f={f} at={BEATS.noise - 8} out={BEATS.flat - 2} style={{left: 48, top: 64, color: C.ink}}>
-      <Rise f={f} at={BEATS.noise - 4} out={BEATS.flat - 2} text="叠太多" style={{...gro(36, 700, -0.04)}} />
+export const Verb: React.FC<{f: number}> = ({f}) => {
+  const items: [number, number, string][] = [
+    [BEATS.pull - 4, BEATS.land + 8, '抽'],
+    [BEATS.lift - 4, BEATS.fan - 6, '提'],
+    [BEATS.press - 4, SCENE.FOLIO.in, '压'],
+  ];
+  return (
+    <>
+      {items.map(([at, out, t]) => (
+        <Show key={t} f={f} at={at} out={out} style={{right: 56, top: 36, color: C.red}}>
+          <div style={{...gro(72, 700, -0.06)}}>{t}</div>
+        </Show>
+      ))}
+    </>
+  );
+};
+
+/** 压的前后对比：为什么这样更好 */
+export const Contrast: React.FC<{f: number}> = ({f}) => {
+  if (f < 648 || f >= 738) return null;
+  return (
+    <Show f={f} at={656} out={732} style={{left: 48, top: 980, color: inkOn(f)}}>
+      <Swap f={f} at={666} h={28} a={<span style={{...sc(16, 500)}}>比较完了，还没决定</span>} b={<span style={{...sc(16, 700)}}>压下去 = 封面定了</span>} />
     </Show>
-    <Show f={f} at={BEATS.flat - 2} out={1192} style={{left: 48, top: 64, color: C.ink}}>
-      <Rise f={f} at={BEATS.flat} out={1192} text="铺平" style={{...gro(36, 700, -0.04)}} />
-    </Show>
-    <Show f={f} at={1192} out={SCENE.END.in} style={{left: 48, top: 64, color: C.ink}}>
-      <Rise f={f} at={1194} out={SCENE.END.in} text="3–4 张" style={{...gro(36, 700, -0.04)}} />
-    </Show>
-  </>
-);
+  );
+};
