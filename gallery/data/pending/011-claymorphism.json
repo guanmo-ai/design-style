@@ -1,0 +1,22 @@
+{
+  "id": "011-claymorphism",
+  "type": "style",
+  "number": "011",
+  "title": "粘土拟态",
+  "titleEn": "Claymorphism",
+  "years": "2021—",
+  "category": "当代界面",
+  "description": "胖圆角、成对阴影，像刚捏出来的。一支 24 秒短片：一颗蜜桃粘土被掐成按钮，再落进真的产品界面。",
+  "tags": ["粘土", "圆角", "双阴影", "pastel", "挤捏", "产品界面"],
+  "release": "day-11",
+  "asset": "011-claymorphism.mp4",
+  "images": [
+    {"file": "poster", "title": "一张海报，认识粘土拟态", "kind": "风格海报", "titleEn": "Claymorphism at a glance", "kindEn": "Style poster"},
+    {"file": "cheatsheet", "title": "四条可执行规则", "kind": "风格速查", "titleEn": "Four executable rules", "kindEn": "Quick reference"},
+    {"file": "app-ui", "title": "如果粘土拟态来做 App", "kind": "界面应用", "titleEn": "Claymorphism in an app", "kindEn": "UI application"},
+    {"file": "recipe", "title": "四步捏出一颗按钮", "kind": "改造教程", "titleEn": "Four steps to pinch a button", "kindEn": "Tutorial"}
+  ],
+  "categoryEn": "Contemporary UI",
+  "descriptionEn": "Fat corners and paired shadows, as if just pinched. A 24-second film pinches one peach clay object into a button, then into a real product UI.",
+  "tagsEn": ["clay", "radius", "twin shadows", "pastel", "squish", "product UI"]
+}

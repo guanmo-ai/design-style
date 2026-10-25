@@ -99,6 +99,7 @@ by 观默 [@guanmo_ai](https://x.com/guanmo_ai)
 | **005** | [**波普艺术 Pop Art**](styles/005-pop-art) | 1956—1970 | 网点代替渐变、粗黑线圈住每块颜色：普通的东西，也能上墙 | [🎬 视频](https://github.com/guanmo-ai/design-style/releases/tag/day-05) · [🛠 过程](styles/005-pop-art/PROCESS.md) · [🧰 从 0 到 1](styles/005-pop-art/MAKING.md) |
 | **006** | [**千禧未来主义 Y2K**](styles/006-y2k) | 1997—2004 | 铬、果冻和半透明塑料：把对 2000 年的期待做进屏幕——未来，正在加载 | 视频待补齐，暂未上线 · [🛠 过程](styles/006-y2k/PROCESS.md) · [🧰 从 0 到 1](styles/006-y2k/MAKING.md) |
 | **008** | [**孔版印刷 Risograph**](styles/008-risograph) | 1946—今天 | 三种油墨、一张会呼吸的纸：荧光粉印不进 CMYK，套不准是这台机器的口音 | [🎬 视频](https://github.com/guanmo-ai/design-style/releases/tag/day-08) · [🛠 过程](styles/008-risograph/PROCESS.md) |
+| **011** | [**粘土拟态 Claymorphism**](styles/011-claymorphism) | 2021— | 胖圆角、成对阴影，像刚捏出来的：先捏体积，再画界面 | 审片中 · [🛠 过程](styles/011-claymorphism/PROCESS.md) · [🧰 从 0 到 1](styles/011-claymorphism/MAKING.md) |
 
 ### 布局方式 · Layout
 
