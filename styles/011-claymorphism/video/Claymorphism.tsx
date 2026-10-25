@@ -38,12 +38,12 @@ const Stage: React.FC = () => {
       >
         <Paper f={f} light={light} />
         {on(0, AT.corners + 8) && <Opening f={f} />}
-        {on(AT.corners - 8, AT.shadows + 12) && <Corners f={f} />}
-        {on(AT.shadows - 10, AT.pastel + 12) && <Shadows f={f} />}
         {on(AT.pastel - 8, AT.product + 10) && <Pastel f={f} />}
         {on(AT.product - 12, AT.end + 8) && <Product f={f} />}
         <HeroClay f={f} />
         <HeroFace f={f} />
+        {on(AT.corners - 8, AT.shadows + 12) && <Corners f={f} />}
+        {on(AT.shadows - 10, AT.pastel + 12) && <Shadows f={f} />}
         {on(AT.end - 16, 1e9) && <End f={f} />}
       </div>
       <Hud f={f} />

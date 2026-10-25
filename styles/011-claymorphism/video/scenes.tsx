@@ -55,7 +55,7 @@ export const Corners: React.FC<P> = ({f}) => {
         const inset = 18;
         const left = i % 2 === 0 ? h.x + inset : h.x + h.w - inset - 28;
         const top = i < 2 ? h.y + inset : h.y + h.h - inset - 28;
-        return <ClaySphere key={i} x={left} y={top} d={28} tone={i % 2 ? 'mint' : 'lavender'} depth={0.8} opacity={p * (1 - tween(f, AT.shadows - 20, 16))} />;
+        return <ClaySphere key={i} x={left} y={top} d={36} tone={i % 2 ? 'mint' : 'lavender'} depth={0.9} opacity={p * (1 - tween(f, AT.shadows - 20, 16))} />;
       })}
       {badge > 0.01 && (
         <ClayShape x={80} y={920} w={220} h={72} r={36} tone="mint" depth={0.85} scale={0.7 + 0.3 * badge} opacity={badge * (1 - tween(f, AT.shadows - 16, 14))}>
@@ -80,7 +80,7 @@ export const Shadows: React.FC<P> = ({f}) => {
   return (
     <Fade f={f} out={AT.pastel - 8} dur={18}>
       {orb > 0.01 && (
-        <ClaySphere x={cx - 38} y={cy - 38} d={76} tone="cream" depth={1.15} light={h.light} opacity={orb} />
+        <ClaySphere x={cx - 48} y={cy - 48} d={96} tone="cream" depth={1.2} light={h.light} opacity={orb} />
       )}
       {flatIn > 0.01 && flatOut < 0.98 && (
         <div
@@ -151,19 +151,19 @@ export const Product: React.FC<P> = ({f}) => {
   const focus = flip < 0.5;
   return (
     <div style={{position: 'absolute', inset: 0, opacity: 1 - leave}}>
-      <Show f={f} at={t0 + 8} out={AT.end - 4} dy={18} dx={-20}>
-        <T x={80} y={220} size={28} style={{...mono(18, 600, 0.14), color: C.muted}}>
+      <Show f={f} at={t0 + 8} out={AT.end - 4} dy={18}>
+        <T x={96} y={240} size={28} style={{...mono(16, 600, 0.12), color: C.muted}}>
           04  PRODUCT
         </T>
-        <T k="sc" x={80} y={320} size={72} style={{...sc(72, 900, 0.04), color: C.ink}}>
+        <T k="sc" x={96} y={340} size={64} style={{...sc(64, 900, 0.04), color: C.ink}}>
           捏进界面
         </T>
-        <T k="sc" x={80} y={400} size={28} style={{...sc(26, 500, 0.04), color: C.muted}}>
-          开关、滑杆、层叠——同一块粘土。
+        <T k="sc" x={96} y={418} size={24} style={{...sc(24, 500, 0.02), color: C.muted}}>
+          开关、滑杆、层叠。
         </T>
       </Show>
       <ClayShape x={x} y={y} w={500} h={940} r={72} tone="sky" depth={1.05} scale={0.86 + 0.14 * rise}>
-        <div style={{position: 'absolute', left: 22, top: 22, right: 22, bottom: 22, borderRadius: 56, background: 'linear-gradient(180deg, #F4F7FB, #E4EAF2)'}}>
+        <div style={{position: 'absolute', left: 22, top: 22, right: 22, bottom: 22, borderRadius: 56, background: 'linear-gradient(180deg, #F4F7FB, #E4EAF2)', overflow: 'hidden'}}>
           <div style={{position: 'absolute', left: 28, top: 28, display: 'flex', alignItems: 'center', gap: 14}}>
             <div style={{position: 'relative', width: 44, height: 44, flex: '0 0 44px'}}>
               <ClaySphere x={0} y={0} d={44} tone="peach" depth={0.8} />
@@ -171,12 +171,16 @@ export const Product: React.FC<P> = ({f}) => {
             <span style={{...disp(26, 600, 0.04), color: C.ink}}>PINCH</span>
           </div>
           <div style={{position: 'absolute', right: 32, top: 38, ...mono(16, 500, 0.06), color: C.muted}}>9:41</div>
-          {/* 开关 */}
-          <ClayShape x={36} y={520} w={400} h={72} r={36} tone={focus ? 'mint' : 'lavender'} depth={0.7} press={0.08}>
+          {/* 开关：滑块跟 Focus→Break，不跟入场弹簧跑到右边 */}
+          <ClayShape x={36} y={468} w={400} h={72} r={36} tone={focus ? 'mint' : 'lavender'} depth={0.7} press={0.08}>
+            <div style={{position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 36px', ...sc(18, 500, 0.02), color: C.ink, opacity: 0.28}}>
+              <span>Focus</span>
+              <span>Break</span>
+            </div>
             <div
               style={{
                 position: 'absolute',
-                left: 8 + on * 196,
+                left: 8 + flip * 196,
                 top: 8,
                 width: 188,
                 height: 56,
@@ -186,6 +190,8 @@ export const Product: React.FC<P> = ({f}) => {
                 display: 'flex',
                 alignItems: 'center',
                 justifyContent: 'center',
+                opacity: 0.2 + 0.8 * on,
+                scale: 0.86 + 0.14 * on,
                 ...sc(22, 700, 0.04),
                 color: C.ink,
               }}
@@ -194,27 +200,26 @@ export const Product: React.FC<P> = ({f}) => {
             </div>
           </ClayShape>
           {/* 滑杆 */}
-          <div style={{position: 'absolute', left: 44, top: 620, width: 384, height: 16, borderRadius: 8, background: '#D5DDE6', boxShadow: 'inset 2px 2px 4px rgba(130,146,168,0.28), inset -2px -2px 4px rgba(255,255,255,0.7)'}}>
+          <div style={{position: 'absolute', left: 44, top: 560, width: 384, height: 16, borderRadius: 8, background: '#D5DDE6', boxShadow: 'inset 2px 2px 4px rgba(130,146,168,0.28), inset -2px -2px 4px rgba(255,255,255,0.7)'}}>
             <ClaySphere x={knob * 360 - 6} y={-14} d={44} tone="peach" depth={0.95} />
           </div>
-          {/* 层叠卡片 */}
           {SESSIONS.map((s, i) => {
             const p = spr(f, t0 + 90 + i * 8, SMOOTH, 22);
             if (p <= 0.01) return null;
             return (
               <ClayShape
                 key={s.title}
-                x={36 + i * 14}
-                y={700 + i * 18}
-                w={400 - i * 28}
-                h={88}
+                x={36 + i * 12}
+                y={628 + i * 86}
+                w={400 - i * 18}
+                h={78}
                 r={28}
                 tone={s.tone}
                 depth={0.75 - i * 0.08}
                 opacity={p * stack}
                 style={{zIndex: 3 - i}}
               >
-                <div style={{padding: '18px 22px', display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
+                <div style={{padding: '16px 22px', display: 'flex', justifyContent: 'space-between', alignItems: 'center'}}>
                   <span style={{...sc(22, 700, 0.02), color: C.ink}}>{s.title}</span>
                   <span style={{...mono(18, 500, 0.04), color: C.ink}}>{s.time}</span>
                 </div>
@@ -282,11 +287,20 @@ export const End: React.FC<P> = ({f}) => {
 /** 英雄身上随幕切换的字：开场 PINCH，产品段 25:00 */
 export const HeroFace: React.FC<P> = ({f}) => {
   const h = heroOf(f);
-  if (f >= 38 && f < 210) {
-    const o = tween(f, 38, 16, 0, 1, E.soft) * (1 - tween(f, 210, 22, 0, 1, E.soft));
+  if (f >= 32 && f < 210) {
+    const o = tween(f, 32, 14, 0, 1, E.soft) * (1 - tween(f, 210, 22, 0, 1, E.soft));
     return (
       <div style={{position: 'absolute', left: h.x, top: h.y, width: h.w, height: h.h, display: 'flex', alignItems: 'center', justifyContent: 'center', opacity: o, pointerEvents: 'none'}}>
         <span style={{...disp(54, 600, 0.08), color: C.ink}}>PINCH</span>
+      </div>
+    );
+  }
+  if (f >= AT.corners + 8 && f < AT.shadows - 6) {
+    const o = tween(f, AT.corners + 8, 16, 0, 1, E.soft) * (1 - tween(f, AT.shadows - 18, 14, 0, 1, E.soft));
+    return (
+      <div style={{position: 'absolute', left: h.x, top: h.y, width: h.w, height: h.h, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', opacity: o, pointerEvents: 'none'}}>
+        <span style={{...disp(120, 700, -0.04), color: C.ink}}>{Math.round(h.r)}</span>
+        <span style={{...sc(28, 500, 0.12), color: C.ink, marginTop: 8}}>圆角</span>
       </div>
     );
   }

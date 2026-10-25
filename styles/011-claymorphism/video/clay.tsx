@@ -79,7 +79,6 @@ export const ClayShape: React.FC<{
         opacity,
         scale: `${sx} ${sy}`,
         rotate: rotate ? `${rotate}deg` : undefined,
-        overflow: 'hidden',
         ...style,
       }}
     >
@@ -161,7 +160,7 @@ export type Hero = {
   light: Light;
 };
 
-const PRESS_HITS = [30, 870, 900, 930];
+const PRESS_HITS = [32, 870, 900, 930];
 
 const pressAt = (f: number) => {
   let p = 0;
@@ -176,9 +175,9 @@ const pressAt = (f: number) => {
 
 export const heroOf = (f: number): Hero => {
   const x = track(f, [
-    {f: 0, v: 760},
-    {f: 8, v: 740, d: 20, e: 'smooth'},
-    {f: 30, v: 610, d: 16, e: 'pop'},
+    {f: 0, v: 750},
+    {f: 6, v: 740, d: 16, e: 'smooth'},
+    {f: 14, v: 610, d: 18, e: 'pop'},
     {f: 236, v: 360, d: 30, e: 'smooth'},
     {f: 700, v: 380, d: 22, e: 'smooth'},
     {f: 760, v: 610, d: 30, e: 'smooth'},
@@ -186,19 +185,19 @@ export const heroOf = (f: number): Hero => {
     {f: 1192, v: 210, d: 38, e: 'smooth'},
   ]);
   const y = track(f, [
-    {f: 0, v: -300},
-    {f: 8, v: 292, d: 22, e: 'smooth'},
-    {f: 30, v: 400, d: 16, e: 'pop'},
+    {f: 0, v: -220},
+    {f: 6, v: 280, d: 18, e: 'smooth'},
+    {f: 14, v: 400, d: 18, e: 'pop'},
     {f: 236, v: 188, d: 30, e: 'smooth'},
     {f: 700, v: 198, d: 22, e: 'smooth'},
     {f: 760, v: 400, d: 30, e: 'smooth'},
-    {f: 948, v: 292, d: 36, e: 'smooth'},
+    {f: 948, v: 268, d: 36, e: 'smooth'},
     {f: 1192, v: 128, d: 38, e: 'smooth'},
   ]);
   const w = track(f, [
-    {f: 0, v: 400},
-    {f: 8, v: 440, d: 18, e: 'smooth'},
-    {f: 30, v: 700, d: 16, e: 'pop'},
+    {f: 0, v: 420},
+    {f: 6, v: 460, d: 14, e: 'smooth'},
+    {f: 14, v: 700, d: 18, e: 'pop'},
     {f: 236, v: 1200, d: 32, e: 'smooth'},
     {f: 700, v: 1160, d: 22, e: 'smooth'},
     {f: 760, v: 700, d: 30, e: 'smooth'},
@@ -206,26 +205,26 @@ export const heroOf = (f: number): Hero => {
     {f: 1192, v: 1500, d: 38, e: 'smooth'},
   ]);
   const h = track(f, [
-    {f: 0, v: 540},
-    {f: 8, v: 370, d: 18, e: 'smooth'},
-    {f: 30, v: 220, d: 16, e: 'pop'},
+    {f: 0, v: 420},
+    {f: 6, v: 360, d: 14, e: 'smooth'},
+    {f: 14, v: 220, d: 18, e: 'pop'},
     {f: 236, v: 640, d: 32, e: 'smooth'},
     {f: 700, v: 620, d: 22, e: 'smooth'},
     {f: 760, v: 220, d: 30, e: 'smooth'},
-    {f: 948, v: 188, d: 36, e: 'smooth'},
+    {f: 948, v: 176, d: 36, e: 'smooth'},
     {f: 1192, v: 820, d: 38, e: 'smooth'},
   ]);
   const r = track(f, [
-    {f: 0, v: 200},
-    {f: 8, v: 168, d: 16, e: 'smooth'},
-    {f: 30, v: 110, d: 16, e: 'pop'},
+    {f: 0, v: 210},
+    {f: 6, v: 180, d: 14, e: 'smooth'},
+    {f: 14, v: 110, d: 18, e: 'pop'},
     {f: 244, v: 12, d: 20, e: 'inOut'},
     {f: 270, v: 22, d: 16, e: 'smooth'},
     {f: 300, v: 34, d: 16, e: 'smooth'},
     {f: 330, v: 46, d: 16, e: 'smooth'},
     {f: 360, v: 56, d: 18, e: 'smooth'},
     {f: 760, v: 110, d: 28, e: 'smooth'},
-    {f: 948, v: 94, d: 28, e: 'smooth'},
+    {f: 948, v: 88, d: 28, e: 'smooth'},
     {f: 1192, v: 72, d: 32, e: 'smooth'},
   ]);
   let light: Light = {x: -0.55, y: -0.65};
@@ -253,9 +252,11 @@ export const heroOf = (f: number): Hero => {
 export const camOf = (f: number) => {
   const punch = f < 30 ? lerp(1.02, 1.0, clamp01(f / 30)) : tween(f, 30, 18, 1.12, 1, E.out);
   const push = (at: number, dur: number, amt: number) => tween(f, at, dur, 0, amt, E.inOut);
-  const scale = punch + push(AT.corners, 200, 0.045) + push(AT.shadows, 200, 0.03) + push(AT.product, 180, 0.05) + push(AT.end, 200, 0.028);
-  const x = Math.sin(f / 70) * 6 + tween(f, AT.product, 40, 0, -18, E.soft);
-  const y = Math.cos(f / 82) * 4;
+  const scale = punch + push(AT.corners, 200, 0.035) + push(AT.shadows, 200, 0.025) + push(AT.product, 180, 0.028) + push(AT.end, 200, 0.018);
+  // 信息幕收住漂移，避免运动模糊把底栏字描出重影
+  const live = 1 - tween(f, AT.end, 20, 0, 1, E.soft);
+  const x = (Math.sin(f / 70) * 6 + tween(f, AT.product, 40, 0, -8, E.soft)) * live;
+  const y = Math.cos(f / 82) * 4 * live;
   return {scale, x, y};
 };
 
