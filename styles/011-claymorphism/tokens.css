@@ -1,0 +1,47 @@
+/* 011 · Claymorphism 粘土拟态 — CSS 设计令牌（与 tokens.ts / tokens.json 同源） */
+:root {
+  --cl-paper: #E7EDF4;
+  --cl-paper-deep: #D8E0EA;
+  --cl-ink: #2C3340;
+  --cl-muted: #7C8796;
+  --cl-peach: #F3B89A;
+  --cl-peach-hi: #FFE4D2;
+  --cl-peach-lo: #DFA17F;
+  --cl-mint: #A8D4B8;
+  --cl-lavender: #C4B4E0;
+  --cl-rose: #E8A8B6;
+  --cl-sky: #A8C4E0;
+  --cl-cream: #F0EBE3;
+  --cl-shadow: rgba(148, 164, 186, 0.42);
+  --cl-highlight: rgba(255, 255, 255, 0.82);
+
+  --cl-font: 'Fredoka', 'Nunito', 'Noto Sans SC', sans-serif;
+  --cl-font-cjk: 'Noto Sans SC', 'Source Han Sans SC', 'PingFang SC', sans-serif;
+  --cl-font-mono: 'JetBrains Mono', ui-monospace, monospace;
+
+  --cl-radius-card: 56px;
+  --cl-radius-phone: 72px;
+}
+
+.cl-paper {
+  background: var(--cl-paper);
+  color: var(--cl-ink);
+  font-family: var(--cl-font);
+}
+
+/* 成对阴影：外软投影 + 内凹高光。光默认从左上。 */
+.cl-clay {
+  border-radius: var(--cl-radius-card);
+  background: radial-gradient(ellipse at 32% 26%, var(--cl-peach-hi), var(--cl-peach) 58%, var(--cl-peach-lo));
+  box-shadow:
+    12px 20px 36px rgba(148, 164, 186, 0.38),
+    4px 8px 14px rgba(148, 164, 186, 0.2),
+    inset 8px 10px 16px rgba(255, 255, 255, 0.78),
+    inset -8px -10px 18px rgba(130, 146, 168, 0.3);
+}
+
+.cl-display {
+  font: 700 96px/0.92 var(--cl-font);
+  letter-spacing: -0.03em;
+  margin: 0;
+}
