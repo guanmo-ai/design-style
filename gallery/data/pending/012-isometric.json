@@ -1,0 +1,48 @@
+{
+  "id": "012-isometric",
+  "type": "style",
+  "number": "012",
+  "title": "等距",
+  "titleEn": "Isometric",
+  "years": "1822—今天",
+  "category": "空间画法",
+  "description": "先锁轴角，再堆体积。一支 24 秒短片把扁平卡片锁上 30° 三轴、弹出体积，再一块块堆出产品小世界，并对照经典等距、军事斜二测与产品柔阴影。",
+  "tags": ["等距", "轴测", "30°", "平行投影", "三面明暗", "产品插画"],
+  "publishedAt": "2026-10-26T06:00:00Z",
+  "release": "day-12",
+  "asset": "012-isometric.mp4",
+  "sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+  "images": [
+    {
+      "file": "poster",
+      "title": "一张海报，认识等距",
+      "kind": "风格海报",
+      "titleEn": "Isometric at a glance",
+      "kindEn": "Style poster"
+    },
+    {
+      "file": "cheatsheet",
+      "title": "轴角、三面明暗与五条规则",
+      "kind": "风格速查",
+      "titleEn": "Axes, three values, and five rules",
+      "kindEn": "Quick reference"
+    },
+    {
+      "file": "app-ui",
+      "title": "如果等距来做 App",
+      "kind": "界面应用",
+      "titleEn": "Isometric in an app",
+      "kindEn": "UI application"
+    },
+    {
+      "file": "variants",
+      "title": "经典、军事、产品三种变体",
+      "kind": "变体对照",
+      "titleEn": "Classic, military, and product variants",
+      "kindEn": "Variant comparison"
+    }
+  ],
+  "categoryEn": "Spatial drawing",
+  "descriptionEn": "Lock the axes, then stack the volume. A 24-second film snaps a flat card onto 30° axes, extrudes it, assembles a product world piece by piece, and compares classic isometric, military dimetric, and soft-shaded product isometric.",
+  "tagsEn": ["isometric", "axonometric", "30°", "parallel projection", "three-value shading", "product illustration"]
+}
