@@ -1,0 +1,46 @@
+/* 012 · 等距 Isometric — CSS 设计令牌（与 tokens.ts / tokens.json 同源） */
+:root {
+  --iso-stage: #E8EEF4;
+  --iso-paper: #F4F1EA;
+  --iso-ink: #1B2430;
+  --iso-muted: #6B7380;
+  --iso-x: #E85D4C;      /* 右行 · 宽 */
+  --iso-y: #1FAE9B;      /* 上行 · 高 */
+  --iso-z: #3D5C9E;      /* 左深 · 深 */
+  --iso-cream: #F1E4D0;
+  --iso-navy: #243447;
+  --iso-gold: #E0B15A;
+
+  --iso-font: 'Inter Display', 'Inter', 'Helvetica Neue', Arial, 'Noto Sans SC', sans-serif;
+  --iso-font-mono: 'Geist Mono', ui-monospace, monospace;
+  --iso-font-cjk: 'Noto Sans SC', 'Source Han Sans SC', 'PingFang SC', sans-serif;
+
+  --iso-angle: 30deg;
+  --iso-cols: 6;
+  --iso-module: 135px;
+  --iso-gutter: 18px;
+  --iso-margin-x: 90px;
+  --iso-margin-y: 72px;
+}
+
+.iso-stage {
+  background: var(--iso-stage);
+  color: var(--iso-ink);
+  font-family: var(--iso-font);
+}
+
+.iso-display {
+  font: 700 96px/0.9 var(--iso-font);
+  letter-spacing: -0.04em;
+  margin: 0;
+}
+
+.iso-measure {
+  font: 500 13px/1.4 var(--iso-font-mono);
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.iso-face-top { filter: brightness(1.12); }
+.iso-face-right { filter: brightness(0.92); }
+.iso-face-left { filter: brightness(0.78); }

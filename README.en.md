@@ -94,6 +94,7 @@ The gallery interface, descriptions, search, and reading pages support **Chinese
 | 005 | [Pop Art](styles/005-pop-art/README.en.md) | [Production overview](styles/005-pop-art/PROCESS.en.md) | 1956–1970 |
 | 006 | [Y2K Futurism — video pending, not yet published](styles/006-y2k/README.en.md) | [Production overview](styles/006-y2k/PROCESS.en.md) | 1997–2004 |
 | 008 | [Risograph](styles/008-risograph/README.en.md) | [Production overview](styles/008-risograph/PROCESS.en.md) | 1946–today |
+| 012 | [Isometric — video pending, not yet published](styles/012-isometric/README.en.md) | [Production overview](styles/012-isometric/PROCESS.en.md) | 1822–today |
 
 ### Layouts
 
@@ -141,7 +142,7 @@ npx playwright install chromium
 npm run images:001
 ```
 
-Episode suffixes are `001`–`006`, `008`, `L01`, and `L02`; for example, `npm run render:L02` renders Masonry. Episode 006 renders its WebGL2 materials with SwiftShader (`--gl=swangle`), so it is slower. Episode 008 is Risograph. Output goes into `out/`. The root `npm ci` applies the browser ZIP extraction security patch. If installation uses `--ignore-scripts`, run `npm run postinstall` before rendering or running the security tests.
+Episode suffixes are `001`–`006`, `008`, `012`, `L01`, and `L02`; for example, `npm run render:L02` renders Masonry. Episode 006 renders its WebGL2 materials with SwiftShader (`--gl=swangle`), so it is slower. Episode 008 is Risograph. Episode 012 is Isometric (24 s). Output goes into `out/`. The root `npm ci` applies the browser ZIP extraction security patch. If installation uses `--ignore-scripts`, run `npm run postinstall` before rendering or running the security tests.
 
 ```bash
 npm test
