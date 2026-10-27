@@ -1,9 +1,9 @@
 /**
  * 2—10 秒 · 四章。全片的物理只有一条：阴影长度 = 离纸面的高度（z）。
- *   01 黑框（f120）黄底。一支笔一笔画过去，依次把六个默认样式组件框起来——框一个，变一个 → 画布向左甩出去
- *   02 硬影（f240）纸底。模糊 40 → 0；卡片抬起来再落下；再摊开成五层阶梯（4 / 8 / 14 / 24 / 40）→ 最高那张蓝卡撑满全屏
- *   03 按下（f360）蓝底。二十颗按钮落下；点一下，按压像水波一样扩散；再从角上来一波；f450 全部一起按下，颜色褪成混凝土
- *   04 来历（f480）同一面网格接着讲：1952 清水混凝土 → 2014 粗野主义网页（翻牌）→ 2021 新粗野主义（重新弹起来）；年份像里程表一样滚
+ *   01 黑框（f120）黄底。画面是空的：一支笔先画框，颜色灌满、文字弹出、阴影落下——元素一个个从框里长出来，拼成一张注册表单 → 画布向左甩出去
+ *   02 硬影（f270）纸底。模糊 40 → 0；卡片抬起来再落下；再摊开成五层阶梯（4 / 8 / 14 / 24 / 40）→ 最高那张蓝卡撑满全屏
+ *   03 按下（f420）蓝底。二十颗按钮落下；点一下，按压像水波一样扩散；再从角上来一波；按一颗全部按下，颜色褪成混凝土
+ *   04 来历（f570）同一面网格接着讲：1952 清水混凝土 → 2014 粗野主义网页（翻牌）→ 2021 新粗野主义（重新弹起来）；年份像里程表一样滚
  */
 import React from 'react';
 import {AbsoluteFill} from 'remotion';
@@ -49,26 +49,12 @@ const Label: React.FC<{f: number; at: number; n: string; en: string; zh: string;
   );
 };
 
-// ───────── 01 黑框：一支笔 ─────────
+// ───────── 01 黑框：先画框，元素从框里长出来 ─────────
 
-const COMP = ['button', 'input', 'card', 'toggle', 'checkbox', 'chip'];
-const CELL = {x0: 760, y0: 190, w: 328, h: 360, gx: 40, gy: 40};
-const PEN = (i: number) => AT.border + 10 + i * 15; // 第 i 个组件开始被画
-const HIT = (i: number) => PEN(i) + 11; // 画完：变身
-/** 每个组件的轮廓（相对格子）：[x, y, w, h, 圆角] */
-const OUTLINE: Record<string, [number, number, number, number, number][]> = {
-  button: [[34, 130, 260, 96, 0]],
-  input: [[30, 136, 268, 90, 0]],
-  card: [[34, 40, 260, 280, 0]],
-  toggle: [[64, 130, 200, 100, 50]],
-  checkbox: [0, 1, 2].map((i) => [40, 70 + i * 76, 48, 48, 0] as [number, number, number, number, number]),
-  chip: [[20, 136, 288, 88, 44]],
-};
-const cellXY = (i: number) => ({x: CELL.x0 + (i % 3) * (CELL.w + CELL.gx), y: CELL.y0 + Math.floor(i / 3) * (CELL.h + CELL.gy)});
 /** 沿矩形周长（顺时针，从左上角起）走到 t 处的点 */
 const onRect = (x: number, y: number, w: number, h: number, t: number) => {
   const L = 2 * (w + h);
-  let d = ((t % 1) + 1) % 1 * L;
+  let d = (((t % 1) + 1) % 1) * L;
   if (d < w) return {x: x + d, y};
   d -= w;
   if (d < h) return {x: x + w, y: y + d};
@@ -77,150 +63,156 @@ const onRect = (x: number, y: number, w: number, h: number, t: number) => {
   d -= w;
   return {x, y: y + h - d};
 };
-
-/** 一个组件的“前 / 后”。k = 0 为默认样式，1 为新粗野主义 */
-const Component: React.FC<{kind: string; k: number; f: number}> = ({kind, k, f}) => {
-  const soft = '0 12px 28px rgba(30,30,60,0.18)';
-  const bw = k ? V.border : 0;
-  const base: CSS = {position: 'absolute', boxSizing: 'border-box'};
-  const sys: CSS = {fontFamily: 'Liberation Sans, Arial, sans-serif'};
-  switch (kind) {
-    case 'button':
-      return (
-        <div style={{...base, left: 34, top: 130, width: 260, height: 96, borderRadius: k ? 0 : 16, background: k ? C.pink : '#6C63FF', border: `${bw}px solid ${C.ink}`, boxShadow: k ? undefined : soft, display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
-          {k ? <span style={{...grot(40, 700)}}>SIGN UP →</span> : <span style={{...sys, fontSize: 34, color: '#fff', fontWeight: 600}}>Sign up</span>}
-        </div>
-      );
-    case 'input':
-      return (
-        <>
-          <div style={{...base, left: 30, top: 96, ...(k ? mono(22, 700) : {...sys, fontSize: 22, color: '#9A9AA5'})}}>{k ? 'EMAIL' : 'Email address'}</div>
-          <div style={{...base, left: 30, top: 136, width: 268, height: 90, borderRadius: k ? 0 : 14, background: C.white, border: k ? `${bw}px solid ${C.ink}` : '2px solid #E1E1E8', boxShadow: k ? undefined : '0 4px 12px rgba(30,30,60,0.08)', display: 'flex', alignItems: 'center', paddingLeft: 22}}>
-            {k ? <span style={{...mono(26, 700)}}>you@site.com</span> : <span style={{...sys, fontSize: 28, color: '#B5B5BF'}}>you@site.com</span>}
-          </div>
-        </>
-      );
-    case 'card':
-      return (
-        <div style={{...base, left: 34, top: 40, width: 260, height: 280, borderRadius: k ? 0 : 22, background: C.white, border: `${bw}px solid ${C.ink}`, boxShadow: k ? undefined : soft, overflow: 'hidden'}}>
-          <div style={{position: 'absolute', left: 0, top: 0, right: 0, height: 150, background: k ? C.blue : 'linear-gradient(135deg, #ECECF2, #D3D3DE)', borderBottom: k ? `${V.border}px solid ${C.ink}` : undefined}}>
-            {k ? (
-              <svg width="248" height="144" style={{position: 'absolute', left: 0, top: 0}}>
-                <circle cx="190" cy="44" r="22" fill={C.yellow} stroke={C.ink} strokeWidth="5" />
-                <path d="M-10 150 L80 60 L150 130 L190 96 L270 150 Z" fill={C.lime} stroke={C.ink} strokeWidth="5" strokeLinejoin="round" />
-              </svg>
-            ) : null}
-          </div>
-          {k ? (
-            <>
-              <div style={{position: 'absolute', left: 20, top: 172, ...grot(32, 700)}}>Hello, world</div>
-              <div style={{position: 'absolute', left: 20, top: 218, ...mono(20, 400)}}>2 min read →</div>
-            </>
-          ) : (
-            <>
-              <div style={{position: 'absolute', left: 22, top: 180, width: 180, height: 18, borderRadius: 9, background: '#DADAE2'}} />
-              <div style={{position: 'absolute', left: 22, top: 216, width: 130, height: 14, borderRadius: 7, background: '#E8E8EE'}} />
-            </>
-          )}
-        </div>
-      );
-    case 'toggle': {
-      const on = k ? tween(f, HIT(3) + 4, 8, 0, 1, E.out) : 0;
-      return (
-        <div style={{...base, left: 64, top: 130, width: 200, height: 100, borderRadius: 50, background: k ? C.lime : '#E3E3EA', border: `${bw}px solid ${C.ink}`, boxShadow: k ? undefined : 'inset 0 2px 6px rgba(0,0,0,0.12)'}}>
-          <div style={{position: 'absolute', top: k ? 8 : 10, left: lerp(k ? 8 : 10, 106, on), width: k ? 72 : 80, height: k ? 72 : 80, borderRadius: 40, background: C.white, border: `${bw}px solid ${C.ink}`, boxShadow: k ? undefined : '0 4px 10px rgba(0,0,0,0.25)'}} />
-        </div>
-      );
-    }
-    case 'checkbox':
-      return (
-        <>
-          {['Grid', 'Border', 'Shadow'].map((t, i) => (
-            <div key={i} style={{...base, left: 40, top: 70 + i * 76, display: 'flex', alignItems: 'center', gap: 20}}>
-              <div style={{width: 48, height: 48, boxSizing: 'border-box', borderRadius: k ? 0 : 10, border: k ? `5px solid ${C.ink}` : '2px solid #C9C9D3', background: k && i < 2 ? C.ink : C.white, display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
-                {k && i < 2 ? <svg width="28" height="24"><path d="M3 12 L11 20 L25 4" fill="none" stroke={C.yellow} strokeWidth="6" /></svg> : null}
-              </div>
-              <span style={k ? grot(34, 700) : {...sys, fontSize: 30, color: '#8D8D99'}}>{t}</span>
-            </div>
-          ))}
-        </>
-      );
-    default:
-      return (
-        <div style={{...base, left: 20, top: 136, width: 288, height: 88, borderRadius: 44, background: k ? C.white : '#EEEEF3', border: `${bw}px solid ${C.ink}`, boxShadow: k ? undefined : soft, display: 'flex', alignItems: 'center', gap: 16, paddingLeft: 12}}>
-          <div style={{width: 60, height: 60, boxSizing: 'border-box', borderRadius: 30, background: k ? C.orange : '#C9C9D6', border: `${k ? 5 : 0}px solid ${C.ink}`}} />
-          <span style={k ? grot(30, 700) : {...sys, fontSize: 28, color: '#6E6E7A'}}>@guanmo_ai</span>
-        </div>
-      );
-  }
-};
-
 const pillPath = (x: number, y: number, w: number, h: number, r: number) =>
   r <= 0
     ? `M${x} ${y} H${x + w} V${y + h} H${x} Z`
     : `M${x + r} ${y} H${x + w - r} A${r} ${r} 0 0 1 ${x + w - r} ${y + h} H${x + r} A${r} ${r} 0 0 1 ${x + r} ${y} Z`;
 
+const PANEL = {x: 800, y: 150, w: 1000, h: 830};
+const px = (dx: number) => PANEL.x + dx;
+const py = (dy: number) => PANEL.y + dy;
+type Stroke = {key: string; t0: number; d: number; x: number; y: number; w: number; h: number; r: number};
+const B = AT.border;
+/** 笔画的顺序：表单外框 → 输入框 → 开关 → 三个复选框 → 按钮 */
+const STROKES: Stroke[] = [
+  {key: 'panel', t0: B + 8, d: 18, x: PANEL.x, y: PANEL.y, w: PANEL.w, h: PANEL.h, r: 0},
+  {key: 'input', t0: B + 38, d: 12, x: px(50), y: py(180), w: 900, h: 110, r: 0},
+  {key: 'toggle', t0: B + 58, d: 10, x: px(50), y: py(340), w: 190, h: 96, r: 48},
+  ...[0, 1, 2].map((i) => ({key: `check${i}`, t0: B + 78 + i * 5, d: 5, x: px(50 + i * 300), y: py(490), w: 60, h: 60, r: 0})),
+  {key: 'button', t0: B + 98, d: 12, x: px(50), y: py(630), w: 470, h: 130, r: 0},
+];
+const S = Object.fromEntries(STROKES.map((s) => [s.key, s])) as Record<string, Stroke>;
+const done = (k: string) => S[k].t0 + S[k].d;
+const CLICK = B + 124;
+
+/** 颜色从左往右灌满一个刚画好的框 */
+const Flood: React.FC<{f: number; at: number; color: string; d?: number}> = ({f, at, color, d = 6}) => {
+  const k = tween(f, at, d, 0, 1, E.out);
+  return <div style={{position: 'absolute', inset: 0, background: color, clipPath: `inset(0 ${(1 - k) * 100}% 0 0)`}} />;
+};
+/** 一个字一个字地弹出来 */
+const PopText: React.FC<{f: number; at: number; text: string; style: CSS; step?: number}> = ({f, at, text, style, step = 1}) => (
+  <span style={{display: 'inline-flex', whiteSpace: 'pre'}}>
+    {text.split('').map((c0, i) => {
+      const ch = c0 === ' ' ? '\u00A0' : c0;
+      const t = at + i * step;
+      const k = tween(f, t, 7, 0, 1, E.out);
+      return (
+        <span key={i} style={{...style, display: 'inline-block', opacity: f < t ? 0 : 1, transform: `translateY(${(1 - k) * 40}px) scale(${lerp(1.4, 1, k)})`}}>
+          {ch}
+        </span>
+      );
+    })}
+  </span>
+);
+
 export const Borders: React.FC<{f: number; dx?: number}> = ({f, dx = 0}) => {
-  const strokes: React.ReactNode[] = [];
+  // 笔尖：画到哪里；两笔之间飞过去；第一笔之前从右下角进来
   let pen: {x: number; y: number} | null = null;
-  COMP.forEach((kind, i) => {
-    const c = cellXY(i);
-    const shapes = OUTLINE[kind];
-    const t0 = PEN(i);
-    const t1 = HIT(i);
-    if (f >= t0 && f < t1) {
-      const prog = (f - t0) / (t1 - t0);
-      shapes.forEach(([x, y, w, h, r], j) => {
-        const a = j / shapes.length;
-        const q = clamp((prog - a) * shapes.length);
-        if (q <= 0) return;
-        strokes.push(<path key={`${i}-${j}`} d={pillPath(c.x + x, c.y + y, w, h, r)} pathLength={1} strokeDasharray="1 1" strokeDashoffset={1 - q} fill="none" stroke={C.ink} strokeWidth={V.border} strokeLinejoin="miter" />);
-        if (q < 1 || j === shapes.length - 1) pen = onRect(c.x + x, c.y + y, w, h, q);
-      });
-    }
-    // 两个组件之间：笔尖飞到下一个的起点
-    if (i < COMP.length - 1 && f >= t1 && f < PEN(i + 1)) {
-      const [x0, y0] = shapes[0];
-      const nx = cellXY(i + 1);
-      const [x1, y1] = OUTLINE[COMP[i + 1]][0];
-      const k = E.inOut(clamp((f - t1) / (PEN(i + 1) - t1)));
-      pen = {x: lerp(c.x + x0, nx.x + x1, k), y: lerp(c.y + y0, nx.y + y1, k)};
+  STROKES.forEach((s, i) => {
+    if (f >= s.t0 && f < s.t0 + s.d) pen = onRect(s.x, s.y, s.w, s.h, (f - s.t0) / s.d);
+    const n = STROKES[i + 1];
+    if (n && f >= s.t0 + s.d && f < n.t0) {
+      const k = E.inOut(clamp((f - s.t0 - s.d) / (n.t0 - s.t0 - s.d)));
+      pen = {x: lerp(s.x, n.x, k), y: lerp(s.y, n.y, k)};
     }
   });
-  const penOn = f >= PEN(0) - 4 && f < HIT(COMP.length - 1) + 4;
-  const p0 = cellXY(0);
-  if (f < PEN(0)) pen = {x: lerp(1960, p0.x + 34, tween(f, PEN(0) - 10, 10, 0, 1, E.out)), y: lerp(1140, p0.y + 130, tween(f, PEN(0) - 10, 10, 0, 1, E.out))};
+  const first = STROKES[0];
+  if (f < first.t0) {
+    const k = tween(f, B - 4, 12, 0, 1, GLIDE);
+    pen = {x: lerp(1980, first.x, k), y: lerp(1140, first.y, k)};
+  }
+  const last = STROKES[STROKES.length - 1];
+  const penO = 1 - tween(f, last.t0 + last.d, 6);
+  const drawing = STROKES.filter((s) => f >= s.t0 && f < s.t0 + s.d);
+  // 光标按“注册”
+  const curK = tween(f, B + 112, 10, 0, 1, GLIDE);
+  const btn = S.button;
+  const target = {x: btn.x + btn.w * 0.72, y: btn.y + btn.h * 0.6};
+  const cp = press(f, CLICK, 6);
+  const on = (k: string) => f >= done(k);
+  const knob = tween(f, done('toggle') + 10, 8, 0, 1, E.inOut);
   return (
     <AbsoluteFill style={{background: C.yellow, transform: `translateX(${dx}px)`}}>
       <Dots opacity={0.14} />
-      <Label f={f} at={AT.border} n="01" en="BORDER" zh="黑框" code={['border: 6px solid #000;', 'border-radius: 0;']} note="一笔描到底，圆角归零" />
-      {COMP.map((kind, i) => {
-        const {x, y} = cellXY(i);
-        const hit = HIT(i);
-        const k = f >= hit ? 1 : 0;
-        const pop = f >= hit ? lerp(1.08, 1, tween(f, hit, 10, 0, 1, E.out)) : 1;
-        return (
-          <div key={kind} style={{position: 'absolute', left: x, top: y, width: CELL.w, height: CELL.h}}>
-            <div style={{position: 'absolute', inset: 0, border: `2px dashed rgba(0,0,0,0.35)`, background: 'rgba(255,255,255,0.35)'}} />
-            <div style={{position: 'absolute', inset: 0, transform: `scale(${pop})`}}>
-              <Component kind={kind} k={k} f={f} />
-            </div>
-            <div style={{position: 'absolute', left: 12, bottom: 8, ...mono(24, 700), color: C.ink}}>
-              {kind}
-              <span style={{opacity: k ? 1 : 0.4}}>{k ? ' · 6px #000' : ' · default'}</span>
-            </div>
+      <Label f={f} at={B} n="01" en="BORDER" zh="黑框" code={['border: 6px solid #000;', 'border-radius: 0;']} note="先有框，才有元素" />
+      {/* 表单外框 */}
+      {on('panel') && (
+        <Box x={PANEL.x} y={PANEL.y} w={PANEL.w} h={PANEL.h} fill="transparent" shadow={14} z={land(f, done('panel') + 4, 14, 0)}>
+          <Flood f={f} at={done('panel')} color={C.white} d={8} />
+          <div style={{position: 'absolute', left: 50, top: 54}}>
+            <PopText f={f} at={done('panel') + 6} text="JOIN THE CLUB" style={disp(76, 112, -0.02)} />
           </div>
+          <div style={{position: 'absolute', right: 40, top: 30, opacity: appear(f, done('panel') + 10), ...mono(24, 700)}}>neo-brutal.form</div>
+          <div style={{position: 'absolute', left: 50, top: 136, opacity: appear(f, done('panel') + 14), ...mono(26, 700)}}>EMAIL</div>
+          <div style={{position: 'absolute', left: 290, top: 362, opacity: appear(f, done('toggle') + 2), ...sc(42, 900)}}>每周寄我一封小志</div>
+          {['Grid', 'Border', 'Shadow'].map((t, i) => (
+            <div key={t} style={{position: 'absolute', left: 130 + i * 300, top: 498, opacity: appear(f, done(`check${i}`)), ...grot(44, 700)}}>
+              {t}
+            </div>
+          ))}
+        </Box>
+      )}
+      {/* 输入框 */}
+      {on('input') && (
+        <Box x={S.input.x} y={S.input.y} w={S.input.w} h={S.input.h} fill="transparent" shadow={8} z={land(f, done('input') + 4, 8, 0)} style={{display: 'flex', alignItems: 'center', paddingLeft: 30}}>
+          <Flood f={f} at={done('input')} color={C.white} />
+          <span style={{position: 'relative', ...mono(44, 700)}}>
+            <Typed f={f} at={done('input') + 4} text="you@site.com" cps={1.6} caret={f < CLICK} />
+          </span>
+        </Box>
+      )}
+      {/* 开关 */}
+      {on('toggle') && (
+        <Box x={S.toggle.x} y={S.toggle.y} w={S.toggle.w} h={S.toggle.h} fill="transparent" r={48} shadow={8} z={land(f, done('toggle') + 4, 8, 0)}>
+          <Flood f={f} at={done('toggle') + 8} color={C.lime} />
+          <div style={{position: 'absolute', top: 8, left: lerp(8, 102, knob), width: 68, height: 68, borderRadius: 34, boxSizing: 'border-box', background: C.white, border: `${V.border}px solid ${C.ink}`}} />
+        </Box>
+      )}
+      {/* 复选框 */}
+      {[0, 1, 2].map((i) => {
+        const s = S[`check${i}`];
+        if (!on(`check${i}`)) return null;
+        const checked = i < 2 && f >= B + 94 + i * 4;
+        return (
+          <Box key={i} x={s.x} y={s.y} w={s.w} h={s.h} fill={checked ? C.ink : C.white} border={5} shadow={5} z={land(f, done(`check${i}`) + 2, 5, 0)} style={{display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
+            {checked && (
+              <svg width="40" height="34" style={{transform: `scale(${lerp(1.6, 1, tween(f, B + 94 + i * 4, 6, 0, 1, E.out))})`}}>
+                <path d="M4 17 L15 28 L36 5" fill="none" stroke={C.yellow} strokeWidth="7" />
+              </svg>
+            )}
+          </Box>
         );
       })}
+      {/* 按钮 */}
+      {on('button') && (
+        <Box x={btn.x} y={btn.y} w={btn.w} h={btn.h} fill="transparent" shadow={14} z={land(f, done('button') + 6, 14, 0) * (1 - cp)} style={{display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
+          <Flood f={f} at={done('button')} color={C.pink} />
+          <span style={{position: 'relative'}}>
+            <PopText f={f} at={done('button') + 3} text="注册 →" style={sc(60, 900)} step={2} />
+          </span>
+        </Box>
+      )}
+      {/* 按下之后：欢迎贴纸 */}
+      {f >= CLICK + 4 && (
+        <Box x={px(570)} y={py(610)} w={380} h={110} fill={C.lime} shadow={10} z={land(f, CLICK + 6, 10, 70)} rot={-5} scale={lerp(1.3, 1, tween(f, CLICK + 4, 8, 0, 1, E.out))} style={{display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
+          <span style={{...sc(52, 900)}}>✓ 欢迎入伙</span>
+        </Box>
+      )}
+      {/* 正在画的笔画 + 笔尖 */}
       <svg width={1920} height={1080} style={{position: 'absolute', left: 0, top: 0, overflow: 'visible'}}>
-        {strokes}
-        {penOn && pen && (
-          <g transform={`translate(${(pen as {x: number; y: number}).x} ${(pen as {x: number; y: number}).y})`}>
-            <circle r={16} fill={C.ink} />
-            <circle r={6} fill={C.yellow} />
+        {drawing.map((s) => (
+          <path key={s.key} d={pillPath(s.x, s.y, s.w, s.h, s.r)} pathLength={1} strokeDasharray="1 1" strokeDashoffset={1 - (f - s.t0) / s.d} fill="none" stroke={C.ink} strokeWidth={V.border} />
+        ))}
+        {pen && penO > 0 && (
+          <g transform={`translate(${(pen as {x: number; y: number}).x} ${(pen as {x: number; y: number}).y})`} opacity={penO}>
+            <circle r={18} fill={C.ink} />
+            <circle r={7} fill={C.yellow} />
           </g>
         )}
       </svg>
+      {f >= B + 108 && <Cursor x={lerp(1960, target.x, curK)} y={lerp(1140, target.y, curK)} p={cp} />}
+      <Burst x={target.x} y={target.y} f={f} at={CLICK} />
     </AbsoluteFill>
   );
 };
@@ -259,9 +251,9 @@ export const Shadows: React.FC<{f: number; dx?: number}> = ({f, dx = 0}) => {
   const k = 1 - soft;
   // 主卡片的高度：14 → 抬到 52 → 落回 14 → 阶梯摊开时退到 4
   let z = 14;
-  if (f >= a + 32 && f < a + 60) z = lerp(14, 52, tween(f, a + 32, 16, 0, 1, GLIDE));
-  if (f >= a + 60) z = land(f, a + 60, 14, 52);
-  if (f >= a + 64) z = lerp(z, 4, tween(f, a + 64, 14, 0, 1, GLIDE));
+  if (f >= a + 34 && f < a + 70) z = lerp(14, 52, tween(f, a + 34, 18, 0, 1, GLIDE));
+  if (f >= a + 70) z = land(f, a + 70, 14, 52);
+  if (f >= a + 78) z = lerp(z, 4, tween(f, a + 78, 16, 0, 1, GLIDE));
   const off = lerp(0, 14, k);
   const softCss = soft > 0.001 ? `${off}px ${lerp(30, off, k)}px ${blur}px rgba(0,0,0,${lerp(0.3, 1, k)})` : undefined;
   const expand = tween(f, AT.press - 14, 14, 0, 1, WHIP);
@@ -270,8 +262,8 @@ export const Shadows: React.FC<{f: number; dx?: number}> = ({f, dx = 0}) => {
       <Dots />
       <Label f={f} at={a} n="02" en="SHADOW" zh="硬影" code={['box-shadow:', '  14px 14px 0 #000;']} note="模糊永远是 0" chip={C.yellow} />
       <Slider x={96} y={760} label="blur" v={blur} max={40} hot={blur < 0.5} />
-      {f >= a + 74 && (
-        <Box x={96} y={880} w={560} h={104} fill={C.yellow} shadow={10} z={land(f, a + 76, 10, 60)} rot={-2} scale={lerp(1.25, 1, tween(f, a + 74, 8, 0, 1, E.out))} style={{display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
+      {f >= a + 100 && (
+        <Box x={96} y={880} w={560} h={104} fill={C.yellow} shadow={10} z={land(f, a + 102, 10, 60)} rot={-2} scale={lerp(1.25, 1, tween(f, a + 100, 8, 0, 1, E.out))} style={{display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
           <span style={{...sc(54, 900)}}>层级 = 偏移量</span>
         </Box>
       )}
@@ -282,18 +274,18 @@ export const Shadows: React.FC<{f: number; dx?: number}> = ({f, dx = 0}) => {
         <div style={{position: 'absolute', left: 42, top: 256, ...mono(28, 700), color: C.ink}}>{softCss ? `blur ${Math.round(blur)}px` : `z = ${Math.round(z)}px · blur 0`}</div>
       </Box>
       {/* 抬起来时的高度标注 */}
-      {f >= a + 34 && f < a + 66 && (
-        <div style={{position: 'absolute', left: MAIN.x + MAIN.w + 30, top: MAIN.y + MAIN.h - 40, opacity: appear(f, a + 34, 6) * (1 - tween(f, a + 60, 6)), background: C.ink, color: C.yellow, padding: '6px 16px', ...mono(40, 700)}}>
+      {f >= a + 36 && f < a + 78 && (
+        <div style={{position: 'absolute', left: MAIN.x + MAIN.w + 30, top: MAIN.y + MAIN.h - 40, opacity: appear(f, a + 36, 6) * (1 - tween(f, a + 70, 6)), background: C.ink, color: C.yellow, padding: '6px 16px', ...mono(40, 700)}}>
           {`↑ z ${Math.round(z)}px`}
         </div>
       )}
       {/* 阶梯 */}
       {STAIR.map((s, j0) => {
         const j = j0 + 1;
-        const t = a + 64 + j0 * 5;
+        const t = a + 80 + j0 * 6;
         if (f < t) return null;
-        const m = tween(f, t, 14, 0, 1, GLIDE);
-        const zz = f < t + 14 ? s.z + 30 : land(f, t + 14, s.z, s.z + 30);
+        const m = tween(f, t, 16, 0, 1, GLIDE);
+        const zz = f < t + 16 ? s.z + 30 : land(f, t + 16, s.z, s.z + 30);
         const last = j0 === STAIR.length - 1;
         const g = {x: lerp(MAIN.x, MAIN.x + j * STEP.x, m), y: lerp(MAIN.y, MAIN.y + j * STEP.y, m), w: MAIN.w, h: MAIN.h};
         const e = last ? expand : 0;
@@ -314,13 +306,13 @@ const G = {x: 720, y: 190, w: 1104, h: 760, cols: 5, rows: 4};
 const CW = G.w / G.cols;
 const CH = G.h / G.rows;
 const IN = 14; // 按钮在格子里的内缩
-const CLICK1 = {at: AT.press + 36, c: 2, r: 1};
-const CLICK2 = {at: AT.press + 66, c: 4, r: 3};
-const ALL = AT.press + 90; // f450：按一颗，全部按下
+const CLICK1 = {at: AT.press + 44, c: 2, r: 1};
+const CLICK2 = {at: AT.press + 80, c: 4, r: 3};
+const ALL = AT.press + 112; // 按一颗，全部按下
 const ERA = [
   {at: AT.lineage, year: '1952', zh: '清水混凝土', en: 'BÉTON BRUT', note: ['勒·柯布西耶 · 马赛公寓', '材料不粉饰，结构露在外面']},
-  {at: AT.lineage + 40, year: '2014', zh: '粗野主义网页', en: 'BRUTALIST WEB', note: ['brutalistwebsites.com', '浏览器默认样式，原样上线']},
-  {at: AT.lineage + 76, year: '2021', zh: '新粗野主义', en: 'NEO-BRUTALISM', note: ['Gumroad 等产品带进主流', '黑框、硬影、平涂——还好用']},
+  {at: AT.lineage + 50, year: '2014', zh: '粗野主义网页', en: 'BRUTALIST WEB', note: ['brutalistwebsites.com', '浏览器默认样式，原样上线']},
+  {at: AT.lineage + 96, year: '2021', zh: '新粗野主义', en: 'NEO-BRUTALISM', note: ['Gumroad 等产品带进主流', '黑框、硬影、平涂——还好用']},
 ];
 
 const WEB = ['index', 'about', 'work', 'blog', 'contact', '<table>', 'Times', 'links', 'raw', 'html', '1px', 'serif', 'home', 'news', 'faq', 'shop', 'zine', 'radio', 'tags', 'rss'];

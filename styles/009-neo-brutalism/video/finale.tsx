@@ -1,8 +1,8 @@
 /**
  * 10—15 秒
- *   五个词（f600）一拍一张整屏卡片叠上来：黑框 / 硬影 / 平涂 / 露结构 / 歪一点。每张从不同方向砸进来，压住上一张
- *   片尾  （f750）整叠卡片掉下去；海报三块 NEO / BRUTAL / ISM 半拍一块砸回来，贴纸、署名；
- *                f870 光标按一下——所有阴影一起归零，再一起弹回来。最后一帧 = 第一帧（开场就是这张海报），循环播放无缝
+ *   五个词（f900）一拍一张整屏卡片叠上来：黑框 / 硬影 / 平涂 / 露结构 / 歪一点。每张从不同方向砸进来，压住上一张
+ *   片尾  （f1050）整叠卡片掉下去；海报三块 NEO / BRUTAL / ISM 从高处落下，贴纸、署名；
+ *                f1146 光标按一下——所有阴影一起归零，再一起弹回来。最后一帧 = 第一帧（开场就是这张海报），循环播放无缝
  */
 import React from 'react';
 import {AbsoluteFill} from 'remotion';
@@ -100,8 +100,8 @@ export const Words: React.FC<{f: number}> = ({f}) => {
 
 const BLOCKS = [
   {text: 'NEO', x: 110, y: 96, w: 760, h: 270, fill: C.pink, rot: -3, at: AT.end + 6, from: [-1200, -500], out: [-900, -1300, -25], size: 230, wdth: 112},
-  {text: 'BRUTAL', x: 96, y: 400, w: 1728, h: 290, fill: C.yellow, rot: 0, at: AT.end + 21, from: [2200, 0], out: [-200, 1500, 12], size: 300, wdth: 125},
-  {text: 'ISM', x: 1230, y: 730, w: 590, h: 220, fill: C.lime, rot: 2.5, at: AT.end + 36, from: [0, 900], out: [1500, 300, 30], size: 176, wdth: 125},
+  {text: 'BRUTAL', x: 96, y: 400, w: 1728, h: 290, fill: C.yellow, rot: 0, at: AT.end + 18, from: [2200, 0], out: [-200, 1500, 12], size: 300, wdth: 125},
+  {text: 'ISM', x: 1230, y: 730, w: 590, h: 220, fill: C.lime, rot: 2.5, at: AT.end + 30, from: [0, 900], out: [1500, 300, 30], size: 176, wdth: 125},
 ];
 export const POSTER_PRESS = {x: 1240, y: 560}; // 光标按在 BRUTAL 的 A 上
 
@@ -170,22 +170,22 @@ export const Poster: React.FC<PosterState> = ({k = [1, 1, 1], zh = 1, tag = 1, s
 
 export const End: React.FC<{f: number}> = ({f}) => {
   const a = AT.end;
-  const pAll = press(f, a + 120, 10); // f870：所有阴影一起归零
-  const cur = tween(f, a + 98, 20, 0, 1, E.inOut);
+  const pAll = press(f, a + 96, 8); // 所有阴影一起归零，再一起弹回
+  const cur = tween(f, a + 76, 18, 0, 1, E.inOut);
   const k = BLOCKS.map((b) => (f >= b.at - 12 ? slamBig(f, b.at - 12) : 0));
   return (
     <AbsoluteFill>
       <Poster
         k={k}
-        zh={f >= a + 45 ? slam(f, a + 45) : 0}
-        tag={tween(f, a + 60, 8)}
-        star={f >= a + 64 ? slam(f, a + 64) : 0}
-        bar={f >= a + 78 ? slam(f, a + 78) : 0}
+        zh={f >= a + 40 ? slam(f, a + 40) : 0}
+        tag={tween(f, a + 50, 8)}
+        star={f >= a + 56 ? slam(f, a + 56) : 0}
+        bar={f >= a + 64 ? slam(f, a + 64) : 0}
         p={pAll}
-        dy={thud(f, [...BLOCKS.map((b) => [b.at, 6] as [number, number]), [a + 120, 8]])}
+        dy={thud(f, [...BLOCKS.map((b) => [b.at, 6] as [number, number]), [a + 96, 8]])}
       />
-      {f >= a + 96 && <Cursor x={lerp(1960, POSTER_PRESS.x, cur)} y={lerp(1140, POSTER_PRESS.y, cur)} p={pAll} opacity={1 - tween(f, a + 136, 8)} />}
-      <Burst x={POSTER_PRESS.x} y={POSTER_PRESS.y} f={f} at={a + 120} />
+      {f >= a + 74 && <Cursor x={lerp(1960, POSTER_PRESS.x, cur)} y={lerp(1140, POSTER_PRESS.y, cur)} p={pAll} opacity={1 - tween(f, a + 108, 8)} />}
+      <Burst x={POSTER_PRESS.x} y={POSTER_PRESS.y} f={f} at={a + 96} />
     </AbsoluteFill>
   );
 };
