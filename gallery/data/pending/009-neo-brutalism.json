@@ -6,7 +6,7 @@
   "titleEn": "Neo-Brutalism",
   "years": "2021—今天",
   "category": "当代界面",
-  "description": "黑框描到底，阴影是一块偏移的黑。一支 15 秒短片，从一张没写 CSS 的网页开始，一拍一行写成新粗野主义：黑框、硬影、按下，再从 1952 年的清水混凝土、2014 年的粗野主义网页一路走到今天的界面。",
+  "description": "黑框描到底，阴影是一块偏移的黑。一支 15 秒短片，全片只有一条物理——阴影长度就是高度：海报炸成十三颗键帽、一支笔把默认组件一个个框起来、卡片抬起来摊成阶梯、二十颗按钮的按压像水波一样扩散，再从 1952 年的清水混凝土、2014 年的粗野主义网页一路变回今天的界面。",
   "tags": [
     "黑框",
     "硬阴影",
@@ -19,7 +19,7 @@
   "publishedAt": "",
   "release": "day-09",
   "asset": "009-neo-brutalism.mp4",
-  "sha256": "a9ae5c369f50ae031092dd5cfec5a43bec6b0b805cd8f3da7d0a0cee7c2830b1",
+  "sha256": "cf1d3e106ca45e6f58fa696512341a2689988dc99717c2142ddb5af446075664",
   "images": [
     {
       "file": "poster",
@@ -51,7 +51,7 @@
     }
   ],
   "categoryEn": "Contemporary interfaces",
-  "descriptionEn": "Black borders on everything; the shadow is a solid offset block. A 15-second film starts from a web page with no CSS and writes it into Neo-Brutalism one line per beat — borders, hard shadows, pressing — then traces the look from 1952 raw concrete and 2014 brutalist websites to today’s interfaces.",
+  "descriptionEn": "Black borders on everything; the shadow is a solid offset block. A 15-second film built on one piece of physics — shadow length is height: a poster shatters into thirteen keycaps, a pen outlines default components one by one, a card lifts and fans into a staircase, and a grid of twenty buttons ripples when pressed, then turns into 1952 raw concrete, a 2014 brutalist web page, and today's interface.",
   "tagsEn": [
     "black borders",
     "hard shadows",

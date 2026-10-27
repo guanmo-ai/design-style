@@ -1,175 +1,90 @@
 /**
- * 0—2 秒 · 开场。第一帧就是片尾那张海报（推特自动循环播放时首尾无缝）
+ * 0—2 秒 · 开场：键帽。第一帧就是片尾那张海报（首尾同一帧，循环无缝）
  *   f0     海报：NEO / BRUTAL / ISM
- *   f10    光标一按——所有阴影一起归零
- *   f16    海报炸开，露出底下一张没写 CSS 的网页（Times 标题、蓝色下划线链接、灰按钮）
- *   f30    border: 6px solid #000      → 黑框“盖章”一样砸下来
- *   f45    box-shadow: 14px 14px 0     → 硬阴影弹出来
- *   f60    background: #FFD23F         → 黄色从左刷过去
- *   f75    font: 900 Archivo           → 标题换成宽体，整页一起变成新粗野主义
- *   f96    光标按下标题（位移 = 阴影，阴影归零）
- *   f101   被按下的标题块撑满全屏 → 01 黑框的黄色底
- * 每一行 CSS 是一枚黑底大字的“代码条”，在拍点前从右边砸进来，生效时闪黄。
+ *   f8     光标一按——所有阴影一起归零
+ *   f14    海报炸开；13 颗巨型键帽 N·E·O-B·R·U·T·A·L·I·S·M 从下面浮上来（抬着，阴影很长），由中间向两边依次落稳
+ *   f42    打字：一道按键的波从左按到右
+ *   f58    「新粗野主义」贴纸落下；f66 小标签
+ *   f75    十三颗键一起按到底；f84 一起弹起来，再落一次
+ *   f96    镜头钻进 O 的孔里，黄色铺满全屏 → 01 黑框
  */
 import React from 'react';
 import {AbsoluteFill} from 'remotion';
 import {E, clamp, tween} from '../../../src/lib/anim';
-import {C, V} from '../tokens';
+import {C} from '../tokens';
 import {POSTER_PRESS, Poster} from './finale';
-import {Box, Burst, Cursor, disp, grot, lerp, mono, press, sc, serif, slam, slamBig, thud} from './ui';
+import {Box, Burst, Cursor, Dots, GLIDE, disp, land, lerp, mono, press, sc} from './ui';
 
-const LINES: [string, number][] = [
-  // 代码，生效的帧
-  ['border: 6px solid #000;', 30],
-  ['box-shadow: 14px 14px 0 #000;', 45],
-  ['background: #FFD23F;', 60],
-  ['font: 900 125% Archivo;', 75],
-];
+const KEYS = 'NEO-BRUTALISM'.split('');
+const KW = 124;
+const KH = 180;
+const KG = 14;
+const X0 = (1920 - (KEYS.length * KW + (KEYS.length - 1) * KG)) / 2;
+const Y0 = 290;
+const KEY_FILL = [C.pink, C.lime, C.yellow, C.white, C.blue, C.orange, C.yellow, C.pink, C.lime, C.blue, C.white, C.orange, C.yellow];
+const O = 2; // 镜头要钻进去的那颗
+const REST = 14;
 
-const PRE = {x: 80, y: 270, w: 960, h: 190};
-const POST = {x: 210, y: 250, w: 1500, h: 240};
+const keyX = (i: number) => X0 + i * (KW + KG);
+const arrive = (i: number) => 12 + Math.abs(i - 6) * 1.0 + 12; // 中间先到，两边后到；最晚 f30 落稳
 
-/** 右边一列代码条：拍点前 9 帧从画外砸进来，生效时闪黄，换字体后一起退场 */
-const CodeChips: React.FC<{f: number}> = ({f}) => {
-  const out = tween(f, 76, 8, 0, 1, E.in);
-  if (out >= 1 || f < 20) return null;
-  return (
-    <div style={{position: 'absolute', inset: 0, transform: `translateX(${out * 1100}px)`}}>
-      <div style={{position: 'absolute', left: 1080, top: 222, opacity: clamp((f - 20) / 4), ...mono(28, 700), color: C.ink}}>style.css · h1 {'{'}</div>
-      {LINES.map(([text, fire], i) => {
-        if (f < fire - 9) return null;
-        const k = slamBig(f, fire - 9);
-        // 生效：先整块变黄 6 帧（阶跃，不渐变），再回到黑底黄字
-        const flash = f >= fire && f < fire + 6;
-        const live = f >= fire;
-        return (
-          <div
-            key={i}
-            style={{
-              position: 'absolute',
-              left: 1080 + (1 - k) * 900,
-              top: 272 + i * 112,
-              height: 88,
-              padding: '0 26px',
-              display: 'flex',
-              alignItems: 'center',
-              background: flash ? C.yellow : C.ink,
-              color: flash ? C.ink : live ? C.yellow : C.paper,
-              border: `4px solid ${C.ink}`,
-              boxShadow: `8px 8px 0 ${C.ink}`,
-              ...mono(40, 700),
-            }}
-          >
-            {text}
-          </div>
-        );
-      })}
-    </div>
-  );
-};
+export const KEY_O = {x: keyX(O) + KW / 2, y: Y0 + KH / 2 - 4};
 
 export const Opening: React.FC<{f: number}> = ({f}) => {
-  // 开场：海报 → 按下 → 炸开
-  const hookP = press(f, 10, 99, false);
-  const ex = tween(f, 16, 10, 0, 1, E.in);
-  const cur1 = tween(f, 1, 8, 0, 1, E.out);
-  // 网页
-  const stamp = f >= 30 ? 1 : 0;
-  const stampScale = f >= 30 ? lerp(1.14, 1, tween(f, 30, 6, 0, 1, E.out)) : 1;
-  const shadowK = f >= 45 ? slam(f, 45) : 0;
-  const fillK = tween(f, 60, 7, 0, 1, E.inOut);
-  const grow = f >= 75 ? slam(f, 75) : 0;
-  const pr = press(f, 96, 99, false);
-  const expand = tween(f, 101, 11, 0, 1, E.in);
-  const g = {x: lerp(PRE.x, POST.x, grow), y: lerp(PRE.y, POST.y, grow), w: lerp(PRE.w, POST.w, grow), h: lerp(PRE.h, POST.h, grow)};
-  const box = {
-    x: lerp(g.x, -V.border, expand),
-    y: lerp(g.y, -V.border, expand),
-    w: lerp(g.w, 1920 + 2 * V.border, expand),
-    h: lerp(g.h, 1080 + 2 * V.border, expand),
-  };
-  const page = tween(f, 75, 8, 0, 1, E.out); // 底色：白 → 纸
-  const oldOut = 1 - tween(f, 75, 4, 0, 1, E.out);
-  const newIn = tween(f, 75, 4, 0, 1, E.out);
-  const textOut = 1 - tween(f, 101, 6, 0, 1, E.out);
-  const preOut = 1 - tween(f, 75, 6, 0, 1, E.in);
-  const pop = (at: number) => (f >= at ? slam(f, at) : 0);
-  const cur2 = tween(f, 86, 10, 0, 1, E.inOut);
-  const dy = thud(f, [
-    [30, 6],
-    [75, 10],
-  ]);
+  const hookP = press(f, 8, 99, false);
+  const ex = tween(f, 14, 10, 0, 1, E.in);
+  const cur = tween(f, 0, 7, 0, 1, E.out);
+  // 钻进 O：指数缩放，越往里越快
+  const dive = tween(f, 96, 22, 0, 1, E.in);
+  const zoom = Math.exp(Math.log(90) * dive);
+  const all = press(f, 75, 99, false) * (f < 84 ? 1 : 0);
   return (
-    <AbsoluteFill style={{background: page >= 1 ? C.paper : `color-mix(in srgb, ${C.paper} ${page * 100}%, #FFFFFF)`}}>
-      <div style={{position: 'absolute', inset: 0, backgroundImage: `radial-gradient(${C.ink} 1.8px, transparent 2.2px)`, backgroundSize: '30px 30px', backgroundPosition: '15px 15px', opacity: 0.16 * page}} />
-      <div style={{position: 'absolute', inset: 0, transform: `translateY(${dy}px)`}}>
-        {/* 默认样式的网页 */}
-        {preOut > 0 && (
-          <div style={{opacity: preOut}}>
-            <div style={{position: 'absolute', left: PRE.x + 4, top: 520, ...serif(54), color: C.ink}}>This page has no CSS yet.</div>
-            <div style={{position: 'absolute', left: PRE.x + 4, top: 610, ...serif(54), color: C.link, textDecoration: 'underline'}}>Read more</div>
-            <div
-              style={{
-                position: 'absolute',
-                left: PRE.x + 4,
-                top: 710,
-                padding: '12px 36px',
-                background: 'linear-gradient(#FDFDFD, #E3E3E3)',
-                border: '1px solid #8F8F8F',
-                borderRadius: 4,
-                fontFamily: 'Arial, Liberation Sans, sans-serif',
-                fontSize: 42,
-                color: C.ink,
-              }}
+    <AbsoluteFill style={{background: C.paper}}>
+      <div style={{position: 'absolute', inset: 0, transform: `scale(${zoom})`, transformOrigin: `${KEY_O.x}px ${KEY_O.y}px`}}>
+        <Dots />
+        {KEYS.map((ch, i) => {
+          const t0 = arrive(i) - 12;
+          if (f < t0) return null;
+          const k = tween(f, t0, 12, 0, 1, GLIDE);
+          let z = land(f, arrive(i), REST, 70);
+          if (f >= 84) z = land(f, 84, REST, 46); // 一起弹起来，再落一次
+          const wave = press(f, 42 + i * 2.2, 2);
+          const p = Math.max(wave, all);
+          return (
+            <Box
+              key={i}
+              x={keyX(i)}
+              y={lerp(1150, Y0, k)}
+              w={KW}
+              h={KH}
+              fill={KEY_FILL[i]}
+              shadow={REST}
+              z={z * (1 - p)}
+              rot={lerp((i - 6) * 4, 0, k)}
+              style={{display: 'flex', alignItems: 'center', justifyContent: 'center'}}
             >
-              Submit
-            </div>
-          </div>
-        )}
-        {/* 新粗野主义的网页 */}
-        {f >= 78 && (
-          <>
-            <div style={{position: 'absolute', left: 960, top: 640, transform: `translate(-50%, 0) scale(${lerp(1.3, 1, pop(78))})`, opacity: clamp((f - 78) / 3), ...sc(104, 900, 0.04), color: C.ink}}>
-              新粗野主义
-            </div>
-            <Box x={500} y={820} w={380} h={110} fill={C.pink} shadow={14} scale={lerp(0, 1, pop(82))} style={{display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
-              <span style={{...sc(44, 900)}}>按下去 →</span>
+              <span style={{...disp(ch === '-' ? 100 : 128, 100, 0), marginTop: 8}}>{ch === '-' ? '–' : ch}</span>
             </Box>
-            <Box x={930} y={820} w={490} h={110} fill={C.lime} shadow={14} r={55} scale={lerp(0, 1, pop(86))} style={{display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
-              <span style={{...grot(42, 700)}}>2021 → NOW</span>
-            </Box>
-          </>
-        )}
-        {/* 标题块 */}
-        {f >= 14 && (
-          <Box
-            x={box.x}
-            y={box.y}
-            w={box.w}
-            h={box.h}
-            fill="transparent"
-            border={stamp ? V.border : 0}
-            shadow={14 * shadowK * (1 - expand)}
-            p={pr * (1 - expand)}
-            scale={stampScale}
-            style={{background: fillK >= 1 ? C.yellow : `linear-gradient(90deg, ${C.yellow} ${fillK * 100}%, transparent ${fillK * 100}%)`}}
-          >
-            <div style={{position: 'absolute', left: 40, top: 24, opacity: oldOut, ...serif(128, 700), color: C.ink}}>Neo-Brutalism</div>
-            {f >= 75 && (
-              <div style={{position: 'absolute', left: '50%', top: '50%', transform: `translate(-50%, -50%) scale(${lerp(0.62, 1, grow)})`, opacity: newIn * textOut, ...disp(140, 112), color: C.ink}}>
-                NEO-BRUTALISM
-              </div>
-            )}
+          );
+        })}
+        {/* 贴纸 */}
+        {f >= 56 && (
+          <Box x={560} y={570} w={800} h={160} fill={C.ink} shadow={14} z={land(f, 58, 14, 60)} rot={-2} scale={lerp(1.15, 1, tween(f, 56, 8, 0, 1, E.out))} style={{display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
+            <span style={{...sc(104, 900, 0.06), color: C.yellow}}>新粗野主义</span>
           </Box>
         )}
-        <CodeChips f={f} />
+        {f >= 64 && (
+          <Box x={700} y={790} w={520} h={80} fill={C.white} border={4} shadow={8} z={land(f, 66, 8, 36)} rot={1.5} style={{display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
+            <span style={{...mono(30, 700)}}>border · shadow · press</span>
+          </Box>
+        )}
       </div>
-      {/* 第一帧的海报：按下 → 炸开；炸开时底色立刻让开，露出底下的网页 */}
-      {ex < 1 && <Poster p={hookP} ex={ex} bg={1 - clamp(ex * 4)} />}
-      {f >= 1 && f < 20 && <Cursor x={lerp(1960, POSTER_PRESS.x, cur1)} y={lerp(1140, POSTER_PRESS.y, cur1)} p={hookP} opacity={1 - tween(f, 15, 4)} />}
-      <Burst x={POSTER_PRESS.x} y={POSTER_PRESS.y} f={f} at={10} />
-      {f >= 86 && f < 104 && <Cursor x={lerp(1780, 1420, cur2)} y={lerp(1100, 430, cur2)} p={pr} />}
-      <Burst x={1420} y={430} f={f} at={96} />
+      {/* 钻到最里面：O 的孔（黄色）铺满全屏 */}
+      {f >= 110 && <AbsoluteFill style={{background: C.yellow, opacity: tween(f, 110, 7, 0, 1, E.in)}} />}
+      {/* 第一帧的海报：按下 → 炸开 */}
+      {ex < 1 && <Poster p={hookP} ex={ex} bg={1 - clamp(ex * 3)} />}
+      {f < 16 && <Cursor x={lerp(1960, POSTER_PRESS.x, cur)} y={lerp(1140, POSTER_PRESS.y, cur)} p={hookP} opacity={1 - tween(f, 12, 4)} />}
+      <Burst x={POSTER_PRESS.x} y={POSTER_PRESS.y} f={f} at={8} />
     </AbsoluteFill>
   );
 };

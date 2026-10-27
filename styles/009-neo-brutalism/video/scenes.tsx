@@ -1,69 +1,82 @@
 /**
- * 2—10 秒 · 四章。每一章是一张整屏的“卡片”：
- *   01 黑框（f120）黄底。六个默认样式组件，半拍一个描上 6px 黑框、圆角归零 → 整张卡片向左推走
- *   02 硬影（f240）纸底。模糊 40 → 0，偏移 8 / 24 / 14；三张卡片砸下来 → 蓝色的下一章从上面砸下来盖住
- *   03 按下（f360）蓝底。记账 App：按筹码、按条目、按“记一笔”，新条目弹进来；再按左边的大按钮 → 卡片向上抽走
- *   04 来历（f480）纸底。同一面网格：1952 清水混凝土 → 2014 粗野主义网页 → 2021 新粗野主义界面
+ * 2—10 秒 · 四章。全片的物理只有一条：阴影长度 = 离纸面的高度（z）。
+ *   01 黑框（f120）黄底。一支笔一笔画过去，依次把六个默认样式组件框起来——框一个，变一个 → 画布向左甩出去
+ *   02 硬影（f240）纸底。模糊 40 → 0；卡片抬起来再落下；再摊开成五层阶梯（4 / 8 / 14 / 24 / 40）→ 最高那张蓝卡撑满全屏
+ *   03 按下（f360）蓝底。二十颗按钮落下；点一下，按压像水波一样扩散；再从角上来一波；f450 全部一起按下，颜色褪成混凝土
+ *   04 来历（f480）同一面网格接着讲：1952 清水混凝土 → 2014 粗野主义网页（翻牌）→ 2021 新粗野主义（重新弹起来）；年份像里程表一样滚
  */
 import React from 'react';
 import {AbsoluteFill} from 'remotion';
-import {E, clamp, spr, tween} from '../../../src/lib/anim';
+import {E, clamp, tween} from '../../../src/lib/anim';
 import {C, V} from '../tokens';
 import {AT} from './timeline';
-import {Box, Burst, Cursor, Dots, Typed, appear, disp, grot, lerp, mono, press, sc, serif, slam, thud} from './ui';
+import {Box, Burst, Cursor, Dots, GLIDE, Typed, WHIP, appear, disp, grot, land, lerp, mono, press, sc, serif, slam} from './ui';
 
 type CSS = React.CSSProperties;
 
-// ───────── 章节卡片与左栏 ─────────
+// ───────── 左栏 ─────────
 
-/** 整屏卡片：静止时边框藏在画外；移动时黑边和 24px 硬阴影露出来 */
-const Card: React.FC<{f: number; bg: string; dx?: number; dy?: number; dots?: number; children: React.ReactNode}> = ({bg, dx = 0, dy = 0, dots = 0.16, children}) => (
-  <div
-    style={{
-      position: 'absolute',
-      left: -V.border,
-      top: -V.border,
-      width: 1920 + 2 * V.border,
-      height: 1080 + 2 * V.border,
-      background: bg,
-      border: `${V.border}px solid ${C.ink}`,
-      boxShadow: dx || dy ? `24px 24px 0 ${C.ink}` : undefined,
-      transform: `translate(${dx}px, ${dy}px)`,
-      overflow: 'hidden',
-    }}
-  >
-    <Dots opacity={dots} />
-    <div style={{position: 'absolute', left: V.border, top: V.border, width: 1920, height: 1080}}>{children}</div>
-  </div>
-);
-
-/** 左栏：章节筹码 → 大字 → 代码 → 一句话，逐个砸进来 */
-const Label: React.FC<{f: number; at: number; n: string; en: string; zh: string; code: string[]; note: string; chip?: string; y?: number}> = ({f, at, n, en, zh, code, note, chip = C.ink, y = 170}) => {
-  const k1 = f >= at + 2 ? slam(f, at + 2) : 0;
-  const k2 = f >= at + 6 ? slam(f, at + 6) : 0;
+/** 左栏：章节筹码滑进来 → 大字一个字一个字落下 → 代码打出来 → 一句话。out：整栏向左甩出去的进度 */
+const Label: React.FC<{f: number; at: number; n: string; en: string; zh: string; code: string[]; note: string; chip?: string; out?: number}> = ({f, at, n, en, zh, code, note, chip = C.ink, out = 0}) => {
+  const y = 170;
+  const k1 = tween(f, at, 12, 0, 1, GLIDE);
   return (
-    <>
-      <div style={{position: 'absolute', left: 96, top: y, height: 50, padding: '0 18px', display: 'flex', alignItems: 'center', background: chip, color: chip === C.ink ? C.paper : C.ink, border: `4px solid ${C.ink}`, transform: `translateX(${(1 - k1) * -400}px)`, ...mono(24, 700, 0.06)}}>
+    <div style={{position: 'absolute', inset: 0, transform: `translateX(${out * -1100}px)`}}>
+      <div style={{position: 'absolute', left: 96, top: y, height: 50, padding: '0 18px', display: 'flex', alignItems: 'center', background: chip, color: chip === C.ink ? C.paper : C.ink, border: `4px solid ${C.ink}`, transform: `translateX(${(1 - k1) * -500}px)`, ...mono(24, 700, 0.06)}}>
         {`${n} / ${en}`}
       </div>
-      <div style={{position: 'absolute', left: 90, top: y + 70, transform: `scale(${lerp(1.5, 1, k2)})`, transformOrigin: 'left center', opacity: clamp((f - at - 6) / 3), ...sc(200, 900, 0.02), color: C.ink}}>{zh}</div>
+      <div style={{position: 'absolute', left: 90, top: y + 70, display: 'flex'}}>
+        {zh.split('').map((ch, i) => {
+          const t = at + 4 + i * 4;
+          if (f < t) return null;
+          const k = tween(f, t, 9, 0, 1, E.out);
+          return (
+            <span key={i} style={{display: 'inline-block', transform: `translateY(${(1 - k) * -120}px) scale(${lerp(1.5, 1, k)})`, opacity: clamp((f - t) / 3), ...sc(200, 900, 0.02), color: C.ink, textShadow: `${lerp(30, 8, k)}px ${lerp(30, 8, k)}px 0 ${chip === C.ink ? C.white : chip}`}}>
+              {ch}
+            </span>
+          );
+        })}
+      </div>
       <div style={{position: 'absolute', left: 96, top: y + 322, ...mono(40, 700), color: C.ink}}>
         {code.map((line, i) => (
           <div key={i}>
-            <Typed f={f} at={at + 10 + i * 6} text={line} cps={3.2} caret={i === code.length - 1} />
+            <Typed f={f} at={at + 12 + i * 6} text={line} cps={3.4} caret={i === code.length - 1} />
           </div>
         ))}
       </div>
-      <div style={{position: 'absolute', left: 96, top: y + 340 + code.length * 50 + 14, opacity: appear(f, at + 18), ...sc(42, 900, 0.04), color: C.ink}}>{note}</div>
-    </>
+      <div style={{position: 'absolute', left: 96, top: y + 340 + code.length * 50 + 14, opacity: appear(f, at + 22), transform: `translateY(${(1 - appear(f, at + 22, 10)) * 20}px)`, ...sc(42, 900, 0.04), color: C.ink}}>{note}</div>
+    </div>
   );
 };
 
-// ───────── 01 黑框 ─────────
+// ───────── 01 黑框：一支笔 ─────────
 
 const COMP = ['button', 'input', 'card', 'toggle', 'checkbox', 'chip'];
 const CELL = {x0: 760, y0: 190, w: 328, h: 360, gx: 40, gy: 40};
-const HIT = (i: number) => AT.border + 12 + i * 15;
+const PEN = (i: number) => AT.border + 10 + i * 15; // 第 i 个组件开始被画
+const HIT = (i: number) => PEN(i) + 11; // 画完：变身
+/** 每个组件的轮廓（相对格子）：[x, y, w, h, 圆角] */
+const OUTLINE: Record<string, [number, number, number, number, number][]> = {
+  button: [[34, 130, 260, 96, 0]],
+  input: [[30, 136, 268, 90, 0]],
+  card: [[34, 40, 260, 280, 0]],
+  toggle: [[64, 130, 200, 100, 50]],
+  checkbox: [0, 1, 2].map((i) => [40, 70 + i * 76, 48, 48, 0] as [number, number, number, number, number]),
+  chip: [[20, 136, 288, 88, 44]],
+};
+const cellXY = (i: number) => ({x: CELL.x0 + (i % 3) * (CELL.w + CELL.gx), y: CELL.y0 + Math.floor(i / 3) * (CELL.h + CELL.gy)});
+/** 沿矩形周长（顺时针，从左上角起）走到 t 处的点 */
+const onRect = (x: number, y: number, w: number, h: number, t: number) => {
+  const L = 2 * (w + h);
+  let d = ((t % 1) + 1) % 1 * L;
+  if (d < w) return {x: x + d, y};
+  d -= w;
+  if (d < h) return {x: x + w, y: y + d};
+  d -= h;
+  if (d < w) return {x: x + w - d, y: y + h};
+  d -= w;
+  return {x, y: y + h - d};
+};
 
 /** 一个组件的“前 / 后”。k = 0 为默认样式，1 为新粗野主义 */
 const Component: React.FC<{kind: string; k: number; f: number}> = ({kind, k, f}) => {
@@ -142,24 +155,54 @@ const Component: React.FC<{kind: string; k: number; f: number}> = ({kind, k, f})
   }
 };
 
-export const Borders: React.FC<{f: number}> = ({f}) => {
-  const out = tween(f, AT.shadow - 15, 15, 0, 1, E.in);
+const pillPath = (x: number, y: number, w: number, h: number, r: number) =>
+  r <= 0
+    ? `M${x} ${y} H${x + w} V${y + h} H${x} Z`
+    : `M${x + r} ${y} H${x + w - r} A${r} ${r} 0 0 1 ${x + w - r} ${y + h} H${x + r} A${r} ${r} 0 0 1 ${x + r} ${y} Z`;
+
+export const Borders: React.FC<{f: number; dx?: number}> = ({f, dx = 0}) => {
+  const strokes: React.ReactNode[] = [];
+  let pen: {x: number; y: number} | null = null;
+  COMP.forEach((kind, i) => {
+    const c = cellXY(i);
+    const shapes = OUTLINE[kind];
+    const t0 = PEN(i);
+    const t1 = HIT(i);
+    if (f >= t0 && f < t1) {
+      const prog = (f - t0) / (t1 - t0);
+      shapes.forEach(([x, y, w, h, r], j) => {
+        const a = j / shapes.length;
+        const q = clamp((prog - a) * shapes.length);
+        if (q <= 0) return;
+        strokes.push(<path key={`${i}-${j}`} d={pillPath(c.x + x, c.y + y, w, h, r)} pathLength={1} strokeDasharray="1 1" strokeDashoffset={1 - q} fill="none" stroke={C.ink} strokeWidth={V.border} strokeLinejoin="miter" />);
+        if (q < 1 || j === shapes.length - 1) pen = onRect(c.x + x, c.y + y, w, h, q);
+      });
+    }
+    // 两个组件之间：笔尖飞到下一个的起点
+    if (i < COMP.length - 1 && f >= t1 && f < PEN(i + 1)) {
+      const [x0, y0] = shapes[0];
+      const nx = cellXY(i + 1);
+      const [x1, y1] = OUTLINE[COMP[i + 1]][0];
+      const k = E.inOut(clamp((f - t1) / (PEN(i + 1) - t1)));
+      pen = {x: lerp(c.x + x0, nx.x + x1, k), y: lerp(c.y + y0, nx.y + y1, k)};
+    }
+  });
+  const penOn = f >= PEN(0) - 4 && f < HIT(COMP.length - 1) + 4;
+  const p0 = cellXY(0);
+  if (f < PEN(0)) pen = {x: lerp(1960, p0.x + 34, tween(f, PEN(0) - 10, 10, 0, 1, E.out)), y: lerp(1140, p0.y + 130, tween(f, PEN(0) - 10, 10, 0, 1, E.out))};
   return (
-    <Card f={f} bg={C.yellow} dx={out * -2000} dots={0.14}>
-      <Label f={f} at={AT.border} n="01" en="BORDER" zh="黑框" code={['border: 6px solid #000;', 'border-radius: 0;']} note="每个元素都描到底" />
+    <AbsoluteFill style={{background: C.yellow, transform: `translateX(${dx}px)`}}>
+      <Dots opacity={0.14} />
+      <Label f={f} at={AT.border} n="01" en="BORDER" zh="黑框" code={['border: 6px solid #000;', 'border-radius: 0;']} note="一笔描到底，圆角归零" />
       {COMP.map((kind, i) => {
-        const c = i % 3;
-        const r = Math.floor(i / 3);
-        const x = CELL.x0 + c * (CELL.w + CELL.gx);
-        const y = CELL.y0 + r * (CELL.h + CELL.gy);
+        const {x, y} = cellXY(i);
         const hit = HIT(i);
         const k = f >= hit ? 1 : 0;
-        const stamp = f >= hit ? lerp(1.14, 1, tween(f, hit, 8, 0, 1, E.out)) : 1;
-        const flash = f >= hit ? clamp(1 - (f - hit) / 10) : 0;
+        const pop = f >= hit ? lerp(1.08, 1, tween(f, hit, 10, 0, 1, E.out)) : 1;
         return (
           <div key={kind} style={{position: 'absolute', left: x, top: y, width: CELL.w, height: CELL.h}}>
-            <div style={{position: 'absolute', inset: 0, border: `2px dashed rgba(0,0,0,${0.35 + 0.4 * flash})`, background: `rgba(255,255,255,${0.35 + 0.4 * flash})`}} />
-            <div style={{position: 'absolute', inset: 0, transform: `scale(${stamp})`}}>
+            <div style={{position: 'absolute', inset: 0, border: `2px dashed rgba(0,0,0,0.35)`, background: 'rgba(255,255,255,0.35)'}} />
+            <div style={{position: 'absolute', inset: 0, transform: `scale(${pop})`}}>
               <Component kind={kind} k={k} f={f} />
             </div>
             <div style={{position: 'absolute', left: 12, bottom: 8, ...mono(24, 700), color: C.ink}}>
@@ -169,356 +212,318 @@ export const Borders: React.FC<{f: number}> = ({f}) => {
           </div>
         );
       })}
-    </Card>
+      <svg width={1920} height={1080} style={{position: 'absolute', left: 0, top: 0, overflow: 'visible'}}>
+        {strokes}
+        {penOn && pen && (
+          <g transform={`translate(${(pen as {x: number; y: number}).x} ${(pen as {x: number; y: number}).y})`}>
+            <circle r={16} fill={C.ink} />
+            <circle r={6} fill={C.yellow} />
+          </g>
+        )}
+      </svg>
+    </AbsoluteFill>
   );
 };
 
-// ───────── 02 硬影 ─────────
+// ───────── 02 硬影：抬起来、落下去、摊成阶梯 ─────────
 
-const Slider: React.FC<{x: number; y: number; label: string; v: number; max: number; unit?: string; hot?: boolean}> = ({x, y, label, v, max, unit = 'px', hot}) => {
-  const W = 470;
+const MAIN = {x: 760, y: 200, w: 560, h: 330};
+const STAIR = [
+  {fill: C.pink, z: 8},
+  {fill: C.lime, z: 14},
+  {fill: C.orange, z: 24},
+  {fill: C.blue, z: 40},
+];
+const STEP = {x: 104, y: 118};
+
+const Slider: React.FC<{x: number; y: number; label: string; v: number; max: number; hot?: boolean}> = ({x, y, label, v, max, hot}) => {
   const p = clamp(v / max);
   return (
-    <div style={{position: 'absolute', left: x, top: y, width: W}}>
-      <div style={{display: 'flex', justifyContent: 'space-between', ...mono(26, 700)}}>
+    <div style={{position: 'absolute', left: x, top: y, width: 520}}>
+      <div style={{display: 'flex', justifyContent: 'space-between', ...mono(30, 700)}}>
         <span>{label}</span>
-        <span style={{background: hot ? C.yellow : 'transparent', padding: '0 8px'}}>{`${Math.round(v)}${unit}`}</span>
+        <span style={{background: hot ? C.yellow : 'transparent', padding: '0 8px'}}>{`${Math.round(v)}px`}</span>
       </div>
-      <div style={{position: 'relative', marginTop: 14, height: 24, border: `4px solid ${C.ink}`, background: C.white}}>
+      <div style={{position: 'relative', marginTop: 14, height: 26, border: `4px solid ${C.ink}`, background: C.white}}>
         <div style={{position: 'absolute', left: 0, top: 0, bottom: 0, width: `${p * 100}%`, background: C.ink}} />
-        <div style={{position: 'absolute', left: `calc(${p * 100}% - 20px)`, top: -16, width: 40, height: 48, boxSizing: 'border-box', background: C.pink, border: `4px solid ${C.ink}`, boxShadow: `4px 4px 0 ${C.ink}`}} />
+        <div style={{position: 'absolute', left: `calc(${p * 100}% - 22px)`, top: -16, width: 44, height: 50, boxSizing: 'border-box', background: C.pink, border: `4px solid ${C.ink}`, boxShadow: `4px 4px 0 ${C.ink}`}} />
       </div>
     </div>
   );
 };
 
-// 层级 = 偏移量：越“高”的卡片阴影越长
-const DROPS = [
-  {x: 1590, y: 150, w: 260, h: 190, rot: 5, fill: C.pink, at: 318, text: '4px', s: 4},
-  {x: 1610, y: 770, w: 230, h: 200, rot: -4, fill: C.lime, at: 326, text: '8px', s: 8},
-  {x: 830, y: 780, w: 600, h: 170, rot: -2, fill: C.blue, at: 334, text: '层级 = 偏移量', s: 14},
-];
-
-export const Shadows: React.FC<{f: number}> = ({f}) => {
+export const Shadows: React.FC<{f: number; dx?: number}> = ({f, dx = 0}) => {
   const a = AT.shadow;
-  const blur = lerp(40, 0, tween(f, a + 6, 26, 0, 1, E.inOut));
+  const blur = lerp(40, 0, tween(f, a + 2, 28, 0, 1, E.inOut));
   const soft = clamp(blur / 40);
-  // 偏移：跟着模糊一起长到 14，再按半拍跳 8 → 24 → 14
-  let off = lerp(0, 14, 1 - soft);
-  const steps: [number, number, number][] = [
-    [a + 45, 14, 8],
-    [a + 60, 8, 24],
-    [a + 75, 24, 14],
-  ];
-  for (const [at, from, to] of steps) if (f >= at) off = lerp(from, to, spr(f, at, {damping: 12, mass: 0.5, stiffness: 300}));
   const k = 1 - soft;
-  const shadowCss = `${off}px ${lerp(30, off, k)}px ${blur}px rgba(0,0,0,${lerp(0.3, 1, k)})`;
-  const snap = f >= a + 32 ? clamp(1 - (f - a - 32) / 12) : 0;
-  const sh = {x: 0, y: thud(f, [
-    [318, 5],
-    [326, 5],
-    [334, 7],
-  ])};
-  const card = {x: 820, y: 260, w: 700, h: 420};
+  // 主卡片的高度：14 → 抬到 52 → 落回 14 → 阶梯摊开时退到 4
+  let z = 14;
+  if (f >= a + 32 && f < a + 60) z = lerp(14, 52, tween(f, a + 32, 16, 0, 1, GLIDE));
+  if (f >= a + 60) z = land(f, a + 60, 14, 52);
+  if (f >= a + 64) z = lerp(z, 4, tween(f, a + 64, 14, 0, 1, GLIDE));
+  const off = lerp(0, 14, k);
+  const softCss = soft > 0.001 ? `${off}px ${lerp(30, off, k)}px ${blur}px rgba(0,0,0,${lerp(0.3, 1, k)})` : undefined;
+  const expand = tween(f, AT.press - 14, 14, 0, 1, WHIP);
   return (
-    <Card f={f} bg={C.paper}>
-      <div style={{position: 'absolute', inset: 0, transform: `translate(${sh.x}px, ${sh.y}px)`}}>
-        <Label f={f} at={a} n="02" en="SHADOW" zh="硬影" code={['box-shadow:', '  14px 14px 0 #000;']} note="模糊永远是 0" chip={C.yellow} />
-        <Slider x={96} y={760} label="blur" v={blur} max={40} hot={blur < 0.5} />
-        <Slider x={96} y={880} label="offset" v={off} max={24} hot={f >= a + 45} />
-        {/* 主卡片 */}
-        <div
-          style={{
-            position: 'absolute',
-            left: card.x,
-            top: card.y,
-            width: card.w,
-            height: card.h,
-            boxSizing: 'border-box',
-            background: C.white,
-            border: `${V.border}px solid ${C.ink}`,
-            boxShadow: shadowCss,
-            transform: `scale(${1 + 0.04 * snap})`,
-          }}
-        >
-          <div style={{position: 'absolute', left: 44, top: 64, ...disp(104, 112), color: C.ink}}>SHADOW</div>
-          <div style={{position: 'absolute', left: 48, top: 214, ...sc(46, 900), color: C.ink}}>阴影 = 偏移的黑块</div>
-          <div style={{position: 'absolute', left: 48, top: 300, ...mono(26, 700), color: C.ink}}>{`x = y = ${Math.round(off)}px · blur ${Math.round(blur)}`}</div>
+    <AbsoluteFill style={{background: C.paper, transform: `translateX(${dx}px)`}}>
+      <Dots />
+      <Label f={f} at={a} n="02" en="SHADOW" zh="硬影" code={['box-shadow:', '  14px 14px 0 #000;']} note="模糊永远是 0" chip={C.yellow} />
+      <Slider x={96} y={760} label="blur" v={blur} max={40} hot={blur < 0.5} />
+      {f >= a + 74 && (
+        <Box x={96} y={880} w={560} h={104} fill={C.yellow} shadow={10} z={land(f, a + 76, 10, 60)} rot={-2} scale={lerp(1.25, 1, tween(f, a + 74, 8, 0, 1, E.out))} style={{display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
+          <span style={{...sc(54, 900)}}>层级 = 偏移量</span>
+        </Box>
+      )}
+      {/* 主卡片 */}
+      <Box x={MAIN.x} y={MAIN.y} w={MAIN.w} h={MAIN.h} fill={C.white} shadow={14} z={softCss ? undefined : z} softShadow={softCss}>
+        <div style={{position: 'absolute', left: 38, top: 56, ...disp(84, 112), color: C.ink}}>SHADOW</div>
+        <div style={{position: 'absolute', left: 42, top: 180, ...sc(42, 900), color: C.ink}}>阴影 = 偏移的黑块</div>
+        <div style={{position: 'absolute', left: 42, top: 256, ...mono(28, 700), color: C.ink}}>{softCss ? `blur ${Math.round(blur)}px` : `z = ${Math.round(z)}px · blur 0`}</div>
+      </Box>
+      {/* 抬起来时的高度标注 */}
+      {f >= a + 34 && f < a + 66 && (
+        <div style={{position: 'absolute', left: MAIN.x + MAIN.w + 30, top: MAIN.y + MAIN.h - 40, opacity: appear(f, a + 34, 6) * (1 - tween(f, a + 60, 6)), background: C.ink, color: C.yellow, padding: '6px 16px', ...mono(40, 700)}}>
+          {`↑ z ${Math.round(z)}px`}
         </div>
-        {/* 偏移的尺寸标注 */}
-        {f >= a + 40 && (
-          <div style={{position: 'absolute', left: card.x + card.w, top: card.y + card.h, opacity: appear(f, a + 40, 6)}}>
-            <svg width={160} height={160} style={{position: 'absolute', left: 0, top: 0, overflow: 'visible'}}>
-              <path d={`M0 ${off + 30} H${off} M0 ${off + 22} V${off + 38} M${off} ${off + 22} V${off + 38}`} stroke={C.ink} strokeWidth="4" fill="none" />
-            </svg>
-            <div style={{position: 'absolute', left: off + 18, top: off + 14, background: C.yellow, border: `4px solid ${C.ink}`, padding: '4px 12px', ...mono(34, 700)}}>{`${Math.round(off)}px`}</div>
-          </div>
-        )}
-        {/* 砸下来的三张 */}
-        {DROPS.map((d, i) => {
-          if (f < d.at - 10) return null;
-          const k2 = slam(f, d.at - 8);
-          return (
-            <Box key={i} x={d.x} y={lerp(-700, d.y, k2)} w={d.w} h={d.h} fill={d.fill} shadow={d.s} rot={d.rot} style={{display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
-              <span style={i === 2 ? sc(48, 900) : mono(64, 700)}>{d.text}</span>
-            </Box>
-          );
-        })}
-      </div>
-    </Card>
+      )}
+      {/* 阶梯 */}
+      {STAIR.map((s, j0) => {
+        const j = j0 + 1;
+        const t = a + 64 + j0 * 5;
+        if (f < t) return null;
+        const m = tween(f, t, 14, 0, 1, GLIDE);
+        const zz = f < t + 14 ? s.z + 30 : land(f, t + 14, s.z, s.z + 30);
+        const last = j0 === STAIR.length - 1;
+        const g = {x: lerp(MAIN.x, MAIN.x + j * STEP.x, m), y: lerp(MAIN.y, MAIN.y + j * STEP.y, m), w: MAIN.w, h: MAIN.h};
+        const e = last ? expand : 0;
+        const box = {x: lerp(g.x, -V.border, e), y: lerp(g.y, -V.border, e), w: lerp(g.w, 1920 + 2 * V.border, e), h: lerp(g.h, 1080 + 2 * V.border, e)};
+        return (
+          <Box key={j} x={box.x} y={box.y} w={box.w} h={box.h} fill={s.fill} shadow={s.z} z={zz * (1 - e)}>
+            <div style={{position: 'absolute', left: 26, top: 22, opacity: 1 - e, ...mono(52, 700)}}>{`${s.z}px`}</div>
+          </Box>
+        );
+      })}
+    </AbsoluteFill>
   );
 };
 
-// ───────── 03 按下 ─────────
+// ───────── 03 按下 + 04 来历：同一面网格 ─────────
 
-const PH = {x: 1150, y: 132, w: 540, sx: 1168, sy: 150};
-const CHIP = (i: number) => ({x: PH.sx + 28 + i * 112, y: PH.sy + 330, w: 100, h: 52});
-const ITEM = 94;
-const ITEM_Y = (i: number) => PH.sy + 410 + i * ITEM;
-const BTN = {x: PH.sx + 28, y: PH.sy + 712, w: 448, h: 76};
-const BIG = {x: 96, y: 830, w: 520, h: 150};
-
-/** 光标路径：[帧, x, y]，帧之间 inOut */
-const PATH: [number, number, number][] = [
-  [AT.press + 2, 1960, 1140],
-  [AT.press + 24, CHIP(1).x + 56, CHIP(1).y + 30],
-  [AT.press + 32, CHIP(1).x + 56, CHIP(1).y + 30],
-  [AT.press + 42, PH.sx + 300, ITEM_Y(0) + 46],
-  [AT.press + 48, PH.sx + 300, ITEM_Y(0) + 46],
-  [AT.press + 58, BTN.x + 300, BTN.y + 42],
-  [AT.press + 76, BTN.x + 300, BTN.y + 42],
-  [AT.press + 88, BIG.x + 380, BIG.y + 80],
-];
-const along = (f: number) => {
-  if (f <= PATH[0][0]) return {x: PATH[0][1], y: PATH[0][2]};
-  for (let i = 1; i < PATH.length; i++) {
-    const [f1, x1, y1] = PATH[i];
-    const [f0, x0, y0] = PATH[i - 1];
-    if (f <= f1) {
-      const t = E.inOut(clamp((f - f0) / (f1 - f0)));
-      return {x: lerp(x0, x1, t), y: lerp(y0, y1, t)};
-    }
-  }
-  const last = PATH[PATH.length - 1];
-  return {x: last[1], y: last[2]};
-};
-
-const ICON: Record<string, string> = {
-  cup: 'M-13 -7 H9 V7 A7 7 0 0 1 2 14 H-6 A7 7 0 0 1 -13 7 Z M9 -2 H13 A5 5 0 0 1 13 8 H9',
-  train: 'M-12 -14 H12 V7 H-12 Z M-12 -2 H12 M-7 14 L-4 7 M7 14 L4 7',
-  bowl: 'M-15 -1 H15 A15 15 0 0 1 -15 -1 Z M-5 -4 L9 -17 M1 -4 L14 -15',
-  tea: 'M-10 -12 H10 L7 14 H-7 Z M-10 -5 H10 M2 -12 L6 -20',
-};
-
-const Item: React.FC<{y: number; icon: string; name: string; when: string; amt: string; col: string; p?: number; scale?: number}> = ({y, icon, name, when, amt, col, p = 0, scale = 1}) => (
-  <Box x={PH.sx + 28} y={y} w={448} h={80} fill={C.white} border={4} shadow={6} p={p} scale={scale}>
-    <div style={{position: 'absolute', left: 14, top: 10, width: 54, height: 54, boxSizing: 'border-box', background: col, border: `4px solid ${C.ink}`}}>
-      <svg width="46" height="46" style={{position: 'absolute', left: 0, top: 0}}>
-        <path d={ICON[icon]} transform="translate(23 23)" fill="none" stroke={C.ink} strokeWidth="3.5" strokeLinejoin="round" strokeLinecap="round" />
-      </svg>
-    </div>
-    <div style={{position: 'absolute', left: 88, top: 12, ...sc(26, 700)}}>{name}</div>
-    <div style={{position: 'absolute', left: 88, top: 48, ...mono(17, 400), opacity: 0.65}}>{when}</div>
-    <div style={{position: 'absolute', right: 18, top: 20, ...grot(34, 700)}}>{amt}</div>
-  </Box>
-);
-
-export const Press: React.FC<{f: number}> = ({f}) => {
-  const a = AT.press;
-  const enter = tween(f, a - 14, 14, 0, 1, E.in);
-  const exit = tween(f, AT.lineage - 14, 14, 0, 1, E.in);
-  const sh = {x: 0, y: thud(f, [[a, 12]])};
-  const chipP = press(f, a + 30, 99, false);
-  const itemP = press(f, a + 45, 4);
-  const btnP = press(f, a + 60, 8);
-  const bigP1 = press(f, a + 90, 4);
-  const bigP2 = press(f, a + 105, 99, false);
-  const added = f >= a + 72 ? slam(f, a + 72) : 0;
-  const balance = f >= a + 74 ? Math.round(lerp(3280, 3262, clamp((f - a - 74) / 10))) : 3280;
-  const cur = along(f);
-  const curP = Math.max(chipP * (f < a + 40 ? 1 : 0), itemP, btnP, bigP1, bigP2);
-  const items = [
-    {icon: 'cup', name: '咖啡', when: '今天 08:12', amt: '−32', col: C.pink},
-    {icon: 'train', name: '地铁', when: '今天 08:40', amt: '−4', col: C.lime},
-    {icon: 'bowl', name: '午饭', when: '昨天 12:30', amt: '−46', col: C.orange},
-  ];
-  return (
-    <div style={{position: 'absolute', inset: 0, transform: `translateY(${(1 - enter) * -1150 - exit * 1200}px)`}}>
-      <Card f={f} bg={C.blue} dy={enter < 1 || exit > 0 ? 1 : 0} dots={0.2}>
-        <div style={{position: 'absolute', inset: 0, transform: `translate(${sh.x}px, ${sh.y}px)`}}>
-          <Label f={f} at={a} n="03" en="PRESS" zh="按下" code={[':active {', '  translate: 14px 14px;', '  box-shadow: none;', '}']} note="位移 = 阴影，阴影 → 0" chip={C.yellow} />
-          <Box x={BIG.x} y={BIG.y} w={BIG.w} h={BIG.h} fill={f >= a + 90 ? C.pink : C.yellow} shadow={14} p={Math.max(bigP1, bigP2)} style={{display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
-            <span style={{...sc(64, 900)}}>{f >= a + 90 ? '按下去 ✓' : '按我 →'}</span>
-          </Box>
-          {/* 手机 */}
-          <div style={{position: 'absolute', left: PH.x + 14, top: PH.y + 14, width: PH.w, height: 1100, borderRadius: 64, background: C.ink}} />
-          <div style={{position: 'absolute', left: PH.x, top: PH.y, width: PH.w, height: 1100, borderRadius: 64, background: C.ink}} />
-          <div style={{position: 'absolute', left: PH.sx, top: PH.sy, width: 504, height: 1100, borderRadius: 48, background: C.paper, overflow: 'hidden'}}>
-            <div style={{position: 'absolute', left: 34, top: 26, ...mono(20, 700)}}>9:41</div>
-            <div style={{position: 'absolute', left: 30, top: 74, ...sc(42, 900)}}>十月</div>
-            <div style={{position: 'absolute', left: 124, top: 90, ...mono(22, 700)}}>/ 2026</div>
-          </div>
-          <Box x={PH.sx + 410} y={PH.sy + 66} w={60} h={60} fill={C.white} border={4} shadow={5} style={{display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
-            <span style={{...grot(44, 700)}}>+</span>
-          </Box>
-          <Box x={PH.sx + 28} y={PH.sy + 140} w={448} h={164} fill={C.yellow} shadow={10}>
-            <div style={{position: 'absolute', left: 22, top: 18, ...mono(20, 700)}}>BALANCE · 本月可用</div>
-            <div style={{position: 'absolute', left: 20, top: 52, ...grot(72, 700, -0.04)}}>{`¥${balance.toLocaleString('en-US')}`}</div>
-            <div style={{position: 'absolute', left: 22, right: 22, top: 120, height: 24, boxSizing: 'border-box', border: `4px solid ${C.ink}`, background: C.white}}>
-              <div style={{width: `${62 + 0.6 * clamp((f - a - 74) / 10)}%`, height: '100%', background: C.ink}} />
-            </div>
-          </Box>
-          {['全部', '餐饮', '交通', '订阅'].map((t, i) => {
-            const c = CHIP(i);
-            const active = i === 1 ? chipP > 0.5 : i === 0 ? chipP <= 0.5 : false;
-            const fill = active ? C.ink : [C.white, C.pink, C.lime, C.white][i];
-            return (
-              <Box key={t} x={c.x} y={c.y} w={c.w} h={c.h} fill={fill} border={4} shadow={active ? 0 : 5} p={i === 1 ? chipP : 0} r={26} style={{display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
-                <span style={{...sc(22, 700), color: active ? C.paper : C.ink}}>{t}</span>
-              </Box>
-            );
-          })}
-          {/* 列表：新条目弹进来，下面的往下挤，最后一条被裁掉 */}
-          <div style={{position: 'absolute', left: 0, top: ITEM_Y(0) - 10, width: 1920, height: 3 * ITEM + 6, overflow: 'hidden'}}>
-            <div style={{position: 'absolute', left: 0, top: -(ITEM_Y(0) - 10), width: 1920, height: 1080}}>
-              {f >= a + 70 && <Item y={ITEM_Y(0)} icon="tea" name="奶茶" when="刚刚" amt="−18" col={C.blue} scale={lerp(0.2, 1, added)} />}
-              {items.map((it, i) => (
-                <Item key={it.name} y={ITEM_Y(i) + ITEM * added} {...it} p={i === 0 ? itemP : 0} />
-              ))}
-            </div>
-          </div>
-          <Box x={BTN.x} y={BTN.y} w={BTN.w} h={BTN.h} fill={C.pink} shadow={10} p={btnP} style={{display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
-            <span style={{...sc(34, 900)}}>+ 记一笔</span>
-          </Box>
-          <Burst x={CHIP(1).x + 56} y={CHIP(1).y + 30} f={f} at={a + 30} r0={20} />
-          <Burst x={BTN.x + 300} y={BTN.y + 42} f={f} at={a + 60} />
-          <Burst x={BIG.x + 380} y={BIG.y + 80} f={f} at={a + 90} />
-          <Burst x={BIG.x + 380} y={BIG.y + 80} f={f} at={a + 105} />
-          {f >= a + 2 && <Cursor x={cur.x} y={cur.y} p={curP} />}
-        </div>
-      </Card>
-    </div>
-  );
-};
-
-// ───────── 04 来历 ─────────
-
-const G = {x: 700, y: 170, w: 1124, h: 780, cols: 5, rows: 4, gap: 0};
+const G = {x: 720, y: 190, w: 1104, h: 760, cols: 5, rows: 4};
+const CW = G.w / G.cols;
+const CH = G.h / G.rows;
+const IN = 14; // 按钮在格子里的内缩
+const CLICK1 = {at: AT.press + 36, c: 2, r: 1};
+const CLICK2 = {at: AT.press + 66, c: 4, r: 3};
+const ALL = AT.press + 90; // f450：按一颗，全部按下
 const ERA = [
   {at: AT.lineage, year: '1952', zh: '清水混凝土', en: 'BÉTON BRUT', note: ['勒·柯布西耶 · 马赛公寓', '材料不粉饰，结构露在外面']},
   {at: AT.lineage + 40, year: '2014', zh: '粗野主义网页', en: 'BRUTALIST WEB', note: ['brutalistwebsites.com', '浏览器默认样式，原样上线']},
   {at: AT.lineage + 76, year: '2021', zh: '新粗野主义', en: 'NEO-BRUTALISM', note: ['Gumroad 等产品带进主流', '黑框、硬影、平涂——还好用']},
 ];
+
 const WEB = ['index', 'about', 'work', 'blog', 'contact', '<table>', 'Times', 'links', 'raw', 'html', '1px', 'serif', 'home', 'news', 'faq', 'shop', 'zine', 'radio', 'tags', 'rss'];
 const UI_BITS = ['¥', '★', '→', '62%', '9:41', 'OK', '+', '✓', 'NEW', '♪', '24px', '01', 'Aa', '#000', 'A+', '●', '↗', '?', 'GO', '∞'];
 const LOGGIA = [C.orange, C.yellow, C.blue, C.lime];
 const FILLS = [C.yellow, C.pink, C.lime, C.blue, C.orange, C.white];
 
-export const Lineage: React.FC<{f: number}> = ({f}) => {
-  const a = AT.lineage;
-  const rise = f >= a - 2 ? slam(f, a - 2) : 0;
+
+/** 里程表：四位数各自滚到下一个年份（9 → 0 往上滚，不倒回去） */
+const ODO = [
+  [1, 9, 5, 2],
+  [2, 10, 11, 4],
+  [2, 10, 12, 11],
+];
+const Odometer: React.FC<{f: number; x: number; y: number}> = ({f, x, y}) => {
+  const H = 200;
+  return (
+    <div style={{position: 'absolute', left: x, top: y, display: 'flex', gap: 4}}>
+      {[0, 1, 2, 3].map((i) => {
+        let v = ODO[0][i];
+        for (let e = 1; e < ODO.length; e++) {
+          const t = ERA[e].at + i * 2;
+          if (f >= t) v += (ODO[e][i] - ODO[e - 1][i]) * tween(f, t, 14, 0, 1, GLIDE);
+        }
+        return (
+          <div key={i} style={{width: 150, height: H, overflow: 'hidden', position: 'relative'}}>
+            <div style={{position: 'absolute', left: 0, top: -v * H}}>
+              {Array.from({length: 20}, (_, d) => (
+                <div key={d} style={{height: H, display: 'flex', alignItems: 'center', ...disp(200, 112, 0), color: C.ink}}>
+                  {d % 10}
+                </div>
+              ))}
+            </div>
+          </div>
+        );
+      })}
+    </div>
+  );
+};
+
+const mix = (a: string, b: string, t: number) => (t <= 0 ? a : t >= 1 ? b : `color-mix(in srgb, ${b} ${t * 100}%, ${a})`);
+
+export const Grid: React.FC<{f: number}> = ({f}) => {
+  const a = AT.press;
+  const drain = tween(f, ALL + 2, 18, 0, 1, E.inOut); // 按钮褪成混凝土
+  const bgK = tween(f, ALL + 6, 20, 0, 1, E.inOut); // 蓝底 → 纸
+  const wall = tween(f, ALL + 12, 16, 0, 1, E.inOut); // 墙面和窗洞出现（和褪色交叠）
+  const web = tween(f, ERA[1].at, 10, 0, 1, E.out);
+  const pop = tween(f, ERA[2].at, 12, 0, 1, E.out);
+  const labelOut = tween(f, ALL + 8, 14, 0, 1, WHIP);
+  // 光标：进场 → 点第一颗 → 点角上那颗 → 回到中间按下全部
+  const cc = (c: number, r: number) => ({x: G.x + (c + 0.5) * CW, y: G.y + (r + 0.5) * CH});
+  const P1 = cc(CLICK1.c, CLICK1.r);
+  const P2 = cc(CLICK2.c, CLICK2.r);
+  const P3 = cc(2, 2);
+  let cur = {x: 1960, y: 1140};
+  const seg = (t0: number, t1: number, A: {x: number; y: number}, B: {x: number; y: number}) => {
+    if (f >= t0) {
+      const k = tween(f, t0, t1 - t0, 0, 1, GLIDE);
+      cur = {x: lerp(A.x, B.x, k), y: lerp(A.y, B.y, k)};
+    }
+  };
+  seg(a + 22, CLICK1.at - 2, {x: 1960, y: 1140}, P1);
+  seg(CLICK1.at + 8, CLICK2.at - 2, P1, P2);
+  seg(CLICK2.at + 8, ALL - 2, P2, P3);
+  const curP = Math.max(press(f, CLICK1.at, 3), press(f, CLICK2.at, 3), press(f, ALL, 99, false));
+  const curO = 1 - tween(f, ALL + 10, 6);
+  // 方形的水波
+  const ring = (at: number, P: {x: number; y: number}) => {
+    const t = (f - at) / 30;
+    if (t < 0 || t > 1) return null;
+    const s = 60 + 1400 * E.out(t);
+    return <div style={{position: 'absolute', left: P.x - s / 2, top: P.y - s / 2, width: s, height: s, border: `8px solid ${C.ink}`, opacity: 0.6 * (1 - t) * (1 - t)}} />;
+  };
   let era = 0;
   ERA.forEach((e, i) => {
     if (f >= e.at) era = i;
   });
-  const cw = G.w / G.cols;
-  const ch = G.h / G.rows;
-  const concrete = 1 - tween(f, ERA[1].at, 10, 0, 1, E.out);
-  const sh = {x: 0, y: 0};
+  const lineageIn = tween(f, ALL + 24, 14, 0, 1, GLIDE);
   return (
-    <Card f={f} bg={C.paper}>
-      <div style={{position: 'absolute', inset: 0, transform: `translate(${sh.x}px, ${sh.y}px)`}}>
-        <div style={{position: 'absolute', left: 96, top: 170, height: 50, padding: '0 18px', display: 'flex', alignItems: 'center', background: C.ink, color: C.paper, ...mono(24, 700, 0.06)}}>04 / LINEAGE</div>
-        {ERA.map((e, i) => {
-          if (i !== era) return null;
-          const k = slam(f, e.at);
-          return (
-            <div key={i} style={{position: 'absolute', left: 90, top: 250, transform: `translateY(${(1 - k) * 60}px)`, opacity: clamp((f - e.at) / 4)}}>
-              <div style={{...disp(200, 112), color: C.ink}}>{e.year}</div>
-              <div style={{marginTop: 20, ...sc(64, 900), color: C.ink}}>{e.zh}</div>
-              <div style={{marginTop: 14, ...grot(30, 700, 0.06), color: C.ink}}>{e.en}</div>
-              <div style={{marginTop: 34, ...sc(34, 700), lineHeight: 1.5, color: C.ink}}>
-                {e.note.map((n) => (
-                  <div key={n}>{n}</div>
-                ))}
-              </div>
-            </div>
-          );
-        })}
-        {/* 时间刻度 */}
-        <div style={{position: 'absolute', left: 96, top: 900, display: 'flex', gap: 14}}>
-          {ERA.map((e, i) => (
-            <div key={i} style={{padding: '6px 14px', border: `4px solid ${C.ink}`, background: i === era ? C.yellow : i < era ? C.ink : C.white, color: i < era ? C.paper : C.ink, ...mono(22, 700)}}>{e.year}</div>
-          ))}
-        </div>
-        {/* 同一面网格 */}
-        <div style={{position: 'absolute', left: G.x, top: G.y + (1 - rise) * 900, width: G.w, height: G.h}}>
-          {/* 混凝土本体 */}
-          <div style={{position: 'absolute', inset: 0, opacity: concrete, background: C.concrete}}>
-            <svg width={G.w} height={G.h} style={{position: 'absolute', inset: 0}}>
-              <filter id="cnc">
-                <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" seed="52" />
-                <feColorMatrix values="0 0 0 0 0.25  0 0 0 0 0.24  0 0 0 0 0.22  0 0 0 0.55 0" />
-              </filter>
-              <rect width={G.w} height={G.h} filter="url(#cnc)" />
-              {Array.from({length: 26}, (_, i) => (
-                <line key={i} x1={0} x2={G.w} y1={i * 30 + 6} y2={i * 30 + 6} stroke="#00000018" strokeWidth={2} />
-              ))}
-            </svg>
-          </div>
-          <div style={{position: 'absolute', inset: 0, background: C.white, border: `2px solid ${C.ink}`, opacity: (1 - concrete) * (1 - tween(f, ERA[2].at, 12, 0, 1, E.out))}} />
-          {Array.from({length: G.cols * G.rows}, (_, n) => {
-            const c = n % G.cols;
-            const r = Math.floor(n / G.cols);
-            const x = c * cw;
-            const y = r * ch;
-            const d = (c + r) * 2;
-            const tB = f - ERA[1].at - d;
-            const tC = f - ERA[2].at - d;
-            const toC = tC >= 0 ? slam(f, ERA[2].at + d) : 0;
-            const phase = tC >= 0 ? 2 : tB >= 4 ? 1 : 0;
-            // 翻牌：4 帧压扁，4 帧展开
-            const sy = phase === 0 ? 1 - clamp(tB / 4) : phase === 1 ? clamp((tB - 4) / 4) : 1;
-            if (phase === 0) {
-              // 窗洞 + 阳台板 + 彩色侧墙（马赛公寓的 polychromy）
-              const lg = (c * 7 + r * 3) % 5 < 2 ? LOGGIA[(c + r) % 4] : null;
-              return (
-                <div key={n} style={{position: 'absolute', left: x, top: y, width: cw, height: ch, transform: `scaleY(${sy})`}}>
-                  <div style={{position: 'absolute', left: 18, top: 16, right: 18, bottom: 34, background: '#3B3934', boxShadow: 'inset 10px 10px 0 #2A2925'}} />
-                  {lg && <div style={{position: 'absolute', left: 18, top: 16, width: 34, bottom: 34, background: lg}} />}
-                  <div style={{position: 'absolute', left: 0, right: 0, bottom: 14, height: 20, background: C.concreteDark}} />
-                </div>
-              );
-            }
-            if (phase === 1) {
-              return (
-                <div key={n} style={{position: 'absolute', left: x, top: y, width: cw, height: ch, boxSizing: 'border-box', border: `1px solid ${C.ink}`, transform: `scaleY(${sy})`, padding: 14}}>
-                  <div style={{...serif(30, 700)}}>{WEB[n].startsWith('<') ? WEB[n] : WEB[n][0].toUpperCase() + WEB[n].slice(1)}</div>
-                  <div style={{...serif(22), color: C.link, textDecoration: 'underline', marginTop: 8}}>{WEB[(n + 7) % WEB.length]}</div>
-                  <div style={{...serif(22), color: C.link, textDecoration: 'underline'}}>{WEB[(n + 13) % WEB.length]}</div>
-                </div>
-              );
-            }
-            const inset = lerp(0, 12, toC);
+    <AbsoluteFill style={{background: mix(C.blue, C.paper, bgK)}}>
+      <Dots opacity={lerp(0.2, 0.16, bgK)} />
+      {labelOut < 1 && (
+        <Label f={f} at={a} n="03" en="PRESS" zh="按下" code={[':active {', '  translate: 14px 14px;', '  box-shadow: none;', '}']} note="位移 = 阴影，阴影 → 0" chip={C.yellow} out={labelOut} />
+      )}
+      {/* 04 来历的左栏 */}
+      {lineageIn > 0 && (
+        <div style={{position: 'absolute', inset: 0, transform: `translateX(${(1 - lineageIn) * -900}px)`}}>
+          <div style={{position: 'absolute', left: 96, top: 170, height: 50, padding: '0 18px', display: 'flex', alignItems: 'center', background: C.ink, color: C.paper, ...mono(24, 700, 0.06)}}>04 / LINEAGE</div>
+          <Odometer f={f} x={86} y={240} />
+          {ERA.map((e, i) => {
+            // 标题等里程表滚到一半再换
+            const show = tween(f, e.at + 6, 10, 0, 1, E.out) * (i < ERA.length - 1 ? 1 - tween(f, ERA[i + 1].at + 2, 6) : 1);
+            if (show <= 0.001 || (i === 0 && f < ALL + 24)) return null;
             return (
-              <Box
-                key={n}
-                x={x + inset}
-                y={y + inset}
-                w={cw - 2 * inset}
-                h={ch - 2 * inset}
-                fill={FILLS[(c * 3 + r * 2) % FILLS.length]}
-                border={lerp(1, V.border, Math.min(1, toC))}
-                shadow={10 * toC}
-                rot={((c + r) % 3 === 0 ? 1.5 : 0) * toC}
-                style={{display: 'flex', alignItems: 'center', justifyContent: 'center'}}
-              >
-                <span style={{...grot(n % 4 === 0 ? 70 : 48, 700)}}>{UI_BITS[n]}</span>
-              </Box>
+              <div key={i} style={{position: 'absolute', left: 96, top: 470, opacity: show, transform: `translateY(${(1 - show) * 30}px)`}}>
+                <div style={{...sc(72, 900), color: C.ink}}>{e.zh}</div>
+                <div style={{marginTop: 14, ...grot(32, 700, 0.06), color: C.ink}}>{e.en}</div>
+                <div style={{marginTop: 30, ...sc(34, 700), lineHeight: 1.5, color: C.ink}}>
+                  {e.note.map((n) => (
+                    <div key={n}>{n}</div>
+                  ))}
+                </div>
+              </div>
             );
           })}
+          <div style={{position: 'absolute', left: 96, top: 900, display: 'flex', gap: 14}}>
+            {ERA.map((e, i) => (
+              <div key={i} style={{padding: '6px 14px', border: `4px solid ${C.ink}`, background: i === era ? C.yellow : i < era ? C.ink : C.white, color: i < era ? C.paper : C.ink, ...mono(26, 700)}}>{e.year}</div>
+            ))}
+          </div>
         </div>
+      )}
+      {/* 墙面：1952 */}
+      <div style={{position: 'absolute', left: G.x, top: G.y, width: G.w, height: G.h, opacity: wall * (1 - web), background: C.concrete}}>
+        <svg width={G.w} height={G.h} style={{position: 'absolute', inset: 0}}>
+          <filter id="cnc">
+            <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" seed="52" />
+            <feColorMatrix values="0 0 0 0 0.25  0 0 0 0 0.24  0 0 0 0 0.22  0 0 0 0.55 0" />
+          </filter>
+          <rect width={G.w} height={G.h} filter="url(#cnc)" />
+          {Array.from({length: 26}, (_, i) => (
+            <line key={i} x1={0} x2={G.w} y1={i * 30 + 6} y2={i * 30 + 6} stroke="#00000018" strokeWidth={2} />
+          ))}
+        </svg>
       </div>
-    </Card>
+      {/* 2014：表格 */}
+      <div style={{position: 'absolute', left: G.x, top: G.y, width: G.w, height: G.h, opacity: web * (1 - pop), background: C.white, border: `2px solid ${C.ink}`}} />
+      {Array.from({length: G.cols * G.rows}, (_, n) => {
+        const c = n % G.cols;
+        const r = Math.floor(n / G.cols);
+        const x = G.x + c * CW;
+        const y = G.y + r * CH;
+        const d = (c + r) * 2;
+        const landAt = a + 2 + (c + r) * 2.2 + 12;
+        const tB = f - ERA[1].at - d;
+        const tC = f - ERA[2].at - d;
+        // 2021：重新弹起来
+        if (tC >= 0) {
+          const z = land(f, ERA[2].at + d, 10, 0);
+          return (
+            <Box key={n} x={x + IN} y={y + IN} w={CW - 2 * IN} h={CH - 2 * IN} fill={FILLS[(c * 3 + r * 2) % FILLS.length]} shadow={10} z={Math.max(0, z)} rot={((c + r) % 3 === 0 ? 1.5 : 0) * clamp(tC / 10)} style={{display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
+              <span style={{...grot(n % 4 === 0 ? 70 : 50, 700)}}>{UI_BITS[n]}</span>
+            </Box>
+          );
+        }
+        // 2014：翻牌成网页表格
+        if (tB >= 0) {
+          const sx = tB < 4 ? 1 - tB / 4 : clamp((tB - 4) / 4);
+          if (tB < 4) {
+            return <Window key={n} x={x} y={y} sx={sx} c={c} r={r} />;
+          }
+          return (
+            <div key={n} style={{position: 'absolute', left: x, top: y, width: CW, height: CH, boxSizing: 'border-box', border: `1px solid ${C.ink}`, transform: `scaleX(${sx})`, padding: 14, background: C.white}}>
+              <div style={{...serif(32, 700)}}>{WEB[n].startsWith('<') ? WEB[n] : WEB[n][0].toUpperCase() + WEB[n].slice(1)}</div>
+              <div style={{...serif(24), color: C.link, textDecoration: 'underline', marginTop: 8}}>{WEB[(n + 7) % WEB.length]}</div>
+              <div style={{...serif(24), color: C.link, textDecoration: 'underline'}}>{WEB[(n + 13) % WEB.length]}</div>
+            </div>
+          );
+        }
+        // 1952：按下去的按钮褪成混凝土，窗洞同时长出来（交叠，不留空白）
+        if (wall >= 1) return <Window key={n} x={x} y={y} sx={1} c={c} r={r} />;
+        // 03：按钮
+        if (f < landAt - 12) return null;
+        const m = tween(f, landAt - 12, 12, 0, 1, GLIDE);
+        const dist1 = Math.hypot(c - CLICK1.c, r - CLICK1.r);
+        const dist2 = Math.hypot(c - CLICK2.c, r - CLICK2.r);
+        const p = Math.max(press(f, CLICK1.at + dist1 * 3, 3), press(f, CLICK2.at + dist2 * 3, 3), press(f, ALL + Math.hypot(c - 2, r - 2) * 1.2, 999, false));
+        const z = (f < landAt ? 60 : land(f, landAt, 10, 60)) * (1 - p);
+        const fill = mix(FILLS[(c * 3 + r * 2) % FILLS.length], C.concrete, drain);
+        return (
+          <div key={n} style={{position: 'absolute', inset: 0}}>
+            {wall > 0 && (
+              <div style={{position: 'absolute', inset: 0, opacity: wall}}>
+                <Window x={x} y={y} sx={1} c={c} r={r} />
+              </div>
+            )}
+            <div style={{position: 'absolute', inset: 0, opacity: 1 - wall}}>
+            <Box x={x + IN} y={lerp(y + IN - 900, y + IN, m)} w={CW - 2 * IN} h={CH - 2 * IN} fill={fill} shadow={10} z={z} border={lerp(V.border, 0, drain)} style={{display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
+              <span style={{...grot(n % 4 === 0 ? 70 : 50, 700), opacity: 1 - drain}}>{UI_BITS[n]}</span>
+            </Box>
+            </div>
+          </div>
+        );
+      })}
+      {ring(CLICK1.at, P1)}
+      {ring(CLICK2.at, P2)}
+      <Burst x={P1.x} y={P1.y} f={f} at={CLICK1.at} />
+      <Burst x={P2.x} y={P2.y} f={f} at={CLICK2.at} />
+      <Burst x={P3.x} y={P3.y} f={f} at={ALL} />
+      {f >= a + 22 && curO > 0 && <Cursor x={cur.x} y={cur.y} p={curP} opacity={curO} />}
+    </AbsoluteFill>
+  );
+};
+
+/** 马赛公寓的一格：窗洞 + 阳台板 + 彩色侧墙 */
+const Window: React.FC<{x: number; y: number; sx: number; c: number; r: number}> = ({x, y, sx, c, r}) => {
+  const lg = (c * 7 + r * 3) % 5 < 2 ? LOGGIA[(c + r) % 4] : null;
+  return (
+    <div style={{position: 'absolute', left: x, top: y, width: CW, height: CH, transform: `scaleX(${sx})`}}>
+      <div style={{position: 'absolute', left: 18, top: 16, right: 18, bottom: 36, background: '#3B3934', boxShadow: 'inset 12px 12px 0 #2A2925'}} />
+      {lg && <div style={{position: 'absolute', left: 18, top: 16, width: 36, bottom: 36, background: lg}} />}
+      <div style={{position: 'absolute', left: 0, right: 0, bottom: 14, height: 22, background: C.concreteDark}} />
+    </div>
   );
 };
