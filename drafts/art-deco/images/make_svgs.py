@@ -1,12 +1,12 @@
 """
-风格 009 候选 A · 装饰艺术 Art Deco —— 风格图（1080×1350）
+待做风格 · 装饰艺术 Art Deco —— 风格图（1080×1350）
 
   poster.svg      一张海报：中轴上的摩天楼 + 拱窗里的放射光 + 三线框
   cheatsheet.svg  速查卡：五种颜色、三种字、五个母题、五条规则
   app-ui.svg      如果装饰艺术来做 app：一家爵士酒吧的订座页，带标注
 
 金色是“材质”不是“颜色”：统一用一条斜向的多段渐变（userSpaceOnUse），线再细也有金属的明暗。
-用法：python3 styles/009-art-deco/images/make_svgs.py
+用法：python3 drafts/art-deco/images/make_svgs.py
 """
 import math
 import os
