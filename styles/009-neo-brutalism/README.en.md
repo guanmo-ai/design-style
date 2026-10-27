@@ -6,7 +6,7 @@
 
 ## Overview
 
-Black borders on everything, shadows that are solid offset blocks, flat saturated color. A 19.5-second film runs on one piece of physics — shadow length is height. It opens on its own end card; press it and it shatters into thirteen giant keycaps that land, get typed and pressed, and the camera dives into the O. Then, on an empty canvas, a pen draws each frame first and a sign-up form grows out of the borders one element at a time, a card lifts and fans into a staircase of shadows, and a grid of twenty buttons ripples when pressed, drains into 1952 raw concrete, flips into a 2014 brutalist web page, and pops back as 2021 UI. Finally a landing page and a phone app assemble layer by layer, so you see the style in real interfaces.
+Black borders on everything, shadows that are solid offset blocks, flat saturated color. A 20-second film runs on one piece of physics — shadow length is height. It opens on its own end card; press it and it shatters into thirteen giant keycaps that land, get typed and pressed, and the camera dives into the O. Then, on an empty canvas, a pen draws each frame first and a sign-up form grows out of the borders one element at a time, a card lifts and fans into a staircase of shadows, and a grid of twenty buttons ripples when pressed, drains into 1952 raw concrete, flips into a 2014 brutalist web page, and pops back as 2021 UI. Finally a landing page and a phone app assemble layer by layer, so you see the style in real interfaces.
 
 Series: **Design styles**. Period shown: **2021—today** (roots in 1950s Brutalist architecture).
 
@@ -59,7 +59,7 @@ Series: **Design styles**. Period shown: **2021—today** (roots in 1950s Brutal
 |---|---|
 | Canvas | 1920 × 1080 |
 | Frame rate | 60 fps |
-| Duration | 19.5 s / 1170 frames |
+| Duration | 20 s / 1200 frames (chapters 01 and 05 run slightly slower) |
 | Tempo | 120 BPM (every slam and press lands on a beat or half-beat) |
 | Loop | First frame = last frame; the music’s tail folds back into the start, so autoplay loops are seamless |
 

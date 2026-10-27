@@ -21,7 +21,7 @@ All motion follows one rule: **shadow length = height z**. Lift an element and i
 ## Workflow
 
 1. Read the [English guide](README.en.md). The through-line is “shadow length = height”: every element lifts, lands and presses by the same rule.
-2. Use `process/timeline.json` for chapter timing. Segments cover all 1170 frames; every hit is a frame number on a beat or half-beat.
+2. Use `process/timeline.json` for chapter timing. Segments cover all 1200 frames; every hit is a frame number on a beat or half-beat.
 3. Build `video/` in Remotion: `opening.tsx`, `scenes.tsx` (border, shadow, press, lineage), `apps.tsx` (landing page + phone app), `finale.tsx` (five words, end card).
 4. Generate audio with `audio/make_music.py` (NumPy only; no sample libraries).
 5. Build the four sheets from `images/make_svgs.py`.
@@ -33,7 +33,7 @@ All motion follows one rule: **shadow length = height z**. Lift an element and i
 |---|---|
 | Canvas | 1920 × 1080 |
 | Frame rate | 60 fps |
-| Duration | 19.5 seconds / 1170 frames |
+| Duration | 20 seconds / 1200 frames |
 | Tempo | 120 BPM |
 | Motion blur | 120° shutter, 8 samples |
 
