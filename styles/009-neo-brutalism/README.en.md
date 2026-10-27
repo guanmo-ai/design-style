@@ -59,8 +59,8 @@ Series: **Design styles**. Period shown: **2021—today** (roots in 1950s Brutal
 |---|---|
 | Canvas | 1920 × 1080 |
 | Frame rate | 60 fps |
-| Duration | 20 s / 1200 frames (chapters 01 and 05 run slightly slower) |
-| Tempo | 120 BPM (every slam and press lands on a beat or half-beat) |
+| Duration | 20 s / 1200 frames (chapter 01 holds one extra beat) |
+| Tempo | 120 BPM throughout (every slam and press lands on a beat or half-beat) |
 | Loop | First frame = last frame; the music’s tail folds back into the start, so autoplay loops are seamless |
 
 ## Reproduce

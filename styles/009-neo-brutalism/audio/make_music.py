@@ -1,7 +1,7 @@
 """
 Design Style · 风格 009 · 新粗野主义 Neo-Brutalism —— 配乐与音效（纯代码合成，无外部音源）
 
-120 BPM（1 拍 = 0.5 秒 = 30 帧；01、05 两章随画面放慢到约 105 / 114 BPM）· 20 秒 · E 小调 → G 大调
+120 BPM（1 拍 = 0.5 秒 = 30 帧，全片不变速）· 20 秒；01 黑框的画面放慢 ×1.2，正好多出 1 拍 · E 小调 → G 大调
 和弦：开场只有键帽与重击 | Em（01）| C（02）| G（03）| D（04）| Em C（05）| C D Em C D（五个词，每拍一个）| G（片尾）
 音色：方波贝斯（只留奇次谐波，像一块没打磨的混凝土）、909 式底鼓 + 拍手、反拍的方波和弦“戳”、木琴旋律。
   0–2s       开场：f8 海报被按下 · f14 炸开 · 十三颗键帽依次落稳 · 一道打字的波 · f75 一起按下 · f84 一起弹起 · f96 钻进 O
@@ -38,17 +38,38 @@ PUMP = np.zeros((2, N))
 LEAD = np.zeros((2, N))
 
 
-# 源帧 → 成片秒数：与 video/timeline.ts 的 WARP 相同（01 黑框 ×1.14、05 应用 ×1.05）
-WARP = [(0, 120, 1.0), (120, 270, 1.14), (270, 720, 1.0), (720, 900, 1.05), (900, 1170, 1.0)]
+# 源帧 → 成片帧：与 video/timeline.ts 的 WARP 相同。只有 01 黑框的画面放慢 ×1.2（正好多 1 拍），
+# 节奏声部（鼓、贝斯、和弦、旋律）始终按成片时间的 120 BPM 走，不变速；音效跟着画面走
+WARP = [(0, 120, 1.0), (120, 270, 1.2), (270, 1170, 1.0)]
 
 
-def fr(frame):
+def out(frame):
     o = 0.0
     for a, b, k in WARP:
         if frame < b:
-            return (o + (frame - a) * k) / 60.0
+            return o + (frame - a) * k
         o += (b - a) * k
-    return (o + frame - WARP[-1][1]) / 60.0
+    return o + frame - WARP[-1][1]
+
+
+def src(o):
+    """成片帧 → 源帧（查和弦用）"""
+    o0 = 0.0
+    for a, b, k in WARP:
+        if o < o0 + (b - a) * k:
+            return a + (o - o0) / k
+        o0 += (b - a) * k
+    return WARP[-1][1] + o - o0
+
+
+def fr(frame):
+    """源帧 → 成片秒数（音效：跟着画面）"""
+    return out(frame) / 60.0
+
+
+def fo(o):
+    """成片帧 → 秒数（节奏声部：固定 120 BPM）"""
+    return o / 60.0
 
 
 def place(sig, t, gain=1.0, pan=0.0, send=0.0, bus=None):
@@ -375,44 +396,47 @@ sfx(whoosh(fr(22), 150, 10000, 0.55, 0.9), fr(96))
 for k in range(4):
     place(SNARE * (0.18 + 0.08 * k), fr(105 + k * 3.75), send=0.15)
 
-# ================= 律动 120 → 片尾前 =================
-for b in range(GROOVE_START // BEAT, GROOVE_END // BEAT + 1):
-    fm = b * BEAT
-    if fm >= GROOVE_END:
+# ================= 律动 120 → 片尾前（成片时间，固定 120 BPM） =================
+G0, G1 = round(out(GROOVE_START)), round(out(GROOVE_END))
+WO = round(out(W0))
+for b in range(G0 // BEAT, G1 // BEAT + 1):
+    o = b * BEAT
+    if o >= G1:
         break
-    kick_at(fm, 1.0)
-    words = fm >= W0
-    if (fm // BEAT) % 2 == 1 or words:
-        place(CLAP * (0.55 if not words else 0.62), fr(fm), send=0.18)
+    place(KICK, fo(o))
+    KICKS.append(fo(o))
+    words = o >= WO
+    if (o // BEAT) % 2 == 1 or words:
+        place(CLAP * (0.55 if not words else 0.62), fo(o), send=0.18)
     for st in range(4):
-        t16 = fm + st * S16
-        if t16 >= GROOVE_END:
+        t16 = o + st * S16
+        if t16 >= G1:
             break
         if st == 2:
-            place(OHAT * 0.2, fr(t16), pan=0.25, send=0.04)
+            place(OHAT * 0.2, fo(t16), pan=0.25, send=0.04)
         else:
-            place(CHAT * (0.12 if st == 0 else 0.08), fr(t16), pan=-0.25 if st == 1 else 0.2)
+            place(CHAT * (0.12 if st == 0 else 0.08), fo(t16), pan=-0.25 if st == 1 else 0.2)
 for k in ('border', 'shadow', 'press', 'lineage', 'apps', 'words'):
     place(CRASH * (0.65 if k == 'words' else 0.5), fr(AT[k]), send=0.3)
 
 # 方波贝斯：八分音符，根音—八度—根音—五度
 BASS_PAT = [0, 12, 0, 7, 0, 12, 10, 7]
-for k in range(int((GROOVE_END - GROOVE_START) / S8)):
-    fm = GROOVE_START + k * S8
-    r = ROOT[chord_at(fm)] + 12
-    place(square_bass(r + BASS_PAT[k % 8], 0.12, 0.3), fr(fm), bus=PUMP)
+for k in range(int((G1 - G0) / S8)):
+    o = G0 + k * S8
+    r = ROOT[chord_at(src(o))] + 12
+    place(square_bass(r + BASS_PAT[k % 8], 0.12, 0.3), fo(o), bus=PUMP)
 
 # 反拍和弦“戳”
-for k in range(int((GROOVE_END - GROOVE_START) / BEAT)):
-    fm = GROOVE_START + k * BEAT + S8
-    if fm >= GROOVE_END:
+for k in range(int((G1 - G0) / BEAT)):
+    o = G0 + k * BEAT + S8
+    if o >= G1:
         break
     for pan in (-0.4, 0.4):
-        place(stab(STABV[chord_at(fm)], 0.1, 0.16), fr(fm), pan=pan, send=0.12, bus=PUMP)
+        place(stab(STABV[chord_at(src(o))], 0.1, 0.16), fo(o), pan=pan, send=0.12, bus=PUMP)
 
-# 木琴旋律：每章一句（16 个十六分音符的位置）
+# 木琴旋律：每章一句（十六分音符的位置，按成片时间排）；01 多出来的一拍补一句尾巴
 HOOK = {
-    AT['border']: [(0, 76), (2, 79), (3, 76), (4, 83), (6, 81), (8, 79), (10, 76), (12, 74), (14, 76), (16, 79), (18, 83)],
+    AT['border']: [(0, 76), (2, 79), (3, 76), (4, 83), (6, 81), (8, 79), (10, 76), (12, 74), (14, 76), (16, 79), (18, 83), (20, 81), (22, 79)],
     AT['shadow']: [(0, 76), (2, 79), (3, 76), (4, 84), (6, 83), (8, 79), (10, 76), (12, 79), (14, 84), (16, 83), (18, 79)],
     AT['press']: [(0, 83), (2, 81), (3, 79), (4, 74), (6, 79), (8, 83), (10, 86), (12, 83), (14, 79), (16, 81), (18, 83)],
     AT['lineage']: [(0, 81), (2, 78), (3, 74), (4, 78), (6, 81), (8, 86), (10, 85), (12, 81), (14, 78), (16, 81), (18, 86)],
@@ -420,7 +444,7 @@ HOOK = {
 }
 for st, notes in HOOK.items():
     for pos, m in notes:
-        place(marimba(midi(m), 0.2, 0.2), fr(st + pos * S16), pan=0.15, send=0.22, bus=LEAD)
+        place(marimba(midi(m), 0.2, 0.2), fo(out(st) + pos * S16), pan=0.15, send=0.22, bus=LEAD)
 
 
 def scribble(d, level=1.0):

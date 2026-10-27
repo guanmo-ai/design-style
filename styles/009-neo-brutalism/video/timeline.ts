@@ -21,16 +21,14 @@ export const CHAPTERS: [string, string, number][] = [
 ];
 
 /**
- * 成片时间 → 源时间（上面所有帧号都是“源帧”）。信息密的两章放慢一点：01 黑框 ×1.14、05 应用 ×1.05，
- * 成片 1170 → 1200 帧（20 秒）。配乐用同一张表（audio/make_music.py 的 WARP），拍点仍然对齐
+ * 成片时间 → 源时间（上面所有帧号都是“源帧”）。信息最密的 01 黑框放慢 ×1.2：150 → 180 帧，正好多 1 拍，
+ * 后面的章节仍然落在拍点上；成片 1170 → 1200 帧（20 秒）。配乐的节奏声部全程 120 BPM 不变速
  */
 export const WARP: [number, number, number][] = [
   // [源起点, 源终点, 放慢倍数]
   [0, AT.border, 1],
-  [AT.border, AT.shadow, 1.14],
-  [AT.shadow, AT.apps, 1],
-  [AT.apps, AT.words, 1.05],
-  [AT.words, DURATION, 1],
+  [AT.border, AT.shadow, 1.2],
+  [AT.shadow, DURATION, 1],
 ];
 export const OUT_DURATION = Math.round(WARP.reduce((n, [a, b, k]) => n + (b - a) * k, 0)); // 1200
 export const toSource = (o: number) => {
