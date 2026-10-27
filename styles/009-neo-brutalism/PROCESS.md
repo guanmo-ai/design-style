@@ -5,7 +5,7 @@
 > 这一期是怎么从三个候选风格里选出来，再变成 20 秒短片和 4 张图的。
 > 过程图在 [`process/`](process)，可复现的代码在 `video/` `audio/` `images/`。
 
-🎬 [看成片（Releases · day-09）](https://github.com/guanmo-ai/design-style/releases/tag/day-09) · 📐 [风格指南](README.md)
+🎬 [看成片（Releases · day-09-audio-v2）](https://github.com/guanmo-ai/design-style/releases/tag/day-09-audio-v2) · 📐 [风格指南](README.md)
 
 ---
 
@@ -104,7 +104,7 @@ npm run render:009                        # 母版 out/009-neo-brutalism-master.
 npm run images:009
 ```
 
-成片不进 git。发布时挂 [Releases · day-09](https://github.com/guanmo-ai/design-style/releases/tag/day-09)（`009-neo-brutalism.mp4`），再把 `gallery/data/pending/009-neo-brutalism.json` 补上真实的 SHA-256 与发布时间、移回 `works.json`。
+成片不进 git。当前音量修订版发布在 [Releases · day-09-audio-v2](https://github.com/guanmo-ai/design-style/releases/tag/day-09-audio-v2)（`009-neo-brutalism.mp4`），`gallery/data/works.json` 登记其 tag、SHA-256 与真实发布时间。后续修订也应先发布附件，再更新目录；原 `day-09` 保留供回退。
 
 ## 8 · 踩坑
 
@@ -122,7 +122,7 @@ npm run images:009
 | 第三版审片：01 黑框右边的组件是事先摆好的，只有笔在动；节奏太快看不清；少了网页和 App 里的样子 | 01 改为画面全空，笔先画框，元素从框里一个个长出来，拼成注册表单；中间各章放到 2.5 秒，总长 15 → 19.5 秒；新增 05 应用：浏览器落地页 + 手机记账 App，一层层从高处落进来 |
 | 第四版审片：节奏还是稍快，01 黑框里看不清 | 不改结构，只在信息最密的两章放慢：01 ×1.14、05 ×1.05，成片 19.5 → 20 秒 |
 | 第五版审片：配乐在放慢的两章跟着变慢（约 105 / 114 BPM），前后不一致 | 节奏声部（鼓、贝斯、和弦、旋律）改为按成片时间排、全程 120 BPM；放慢只能按整拍：01 ×1.2（150 → 180 帧，多 1 拍），05 恢复原速，后面所有章节仍在拍点上；只有音效跟着画面走 |
-| 发布版 4—5 秒音效偏密 | 原 `day-09` 中画框、盖章、打字、按钮叠在一起，压住了 BGM。2026-10-27 按主人授权，本地源码将 01 黑框（成片 2—5 秒）起音的音效及混响发送降低 3 dB；事件与配乐编排保持原样。已输出原画面搭配新音轨的试听版，尚待试听确认与发布；线上仍为原版，详见 [`docs/HANDOFF.md`](../../docs/HANDOFF.md) |
+| 原发布版 4—5 秒音效偏密 | 原 `day-09` 中画框、盖章、打字、按钮叠在一起，压住了 BGM。2026-10-27 将 01 黑框（成片 2—5 秒）起音的音效及混响发送降低 3 dB，事件与配乐编排保持原样；经试听确认后发布为 `day-09-audio-v2`，原画面码流完整保留 |
 | 手机上看，代码和说明太小 | 代码从小编辑器改成黑底 40px 代码条；章节代码 30 → 40px、说明 34 → 42px、HUD 22 → 26px；打完字的光标不再闪 |
 | 低透明度大面积色块在 Chromium 里分块 | 图里的半透明一律预先算成实色 |
 

@@ -47,4 +47,4 @@ npm run images:009
 
 Composition id: `S009-NeoBrutalism`.
 
-- [Released video](https://github.com/guanmo-ai/design-style/releases/tag/day-09)
+- [Released video](https://github.com/guanmo-ai/design-style/releases/tag/day-09-audio-v2)
