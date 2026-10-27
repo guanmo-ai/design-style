@@ -1,12 +1,12 @@
 """
-风格 009 候选 B · 欧普艺术 Op Art —— 风格图（1080×1350）
+待做风格 · 欧普艺术 Op Art —— 风格图（1080×1350）
 
   poster.svg      一张海报：上半是鼓起来的棋盘（Vasarely《Vega》式网格扭曲），下半是波浪条纹里“相位错开”的标题
   cheatsheet.svg  速查卡：五种让平面动起来的方法，每种带参数和可直接照抄的小样
   app-ui.svg      如果欧普艺术来做 app：一个呼吸练习，带标注
 
 图形全部由公式生成：改一个参数（线宽、间距、相位、扭曲半径），而不是画一个形状。
-用法：python3 styles/009-op-art/images/make_svgs.py
+用法：python3 drafts/op-art/images/make_svgs.py
 """
 import math
 import os
