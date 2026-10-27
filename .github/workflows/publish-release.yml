@@ -1,0 +1,48 @@
+# 发布成片：把 release-assets 分支里每个 day-NN/ 目录发成一个 GitHub Release。
+# 目录里放 release.json（tag、标题、目标提交、附件）、notes.md（发布说明）、SHA256SUMS 和附件本身。
+# 只处理还不存在的 tag；附件先核对 SHA-256，不一致就失败，不发布。已有的 Release 不会被改动。
+name: Publish release assets
+
+on:
+  push:
+    branches: [release-assets]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: publish-release
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write
+    steps:
+      - name: Checkout
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          persist-credentials: false
+      - name: Publish new releases
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+        run: |
+          set -euo pipefail
+          for dir in day-*/ layout-*/; do
+            [ -f "$dir/release.json" ] || continue
+            tag=$(jq -r .tag "$dir/release.json")
+            if gh release view "$tag" --repo "$REPO" >/dev/null 2>&1; then
+              echo "skip $tag (already published)"
+              continue
+            fi
+            (cd "$dir" && sha256sum --check --strict SHA256SUMS)
+            title=$(jq -r .title "$dir/release.json")
+            target=$(jq -r .target "$dir/release.json")
+            mapfile -t assets < <(jq -r '.assets[]' "$dir/release.json" | sed "s#^#$dir#")
+            gh release create "$tag" "${assets[@]}" --repo "$REPO" --target "$target" --title "$title" --notes-file "$dir/notes.md"
+            echo "published $tag"
+          done
