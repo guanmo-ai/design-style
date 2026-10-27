@@ -492,5 +492,69 @@
     "categoryEn": "Print process",
     "descriptionEn": "Three soy inks on a sheet of paper that still breathes. A 15-second film runs a Risograph: plates slam into register, a thermal head burns a master, colors reprint one drum at a time, and overprints mix by multiplying.",
     "tagsEn": ["stencil", "spot color", "overprint", "misregistration", "halftone", "zine"]
+  },
+  {
+    "id": "009-neo-brutalism",
+    "type": "style",
+    "number": "009",
+    "title": "新粗野主义",
+    "titleEn": "Neo-Brutalism",
+    "years": "2021—今天",
+    "category": "当代界面",
+    "description": "黑框描到底，阴影是一块偏移的黑。一支 20 秒短片，全片只有一条物理——阴影长度就是高度：海报炸成十三颗键帽；一支笔先画框，注册表单从框里一个个长出来；卡片抬起来摊成阶梯；二十颗按钮的按压像水波一样扩散，再从 1952 年的清水混凝土、2014 年的粗野主义网页一路变回今天的界面；最后落进网页和手机 App。",
+    "tags": [
+      "黑框",
+      "硬阴影",
+      "平涂",
+      "按下",
+      "CSS",
+      "界面",
+      "无障碍"
+    ],
+    "publishedAt": "2026-10-27T10:51:25Z",
+    "release": "day-09",
+    "asset": "009-neo-brutalism.mp4",
+    "sha256": "7584cd6ec6caf5bf25cb5209ebef94e6bea0bd8ed60349512b58a6d2fbfef69e",
+    "images": [
+      {
+        "file": "poster",
+        "title": "一张海报，认识新粗野主义",
+        "kind": "风格海报",
+        "titleEn": "Neo-Brutalism at a glance",
+        "kindEn": "Style poster"
+      },
+      {
+        "file": "cheatsheet",
+        "title": "五个令牌、按钮三态与五条规则",
+        "kind": "风格速查",
+        "titleEn": "Five tokens, three button states, and five rules",
+        "kindEn": "Quick reference"
+      },
+      {
+        "file": "app-ui",
+        "title": "如果新粗野主义来做 App",
+        "kind": "界面应用",
+        "titleEn": "Neo-Brutalism in an app",
+        "kindEn": "UI application"
+      },
+      {
+        "file": "steps",
+        "title": "四步，改一张卡片",
+        "kind": "改造教程",
+        "titleEn": "Four steps to restyle one card",
+        "kindEn": "Card tutorial"
+      }
+    ],
+    "categoryEn": "Contemporary interfaces",
+    "descriptionEn": "Black borders on everything; the shadow is a solid offset block. A 20-second film built on one piece of physics — shadow length is height: a poster shatters into thirteen keycaps; a pen draws each frame and a sign-up form grows out of the borders; a card lifts and fans into a staircase; twenty buttons ripple when pressed, turn into 1952 raw concrete and a 2014 brutalist web page, and come back as today's UI — then a landing page and a phone app assemble layer by layer.",
+    "tagsEn": [
+      "black borders",
+      "hard shadows",
+      "flat color",
+      "press states",
+      "CSS",
+      "interfaces",
+      "accessibility"
+    ]
   }
 ]

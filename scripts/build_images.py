@@ -50,6 +50,12 @@ FACES = [  # (family, file, weight[, style])
     ('Archivo', 'Archivo.ttf', '100 900'),
     ('Space Mono', 'SpaceMono-Regular.ttf', '400'),
     ('Space Mono', 'SpaceMono-Bold.ttf', '700'),
+    ('Poiret One', 'PoiretOne-Regular.ttf', '400'),
+    ('Limelight', 'Limelight-Regular.ttf', '400'),
+    ('Bodoni Moda', 'BodoniModa.ttf', '400 900'),
+    ('Noto Serif SC', 'NotoSerifSC.ttf', '200 900'),
+    ('Monoton', 'Monoton-Regular.ttf', '400'),
+    ('Space Grotesk', 'SpaceGrotesk.ttf', '300 700'),
 ]
 
 

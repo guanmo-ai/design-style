@@ -7,6 +7,11 @@
 <table>
   <tr>
     <td align="center" valign="top" width="33%">
+      <a href="https://guanmo-ai.github.io/design-style/?lang=zh#work-009-neo-brutalism"><img src="styles/009-neo-brutalism/video/cover.jpg" width="240" alt="新粗野主义 视频封面" /></a><br />
+      <a href="https://guanmo-ai.github.io/design-style/?lang=zh#work-009-neo-brutalism"><b>新粗野主义</b></a><br />
+      <sub>Neo-Brutalism · 20 秒</sub>
+    </td>
+    <td align="center" valign="top" width="33%">
       <a href="https://guanmo-ai.github.io/design-style/?lang=zh#work-008-risograph"><img src="styles/008-risograph/video/cover.jpg" width="240" alt="孔版印刷 视频封面" /></a><br />
       <a href="https://guanmo-ai.github.io/design-style/?lang=zh#work-008-risograph"><b>孔版印刷</b></a><br />
       <sub>Risograph · 15 秒</sub>
@@ -16,13 +21,13 @@
       <a href="https://guanmo-ai.github.io/design-style/?lang=zh#work-005-pop-art"><b>波普艺术</b></a><br />
       <sub>Pop Art · 18 秒</sub>
     </td>
+  </tr>
+  <tr>
     <td align="center" valign="top" width="33%">
       <a href="https://guanmo-ai.github.io/design-style/?lang=zh#work-004-memphis"><img src="styles/004-memphis/video/cover.jpg" width="240" alt="孟菲斯 视频封面" /></a><br />
       <a href="https://guanmo-ai.github.io/design-style/?lang=zh#work-004-memphis"><b>孟菲斯</b></a><br />
       <sub>Memphis · 15 秒</sub>
     </td>
-  </tr>
-  <tr>
     <td align="center" valign="top" width="33%">
       <a href="https://guanmo-ai.github.io/design-style/?lang=zh#work-003-constructivism"><img src="styles/003-constructivism/video/cover.jpg" width="240" alt="构成主义 视频封面" /></a><br />
       <a href="https://guanmo-ai.github.io/design-style/?lang=zh#work-003-constructivism"><b>构成主义</b></a><br />
@@ -33,13 +38,13 @@
       <a href="https://guanmo-ai.github.io/design-style/?lang=zh#work-02-masonry"><b>瀑布流布局</b></a><br />
       <sub>Masonry · 15 秒</sub>
     </td>
+  </tr>
+  <tr>
     <td align="center" valign="top" width="33%">
       <a href="https://guanmo-ai.github.io/design-style/?lang=zh#work-002-swiss-style"><img src="styles/002-swiss-style/video/cover.jpg" width="240" alt="瑞士国际主义 视频封面" /></a><br />
       <a href="https://guanmo-ai.github.io/design-style/?lang=zh#work-002-swiss-style"><b>瑞士国际主义</b></a><br />
       <sub>Swiss Style · 15 秒</sub>
     </td>
-  </tr>
-  <tr>
     <td align="center" valign="top" width="33%">
       <a href="https://guanmo-ai.github.io/design-style/?lang=zh#work-01-bento-grid"><img src="layouts/01-bento-grid/video/cover.jpg" width="240" alt="便当盒布局 视频封面" /></a><br />
       <a href="https://guanmo-ai.github.io/design-style/?lang=zh#work-01-bento-grid"><b>便当盒布局</b></a><br />
@@ -99,6 +104,7 @@ by 观默 [@guanmo_ai](https://x.com/guanmo_ai)
 | **005** | [**波普艺术 Pop Art**](styles/005-pop-art) | 1956—1970 | 网点代替渐变、粗黑线圈住每块颜色：普通的东西，也能上墙 | [🎬 视频](https://github.com/guanmo-ai/design-style/releases/tag/day-05) · [🛠 过程](styles/005-pop-art/PROCESS.md) · [🧰 从 0 到 1](styles/005-pop-art/MAKING.md) |
 | **006** | [**千禧未来主义 Y2K**](styles/006-y2k) | 1997—2004 | 铬、果冻和半透明塑料：把对 2000 年的期待做进屏幕——未来，正在加载 | 视频待补齐，暂未上线 · [🛠 过程](styles/006-y2k/PROCESS.md) · [🧰 从 0 到 1](styles/006-y2k/MAKING.md) |
 | **008** | [**孔版印刷 Risograph**](styles/008-risograph) | 1946—今天 | 三种油墨、一张会呼吸的纸：荧光粉印不进 CMYK，套不准是这台机器的口音 | [🎬 视频](https://github.com/guanmo-ai/design-style/releases/tag/day-08) · [🛠 过程](styles/008-risograph/PROCESS.md) |
+| **009** | [**新粗野主义 Neo-Brutalism**](styles/009-neo-brutalism) | 2021—今天 | 黑框描到底，阴影是一块偏移的黑：按下去，就是滑到阴影的位置 | [🎬 视频](https://github.com/guanmo-ai/design-style/releases/tag/day-09) · [🛠 过程](styles/009-neo-brutalism/PROCESS.md) |
 
 ### 布局方式 · Layout
 
@@ -131,7 +137,7 @@ npm run gallery:serve
 ```bash
 git clone https://github.com/guanmo-ai/design-style.git && cd design-style
 npm ci
-npm run fonts                  # 下载开源字体到 public/fonts（Jost / JetBrains Mono / TeX Gyre Heros / Oswald / Fredoka / Bangers / Unbounded / Michroma / Silkscreen / Inter / Geist Mono / Selawik / Instrument Serif / Noto Sans SC）
+npm run fonts                  # 下载开源字体到 public/fonts（Jost / JetBrains Mono / TeX Gyre Heros / Oswald / Fredoka / Bangers / Unbounded / Michroma / Silkscreen / Archivo / Space Mono / Space Grotesk / Tinos / Inter / Geist Mono / Selawik / Instrument Serif / Noto Sans SC）
 pip install numpy fonttools
 
 npm run studio                 # 在浏览器里逐帧预览、改参数
@@ -150,6 +156,8 @@ npm run render:006             # 风格 006：生成配乐 → 渲染 out/006-y2
 npm run images:006             # 风格 006：生成 4 张风格图 → 用视频同款着色器渲染材质图层 → preview SVG + 2x PNG
 npm run render:008             # 风格 008：生成配乐 → 渲染 out/008-risograph-master.mp4（孔版叠印 + 运动模糊）
 npm run images:008             # 风格 008：生成 4 张风格图 → preview SVG + 2x PNG
+npm run render:009             # 风格 009：生成配乐 → 渲染 out/009-neo-brutalism-master.mp4（真实 CSS 硬阴影 + 运动模糊）
+npm run images:009             # 风格 009：生成 4 张风格图 → preview SVG + 2x PNG
 npm run render:L01             # 布局 01：生成配乐 → 渲染 out/01-bento-grid-master.mp4
 npm run images:L01             # 布局 01：生成 4 张布局图 → preview SVG + 2x PNG
 npm run render:L02             # 布局 02：生成配乐 → 渲染 out/02-masonry-master.mp4
@@ -185,6 +193,7 @@ design-style/
 │  └─ 005-pop-art/         # 同上，含 MAKING.md；短片：一切都像印出来的——网点代替渐变、粗黑线 + 硬投影，网点长满接力换幕；整体放慢 1.2 倍到 18 秒
 │  └─ 006-y2k/             # 同上，含 MAKING.md；短片：开机 → 铬字 → 果冻 iMac → Aqua → 像素表情 → 千年虫 → 今天；铬、果冻、泡泡、玻璃由 WebGL2 着色器逐帧算出（video/material.js），18 秒
 │  └─ 008-risograph/       # 同上；短片：三张版砸在一起 → 热敏头烧孔 → 分色过机 → 叠印 → 小志出纸 → 五个词；每色一张版，正片叠底
+│  └─ 009-neo-brutalism/   # 同上；短片：键帽 → 元素从框里长出来 → 抬起与阶梯 → 按压水波 → 混凝土 / 网页 / 按钮 → 网页与 App → 五个词；阴影长度 = 高度，20 秒
 ├─ layouts/                # 布局：结构同 styles/，期号两位
 │  └─ 01-bento-grid/
 │     ├─ README.md         # 布局指南
@@ -207,9 +216,9 @@ design-style/
 - **每期四件套** 视频 · 风格图 · 制作过程 · 源代码
 - **风格图** 海报 · 速查卡 · 今天的应用 · 图案/纹理，四张一组
 - **布局图** 海报 · 速查卡 · 布局 × 风格（或易混布局对照）· 拿来就用的模板，四张一组
-- **字体** 只用可免费商用的开源字体（SIL OFL / GUST Font License）
+- **字体** 只用可免费商用的开源字体（SIL OFL / GUST Font License / Apache 2.0）
 
 ## 授权
 
 代码欢迎学习和改造；转发视频和图片请注明出处 **观默 @guanmo_ai**。
-字体 Jost、JetBrains Mono、Inter、Geist Mono、Selawik、Instrument Serif、Noto Sans SC、Oswald、Fredoka、Bangers、Unbounded、Michroma、Silkscreen 均为 SIL Open Font License 1.1；TeX Gyre Heros 为 GUST Font License。
+字体 Jost、JetBrains Mono、Inter、Geist Mono、Selawik、Instrument Serif、Noto Sans SC、Oswald、Fredoka、Bangers、Unbounded、Michroma、Silkscreen、Archivo、Space Mono、Space Grotesk 均为 SIL Open Font License 1.1；TeX Gyre Heros 为 GUST Font License；Tinos 为 Apache License 2.0。
