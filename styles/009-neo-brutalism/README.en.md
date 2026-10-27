@@ -6,7 +6,7 @@
 
 ## Overview
 
-Black borders on everything, shadows that are solid offset blocks, flat saturated color. A 15-second film opens on its own end card — press it, it shatters, and underneath is a web page with no CSS — then adds the style back one line per beat, then teaches each rule as a full-screen card: borders, hard shadows, pressing, and where the look came from — from 1952 raw concrete to 2014 brutalist websites to 2021 product UI.
+Black borders on everything, shadows that are solid offset blocks, flat saturated color. A 15-second film runs on one piece of physics — shadow length is height. It opens on its own end card; press it and it shatters into thirteen giant keycaps that land, get typed and pressed, and the camera dives into the O. Then a pen outlines six default components one stroke at a time, a card lifts and fans into a staircase of shadows, and a grid of twenty buttons ripples when pressed, drains into 1952 raw concrete, flips into a 2014 brutalist web page, and pops back as 2021 UI.
 
 Series: **Design styles**. Period shown: **2021—today** (roots in 1950s Brutalist architecture).
 

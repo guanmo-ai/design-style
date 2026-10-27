@@ -16,7 +16,7 @@ The first frame is the end card, so it works as the thumbnail and something move
 
 Pressing = the element slides onto its shadow and the shadow goes to zero. Every button, card, chip and full-screen chapter in the film is the same `Box` component in `video/ui.tsx`: a black border, a real CSS `box-shadow: Npx Npx 0 #000`, and a press value `p`.
 
-Motion has only two verbs: **slam** (one small overshoot on landing) and **press** (linear, about 100ms, no spring). Chapters are full-screen cards that get pushed away, slammed down from above, pulled up, or stacked — no crossfades.
+All motion follows one rule: **shadow length = height z**. Lift an element and its shadow grows as it floats up-left; land it and the shadow settles back to rest (a little short on contact); press it and the shadow goes to zero. Chapters relay one object instead of cutting: dive into the O keycap, whip-pan the whole canvas, grow the highest card to full screen, and let one grid of buttons become concrete, a web page, and buttons again.
 
 ## Workflow
 

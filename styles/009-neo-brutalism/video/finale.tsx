@@ -32,7 +32,7 @@ const WordCard: React.FC<{f: number; i: number}> = ({f, i}) => {
   const shadow = i === 1 ? 44 : 24;
   return (
     <div style={{position: 'absolute', inset: 0, transform: `translate(${dx}px, ${dy}px) rotate(${w.rot}deg) scale(${zoom})`, opacity: i === 4 ? clamp((f - at + 12) / 3) : 1}}>
-      <Box x={70} y={60} w={1780} h={960} fill={w.fill} border={border} shadow={shadow}>
+      <Box x={70} y={60} w={1780} h={960} fill={w.fill} border={border} shadow={shadow} z={lerp(shadow + 70, shadow, Math.min(1, k)) - Math.max(0, k - 1) * 30}>
         {i === 3 && (
           <svg width={1780} height={960} style={{position: 'absolute', left: -V.border, top: -V.border}}>
             {Array.from({length: 13}, (_, c) => (
@@ -126,11 +126,15 @@ export const Poster: React.FC<PosterState> = ({k = [1, 1, 1], zh = 1, tag = 1, s
       <div style={{position: 'absolute', inset: 0, transform: `translateY(${dy}px)`}}>
         {BLOCKS.map((b, i) => {
           if (k[i] <= 0.0001) return null;
-          const ox = (1 - k[i]) * b.from[0] + e * b.out[0];
-          const oy = (1 - k[i]) * b.from[1] + e * b.out[1];
+          // 从高处落下：越高越大、阴影越长；落地时阴影略短一下再回来
+          const ki = k[i];
+          const ox = (1 - ki) * b.from[0] * 0.18 + e * b.out[0];
+          const oy = (1 - ki) * b.from[1] * 0.18 + e * b.out[1];
+          const zi = 14 + 110 * (1 - ki);
+          const si = 1 + 0.32 * Math.max(0, 1 - ki);
           return (
-            <div key={b.text} style={{position: 'absolute', inset: 0, transform: `translate(${ox}px, ${oy}px) rotate(${e * b.out[2]}deg)`}}>
-              <Box x={b.x} y={b.y} w={b.w} h={b.h} fill={b.fill} shadow={V.shadow[1]} p={p} rot={b.rot} style={{display: 'flex', alignItems: 'center', paddingLeft: 40}}>
+            <div key={b.text} style={{position: 'absolute', inset: 0, opacity: clamp(ki * 4), transform: `translate(${ox}px, ${oy}px) rotate(${e * b.out[2]}deg)`}}>
+              <Box x={b.x} y={b.y} w={b.w} h={b.h} fill={b.fill} shadow={V.shadow[1]} z={Math.max(0, zi) * (1 - p)} rot={b.rot} scale={si} style={{display: 'flex', alignItems: 'center', paddingLeft: 40}}>
                 <span style={{...disp(b.size, b.wdth, -0.03), marginTop: b.size * 0.04}}>{b.text}</span>
               </Box>
             </div>

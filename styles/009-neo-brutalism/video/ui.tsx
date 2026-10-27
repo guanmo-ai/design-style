@@ -1,6 +1,6 @@
 /** 009 · Neo-Brutalism —— 字体、硬阴影盒子、光标、点阵、打字、按下 / 砸下的节奏 */
 import React from 'react';
-import {staticFile} from 'remotion';
+import {Easing, staticFile} from 'remotion';
 import {loadFont} from '@remotion/fonts';
 import {clamp, spr, tween, E} from '../../../src/lib/anim';
 import {C, FONT, V} from '../tokens';
@@ -76,6 +76,18 @@ export const thud = (f: number, hits: [number, number][]) => {
   return y;
 };
 export const appear = (f: number, at: number, d = 8) => tween(f, at, d, 0, 1, E.out);
+/** 甩镜头 / 整屏推移：两头很慢、中间极快（配合运动模糊） */
+export const WHIP = Easing.bezier(0.83, 0, 0.17, 1);
+/** 柔和的长距离移动：抬起来之后在空中滑过去 */
+export const GLIDE = Easing.bezier(0.45, 0, 0.15, 1);
+
+/**
+ * 高度 z = 阴影长度。这是全片唯一的“物理”：
+ *   抬起来 → 阴影变长、元素往左上浮；落下去 → 阴影缩回 rest；按下去 → 阴影 0、元素落到阴影上。
+ * land：从 from 的高度落到 rest，接触时略微压过头（阴影短一点）再回到 rest，像真的落在纸上
+ */
+export const LAND = {damping: 15, mass: 0.7, stiffness: 240};
+export const land = (f: number, at: number, rest: number, from: number) => (f < at ? from : rest + (from - rest) * (1 - spr(f, at, LAND)));
 
 // ───────── 盒子 ─────────
 export type BoxProps = {
@@ -87,6 +99,7 @@ export type BoxProps = {
   border?: number;
   shadow?: number; // 偏移量（右下），0 模糊
   p?: number; // 按下进度 0—1：位移 = 阴影 × p，阴影 = 阴影 × (1 − p)
+  z?: number; // 高度（= 当前阴影长度）。给了 z 就不看 p：元素相对静止位置偏移 shadow − z
   r?: number; // 圆角
   rot?: number;
   scale?: number;
@@ -96,9 +109,9 @@ export type BoxProps = {
   children?: React.ReactNode;
 };
 /** 新粗野主义的全部秘密：黑描边 + 同形黑块向右下偏移；按下时元素滑到阴影的位置 */
-export const Box: React.FC<BoxProps> = ({x, y, w, h, fill = C.white, border = V.border, shadow = V.shadow[1], p = 0, r = 0, rot = 0, scale = 1, origin = 'center', softShadow, style, children}) => {
-  const s = shadow * (1 - p);
-  const d = shadow * p;
+export const Box: React.FC<BoxProps> = ({x, y, w, h, fill = C.white, border = V.border, shadow = V.shadow[1], p = 0, z, r = 0, rot = 0, scale = 1, origin = 'center', softShadow, style, children}) => {
+  const s = Math.max(0, z ?? shadow * (1 - p));
+  const d = shadow - s;
   return (
     <div
       style={{
