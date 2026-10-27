@@ -20,7 +20,7 @@
 | 响度 | ffmpeg `loudnorm` | 任意近版 | 标准化到 −14 LUFS | 免费 |
 | 布局图 | 手写 SVG + fontTools + Playwright(Chromium) | — | 生成 SVG，子集化内嵌字体，导出 2x PNG | 免费 |
 | 联系表 / 时间轴 | Pillow、matplotlib | — | 从成片抽帧拼联系表；画“剪辑点是否落在拍点上”的图 | 免费 |
-| 字体 | Archivo、Noto Sans SC、Space Mono | — | 全部 OFL，不用买授权 | 免费 |
+| 字体 | TeX Gyre Heros、Bangers、Jost、Oswald、Fredoka、Space Grotesk、Noto Sans SC、Space Mono | — | 全部开源（OFL / GUST），不用买授权；各取自对应风格的那一期 | 免费 |
 
 ## 2 · 准备环境
 
@@ -74,9 +74,9 @@ clipPath: `polygon(${P(B, 0)}, ${P(-B, 0)}, ${P(-B, B)}, ${P(B, B)})`
 ```bash
 npx remotion bundle src/index.ts --out-dir out/bundle
 COMP=L03-SplitScreen SCALE=0.4 PROPS='{"blur":1,"music":false}' \
-  node scripts/stills.mjs out/bundle out/check 150 330 540 690 870 1050
+  node scripts/stills.mjs out/bundle out/check 120 330 540 690 870 1050
 # 或者一条命令：打包 + 抽帧 + 拼联系表（开发辅助）
-scripts/l03_check.sh 150 330 540 690 870 1050
+scripts/l03_check.sh 120 330 540 690 870 1050
 ```
 
 ### ⑦ 配乐
@@ -114,7 +114,7 @@ ffprobe -v error -show_entries stream=codec_name,width,height,r_frame_rate,durat
 - **过关标准：** 逐拍看一遍没有空白落定、没有压字、没有跳变；时间轴图上剪辑点全在拍点。
 
 ```bash
-python3 scripts/contact_sheet.py out/sheet.jpg --video out/03-split-screen-master.mp4 --cols 4 "0|开场" "150|来历" ...
+python3 scripts/contact_sheet.py out/sheet.jpg --video out/03-split-screen-master.mp4 --cols 4 "0|开场" "120|来历" ...
 python3 scripts/timeline_chart.py layouts/03-split-screen/process/timeline.json public/03-split-screen/music.wav layouts/03-split-screen/process/04-timeline.png
 ```
 

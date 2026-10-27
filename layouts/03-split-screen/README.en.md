@@ -24,8 +24,11 @@ Series: **Layouts**. Period shown in this episode: **1927—**.
 
 This is the palette used by this project, not a universal specification for every split-screen layout.
 
-- Colors: ink `#0E0E10`, paper `#F1EDE4`, cobalt `#2B35FF`, periwinkle `#8E95FF` (small labels on ink), greys `#6B675E` / `#8A877F` (secondary text). Ink on paper is 16.5:1; paper on cobalt is 5.9:1; ink on cobalt is only 2.8:1 — do not set body text that way.
-- Typefaces: Archivo 900 (wdth 62–125), Noto Sans SC, Space Mono.
+- Split screen is a layout, so it does not own a palette. In the film **each half of every chapter wears a different earlier style** — Swiss | Pop (intro, finale), Constructivism → Pop → Aero → iPad (history), Bauhaus | Swiss (ratio), Riso / Bento Dark / Neo-Brutalism / Pop (contrast), Neo-Brutalism | Riso then Memphis | Constructivism (scroll), Memphis | Constructivism (responsive) — each with its own palette, typeface and motion personality.
+- Rules for pairing: keep the two halves far apart (warm vs cool, rough vs fine, hand-made vs grid); one style per half; body text ≥ 4.5:1, large text ≥ 3:1.
+- Poster: Swiss paper `#F5F4F0` / ink `#111111` / red `#E30613` on the left, Pop yellow `#FFD31A` / red `#E62E2D` with Ben-Day dots on the right. Templates: Neo-Brutalism login (50:50), Swiss product hero (62:38), Bento Dark dashboard (70:30).
+- Typefaces: TeX Gyre Heros (Swiss), Bangers (Pop), Jost (Bauhaus), Oswald (Constructivism), Fredoka (Memphis), Space Grotesk (Neo-Brutalism), Noto Sans SC, Space Mono.
+- The cheat sheet and the "split ≠ two columns" diagram keep the v1 ink / paper / cobalt (`#0E0E10`, `#F1EDE4`, `#2B35FF`) so the *structure* stays easy to read.
 - Editable values: [JSON tokens](tokens.json), [CSS tokens](tokens.css), and [TypeScript tokens](tokens.ts).
 
 ## Visual references
@@ -77,10 +80,12 @@ The original episode includes this English prompt:
 
 ```text
 Split-screen layout poster: the canvas is cut by one vertical line at 61.8% into two full-bleed
-halves with no gap — left half ink black #0E0E10, right half cobalt blue #2B35FF; a gigantic
-heavy grotesque word "Split" crosses the line and flips color at the cut (paper white on black,
-black on blue); flat color, no shadows, no outlines, no gradients; small monospace labels,
-a ratio readout "61.8 %" on the line; Swiss poster, calm, confident --ar 4:5
+halves with no gap — left half Swiss International style (warm paper white, black Helvetica,
+one red accent, thin grid lines), right half Pop Art style (primary yellow, red Ben-Day dots,
+thick black outlines with hard offset shadows, a white comic burst); a gigantic heavy grotesque
+word "Split" crosses the line and changes skin at the cut (flat black on the left, red with
+black outline on the right); small monospace labels, a ratio readout "61.8 %" on the line;
+two styles, one layout --ar 4:5
 ```
 
 ## Note

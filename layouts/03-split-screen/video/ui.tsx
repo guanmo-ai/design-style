@@ -11,7 +11,7 @@ let fontsP: Promise<unknown> | null = null;
 export const loadFonts = () => {
   if (fontsP) return fontsP;
   const L = (family: string, file: string, weight: string, stretch?: string) =>
-    loadFont({family, url: staticFile(`fonts/${file}`), weight, stretch, format: file.endsWith('.otf') ? 'opentype' : 'truetype'});
+    loadFont({family, url: staticFile(`fonts/${file}`), weight, stretch, format: file.endsWith('.otf') ? 'opentype' : file.endsWith('.woff2') ? 'woff2' : 'truetype'});
   fontsP = Promise.all([
     L('Archivo', 'Archivo.ttf', '100 900', '62% 125%'),
     L('Space Mono', 'SpaceMono-Regular.ttf', '400'),
@@ -20,6 +20,17 @@ export const loadFonts = () => {
     L('Noto Sans SC', 'NotoSansSC-Medium.otf', '500'),
     L('Noto Sans SC', 'NotoSansSC-Bold.otf', '700'),
     L('Noto Sans SC', 'NotoSansSC-Black.otf', '900'),
+    // 各期风格的字体（每个半边穿一种风格）
+    L('Jost', 'Jost.ttf', '100 900'), // 001 包豪斯
+    L('TeX Gyre Heros', 'TeXGyreHeros-Regular.otf', '400'), // 002 瑞士
+    L('TeX Gyre Heros', 'TeXGyreHeros-Bold.otf', '700'),
+    L('Oswald', 'Oswald.ttf', '200 700'), // 003 构成主义
+    L('Fredoka', 'Fredoka.ttf', '300 700', '75% 125%'), // 004 孟菲斯
+    L('Bangers', 'Bangers-Regular.ttf', '400'), // 005 波普
+    L('JetBrains Mono', 'JetBrainsMono.ttf', '100 800'),
+    L('Space Grotesk', 'SpaceGrotesk.ttf', '300 700'), // 009 新粗野
+    L('Tinos', 'Tinos-400.woff2', '400'),
+    L('Tinos', 'Tinos-700.woff2', '700'),
   ]);
   return fontsP;
 };

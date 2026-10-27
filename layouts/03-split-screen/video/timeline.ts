@@ -11,8 +11,8 @@ export const PRE = 24;
 export const POST = 6;
 
 export const CH = [
-  {id: 'intro', at: 0, beats: 5, label: '定义', en: 'Definition', rule: 1},
-  {id: 'history', at: 150, beats: 6, label: '来历', en: 'Origin', rule: 0},
+  {id: 'intro', at: 0, beats: 4, label: '定义', en: 'Definition', rule: 1},
+  {id: 'history', at: 120, beats: 7, label: '来历', en: 'Origin', rule: 0},
   {id: 'ratio', at: 330, beats: 7, label: '比例', en: 'Ratio', rule: 2},
   {id: 'contrast', at: 540, beats: 5, label: '反差', en: 'Contrast', rule: 3},
   {id: 'scroll', at: 690, beats: 6, label: '滚动', en: 'Scroll', rule: 4},
