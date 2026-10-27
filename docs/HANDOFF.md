@@ -11,7 +11,7 @@
 设计侧全部完成（短片、配乐、4 张风格图、tokens、中英文档），在分支 `claude/fervent-meitner-efjuvg`。
 **成片已由设计侧发布**：`release-assets` 分支的 `day-13/`（成片 + 源码包 + SHA256SUMS），推送后 `publish-release.yml` 自动建 Release [day-13](https://github.com/guanmo-ai/design-style/releases/tag/day-13)。不用重新渲染。剩下的工程侧：
 
-1. **画廊**：在 `gallery/data/works.json` 末尾加一条，`publishedAt` 填 Release 的发布时间，其余照抄：
+1. **画廊**：在 `gallery/data/works.json` 末尾加一条，其余照抄（`publishedAt` 已填 Release 的实际发布时间）：
 
 ```json
 {
@@ -27,7 +27,7 @@
   "descriptionEn": "Draw one central axis, then grow steps, sunbursts and triple lines out of it on both sides at once; gold is a material, used only for lines. A 20-second single-shot film: light races along the poster's gold lines, the camera pushes through the arch into a tunnel of triple-line portals, a rose window turns into a twelve-fold Busby Berkeley kaleidoscope that collapses into a sun on the horizon, a night skyline rises in three layers of depth under crossing searchlights while the camera rides the hero tower up to its spire, five rule plaques flip in from the distance, and the poster redraws itself stroke by stroke.",
   "tags": ["中轴对称", "阶梯", "放射", "三线", "金色", "海报", "品牌"],
   "tagsEn": ["symmetry", "ziggurat", "sunburst", "triple line", "gold", "posters", "branding"],
-  "publishedAt": "<发布时间>",
+  "publishedAt": "2026-10-27T16:31:08Z",
   "release": "day-13",
   "asset": "013-art-deco.mp4",
   "sha256": "9df3171271f51ce6a2af8281e3307fb3f00c4974642c3d7473ad2060181ec05d",
