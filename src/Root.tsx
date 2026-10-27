@@ -10,6 +10,7 @@ import {PopArt, POPART_DURATION} from '../styles/005-pop-art/video/PopArt';
 import {Y2K, Y2K_DURATION} from '../styles/006-y2k/video/Y2K';
 import {Risograph, RISOGRAPH_DURATION} from '../styles/008-risograph/video/Risograph';
 import {NeoBrutalism, NEOBRUTAL_DURATION} from '../styles/009-neo-brutalism/video/NeoBrutalism';
+import {ArtDeco, ARTDECO_DURATION} from '../styles/013-art-deco/video/ArtDeco';
 
 // 每期注册为一个 Composition：风格 S{期号}-{名字}，布局 L{期号}-{名字}
 // 统一规格：1920×1080 · 60fps · 15s
@@ -103,6 +104,15 @@ export const Root: React.FC = () => (
       width={1920}
       height={1080}
       defaultProps={{music: true, blur: 8}}
+    />
+    <Composition
+      id="S013-ArtDeco"
+      component={ArtDeco}
+      durationInFrames={ARTDECO_DURATION}
+      fps={60}
+      width={1920}
+      height={1080}
+      defaultProps={{music: true, blur: 6}}
     />
   </>
 );

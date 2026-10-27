@@ -30,6 +30,9 @@ curl -fsSL -o SpaceGrotesk.ttf  "$GF/spacegrotesk/SpaceGrotesk%5Bwght%5D.ttf"
 FS=https://cdn.jsdelivr.net/npm/@fontsource/tinos@5.1.0/files
 curl -fsSL -o Tinos-400.woff2   "$FS/tinos-latin-400-normal.woff2"
 curl -fsSL -o Tinos-700.woff2   "$FS/tinos-latin-700-normal.woff2"
+# 风格 013 装饰艺术：Poiret One（1920 年代海报式细线几何大写；OFL）+ Noto Serif SC（中文细宋，可变字重 200—900；OFL）
+curl -fsSL -o PoiretOne-Regular.ttf "$GF/poiretone/PoiretOne-Regular.ttf"
+curl -fsSL -o NotoSerifSC.ttf       "$GF/notoserifsc/NotoSerifSC%5Bwght%5D.ttf"
 # 风格 006 千禧未来主义：Unbounded（宽体几何标题，可变字重 200—900）+ Michroma（宽体“科技”小字）+ Silkscreen（像素字读数）；均为 OFL
 curl -fsSL -o Unbounded.ttf          "$GF/unbounded/Unbounded%5Bwght%5D.ttf"
 curl -fsSL -o Michroma-Regular.ttf   "$GF/michroma/Michroma-Regular.ttf"
@@ -52,4 +55,4 @@ curl -fsSL -o InstrumentSerif-Regular.ttf "$GF/instrumentserif/InstrumentSerif-R
 curl -fsSL -o InstrumentSerif-Italic.ttf  "$GF/instrumentserif/InstrumentSerif-Italic.ttf"
 rm -rf "$TMP"
 ls -lh
-echo "✓ 字体就绪。视频渲染时 Jost / JetBrains Mono / Noto Sans SC / TeX Gyre Heros / Oswald / Fredoka / Bangers / Unbounded / Michroma / Silkscreen / Archivo / Space Mono / Space Grotesk / Tinos / Inter / Geist Mono / Selawik / Instrument Serif 自动加载，无需安装到系统。"
+echo "✓ 字体就绪。视频渲染时 Jost / JetBrains Mono / Noto Sans SC / TeX Gyre Heros / Oswald / Fredoka / Bangers / Unbounded / Michroma / Silkscreen / Archivo / Space Mono / Space Grotesk / Tinos / Inter / Geist Mono / Selawik / Instrument Serif / Poiret One / Noto Serif SC 自动加载，无需安装到系统。"

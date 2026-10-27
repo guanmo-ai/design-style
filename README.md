@@ -105,6 +105,7 @@ by 观默 [@guanmo_ai](https://x.com/guanmo_ai)
 | **006** | [**千禧未来主义 Y2K**](styles/006-y2k) | 1997—2004 | 铬、果冻和半透明塑料：把对 2000 年的期待做进屏幕——未来，正在加载 | 视频待补齐，暂未上线 · [🛠 过程](styles/006-y2k/PROCESS.md) · [🧰 从 0 到 1](styles/006-y2k/MAKING.md) |
 | **008** | [**孔版印刷 Risograph**](styles/008-risograph) | 1946—今天 | 三种油墨、一张会呼吸的纸：荧光粉印不进 CMYK，套不准是这台机器的口音 | [🎬 视频](https://github.com/guanmo-ai/design-style/releases/tag/day-08) · [🛠 过程](styles/008-risograph/PROCESS.md) |
 | **009** | [**新粗野主义 Neo-Brutalism**](styles/009-neo-brutalism) | 2021—今天 | 黑框描到底，阴影是一块偏移的黑：按下去，就是滑到阴影的位置 | [🎬 视频](https://github.com/guanmo-ai/design-style/releases/tag/day-09-audio-v2) · [🛠 过程](styles/009-neo-brutalism/PROCESS.md) |
+| **013** | [**装饰艺术 Art Deco**](styles/013-art-deco) | 1925—1939 | 先立一条中轴，阶梯、放射、三线从中轴往两边同时长出来；金色只给线 | [🎬 视频](https://github.com/guanmo-ai/design-style/releases/tag/day-13)（待发布） · [🛠 过程](styles/013-art-deco/PROCESS.md) |
 
 ### 布局方式 · Layout
 
@@ -158,6 +159,8 @@ npm run render:008             # 风格 008：生成配乐 → 渲染 out/008-ri
 npm run images:008             # 风格 008：生成 4 张风格图 → preview SVG + 2x PNG
 npm run render:009             # 风格 009：生成配乐 → 渲染 out/009-neo-brutalism-master.mp4（真实 CSS 硬阴影 + 运动模糊）
 npm run images:009             # 风格 009：生成 4 张风格图 → preview SVG + 2x PNG
+npm run render:013             # 风格 013：生成配乐 → 渲染 out/013-art-deco-master.mp4
+npm run images:013             # 风格 013：生成 4 张风格图 → preview SVG + 2x PNG
 npm run render:L01             # 布局 01：生成配乐 → 渲染 out/01-bento-grid-master.mp4
 npm run images:L01             # 布局 01：生成 4 张布局图 → preview SVG + 2x PNG
 npm run render:L02             # 布局 02：生成配乐 → 渲染 out/02-masonry-master.mp4
@@ -193,7 +196,8 @@ design-style/
 │  └─ 005-pop-art/         # 同上，含 MAKING.md；短片：一切都像印出来的——网点代替渐变、粗黑线 + 硬投影，网点长满接力换幕；整体放慢 1.2 倍到 18 秒
 │  └─ 006-y2k/             # 同上，含 MAKING.md；短片：开机 → 铬字 → 果冻 iMac → Aqua → 像素表情 → 千年虫 → 今天；铬、果冻、泡泡、玻璃由 WebGL2 着色器逐帧算出（video/material.js），18 秒
 │  └─ 008-risograph/       # 同上；短片：三张版砸在一起 → 热敏头烧孔 → 分色过机 → 叠印 → 小志出纸 → 五个词；每色一张版，正片叠底
-│  └─ 009-neo-brutalism/   # 同上；短片：键帽 → 元素从框里长出来 → 抬起与阶梯 → 按压水波 → 混凝土 / 网页 / 按钮 → 网页与 App → 五个词；阴影长度 = 高度，20 秒
+│  ├─ 009-neo-brutalism/   # 同上；短片：键帽 → 元素从框里长出来 → 抬起与阶梯 → 按压水波 → 混凝土 / 网页 / 按钮 → 网页与 App → 五个词；阴影长度 = 高度，20 秒
+│  └─ 013-art-deco/        # 同上；短片：海报电梯门 → 一线变三线拉成画框 → 楼一级级长高 → 折扇放射 → 巴黎 / 上海 / 纽约 → 网页与 App → 五条规则；一切从中轴向两边长，20 秒
 ├─ layouts/                # 布局：结构同 styles/，期号两位
 │  └─ 01-bento-grid/
 │     ├─ README.md         # 布局指南

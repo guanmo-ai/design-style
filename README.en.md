@@ -100,6 +100,7 @@ The gallery interface, descriptions, search, and reading pages support **Chinese
 | 006 | [Y2K Futurism — video pending, not yet published](styles/006-y2k/README.en.md) | [Production overview](styles/006-y2k/PROCESS.en.md) | 1997–2004 |
 | 008 | [Risograph](styles/008-risograph/README.en.md) | [Production overview](styles/008-risograph/PROCESS.en.md) | 1946–today |
 | 009 | [Neo-Brutalism](styles/009-neo-brutalism/README.en.md) | [Production overview](styles/009-neo-brutalism/PROCESS.en.md) | 2021–today |
+| 013 | [Art Deco — video pending release](styles/013-art-deco/README.en.md) | [Production overview](styles/013-art-deco/PROCESS.en.md) | 1925–1939 |
 
 ### Layouts
 
@@ -147,7 +148,7 @@ npx playwright install chromium
 npm run images:001
 ```
 
-Episode suffixes are `001`–`006`, `008`, `009`, `L01`, and `L02`; for example, `npm run render:L02` renders Masonry. Episode 006 renders its WebGL2 materials with SwiftShader (`--gl=swangle`), so it is slower. Episode 008 is Risograph; 009 is Neo-Brutalism. Output goes into `out/`. The root `npm ci` applies the browser ZIP extraction security patch. If installation uses `--ignore-scripts`, run `npm run postinstall` before rendering or running the security tests.
+Episode suffixes are `001`–`006`, `008`, `009`, `013`, `L01`, and `L02`; for example, `npm run render:L02` renders Masonry. Episode 006 renders its WebGL2 materials with SwiftShader (`--gl=swangle`), so it is slower. Episode 008 is Risograph; 009 is Neo-Brutalism; 013 is Art Deco. Output goes into `out/`. The root `npm ci` applies the browser ZIP extraction security patch. If installation uses `--ignore-scripts`, run `npm run postinstall` before rendering or running the security tests.
 
 ```bash
 npm test

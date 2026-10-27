@@ -1,12 +1,13 @@
 """
-待做风格 · 装饰艺术 Art Deco —— 风格图（1080×1350）
+风格 013 · 装饰艺术 Art Deco —— 风格图（1080×1350）
 
   poster.svg      一张海报：中轴上的摩天楼 + 拱窗里的放射光 + 三线框
   cheatsheet.svg  速查卡：五种颜色、三种字、五个母题、五条规则
   app-ui.svg      如果装饰艺术来做 app：一家爵士酒吧的订座页，带标注
+  steps.svg       教程：五步，从一条中轴到一张装饰艺术（附错误示范）
 
 金色是“材质”不是“颜色”：统一用一条斜向的多段渐变（userSpaceOnUse），线再细也有金属的明暗。
-用法：python3 drafts/art-deco/images/make_svgs.py
+用法：python3 styles/013-art-deco/images/make_svgs.py
 """
 import math
 import os
@@ -195,7 +196,7 @@ def poster():
     for x, y, sx, sy in ((64, 64, 1, 1), (W - 64, 64, -1, 1), (64, H - 64, 1, -1), (W - 64, H - 64, -1, -1)):
         s.append(corner_ornament(x, y, sx, sy))
     # 顶部小字
-    s.append(t(CX, 128, 17, 'DESIGN STYLE  ·  NO. 009', GEO, 500, GOLD, '0.42em', 'middle'))
+    s.append(t(CX, 128, 17, 'DESIGN STYLE  ·  NO. 013', GEO, 500, GOLD, '0.42em', 'middle'))
     # 标题
     s.append(t(CX, 252, 128, 'ART DECO', DISPLAY, 400, G, '0.10em', 'middle'))
     s.append(rule_with_diamond(250, 830, 290))
@@ -216,7 +217,7 @@ def poster():
     s.append(t(CX, 1268, 14, 'PARIS  ·  NEW YORK  ·  SHANGHAI', GEO, 500, GOLD, '0.48em', 'middle'))
     s.append(t(150, 1236, 15, '巴黎 · 纽约 · 上海', SC, 400, GOLD, '0.18em'))
     s.append(t(150, 1264, 15, '中轴 · 阶梯 · 放射', SC, 400, IVORY, '0.18em', extra='opacity="0.7"'))
-    s.append(t(W - 150, 1236, 15, 'Design Style 风格 009', SC, 400, GOLD, '0.06em', 'end'))
+    s.append(t(W - 150, 1236, 15, 'Design Style 风格 013', SC, 400, GOLD, '0.06em', 'end'))
     s.append(t(W - 150, 1264, 15, '@guanmo_ai', GEO, 400, IVORY, '0.12em', 'end', 'opacity="0.7"'))
     s.append(FOOT)
     return ''.join(s)
@@ -278,7 +279,7 @@ def cheatsheet():
     L = 96
     s.append(t(L, 168, 76, 'ART DECO', DISPLAY, 400, ink, '0.06em'))
     s.append(t(L, 214, 24, '速查 · 五种颜色、三种字、五个母题、五条规则', SC, 500, ink, '0.04em'))
-    s.append(t(W - L, 168, 15, 'NO. 009 · 1925—1939', GEO, 500, GOLD_DK, '0.3em', 'end'))
+    s.append(t(W - L, 168, 15, 'NO. 013 · 1925—1939', GEO, 500, GOLD_DK, '0.3em', 'end'))
     # 颜色
     s.append(t(L, 278, 15, '01  颜色 · 比例 60 / 25 / 10 / 5', GEO, 600, GOLD_DK, '0.18em'))
     sw = [
@@ -446,13 +447,97 @@ def app_ui():
     toks = ['--gold: #C9A45A', '--onyx: #0E0D0B', '--step: 6px × 2', '--line: 1.8 / 0.8 / 0.8', '--track: 0.06em']
     for i, tok in enumerate(toks):
         s.append(t(TX, ky + 30 + i * 22, 15, tok, "'JetBrains Mono', monospace", 400, IVORY, '0', extra='opacity="0.8"'))
-    s.append(t(96, 1278, 13, 'Design Style 风格 009 · @guanmo_ai', SC, 400, GOLD, '0.06em'))
+    s.append(t(96, 1278, 13, 'Design Style 风格 013 · @guanmo_ai', SC, 400, GOLD, '0.06em'))
+    s.append(FOOT)
+    return ''.join(s)
+
+
+# ───────────────────────────── 教程：五步 ─────────────────────────────
+MONO = "'JetBrains Mono', monospace"
+SMOKE = '#A89F8C'
+
+
+def mini(i, x, y, w, h):
+    """第 i 步的小样（累加）：0 中轴 · 1 三线框 · 2 阶梯楼 · 3 放射 · 4 一块实心金；5 = 错误示范"""
+    cx, by = x + w / 2, y + h - 26
+    o = [f'<rect x="{x}" y="{y}" width="{w}" height="{h}" fill="#15120D"/>']
+    if i == 5:
+        # 错误示范：圆角、满屏金底、射线又粗又密
+        o.append(f'<rect x="{x + 40}" y="{y + 30}" width="{w - 80}" height="{h - 60}" rx="26" fill="{G}"/>')
+        o.append(f'<clipPath id="bad"><rect x="{x + 40}" y="{y + 30}" width="{w - 80}" height="{h - 60}" rx="26"/></clipPath>')
+        o.append('<g clip-path="url(#bad)">')
+        for k in range(36):
+            a = math.radians(180 + 5 * k)
+            o.append(f'<path d="M{cx} {by} L{cx + 400 * math.cos(a):.1f} {by + 400 * math.sin(a):.1f}" stroke="{ONYX}" stroke-width="3.2" opacity="0.55"/>')
+        o.append('</g>')
+        o.append(t(cx, y + h / 2 + 10, 30, 'ART DECO', GEO, 800, ONYX, '0.02em', 'middle'))
+        for dx in (-1, 1):
+            o.append(f'<path d="M{x + w - 36 - 13 + dx * 13} {y + 22} L{x + w - 36 - 13 - dx * 13} {y + 48}" stroke="{LACQUER}" stroke-width="5" stroke-linecap="round"/>')
+        return ''.join(o)
+    if i >= 3:
+        cid = f'arch{i}'
+        hw, side = 120, 40
+        o.append(f'<clipPath id="{cid}"><path d="{arch_path(cx, by, hw, side)}"/></clipPath>')
+        o.append(f'<g clip-path="url(#{cid})">{sunburst(cx, by, 200, 18, bg="#15120D")}</g>')
+        o.append(f'<path d="M{cx - hw} {by} V{by - side} A{hw} {hw} 0 0 1 {cx + hw} {by - side} V{by}" fill="none" stroke="{G}" stroke-width="1.6"/>')
+    if i >= 2:
+        for hw, top in ((62, 56), (44, 90), (28, 117)):
+            o.append(f'<rect x="{cx - hw}" y="{by - top}" width="{2 * hw}" height="{top}" fill="url(#shaft)" stroke="{G}" stroke-width="1.4"/>')
+        o.append(f'<path d="M{cx - 3} {by - 117} L{cx} {by - 150} L{cx + 3} {by - 117} Z" fill="{G}"/>')
+        o.append(f'<rect x="{cx - 84}" y="{by}" width="168" height="7" fill="{ONYX}" stroke="{G}" stroke-width="1"/>')
+    if i >= 1:
+        o.append(triple_rect(x + 12, y + 12, w - 24, h - 24, step=8, widths=(1.8, 0.8, 0.8), gap=5))
+    if i == 4:
+        o.append(f'<path d="{stepped_rect_path(cx - 60, by - 30, 120, 22, 4)}" fill="{G}"/>')
+        o.append(t(cx, by - 14.5, 10, 'RESERVE', GEO, 700, ONYX, '0.2em', 'middle'))
+    # 中轴：第 0 步是主角，之后藏进楼的中肋
+    if i == 0:
+        o.append(f'<path d="M{cx} {y + 18} V{y + h - 18}" stroke="{G}" stroke-width="2.4"/>')
+        for d in (-7, 7):
+            o.append(f'<path d="M{cx + d} {y + 18} V{y + h - 18}" stroke="{G}" stroke-width="0.9"/>')
+        o.append(diamond(cx, y + h / 2, 6))
+    elif i <= 2:
+        o.append(f'<path d="M{cx} {y + 18} V{by - (150 if i == 2 else 0)}" stroke="{G}" stroke-width="1" opacity="0.6" stroke-dasharray="3 4"/>')
+    return ''.join(o)
+
+
+def steps():
+    defs = (
+        '<linearGradient id="shaft" x1="0" y1="0" x2="1" y2="0">'
+        '<stop offset="0" stop-color="#0B0A08"/><stop offset="0.5" stop-color="#211C13"/><stop offset="1" stop-color="#0B0A08"/></linearGradient>'
+    )
+    s = [head(defs), f'<rect width="{W}" height="{H}" fill="{ONYX}"/>']
+    s.append(triple_rect(36, 36, W - 72, H - 72, step=16))
+    L = 96
+    s.append(t(L, 140, 15, 'ART DECO · HOW TO', GEO, 600, GOLD, '0.36em'))
+    s.append(t(L, 200, 46, '五步，从一条中轴到一张装饰艺术', SC, 700, IVORY, '0.02em'))
+    s.append(t(L, 240, 20, '每一步只加一样东西；左右永远同时长。', SC, 400, SMOKE, '0.04em'))
+    cells = [
+        ('01', '立中轴', '先画一条竖线，后面所有东西都左右镜像。', 'axis: x = 50%'),
+        ('02', '一线变三线', '框用一粗两细，间距 ≈ 粗线 × 3。', 'line: 1.8 / 0.8 / 0.8 · gap 5'),
+        ('03', '阶梯收分', '体块越往上越窄；转角用两级台阶。', 'step: 6px × 2 · radius: 0'),
+        ('04', '放射藏光', '光源藏在主体后面，射线细而稀。', 'rays: 18 / 180° · 1px'),
+        ('05', '金只给线', '整屏只有一块实心金：要你按的那个。', 'gold fill ≤ 1 / screen'),
+        ('✕', '别这样', '圆角 + 满屏金底 + 粗密射线 = 土豪，不是 Deco。', 'radius > 0 · gold bg · rays 3px'),
+    ]
+    cw, ch, gx = 424, 196, 40
+    for k, (num, title, hint, param) in enumerate(cells):
+        col, row = k % 2, k // 2
+        x = L + col * (cw + gx)
+        y = 286 + row * 326
+        s.append(mini(k, x, y, cw, ch))
+        bad = num == '✕'
+        s.append(t(x, y + ch + 40, 24, num, GEO, 500, LACQUER if bad else GOLD, '0.1em'))
+        s.append(t(x + 52, y + ch + 40, 24, title, SC, 700, IVORY, '0.04em'))
+        s.append(t(x, y + ch + 72, 15, hint, SC, 400, SMOKE, '0.02em'))
+        s.append(t(x, y + ch + 98, 13, param, MONO, 400, LACQUER if bad else GOLD, '0'))
+    s.append(t(L, 1278, 13, 'Design Style 风格 013 · @guanmo_ai', SC, 400, GOLD, '0.06em'))
     s.append(FOOT)
     return ''.join(s)
 
 
 def main():
-    for name, fn in (('poster', poster), ('cheatsheet', cheatsheet), ('app-ui', app_ui)):
+    for name, fn in (('poster', poster), ('cheatsheet', cheatsheet), ('app-ui', app_ui), ('steps', steps)):
         path = os.path.join(HERE, f'{name}.svg')
         with open(path, 'w', encoding='utf-8') as f:
             f.write(fn())
