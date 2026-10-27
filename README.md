@@ -105,7 +105,7 @@ by 观默 [@guanmo_ai](https://x.com/guanmo_ai)
 | **006** | [**千禧未来主义 Y2K**](styles/006-y2k) | 1997—2004 | 铬、果冻和半透明塑料：把对 2000 年的期待做进屏幕——未来，正在加载 | 视频待补齐，暂未上线 · [🛠 过程](styles/006-y2k/PROCESS.md) · [🧰 从 0 到 1](styles/006-y2k/MAKING.md) |
 | **008** | [**孔版印刷 Risograph**](styles/008-risograph) | 1946—今天 | 三种油墨、一张会呼吸的纸：荧光粉印不进 CMYK，套不准是这台机器的口音 | [🎬 视频](https://github.com/guanmo-ai/design-style/releases/tag/day-08) · [🛠 过程](styles/008-risograph/PROCESS.md) |
 | **009** | [**新粗野主义 Neo-Brutalism**](styles/009-neo-brutalism) | 2021—今天 | 黑框描到底，阴影是一块偏移的黑：按下去，就是滑到阴影的位置 | [🎬 视频](https://github.com/guanmo-ai/design-style/releases/tag/day-09-audio-v2) · [🛠 过程](styles/009-neo-brutalism/PROCESS.md) |
-| **013** | [**装饰艺术 Art Deco**](styles/013-art-deco) | 1925—1939 | 先立一条中轴，阶梯、放射、三线从中轴往两边同时长出来；金色只给线 | [🎬 视频](https://github.com/guanmo-ai/design-style/releases/tag/day-13)（待发布） · [🛠 过程](styles/013-art-deco/PROCESS.md) |
+| **013** | [**装饰艺术 Art Deco**](styles/013-art-deco) | 1925—1939 | 先立一条中轴，阶梯、放射、三线从中轴往两边同时长出来；金色只给线 | [🎬 视频](https://github.com/guanmo-ai/design-style/releases/tag/day-13) · [🛠 过程](styles/013-art-deco/PROCESS.md) |
 
 ### 布局方式 · Layout
 

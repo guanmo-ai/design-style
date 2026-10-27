@@ -100,7 +100,7 @@ The gallery interface, descriptions, search, and reading pages support **Chinese
 | 006 | [Y2K Futurism — video pending, not yet published](styles/006-y2k/README.en.md) | [Production overview](styles/006-y2k/PROCESS.en.md) | 1997–2004 |
 | 008 | [Risograph](styles/008-risograph/README.en.md) | [Production overview](styles/008-risograph/PROCESS.en.md) | 1946–today |
 | 009 | [Neo-Brutalism](styles/009-neo-brutalism/README.en.md) | [Production overview](styles/009-neo-brutalism/PROCESS.en.md) | 2021–today |
-| 013 | [Art Deco — video pending release](styles/013-art-deco/README.en.md) | [Production overview](styles/013-art-deco/PROCESS.en.md) | 1925–1939 |
+| 013 | [Art Deco](styles/013-art-deco/README.en.md) | [Production overview](styles/013-art-deco/PROCESS.en.md) | 1925–1939 |
 
 ### Layouts
 
