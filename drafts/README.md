@@ -38,3 +38,19 @@
 - **字：** Archivo 900（wdth 108—125）· Space Mono · Monoton（点缀）· Noto Sans SC
 - **动效设想（15 秒）：** 白屏里条纹出现，标题靠相位错开显形 → 整片条纹像 Riley《Current》一样流动 → 平的棋盘被一个参数推成一颗球（Vega）并转动 → 两组同心圆滑过、流出摩尔纹 → 等宽线靠线宽调制转成圆柱 → 同明度红青“颤”一下收尾。全片不搬形状，只改参数。
 - **安全线：** 每秒闪烁 ≤ 3 次（WCAG 2.3.1）；大面积高频条纹不要剧烈运动；提供减少动态效果的静帧版本。
+
+---
+
+## 布局 03 候选 · `layout-03/`
+
+下一期布局（03）的三个候选，各一张海报（1080×1350，图本身就是它讲的那种布局）。选定一个后再做成完整一期：`git mv` 到 `layouts/03-xxx/`，补视频、四张图、指南、配乐与文档。
+
+| A · 分屏 Split Screen | B · 破格 Broken Grid | C · 层叠 Stacked Cards |
+|:-:|:-:|:-:|
+| <img src="layout-03/images/preview/a-split.svg" width="260" alt="分屏布局" /> | <img src="layout-03/images/preview/b-broken.svg" width="260" alt="破格布局" /> | <img src="layout-03/images/preview/c-stack.svg" width="260" alt="层叠布局" /> |
+
+- **A 分屏：** 一条 61.8% 的中线，两种声音。墨黑 × 钴蓝，硬色块；Archivo 900 + Space Mono。
+- **B 破格：** 先立 12 列网格，再让一两个元素冲出边距。纸色 × 荧光黄，Bodoni Moda 斜体 + 真实照片。
+- **C 层叠：** 后一张压住前一张，只露一条边（步长 76px、每层缩小 4%）。夜色 × 糖果色；Inter Display + JetBrains Mono。
+
+重新生成：`python3 drafts/layout-03/images/make_svgs.py && python3 scripts/build_images.py drafts/layout-03/images`（Bodoni Moda Italic 需另外下载到 `public/fonts/BodoniModa-Italic.ttf`）。
