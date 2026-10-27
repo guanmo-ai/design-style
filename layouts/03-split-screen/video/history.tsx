@@ -1,272 +1,206 @@
 /**
- * 02:30–05:30 来历：一条线，一百年。
- * 左半（纸）：年份是四个数字滚轮，像里程表一样向上滚；右半（墨）：四幅示意图同时向下滚——全片的反向滚动在这里缩小再演一遍。
- *   1927 三联银幕 → 1959 电话分屏 → 2009 Aero Snap → 2015 Split View
+ * 02:00–05:30 来历：四个年代，四个世界。
+ * 每个年代是一整幅画面（两半各画一遍、被中线裁开），用那个年代自己的视觉语言：
+ *   1927 构成主义（红色斜带 + 三联银幕的胶片）→ 1959 波普（网点 + 两格漫画 + 电话线）→
+ *   2009 Aero 玻璃（桌面窗口真的贴到左半 / 右半）→ 2015 扁平（iPad 的 Split View，中缝可拖）
+ * 年代之间的翻页是“反向传送带”：左半向上、右半向下，整个世界被中线劈开错位。
  */
 import React from 'react';
 import {Img, staticFile} from 'remotion';
-import {C} from '../tokens';
-import {BELT, ChProps, Cursor, EXPO, Page, Rise, SLIDE, Wheel, clamp, disp, lerp, mono, popEase, rgba, sc, tween} from './ui';
+import {BELT, ChProps, EXPO, clamp, popEase, tween} from './ui';
+import {KC, Pop, PC} from './kit';
+import {World2, World3} from './eras';
 import type {SeamStyle} from './SplitScreen';
 
-export const historySeam = (_f: number): SeamStyle => ({line: C.blue, pillBg: C.blue, pillFg: C.paper});
+export const historySeam = (_f: number): SeamStyle => ({line: null, pillBg: '#111111', pillFg: '#F5F4F0'});
 
-/** 每一站“到位”的局部帧；前一站滚走用 18 帧 */
-export const STOP_AT = [18, 52, 94, 136];
+/** 每一站“到位”的局部帧；滚到下一站用 18 帧 */
+export const STOP_AT = [0, 46, 92, 150];
 const ROLL = 18;
-const YEARS = [
-  {year: '1927', title: '三联银幕', desc: '《拿破仑》：三台放映机，三块银幕并排', tag: 'POLYVISION'},
-  {year: '1959', title: '电话分屏', desc: '《枕边细语》：一通电话，把两个人放在左右两半', tag: 'PILLOW TALK'},
-  {year: '2009', title: '窗口贴边', desc: 'Windows 7 Aero Snap：拖到屏幕边缘，自动占满一半', tag: 'AERO SNAP'},
-  {year: '2015', title: '分屏视图', desc: 'iPad Split View 与 OS X El Capitan：两个 App，中缝可拖', tag: 'SPLIT VIEW'},
+export const rollP = (f: number, k: number) => BELT(clamp((f - (STOP_AT[k] - ROLL - 2)) / ROLL));
+export const rIndex = (f: number) => [1, 2, 3].reduce((s, k) => s + rollP(f, k), 0);
+/** 每个世界自己的动画时间：从它开始滚进来的前几帧起算 */
+export const worldG = (f: number, k: number) => (k === 0 ? f + 24 : f - (STOP_AT[k] - ROLL - 6));
+
+const W = 1920;
+const H = 1080;
+const AXIS = {x: Math.cos(Math.PI / 6), y: -Math.sin(Math.PI / 6)}; // 构成主义的主轴：从左下往右上 30°
+const slideAlong = (dist: number, t: number) => `translate(${-AXIS.x * dist * (1 - t)} ${-AXIS.y * dist * (1 - t)})`;
+
+// ═══════════════ 世界 0 · 1927 构成主义 ═══════════════
+const FRAMES = [
+  {src: 'dunes', dx: -226},
+  {src: 'lake', dx: 0},
+  {src: 'ocean', dx: 226},
 ];
-// 每个数字滚轮的累计位置（只往前滚）：千 / 百 / 十 / 个
-const WHEELS = [
-  [1, 1, 2, 2],
-  [9, 9, 10, 10],
-  [2, 5, 10, 11],
-  [7, 9, 9, 15],
-];
-
-/** 第 k 站的滚动进度（k ≥ 1），带一点点逐位的错开 */
-const rollP = (f: number, k: number, stagger = 0) => BELT(clamp((f - (STOP_AT[k] - ROLL - 2 + stagger)) / ROLL));
-/** 整体“第几站”（小数）：右半的示意图、左半的标题跟着它滚 */
-const rIndex = (f: number) => YEARS.reduce((s, _, k) => (k === 0 ? 0 : s + rollP(f, k)), 0);
-
-const CX = 1553; // 右半的中心
-const CY = 520;
-
-// ───────── 四幅示意图（局部时间 g，单位帧） ─────────
-const Triptych: React.FC<{g: number}> = ({g}) => {
-  const W = 200;
-  const Hh = 150;
-  const gap = 6;
-  const open = tween(g, 8, 18, 0, 1, EXPO);
-  const panes = [
-    {src: 'dunes', dx: -(W + gap)},
-    {src: 'lake', dx: 0},
-    {src: 'ocean', dx: W + gap},
-  ];
-  const sx = tween(g, 0, 10, 0, 1, EXPO);
+const World0: React.FC<{g: number; X: number}> = ({g, X}) => {
+  const band = EXPO(clamp(g / 24));
+  const bar = EXPO(clamp((g - 4) / 24));
+  const year = tween(g, 8, 26, 0, 1, popEase);
+  const ring = tween(g, 12, 18, 0, 1, popEase);
+  const CX = (X + W) / 2;
+  const CY = 560;
   return (
-    <div style={{position: 'absolute', left: CX - W / 2, top: CY - Hh / 2, width: W, height: Hh}}>
-      {/* 4:3 的单块银幕：虚线轮廓留在原地 */}
-      <div style={{position: 'absolute', inset: -6, border: `2px dashed ${rgba(C.paper, 0.35)}`, opacity: open}} />
-      {panes.map((p, i) => (
-        <div key={i} style={{position: 'absolute', left: p.dx * open, top: 0, width: W, height: Hh, overflow: 'hidden', transform: `scale(${i === 1 ? 1 : 1}, ${sx})`, zIndex: i === 1 ? 2 : 1}}>
-          <Img src={staticFile(`02-masonry/photos/${p.src}.jpg`)} style={{width: '100%', height: '100%', objectFit: 'cover', filter: 'grayscale(1) contrast(1.2) brightness(0.95)'}} />
-        </div>
-      ))}
-      <div style={{position: 'absolute', left: -(W + gap) - 6, top: Hh + 40, width: 3 * W + 2 * gap + 12, textAlign: 'center', color: C.peri, ...mono(26, 700, 0.06), opacity: open}}>{'3 × 4:3  →  4 : 1'}</div>
-      {/* 两条缝 */}
-      {[-(W + gap) / 2 - 0.5, (W + gap) / 2 + 0.5].map((x, i) => (
-        <div key={i} style={{position: 'absolute', left: W / 2 + x * open * 2 - 2, top: -22 * open, width: 4, height: Hh + 44 * open, background: C.blue, opacity: open, zIndex: 3}} />
-      ))}
-    </div>
-  );
-};
-
-const Figure: React.FC<{x: number; y: number; w: number; fg: string; flip?: boolean; s: number}> = ({x, y, w, fg, flip, s}) => {
-  const k = flip ? -1 : 1;
-  return (
-    <svg style={{position: 'absolute', left: x, top: y, overflow: 'visible', transform: `scale(${s})`, transformOrigin: `${w / 2}px 360px`}} width={w} height={360} viewBox={`0 0 ${w} 360`}>
-      <circle cx={w / 2} cy={150} r={48} fill={fg} />
-      <path d={`M ${w / 2 - 104} 360 C ${w / 2 - 104} 250 ${w / 2 - 66} 214 ${w / 2} 214 C ${w / 2 + 66} 214 ${w / 2 + 104} 250 ${w / 2 + 104} 360 Z`} fill={fg} />
-      {/* 听筒 */}
-      <g transform={`translate(${w / 2 + k * 62} 150) rotate(${k * -14})`}>
-        <rect x={-13} y={-42} width={26} height={84} rx={13} fill={fg} stroke={flip ? C.blue : C.paper} strokeWidth={5} />
+    <svg width={W} height={H} style={{position: 'absolute', left: 0, top: 0}}>
+      <rect x={0} y={0} width={X} height={H} fill={KC.paper} />
+      <rect x={X} y={0} width={W - X} height={H} fill={KC.ink} />
+      {/* 主轴上的红色斜带和黑条：横跨中线 */}
+      <g transform={slideAlong(1500, bar)}>
+        <polygon points="-300,833 2200,-610 2200,-550 -300,893" fill={KC.ink} />
       </g>
+      <g transform={slideAlong(1700, band)}>
+        <polygon points="-300,933 2200,-510 2200,-320 -300,1123" fill={KC.red} />
+      </g>
+      {/* 圆：比纸更亮的“白圆” */}
+      <g transform={`translate(1010 160) scale(${ring})`}>
+        <circle r={118} fill={KC.light} stroke={KC.ink} strokeWidth={6} />
+        <circle r={78} fill="none" stroke={KC.ink} strokeWidth={4} />
+      </g>
+      {/* 年份：沿着主轴往上冲 */}
+      <g transform={slideAlong(800, year)}>
+        <text transform="translate(150 650) rotate(-30)" fontFamily="'Oswald', sans-serif" fontWeight={700} fontSize={410} fill={KC.ink} letterSpacing="-6">
+          1927
+        </text>
+      </g>
+      <g transform={slideAlong(800, tween(g, 14, 24, 0, 1, EXPO))}>
+        <text transform="translate(236 758) rotate(-30)" fontFamily="'Noto Sans SC', sans-serif" fontWeight={900} fontSize={104} fill={KC.light}>
+          三联银幕
+        </text>
+      </g>
+      <g opacity={tween(g, 24, 14)}>
+        <text x={96} y={992} fontFamily="'Noto Sans SC', sans-serif" fontWeight={500} fontSize={34} fill={KC.ink}>
+          《拿破仑》：三台放映机，三块银幕并排
+        </text>
+        <text x={96} y={1036} fontFamily="'Oswald', sans-serif" fontWeight={500} fontSize={24} letterSpacing="3" fill={KC.red}>
+          ТРИ ЭКРАНА · POLYVISION · 1927
+        </text>
+      </g>
+      {/* 右半：胶片。三个 4:3 的画面依次沿主轴飞进来，拼成 4:1 */}
+      <g transform={slideAlong(500, EXPO(clamp((g - 6) / 22)))}>
+        <rect x={CX - 360} y={CY - 150} width={720} height={300} fill="#26231F" />
+        {Array.from({length: 15}).map((_, i) => (
+          <React.Fragment key={i}>
+            <rect x={CX - 346 + i * 48} y={CY - 140} width={22} height={16} rx={3} fill={KC.paper} />
+            <rect x={CX - 346 + i * 48} y={CY + 124} width={22} height={16} rx={3} fill={KC.paper} />
+          </React.Fragment>
+        ))}
+        <text x={CX - 346} y={CY + 190} fontFamily="'JetBrains Mono', monospace" fontWeight={700} fontSize={22} fill={KC.grey}>
+          3 × 4:3 → 4 : 1
+        </text>
+      </g>
+      {FRAMES.map((fr, i) => {
+        const t = EXPO(clamp((g - (10 + (i === 1 ? 0 : 5))) / 20));
+        return (
+          <g key={i} transform={slideAlong(700, t)}>
+            <foreignObject x={CX + fr.dx - 107} y={CY - 80} width={214} height={160}>
+              <div style={{width: 214, height: 160, overflow: 'hidden', outline: `3px solid ${KC.paper}`}}>
+                <Img src={staticFile(`02-masonry/photos/${fr.src}.jpg`)} style={{width: '100%', height: '100%', objectFit: 'cover', filter: 'grayscale(1) contrast(1.25) brightness(0.95)'}} />
+              </div>
+            </foreignObject>
+          </g>
+        );
+      })}
     </svg>
   );
 };
-const Phone: React.FC<{g: number}> = ({g}) => {
-  const pw = 280;
-  const ph = 440;
-  const x0 = CX - pw - 2;
-  const y0 = CY - ph / 2;
-  const a = tween(g, 0, 12, 0, 1, popEase);
-  const cord = tween(g, 6, 22, 0, 1, EXPO);
-  const len = 560;
-  return (
-    <>
-      <div style={{position: 'absolute', left: x0, top: y0, width: pw, height: ph, background: C.paper, overflow: 'hidden', transform: `scaleY(${a})`}}>
-        <Figure x={0} y={ph - 360} w={pw} fg={C.ink} s={1} />
-      </div>
-      <div style={{position: 'absolute', left: x0 + pw + 4, top: y0, width: pw, height: ph, background: C.blue, overflow: 'hidden', transform: `scaleY(${a})`}}>
-        <Figure x={0} y={ph - 360} w={pw} fg={C.paper} flip s={1} />
-      </div>
-      {/* 电话线：从左边的听筒绕出去，穿过中缝，接到右边 */}
-      <svg style={{position: 'absolute', left: 0, top: 0, overflow: 'visible', zIndex: 5}} width={1920} height={1080}>
-        <path
-          d={`M ${x0 + pw / 2 + 62} ${y0 + 270} C ${x0 + pw / 2 + 62} ${y0 + 400} ${CX - 40} ${y0 + 410} ${CX} ${y0 + 380} S ${CX + pw / 2 - 62} ${y0 + 340} ${CX + pw / 2 - 62} ${y0 + 272}`}
-          fill="none"
-          stroke={C.peri}
-          strokeWidth={7}
-          strokeLinecap="round"
-          strokeDasharray={`${len} ${len}`}
-          strokeDashoffset={len * (1 - cord)}
-        />
-      </svg>
-      <div style={{position: 'absolute', left: x0, top: y0 + ph + 34, width: pw * 2 + 4, textAlign: 'center', color: C.peri, ...mono(26, 700, 0.06), opacity: tween(g, 14, 10)}}>{'1 通电话 = 2 个画面'}</div>
-    </>
-  );
-};
 
-const Window: React.FC<{x: number; y: number; w: number; h: number; body: string; bar: string; line?: string}> = ({x, y, w, h, body, bar, line = C.ink}) => (
-  <div style={{position: 'absolute', left: x, top: y, width: w, height: h, background: body, overflow: 'hidden', outline: `3px solid ${line}`}}>
-    <div style={{height: 36, background: bar, display: 'flex', alignItems: 'center', gap: 6, padding: '0 12px'}}>
-      {[0, 1, 2].map((i) => (
-        <div key={i} style={{width: 10, height: 10, borderRadius: '50%', background: body}} />
-      ))}
-    </div>
-    <div style={{padding: 14, display: 'flex', flexDirection: 'column', gap: 10}}>
-      {[0.9, 0.6, 0.78, 0.5].map((q, i) => (
-        <div key={i} style={{height: 8, width: `${q * 100}%`, background: line, opacity: 0.35}} />
-      ))}
-    </div>
-  </div>
+// ═══════════════ 世界 1 · 1959 波普 ═══════════════
+const Face: React.FC<{hair: string; skin: string; lips?: boolean; flip?: boolean}> = ({hair, skin, lips, flip}) => (
+  <g transform={flip ? 'scale(-1 1)' : undefined}>
+    <path d="M-150 260 C-150 150 -80 120 0 120 C80 120 150 150 150 260Z" fill={PC.white} stroke={PC.ink} strokeWidth={7} />
+    <rect x={-26} y={70} width={52} height={70} fill={skin} stroke={PC.ink} strokeWidth={7} />
+    <path d="M-72 -20 C-72 -110 72 -110 72 -20 C72 50 40 96 0 96 C-40 96 -72 50 -72 -20Z" fill={skin} stroke={PC.ink} strokeWidth={7} />
+    <path d="M-72 -20 C-72 -110 72 -110 72 -20 C72 50 40 96 0 96 C-40 96 -72 50 -72 -20Z" fill="url(#skin)" opacity={0.7} />
+    <path d="M-84 -10 C-100 -130 90 -150 84 -10 C70 -60 40 -80 -10 -78 C-50 -76 -76 -50 -84 -10Z" fill={hair} stroke={PC.ink} strokeWidth={7} />
+    <path d="M-46 -26 Q-30 -40 -12 -28M14 -28 Q30 -40 46 -26" stroke={PC.ink} strokeWidth={7} fill="none" strokeLinecap="round" />
+    <circle cx={-28} cy={-14} r={8} fill={PC.ink} />
+    <circle cx={30} cy={-14} r={8} fill={PC.ink} />
+    {lips ? <path d="M-22 44 Q0 30 22 44 Q0 66 -22 44Z" fill={PC.red} stroke={PC.ink} strokeWidth={5} /> : <path d="M-18 46 Q0 58 18 46" stroke={PC.ink} strokeWidth={6} fill="none" strokeLinecap="round" />}
+    <g transform="translate(70 24) rotate(-12)">
+      <rect x={-14} y={-52} width={28} height={104} rx={14} fill={PC.ink} />
+      <rect x={-6} y={-40} width={12} height={80} rx={6} fill="#555" />
+    </g>
+  </g>
 );
-const SW = 600;
-const SH = 440;
-const SX = CX - SW / 2;
-const SY = CY - SH / 2;
-const Snap: React.FC<{g: number}> = ({g}) => {
-  // A：贴到左边；B：贴到右边
-  const a1 = tween(g, 6, 8, 0, 1, SLIDE);
-  const aSnap = tween(g, 14, 12, 0, 1, popEase);
-  const b1 = tween(g, 19, 7, 0, 1, SLIDE);
-  const bSnap = tween(g, 27, 12, 0, 1, popEase);
-  const half = SW / 2 - 2;
-  // 窗口 A
-  const A = {x: lerp(lerp(SX + 150, SX, a1), SX, aSnap), y: lerp(SY + 70, SY, aSnap), w: lerp(260, half, aSnap), h: lerp(190, SH, aSnap)};
-  const Bw = {x: lerp(lerp(SX + 240, SX + SW - 260, b1), SX + SW - half, bSnap), y: lerp(SY + 120, SY, bSnap), w: lerp(260, half, bSnap), h: lerp(190, SH, bSnap)};
-  const ghostA = tween(g, 12, 3) * (1 - tween(g, 14, 3));
-  const ghostB = tween(g, 25, 3) * (1 - tween(g, 27, 3));
-  // 光标：落在 A 的标题栏 → 拖到左缘 → 去 B 的标题栏 → 拖到右缘
-  const cx = g < 14 ? lerp(SX + 150 + 130, SX + 20, a1) : lerp(lerp(SX + 20, SX + 240 + 130, tween(g, 14, 6, 0, 1, SLIDE)), SX + SW - 20, b1);
-  const cy = g < 14 ? lerp(SY + 70 + 18, SY + 18, a1) : lerp(SY + 18, SY + 120 + 18, tween(g, 14, 6, 0, 1, SLIDE));
-  const press = (g >= 4 && g < 14 ? 1 : 0) + (g >= 19 && g < 27 ? 1 : 0);
-  const ring = g >= 14 && g < 28 ? tween(g, 14, 12) : g >= 27 ? tween(g, 27, 12) : 0;
+const World1: React.FC<{g: number; X: number}> = ({g, X}) => {
+  const CX = (X + W) / 2;
+  const cord = tween(g, 26, 22, 0, 1, EXPO);
+  const len = 900;
   return (
-    <>
-      <div style={{position: 'absolute', left: SX, top: SY, width: SW, height: SH, border: `3px solid ${C.paper}`, boxSizing: 'content-box', marginLeft: -3, marginTop: -3, opacity: tween(g, 0, 8)}} />
-      <div style={{position: 'absolute', left: SX, top: SY, width: SW / 2 - 2, height: SH, background: rgba(C.paper, 0.18), opacity: ghostA}} />
-      <div style={{position: 'absolute', left: SX + SW / 2 + 2, top: SY, width: SW / 2 - 2, height: SH, background: rgba(C.paper, 0.18), opacity: ghostB}} />
-      <Window x={Bw.x} y={Bw.y} w={Bw.w} h={Bw.h} body={C.blue} bar={C.ink} line={C.paper} />
-      <Window x={A.x} y={A.y} w={A.w} h={A.h} body={C.paper} bar={C.ink} />
-      <Cursor x={cx} y={cy} press={press > 0 ? 1 : 0} ring={ring} scale={1} />
-      <div style={{position: 'absolute', left: SX, top: SY + SH + 34, width: SW, textAlign: 'center', color: C.peri, ...mono(26, 700, 0.06), opacity: tween(g, 24, 10)}}>{'贴边 → 各占 50 %'}</div>
-    </>
+    <svg width={W} height={H} style={{position: 'absolute', left: 0, top: 0}}>
+      <Pop.Patterns f={g} />
+      <rect width={W} height={H} fill={PC.paper} />
+      <rect width={W} height={H} fill="url(#dotPaper)" />
+      {/* 左半：年份 + 标题 + 旁白框 */}
+      <Pop.Slap f={g} t0={4} x={96} y={470} rot={-5}>
+        <Pop.Txt x={0} y={0} size={400} font="display" c={PC.red} stroke={16} sh={22} ls={0.01}>{'1959'}</Pop.Txt>
+      </Pop.Slap>
+      <Pop.Box x={96} y={560} w={560} h={130} fill={PC.yellow} k={Pop.popS(g, 14)} rot={-3} sh={12}>
+        <Pop.Txt x={280} y={90} size={90} font="cn" anchor="middle">{'电话分屏'}</Pop.Txt>
+      </Pop.Box>
+      <Pop.Box x={110} y={770} w={880} h={150} fill={PC.white} k={Pop.popS(g, 22)} rot={1.5} sh={10}>
+        <Pop.Txt x={36} y={62} size={40} font="cn" w={700}>{'《枕边细语》：一通电话，'}</Pop.Txt>
+        <Pop.Txt x={36} y={116} size={40} font="cn" w={700}>{'把两个人放在左右两半'}</Pop.Txt>
+      </Pop.Box>
+      {/* 右半：两格漫画，一条电话线穿过格间的白缝 */}
+      <Pop.Slap f={g} t0={10} x={CX - 316} y={300} rot={-2}>
+        <rect x={10} y={10} width={300} height={500} fill={PC.ink} />
+        <rect width={300} height={500} fill={PC.blue} stroke={PC.ink} strokeWidth={8} />
+        <rect width={300} height={500} fill="url(#skinBlue)" opacity={0.18} />
+        <g transform="translate(150 262) scale(0.9)"><Face hair={PC.yellow} skin={PC.pink} lips /></g>
+      </Pop.Slap>
+      <Pop.Slap f={g} t0={16} x={CX + 20} y={290} rot={2}>
+        <rect x={10} y={10} width={300} height={500} fill={PC.ink} />
+        <rect width={300} height={500} fill={PC.cyan} stroke={PC.ink} strokeWidth={8} />
+        <rect width={300} height={500} fill="url(#dotCyan)" opacity={0.5} />
+        <g transform="translate(150 262) scale(0.9)"><Face hair={PC.ink} skin={PC.pink} flip /></g>
+      </Pop.Slap>
+      {/* 电话铃声：拟声字把左半的空白填满 */}
+      {Pop.popS(g, 18) > 0.001 && (
+        <g transform={`translate(${1040 + Pop.shake(g, 18, 10, 'ring')[0]} ${250 + Pop.shake(g, 18, 10, 'ring')[1]}) scale(${Pop.popS(g, 18)})`}>
+          <Pop.Blk d={Pop.burstD(200, 130, 11, 0.2, 'ring')} fill={PC.yellow} sw={8} sh={14} />
+          <Pop.Bang x={0} y={0} size={128} k={1} rot={-8}>RING!</Pop.Bang>
+        </g>
+      )}
+      <path
+        d={`M${CX - 138} 590 C${CX - 138} 740 ${CX - 50} 770 ${CX} 730 S${CX + 120} 690 ${CX + 138} 590`}
+        fill="none"
+        stroke={PC.ink}
+        strokeWidth={16}
+        strokeLinecap="round"
+        strokeDasharray={`${len} ${len}`}
+        strokeDashoffset={len * (1 - cord)}
+      />
+      <Pop.Bubble x={CX - 150} y={240} w={190} h={96} tx={40} ty={80} k={Pop.popS(g, 30)} rot={-4}>
+        <Pop.Txt x={0} y={20} size={50} font="cn" anchor="middle">{'喂？'}</Pop.Txt>
+      </Pop.Bubble>
+      <Pop.Bubble x={CX + 190} y={240} w={190} h={96} tx={-40} ty={80} k={Pop.popS(g, 38)} rot={4}>
+        <Pop.Txt x={0} y={20} size={50} font="cn" anchor="middle">{'喂！'}</Pop.Txt>
+      </Pop.Bubble>
+      <Pop.Box x={CX - 170} y={880} w={380} h={62} fill={PC.yellow} k={Pop.popS(g, 44)} rot={-1.5} sh={8}>
+        <Pop.Txt x={190} y={44} size={30} font="cn" anchor="middle">{'1 通电话 = 2 个画面'}</Pop.Txt>
+      </Pop.Box>
+    </svg>
   );
 };
 
-const SplitView: React.FC<{g: number}> = ({g}) => {
-  const r = 0.5 + 0.22 * ramp3(g);
-  const handleX = SX + SW * r;
-  const c = tween(g, 0, 10);
-  const appear = tween(g, 0, 8);
-  return (
-    <>
-      <div style={{position: 'absolute', left: SX, top: SY, width: SW, height: SH, opacity: appear, transform: `scaleY(${c})`}}>
-        {/* 左：笔记 App */}
-        <div style={{position: 'absolute', left: 0, top: 0, width: SW * r - 3, height: SH, background: C.paper, overflow: 'hidden'}}>
-          <div style={{height: 34, background: C.ink}} />
-          <div style={{padding: 16, display: 'flex', flexDirection: 'column', gap: 12}}>
-            {[0.92, 0.7, 0.84, 0.55, 0.76, 0.6, 0.8].map((q, i) => (
-              <div key={i} style={{height: 9, width: `${q * 100}%`, background: C.ink, opacity: 0.3}} />
-            ))}
-          </div>
-        </div>
-        {/* 右：浏览器 App */}
-        <div style={{position: 'absolute', left: SW * r + 3, top: 0, width: SW * (1 - r) - 3, height: SH, background: C.blue, overflow: 'hidden'}}>
-          <div style={{height: 34, background: C.ink}} />
-          <Img src={staticFile('02-masonry/photos/stairs.jpg')} style={{width: SW * 0.5, height: SH - 34, objectFit: 'cover', objectPosition: '30% 50%'}} />
-        </div>
-        {/* 中缝上的把手 */}
-        <div style={{position: 'absolute', left: SW * r - 7, top: SH / 2 - 36, width: 14, height: 72, borderRadius: 7, background: C.paper, outline: `3px solid ${C.ink}`, zIndex: 4}} />
-      </div>
-      <Cursor x={handleX} y={SY + SH / 2 + 8} press={g > 3 && g < 20 ? 1 : 0} ring={tween(g, 2, 10)} />
-      <div style={{position: 'absolute', left: SX, top: SY + SH + 34, width: SW, textAlign: 'center', color: C.peri, ...mono(26, 700, 0.06), opacity: tween(g, 6, 10)}}>{`${Math.round(r * 100)} : ${100 - Math.round(r * 100)}  ·  中缝可拖`}</div>
-    </>
-  );
-};
-/** 0 → 1 → 0：把手往右拖，再回到中间 */
-const ramp3 = (g: number) => {
-  const up = SLIDE(clamp((g - 4) / 12));
-  const dn = SLIDE(clamp((g - 24) / 10));
-  return up * (1 - dn);
-};
-
-const DIAGRAMS = [Triptych, Phone, Snap, SplitView];
+const WORLDS: React.FC<{g: number; X: number}>[] = [World0, World1, World2, World3];
 
 export const History: React.FC<ChProps> = (p) => {
-  const {f, side} = p;
-  const L = side === 'L';
+  const {f, side, X} = p;
   const r = rIndex(f);
-  // 个位最先动，千位最后动（错开 0 / 2 / 3 / 4 帧）
-  const wheelV = (j: number) => {
-    let v = WHEELS[j][0];
-    for (let k = 1; k < 4; k++) v += (WHEELS[j][k] - WHEELS[j][k - 1]) * rollP(f, k, [4, 3, 2, 0][j]);
-    return v;
-  };
-  const SZ = 380;
-  const cw = SZ * 0.66;
   return (
-    <Page p={p} bg={L ? C.paper : C.ink}>
-      {L && (
-        <>
-          <div style={{position: 'absolute', left: 96, top: 62, display: 'flex', alignItems: 'baseline', gap: 18}}>
-            <Rise f={f} at={6} d={16} pad={8}>
-              <span style={{...mono(22, 700, 0.14), color: C.grey}}>{'ORIGIN'}</span>
-            </Rise>
-            <Rise f={f} at={9} d={16} pad={8}>
-              <span style={{...sc(30, 900), color: C.ink}}>{'一条线，一百年'}</span>
-            </Rise>
+    <div style={{position: 'absolute', inset: 0, overflow: 'hidden', background: '#111'}}>
+      {WORLDS.map((Wd, k) => {
+        // 左半向上、右半向下：下一站从反方向进来
+        const off = (side === 'L' ? k - r : r - k) * H;
+        if (Math.abs(r - k) > 1.02) return null;
+        return (
+          <div key={k} style={{position: 'absolute', inset: 0, transform: `translateY(${off}px)`}}>
+            <Wd g={worldG(f, k)} X={X} />
           </div>
-          {/* 年份：四个数字滚轮 */}
-          <div style={{position: 'absolute', left: 96, top: 150, display: 'flex', color: C.ink, ...disp(SZ, 100, -0.02)}}>
-            {[0, 1, 2, 3].map((j) => (
-              <Wheel key={j} v={wheelV(j)} h={SZ * 1.02} style={{width: cw}} />
-            ))}
-          </div>
-          {/* 标题 + 说明：跟着右边同一个进度向上滚 */}
-          <div style={{position: 'absolute', left: 96, top: 590, width: 1010, height: 250, overflow: 'hidden'}}>
-            <div style={{transform: `translateY(${-r * 250}px)`}}>
-              {YEARS.map((y, k) => (
-                <div key={k} style={{height: 250}}>
-                  <div style={{...sc(96, 900, -0.01), color: C.ink, lineHeight: 1.1}}>{y.title}</div>
-                  <div style={{...sc(38, 500), color: C.grey, marginTop: 14}}>{y.desc}</div>
-                </div>
-              ))}
-            </div>
-          </div>
-          {/* 四站进度 */}
-          <div style={{position: 'absolute', left: 96, top: 962, display: 'flex', gap: 12}}>
-            {YEARS.map((_, k) => {
-              const on = clamp(1 - Math.abs(r - k));
-              return <div key={k} style={{width: 120, height: 10, background: rgba(C.ink, 0.16), position: 'relative'}}><div style={{position: 'absolute', inset: 0, background: C.blue, transform: `scaleX(${on})`, transformOrigin: 'left'}} /></div>;
-            })}
-          </div>
-        </>
-      )}
-      {!L && (
-        <>
-          {YEARS.map((y, k) => {
-            const off = (r - k) * 1080; // 右半向下：下一站从上方进来
-            if (Math.abs(r - k) > 1.05) return null;
-            const g = f - (STOP_AT[k] - ROLL - 4 + (k === 0 ? -12 : 0));
-            const D = DIAGRAMS[k];
-            return (
-              <div key={k} style={{position: 'absolute', inset: 0, transform: `translateY(${off}px)`}}>
-                <div style={{position: 'absolute', left: 1187 + 64, top: 62, color: C.peri, ...mono(24, 700, 0.14)}}>{y.tag}</div>
-                <div style={{position: 'absolute', inset: 0, transform: `scale(1.18)`, transformOrigin: `${CX}px ${CY}px`}}>
-                  <D g={g} />
-                </div>
-              </div>
-            );
-          })}
-        </>
-      )}
-    </Page>
+        );
+      })}
+    </div>
   );
 };

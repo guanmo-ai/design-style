@@ -1,10 +1,10 @@
-{"fps": 60, "bpm": 120, "frames": 1200, "title": "布局 03 · 时间轴：每次换幕都在拍点上落定（1 拍 = 30 帧，落定帧 = 章节起点）",
+{"fps": 60, "bpm": 120, "frames": 1200, "title": "布局 03 · 时间轴 v2：每次换幕都在拍点上落定（1 拍 = 30 帧，落定帧 = 章节起点）；每章的两半各穿一种风格",
  "segments": [
-  {"label": "01 定义", "start": 0, "dur": 150, "color": "#0E0E10"},
-  {"label": "来历", "start": 150, "dur": 180, "color": "#F1EDE4"},
-  {"label": "02 比例", "start": 330, "dur": 210, "color": "#2B35FF"},
-  {"label": "03 反差", "start": 540, "dur": 150, "color": "#8E95FF"},
-  {"label": "04 滚动", "start": 690, "dur": 180, "color": "#0E0E10"},
-  {"label": "05 响应式", "start": 870, "dur": 180, "color": "#F1EDE4"},
-  {"label": "片尾", "start": 1050, "dur": 150, "color": "#2B35FF"}
+  {"label": "01 定义 · 瑞士 | 波普", "start": 0, "dur": 120, "color": "#F5F4F0"},
+  {"label": "来历 · 构成 / 波普 / Aero / iPad", "start": 120, "dur": 210, "color": "#FFD31A"},
+  {"label": "02 比例 · 包豪斯 | 瑞士", "start": 330, "dur": 210, "color": "#1F4FA3"},
+  {"label": "03 反差 · 孔版 / 便当盒", "start": 540, "dur": 150, "color": "#16171C"},
+  {"label": "04 滚动 · 新粗野 | 孔版", "start": 690, "dur": 180, "color": "#FFE55C"},
+  {"label": "05 响应式 · 孟菲斯 | 构成", "start": 870, "dur": 180, "color": "#FF6B9D"},
+  {"label": "片尾 · 五风格贴纸", "start": 1050, "dur": 150, "color": "#E62E2D"}
  ]}

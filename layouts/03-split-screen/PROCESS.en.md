@@ -6,13 +6,15 @@
 
 ## Design constraint
 
+**This is v2.** v1 used a single ink / paper / cobalt look for the whole film and was judged "ordinary — the visual style never changes". Because split screen is a *layout*, not a style, v2 keeps the engine and redraws every chapter so that **each half wears a different earlier style** (Swiss | Pop, Constructivism → Pop → Aero → iPad, Bauhaus | Swiss, Riso / Bento Dark / Neo-Brutalism, Memphis | Constructivism …), reusing those episodes' UI kits, tokens and motion physics (Pop slaps, Memphis drops and squashes, Neo-Brutalism shadow = height, Riso mis-registers, Aero glass snaps).
+
 The film has exactly one protagonist: the dividing line. The picture is always cut into two halves; chapters turn pages like two conveyor belts — the left half slides up, the right half slides down — and every landing hits a beat. The line itself slides between ratios and, once, rotates 90° when a layout stacks.
 
-The film and four reference sheets share the values in `tokens.ts`, `tokens.css`, and `tokens.json`. Typography in this episode uses Archivo, Noto Sans SC, Space Mono.
+The film and four reference sheets share the values in `tokens.ts`, `tokens.css`, and `tokens.json`. Engine values (BPM, easings, ratios) are fixed; palettes and typefaces are borrowed per style (TeX Gyre Heros, Bangers, Jost, Oswald, Fredoka, Space Grotesk, Noto Sans SC, Space Mono). The v1 ink / paper / cobalt tokens remain for the cheat sheet and comparison diagrams.
 
 ## Production workflow
 
-1. Present three candidate layouts as posters (split screen, broken grid, stacked cards), each in a different visual treatment, and let the author pick.
+1. Present three candidate layouts as posters (split screen, broken grid, stacked cards), each in a different visual treatment, and let the author pick. Split Screen won.
 2. Read the [English guide](README.en.md) and choose one motion idea per chapter; the five rules map to five demos.
 3. Use `process/timeline.json` as the chapter timing reference (40 beats, 1200 frames).
 4. Build the stage in `video/` with Remotion and React: each chapter is drawn twice (once per half) and clipped by the dividing line, so a word can cross the line and change color. Layouts in the film are real CSS-like boxes: when the line moves, text reflows for real.

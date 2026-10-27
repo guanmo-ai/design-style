@@ -19,6 +19,7 @@ import {C} from '../tokens';
 import {CH, DURATION, POST, PRE} from './timeline';
 import {xAt, thetaAt} from './tracks';
 import {BELT, ChProps, Side, lerp, loadFonts, mono} from './ui';
+import {TextureStyles, preloadTextures} from '../../../styles/008-risograph/video/riso';
 import {Intro, introSeam} from './intro';
 import {History, historySeam} from './history';
 import {Ratio, ratioSeam} from './ratio';
@@ -31,7 +32,7 @@ export const SPLIT_DURATION = DURATION;
 const W = 1920;
 const H = 1080;
 
-export type SeamStyle = {line: string | null; pillBg: string; pillFg: string; pill?: boolean};
+export type SeamStyle = {line: string | null; pillBg: string; pillFg: string; pill?: boolean; width?: number};
 const REG: {Comp: React.FC<ChProps>; seam: (f: number) => SeamStyle}[] = [
   {Comp: Intro, seam: introSeam},
   {Comp: History, seam: historySeam},
@@ -111,7 +112,7 @@ const Stage: React.FC = () => {
       })}
       {/* 中线与读数：不跟着传送带走，是全片唯一不动的东西 */}
       {seam.line && (
-        <div style={{position: 'absolute', left: cx - 1.5, top: cy - B / 2, width: 3, height: B, background: seam.line, transform: `rotate(${theta}rad) scaleY(${lineGrow})`, transformOrigin: '50% 50%', clipPath: f < 22 ? `inset(${(0.5 - lineGrow / 2) * 100}% 0 ${(0.5 - lineGrow / 2) * 100}% 0)` : undefined}} />
+        <div style={{position: 'absolute', left: cx - (seam.width ?? 3) / 2, top: cy - B / 2, width: seam.width ?? 3, height: B, background: seam.line, transform: `rotate(${theta}rad) scaleY(${lineGrow})`, transformOrigin: '50% 50%', clipPath: f < 22 ? `inset(${(0.5 - lineGrow / 2) * 100}% 0 ${(0.5 - lineGrow / 2) * 100}% 0)` : undefined}} />
       )}
       {seam.pill !== false && f > 14 && (
         <div style={{position: 'absolute', left: pillPos.x, top: pillPos.y, transform: `translate(-50%, -50%) scale(${clamp((f - 14) / 8)})`, height: 38, padding: '0 18px', display: 'flex', alignItems: 'center', background: seam.pillBg, color: seam.pillFg, ...mono(20, 700), whiteSpace: 'nowrap'}}>
@@ -125,10 +126,11 @@ const Stage: React.FC = () => {
 export const SplitScreen: React.FC<{music?: boolean; blur?: number}> = ({music = true, blur = 10}) => {
   const [ready] = useState(() => delayRender('split-screen-fonts'));
   useEffect(() => {
-    loadFonts().then(() => continueRender(ready));
+    Promise.all([loadFonts(), preloadTextures()]).then(() => continueRender(ready));
   }, [ready]);
   return (
     <AbsoluteFill style={{background: C.ink}}>
+      <TextureStyles />
       {blur > 1 ? (
         <CameraMotionBlur shutterAngle={140} samples={blur}>
           <Stage />

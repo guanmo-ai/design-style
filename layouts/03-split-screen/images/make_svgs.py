@@ -9,6 +9,7 @@
 生成的 SVG 是普通可读的源文件（带注释），可以直接改；改完再跑 scripts/build_images.py 内嵌字体和照片、导出 PNG。
 用法：python3 layouts/03-split-screen/images/make_svgs.py && python3 scripts/build_images.py layouts/03-split-screen/images
 """
+import math
 import os
 from xml.sax.saxutils import escape
 
@@ -25,6 +26,8 @@ STYLE = """
       .a { font-family: 'Archivo', 'Noto Sans SC', sans-serif; }
       .m { font-family: 'Space Mono', 'Noto Sans SC', monospace; }
       .c { font-family: 'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif; }
+      .h { font-family: 'TeX Gyre Heros', 'Helvetica Neue', Arial, 'Noto Sans SC', sans-serif; }
+      .b { font-family: 'Bangers', 'Noto Sans SC', sans-serif; }
     </style>"""
 
 
@@ -48,6 +51,10 @@ def text(x, y, s, cls='c', size=20, weight=400, fill='#000', anchor='start', ls=
     anc = f' text-anchor="{anchor}"' if anchor != 'start' else ''
     return (f'<text x="{f(x)}" y="{f(y)}" class="{cls}" font-size="{f(size)}" font-weight="{weight}" '
             f'fill="{fill}"{anc}{lsp} {extra}>{escape(s)}</text>')
+
+
+def circle(cx, cy, r, fill):
+    return f'<circle cx="{f(cx)}" cy="{f(cy)}" r="{f(r)}" fill="{fill}"/>'
 
 
 def line(x1, y1, x2, y2, stroke, sw=1.5, extra=''):
@@ -185,36 +192,54 @@ def phone(x, y, w, h, stroke=INK, fill=PAPER, r=18):
 
 # ═══════════════════════════════ 01 · 海报 ═══════════════════════════════
 def poster():
+    """海报：左半瑞士（纸白 + 黑 + 一抹红），右半波普（黄底 + 红网点 + 粗黑边硬投影）——分屏是布局，两半各穿一种风格"""
     SPLIT = round(W * GOLD)  # 668
-    d = Doc('poster', '一张海报，认识分屏', STYLE, INK)
+    SW_PAPER, SW_INK, SW_RED = '#F5F4F0', '#111111', '#E30613'
+    PY, PR, PW = '#FFD31A', '#E62E2D', '#FFFFFF'
+    d = Doc('poster', '一张海报，认识分屏', STYLE, SW_PAPER)
     left = d.clip(0, 0, SPLIT, H)
     right = d.clip(SPLIT, 0, W - SPLIT, H)
-    o = [rect(SPLIT, 0, W - SPLIT, H, 0, BLUE)]
+    d.defs.append('<pattern id="dots" width="22" height="22" patternUnits="userSpaceOnUse" patternTransform="rotate(30)"><circle cx="11" cy="11" r="5.2" fill="%s"/></pattern>' % PR)
+    o = [rect(SPLIT, 0, W - SPLIT, H, 0, PY)]
+    # 右半：波普的网点铺在“t”的后面，再叠一个白色爆炸框
+    cx, cy = 790, 455
+    pts = ' '.join(f"{cx + (250 if k % 2 == 0 else 175) * math.cos(math.pi * k / 11):.1f},{cy + (250 if k % 2 == 0 else 175) * math.sin(math.pi * k / 11):.1f}" for k in range(22))
+    o.append(f'<g clip-path="url(#{right})"><rect x="{SPLIT}" y="230" width="{W - SPLIT}" height="480" fill="url(#dots)"/>'
+             f'<polygon points="{pts}" fill="#000" transform="translate(10 10)"/><polygon points="{pts}" fill="#fff" stroke="#111" stroke-width="6" stroke-linejoin="round"/></g>')
+    # 左半：瑞士的网格线与一块红色方块（“l”从它上面经过，翻成白）
+    o.append(f'<g clip-path="url(#{left})">' + ''.join(line(72 + k * 104, 0, 72 + k * 104, H, SW_INK, 1, 'opacity=".07"') for k in range(6)) + '</g>')
 
     # 页眉
-    o.append(text(72, 96, 'Design Style · 布局 03', 'm', 21, 400, mix(INK, PAPER, .72)))
-    o.append(text(W - 40, 96, '每天一个设计风格', 'c', 21, 500, PAPER, 'end'))
+    o.append(circle(80, 90, 6, SW_RED))
+    o.append(text(96, 96, 'Design Style · 布局 03', 'h', 21, 400, SW_INK))
+    o.append(rect(W - 330, 62, 290, 50, 0, PW, f'stroke="{SW_INK}" stroke-width="4"'))
+    o.append(text(W - 185, 96, '每天一个设计风格', 'c', 22, 900, SW_INK, 'middle'))
 
-    # 巨字：同一个词画两遍，分界线左边纸色、右边墨色——一条线，两种声音
-    big = dict(cls='a', size=320, weight=900, ls=-12)
-    o.append(f'<g clip-path="url(#{left})">' + text(56, 440, 'Split', fill=PAPER, **big) + '</g>')
-    o.append(f'<g clip-path="url(#{right})">' + text(56, 440, 'Split', fill=INK, **big) + '</g>')
+    # 巨字：同一个词画两遍，同一套字形——左边是瑞士（黑），右边穿上波普（红字 + 粗黑边 + 硬投影）
+    big = dict(cls='h', size=360, weight=700, ls=-18)
+    o.append(f'<g clip-path="url(#{left})">' + text(52, 442, 'Split', fill=SW_INK, **big) + '</g>')
+    o.append(f'<g clip-path="url(#{right})">'
+             + text(64, 454, 'Split', fill=SW_INK, **big)
+             + text(52, 442, 'Split', fill=PR, extra=f'stroke="{SW_INK}" stroke-width="8" paint-order="stroke" stroke-linejoin="round"', **big) + '</g>')
 
     # 分界线上的刻度：61.8%
-    o.append(line(SPLIT, 0, SPLIT, 150, PAPER, 2))
-    o.append(rect(SPLIT - 62, 150, 124, 38, 0, PAPER))
-    o.append(text(SPLIT, 176, '61.8 %', 'm', 20, 700, INK, 'middle'))
-    o.append(line(SPLIT, 188, SPLIT, 214, PAPER, 2))
+    o.append(line(SPLIT, 0, SPLIT, 150, SW_INK, 3))
+    o.append(rect(SPLIT - 62, 150, 124, 38, 0, SW_INK))
+    o.append(text(SPLIT, 176, '61.8 %', 'm', 20, 700, PY, 'middle'))
+    o.append(line(SPLIT, 188, SPLIT, 214, SW_INK, 3))
 
-    # 中文标题（左半，纸色）+ 右半一句话
-    o.append(text(72, 640, '分屏布局', 'c', 118, 900, PAPER, ls=-2))
-    o.append(text(72, 696, 'Split Screen · 一条中线，两种声音', 'm', 21, 400, PERI))
-    o.append(text(704, 566, '左边说话，', 'c', 38, 700, PAPER))
-    o.append(text(704, 616, '右边给证据。', 'c', 38, 700, PAPER))
+    # 中文标题（左半，瑞士）+ 右半一句话（波普的旁白框）
+    o.append(text(72, 640, '分屏布局', 'c', 118, 900, SW_INK, ls=-2))
+    o.append(rect(72, 664, 96, 10, 0, SW_RED))
+    o.append(text(72, 712, 'Split Screen · 一条中线，两种声音', 'h', 21, 400, SW_INK))
+    o.append(rect(716, 502, 300, 140, 0, SW_INK))
+    o.append(rect(704, 490, 300, 140, 0, PW, f'stroke="{SW_INK}" stroke-width="5"'))
+    o.append(text(730, 548, '左边说话，', 'c', 38, 900, SW_INK))
+    o.append(text(730, 602, '右边给证据。', 'c', 38, 900, PR))
 
-    # 左：五条规则
-    o.append(text(72, 762, '五条规则', 'm', 20, 700, PERI, ls=3))
-    o.append(line(72, 782, SPLIT - 72, 782, mix(INK, PAPER, .22), 1.5))
+    # 左：五条规则（瑞士：红色序号 + 黑字 + 灰说明）
+    o.append(text(72, 772, '五条规则', 'c', 20, 700, SW_RED, ls=3))
+    o.append(line(72, 790, SPLIT - 72, 790, SW_INK, 2))
     rules = [
         ('01', '只有一条中线', '不加阴影、不加描边，色块自己说话'),
         ('02', '比例要有意思', '50:50 对等，62:38 主次，70:30 导航'),
@@ -222,40 +247,42 @@ def poster():
         ('04', '一边固定，一边滚', 'position: sticky；左边不动，右边流'),
         ('05', '手机上叠成上下', '文字在上，一屏只讲一件事'),
     ]
-    y = 832
-    for n, t, s in rules:
-        o.append(text(72, y, n, 'm', 22, 700, PERI))
-        o.append(text(130, y + 2, t, 'c', 31, 700, PAPER))
-        o.append(text(130, y + 36, s, 'c', 20, 400, mix(INK, PAPER, .62)))
+    y = 838
+    for n, t, s_ in rules:
+        o.append(text(72, y, n, 'h', 22, 700, SW_RED))
+        o.append(text(130, y + 2, t, 'c', 31, 700, SW_INK))
+        o.append(text(130, y + 36, s_, 'c', 20, 400, '#6B6B68'))
         y += 90
 
-    # 右：三种常用比例
-    o.append(text(704, 762, '三种常用比例', 'm', 20, 700, PAPER, ls=3))
-    o.append(line(704, 782, W - 40, 782, mix(BLUE, PAPER, .4), 1.5))
+    # 右：三种常用比例（波普：白底黑边 + 硬投影的色条）
+    o.append(text(704, 772, '三种常用比例', 'c', 20, 900, SW_INK, ls=3))
+    o.append(line(704, 790, W - 40, 790, SW_INK, 4))
     bw = 336
     bars = [(.5, '50', '50', '对等 · 两个主角'), (.618, '62', '38', '主次 · 图文 / 登录页'), (.7, '70', '30', '内容 + 侧栏 · 后台')]
-    y = 812
-    for a, l, r_, cap in bars:
-        o.append(rect(704, y, bw * a, 60, 0, INK))
-        o.append(rect(704 + bw * a, y, bw * (1 - a), 60, 0, PAPER))
-        o.append(text(704 + 16, y + 39, l, 'a', 30, 800, PAPER))
-        o.append(text(704 + bw - 16, y + 39, r_, 'a', 30, 800, INK, 'end'))
-        o.append(text(704, y + 92, cap, 'c', 19, 500, PAPER))
-        y += 120
+    y = 820
+    for a_, l, r_, cap in bars:
+        o.append(rect(704 + 7, y + 7, bw, 56, 0, SW_INK))
+        o.append(rect(704, y, bw * a_, 56, 0, PR, f'stroke="{SW_INK}" stroke-width="4"'))
+        o.append(rect(704 + bw * a_, y, bw * (1 - a_), 56, 0, PW, f'stroke="{SW_INK}" stroke-width="4"'))
+        o.append(text(704 + 16, y + 38, l, 'b', 34, 400, PW, extra=f'stroke="{SW_INK}" stroke-width="5" paint-order="stroke"', ls=1))
+        o.append(text(704 + bw - 16, y + 38, r_, 'b', 34, 400, SW_INK, 'end', ls=1))
+        o.append(text(704, y + 94, cap, 'c', 19, 700, SW_INK))
+        y += 118
 
     # 右下：粘性滚动示意（左固定，右滚）
-    wx, wy, ww, wh = 704, 1184, bw, 90
-    o.append(rect(wx, wy, ww, wh, 0, 'none', f'stroke="{PAPER}" stroke-width="2"'))
-    o.append(rect(wx, wy, ww * .4, wh, 0, PAPER))
-    o.append(text(wx + ww * .2, wy + wh / 2 + 7, 'sticky', 'm', 17, 700, INK, 'middle'))
-    rc = d.clip(wx + ww * .4, wy, ww * .6, wh)
+    wx, wy, ww, wh = 704, 1180, bw, 90
+    o.append(rect(wx + 7, wy + 7, ww, wh, 0, SW_INK))
+    o.append(rect(wx, wy, ww, wh, 0, PW, f'stroke="{SW_INK}" stroke-width="4"'))
+    o.append(rect(wx, wy, ww * .4, wh, 0, SW_INK))
+    o.append(text(wx + ww * .2, wy + wh / 2 + 7, 'sticky', 'm', 17, 700, PY, 'middle'))
+    rc = d.clip(wx + ww * .4 + 2, wy + 2, ww * .6 - 4, wh - 4)
     o.append(f'<g clip-path="url(#{rc})">')
     for i, lw in enumerate([.86, .6, .78, .5, .7, .82]):
-        o.append(rect(wx + ww * .4 + 14, wy - 4 + i * 24, (ww * .6 - 28) * lw, 10, 0, PAPER, 'opacity=".9"'))
+        o.append(rect(wx + ww * .4 + 14, wy - 4 + i * 24, (ww * .6 - 28) * lw, 10, 0, SW_INK, 'opacity=".85"'))
     o.append('</g>')
-    o.append(text(wx + ww - 10, wy + wh + 26, '↕ scroll', 'm', 17, 400, PAPER, 'end'))
+    o.append(text(wx + ww - 4, wy + wh + 34, '↕ scroll', 'm', 17, 700, SW_INK, 'end'))
 
-    o.append(text(72, 1304, '@guanmo_ai · github.com/guanmo-ai/design-style', 'm', 19, 400, mix(INK, PAPER, .55)))
+    o.append(text(72, 1304, '@guanmo_ai · github.com/guanmo-ai/design-style', 'm', 19, 400, '#6B6B68'))
     return d.render('\n'.join(o))
 
 
@@ -450,86 +477,96 @@ def templates():
     o.append(text(M - 2, 190, '拿来就用：三套分屏', 'c', 72, 900, INK, ls=-2))
 
     dw, dh = 520, 292
+    # 每套模板穿一种风格：登录 = 新粗野（黄 + 粉 + 黑框硬阴影），产品首屏 = 瑞士（纸白 + 黑 + 红），后台 = 深色便当盒（反相）
+    pal = [('#FF6B9D', '#111111', '#FFE55C', '新粗野 Neo-Brutalism', '#D6246E'), ('#E30613', '#111111', '#F5F4F0', '瑞士 Swiss', '#E30613'), ('#6C7BFF', '#ECEDF5', '#16171C', '深色便当盒 Bento Dark', '#4B58E8')]
     rows = [(238, '50 : 50', '登录 · 注册', '品牌图 + 表单，两边一样重', '1fr 1fr'), (582, '62 : 38', '产品首屏', '大图 + 一句话，图是主角', '1.618fr 1fr'), (926, '70 : 30', '后台 · 文档', '内容 + 侧栏，侧栏是工具', '7fr 3fr')]
     for k, (y, ratio, name, use, css) in enumerate(rows):
+        ACC, DK, LT, sty, TA = pal[k]
+        SB, ITEM = ('#2A2C36', DK) if k == 2 else (DK, LT)  # 侧栏底色 / 侧栏里的条
         # 左：说明
-        o.append(text(M, y + 66, ratio, 'a', 62, 900, BLUE, ls=-2))
+        o.append(text(M, y + 66, ratio, 'a', 62, 900, TA, ls=-2))
         o.append(text(M, y + 112, name, 'c', 30, 900, INK))
         o.append(text(M, y + 146, use, 'c', 16, 400, GREY))
         o.append(rect(M, y + 172, 196, 30, 0, INK))
         o.append(text(M + 10, y + 193, css, 'm', 14, 400, PAPER))
         o.append(text(M, y + 232, 'min-height: 100svh', 'm', 13, 400, GREY))
-        o.append(text(M, y + 256, '手机 < 768px → 叠成上下', 'c', 14, 700, BLUE))
+        o.append(text(M, y + 256, '手机 < 768px → 叠成上下', 'c', 14, 700, TA))
+        o.append(text(M, y + 282, sty, 'c', 14, 900, INK))
+        o.append(rect(M, y + 290, 40, 5, 0, TA))
 
         dx = 300
         a = [.5, GOLD, .7][k]
         lw = dw * a
         # 桌面
-        o.append(rect(dx - 2, y - 2, dw + 4, dh + 4, 0, 'none', f'stroke="{INK}" stroke-width="3"'))
+        if k == 0:  # 新粗野：硬阴影
+            o.append(rect(dx + 10, y + 10, dw, dh, 0, '#111111'))
+            o.append(rect(848 + 8, y + 8, 160, 292, 18, '#111111'))
+        o.append(rect(dx, y, dw, dh, 0, LT))
+        o.append(rect(dx - 2, y - 2, dw + 4, dh + 4, 0, 'none', f'stroke="{DK}" stroke-width="3"'))
         if k == 0:  # 登录：左品牌图（蓝），右表单（纸）
-            o.append(rect(dx, y, lw, dh, 0, BLUE))
-            o.append(f'<circle cx="{f(dx + lw / 2)}" cy="{f(y + 120)}" r="64" fill="{PAPER}"/>')
-            o.append(f'<circle cx="{f(dx + lw / 2 + 40)}" cy="{f(y + 170)}" r="48" fill="{INK}"/>')
-            o.append(text(dx + 22, y + dh - 22, 'Split', 'a', 30, 900, PAPER))
+            o.append(rect(dx, y, lw, dh, 0, ACC))
+            o.append(f'<circle cx="{f(dx + lw / 2)}" cy="{f(y + 120)}" r="64" fill="{LT}"/>')
+            o.append(f'<circle cx="{f(dx + lw / 2 + 40)}" cy="{f(y + 170)}" r="48" fill="{DK}"/>')
+            o.append(text(dx + 22, y + dh - 22, 'Split', 'a', 30, 900, LT))
             fx = dx + lw + 36
-            o.append(rect(fx, y + 50, 90, 12, 0, INK))
-            o.append(wire_lines(fx, y + 80, 150, 2, 18, INK, 7, widths=(1, .7), op=.3))
+            o.append(rect(fx, y + 50, 90, 12, 0, DK))
+            o.append(wire_lines(fx, y + 80, 150, 2, 18, DK, 7, widths=(1, .7), op=.3))
             for i in range(2):
-                o.append(rect(fx, y + 126 + i * 48, dw - lw - 72, 34, 0, 'none', f'stroke="{INK}" stroke-width="2"'))
-            o.append(rect(fx, y + 230, dw - lw - 72, 36, 0, BLUE))
-            o.append(text(fx + (dw - lw - 72) / 2, y + 254, '登录', 'c', 16, 900, PAPER, 'middle'))
+                o.append(rect(fx, y + 126 + i * 48, dw - lw - 72, 34, 0, 'none', f'stroke="{DK}" stroke-width="2"'))
+            o.append(rect(fx, y + 230, dw - lw - 72, 36, 0, ACC))
+            o.append(text(fx + (dw - lw - 72) / 2, y + 254, '登录', 'c', 16, 900, DK if k == 0 else LT, 'middle'))
         elif k == 1:  # 产品首屏：左大图，右墨底文案
             o.append(d.photo('stairs', dx, y, lw, dh, 0, 'xMidYMid'))
-            o.append(rect(dx + lw, y, dw - lw, dh, 0, INK))
+            o.append(rect(dx + lw, y, dw - lw, dh, 0, DK))
             fx = dx + lw + 22
-            o.append(text(fx, y + 96, 'Less,', 'a', 36, 900, PAPER, ls=-1))
-            o.append(text(fx, y + 134, 'but', 'a', 36, 900, PAPER, ls=-1))
-            o.append(text(fx, y + 172, 'better.', 'a', 36, 900, PAPER, ls=-1))
-            o.append(wire_lines(fx, y + 198, dw - lw - 44, 2, 16, PAPER, 6, widths=(1, .7), op=.5))
-            o.append(rect(fx, y + 246, 96, 30, 0, BLUE))
+            o.append(text(fx, y + 96, 'Less,', 'a', 36, 900, LT, ls=-1))
+            o.append(text(fx, y + 134, 'but', 'a', 36, 900, LT, ls=-1))
+            o.append(text(fx, y + 172, 'better.', 'a', 36, 900, LT, ls=-1))
+            o.append(wire_lines(fx, y + 198, dw - lw - 44, 2, 16, LT, 6, widths=(1, .7), op=.5))
+            o.append(rect(fx, y + 246, 96, 30, 0, ACC))
         else:  # 后台：左内容，右墨底侧栏
-            o.append(rect(dx, y, lw, dh, 0, PAPER))
-            o.append(rect(dx + 20, y + 22, 120, 14, 0, INK))
+            o.append(rect(dx, y, lw, dh, 0, LT))
+            o.append(rect(dx + 20, y + 22, 120, 14, 0, DK))
             for i in range(3):
-                o.append(rect(dx + 20 + i * 114, y + 56, 102, 62, 0, INK, 'opacity=".12"'))
+                o.append(rect(dx + 20 + i * 114, y + 56, 102, 62, 0, DK, 'opacity=".12"'))
             for i, hh in enumerate([60, 100, 78, 124, 90, 108]):
-                o.append(rect(dx + 24 + i * 52, y + dh - 24 - hh, 36, hh, 0, BLUE if i == 3 else INK, '' if i == 3 else 'opacity=".75"'))
-            o.append(rect(dx + lw, y, dw - lw, dh, 0, INK))
+                o.append(rect(dx + 24 + i * 52, y + dh - 24 - hh, 36, hh, 0, ACC if i == 3 else DK, '' if i == 3 else 'opacity=".75"'))
+            o.append(rect(dx + lw, y, dw - lw, dh, 0, SB))
             sx = dx + lw + 18
             for i in range(5):
-                o.append(rect(sx, y + 30 + i * 40, dw - lw - 36, 22, 0, BLUE if i == 1 else PAPER, 'opacity="1"' if i == 1 else 'opacity=".22"'))
+                o.append(rect(sx, y + 30 + i * 40, dw - lw - 36, 22, 0, ACC if i == 1 else ITEM, 'opacity="1"' if i == 1 else 'opacity=".22"'))
         # 比例尺
         o.append(line(dx, y + dh + 18, dx + lw, y + dh + 18, INK, 2))
-        o.append(line(dx + lw, y + dh + 18, dx + dw, y + dh + 18, BLUE, 2))
+        o.append(line(dx + lw, y + dh + 18, dx + dw, y + dh + 18, TA, 2))
         o.append(text(dx + lw / 2, y + dh + 40, f'{round(a * 100)} %', 'm', 14, 700, INK, 'middle'))
-        o.append(text(dx + lw + (dw - lw) / 2, y + dh + 40, f'{round((1 - a) * 100)} %', 'm', 14, 700, BLUE, 'middle'))
+        o.append(text(dx + lw + (dw - lw) / 2, y + dh + 40, f'{round((1 - a) * 100)} %', 'm', 14, 700, TA, 'middle'))
 
         # 手机：叠成上下
         px, pw, ph = 848, 160, 292
-        o.append(phone(px, y, pw, ph))
+        o.append(phone(px, y, pw, ph, DK, LT))
         ix, iw = px + 10, pw - 20
         if k == 0:  # 登录：品牌图收成顶部横条，表单在下
-            o.append(rect(ix, y + 24, iw, 52, 0, BLUE))
-            o.append(f'<circle cx="{f(ix + iw / 2)}" cy="{f(y + 50)}" r="16" fill="{PAPER}"/>')
-            o.append(rect(ix, y + 96, 70, 9, 0, INK))
+            o.append(rect(ix, y + 24, iw, 52, 0, ACC))
+            o.append(f'<circle cx="{f(ix + iw / 2)}" cy="{f(y + 50)}" r="16" fill="{LT}"/>')
+            o.append(rect(ix, y + 96, 70, 9, 0, DK))
             for i in range(2):
-                o.append(rect(ix, y + 126 + i * 40, iw, 28, 0, 'none', f'stroke="{INK}" stroke-width="2"'))
-            o.append(rect(ix, y + 214, iw, 30, 0, BLUE))
+                o.append(rect(ix, y + 126 + i * 40, iw, 28, 0, 'none', f'stroke="{DK}" stroke-width="2"'))
+            o.append(rect(ix, y + 214, iw, 30, 0, ACC))
         elif k == 1:  # 文字在上，图在下
-            o.append(rect(ix, y + 24, iw, 130, 0, INK))
-            o.append(text(ix + 10, y + 70, 'Less,', 'a', 22, 900, PAPER, ls=-1))
-            o.append(text(ix + 10, y + 96, 'but better.', 'a', 22, 900, PAPER, ls=-1))
-            o.append(rect(ix + 10, y + 118, 64, 20, 0, BLUE))
+            o.append(rect(ix, y + 24, iw, 130, 0, DK))
+            o.append(text(ix + 10, y + 70, 'Less,', 'a', 22, 900, LT, ls=-1))
+            o.append(text(ix + 10, y + 96, 'but better.', 'a', 22, 900, LT, ls=-1))
+            o.append(rect(ix + 10, y + 118, 64, 20, 0, ACC))
             o.append(d.photo('stairs', ix, y + 160, iw, 100, 0, 'xMidYMid'))
         else:  # 侧栏变成顶部标签，内容在下
-            o.append(rect(ix, y + 24, iw, 34, 0, INK))
+            o.append(rect(ix, y + 24, iw, 34, 0, SB))
             for i in range(3):
-                o.append(rect(ix + 8 + i * 42, y + 34, 34, 14, 0, BLUE if i == 1 else PAPER, '' if i == 1 else 'opacity=".3"'))
+                o.append(rect(ix + 8 + i * 42, y + 34, 34, 14, 0, ACC if i == 1 else ITEM, '' if i == 1 else 'opacity=".3"'))
             for i in range(2):
-                o.append(rect(ix, y + 72 + i * 56, iw, 46, 0, INK, 'opacity=".12"'))
+                o.append(rect(ix, y + 72 + i * 56, iw, 46, 0, DK, 'opacity=".12"'))
             for i, hh in enumerate([34, 62, 46, 70]):
-                o.append(rect(ix + 8 + i * 32, y + ph - 22 - hh, 22, hh, 0, BLUE if i == 3 else INK, '' if i == 3 else 'opacity=".75"'))
-        o.append(text(px + pw / 2, y + ph + 40, '< 768 px', 'm', 14, 700, BLUE, 'middle'))
+                o.append(rect(ix + 8 + i * 32, y + ph - 22 - hh, 22, hh, 0, ACC if i == 3 else DK, '' if i == 3 else 'opacity=".75"'))
+        o.append(text(px + pw / 2, y + ph + 40, '< 768 px', 'm', 14, 700, TA, 'middle'))
     o.append(text(M, 1316, '@guanmo_ai · github.com/guanmo-ai/design-style', 'm', 17, 400, GREY))
     o.append(text(W - M, 1316, '桌面 520×292 · 手机 160×292（示意）', 'c', 15, 400, GREY, 'end'))
     return d.render('\n'.join(o))

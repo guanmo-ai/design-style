@@ -1,16 +1,18 @@
 /**
  * 05:30–09:00 比例：同一张落地页，50:50 → 62:38 → 70:30。
- * 左半是一幅会“长出新东西”的海报，右半是会重新折行的文字；两边宽度实时标注，底部的 CSS 跟着变。
+ * 左半是包豪斯（圆、方、三角：有的贴左、有的按比例、有的贴着中线），右半是瑞士（Helvetica 大标题 + 红块，真实折行）；
+ * 两边宽度实时标注，底部的 CSS 跟着变。
  * 用的是真实的盒子和真实的折行（不是图片切换）：中线一动，所有东西都是现算出来的。
  */
 import React from 'react';
 import {C} from '../tokens';
 import {AT} from './timeline';
 import {xAt} from './tracks';
-import {BELT, ChProps, Cursor, EXPO, Page, Rise, RuleTag, clamp, disp, lerp, mono, popEase, rgba, sc, tween} from './ui';
+import {BELT, ChProps, Cursor, EXPO, Page, Rise, RuleTag, clamp, lerp, mono, popEase, rgba, sc, tween} from './ui';
+import {BH, SW, bauhaus, swiss} from './kit';
 import type {SeamStyle} from './SplitScreen';
 
-export const ratioSeam = (_f: number): SeamStyle => ({line: null, pillBg: C.ink, pillFg: C.paper});
+export const ratioSeam = (_f: number): SeamStyle => ({line: null, pillBg: BH.ink, pillFg: BH.paper});
 
 const STATES = [
   {fr: '1fr 1fr', name: '对等', use: '对比 · 登录页 · 双语页'},
@@ -48,29 +50,28 @@ const Dim: React.FC<{x0: number; x1: number; y: number; color: string; bg: strin
   );
 };
 
-/** 左半的海报：从左边起算的固定坐标——中线往右挪，右边的东西才“长出来” */
-const Art: React.FC<{X: number}> = ({X}) => (
-  <div style={{position: 'absolute', left: 0, top: 0, width: X, height: 800, overflow: 'hidden', background: C.paper}}>
-    {/* 方格底纹 */}
-    {Array.from({length: 16}).map((_, i) => (
-      <div key={i} style={{position: 'absolute', left: i * 90, top: 0, width: 2, height: 800, background: rgba(C.ink, 0.07)}} />
-    ))}
-    {Array.from({length: 9}).map((_, i) => (
-      <div key={i} style={{position: 'absolute', left: 0, top: i * 90, width: 2000, height: 2, background: rgba(C.ink, 0.07)}} />
-    ))}
-    <div style={{position: 'absolute', left: 140, top: 250, width: 640, height: 640, borderRadius: '50%', background: C.blue}} />
-    <div style={{position: 'absolute', left: 520, top: 470, width: 760, height: 760, borderRadius: '50%', background: C.ink}} />
-    <div style={{position: 'absolute', left: 240, top: 350, width: 440, height: 440, borderRadius: '50%', border: `3px solid ${C.paper}`}} />
-    {[
-      [1040, 420, 96],
-      [1166, 250, 96],
-      [1292, 360, 96],
-    ].map(([x, y, w], i) => (
-      <div key={i} style={{position: 'absolute', left: x, top: y, width: w, height: 800 - y, background: i === 1 ? C.blue : C.ink}} />
-    ))}
-    <div style={{position: 'absolute', left: 96, top: 196, color: C.ink, ...mono(22, 700, 0.14)}}>{'FIG. 01 — 圆、圆、三根柱子'}</div>
-  </div>
-);
+/** 左半：包豪斯的构成。三种定位方式：贴左（圆）、按比例（方块）、贴着中线（三角）——响应式布局的三种“锚” */
+const Art: React.FC<{X: number; f: number}> = ({X, f}) => {
+  const k = (at: number) => tween(f, at, 22, 0, 1, EXPO);
+  const sqX = X * 0.46;
+  const triR = X - 70;
+  return (
+    <div style={{position: 'absolute', left: 0, top: 0, width: X, height: 800, overflow: 'hidden', background: BH.paper}}>
+      {/* 圆：贴左 */}
+      <div style={{position: 'absolute', left: 96, top: 250, width: 520, height: 520, borderRadius: '50%', background: BH.red, transform: `scale(${k(-6)}) rotate(${(1 - k(-6)) * -90}deg)`}} />
+      {/* 方：按比例（x = 46% 的左半宽度） */}
+      <div style={{position: 'absolute', left: sqX, top: 190, width: 330, height: 330, background: BH.blue, transform: `scale(${k(0)}) rotate(${(1 - k(0)) * 90}deg)`}} />
+      {/* 黑线与黑圆环 */}
+      <div style={{position: 'absolute', left: 96, top: 770, width: X - 96 - 70, height: 14, background: BH.ink, transform: `scaleX(${k(4)})`, transformOrigin: 'left'}} />
+      <div style={{position: 'absolute', left: sqX - 60, top: 470, width: 220, height: 220, borderRadius: '50%', border: `10px solid ${BH.ink}`, transform: `scale(${k(8)})`}} />
+      {/* 三角：贴着中线（右边缘 = 中线 − 70）；中线往右挪它就跟着往右 */}
+      <svg width={420} height={420} viewBox="0 0 420 420" style={{position: 'absolute', left: triR - 420, top: 360, transform: `scale(${k(10)})`, transformOrigin: 'bottom right'}}>
+        <polygon points="0,420 420,420 210,40" fill={BH.yellow} stroke={BH.ink} strokeWidth={8} strokeLinejoin="round" />
+      </svg>
+      <div style={{position: 'absolute', left: 96, top: 196, color: BH.ink, ...bauhaus(22, 700, 0.14)}}>{'FORM FOLLOWS FUNCTION'}</div>
+    </div>
+  );
+};
 
 export const Ratio: React.FC<ChProps> = (p) => {
   const {f, side, X} = p;
@@ -87,22 +88,22 @@ export const Ratio: React.FC<ChProps> = (p) => {
   const chipK = tween(f, 6, 14, 0, 1, EXPO);
   const ringT = (at: number) => tween(f, at, 14);
   return (
-    <Page p={p} bg={L ? C.paper : C.blue}>
+    <Page p={p} bg={L ? BH.paper : SW.paper}>
       {L && (
         <>
-          <Art X={lw} />
-          <div style={{position: 'absolute', left: 0, top: 800, width: lw, height: 280, background: C.paper}} />
+          <Art X={lw} f={f} />
+          <div style={{position: 'absolute', left: 0, top: 800, width: lw, height: 280, background: BH.paper}} />
           <div style={{position: 'absolute', left: 96, top: 62}}>
-            <RuleTag f={f} n={2} title="比例要有意思" fg={C.ink} sub={C.grey} at={-6} />
+            <RuleTag f={f} n={2} title="比例要有意思" fg={BH.ink} sub={BH.gray} at={-6} />
           </div>
-          <Dim x0={48} x1={X - 48} y={150} color={C.ink} bg={C.paper} label={`${Math.round(lw)} px`} k={dimK} />
+          <Dim x0={48} x1={X - 48} y={150} color={BH.ink} bg={BH.yellow} label={`${Math.round(lw)} px`} k={dimK} />
           {/* 用途：随比例滚动 */}
           <div style={{position: 'absolute', left: 96, top: 826}}>
             <Roll index={idx} h={150} style={{width: 900}}>
               {STATES.map((s, i) => (
                 <div key={i}>
-                  <div style={{...sc(76, 900, -0.01), color: C.ink, lineHeight: 1.05}}>{s.name}</div>
-                  <div style={{...sc(34, 500), color: C.grey, marginTop: 6}}>{s.use}</div>
+                  <div style={{...sc(76, 900, -0.01), color: BH.ink, lineHeight: 1.05}}>{s.name}</div>
+                  <div style={{...sc(34, 500), color: BH.gray, marginTop: 6}}>{s.use}</div>
                 </div>
               ))}
             </Roll>
@@ -111,36 +112,44 @@ export const Ratio: React.FC<ChProps> = (p) => {
       )}
       {!L && (
         <>
-          <Dim x0={X + 48} x1={1872} y={150} color={C.paper} bg={C.blue} label={`${Math.round(rw)} px`} k={dimK} />
-          <div style={{position: 'absolute', left: X + pad, top: 236, width: textW, color: C.paper}}>
+          {/* 瑞士：栏线随宽度重排 */}
+          {Array.from({length: 6}).map((_, i) => (
+            <div key={i} style={{position: 'absolute', left: X + pad + (i * (textW + 24)) / 6, top: 0, width: textW / 6 - 24, height: 1080, borderLeft: `1px solid ${SW.rule}`, borderRight: `1px solid ${SW.rule}`}} />
+          ))}
+          <Dim x0={X + 48} x1={1872} y={150} color={SW.red} bg={SW.paper} label={`${Math.round(rw)} px`} k={dimK} />
+          <div style={{position: 'absolute', left: X + pad, top: 236, width: textW, color: SW.ink}}>
             <Rise f={f} at={-4} d={20} pad={8}>
-              <div style={{...mono(24, 700, 0.14), color: rgba(C.paper, 0.78)}}>{'NEW · SPLIT / 2026'}</div>
+              <div style={{...swiss(24, 700, 0.02), color: SW.red}}>{'● Swiss Style'}</div>
             </Rise>
-            <Rise f={f} at={0} d={24} pad={20} style={{marginTop: 26}}>
-              <div style={{...disp(100, 100, -0.035), lineHeight: 0.98}}>{'Less, but better.'}</div>
+            <div style={{width: 150 * tween(f, -2, 20, 0, 1, EXPO), height: 12, background: SW.red, marginTop: 22}} />
+            <Rise f={f} at={0} d={24} pad={22} style={{marginTop: 30}}>
+              <div style={{...swiss(120, 700, -0.055), lineHeight: 0.96}}>{'Less is more.'}</div>
             </Rise>
-            <Rise f={f} at={6} d={24} pad={10} style={{marginTop: 36}}>
-              <div style={{...sc(34, 500), lineHeight: 1.5, color: rgba(C.paper, 0.9)}}>{'一半讲故事，一半给证据。中线在哪里，重点就在哪里。'}</div>
+            <Rise f={f} at={6} d={24} pad={10} style={{marginTop: 34}}>
+              <div style={{...sc(34, 500), lineHeight: 1.5, color: SW.ink}}>{'一半讲故事，一半给证据。中线在哪里，重点就在哪里。'}</div>
             </Rise>
-            <Rise f={f} at={12} d={22} pad={10} style={{marginTop: 44}}>
-              <div style={{display: 'inline-block', padding: '20px 34px', background: C.paper, color: C.ink, ...sc(30, 900)}}>{'了解更多 →'}</div>
+            <Rise f={f} at={12} d={22} pad={10} style={{marginTop: 40}}>
+              <div style={{display: 'flex', alignItems: 'center', gap: 22}}>
+                <div style={{width: 84, height: 84, background: SW.red, color: SW.paper, ...swiss(52, 400, 0), display: 'flex', alignItems: 'center', justifyContent: 'center'}}>{'→'}</div>
+                <div style={{...sc(30, 700)}}>{'了解更多'}</div>
+              </div>
             </Rise>
           </div>
         </>
       )}
 
       {/* 把手 + 光标：中线上最醒目的一个点 */}
-      <div style={{position: 'absolute', left: X - 34, top: 540 - 34, width: 68, height: 68, borderRadius: '50%', background: C.paper, border: `5px solid ${C.ink}`, transform: `scale(${pop * (dragging ? 1.12 : 1)})`, zIndex: 20}}>
+      <div style={{position: 'absolute', left: X - 34, top: 540 - 34, width: 68, height: 68, borderRadius: '50%', background: BH.paper, border: `5px solid ${BH.ink}`, transform: `scale(${pop * (dragging ? 1.12 : 1)})`, zIndex: 20}}>
         <svg width={58} height={58} viewBox="0 0 58 58" style={{position: 'absolute', left: 0, top: 0}}>
-          <path d="M16 29 L26 21 L26 26 L32 26 L32 21 L42 29 L32 37 L32 32 L26 32 L26 37 Z" fill={C.ink} />
+          <path d="M16 29 L26 21 L26 26 L32 26 L32 21 L42 29 L32 37 L32 32 L26 32 L26 37 Z" fill={BH.ink} />
         </svg>
       </div>
-      {pop > 0.5 && <Cursor x={X + 14} y={560} press={dragging ? 1 : 0} ring={Math.max(ringT(T1 - 6) * (f < T1 + 20 ? 1 : 0), ringT(T2 - 6) * (f >= T2 - 6 && f < T2 + 20 ? 1 : 0))} ringColor={C.ink} fill={C.paper} stroke={C.ink} />}
+      {pop > 0.5 && <Cursor x={X + 14} y={560} press={dragging ? 1 : 0} ring={Math.max(ringT(T1 - 6) * (f < T1 + 20 ? 1 : 0), ringT(T2 - 6) * (f >= T2 - 6 && f < T2 + 20 ? 1 : 0))} ringColor={BH.ink} fill={BH.paper} stroke={BH.ink} />}
 
       {/* 代码：跨过中线的一块墨色标签，值随比例滚动 */}
-      <div style={{position: 'absolute', left: X - 380, top: 962, width: 760, height: 78, background: C.ink, color: C.paper, transform: `scaleX(${chipK})`, overflow: 'hidden', zIndex: 15}}>
+      <div style={{position: 'absolute', left: X - 380, top: 962, width: 760, height: 78, background: BH.ink, color: BH.paper, transform: `scaleX(${chipK})`, overflow: 'hidden', zIndex: 15}}>
         <div style={{position: 'absolute', left: 28, top: 0, height: 78, display: 'flex', alignItems: 'center', ...mono(26, 400)}}>
-          <span style={{color: C.peri}}>{'grid-template-columns: '}</span>
+          <span style={{color: BH.yellow}}>{'grid-template-columns: '}</span>
         </div>
         <div style={{position: 'absolute', left: 28 + 23 * 0.6 * 26 + 6, top: 0}}>
           <Roll index={idx} h={78}>

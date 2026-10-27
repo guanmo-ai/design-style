@@ -10,7 +10,7 @@ Design Style · 布局 03 · Split Screen 分屏 —— 配乐与音效（纯代
   · 片尾：中线转回竖直，两个声部从左右汇到中间；五个词各一个五声音阶的音，最后一个和弦
 
 全部时间点（帧 / 60 = 秒）与 video/ 下各章的关键帧对齐（章节起点见 video/timeline.ts）：
-  AT = 开场 0 · 来历 150 · 比例 330 · 反差 540 · 滚动 690 · 响应式 870 · 片尾 1050
+  AT = 开场 0 · 来历 120 · 比例 330 · 反差 540 · 滚动 690 · 响应式 870 · 片尾 1050
   换幕：落定在章节起点；起点前 24 帧开始滑，最快的一刻在起点前约 10 帧
 
 用法：python3 layouts/03-split-screen/audio/make_music.py
@@ -224,7 +224,7 @@ def riser(d=0.5, level=1.0):
 
 # ───────── 时间轴（帧） ─────────
 BEAT = 30
-AT = dict(intro=0, history=150, ratio=330, contrast=540, scroll=690, resp=870, end=1050)
+AT = dict(intro=0, history=120, ratio=330, contrast=540, scroll=690, resp=870, end=1050)
 ORDER = ['intro', 'history', 'ratio', 'contrast', 'scroll', 'resp', 'end']
 PENTA = [69, 72, 74, 76, 79]  # A C D E G
 
@@ -291,7 +291,7 @@ def voices(c, f0, f1, left=True, right=True, lpan=-0.75, rpan=0.75, lvl=1.0):
         if right:
             place(bell(midi(high[(k + 1) % len(high)]), 0.085 * lvl, 0.35), fr(fm + BEAT // 4), pan=rpan, bus=PLUCK, send=0.3)
 
-voices('history', 168, 330)
+voices('history', 138, 330)
 voices('ratio', 348, 540)
 # 反差：三对声音，一次只换一对（明暗：左右都亮；图文：左边被“闷住”；静动：左边只剩长音、右边加速）
 voices('contrast', 558, 596)
@@ -352,27 +352,31 @@ for c in ORDER[1:]:
     root, notes = CHORD[c]
     sfx(bell(midi(notes[-1] + 12), 0.18, 1.0), fr(AT[c]), pan=0.0, send=0.5)
 
-# ───────── 来历（150–330）：年份滚轮的“咔哒” + 四幅图各一声 ─────────
-for k, (a, b) in enumerate([(182, 200), (224, 242), (266, 284)], start=1):
-    n_ticks = [7, 8, 7][k - 1]
-    for j in range(n_ticks):
-        x = (j / n_ticks) ** 0.8  # 越到后面越疏
-        sfx(tick(1500 + 160 * j, 0.22), fr(a + (b - a) * x), pan=-0.35, send=0.1)
-    sfx(thump(0.45, 220, 70, 0.3), fr(b + 2), pan=-0.2)  # 滚轮到位
-sfx(pop(620, 0.2), fr(142), pan=0.5)  # 三联银幕：中间一块
-for k, fm in enumerate([146, 150]):  # 两侧的银幕滑出
-    sfx(sweep(fr(14), 600, 3000, 0.16), fr(fm), pan=[-0.7, 0.7][k])
-sfx(pluck(midi(88), 0.2, 0.2), fr(184), pan=0.4, send=0.3)  # 电话：两个画面
-sfx(pluck(midi(91), 0.2, 0.2), fr(186), pan=-0.4, send=0.3)
-sfx(sweep(fr(20), 500, 2500, 0.1), fr(188), pan=np.linspace(-0.5, 0.5, int(fr(20) * SR)))  # 电话线
-for fm, pn in [(236, -0.5), (249, 0.5)]:  # Aero Snap：贴边“啪”
-    sfx(thump(0.55, 380, 110, 0.2), fr(fm), pan=pn)
-    sfx(click(0.35), fr(fm), pan=pn)
-sfx(pluck(midi(84), 0.18, 0.3), fr(228), pan=-0.6)
-sfx(pluck(midi(86), 0.18, 0.3), fr(241), pan=0.6)
-for fm, pn in [(270, 0.2), (292, 0.0)]:  # Split View：把手拖动的两声
-    sfx(sweep(fr(12), 700, 2400, 0.14), fr(fm), pan=pn)
-    sfx(pop(700, 0.16), fr(fm + 10), pan=pn)
+# ───────── 来历（120–330）：四个年代，每个世界穿自己的风格，各有各的“手感” ─────────
+# 世界 0 · 1917 构成主义（120–146）：斜线上的滑入，一声硬的木鼓
+sfx(sweep(fr(18), 500, 3500, 0.2), fr(124), pan=-0.5)
+sfx(thump(0.6, 200, 60, 0.25), fr(142), pan=-0.4)
+sfx(pluck(midi(81), 0.2, 0.25), fr(146), pan=0.5, send=0.3)
+# 世界 1 · 1963 波普：Slap！——拍击 + 铃（用打击的“啪”和一声带泛音的 pop）
+for fm, pn, hz in [(152, -0.4, 620), (158, 0.4, 800), (166, 0.0, 980)]:
+    sfx(thump(0.55, 420, 120, 0.15), fr(fm), pan=pn)
+    sfx(clap(0.5), fr(fm), pan=pn, send=0.2)
+    sfx(pop(hz, 0.2), fr(fm + 1), pan=pn, send=0.2)
+sfx(bell(midi(93), 0.14, 0.6), fr(168), pan=0.5, send=0.5)
+# 世界 2 · 2009 Aero：玻璃“啪”一下贴边（两次：左边、右边），带一点高频闪光
+for fm, pn, m in [(217, -0.6, 84), (238, 0.6, 86)]:
+    sfx(sweep(fr(12), 900, 4200, 0.16), fr(fm - 10), pan=pn)
+    sfx(thump(0.5, 380, 110, 0.2), fr(fm), pan=pn)
+    sfx(click(0.4), fr(fm), pan=pn)
+    sfx(bell(midi(m), 0.2, 0.6), fr(fm), pan=pn, send=0.5)
+# 世界 3 · 2015 iPad：中缝被拖动——一条滑动的扫频 + 圆润的 pop
+for fm, pn in [(268, 0.1), (292, -0.1)]:
+    sfx(sweep(fr(14), 700, 2400, 0.14), fr(fm), pan=np.linspace(pn - 0.3, pn + 0.3, int(fr(14) * SR)))
+    sfx(pop(700, 0.18), fr(fm + 12), pan=pn, send=0.2)
+# 年份滚动：每次换世界，年份像里程表走几格
+for a0, a1 in [(142, 160), (188, 208), (250, 266)]:
+    for j in range(7):
+        sfx(tick(1500 + 160 * j, 0.2), fr(a0 + (a1 - a0) * (j / 7) ** 0.8), pan=-0.35, send=0.1)
 
 # ───────── 比例（330–540）：中线每滑一次一道扫频，数字读数的嘀 ─────────
 sfx(pop(900, 0.22), fr(348), pan=0.0)  # 把手出现

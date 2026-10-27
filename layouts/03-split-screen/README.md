@@ -2,7 +2,7 @@
 
 **中文** · [English](README.en.md)
 
-> **一句话：** 一条中线，两种声音；左边说话，右边给证据。
+> **一句话：** 一条中线，两种声音；左边说话，右边给证据。**每一半还可以穿不同的风格。**
 
 > **风格塑造视觉，布局组织信息。** 分屏不规定颜色和质感，只规定“页面被一条线切成两个舞台，每个舞台一个角色”：切成什么比例、谁固定谁滚动、窄了怎么叠。同一条中线，可以是登录页（50:50）、产品首屏（62:38），也可以是后台和文档（70:30）。
 
@@ -34,36 +34,53 @@
 
 | # | 规则 | 怎么做 | 小心 |
 |:-:|---|---|---|
-| 01 | **只有一条中线** | 两半满幅、没有缝；分界就是两块颜色的边，不加阴影和描边 | 给每一半加圆角和阴影，两半就变成两张卡片，不再是分屏 |
+| 01 | **只有一条中线** | 两半满幅、没有缝；分界就是两块颜色的边，**线上**不加阴影和描边（每一半里面的风格可以有自己的阴影和描边，比如新粗野、波普） | 给每一半加圆角和阴影，两半就变成两张卡片，不再是分屏 |
 | 02 | **比例要有意思** | 50:50 对等（登录、对比）· 62:38 主次（首屏、品牌）· 70:30 内容 + 侧栏（后台、文档） | 49:51 这种“差不多”最糟：看不出谁主谁次 |
 | 03 | **两边要有反差** | 明暗 / 图文 / 静动，一次只选一对；每一半的文字与底色对比度 ≥ 4.5 : 1 | 三对一起用，两边都在喊，反差就没了 |
 | 04 | **一边固定，一边滚** | 固定的一半 `position: sticky; top: 0; height: 100svh; align-self: start`；滚的一半放长内容 | Grid 子项默认拉伸到整行高，不写 `align-self: start`，sticky 就“不动”；祖先有 `overflow: hidden` 也会失效 |
 | 05 | **手机上叠成上下** | 窄过 768px 改成单列；谁重要谁写在 HTML 前面；一屏只讲一件事 | 手机上继续左右各 50%：每半只剩 190px，字会折成一列 |
 
-## 3 · 色板
+## 3 · 色板：每一半穿一种风格
 
-分屏是布局，**没有“正宗配色”**。规则只有一条：**两半之间要有一对强反差，其余让位。** 视频与布局图用的是三色：
+分屏是布局，**没有“正宗配色”**。规则只有一条：**两半之间要有一对强反差，其余让位。** 所以视频里每一章的两半各穿一种以前做过的风格（色板、字体、动作手感全部沿用那一期的令牌）：
 
-| 名称 | HEX | 用途 | 对比度 |
+| 章节 | 左 / 上半 | 右 / 下半 | 为什么这样配 |
 |---|---|---|---|
-| 墨 | `#0E0E10` | 暗的一半、正文 | 墨 / 纸 **16.5 : 1** |
-| 纸 | `#F1EDE4` | 亮的一半、暗面上的文字 | 纸 / 蓝 **5.9 : 1** |
-| 蓝 | `#2B35FF` | 第二种声音：另一半的底色、按钮 | 墨 / 蓝只有 2.8 : 1，**不要把墨色字放在蓝底上做正文** |
-| 浅钴蓝 | `#8E95FF` | 墨色上的编号、小标签 | 浅钴蓝 / 墨 **7.2 : 1** |
-| 灰（纸上） | `#6B675E` | 纸上的次要文字 | **4.8 : 1** |
-| 灰（墨上） | `#8A877F` | 墨上的次要文字 | **5.4 : 1** |
+| 定义 | 瑞士 `#F5F4F0` 纸 + `#111` 墨 + `#E30613` 红 | 波普 `#FFD31A` 黄 + `#E62E2D` 红 + 网点 | 一冷一热：理性的网格对上喊出来的拟声字 |
+| 来历 | 构成主义 → 波普 → Aero 玻璃 → iPad 扁平 | 同上（每个年代两半同风格，随年代滚过去） | 分屏的历史就是风格的历史 |
+| 比例 | 包豪斯：红圆、蓝方、黄三角 | 瑞士：Helvetica 与红色小方块 | 图和字，各用最擅长的人 |
+| 反差 | 孔版印刷（亮）· 深色便当盒（暗）· 照片 | 新粗野 · 瑞士静帧 · 波普动效 | 明暗、图文、静动三对，一次只换一对 |
+| 滚动 | 新粗野：黑框硬阴影的“钉住”卡片 | 孔版印刷：三篇文章往上滚 | 固定的要“重”，滚的要“轻” |
+| 响应式 | 孟菲斯：糖果色、纸屑图案 | 构成主义：红黑斜线 | 手机上叠成上下时，两种风格也跟着转 90° |
+| 片尾 | 瑞士 | 波普 | 回到开场，五个风格贴纸排成一行 |
 
-> 大字（巨型标题）不受 4.5 : 1 限制，所以海报里的“Split”可以把墨色字放在蓝底上；小字不行。
+**两半风格的取舍：** ① 相邻的两半，色相和质感都要拉开（暖 / 冷、粗 / 细、手绘 / 网格）；② 每一半内部只用一种风格的令牌，不混；③ 文字与底色对比度 ≥ 4.5 : 1（大字 ≥ 3 : 1）。视频里的“反差”一章还现场算了这个对比度。
+
+**海报 / 模板图里的配色：**
+
+| 风格 | 主色 | 用在 |
+|---|---|---|
+| 瑞士 | `#F5F4F0` 纸、`#111111` 墨、`#E30613` 红 | 海报左半、产品首屏模板 |
+| 波普 | `#FFD31A` 黄、`#E62E2D` 红、`#FFFFFF` 白、`#111111` 轮廓 | 海报右半 |
+| 新粗野 | `#FFE55C` 黄、`#FF6B9D` 粉、`#111111` 轮廓 + 硬阴影 | 登录页模板 |
+| 深色便当盒 | `#16171C` 底、`#2A2C36` 卡片、`#6C7BFF` 强调 | 后台模板 |
+
+> 速查卡与“分屏 ≠ 两栏”仍用 v1 的墨 / 纸 / 蓝三色（`tokens.*`）：做示意图时，单一色板更容易看清**结构**。
 
 ## 4 · 字体
 
 | 用途 | 本项目 | 商用原版 / 其他选择 |
 |---|---|---|
-| 巨字 / 标题（Split、1927） | **Archivo** 900，字宽 wdth 62—125（免费，OFL） | Druk Wide · GT America Expanded |
-| 中文标题 / 正文 | **思源黑体 / Noto Sans SC** 400—900（免费，OFL） | 苹方 · HarmonyOS Sans |
+| 瑞士半边 | **TeX Gyre Heros**（Helvetica 的开源替代） | Helvetica Neue · Neue Haas Grotesk |
+| 波普半边（拟声字） | **Bangers** + 思源黑体 Black | Komika · Anime Ace |
+| 包豪斯半边 | **Jost**（Futura 的开源替代） | Futura · Avant Garde |
+| 构成主义 | **Oswald** 压缩无衬线 | Impact · Druk Condensed |
+| 孟菲斯 | **Fredoka** 圆头 | Gilroy Rounded |
+| 新粗野 | **Space Grotesk** | Inter Display |
+| 中文 | **思源黑体 / Noto Sans SC** 400—900（免费，OFL） | 苹方 · HarmonyOS Sans |
 | 代码 / 标注 / 读数 | **Space Mono** 400 / 700（免费，OFL） | SF Mono · JetBrains Mono |
 
-分屏的版面很“满”，字要粗、要大、要直：两个舞台各自要撑得住，不需要衬线的细腻。
+分屏的版面很“满”，字要粗、要大、要直：两个舞台各自要撑得住。换风格就换字，字体和色板一样跟着这一半走。
 
 ## 5 · 版式参数
 
@@ -122,10 +139,12 @@
 
 ```
 Split-screen layout poster: the canvas is cut by one vertical line at 61.8% into two full-bleed
-halves with no gap — left half ink black #0E0E10, right half cobalt blue #2B35FF; a gigantic
-heavy grotesque word "Split" crosses the line and flips color at the cut (paper white on black,
-black on blue); flat color, no shadows, no outlines, no gradients; small monospace labels,
-a ratio readout "61.8 %" on the line; Swiss poster, calm, confident --ar 4:5
+halves with no gap — left half Swiss International style (warm paper white, black Helvetica,
+one red accent, thin grid lines), right half Pop Art style (primary yellow, red Ben-Day dots,
+thick black outlines with hard offset shadows, a white comic burst); a gigantic heavy grotesque
+word "Split" crosses the line and changes skin at the cut (flat black on the left, red with
+black outline on the right); small monospace labels, a ratio readout "61.8 %" on the line;
+two styles, one layout --ar 4:5
 ```
 
 **风格 + 布局（把任意一期风格套进分屏）**
@@ -146,32 +165,37 @@ Motion graphics: a screen split by one vertical line into two halves; on every b
 half scrolls up while the right half scrolls down in opposite directions, swapping pages; a
 giant word is assembled like a zipper from the two halves; the dividing line slides from 50:50 to
 62:38 to 70:30 while text reflows; a browser window shrinks from desktop to phone and the dividing
-line rotates 90 degrees so left/right becomes top/bottom. Ink black, paper white, cobalt blue,
-flat, hard edges, 120 bpm, no 3D, no shadows.
+line rotates 90 degrees so left/right becomes top/bottom. Each half wears a different graphic
+style (Swiss grid | Pop Art comic, Bauhaus shapes | Swiss type, Memphis | Constructivism), each
+with its own motion personality; 120 bpm, 2D, hard edges.
 ```
 
 **代码（让 AI 写网页 / 组件）**
 
 ```
 用分屏布局做这个落地页：外层 .split 用 display: grid，grid-template-columns: 1.618fr 1fr；
-min-height: 100vh 并用 100svh 覆盖；两半满幅、没有缝，左边墨黑右边钴蓝，不要圆角、阴影和描边。
+min-height: 100vh 并用 100svh 覆盖；两半满幅、没有缝，左半用瑞士风格（纸白、黑字、一抹红）、右半用波普风格（黄底、粗黑边），分界线上不要圆角和阴影。
 左边是固定的一半（position: sticky; top: 0; height: 100svh; align-self: start），右边放长内容。
 < 768px 时改成单列并取消 sticky，文字在上、图在下（HTML 里文字写在前面）。
 每一半的文字与底色对比度不低于 4.5:1。设计令牌见 tokens.css。
 ```
 
-## 9 · 20 秒分镜
+## 9 · 20 秒分镜（v2：两半各穿一种风格）
 
-全片只有一个主角：**中线**。画面永远被它切成两半，每一半各自说话；章节靠“反向传送带”翻页——左半向上、右半向下同时滑走，落定帧正好在拍点上。120 BPM，1 拍 = 30 帧。
+全片只有一个主角：**中线**。画面永远被它切成两半，每一半各自说话，并且**各穿一种以前做过的风格**；章节靠“反向传送带”翻页——左半向上、右半向下同时滑走，落定帧正好在拍点上。120 BPM，1 拍 = 30 帧。
 
-| 时间 | 章节 | 画面 |
+| 时间 | 章节 | 画面（左 | 右） |
 |---|---|---|
-| 0.0—2.5s | 01 定义 | 中线画下来，钴蓝从线上铺开；“Split”被拉链拉合（左半字母从下往上、右半的 t 从上往下），咬合一下；一条中线，两种声音 |
-| 2.5—5.5s | 来历 | 左边年份数字滚轮向上滚，右边示意图向下滚：1927 三联银幕 → 1959 电话分屏 → 2009 Aero Snap → 2015 Split View |
-| 5.5—9.0s | 02 比例 | 同一张落地页，中线 50:50 → 62:38 → 70:30：文字重新折行、海报长出新东西，两边宽度实时标注，底部的 CSS 跟着变 |
-| 9.0—11.5s | 03 反差 | 明 / 暗 → 图 / 文 → 静 / 动：每一对都从中线向两边撕开；一次只选一对 |
-| 11.5—14.5s | 04 滚动 | 左边固定、右边滚（序号和滚动条跟着变）；再反过来：左边向下、右边向上 |
-| 14.5—17.5s | 05 响应式 | 浏览器从 1440 缩到 390；窄过 768 的一刻两栏叠成上下，整条中线转 90° |
-| 17.5—20.0s | 片尾 | 海报被横着切开，中线转回竖直；五个词一个接一个：一条中线 · 比例 · 反差 · 固定与滚动 · 上下叠 |
+| 0.0—2.0s | 01 定义 | **瑞士｜波普**：“Split”被拉链拉合——Helvetica 的 Spli 从下往上，波普的红色 T 带着爆炸框和速度线砸下来，咬合时整幅画面“啪”地抖一下；一条中线，两种声音 |
+| 2.0—5.5s | 来历 | 四个世界依次滚过：1927 **构成主义**（三联银幕，沿 −30° 斜线滑入）→ 1959 **波普**（电话分屏，对话框）→ 2009 **Aero 玻璃**（窗口拖到边缘“啪”地贴住左 / 右半）→ 2015 **iPad 扁平**（Split View，中缝可拖） |
+| 5.5—9.0s | 02 比例 | **包豪斯｜瑞士**：同一张落地页，中线 50:50 → 62:38 → 70:30；左边是红圆蓝方黄三角，右边是 Helvetica 的字，宽度实时标注，代码标签 `1fr 1fr → 1.618fr 1fr → 7fr 3fr` 滚轮式翻动 |
+| 9.0—11.5s | 03 反差 | 明 / 暗：**孔版印刷｜深色便当盒**；图 / 文：**孔版照片｜新粗野文字**；静 / 动：**瑞士静帧｜波普动效**。每一对从中线向两边撕开，一次只换一对，并现场算出 WCAG 对比度 |
+| 11.5—14.5s | 04 滚动 | **新粗野｜孔版印刷**：左边的黑框卡片“钉住”，序号每变一次像被按一下；右边三篇文章带着惯性往上滚。再反过来：**孟菲斯**积木从左半往下掉，**构成主义**口号从右半往上冲 |
+| 14.5—17.5s | 05 响应式 | **孟菲斯｜构成主义**：窗口里是同一页（包豪斯的图 + 瑞士的字），从 1440 缩到 390；窄过 768 的一刻，两栏叠成上下，整条中线转 90°，两半风格变成上半 / 下半 |
+| 17.5—20.0s | 片尾 | **瑞士｜波普**：回到开场的海报，下方五个风格贴纸依次落地（包豪斯 · 瑞士 · 波普 · 新粗野 · 孟菲斯）：同一条中线，随便穿 |
 
 > 画面里的网页、窗口、手机和 App 都是重绘的示意，不是截图；Windows / iPad 的界面是示意图；页面文案均为虚构。照片为 AI 生成，沿用布局 02。
+
+### v1 → v2：为什么重做
+
+v1 全片用同一套“墨 / 纸 / 蓝”三色，是一部**讲分屏的图解**：结构清楚，但视觉从头到尾不变，也没有任何一期风格自己的动作手感，比起前面几期显得平。v2 的判断是：**分屏是布局，不绑定风格**——所以让每一章的两半各穿一种以前做过的风格，同时把那一期的“动作物理”也一起带过来（波普的拍击、孟菲斯的掉落压扁、新粗野的阴影 = 高度、孔版的套印错位、Aero 的玻璃吸附、瑞士的精确滑动）。引擎（中线、传送带、拍点）不变，换的是两个舞台里的演员。

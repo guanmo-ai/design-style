@@ -5,69 +5,83 @@
       .a { font-family: 'Archivo', 'Noto Sans SC', sans-serif; }
       .m { font-family: 'Space Mono', 'Noto Sans SC', monospace; }
       .c { font-family: 'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif; }
+      .h { font-family: 'TeX Gyre Heros', 'Helvetica Neue', Arial, 'Noto Sans SC', sans-serif; }
+      .b { font-family: 'Bangers', 'Noto Sans SC', sans-serif; }
     </style>
     <clipPath id="k1"><rect x="0" y="0" width="667" height="1350" rx="0"/></clipPath>
     <clipPath id="k2"><rect x="667" y="0" width="413" height="1350" rx="0"/></clipPath>
-    <clipPath id="k3"><rect x="838.4" y="1184" width="201.6" height="90" rx="0"/></clipPath>
+    <pattern id="dots" width="22" height="22" patternUnits="userSpaceOnUse" patternTransform="rotate(30)"><circle cx="11" cy="11" r="5.2" fill="#E62E2D"/></pattern>
+    <clipPath id="k3"><rect x="840.4" y="1182" width="197.6" height="86" rx="0"/></clipPath>
   </defs>
-  <rect width="1080" height="1350" fill="#0E0E10"/>
-<rect x="667" y="0" width="413" height="1350" rx="0" fill="#2B35FF" />
-<text x="72" y="96" class="m" font-size="21" font-weight="400" fill="#B1AFA9" >Design Style · 布局 03</text>
-<text x="1040" y="96" class="c" font-size="21" font-weight="500" fill="#F1EDE4" text-anchor="end" >每天一个设计风格</text>
-<g clip-path="url(#k1)"><text x="56" y="440" class="a" font-size="320" font-weight="900" fill="#F1EDE4" letter-spacing="-12" >Split</text></g>
-<g clip-path="url(#k2)"><text x="56" y="440" class="a" font-size="320" font-weight="900" fill="#0E0E10" letter-spacing="-12" >Split</text></g>
-<line x1="667" y1="0" x2="667" y2="150" stroke="#F1EDE4" stroke-width="2" />
-<rect x="605" y="150" width="124" height="38" rx="0" fill="#F1EDE4" />
-<text x="667" y="176" class="m" font-size="20" font-weight="700" fill="#0E0E10" text-anchor="middle" >61.8 %</text>
-<line x1="667" y1="188" x2="667" y2="214" stroke="#F1EDE4" stroke-width="2" />
-<text x="72" y="640" class="c" font-size="118" font-weight="900" fill="#F1EDE4" letter-spacing="-2" >分屏布局</text>
-<text x="72" y="696" class="m" font-size="21" font-weight="400" fill="#8E95FF" >Split Screen · 一条中线，两种声音</text>
-<text x="704" y="566" class="c" font-size="38" font-weight="700" fill="#F1EDE4" >左边说话，</text>
-<text x="704" y="616" class="c" font-size="38" font-weight="700" fill="#F1EDE4" >右边给证据。</text>
-<text x="72" y="762" class="m" font-size="20" font-weight="700" fill="#8E95FF" letter-spacing="3" >五条规则</text>
-<line x1="72" y1="782" x2="595" y2="782" stroke="#403F3F" stroke-width="1.5" />
-<text x="72" y="832" class="m" font-size="22" font-weight="700" fill="#8E95FF" >01</text>
-<text x="130" y="834" class="c" font-size="31" font-weight="700" fill="#F1EDE4" >只有一条中线</text>
-<text x="130" y="868" class="c" font-size="20" font-weight="400" fill="#9B9893" >不加阴影、不加描边，色块自己说话</text>
-<text x="72" y="922" class="m" font-size="22" font-weight="700" fill="#8E95FF" >02</text>
-<text x="130" y="924" class="c" font-size="31" font-weight="700" fill="#F1EDE4" >比例要有意思</text>
-<text x="130" y="958" class="c" font-size="20" font-weight="400" fill="#9B9893" >50:50 对等，62:38 主次，70:30 导航</text>
-<text x="72" y="1012" class="m" font-size="22" font-weight="700" fill="#8E95FF" >03</text>
-<text x="130" y="1014" class="c" font-size="31" font-weight="700" fill="#F1EDE4" >两边要有反差</text>
-<text x="130" y="1048" class="c" font-size="20" font-weight="400" fill="#9B9893" >明暗、图文、静动，一次只选一对</text>
-<text x="72" y="1102" class="m" font-size="22" font-weight="700" fill="#8E95FF" >04</text>
-<text x="130" y="1104" class="c" font-size="31" font-weight="700" fill="#F1EDE4" >一边固定，一边滚</text>
-<text x="130" y="1138" class="c" font-size="20" font-weight="400" fill="#9B9893" >position: sticky；左边不动，右边流</text>
-<text x="72" y="1192" class="m" font-size="22" font-weight="700" fill="#8E95FF" >05</text>
-<text x="130" y="1194" class="c" font-size="31" font-weight="700" fill="#F1EDE4" >手机上叠成上下</text>
-<text x="130" y="1228" class="c" font-size="20" font-weight="400" fill="#9B9893" >文字在上，一屏只讲一件事</text>
-<text x="704" y="762" class="m" font-size="20" font-weight="700" fill="#F1EDE4" letter-spacing="3" >三种常用比例</text>
-<line x1="704" y1="782" x2="1040" y2="782" stroke="#7A7FF4" stroke-width="1.5" />
-<rect x="704" y="812" width="168" height="60" rx="0" fill="#0E0E10" />
-<rect x="872" y="812" width="168" height="60" rx="0" fill="#F1EDE4" />
-<text x="720" y="851" class="a" font-size="30" font-weight="800" fill="#F1EDE4" >50</text>
-<text x="1024" y="851" class="a" font-size="30" font-weight="800" fill="#0E0E10" text-anchor="end" >50</text>
-<text x="704" y="904" class="c" font-size="19" font-weight="500" fill="#F1EDE4" >对等 · 两个主角</text>
-<rect x="704" y="932" width="207.6" height="60" rx="0" fill="#0E0E10" />
-<rect x="911.6" y="932" width="128.4" height="60" rx="0" fill="#F1EDE4" />
-<text x="720" y="971" class="a" font-size="30" font-weight="800" fill="#F1EDE4" >62</text>
-<text x="1024" y="971" class="a" font-size="30" font-weight="800" fill="#0E0E10" text-anchor="end" >38</text>
-<text x="704" y="1024" class="c" font-size="19" font-weight="500" fill="#F1EDE4" >主次 · 图文 / 登录页</text>
-<rect x="704" y="1052" width="235.2" height="60" rx="0" fill="#0E0E10" />
-<rect x="939.2" y="1052" width="100.8" height="60" rx="0" fill="#F1EDE4" />
-<text x="720" y="1091" class="a" font-size="30" font-weight="800" fill="#F1EDE4" >70</text>
-<text x="1024" y="1091" class="a" font-size="30" font-weight="800" fill="#0E0E10" text-anchor="end" >30</text>
-<text x="704" y="1144" class="c" font-size="19" font-weight="500" fill="#F1EDE4" >内容 + 侧栏 · 后台</text>
-<rect x="704" y="1184" width="336" height="90" rx="0" fill="none" stroke="#F1EDE4" stroke-width="2"/>
-<rect x="704" y="1184" width="134.4" height="90" rx="0" fill="#F1EDE4" />
-<text x="771.2" y="1236" class="m" font-size="17" font-weight="700" fill="#0E0E10" text-anchor="middle" >sticky</text>
+  <rect width="1080" height="1350" fill="#F5F4F0"/>
+<rect x="667" y="0" width="413" height="1350" rx="0" fill="#FFD31A" />
+<g clip-path="url(#k2)"><rect x="667" y="230" width="413" height="480" fill="url(#dots)"/><polygon points="1040.0,455.0 957.9,504.3 1000.3,590.2 904.6,587.3 893.9,682.4 814.9,628.2 754.4,702.5 717.3,614.2 626.3,643.9 642.8,549.6 550.1,525.4 615.0,455.0 550.1,384.6 642.8,360.4 626.3,266.1 717.3,295.8 754.4,207.5 814.9,281.8 893.9,227.6 904.6,322.7 1000.3,319.8 957.9,405.7" fill="#000" transform="translate(10 10)"/><polygon points="1040.0,455.0 957.9,504.3 1000.3,590.2 904.6,587.3 893.9,682.4 814.9,628.2 754.4,702.5 717.3,614.2 626.3,643.9 642.8,549.6 550.1,525.4 615.0,455.0 550.1,384.6 642.8,360.4 626.3,266.1 717.3,295.8 754.4,207.5 814.9,281.8 893.9,227.6 904.6,322.7 1000.3,319.8 957.9,405.7" fill="#fff" stroke="#111" stroke-width="6" stroke-linejoin="round"/></g>
+<g clip-path="url(#k1)"><line x1="72" y1="0" x2="72" y2="1350" stroke="#111111" stroke-width="1" opacity=".07"/><line x1="176" y1="0" x2="176" y2="1350" stroke="#111111" stroke-width="1" opacity=".07"/><line x1="280" y1="0" x2="280" y2="1350" stroke="#111111" stroke-width="1" opacity=".07"/><line x1="384" y1="0" x2="384" y2="1350" stroke="#111111" stroke-width="1" opacity=".07"/><line x1="488" y1="0" x2="488" y2="1350" stroke="#111111" stroke-width="1" opacity=".07"/><line x1="592" y1="0" x2="592" y2="1350" stroke="#111111" stroke-width="1" opacity=".07"/></g>
+<circle cx="80" cy="90" r="6" fill="#E30613"/>
+<text x="96" y="96" class="h" font-size="21" font-weight="400" fill="#111111" >Design Style · 布局 03</text>
+<rect x="750" y="62" width="290" height="50" rx="0" fill="#FFFFFF" stroke="#111111" stroke-width="4"/>
+<text x="895" y="96" class="c" font-size="22" font-weight="900" fill="#111111" text-anchor="middle" >每天一个设计风格</text>
+<g clip-path="url(#k1)"><text x="52" y="442" class="h" font-size="360" font-weight="700" fill="#111111" letter-spacing="-18" >Split</text></g>
+<g clip-path="url(#k2)"><text x="64" y="454" class="h" font-size="360" font-weight="700" fill="#111111" letter-spacing="-18" >Split</text><text x="52" y="442" class="h" font-size="360" font-weight="700" fill="#E62E2D" letter-spacing="-18" stroke="#111111" stroke-width="8" paint-order="stroke" stroke-linejoin="round">Split</text></g>
+<line x1="667" y1="0" x2="667" y2="150" stroke="#111111" stroke-width="3" />
+<rect x="605" y="150" width="124" height="38" rx="0" fill="#111111" />
+<text x="667" y="176" class="m" font-size="20" font-weight="700" fill="#FFD31A" text-anchor="middle" >61.8 %</text>
+<line x1="667" y1="188" x2="667" y2="214" stroke="#111111" stroke-width="3" />
+<text x="72" y="640" class="c" font-size="118" font-weight="900" fill="#111111" letter-spacing="-2" >分屏布局</text>
+<rect x="72" y="664" width="96" height="10" rx="0" fill="#E30613" />
+<text x="72" y="712" class="h" font-size="21" font-weight="400" fill="#111111" >Split Screen · 一条中线，两种声音</text>
+<rect x="716" y="502" width="300" height="140" rx="0" fill="#111111" />
+<rect x="704" y="490" width="300" height="140" rx="0" fill="#FFFFFF" stroke="#111111" stroke-width="5"/>
+<text x="730" y="548" class="c" font-size="38" font-weight="900" fill="#111111" >左边说话，</text>
+<text x="730" y="602" class="c" font-size="38" font-weight="900" fill="#E62E2D" >右边给证据。</text>
+<text x="72" y="772" class="c" font-size="20" font-weight="700" fill="#E30613" letter-spacing="3" >五条规则</text>
+<line x1="72" y1="790" x2="595" y2="790" stroke="#111111" stroke-width="2" />
+<text x="72" y="838" class="h" font-size="22" font-weight="700" fill="#E30613" >01</text>
+<text x="130" y="840" class="c" font-size="31" font-weight="700" fill="#111111" >只有一条中线</text>
+<text x="130" y="874" class="c" font-size="20" font-weight="400" fill="#6B6B68" >不加阴影、不加描边，色块自己说话</text>
+<text x="72" y="928" class="h" font-size="22" font-weight="700" fill="#E30613" >02</text>
+<text x="130" y="930" class="c" font-size="31" font-weight="700" fill="#111111" >比例要有意思</text>
+<text x="130" y="964" class="c" font-size="20" font-weight="400" fill="#6B6B68" >50:50 对等，62:38 主次，70:30 导航</text>
+<text x="72" y="1018" class="h" font-size="22" font-weight="700" fill="#E30613" >03</text>
+<text x="130" y="1020" class="c" font-size="31" font-weight="700" fill="#111111" >两边要有反差</text>
+<text x="130" y="1054" class="c" font-size="20" font-weight="400" fill="#6B6B68" >明暗、图文、静动，一次只选一对</text>
+<text x="72" y="1108" class="h" font-size="22" font-weight="700" fill="#E30613" >04</text>
+<text x="130" y="1110" class="c" font-size="31" font-weight="700" fill="#111111" >一边固定，一边滚</text>
+<text x="130" y="1144" class="c" font-size="20" font-weight="400" fill="#6B6B68" >position: sticky；左边不动，右边流</text>
+<text x="72" y="1198" class="h" font-size="22" font-weight="700" fill="#E30613" >05</text>
+<text x="130" y="1200" class="c" font-size="31" font-weight="700" fill="#111111" >手机上叠成上下</text>
+<text x="130" y="1234" class="c" font-size="20" font-weight="400" fill="#6B6B68" >文字在上，一屏只讲一件事</text>
+<text x="704" y="772" class="c" font-size="20" font-weight="900" fill="#111111" letter-spacing="3" >三种常用比例</text>
+<line x1="704" y1="790" x2="1040" y2="790" stroke="#111111" stroke-width="4" />
+<rect x="711" y="827" width="336" height="56" rx="0" fill="#111111" />
+<rect x="704" y="820" width="168" height="56" rx="0" fill="#E62E2D" stroke="#111111" stroke-width="4"/>
+<rect x="872" y="820" width="168" height="56" rx="0" fill="#FFFFFF" stroke="#111111" stroke-width="4"/>
+<text x="720" y="858" class="b" font-size="34" font-weight="400" fill="#FFFFFF" letter-spacing="1" stroke="#111111" stroke-width="5" paint-order="stroke">50</text>
+<text x="1024" y="858" class="b" font-size="34" font-weight="400" fill="#111111" text-anchor="end" letter-spacing="1" >50</text>
+<text x="704" y="914" class="c" font-size="19" font-weight="700" fill="#111111" >对等 · 两个主角</text>
+<rect x="711" y="945" width="336" height="56" rx="0" fill="#111111" />
+<rect x="704" y="938" width="207.6" height="56" rx="0" fill="#E62E2D" stroke="#111111" stroke-width="4"/>
+<rect x="911.6" y="938" width="128.4" height="56" rx="0" fill="#FFFFFF" stroke="#111111" stroke-width="4"/>
+<text x="720" y="976" class="b" font-size="34" font-weight="400" fill="#FFFFFF" letter-spacing="1" stroke="#111111" stroke-width="5" paint-order="stroke">62</text>
+<text x="1024" y="976" class="b" font-size="34" font-weight="400" fill="#111111" text-anchor="end" letter-spacing="1" >38</text>
+<text x="704" y="1032" class="c" font-size="19" font-weight="700" fill="#111111" >主次 · 图文 / 登录页</text>
+<rect x="711" y="1063" width="336" height="56" rx="0" fill="#111111" />
+<rect x="704" y="1056" width="235.2" height="56" rx="0" fill="#E62E2D" stroke="#111111" stroke-width="4"/>
+<rect x="939.2" y="1056" width="100.8" height="56" rx="0" fill="#FFFFFF" stroke="#111111" stroke-width="4"/>
+<text x="720" y="1094" class="b" font-size="34" font-weight="400" fill="#FFFFFF" letter-spacing="1" stroke="#111111" stroke-width="5" paint-order="stroke">70</text>
+<text x="1024" y="1094" class="b" font-size="34" font-weight="400" fill="#111111" text-anchor="end" letter-spacing="1" >30</text>
+<text x="704" y="1150" class="c" font-size="19" font-weight="700" fill="#111111" >内容 + 侧栏 · 后台</text>
+<rect x="711" y="1187" width="336" height="90" rx="0" fill="#111111" />
+<rect x="704" y="1180" width="336" height="90" rx="0" fill="#FFFFFF" stroke="#111111" stroke-width="4"/>
+<rect x="704" y="1180" width="134.4" height="90" rx="0" fill="#111111" />
+<text x="771.2" y="1232" class="m" font-size="17" font-weight="700" fill="#FFD31A" text-anchor="middle" >sticky</text>
 <g clip-path="url(#k3)">
-<rect x="852.4" y="1180" width="149.3" height="10" rx="0" fill="#F1EDE4" opacity=".9"/>
-<rect x="852.4" y="1204" width="104.2" height="10" rx="0" fill="#F1EDE4" opacity=".9"/>
-<rect x="852.4" y="1228" width="135.4" height="10" rx="0" fill="#F1EDE4" opacity=".9"/>
-<rect x="852.4" y="1252" width="86.8" height="10" rx="0" fill="#F1EDE4" opacity=".9"/>
-<rect x="852.4" y="1276" width="121.5" height="10" rx="0" fill="#F1EDE4" opacity=".9"/>
-<rect x="852.4" y="1300" width="142.4" height="10" rx="0" fill="#F1EDE4" opacity=".9"/>
+<rect x="852.4" y="1176" width="149.3" height="10" rx="0" fill="#111111" opacity=".85"/>
+<rect x="852.4" y="1200" width="104.2" height="10" rx="0" fill="#111111" opacity=".85"/>
+<rect x="852.4" y="1224" width="135.4" height="10" rx="0" fill="#111111" opacity=".85"/>
+<rect x="852.4" y="1248" width="86.8" height="10" rx="0" fill="#111111" opacity=".85"/>
+<rect x="852.4" y="1272" width="121.5" height="10" rx="0" fill="#111111" opacity=".85"/>
+<rect x="852.4" y="1296" width="142.4" height="10" rx="0" fill="#111111" opacity=".85"/>
 </g>
-<text x="1030" y="1300" class="m" font-size="17" font-weight="400" fill="#F1EDE4" text-anchor="end" >↕ scroll</text>
-<text x="72" y="1304" class="m" font-size="19" font-weight="400" fill="#8B8985" >@guanmo_ai · github.com/guanmo-ai/design-style</text></svg>
+<text x="1036" y="1304" class="m" font-size="17" font-weight="700" fill="#111111" text-anchor="end" >↕ scroll</text>
+<text x="72" y="1304" class="m" font-size="19" font-weight="400" fill="#6B6B68" >@guanmo_ai · github.com/guanmo-ai/design-style</text></svg>

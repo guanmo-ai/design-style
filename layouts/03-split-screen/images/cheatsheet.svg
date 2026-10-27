@@ -5,6 +5,8 @@
       .a { font-family: 'Archivo', 'Noto Sans SC', sans-serif; }
       .m { font-family: 'Space Mono', 'Noto Sans SC', monospace; }
       .c { font-family: 'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif; }
+      .h { font-family: 'TeX Gyre Heros', 'Helvetica Neue', Arial, 'Noto Sans SC', sans-serif; }
+      .b { font-family: 'Bangers', 'Noto Sans SC', sans-serif; }
     </style>
     
   </defs>
