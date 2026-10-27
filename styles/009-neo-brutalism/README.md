@@ -4,7 +4,7 @@
 
 > **一句话：** 黑框描到底，阴影是一块偏移的黑——不讨好，只诚实。
 
-🎬 [看视频](https://github.com/guanmo-ai/design-style/releases/tag/day-09) · 🛠 [制作过程](PROCESS.md) · 🖼 [图片源文件](images)
+🎬 [看视频](https://github.com/guanmo-ai/design-style/releases/tag/day-09-audio-v2) · 🛠 [制作过程](PROCESS.md) · 🖼 [图片源文件](images)
 
 | 海报 | 速查卡 |
 |:-:|:-:|
@@ -127,7 +127,7 @@ transition: 100ms linear。颜色平涂 #FFD23F / #FF8FD6 / #B8F15A / #7AA2FF / 
 
 **为推特做的三件事：** 第一帧就是最好看的那一帧（片尾海报），0.15 秒内就有动作；首尾是同一帧、配乐的余音折回开头，自动循环时看不出接缝；静音也看得懂——每条规则都写在画面上，代码用 40px 的等宽大字。镜头不晃。
 
-<a href="https://github.com/guanmo-ai/design-style/releases/tag/day-09"><img src="video/cover.jpg" width="800" alt="短片封面（点击看视频）" /></a>
+<a href="https://github.com/guanmo-ai/design-style/releases/tag/day-09-audio-v2"><img src="video/cover.jpg" width="800" alt="短片封面（点击看视频）" /></a>
 
 | 时间 | 帧 | 章节 | 画面 | 教的是什么 |
 |---|---|---|---|---|
