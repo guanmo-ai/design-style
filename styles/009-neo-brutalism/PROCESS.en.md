@@ -8,6 +8,10 @@
 
 Three candidates were drafted first, each with a poster, a cheatsheet and an app concept: Art Deco, Op Art and Neo-Brutalism. Neo-Brutalism was picked because it is the most immediately useful for interface work — the whole style is a handful of numbers you can paste into CSS. The other two are kept in [`drafts/`](../../drafts) for future episodes.
 
+## Built for Twitter
+
+The first frame is the end card, so it works as the thumbnail and something moves within 0.2 s. First frame = last frame (pixel-identical) and the music's tail folds back into the start, so autoplay loops are seamless. Every rule is written on screen, so it reads with the sound off. The camera does not shake: six key landings get a one-way thud instead.
+
 ## Design constraint
 
 Pressing = the element slides onto its shadow and the shadow goes to zero. Every button, card, chip and full-screen chapter in the film is the same `Box` component in `video/ui.tsx`: a black border, a real CSS `box-shadow: Npx Npx 0 #000`, and a press value `p`.

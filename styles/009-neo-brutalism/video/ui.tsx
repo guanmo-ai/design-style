@@ -51,8 +51,8 @@ export const sc = (size: number, w = 900, ls = 0.02): CSS => ({fontFamily: FONT.
 export const serif = (size: number, w = 400): CSS => ({fontFamily: FONT.browser, fontSize: size, fontWeight: w, lineHeight: 1.2, whiteSpace: 'nowrap'});
 
 // ───────── 节奏 ─────────
-/** 砸下来：一次过冲再停住（只给“落地”，不给“按下”） */
-export const SLAM = {damping: 13, mass: 0.6, stiffness: 260};
+/** 砸下来：一次小过冲（约 5%）再停住（只给“落地”，不给“按下”） */
+export const SLAM = {damping: 17, mass: 0.6, stiffness: 280};
 export const slam = (f: number, at: number) => spr(f, at, SLAM);
 /** 整屏级别的大位移（上千像素）：阻尼更大，过冲只有 3% 左右，正好在拍点上停住 */
 export const SLAM_BIG = {damping: 22, mass: 0.6, stiffness: 300};
@@ -66,6 +66,15 @@ export const press = (f: number, at: number, hold = 6, release = true) => {
   return down * (1 - up);
 };
 export const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
+/** 落地的“咚”：整屏往下沉 amp 像素再回来，只朝一个方向、不来回颤（替代衰减正弦式的镜头抖动） */
+export const thud = (f: number, hits: [number, number][]) => {
+  let y = 0;
+  for (const [at, amp] of hits) {
+    const t = f - at;
+    if (t >= 0 && t < 10) y += amp * Math.exp(-t / 1.8);
+  }
+  return y;
+};
 export const appear = (f: number, at: number, d = 8) => tween(f, at, d, 0, 1, E.out);
 
 // ───────── 盒子 ─────────
@@ -171,16 +180,15 @@ export const Burst: React.FC<{x: number; y: number; f: number; at: number; color
   );
 };
 
-/** 逐字打出来的一行代码；光标块闪烁 */
+/** 逐字打出来的一行代码；打字时带一个光标块，打完就收掉（不闪） */
 export const Typed: React.FC<{f: number; at: number; text: string; cps?: number; style?: CSS; caret?: boolean}> = ({f, at, text, cps = 2.2, style, caret = true}) => {
   if (f < at) return null;
   const n = Math.min(text.length, Math.floor((f - at) * cps));
   const done = n >= text.length;
-  const blink = Math.floor(f / 15) % 2 === 0;
   return (
     <span style={style}>
       {text.slice(0, n)}
-      {caret && (!done || blink) && <span style={{background: C.ink, color: 'transparent'}}>_</span>}
+      {caret && !done && <span style={{background: C.ink, color: 'transparent'}}>_</span>}
     </span>
   );
 };

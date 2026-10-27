@@ -6,7 +6,7 @@
 
 ## Overview
 
-Black borders on everything, shadows that are solid offset blocks, flat saturated color. A 15-second film starts from a web page with no CSS and adds the style one line per beat, then teaches each rule as a full-screen card: borders, hard shadows, pressing, and where the look came from — from 1952 raw concrete to 2014 brutalist websites to 2021 product UI.
+Black borders on everything, shadows that are solid offset blocks, flat saturated color. A 15-second film opens on its own end card — press it, it shatters, and underneath is a web page with no CSS — then adds the style back one line per beat, then teaches each rule as a full-screen card: borders, hard shadows, pressing, and where the look came from — from 1952 raw concrete to 2014 brutalist websites to 2021 product UI.
 
 Series: **Design styles**. Period shown: **2021—today** (roots in 1950s Brutalist architecture).
 
@@ -61,6 +61,7 @@ Series: **Design styles**. Period shown: **2021—today** (roots in 1950s Brutal
 | Frame rate | 60 fps |
 | Duration | 15 s / 900 frames |
 | Tempo | 120 BPM (every slam and press lands on a beat or half-beat) |
+| Loop | First frame = last frame; the music’s tail folds back into the start, so autoplay loops are seamless |
 
 ## Reproduce
 

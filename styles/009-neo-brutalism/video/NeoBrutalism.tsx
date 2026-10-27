@@ -2,7 +2,8 @@
  * Design Style · 风格 009 · 新粗野主义 Neo-Brutalism —— 15 秒短片（1920×1080 · 60fps · 120 BPM）
  *
  * 全片是一叠“卡片”：每一章都是一张带黑框和硬阴影的卡片，换章 = 上一张被推走、被按下、或下一张砸上来。
- *   0.0–2.0s   开场    没写 CSS 的网页 → 四行 CSS 一拍一行砸上去 → 按下标题，标题块撑满全屏
+ *   0.0–2.0s   开场    第一帧 = 片尾海报（循环无缝）→ 一按就炸开 → 没写 CSS 的网页 → 四行 CSS 一拍一行 → 按下标题，撑满全屏
+ *   镜头不晃：只有六次关键落地用单向的 thud 往下沉一下
  *   2.0–4.0s   01 黑框  六个默认样式的组件，半拍一个描上 6px 黑框
  *   4.0–6.0s   02 硬影  模糊 40 → 0；偏移 8 / 24 / 14；三张卡片砸下来
  *   6.0–8.0s   03 按下  在记账 App 里按筹码、按条目、按“记一笔”
@@ -36,8 +37,8 @@ const Hud: React.FC<{f: number}> = ({f}) => {
   return (
     <>
       <div style={{position: 'absolute', left: 96, top: 40 + y, height: 52, padding: '0 22px', display: 'flex', alignItems: 'center', gap: 14, background: C.ink, color: C.yellow, border: `4px solid ${C.ink}`}}>
-        <span style={{...grot(22, 700, 0.04)}}>NEO-BRUTALISM</span>
-        <span style={{...sc(22, 700, 0.06)}}>新粗野主义</span>
+        <span style={{...grot(26, 700, 0.04)}}>NEO-BRUTALISM</span>
+        <span style={{...sc(26, 700, 0.06)}}>新粗野主义</span>
       </div>
       <div
         style={{
@@ -55,9 +56,9 @@ const Hud: React.FC<{f: number}> = ({f}) => {
           transform: `translateY(${(1 - flip) * -8}px)`,
         }}
       >
-        <span style={{...mono(22, 700)}}>{`0${k + 1} / 0${CHAPTERS.length}`}</span>
-        <span style={{...sc(22, 900, 0.06)}}>{CHAPTERS[k][0]}</span>
-        <span style={{...grot(20, 700, 0.06)}}>{CHAPTERS[k][1]}</span>
+        <span style={{...mono(26, 700)}}>{`0${k + 1} / 0${CHAPTERS.length}`}</span>
+        <span style={{...sc(26, 900, 0.06)}}>{CHAPTERS[k][0]}</span>
+        <span style={{...grot(24, 700, 0.06)}}>{CHAPTERS[k][1]}</span>
       </div>
     </>
   );
