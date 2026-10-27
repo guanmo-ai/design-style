@@ -1,10 +1,9 @@
-/** 013 · Art Deco —— 字体、金、三线、阶梯切角，以及“从中轴向两边长出来”的镜像字幕 */
+/** 013 · Art Deco —— 字体、金、三线、阶梯切角、光（沿线跑的高光、星芒）、字幕牌 */
 import React from 'react';
 import {staticFile} from 'remotion';
 import {loadFont} from '@remotion/fonts';
-import {E, tween} from '../../../src/lib/anim';
+import {E, clamp, spr, tween} from '../../../src/lib/anim';
 import {C, FONT, GOLD_STOPS, LINE, STEP} from '../tokens';
-import {SWEEPS} from './timeline';
 
 let fontsP: Promise<unknown> | null = null;
 export const loadFonts = () => {
@@ -28,39 +27,81 @@ export const AX = 960;
 export const G = 'url(#gold)';
 export const GV = LINE.video;
 
-// ───────── 金 ─────────
-/** 高光扫过：每次沿渐变方向平移一整个反射周期（2 × 渐变向量），首尾相位一致，循环无缝 */
-export const sweep = (f: number) => SWEEPS.reduce((n, t) => n + tween(f, t, 44, 0, 1, E.inOut), 0);
-export const GoldDefs: React.FC<{f: number}> = ({f}) => {
-  const s = sweep(f);
-  const stops = GOLD_STOPS.map(([o, c]) => <stop key={o} offset={o} stopColor={c} />);
-  return (
-    <>
-      <linearGradient id="gold" gradientUnits="userSpaceOnUse" x1={0} y1={0} x2={520} y2={560} spreadMethod="reflect" gradientTransform={`translate(${s * 1040} ${s * 1120})`}>
-        {stops}
-      </linearGradient>
-      {/* 按钮：实心金块用一条更短的渐变，面上也有明暗 */}
-      <linearGradient id="goldFill" x1="0" y1="0" x2="1" y2="1">
-        <stop offset="0" stopColor={C.goldLt} />
-        <stop offset="0.45" stopColor={C.gold} />
-        <stop offset="1" stopColor={C.goldDk} />
-      </linearGradient>
-      <linearGradient id="shaft" x1="0" y1="0" x2="1" y2="0">
-        <stop offset="0" stopColor="#0A0907" />
-        <stop offset="0.5" stopColor="#231D13" />
-        <stop offset="1" stopColor="#0A0907" />
-      </linearGradient>
-    </>
-  );
-};
+// ───────── 金与光 ─────────
+export const GoldDefs: React.FC = () => (
+  <>
+    <linearGradient id="gold" gradientUnits="userSpaceOnUse" x1={0} y1={0} x2={520} y2={560} spreadMethod="reflect">
+      {GOLD_STOPS.map(([o, c]) => (
+        <stop key={o} offset={o} stopColor={c} />
+      ))}
+    </linearGradient>
+    <linearGradient id="goldFill" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stopColor={C.goldLt} />
+      <stop offset="0.45" stopColor={C.gold} />
+      <stop offset="1" stopColor={C.goldDk} />
+    </linearGradient>
+    <linearGradient id="shaft" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0" stopColor="#0A0907" />
+      <stop offset="0.5" stopColor="#231D13" />
+      <stop offset="1" stopColor="#0A0907" />
+    </linearGradient>
+    <radialGradient id="sunDisc" cx="0.5" cy="0.35" r="0.7">
+      <stop offset="0" stopColor="#FFF3CF" />
+      <stop offset="0.5" stopColor={C.goldLt} />
+      <stop offset="1" stopColor={C.gold} />
+    </radialGradient>
+    <radialGradient id="flare">
+      <stop offset="0" stopColor="#FFF6DC" stopOpacity={0.95} />
+      <stop offset="0.18" stopColor={C.goldLt} stopOpacity={0.55} />
+      <stop offset="1" stopColor={C.gold} stopOpacity={0} />
+    </radialGradient>
+  </>
+);
 
 /** 把 a 以不透明度 k 叠到 b 上，直接算出实色（大面积低透明度叠加在 Chromium 里会分块） */
 export const mix = (a: string, b: string, k: number) => {
   const p = (s: string) => [1, 3, 5].map((i) => parseInt(s.slice(i, i + 2), 16));
   const pa = p(a);
   const pb = p(b);
-  return '#' + [0, 1, 2].map((i) => Math.round(pb[i] + (pa[i] - pb[i]) * k).toString(16).padStart(2, '0')).join('');
+  return '#' + [0, 1, 2].map((i) => Math.round(pb[i] + (pa[i] - pb[i]) * clamp(k)).toString(16).padStart(2, '0')).join('');
 };
+
+/**
+ * 沿线跑的高光：一段亮线顺着路径从起点跑到终点（p 0 → 1），外面裹两层宽而淡的“光晕”。
+ * 不用滤镜：滤镜区域在缩放的组里很难算，三层描边一样好看、快得多
+ */
+export const Streak: React.FC<{d: string; p: number; w?: number; len?: number; tf?: string}> = ({d, p, w = 3, len = 0.14, tf}) => {
+  if (p <= 0 || p >= 1) return null;
+  const o = len - p * (1 + len);
+  const a = Math.sin(Math.PI * p) ** 0.5;
+  const common = {d, fill: 'none', pathLength: 1, strokeDasharray: `${len} ${2 + len}`, strokeDashoffset: o, strokeLinecap: 'round' as const, transform: tf};
+  return (
+    <g opacity={a}>
+      <path {...common} stroke={C.gold} strokeWidth={w * 7} opacity={0.16} />
+      <path {...common} stroke={C.goldLt} strokeWidth={w * 3} opacity={0.4} />
+      <path {...common} stroke="#FFF8E6" strokeWidth={w * 1.3} />
+    </g>
+  );
+};
+
+/** 星芒：一圈光 + 一横一竖两道细菱形 */
+export const Flare: React.FC<{x: number; y: number; k: number; rot?: number}> = ({x, y, k, rot = 0}) => {
+  if (k <= 0.01) return null;
+  const D = (l: number, t: number) => `M${-l} 0 L0 ${-t} L${l} 0 L0 ${t} Z`;
+  return (
+    <g transform={`translate(${x} ${y}) rotate(${rot}) scale(${k})`}>
+      <circle r={90} fill="url(#flare)" />
+      <path d={D(170, 3.2)} fill="#FFF8E6" />
+      <path d={D(3.2, 95)} fill="#FFF8E6" />
+      <g transform="rotate(45)" opacity={0.6}>
+        <path d={D(48, 2)} fill={C.goldLt} />
+        <path d={D(2, 48)} fill={C.goldLt} />
+      </g>
+    </g>
+  );
+};
+/** 星芒的包络：一下亮起，慢慢收 */
+export const flareK = (f: number, at: number, dur = 40) => (f < at ? 0 : tween(f, at, 5, 0, 1, E.out) * (1 - tween(f, at + 5, dur, 0, 1, E.inOut)));
 
 // ───────── 几何 ─────────
 /** 两级阶梯切角的矩形（s = 0 时就是直角） */
@@ -73,6 +114,14 @@ export const stepRect = (x: number, y: number, w: number, h: number, s: number =
   ];
   return 'M' + pts.map(([a, b]) => `${a.toFixed(1)} ${b.toFixed(1)}`).join(' L') + ' Z';
 };
+
+/** 阶梯切角矩形的右半边：从顶边中点出发，顺时针到底边中点（左半边用 mirror 镜像）——高光从中轴往两边跑 */
+export const stepHalf = (cx: number, y: number, hw: number, h: number, s: number) => {
+  const x = cx + hw;
+  const b = y + h;
+  return `M${cx} ${y} H${x - 2 * s} V${y + s} H${x - s} V${y + 2 * s} H${x} V${b - 2 * s} H${x - s} V${b - s} H${x - 2 * s} V${b} H${cx}`;
+};
+export const mirror = (cx: number) => `translate(${cx} 0) scale(-1 1) translate(${-cx} 0)`;
 
 /** 三线框：一粗两细，粗线在外 */
 export const TripleRect: React.FC<{x: number; y: number; w: number; h: number; s?: number; k?: number; stroke?: string; op?: number}> = ({x, y, w, h, s = STEP.video, k = 1, stroke = G, op = 1}) => {
@@ -95,6 +144,7 @@ export const Diamond: React.FC<{x: number; y: number; r: number; fill?: string; 
 export const RuleDiamond: React.FC<{x1: number; x2: number; y: number; p?: number; sw?: number}> = ({x1, x2, y, p = 1, sw = 1.6}) => {
   const m = (x1 + x2) / 2;
   const half = ((x2 - x1) / 2 - 20) * p;
+  if (p <= 0) return null;
   return (
     <g>
       <path d={`M${m - 20} ${y} H${m - 20 - half} M${m + 20} ${y} H${m + 20 + half}`} stroke={G} strokeWidth={sw} />
@@ -130,62 +180,34 @@ type TP = {
   children: React.ReactNode;
 };
 export const T: React.FC<TP> = ({x, y, size, family = FONT.geo, weight = 400, fill = C.ivory, ls = 0, anchor = 'start', op = 1, children}) => (
-  // SVG 的字距加在每个字后面：右对齐时补回最后一个字距，左右两半才真正对称
-  <text x={anchor === 'end' ? x + ls * size : x} y={y} fontFamily={family} fontWeight={weight} fontSize={size} fill={fill} letterSpacing={`${ls}em`} textAnchor={anchor} opacity={op}>
+  // SVG 的字距加在每个字后面：右对齐时补回最后一个字距，左右两半才真正对称；Poiret One 只有 400，写粗了会被假加粗
+  <text x={anchor === 'end' ? x + ls * size : x} y={y} fontFamily={family} fontWeight={family.includes('Poiret') ? 400 : weight} fontSize={size} fill={fill} letterSpacing={`${ls}em`} textAnchor={anchor} opacity={op}>
     {children}
   </text>
 );
 
 /**
- * 镜像字幕：一句话从中轴劈成两半，左半句靠右对齐、右半句靠左对齐，同时从中轴里“长”出来，退场时缩回中轴。
- * big 用细宋大字，sub 用黑体说明（手机上要看得清：≥ 40px）
+ * 字幕牌：一块黑曜底、三线框、阶梯切角的牌子，从中轴打开。
+ * 规则名（细宋、金）靠右落在中轴左边，说明（黑体、象牙）靠左落在中轴右边——一句话从中轴劈成两半
  */
-export const Pair: React.FC<{
-  f: number;
-  id: string;
-  at: number;
-  out: number;
-  big: [string, string];
-  sub?: [string, string];
-  gap?: number;
-  y?: number;
-  ax?: number;
-  bigSize?: number;
-  bigFamily?: string;
-  bigLs?: number;
-  fam?: [string, string];
-}> = ({f, id, at, out, big, sub, gap = 420, y = 520, ax = AX, bigSize = 104, bigFamily = FONT.serif, bigLs = 0.18, fam}) => {
-  const p = tween(f, at, 22, 0, 1, E.out) * (1 - tween(f, out, 14, 0, 1, E.in));
-  if (p <= 0.001) return null;
-  const q = tween(f, at + 8, 22, 0, 1, E.out) * (1 - tween(f, out, 12, 0, 1, E.in));
+export const Plaque: React.FC<{f: number; at: number; out: number; title: string; sub: string; y?: number; w?: number}> = ({f, at, out, title, sub, y = 952, w = 1260}) => {
+  const k = (f < at ? 0 : spr(f, at, {damping: 16, mass: 0.6, stiffness: 220})) * (1 - tween(f, out, 12, 0, 1, E.in));
+  if (k <= 0.002) return null;
+  const txt = clamp(tween(f, at + 6, 14)) * (1 - tween(f, out - 4, 8));
+  const h = 108;
   return (
-    <g>
-      {([-1, 1] as const).map((side) => {
-        const edge = ax + side * gap;
-        const cid = `${id}${side}`;
-        const anchor = side < 0 ? 'end' : 'start';
-        return (
-          <g key={side}>
-            <clipPath id={cid}>
-              <rect x={side < 0 ? edge + 30 - p * 1000 : edge - 30} y={0} width={p * 1000} height={H} />
-            </clipPath>
-            <g clipPath={`url(#${cid})`}>
-              <g transform={`translate(${-side * (1 - p) * 70} 0)`}>
-                <T x={edge} y={y} size={bigSize} family={fam ? fam[side < 0 ? 0 : 1] : bigFamily} weight={(fam ? fam[side < 0 ? 0 : 1] : bigFamily).includes('Poiret') ? 400 : 600} fill={G} ls={bigLs} anchor={anchor}>
-                  {big[side < 0 ? 0 : 1]}
-                </T>
-                {sub && (
-                  <g opacity={q} transform={`translate(${-side * (1 - q) * 40} 0)`}>
-                    <T x={edge} y={y + 84} size={42} family={FONT.sc} weight={500} fill={C.ivory} ls={0.04} anchor={anchor}>
-                      {sub[side < 0 ? 0 : 1]}
-                    </T>
-                  </g>
-                )}
-              </g>
-            </g>
-          </g>
-        );
-      })}
+    <g transform={`translate(${AX} 0) scale(${k} 1) translate(${-AX} 0)`}>
+      <path d={stepRect(AX - w / 2, y - h / 2, w, h, 12)} fill={C.onyx} />
+      <TripleRect x={AX - w / 2} y={y - h / 2} w={w} h={h} s={12} k={0.55} />
+      <g opacity={txt}>
+        <T x={AX - 34} y={y + 19} size={54} family={FONT.serif} weight={600} fill={G} ls={0.18} anchor="end">
+          {title}
+        </T>
+        <Diamond x={AX} y={y} r={8} />
+        <T x={AX + 34} y={y + 14} size={40} family={FONT.sc} weight={500} fill={C.ivory} ls={0.04}>
+          {sub}
+        </T>
+      </g>
     </g>
   );
 };

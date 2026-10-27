@@ -6,11 +6,11 @@
 
 ## Overview
 
-Onyx black, ivory, and gold that only ever appears as a line. A 20-second film runs on one rule — mirroring. It opens on its own poster, which slides apart like elevator doors along the center seam; one gold line is left, and a spark of light drops down it. The line becomes three (one thick, two thin), the three lines pull out to the edges as a frame with stepped corners, and a ziggurat tower rises tier by tier while the camera tilts up. Sunburst rays fan open behind it, the crown morphs between Paris 1925, Shanghai 1929 and New York 1930, and the whole tower shrinks into the arched window of a phone app while a web page opens from its own axis. Five rule plaques open from the middle, then the doors close and the film is back on its first frame.
+Onyx black, ivory, and gold that only ever appears as a line. A 20-second film runs on one rule — mirroring — and gold works as light: highlights run along the gold lines and land as star flares. It is a single continuous shot with no fades. It opens on its own poster while light runs around the triple-line frame, then the camera pushes into the arched window and the window turns out to be a tunnel. The camera flies through a row of triple-line arches in real depth and stops at a twelve-spoke rose window; the rose window becomes a 24-way mirrored kaleidoscope in the manner of a Busby Berkeley overhead shot, which collapses into a sun on the horizon. A three-layer night skyline rises in front of the sun, mirrored searchlights cross above it, and the camera rises up the hero tower to the spire before pulling far back. Five rule plaques flip in from the depth, then rush at the camera, and the poster redraws itself stroke by stroke until the film is back on its first frame.
 
 Series: **Design styles**. Period shown: **1925—1939** (Paris 1925 exposition to the eve of World War II).
 
-**The one trick:** *draw the axis first; everything grows left and right at the same time.* Layout, icons, buttons and motion all start from the center line — even the captions split in two halves at the axis.
+**The one trick:** *draw the axis first; everything grows left and right at the same time.* Layout, icons, buttons and motion all start from the center line. In the film the arches, kaleidoscope, skyline, searchlights and rule plaques are all mirrored, and even the captions split in two halves at the axis: the rule name on the left, its explanation on the right.
 
 ## Five practical rules
 
@@ -58,13 +58,24 @@ All four sheets keep their original Chinese labels.
 
 ## Timing
 
+One continuous shot with no fades; the camera only pushes, rises and pulls back, and never shakes. Every rule is also written on the caption plaque at the bottom (rule name 54px, explanation 40px), so the film reads with the sound off.
+
+| Time | Frames | Chapter | On screen |
+|---|---|---|---|
+| 0–1.5 s | 0–90 | Opening | First frame is the poster; light runs around the triple-line frame from the axis outward and a star lights on the spire; the tower sinks, the rays fold shut like a fan, and the camera pushes into the arched window, which is already a tunnel |
+| 1.5–4.5 s | 90–270 | 01 Triple line | Tunnel of triple-line arches (stepped frame / arch / stepped lintel in turn), one passing every half beat, light running along its three lines before it passes; the end grows brighter and the camera brakes in front of a twelve-spoke rose window |
+| 4.5–8 s | 270–480 | 02 Sunburst | Kaleidoscope: 24-way mirrored, fans, chevrons and diamonds flowing out from the center, one pulse per beat; rays shoot out and the whole thing collapses into a sun on the horizon |
+| 8–13 s | 480–780 | 03 Ziggurat | Three-layer skyline rises in mirrored pairs in front of the sun, the hero tower lands last, windows light up, four searchlights cross in mirrored pairs; the camera rises up the hero tower to the spire, then pulls far back to take in the whole skyline |
+| 13–16 s | 780–960 | Five rules | Five plaques flip in from the depth (the middle one first, then pair by pair), light runs around each as it settles and its motif starts moving; then all rush at the camera |
+| 16–20 s | 960–1200 | Ending | The axis drops; ART / DECO is stroke-drawn, then filled with gold; the frame widens to the edges with stepped corners; the window closes, the rays open and the tower regrows, ending on the first frame: the poster is redrawn |
+
 | Property | Value |
 |---|---|
 | Canvas | 1920 × 1080 |
 | Frame rate | 60 fps |
 | Duration | 20 s / 1200 frames |
 | Tempo | 120 BPM swing throughout (off-beats land at 2/3 of a beat) |
-| Loop | First frame = last frame (the gold highlight sweeps a whole period); the music’s tail folds back into the start, so autoplay loops are seamless |
+| Loop | First frame = last frame (pixel-identical); the music’s tail folds back into the start, so autoplay loops are seamless |
 
 ## Reproduce
 

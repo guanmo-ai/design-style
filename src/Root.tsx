@@ -112,7 +112,7 @@ export const Root: React.FC = () => (
       fps={60}
       width={1920}
       height={1080}
-      defaultProps={{music: true, blur: 6}}
+      defaultProps={{music: true, blur: 8}}
     />
   </>
 );
