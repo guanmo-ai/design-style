@@ -44,7 +44,7 @@ npm run gallery:check   # 构建后检查发布文件、Pages 子路径链接、
 
 ## 添加下一期
 
-`gallery/data/works.json` 只登记已有 Release 成片的作品。尚未完成的登记保存在 `gallery/data/pending/<作品 ID>.json`，不参与同步、构建、README 视频预览或站点发布，原作品源码继续保留在 `styles/` 或 `layouts/`。恢复发布前先补齐 Release 视频，重新核对 SHA-256 和真实发布时间，再将条目移回 `works.json`。当前 `006-y2k` 因缺少 `day-06` 的成片暂存于此。
+`gallery/data/works.json` 只登记已有 Release 成片的作品。尚未完成的登记保存在 `gallery/data/pending/<作品 ID>.json`，不参与同步、构建、README 视频预览或站点发布，原作品源码继续保留在 `styles/` 或 `layouts/`。恢复发布前先补齐 Release 视频，重新核对 SHA-256 和真实发布时间，再将条目移回 `works.json`。当前 `006-y2k` 因缺少 `day-06` 的成片暂存于此；`009-neo-brutalism` 等待 `day-09` 发布（条目里的 SHA-256 是本地母版 `out/009-neo-brutalism-master.mp4` 的哈希，原样上传即可对上；`publishedAt` 发布后填写）。
 
 1. 完成本期目录：风格为 `styles/NNN-name/`（三位期号），布局为 `layouts/NN-name/`（两位期号）。内含封面 `video/cover.jpg`、风格图或布局图 `images/preview/*.svg` 及对应源文件、中英文 `README.md` / `README.en.md`、`PROCESS.md` / `PROCESS.en.md`、`tokens.json`、`process/timeline.json`。
 2. 在本仓库 Release 发布成片。视频名与目录名一致：风格 `NNN-name.mp4`，布局 `NN-name.mp4`；Release tag 现有 `day-01`（风格 001）与 `layout-01`（布局 01）。

@@ -25,6 +25,11 @@ curl -fsSL -o Bangers-Regular.ttf "$GF/bangers/Bangers-Regular.ttf"
 curl -fsSL -o Archivo.ttf          "$GF/archivo/Archivo%5Bwdth,wght%5D.ttf"
 curl -fsSL -o SpaceMono-Regular.ttf "$GF/spacemono/SpaceMono-Regular.ttf"
 curl -fsSL -o SpaceMono-Bold.ttf    "$GF/spacemono/SpaceMono-Bold.ttf"
+# 风格 009 新粗野主义：Space Grotesk（界面文字，可变字重 300—700；OFL）+ Tinos（“没写 CSS 的网页”里的浏览器默认字体，Times New Roman 的等宽开源替代；Apache 2.0）
+curl -fsSL -o SpaceGrotesk.ttf  "$GF/spacegrotesk/SpaceGrotesk%5Bwght%5D.ttf"
+FS=https://cdn.jsdelivr.net/npm/@fontsource/tinos@5.1.0/files
+curl -fsSL -o Tinos-400.woff2   "$FS/tinos-latin-400-normal.woff2"
+curl -fsSL -o Tinos-700.woff2   "$FS/tinos-latin-700-normal.woff2"
 # 风格 006 千禧未来主义：Unbounded（宽体几何标题，可变字重 200—900）+ Michroma（宽体“科技”小字）+ Silkscreen（像素字读数）；均为 OFL
 curl -fsSL -o Unbounded.ttf          "$GF/unbounded/Unbounded%5Bwght%5D.ttf"
 curl -fsSL -o Michroma-Regular.ttf   "$GF/michroma/Michroma-Regular.ttf"
@@ -47,4 +52,4 @@ curl -fsSL -o InstrumentSerif-Regular.ttf "$GF/instrumentserif/InstrumentSerif-R
 curl -fsSL -o InstrumentSerif-Italic.ttf  "$GF/instrumentserif/InstrumentSerif-Italic.ttf"
 rm -rf "$TMP"
 ls -lh
-echo "✓ 字体就绪。视频渲染时 Jost / JetBrains Mono / Noto Sans SC / TeX Gyre Heros / Oswald / Fredoka / Bangers / Unbounded / Michroma / Silkscreen / Archivo / Space Mono / Inter / Geist Mono / Selawik / Instrument Serif 自动加载，无需安装到系统。"
+echo "✓ 字体就绪。视频渲染时 Jost / JetBrains Mono / Noto Sans SC / TeX Gyre Heros / Oswald / Fredoka / Bangers / Unbounded / Michroma / Silkscreen / Archivo / Space Mono / Space Grotesk / Tinos / Inter / Geist Mono / Selawik / Instrument Serif 自动加载，无需安装到系统。"

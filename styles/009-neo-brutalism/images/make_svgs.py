@@ -1,9 +1,10 @@
 """
-风格 009 候选 C · 新粗野主义 Neo-Brutalism —— 风格图（1080×1350）
+风格 009 · 新粗野主义 Neo-Brutalism —— 四张风格图（1080×1350）
 
   poster.svg      一张海报：硬阴影的标题块 + 一颗被按下去的按钮 + 贴纸
   cheatsheet.svg  速查卡：五个令牌（描边 / 硬阴影 / 圆角 / 颜色 / 字）、按钮三态、五条规则
   app-ui.svg      如果新粗野主义来做 app：一个记账页，带标注
+  steps.svg       四步改一张卡片：默认样式 → 黑框 → 硬影 → 平涂粗字 → 按下（和短片开场同一个思路）
 
 所有“阴影”都是一个偏移的黑色同形块，模糊永远是 0。
 用法：python3 styles/009-neo-brutalism/images/make_svgs.py
@@ -323,8 +324,82 @@ def app_ui():
     return ''.join(s)
 
 
+# ───────────────────────────── 四步 ─────────────────────────────
+
+def sub_card(x, y, w, h, step):
+    """同一张“订阅”卡片的第 step 步（0 = 默认样式）"""
+    o = []
+    if step == 0:
+        o.append(f'<rect x="{x}" y="{y + 10}" width="{w}" height="{h}" rx="18" fill="#000" opacity="0.06"/>')
+        o.append(f'<rect x="{x}" y="{y + 4}" width="{w}" height="{h}" rx="18" fill="#000" opacity="0.05"/>')
+        o.append(f'<rect x="{x}" y="{y}" width="{w}" height="{h}" rx="18" fill="{WHITE}"/>')
+        o.append(t(x + 26, y + 52, 26, '订阅周刊', SC, 500, '#55555F'))
+        o.append(t(x + 26, y + 82, 16, '每周一封，不讨好。', SC, 400, '#9A9AA5'))
+        o.append(f'<rect x="{x + 26}" y="{y + h - 58}" width="140" height="42" rx="21" fill="#6C63FF"/>')
+        o.append(t(x + 96, y + h - 31, 17, '订阅', SC, 500, WHITE, '0', 'middle'))
+        return ''.join(o)
+    fill = YELLOW if step >= 3 else WHITE
+    shadow = 0 if step in (1,) else SHADOW
+    dx = SHADOW if step == 4 else 0
+    if step == 4:
+        o.append(f'<rect x="{x}" y="{y}" width="{w}" height="{h}" fill="none" stroke="{INK}" stroke-width="2" stroke-dasharray="6 6" opacity="0.5"/>')
+        shadow = 0
+    o.append(box(x + dx, y + dx, w, h, fill, 0, shadow))
+    heavy = step >= 3
+    o.append(t(x + dx + 26, y + dx + 54, 30 if heavy else 26, '订阅周刊', SC, 900 if heavy else 500, INK))
+    o.append(t(x + dx + 26, y + dx + 84, 16, '每周一封，不讨好。', SC, 400, INK))
+    bfill = PINK if step >= 3 else WHITE
+    o.append(box(x + dx + 26, y + dx + h - 62, 150, 44, bfill, 0, 4 if step >= 2 else 0, 3))
+    o.append(t(x + dx + 101, y + dx + h - 33, 18, '订阅 →', SC, 900 if heavy else 500, INK, '0', 'middle'))
+    return ''.join(o)
+
+
+def code_block(x, y, w, lines):
+    h = 26 + len(lines) * 30
+    o = [box(x, y, w, h, INK, 0, 0, 0)]
+    for i, (sign, text) in enumerate(lines):
+        col = {'+': LIME, '-': ORANGE, ' ': PAPER}[sign]
+        o.append(t(x + 18, y + 40 + i * 30, 16, f'{sign} {text}', MONO, 700, col))
+    return ''.join(o)
+
+
+def steps():
+    s = [head(), f'<rect width="{W}" height="{H}" fill="{PAPER}"/>']
+    dots = ''.join(f'<circle cx="{x}" cy="{y}" r="1.6" fill="{INK}" opacity="0.16"/>' for x in range(30, W, 30) for y in range(30, H, 30))
+    s.append(dots)
+    L = 64
+    s.append(t(L, 104, 15, 'NEO-BRUTALISM · HOW-TO', MONO, 700, INK, '0.1em'))
+    s.append(t(L, 160, 48, '四步，改一张卡片', SC, 900, INK))
+    s.append(t(L, 198, 17, '同一张“订阅”卡片：每一步只加一两行 CSS。顺序别乱——先框，再影，后颜色。', SC, 400, INK))
+    # 第 0 步：默认样式
+    s.append(t(700, 92, 13, 'BEFORE · 默认样式', MONO, 700, INK, '0.06em'))
+    s.append(sub_card(700, 104, 300, 160, 0))
+    rows = [
+        (1, '黑框', 'BORDER', [('+', 'border: 4px solid #000;'), ('+', 'border-radius: 0;'), ('-', 'box-shadow: 0 8px 24px #0002;')], '先把柔和的阴影和圆角拿掉，所有元素描到底。'),
+        (2, '硬影', 'SHADOW', [('+', 'box-shadow: 8px 8px 0 #000;'), (' ', '/* blur = 0，只朝右下 */')], '阴影是一块偏移的黑色实块；按钮用 4px，卡片用 8px。'),
+        (3, '平涂 · 粗字', 'COLOR + TYPE', [('+', 'background: #FFD23F;'), ('+', 'font-weight: 900;'), ('+', 'button { background: #FF8FD6; }')], '最重要的一块给最亮的颜色；字放大、加粗。'),
+        (4, '按下', 'PRESS', [('+', ':active { translate: 8px 8px;'), ('+', '  box-shadow: none; }'), ('+', 'transition: 100ms linear;')], '按下时整块滑到阴影的位置，阴影归零。不弹。'),
+    ]
+    y0, rh = 290, 256
+    for i, (n, zh, en, code, note) in enumerate(rows):
+        y = y0 + i * rh
+        s.append(box(L, y, 56, 56, [YELLOW, PINK, LIME, BLUE][i], 0, 4, 3))
+        s.append(t(L + 28, y + 39, 28, str(n), HEAVY, 900, INK, '0', 'middle'))
+        s.append(t(L + 76, y + 40, 30, zh, SC, 900, INK))
+        zw = sum(31 if ord(c) > 255 and c != '·' else 10 for c in zh)
+        s.append(t(L + 76 + zw + 20, y + 38, 14, en, MONO, 700, INK, '0.06em'))
+        s.append(sub_card(L, y + 72, 380, 166, n))
+        s.append(code_block(500, y + 8, 516, code))
+        s.append(t(500, y + 26 + len(code) * 30 + 40, 16, note, SC, 500, INK))
+        if i < 3:
+            s.append(f'<path d="M{L} {y + rh - 6} H{W - L}" stroke="{INK}" stroke-width="2" stroke-dasharray="8 8" opacity="0.4"/>')
+    s.append(t(W - L, H - 30, 13, 'Design Style 风格 009 · @guanmo_ai', MONO, 700, INK, '0', 'end'))
+    s.append(FOOT)
+    return ''.join(s)
+
+
 def main():
-    for name, fn in (('poster', poster), ('cheatsheet', cheatsheet), ('app-ui', app_ui)):
+    for name, fn in (('poster', poster), ('cheatsheet', cheatsheet), ('app-ui', app_ui), ('steps', steps)):
         path = os.path.join(HERE, f'{name}.svg')
         with open(path, 'w', encoding='utf-8') as f:
             f.write(fn())
