@@ -8,13 +8,10 @@
 
 ### 013 · 装饰艺术 Art Deco：发布与上架（2026-10-27，设计已完成）
 
-设计侧全部完成（短片、配乐、4 张风格图、tokens、中英文档），在分支 `claude/fervent-meitner-efjuvg`。下面是工程侧：
+设计侧全部完成（短片、配乐、4 张风格图、tokens、中英文档），在分支 `claude/fervent-meitner-efjuvg`。
+**成片已由设计侧发布**：`release-assets` 分支的 `day-13/`（成片 + 源码包 + SHA256SUMS），推送后 `publish-release.yml` 自动建 Release [day-13](https://github.com/guanmo-ai/design-style/releases/tag/day-13)。不用重新渲染。剩下的工程侧：
 
-1. **渲染成片**：`npm ci && npm run fonts && npm run render:013` → `out/013-art-deco-master.mp4`（20.0 秒，1920×1080，60 fps，h264 crf 16 + AAC，bt709；8 次采样运动模糊，设计侧本机渲染约 10 分钟）。`npm run fonts` 已加 Poiret One、Noto Serif SC 两支；若 `github.com/.../raw/` 被拦，可改用 `raw.githubusercontent.com/google/fonts/main/ofl/...`。
-2. **质检**：首帧与末帧应逐像素一致（设计侧已核对）；配乐 −14 LUFS、真峰值 < −1 dBTP（`python3 styles/013-art-deco/audio/make_music.py` 会打印响度）。
-3. **封面**：`styles/013-art-deco/video/cover.jpg` 已由设计侧从首帧导出（1920×1080），不用再做。
-4. **Release**：新建 `day-13`，上传 `013-art-deco.mp4`（即上面的 master），说明文字可用 README §9 的第一段。
-5. **画廊**：在 `gallery/data/works.json` 末尾加一条，`publishedAt` / `sha256` 按实际填，其余照抄：
+1. **画廊**：在 `gallery/data/works.json` 末尾加一条，`publishedAt` 填 Release 的发布时间，其余照抄：
 
 ```json
 {
@@ -33,7 +30,7 @@
   "publishedAt": "<发布时间>",
   "release": "day-13",
   "asset": "013-art-deco.mp4",
-  "sha256": "<实际值>",
+  "sha256": "9df3171271f51ce6a2af8281e3307fb3f00c4974642c3d7473ad2060181ec05d",
   "images": [
     {"file": "poster", "title": "一张海报，认识装饰艺术", "kind": "风格海报", "titleEn": "Art Deco at a glance", "kindEn": "Style poster"},
     {"file": "cheatsheet", "title": "五种颜色、三种字、五个母题、五条规则", "kind": "风格速查", "titleEn": "Five colors, three typefaces, five motifs, five rules", "kindEn": "Quick reference"},
@@ -43,8 +40,8 @@
 }
 ```
 
-6. `npm run gallery:sync`（会顺带更新两份 README 的预览表）→ `gallery:test` → `gallery:check` → 部署。
-7. 发布后去掉两处“待发布”标记：`README.md` 表格里的“（待发布）”、`README.en.md` 的 “— video pending release”。
+2. `npm run gallery:sync`（会顺带更新两份 README 的预览表）→ `gallery:test` → `gallery:check` → 部署。
+3. 把分支合进 `main`（README 里的“待发布”标记设计侧已去掉）。
 
 ## 设计侧留下的素材（不用动，供下次做新一期）
 
