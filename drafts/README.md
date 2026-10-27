@@ -4,27 +4,15 @@
 
 正式开做时：
 
-1. 取下一个空期号，把目录移到 `styles/NNN-name/`（例如 `git mv drafts/op-art styles/013-op-art`）
+1. 取下一个空期号，把目录移到 `styles/NNN-name/`（例如 `git mv drafts/op-art styles/014-op-art`）
 2. 把图里的 `NO. 009` / `风格 009` 改成新期号，重跑 `python3 styles/NNN-name/images/make_svgs.py && python3 scripts/build_images.py styles/NNN-name/images`
 3. 补第四张图、tokens、视频、配乐与文档（流程同 [MAKING_TEMPLATE](../docs/MAKING_TEMPLATE.md)）
 
-字体已在 `scripts/build_images.py` 登记；`npm run fonts` 尚未下载这几支（Poiret One、Limelight、Noto Serif SC、Monoton），开做时加进 `scripts/fetch_fonts.sh`。
+字体已在 `scripts/build_images.py` 登记；Poiret One、Noto Serif SC 已随 013 装饰艺术加进 `scripts/fetch_fonts.sh`，Limelight、Monoton 开做时再加。
+
+> 装饰艺术已做成 [013 · 装饰艺术](../styles/013-art-deco)。
 
 ---
-
-## 装饰艺术 Art Deco（1925—1939）· `art-deco/`
-
-| 海报 | 速查卡 | App 概念 |
-|:-:|:-:|:-:|
-| <img src="art-deco/images/preview/poster.svg" width="260" alt="海报" /> | <img src="art-deco/images/preview/cheatsheet.svg" width="260" alt="速查卡" /> | <img src="art-deco/images/preview/app-ui.svg" width="260" alt="App 概念" /> |
-
-- **一句话：** 先立一条中轴，再让阶梯、放射和三线从中轴往外长；金色是材质，只给线。
-- **对设计师有用的地方：** 品牌、包装、酒店餐饮的“高级感”。五个母题（放射 / 阶梯 / 人字 / 扇形 / 三线）可直接拿走；上海外滩是中文读者最近的 Deco 样本。
-- **色板：** 黑曜 `#0E0D0B` 60% · 鎏金 `#C9A45A`（斜向多段渐变）10% · 象牙 `#F1E7D2` 25% · 孔雀绿 `#0E4A3C` · 漆红 `#9E2B25` 5%
-- **字：** Poiret One（标题，细线几何）· Jost（Futura 1927 的开源替代）· Noto Serif SC 300（中文细宋，宽字距）
-- **五条规则：** 中轴对称 · 阶梯收分（不用圆角）· 放射光芒（光源藏在主体后）· 一线变三线（1 粗 2 细，间距 ≈ 粗线 × 3）· 金只给线
-- **动效设想（15 秒）：** 一根金线落在中轴上 → 分裂成三线、画出阶梯角框 → 放射线像折扇从中轴展开 → 摩天楼逐层收分长高，镜头上摇到拱冠、尖顶伸出 → 巴黎 / 纽约 / 上海三城对称变形 → 五个母题镜像蒙太奇 → 电梯门合上落回海报。签名动作：左右镜像同时生长 + 金属高光扫过。
-- **制作提醒：** 大面积低不透明度的金色楔形在 Chromium 里会出分块色差，用 `mix()` 预先算成实色（见 `make_svgs.py`）。
 
 ## 欧普艺术 Op Art（1955—1970）· `op-art/`
 

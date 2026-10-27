@@ -1,0 +1,120 @@
+/* 013 · 装饰艺术 Art Deco — CSS 设计令牌（与 tokens.ts / tokens.json 同源）
+   整个风格只有一条规矩：先立一条中轴，所有东西从中轴向左右同时长出来；金色是材质，只给线。 */
+:root {
+  /* 颜色：黑曜底 + 象牙字 + 三档金 + 孔雀绿 / 漆红 */
+  --ad-onyx: #0E0D0B;      /* 底 60%：黑曜，带一点暖 */
+  --ad-onyx2: #1A1711;     /* 体块的亮面 */
+  --ad-gold: #C9A45A;      /* 鎏金 10%：线、大字（≥ 24px）、唯一的按钮 */
+  --ad-gold-lt: #F2DC9C;   /* 金的高光 */
+  --ad-gold-dk: #7E5E26;   /* 金的暗部 */
+  --ad-ivory: #F1E7D2;     /* 象牙 25%：正文、纸（在黑曜上 15.8:1） */
+  --ad-emerald: #0E4A3C;   /* 孔雀绿：第二底色（上海的绿铜屋顶） */
+  --ad-lacquer: #9E2B25;   /* 漆红 5%：点缀、错误 */
+  --ad-smoke: #A89F8C;     /* 次要文字：在黑曜上 7.4:1 */
+
+  /* 金是材质不是颜色：斜向多段渐变，亮—暗—亮；用于线、标题、唯一的主按钮 */
+  --ad-gold-grad: linear-gradient(135deg, #F2DC9C 0%, #C9A45A 22%, #7E5E26 40%, #F2DC9C 60%, #C9A45A 80%, #7E5E26 100%);
+
+  /* 形状：一粗两细三线，阶梯切角两级，不用圆角 */
+  --ad-line-thick: 1.8px;
+  --ad-line-thin: 0.8px;
+  --ad-line-gap: 5px;      /* 间距 ≈ 粗线 × 3 */
+  --ad-step: 6px;          /* 阶梯切角：每级 6px，共 2 级 */
+  --ad-radius: 0;          /* 永远是 0 */
+
+  /* 字：细线几何标题 + 几何标签 + 中文细宋 + 中文黑体 */
+  --ad-font-display: 'Poiret One', 'Jost', sans-serif;
+  --ad-font-geo: 'Jost', 'Futura', 'Noto Sans SC', sans-serif;
+  --ad-font-serif: 'Noto Serif SC', 'Songti SC', serif;
+  --ad-font-cjk: 'Noto Sans SC', 'PingFang SC', sans-serif;
+
+  /* 字距：拉丁大写 0.06–0.42em，中文 0.2–0.5em */
+  --ad-track-title: 0.06em;
+  --ad-track-label: 0.24em;
+  --ad-track-latin-min: 0.06em;
+  --ad-track-latin-max: 0.42em;
+  --ad-track-cjk-min: 0.2em;
+  --ad-track-cjk-max: 0.5em;
+}
+
+/* 底：黑曜 + 象牙字（深色是 Deco 的本位） */
+.ad-page {
+  background-color: var(--ad-onyx);
+  color: var(--ad-ivory);
+  font-family: var(--ad-font-geo), var(--ad-font-cjk);
+}
+
+/* 画框：一粗两细三线 + 阶梯切角。外线用 border，内两线用伪元素，往里各退一个间距 */
+.ad-frame {
+  --s: var(--ad-step);
+  position: relative;
+  border: var(--ad-line-thick) solid;
+  border-image: var(--ad-gold-grad) 1;
+  border-radius: var(--ad-radius);
+  clip-path: polygon(
+    0 calc(var(--s) * 2), var(--s) calc(var(--s) * 2), var(--s) var(--s), calc(var(--s) * 2) var(--s), calc(var(--s) * 2) 0,
+    calc(100% - var(--s) * 2) 0, calc(100% - var(--s) * 2) var(--s), calc(100% - var(--s)) var(--s), calc(100% - var(--s)) calc(var(--s) * 2), 100% calc(var(--s) * 2),
+    100% calc(100% - var(--s) * 2), calc(100% - var(--s)) calc(100% - var(--s) * 2), calc(100% - var(--s)) calc(100% - var(--s)), calc(100% - var(--s) * 2) calc(100% - var(--s)), calc(100% - var(--s) * 2) 100%,
+    calc(var(--s) * 2) 100%, calc(var(--s) * 2) calc(100% - var(--s)), var(--s) calc(100% - var(--s)), var(--s) calc(100% - var(--s) * 2), 0 calc(100% - var(--s) * 2)
+  );
+}
+.ad-frame::before,
+.ad-frame::after {
+  content: '';
+  position: absolute;
+  pointer-events: none;
+  border: var(--ad-line-thin) solid;
+  border-image: var(--ad-gold-grad) 1;
+}
+.ad-frame::before { inset: var(--ad-line-gap); }
+.ad-frame::after { inset: calc(var(--ad-line-gap) * 2 + var(--ad-line-thin)); }
+
+/* 按钮：全页唯一的实心金块。黑曜字 8.27:1 */
+.ad-button {
+  padding: 14px 28px;
+  background: var(--ad-gold-grad);
+  background-size: 200% 200%;
+  border: 0;
+  border-radius: var(--ad-radius);
+  clip-path: polygon(
+    0 12px, 6px 12px, 6px 6px, 12px 6px, 12px 0,
+    calc(100% - 12px) 0, calc(100% - 12px) 6px, calc(100% - 6px) 6px, calc(100% - 6px) 12px, 100% 12px,
+    100% calc(100% - 12px), calc(100% - 6px) calc(100% - 12px), calc(100% - 6px) calc(100% - 6px), calc(100% - 12px) calc(100% - 6px), calc(100% - 12px) 100%,
+    12px 100%, 12px calc(100% - 6px), 6px calc(100% - 6px), 6px calc(100% - 12px), 0 calc(100% - 12px)
+  );
+  font: 600 16px/1 var(--ad-font-geo), var(--ad-font-cjk);
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--ad-onyx);
+  cursor: pointer;
+  transition: background-position 400ms ease-out;
+}
+/* 悬停 = 高光扫过 */
+.ad-button:hover {
+  background-position: 100% 100%;
+}
+/* 焦点环：切角会裁掉外部 outline，所以向内画 */
+.ad-button:focus-visible {
+  outline: 2px solid var(--ad-onyx);
+  outline-offset: -5px;
+}
+
+/* 标题：细线几何大写，字重只有 400 */
+.ad-title {
+  font-family: var(--ad-font-display);
+  font-weight: 400;
+  letter-spacing: var(--ad-track-title);
+  color: var(--ad-gold);
+}
+
+/* 标签：Jost 大写宽字距 */
+.ad-label {
+  font-family: var(--ad-font-geo);
+  text-transform: uppercase;
+  letter-spacing: var(--ad-track-label);
+  color: var(--ad-smoke);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ad-button { transition: none; }
+}
