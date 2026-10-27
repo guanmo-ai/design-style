@@ -107,6 +107,7 @@ The gallery interface, descriptions, search, and reading pages support **Chinese
 |---|---|---|---|
 | 01 | [Bento Grid](layouts/01-bento-grid/README.en.md) | [Production overview](layouts/01-bento-grid/PROCESS.en.md) | 2020s– |
 | 02 | [Masonry](layouts/02-masonry/README.en.md) | [Production overview](layouts/02-masonry/PROCESS.en.md) | 2009– |
+| 03 | [Split Screen](layouts/03-split-screen/README.en.md) | [Production overview](layouts/03-split-screen/PROCESS.en.md) | 1927– |
 
 ## Run the gallery locally
 
@@ -147,7 +148,7 @@ npx playwright install chromium
 npm run images:001
 ```
 
-Episode suffixes are `001`–`006`, `008`, `009`, `L01`, and `L02`; for example, `npm run render:L02` renders Masonry. Episode 006 renders its WebGL2 materials with SwiftShader (`--gl=swangle`), so it is slower. Episode 008 is Risograph; 009 is Neo-Brutalism. Output goes into `out/`. The root `npm ci` applies the browser ZIP extraction security patch. If installation uses `--ignore-scripts`, run `npm run postinstall` before rendering or running the security tests.
+Episode suffixes are `001`–`006`, `008`, `009`, `L01`, `L02`, and `L03`; for example, `npm run render:L02` renders Masonry and `npm run render:L03` renders Split Screen. Episode 006 renders its WebGL2 materials with SwiftShader (`--gl=swangle`), so it is slower. Episode 008 is Risograph; 009 is Neo-Brutalism. Output goes into `out/`. The root `npm ci` applies the browser ZIP extraction security patch. If installation uses `--ignore-scripts`, run `npm run postinstall` before rendering or running the security tests.
 
 ```bash
 npm test

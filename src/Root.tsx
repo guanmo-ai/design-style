@@ -3,6 +3,7 @@ import {Composition} from 'remotion';
 import {Bauhaus, BAUHAUS_DURATION} from '../styles/001-bauhaus/video/Bauhaus';
 import {BentoGrid, BENTO_DURATION} from '../layouts/01-bento-grid/video/BentoGrid';
 import {Masonry, MASONRY_DURATION} from '../layouts/02-masonry/video/Masonry';
+import {SplitScreen, SPLIT_DURATION} from '../layouts/03-split-screen/video/SplitScreen';
 import {SwissStyle, SWISS_DURATION} from '../styles/002-swiss-style/video/SwissStyle';
 import {Constructivism, CONSTRUCTIVISM_DURATION} from '../styles/003-constructivism/video/Constructivism';
 import {Memphis, MEMPHIS_DURATION} from '../styles/004-memphis/video/Memphis';
@@ -76,6 +77,15 @@ export const Root: React.FC = () => (
       width={1920}
       height={1080}
       defaultProps={{music: true}}
+    />
+    <Composition
+      id="L03-SplitScreen"
+      component={SplitScreen}
+      durationInFrames={SPLIT_DURATION}
+      fps={60}
+      width={1920}
+      height={1080}
+      defaultProps={{music: true, blur: 10}}
     />
     <Composition
       id="S006-Y2K"
