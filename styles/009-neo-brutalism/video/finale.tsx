@@ -2,14 +2,14 @@
  * 10—15 秒
  *   五个词（f600）一拍一张整屏卡片叠上来：黑框 / 硬影 / 平涂 / 露结构 / 歪一点。每张从不同方向砸进来，压住上一张
  *   片尾  （f750）整叠卡片掉下去；海报三块 NEO / BRUTAL / ISM 半拍一块砸回来，贴纸、署名；
- *                f870 光标按一下——所有阴影一起归零，再一起弹回来
+ *                f870 光标按一下——所有阴影一起归零，再一起弹回来。最后一帧 = 第一帧（开场就是这张海报），循环播放无缝
  */
 import React from 'react';
 import {AbsoluteFill} from 'remotion';
-import {E, clamp, shake, tween} from '../../../src/lib/anim';
+import {E, clamp, tween} from '../../../src/lib/anim';
 import {C, V} from '../tokens';
 import {AT, WORD_AT} from './timeline';
-import {Box, Burst, Cursor, Dots, Star, disp, grot, lerp, mono, press, sc, slam, slamBig} from './ui';
+import {Box, Burst, Cursor, Dots, Star, disp, grot, lerp, mono, press, sc, slam, slamBig, thud} from './ui';
 
 type Word = {zh: string; en: string; code: string; fill: string; rot: number; from: [number, number]};
 const WORDS: Word[] = [
@@ -87,9 +87,8 @@ const WordCard: React.FC<{f: number; i: number}> = ({f, i}) => {
 
 export const Words: React.FC<{f: number}> = ({f}) => {
   const fall = tween(f, AT.end - 8, 18, 0, 1, E.in);
-  const sh = shake(f, WORD_AT.map((t) => [t, 14] as [number, number]));
   return (
-    <AbsoluteFill style={{transform: `translate(${sh.x}px, ${sh.y + fall * 1400}px) rotate(${fall * 6}deg)`}}>
+    <AbsoluteFill style={{transform: `translateY(${fall * 1400}px) rotate(${fall * 6}deg)`}}>
       {WORDS.map((_, i) => (
         <WordCard key={i} f={f} i={i} />
       ))}
@@ -97,64 +96,92 @@ export const Words: React.FC<{f: number}> = ({f}) => {
   );
 };
 
-// ───────── 片尾 ─────────
+// ───────── 海报（片尾 = 开场第一帧） ─────────
 
 const BLOCKS = [
-  {text: 'NEO', x: 110, y: 96, w: 760, h: 270, fill: C.pink, rot: -3, at: AT.end + 6, from: [-1200, -500], size: 230, wdth: 112},
-  {text: 'BRUTAL', x: 96, y: 400, w: 1728, h: 290, fill: C.yellow, rot: 0, at: AT.end + 21, from: [2200, 0], size: 300, wdth: 125},
-  {text: 'ISM', x: 1230, y: 730, w: 590, h: 220, fill: C.lime, rot: 2.5, at: AT.end + 36, from: [0, 900], size: 176, wdth: 125},
+  {text: 'NEO', x: 110, y: 96, w: 760, h: 270, fill: C.pink, rot: -3, at: AT.end + 6, from: [-1200, -500], out: [-900, -1300, -25], size: 230, wdth: 112},
+  {text: 'BRUTAL', x: 96, y: 400, w: 1728, h: 290, fill: C.yellow, rot: 0, at: AT.end + 21, from: [2200, 0], out: [-200, 1500, 12], size: 300, wdth: 125},
+  {text: 'ISM', x: 1230, y: 730, w: 590, h: 220, fill: C.lime, rot: 2.5, at: AT.end + 36, from: [0, 900], out: [1500, 300, 30], size: 176, wdth: 125},
 ];
+export const POSTER_PRESS = {x: 1240, y: 560}; // 光标按在 BRUTAL 的 A 上
 
-export const End: React.FC<{f: number}> = ({f}) => {
-  const a = AT.end;
-  const pAll = press(f, a + 120, 10); // f870：所有阴影一起归零
-  const sh = shake(f, [
-    ...BLOCKS.map((b) => [b.at, 12] as [number, number]),
-    [a + 120, 8],
-  ]);
-  const cur = tween(f, a + 98, 20, 0, 1, E.inOut);
-  const bar = f >= a + 78 ? slam(f, a + 78) : 0;
-  const zh = f >= a + 45 ? slam(f, a + 45) : 0;
+export type PosterState = {
+  k?: number[]; // 三块的落地进度（0 = 在画外，1 = 落稳）
+  zh?: number; // 新粗野主义 + 标语
+  tag?: number;
+  star?: number;
+  bar?: number;
+  p?: number; // 所有阴影一起按下
+  ex?: number; // 炸开：0 = 原位，1 = 全部飞出画外
+  dy?: number;
+  bg?: number; // 底色与点阵的不透明度（开场炸开时让开，露出底下的网页）
+};
+
+/** 片尾海报。参数全部取默认值时就是最后一帧，也就是第一帧 */
+export const Poster: React.FC<PosterState> = ({k = [1, 1, 1], zh = 1, tag = 1, star = 1, bar = 1, p = 0, ex = 0, dy = 0, bg = 1}) => {
+  const e = ex;
   return (
-    <AbsoluteFill style={{background: C.paper}}>
-      <Dots />
-      <div style={{position: 'absolute', inset: 0, transform: `translate(${sh.x}px, ${sh.y}px)`}}>
-        {BLOCKS.map((b) => {
-          if (f < b.at - 12) return null;
-          const k = slamBig(f, b.at - 12);
+    <AbsoluteFill style={{background: bg >= 1 ? C.paper : `rgba(255, 246, 229, ${bg})`}}>
+      <Dots opacity={0.16 * bg} />
+      <div style={{position: 'absolute', inset: 0, transform: `translateY(${dy}px)`}}>
+        {BLOCKS.map((b, i) => {
+          if (k[i] <= 0.0001) return null;
+          const ox = (1 - k[i]) * b.from[0] + e * b.out[0];
+          const oy = (1 - k[i]) * b.from[1] + e * b.out[1];
           return (
-            <div key={b.text} style={{position: 'absolute', inset: 0, transform: `translate(${(1 - k) * b.from[0]}px, ${(1 - k) * b.from[1]}px)`}}>
-              <Box x={b.x} y={b.y} w={b.w} h={b.h} fill={b.fill} shadow={V.shadow[1]} p={pAll} rot={b.rot} style={{display: 'flex', alignItems: 'center', paddingLeft: 40}}>
+            <div key={b.text} style={{position: 'absolute', inset: 0, transform: `translate(${ox}px, ${oy}px) rotate(${e * b.out[2]}deg)`}}>
+              <Box x={b.x} y={b.y} w={b.w} h={b.h} fill={b.fill} shadow={V.shadow[1]} p={p} rot={b.rot} style={{display: 'flex', alignItems: 'center', paddingLeft: 40}}>
                 <span style={{...disp(b.size, b.wdth, -0.03), marginTop: b.size * 0.04}}>{b.text}</span>
               </Box>
             </div>
           );
         })}
-        {f >= a + 43 && (
-          <div style={{position: 'absolute', left: 110, top: 742, transform: `scale(${lerp(1.4, 1, zh)})`, transformOrigin: 'left center', opacity: clamp((f - a - 45) / 3)}}>
+        {zh > 0 && (
+          <div style={{position: 'absolute', left: 110, top: 742, transform: `translate(${e * -1300}px, ${e * 700}px) scale(${lerp(1.4, 1, zh)})`, transformOrigin: 'left center', opacity: clamp(zh * 3)}}>
             <div style={{...sc(118, 900, 0.04)}}>新粗野主义</div>
-            <div style={{marginTop: 16, display: 'flex', alignItems: 'center', gap: 20, opacity: tween(f, a + 60, 8)}}>
+            <div style={{marginTop: 16, display: 'flex', alignItems: 'center', gap: 20, opacity: tag}}>
               <span style={{...sc(44, 900)}}>不讨好，只诚实。</span>
-              <span style={{...mono(24, 700), padding: '4px 12px', border: `4px solid ${C.ink}`, background: C.white}}>border 6 · shadow 14 · blur 0</span>
+              <span style={{...mono(26, 700), padding: '4px 12px', border: `4px solid ${C.ink}`, background: C.white}}>border 6 · shadow 14 · blur 0</span>
             </div>
           </div>
         )}
-        {f >= a + 64 && (
-          <Star x={1700} y={200} r={112} fill={C.orange} rot={lerp(-160, 12, slam(f, a + 64))} shadow={12}>
-            <span style={{...disp(44, 112, 0)}}>RAW!</span>
-          </Star>
+        {star > 0 && (
+          <div style={{position: 'absolute', inset: 0, transform: `translate(${e * 900}px, ${e * -900}px)`}}>
+            <Star x={1700} y={200} r={112} fill={C.orange} rot={lerp(-160, 12, star) + e * 220} shadow={12 * (1 - p)}>
+              <span style={{...disp(44, 112, 0)}}>RAW!</span>
+            </Star>
+          </div>
         )}
       </div>
-      {/* 底栏 */}
-      <div style={{position: 'absolute', left: 0, right: 0, top: lerp(1080, 990, bar), height: 90, background: C.ink, display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 96px'}}>
+      <div style={{position: 'absolute', left: 0, right: 0, top: lerp(1080, 990, bar) + e * 200, height: 90, background: C.ink, display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0 96px'}}>
         <span style={{...grot(30, 700, 0.02), color: C.paper}}>
           Design Style <span style={{...sc(30, 700), color: C.yellow}}>风格 009</span>
         </span>
         <span style={{...mono(30, 700), color: C.yellow}}>@guanmo_ai</span>
         <span style={{...grot(30, 700, 0.02), color: C.paper}}>2021 → NOW</span>
       </div>
-      {f >= a + 96 && <Cursor x={lerp(1960, 1240, cur)} y={lerp(1140, 560, cur)} p={pAll} opacity={1 - tween(f, a + 136, 8)} />}
-      <Burst x={1240} y={560} f={f} at={a + 120} />
+    </AbsoluteFill>
+  );
+};
+
+export const End: React.FC<{f: number}> = ({f}) => {
+  const a = AT.end;
+  const pAll = press(f, a + 120, 10); // f870：所有阴影一起归零
+  const cur = tween(f, a + 98, 20, 0, 1, E.inOut);
+  const k = BLOCKS.map((b) => (f >= b.at - 12 ? slamBig(f, b.at - 12) : 0));
+  return (
+    <AbsoluteFill>
+      <Poster
+        k={k}
+        zh={f >= a + 45 ? slam(f, a + 45) : 0}
+        tag={tween(f, a + 60, 8)}
+        star={f >= a + 64 ? slam(f, a + 64) : 0}
+        bar={f >= a + 78 ? slam(f, a + 78) : 0}
+        p={pAll}
+        dy={thud(f, [...BLOCKS.map((b) => [b.at, 6] as [number, number]), [a + 120, 8]])}
+      />
+      {f >= a + 96 && <Cursor x={lerp(1960, POSTER_PRESS.x, cur)} y={lerp(1140, POSTER_PRESS.y, cur)} p={pAll} opacity={1 - tween(f, a + 136, 8)} />}
+      <Burst x={POSTER_PRESS.x} y={POSTER_PRESS.y} f={f} at={a + 120} />
     </AbsoluteFill>
   );
 };

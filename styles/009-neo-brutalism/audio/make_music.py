@@ -2,9 +2,9 @@
 Design Style · 风格 009 · 新粗野主义 Neo-Brutalism —— 配乐与音效（纯代码合成，无外部音源）
 
 120 BPM（1 拍 = 0.5 秒 = 30 帧）· E 小调 → G 大调
-和弦：开场只有键盘声与重击 | Em（2–4s）| C（4–6s）| G（6–8s）| D（8–10s）| C D Em C D（每拍一个，10–12.5s）| G（12.5s 起）
+和弦：开场只有按键、代码条与重击 | Em（2–4s）| C（4–6s）| G（6–8s）| D（8–10s）| C D Em C D（每拍一个，10–12.5s）| G（12.5s 起）
 音色：方波贝斯（只留奇次谐波，像一块没打磨的混凝土）、909 式底鼓 + 拍手、反拍的方波和弦“戳”、木琴旋律。
-  0–2s      开场：机械键盘逐字打 CSS；f30 黑框“盖章”· f60 阴影“啵”· f75 刷黄 · f90 换字体重击 · f102 按下 · 上升进 2s
+  0–2s      开场：f10 海报被按下 · f16 炸开 · 四枚代码条一拍一枚：f30 黑框“盖章”· f45 阴影“啵”· f60 刷黄 · f75 换字体重击 · f96 按下 · 上升进 2s
   2–4s      01 黑框：六声盖章，音高沿五声音阶往上
   4–6s      02 硬影：拉滑块的拉链声 → f272 咔嗒 → 三次“嘣”（8 / 24 / 14px）→ 三张卡片砸地
   6–8s      03 按下：筹码、条目、“记一笔”三次按键 · 新条目弹出 · 余额跳字 · 收银“叮”· 大按钮按两下
@@ -26,7 +26,8 @@ import numpy as np
 
 SR = 48000
 DUR = 15.0
-N = int(SR * DUR)
+NV = int(SR * DUR)  # 成片长度
+N = int(SR * (DUR + 1.5))  # 多算 1.5 秒余音，最后折回开头：循环播放时首尾无缝
 rng = np.random.default_rng(2021)
 
 MUS = np.zeros((2, N))
@@ -317,35 +318,52 @@ def kick_at(fm, level=1.0):
     KICKS.append(fr(fm))
 
 
-# ================= 开场 0–120：没写 CSS 的网页 =================
-LINES = [('  border: 6px solid #000;', 12), ('  box-shadow: 14px 14px 0 #000;', 38), ('  background: #FFD23F;', 64), ('  font: 900 125% Archivo;', 78)]
-for text, at in LINES:
-    for i, ch in enumerate(text):
-        if ch == ' ':
-            continue
-        fm = at + i / 2.4
-        sfx(keyclick(0.13 + 0.05 * rng.random(), 0.85 + 0.3 * rng.random()), fr(fm), pan=0.35 + 0.1 * rng.standard_normal(), send=0.04)
+# ================= 开场 0–120：海报被按下、炸开 → 没写 CSS 的网页 → 四行 CSS =================
+# f0 是片尾那张海报（循环播放时接着上一遍的余音）。f2 光标滑进来，f10 按下，f16 炸开
+sfx(whoosh(fr(9), 800, 9000, 0.22, 0.85), fr(1), pan=0.5)
+sfx(click(1.0, deep=True), fr(10), send=0.2)
+kick_at(10, 1.0)
+sfx(BOOM * 0.9, fr(10), send=0.35)
+place(CRASH * 0.5, fr(10), send=0.35)
+sfx(whoosh(fr(14), 150, 9500, 0.6, 0.35), fr(15))
+sfx(hp(noise(0.35), 2500) * np.exp(-tt(0.35) / 0.06) * 0.35, fr(16), send=0.3)
+for k, pn in enumerate((-0.6, 0.6, -0.2, 0.3)):
+    sfx(stamp(0.25, 300 - 30 * k, 90), fr(17 + 2 * k), pan=pn, send=0.2)
+# f26 露出默认网页：一个往下掉的“哔——”
+sfx(boing(midi(84), 0.18, up=False, d=0.3), fr(26), send=0.2)
+# 四行 CSS：代码条在拍点前 9 帧砸进来（打字声），在拍点上生效
+LINES = [('border: 6px solid #000;', 30), ('box-shadow: 14px 14px 0 #000;', 45), ('background: #FFD23F;', 60), ('font: 900 125% Archivo;', 75)]
+for text, fire in LINES:
+    chars = [c for c in text if c != ' ']
+    for i in range(len(chars)):
+        fm = fire - 9 + 8 * i / len(chars)
+        sfx(keyclick(0.1 + 0.04 * rng.random(), 0.85 + 0.3 * rng.random()), fr(fm), pan=0.4 + 0.1 * rng.standard_normal(), send=0.03)
+    sfx(whoosh(fr(8), 900, 8000, 0.14, 0.8), fr(fire - 9), pan=0.6)
 # f30 黑框：盖章
 kick_at(30, 0.9)
 sfx(stamp(0.9, 260, 60), fr(30), send=0.25)
-place(CRASH * 0.25, fr(30), send=0.2)
-# f60 阴影：啵
+place(CRASH * 0.22, fr(30), send=0.2)
+# f45 阴影：啵
+kick_at(45, 0.85)
+sfx(boing(midi(52), 0.5), fr(45), send=0.25)
+# f60 刷黄
 kick_at(60, 0.85)
-sfx(boing(midi(52), 0.5), fr(60), send=0.25)
-# f75 刷黄
-sfx(whoosh(fr(10), 600, 7000, 0.35, 0.6), fr(73), pan=-0.3)
-place(CLAP * 0.4, fr(75), send=0.2)
-# f90 换字体：整页一起变
-kick_at(90, 1.0)
-sfx(BOOM * 0.85, fr(90), send=0.3)
-place(CRASH * 0.5, fr(90), send=0.3)
-place(square_bass(40, 0.25, 0.4), fr(90))
-for fm, m in ((92, 76), (96, 79), (100, 83)):
-    sfx(pop(midi(m), 0.32), fr(fm), pan=(fm - 96) / 8, send=0.25)
-# f102 按下标题 → 撑满全屏
-sfx(click(0.8, deep=True), fr(102), send=0.15)
-sfx(riser(fr(18), 0.45), fr(102), send=0.25)
-sfx(whoosh(fr(14), 200, 9000, 0.45, 0.8), fr(106))
+sfx(whoosh(fr(9), 600, 7000, 0.35, 0.6), fr(58), pan=-0.3)
+place(CLAP * 0.45, fr(60), send=0.2)
+# f75 换字体：整页一起变
+kick_at(75, 1.0)
+sfx(BOOM * 0.85, fr(75), send=0.3)
+place(CRASH * 0.5, fr(75), send=0.3)
+place(square_bass(40, 0.25, 0.4), fr(75))
+sfx(whoosh(fr(8), 500, 6000, 0.25, 0.7), fr(76), pan=0.7)
+for fm, m in ((78, 76), (82, 79), (86, 83)):
+    sfx(pop(midi(m), 0.32), fr(fm), pan=(fm - 82) / 8, send=0.25)
+for fm in (90, 97.5, 105, 108.75, 112.5, 116.25):
+    place(CHAT * 0.1, fr(fm), pan=0.2)
+# f96 按下标题 → 撑满全屏
+sfx(click(0.8, deep=True), fr(96), send=0.15)
+sfx(riser(fr(24), 0.45), fr(96), send=0.25)
+sfx(whoosh(fr(14), 200, 9000, 0.45, 0.8), fr(104))
 for k in range(4):
     place(SNARE * (0.18 + 0.08 * k), fr(105 + k * 3.75), send=0.15)
 
@@ -524,13 +542,12 @@ gap = np.ones(N)
 g0, g1 = int(fr(871) * SR), int(fr(880) * SR)
 gap[g0:g1] = 0.12
 mix = (mix - SFX) * gap[None, :] + SFX
+# 循环：15 秒之后的余音（最后那记 G 大和弦、混响尾巴）折回开头，和第一帧的海报接上
+mix[:, : N - NV] += mix[:, NV:]
+mix = mix[:, :NV]
 mix = mix.T
 mix /= np.abs(mix).max() + 1e-9
 mix = np.tanh(mix * 1.3) / np.tanh(1.3)
-fade = np.ones(N)
-f0 = int(fr(890) * SR)
-fade[f0:] = np.linspace(1, 0, N - f0) ** 1.5
-mix *= fade[:, None]
 
 root = os.path.dirname(os.path.abspath(__file__))
 out_dir = os.path.normpath(os.path.join(root, '..', '..', '..', 'public', '009-neo-brutalism'))

@@ -7,10 +7,10 @@
  */
 import React from 'react';
 import {AbsoluteFill} from 'remotion';
-import {E, clamp, shake, spr, tween} from '../../../src/lib/anim';
+import {E, clamp, spr, tween} from '../../../src/lib/anim';
 import {C, V} from '../tokens';
 import {AT} from './timeline';
-import {Box, Burst, Cursor, Dots, Typed, appear, disp, grot, lerp, mono, press, sc, serif, slam} from './ui';
+import {Box, Burst, Cursor, Dots, Typed, appear, disp, grot, lerp, mono, press, sc, serif, slam, thud} from './ui';
 
 type CSS = React.CSSProperties;
 
@@ -47,14 +47,14 @@ const Label: React.FC<{f: number; at: number; n: string; en: string; zh: string;
         {`${n} / ${en}`}
       </div>
       <div style={{position: 'absolute', left: 90, top: y + 70, transform: `scale(${lerp(1.5, 1, k2)})`, transformOrigin: 'left center', opacity: clamp((f - at - 6) / 3), ...sc(200, 900, 0.02), color: C.ink}}>{zh}</div>
-      <div style={{position: 'absolute', left: 96, top: y + 330, ...mono(30, 700), color: C.ink}}>
+      <div style={{position: 'absolute', left: 96, top: y + 322, ...mono(40, 700), color: C.ink}}>
         {code.map((line, i) => (
           <div key={i}>
             <Typed f={f} at={at + 10 + i * 6} text={line} cps={3.2} caret={i === code.length - 1} />
           </div>
         ))}
       </div>
-      <div style={{position: 'absolute', left: 96, top: y + 350 + code.length * 38 + 12, opacity: appear(f, at + 18), ...sc(34, 700, 0.04), color: C.ink}}>{note}</div>
+      <div style={{position: 'absolute', left: 96, top: y + 340 + code.length * 50 + 14, opacity: appear(f, at + 18), ...sc(42, 900, 0.04), color: C.ink}}>{note}</div>
     </>
   );
 };
@@ -162,7 +162,7 @@ export const Borders: React.FC<{f: number}> = ({f}) => {
             <div style={{position: 'absolute', inset: 0, transform: `scale(${stamp})`}}>
               <Component kind={kind} k={k} f={f} />
             </div>
-            <div style={{position: 'absolute', left: 12, bottom: 10, ...mono(20, 700), color: C.ink}}>
+            <div style={{position: 'absolute', left: 12, bottom: 8, ...mono(24, 700), color: C.ink}}>
               {kind}
               <span style={{opacity: k ? 1 : 0.4}}>{k ? ' · 6px #000' : ' · default'}</span>
             </div>
@@ -214,12 +214,11 @@ export const Shadows: React.FC<{f: number}> = ({f}) => {
   const k = 1 - soft;
   const shadowCss = `${off}px ${lerp(30, off, k)}px ${blur}px rgba(0,0,0,${lerp(0.3, 1, k)})`;
   const snap = f >= a + 32 ? clamp(1 - (f - a - 32) / 12) : 0;
-  const sh = shake(f, [
-    [a + 32, 6],
-    [318, 10],
-    [326, 10],
-    [334, 12],
-  ]);
+  const sh = {x: 0, y: thud(f, [
+    [318, 5],
+    [326, 5],
+    [334, 7],
+  ])};
   const card = {x: 820, y: 260, w: 700, h: 420};
   return (
     <Card f={f} bg={C.paper}>
@@ -277,7 +276,7 @@ const CHIP = (i: number) => ({x: PH.sx + 28 + i * 112, y: PH.sy + 330, w: 100, h
 const ITEM = 94;
 const ITEM_Y = (i: number) => PH.sy + 410 + i * ITEM;
 const BTN = {x: PH.sx + 28, y: PH.sy + 712, w: 448, h: 76};
-const BIG = {x: 96, y: 790, w: 520, h: 150};
+const BIG = {x: 96, y: 830, w: 520, h: 150};
 
 /** 光标路径：[帧, x, y]，帧之间 inOut */
 const PATH: [number, number, number][] = [
@@ -328,10 +327,7 @@ export const Press: React.FC<{f: number}> = ({f}) => {
   const a = AT.press;
   const enter = tween(f, a - 14, 14, 0, 1, E.in);
   const exit = tween(f, AT.lineage - 14, 14, 0, 1, E.in);
-  const sh = shake(f, [
-    [a, 16],
-    [a + 75, 6],
-  ]);
+  const sh = {x: 0, y: thud(f, [[a, 12]])};
   const chipP = press(f, a + 30, 99, false);
   const itemP = press(f, a + 45, 4);
   const btnP = press(f, a + 60, 8);
@@ -428,10 +424,7 @@ export const Lineage: React.FC<{f: number}> = ({f}) => {
   const cw = G.w / G.cols;
   const ch = G.h / G.rows;
   const concrete = 1 - tween(f, ERA[1].at, 10, 0, 1, E.out);
-  const sh = shake(f, [
-    [ERA[1].at, 6],
-    [ERA[2].at, 10],
-  ]);
+  const sh = {x: 0, y: 0};
   return (
     <Card f={f} bg={C.paper}>
       <div style={{position: 'absolute', inset: 0, transform: `translate(${sh.x}px, ${sh.y}px)`}}>
@@ -444,7 +437,7 @@ export const Lineage: React.FC<{f: number}> = ({f}) => {
               <div style={{...disp(200, 112), color: C.ink}}>{e.year}</div>
               <div style={{marginTop: 20, ...sc(64, 900), color: C.ink}}>{e.zh}</div>
               <div style={{marginTop: 14, ...grot(30, 700, 0.06), color: C.ink}}>{e.en}</div>
-              <div style={{marginTop: 34, ...sc(28, 500), lineHeight: 1.6, color: C.ink}}>
+              <div style={{marginTop: 34, ...sc(34, 700), lineHeight: 1.5, color: C.ink}}>
                 {e.note.map((n) => (
                   <div key={n}>{n}</div>
                 ))}
