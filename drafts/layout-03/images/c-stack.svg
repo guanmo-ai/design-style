@@ -1,0 +1,56 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1080" height="1350" viewBox="0 0 1080 1350">
+  <!-- Design Style · 布局 03 候选 · 层叠布局 Stacked Cards / 1080×1350（由 make_svgs.py 生成） -->
+  <defs>
+    <style>
+      .d { font-family: 'Inter Display', 'Noto Sans SC', sans-serif; }
+      .t { font-family: 'Inter', 'Noto Sans SC', sans-serif; }
+      .m { font-family: 'JetBrains Mono', 'SFMono-Regular', Menlo, monospace; }
+      .c { font-family: 'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif; }
+    </style>
+    <radialGradient id="glow" cx="78%" cy="8%" r="70%"><stop offset="0" stop-color="#3A3F9E" stop-opacity=".55"/><stop offset="1" stop-color="#0D0E12" stop-opacity="0"/></radialGradient>
+    <filter id="up" x="-10%" y="-30%" width="120%" height="160%"><feDropShadow dx="0" dy="-14" stdDeviation="16" flood-color="#000" flood-opacity=".5"/></filter>
+  </defs>
+  <rect width="1080" height="1350" fill="#0D0E12"/>
+<rect width="1080" height="1350" fill="url(#glow)"/>
+<text x="72" y="96" class="t" font-size="24" font-weight="500" fill="#8B8D96" >Design Style  布局 03</text>
+<text x="1008" y="96" class="m" font-size="22" font-weight="400" fill="#8B8D96" text-anchor="end" >2012 —</text>
+<text x="66" y="330" class="d" font-size="270" font-weight="700" fill="#F5F3EE" letter-spacing="-12" >Stack</text>
+<text x="72" y="408" class="c" font-size="70" font-weight="900" fill="#F5F3EE" >层叠布局</text>
+<text x="1008" y="380" class="c" font-size="26" font-weight="500" fill="#C8CAD2" text-anchor="end" >后一张压住前一张，</text>
+<text x="1008" y="416" class="c" font-size="26" font-weight="500" fill="#C8CAD2" text-anchor="end" >只露一条边。</text>
+<g filter="url(#up)"><rect x="146.9" y="470" width="786.2" height="800" rx="44" fill="#BB513A" /></g>
+<text x="186.9" y="520" class="m" font-size="20" font-weight="700" fill="#14141A" opacity=".8">01</text>
+<text x="242.9" y="522" class="c" font-size="28" font-weight="700" fill="#14141A" >叠放顺序 = 阅读顺序</text>
+<text x="893.1" y="520" class="m" font-size="18" font-weight="700" fill="#14141A" text-anchor="end" opacity=".8">scale 0.84</text>
+<g filter="url(#up)"><rect x="128.2" y="546" width="823.7" height="724" rx="44" fill="#CCAE41" /></g>
+<text x="168.2" y="596" class="m" font-size="20" font-weight="700" fill="#14141A" opacity=".8">02</text>
+<text x="224.2" y="598" class="c" font-size="28" font-weight="700" fill="#14141A" >每张只露一条边</text>
+<text x="911.8" y="596" class="m" font-size="18" font-weight="700" fill="#14141A" text-anchor="end" opacity=".8">scale 0.88</text>
+<g filter="url(#up)"><rect x="109.4" y="622" width="861.1" height="648" rx="44" fill="#6CC39A" /></g>
+<text x="149.4" y="672" class="m" font-size="20" font-weight="700" fill="#14141A" opacity=".8">03</text>
+<text x="205.4" y="674" class="c" font-size="28" font-weight="700" fill="#14141A" >越靠后，越小越暗</text>
+<text x="930.6" y="672" class="m" font-size="18" font-weight="700" fill="#14141A" text-anchor="end" opacity=".8">scale 0.92</text>
+<g filter="url(#up)"><rect x="90.7" y="698" width="898.6" height="572" rx="44" fill="#AD9CEE" /></g>
+<text x="130.7" y="748" class="m" font-size="20" font-weight="700" fill="#14141A" opacity=".8">04</text>
+<text x="186.7" y="750" class="c" font-size="28" font-weight="700" fill="#14141A" >步长固定，不抖</text>
+<text x="949.3" y="748" class="m" font-size="18" font-weight="700" fill="#14141A" text-anchor="end" opacity=".8">scale 0.96</text>
+<g filter="url(#up)"><rect x="72" y="774" width="936" height="496" rx="44" fill="#F5F3EE" /></g>
+<text x="112" y="824" class="m" font-size="20" font-weight="700" fill="#14141A" opacity=".6">05</text>
+<text x="168" y="826" class="c" font-size="28" font-weight="700" fill="#14141A" >用 sticky 实现</text>
+<text x="968" y="824" class="m" font-size="18" font-weight="500" fill="#14141A" text-anchor="end" opacity=".6">scale 1.00</text>
+<rect x="112" y="858" width="856" height="214" rx="20" fill="#14141A" />
+<text x="142" y="906" class="m" font-size="22" font-weight="500" fill="#E9E7E0" >.card {</text>
+<text x="172" y="942" class="m" font-size="22" font-weight="500" fill="#E9E7E0" >position: sticky;</text>
+<text x="172" y="978" class="m" font-size="22" font-weight="500" fill="#E9E7E0" >top: calc(var(--i) * 76px);</text>
+<text x="172" y="1014" class="m" font-size="22" font-weight="500" fill="#E9E7E0" >transform: scale(calc(1 - var(--k) * .04));</text>
+<text x="142" y="1050" class="m" font-size="22" font-weight="500" fill="#E9E7E0" >}</text>
+<rect x="112" y="1098" width="272" height="130" rx="20" fill="#E5E3DF" />
+<text x="138" y="1160" class="d" font-size="52" font-weight="700" fill="#14141A" >76px</text>
+<text x="138" y="1202" class="c" font-size="21" font-weight="500" fill="#6A696B" >每层露出 = 步长</text>
+<rect x="404" y="1098" width="272" height="130" rx="20" fill="#E5E3DF" />
+<text x="430" y="1160" class="d" font-size="52" font-weight="700" fill="#14141A" >−4%</text>
+<text x="430" y="1202" class="c" font-size="21" font-weight="500" fill="#6A696B" >每退一层缩小</text>
+<rect x="696" y="1098" width="272" height="130" rx="20" fill="#E5E3DF" />
+<text x="722" y="1160" class="d" font-size="52" font-weight="700" fill="#14141A" >≤ 5</text>
+<text x="722" y="1202" class="c" font-size="21" font-weight="500" fill="#6A696B" >叠放的张数</text>
+<text x="72" y="1316" class="m" font-size="18" font-weight="400" fill="#8B8D96" >@guanmo_ai · github.com/guanmo-ai/design-style</text></svg>

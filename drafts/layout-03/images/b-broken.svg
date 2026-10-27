@@ -1,0 +1,64 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1080" height="1350" viewBox="0 0 1080 1350">
+  <!-- Design Style · 布局 03 候选 · 破格布局 Broken Grid / 1080×1350（由 make_svgs.py 生成） -->
+  <defs>
+    <style>
+      .bo { font-family: 'Bodoni Moda', 'Noto Serif SC', serif; }
+      .m { font-family: 'Space Mono', 'Noto Sans SC', monospace; }
+      .s { font-family: 'Noto Serif SC', 'Songti SC', serif; }
+      .c { font-family: 'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif; }
+    </style>
+    <clipPath id="k1"><rect x="72" y="640" width="383" height="430" rx="0"/></clipPath>
+    <clipPath id="k2"><rect x="388" y="760" width="383" height="430" rx="0"/></clipPath>
+    <clipPath id="k3"><rect x="800" y="740" width="280" height="260" rx="0"/></clipPath>
+  </defs>
+  <rect width="1080" height="1350" fill="#EEEAE0"/>
+<rect x="72" y="0" width="67" height="1350" rx="0" fill="#121212" opacity=".045"/>
+<rect x="151" y="0" width="67" height="1350" rx="0" fill="#121212" opacity=".045"/>
+<rect x="230" y="0" width="67" height="1350" rx="0" fill="#121212" opacity=".045"/>
+<rect x="309" y="0" width="67" height="1350" rx="0" fill="#121212" opacity=".045"/>
+<rect x="388" y="0" width="67" height="1350" rx="0" fill="#121212" opacity=".045"/>
+<rect x="467" y="0" width="67" height="1350" rx="0" fill="#121212" opacity=".045"/>
+<rect x="546" y="0" width="67" height="1350" rx="0" fill="#121212" opacity=".045"/>
+<rect x="625" y="0" width="67" height="1350" rx="0" fill="#121212" opacity=".045"/>
+<rect x="704" y="0" width="67" height="1350" rx="0" fill="#121212" opacity=".045"/>
+<rect x="783" y="0" width="67" height="1350" rx="0" fill="#121212" opacity=".045"/>
+<rect x="862" y="0" width="67" height="1350" rx="0" fill="#121212" opacity=".045"/>
+<rect x="941" y="0" width="67" height="1350" rx="0" fill="#121212" opacity=".045"/>
+<line x1="72" y1="0" x2="72" y2="1350" stroke="#121212" stroke-width="1.2" stroke-dasharray="6 6" opacity=".45"/>
+<line x1="1008" y1="0" x2="1008" y2="1350" stroke="#121212" stroke-width="1.2" stroke-dasharray="6 6" opacity=".45"/>
+<text x="80" y="24" class="m" font-size="13" font-weight="400" fill="#6B665C" >MARGIN 72</text>
+<text x="1000" y="24" class="m" font-size="13" font-weight="400" fill="#6B665C" text-anchor="end" >MARGIN 72</text>
+<text x="72" y="80" class="m" font-size="20" font-weight="400" fill="#121212" >● Design Style · 布局 03</text>
+<text x="1008" y="80" class="m" font-size="20" font-weight="400" fill="#121212" text-anchor="end" >12 COL · GUTTER 12</text>
+<text x="0" y="0" class="m" font-size="17" font-weight="400" fill="#6B665C" text-anchor="middle" letter-spacing="3" transform="translate(40 700) rotate(-90)">BREAK THE GRID — 先立网格，再破格</text>
+<image href="../../../public/02-masonry/photos/stairs.jpg" x="72" y="640" width="383" height="430" preserveAspectRatio="xMidYMid slice" clip-path="url(#k1)" />
+<rect x="380" y="752" width="399" height="446" rx="0" fill="#EEEAE0" />
+<image href="../../../public/02-masonry/photos/tokyo.jpg" x="388" y="760" width="383" height="430" preserveAspectRatio="xMidYMid slice" clip-path="url(#k2)" />
+<image href="../../../public/02-masonry/photos/citrus.jpg" x="800" y="740" width="280" height="260" preserveAspectRatio="xMidYMid slice" clip-path="url(#k3)" />
+<text x="22" y="400" class="bo" font-size="300" font-weight="800" fill="#121212" letter-spacing="-10" font-style="italic">Broken</text>
+<text x="444" y="640" class="bo" font-size="280" font-weight="800" fill="#121212" letter-spacing="-8" >Grid</text>
+<line x1="22" y1="438" x2="72" y2="438" stroke="#121212" stroke-width="2" />
+<line x1="22" y1="428" x2="22" y2="448" stroke="#121212" stroke-width="2" />
+<line x1="72" y1="428" x2="72" y2="448" stroke="#121212" stroke-width="2" />
+<rect x="76" y="421" width="66" height="34" rx="0" fill="#E4FF3A" />
+<text x="109" y="444" class="m" font-size="18" font-weight="700" fill="#121212" text-anchor="middle" >−50</text>
+<text x="72" y="530" class="s" font-size="84" font-weight="800" fill="#121212" letter-spacing="-2" >破格布局</text>
+<text x="72" y="578" class="c" font-size="24" font-weight="500" fill="#121212" >先立一张严格的网格，</text>
+<text x="72" y="610" class="c" font-size="24" font-weight="500" fill="#121212" >再让一两个元素冲出去。</text>
+<rect x="700" y="664" width="308" height="128" rx="0" fill="#E4FF3A" />
+<text x="720" y="708" class="m" font-size="17" font-weight="700" fill="#121212" >RULE 02</text>
+<text x="720" y="760" class="c" font-size="42" font-weight="900" fill="#121212" >只破一两处</text>
+<text x="800" y="1024" class="m" font-size="15" font-weight="400" fill="#6B665C" >bleed →  出血到画面边缘</text>
+<text x="800" y="1180" class="m" font-size="15" font-weight="400" fill="#6B665C" >← z-index: 2</text>
+<line x1="72" y1="1236" x2="1008" y2="1236" stroke="#121212" stroke-width="2" />
+<text x="72" y="1272" class="m" font-size="18" font-weight="700" fill="#121212" >01</text>
+<text x="110" y="1274" class="c" font-size="24" font-weight="700" fill="#121212" >先立网格</text>
+<text x="259.2" y="1272" class="m" font-size="18" font-weight="700" fill="#121212" >02</text>
+<text x="297.2" y="1274" class="c" font-size="24" font-weight="700" fill="#121212" >只破一两处</text>
+<text x="446.4" y="1272" class="m" font-size="18" font-weight="700" fill="#121212" >03</text>
+<text x="484.4" y="1274" class="c" font-size="24" font-weight="700" fill="#121212" >重叠分层</text>
+<text x="633.6" y="1272" class="m" font-size="18" font-weight="700" fill="#121212" >04</text>
+<text x="671.6" y="1274" class="c" font-size="24" font-weight="700" fill="#121212" >同向破格</text>
+<text x="820.8" y="1272" class="m" font-size="18" font-weight="700" fill="#121212" >05</text>
+<text x="858.8" y="1274" class="c" font-size="24" font-weight="700" fill="#121212" >手机回单列</text>
+<text x="72" y="1322" class="m" font-size="17" font-weight="400" fill="#6B665C" >@guanmo_ai · github.com/guanmo-ai/design-style</text></svg>
