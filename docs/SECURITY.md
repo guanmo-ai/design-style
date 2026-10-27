@@ -32,6 +32,12 @@ npm audit --prefix gallery --registry=https://registry.npmjs.org
 
 该补丁保护本项目的顺序解压调用，不把与另一个本机进程同时修改解压目录的竞态攻击纳入保证范围。浏览器下载仍应来自可信的官方来源。
 
+## zod 版本覆盖
+
+当前 Remotion 4.0.538 的 `@remotion/studio-server` 原生依赖 zod 4.5.4，仍受 [GHSA-mrhx-c7xc-m3w5](https://github.com/advisories/GHSA-mrhx-c7xc-m3w5) 影响（修复版本为 4.6.6）。根 `package.json` 因此保留 `overrides.zod = 4.6.7`，锁文件同步固定该版本。本次不为移除 override 而升级整个渲染工具链。
+
+拉取包含锁文件更新的代码后，需要重新安装依赖；只运行 `npm audit` 不能证明现有 `node_modules` 已更新。用 `npm ls zod --all` 确认实际安装版本没有 `invalid`。以后升级 Remotion，确认其依赖树原生使用 zod ≥ 4.6.6，再移除 override、更新锁文件并重跑安装、测试与两棵依赖树审计。
+
 ## 回归范围
 
 `tests/gallery/serve.test.mjs` 验证空文件 GET / HEAD / Range 及后续请求；空文件不能导致进程退出。`tests/security/toolchain.test.mjs` 使用临时标记文件检查 CSS source map 读取，以及浏览器 ZIP 的符号链接、目录创建和正常解压行为，不访问个人文件。

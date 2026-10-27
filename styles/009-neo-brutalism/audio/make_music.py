@@ -27,6 +27,7 @@ import numpy as np
 
 SR = 48000
 DUR = 20.0
+BORDER_SFX_DB = -3.0  # 01 黑框的音效让出背景音乐，不改变节拍和触发时间
 NV = int(SR * DUR)  # 成片长度
 N = int(SR * (DUR + 1.5))  # 多算 1.5 秒余音，最后折回开头：循环播放时首尾无缝
 rng = np.random.default_rng(2021)
@@ -88,6 +89,9 @@ def place(sig, t, gain=1.0, pan=0.0, send=0.0, bus=None):
 
 
 def sfx(sig, t, gain=1.0, pan=0.0, send=0.2):
+    # 按音效起点衰减整条声音（含混响发送），保留自然尾音。
+    if fr(AT['border']) <= t < fr(AT['shadow']):
+        gain *= 10 ** (BORDER_SFX_DB / 20.0)
     place(sig, t, gain, pan, send, SFX)
 
 
