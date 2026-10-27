@@ -6,7 +6,7 @@
   "titleEn": "Neo-Brutalism",
   "years": "2021—今天",
   "category": "当代界面",
-  "description": "黑框描到底，阴影是一块偏移的黑。一支 19.5 秒短片，全片只有一条物理——阴影长度就是高度：海报炸成十三颗键帽；一支笔先画框，注册表单从框里一个个长出来；卡片抬起来摊成阶梯；二十颗按钮的按压像水波一样扩散，再从 1952 年的清水混凝土、2014 年的粗野主义网页一路变回今天的界面；最后落进网页和手机 App。",
+  "description": "黑框描到底，阴影是一块偏移的黑。一支 20 秒短片，全片只有一条物理——阴影长度就是高度：海报炸成十三颗键帽；一支笔先画框，注册表单从框里一个个长出来；卡片抬起来摊成阶梯；二十颗按钮的按压像水波一样扩散，再从 1952 年的清水混凝土、2014 年的粗野主义网页一路变回今天的界面；最后落进网页和手机 App。",
   "tags": [
     "黑框",
     "硬阴影",
@@ -19,7 +19,7 @@
   "publishedAt": "",
   "release": "day-09",
   "asset": "009-neo-brutalism.mp4",
-  "sha256": "ac29287e0b59316db37ecc5d870a75a3d02884c1847e5e5e86e60cb6d28c1412",
+  "sha256": "bf5f94db82d21f41abaa7644980a594b1a56de675094c642bee70622ca0019a3",
   "images": [
     {
       "file": "poster",
@@ -51,7 +51,7 @@
     }
   ],
   "categoryEn": "Contemporary interfaces",
-  "descriptionEn": "Black borders on everything; the shadow is a solid offset block. A 19.5-second film built on one piece of physics — shadow length is height: a poster shatters into thirteen keycaps; a pen draws each frame and a sign-up form grows out of the borders; a card lifts and fans into a staircase; twenty buttons ripple when pressed, turn into 1952 raw concrete and a 2014 brutalist web page, and come back as today's UI — then a landing page and a phone app assemble layer by layer.",
+  "descriptionEn": "Black borders on everything; the shadow is a solid offset block. A 20-second film built on one piece of physics — shadow length is height: a poster shatters into thirteen keycaps; a pen draws each frame and a sign-up form grows out of the borders; a card lifts and fans into a staircase; twenty buttons ripple when pressed, turn into 1952 raw concrete and a 2014 brutalist web page, and come back as today's UI — then a landing page and a phone app assemble layer by layer.",
   "tagsEn": [
     "black borders",
     "hard shadows",

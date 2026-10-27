@@ -1,7 +1,7 @@
 """
 Design Style · 风格 009 · 新粗野主义 Neo-Brutalism —— 配乐与音效（纯代码合成，无外部音源）
 
-120 BPM（1 拍 = 0.5 秒 = 30 帧）· 19.5 秒 · E 小调 → G 大调
+120 BPM（1 拍 = 0.5 秒 = 30 帧；01、05 两章随画面放慢到约 105 / 114 BPM）· 20 秒 · E 小调 → G 大调
 和弦：开场只有键帽与重击 | Em（01）| C（02）| G（03）| D（04）| Em C（05）| C D Em C D（五个词，每拍一个）| G（片尾）
 音色：方波贝斯（只留奇次谐波，像一块没打磨的混凝土）、909 式底鼓 + 拍手、反拍的方波和弦“戳”、木琴旋律。
   0–2s       开场：f8 海报被按下 · f14 炸开 · 十三颗键帽依次落稳 · 一道打字的波 · f75 一起按下 · f84 一起弹起 · f96 钻进 O
@@ -26,7 +26,7 @@ import wave
 import numpy as np
 
 SR = 48000
-DUR = 19.5
+DUR = 20.0
 NV = int(SR * DUR)  # 成片长度
 N = int(SR * (DUR + 1.5))  # 多算 1.5 秒余音，最后折回开头：循环播放时首尾无缝
 rng = np.random.default_rng(2021)
@@ -38,8 +38,17 @@ PUMP = np.zeros((2, N))
 LEAD = np.zeros((2, N))
 
 
+# 源帧 → 成片秒数：与 video/timeline.ts 的 WARP 相同（01 黑框 ×1.14、05 应用 ×1.05）
+WARP = [(0, 120, 1.0), (120, 270, 1.14), (270, 720, 1.0), (720, 900, 1.05), (900, 1170, 1.0)]
+
+
 def fr(frame):
-    return frame / 60.0
+    o = 0.0
+    for a, b, k in WARP:
+        if frame < b:
+            return (o + (frame - a) * k) / 60.0
+        o += (b - a) * k
+    return (o + frame - WARP[-1][1]) / 60.0
 
 
 def place(sig, t, gain=1.0, pan=0.0, send=0.0, bus=None):

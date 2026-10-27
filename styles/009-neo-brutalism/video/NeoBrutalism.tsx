@@ -1,15 +1,15 @@
 /**
- * Design Style · 风格 009 · 新粗野主义 Neo-Brutalism —— 19.5 秒短片（1920×1080 · 60fps · 120 BPM）
+ * Design Style · 风格 009 · 新粗野主义 Neo-Brutalism —— 20 秒短片（1920×1080 · 60fps · 120 BPM；01 与 05 放慢一点，见 timeline.ts 的 WARP）
  *
  * 全片只有一条物理：阴影长度 = 离纸面的高度 z。抬起来阴影变长，落下去缩回，按下去归零。
  *   0.0–2.0s   开场    第一帧 = 片尾海报（循环无缝）→ 一按就炸开 → 十三颗键帽浮上来、打字、一起按下 → 镜头钻进 O
- *   2.0–4.5s   01 黑框  画面是空的：笔先画框，元素一个个从框里长出来，拼成注册表单 → 画布向左甩
- *   4.5–7.0s   02 硬影  模糊 40 → 0；卡片抬起、落下；摊成五层阶梯 → 最高那张蓝卡撑满全屏
- *   7.0–9.5s   03 按下  二十颗按钮落下；按一下，按压像水波一样扩散；全部按下，褪成混凝土
- *   9.5–12.0s  04 来历  同一面网格：1952 清水混凝土 → 2014 粗野主义网页 → 2021 新粗野主义；年份里程表
- *  12.0–15.0s  05 应用  浏览器落地页 + 手机 App，一层层从高处落进来；光标在两边各按一下
- *  15.0–17.5s  五个词  黑框 / 硬影 / 平涂 / 露结构 / 歪一点
- *  17.5–19.5s  片尾    海报三块从高处落下，所有阴影一起按一下；署名 @guanmo_ai；最后一帧 = 第一帧
+ *   2.0–4.85s  01 黑框  画面是空的：笔先画框，元素一个个从框里长出来，拼成注册表单 → 画布向左甩
+ *   4.85–7.35s 02 硬影  模糊 40 → 0；卡片抬起、落下；摊成五层阶梯 → 最高那张蓝卡撑满全屏
+ *   7.35–9.85s 03 按下  二十颗按钮落下；按一下，按压像水波一样扩散；全部按下，褪成混凝土
+ *   9.85–12.35s 04 来历  同一面网格：1952 清水混凝土 → 2014 粗野主义网页 → 2021 新粗野主义；年份里程表
+ *  12.35–15.5s 05 应用  浏览器落地页 + 手机 App，一层层从高处落进来；光标在两边各按一下
+ *  15.5–18.0s  五个词  黑框 / 硬影 / 平涂 / 露结构 / 歪一点
+ *  18.0–20.0s  片尾    海报三块从高处落下，所有阴影一起按一下；署名 @guanmo_ai；最后一帧 = 第一帧
  */
 import React, {useEffect, useState} from 'react';
 import {AbsoluteFill, Audio, continueRender, delayRender, staticFile, useCurrentFrame} from 'remotion';
@@ -20,10 +20,10 @@ import {Opening} from './opening';
 import {Borders, Grid, Shadows} from './scenes';
 import {Apps} from './apps';
 import {End, Words} from './finale';
-import {AT, CHAPTERS, DURATION} from './timeline';
+import {AT, CHAPTERS, OUT_DURATION, toSource} from './timeline';
 import {WHIP, grot, loadFonts, mono, sc} from './ui';
 
-export const NEOBRUTAL_DURATION = DURATION;
+export const NEOBRUTAL_DURATION = OUT_DURATION;
 
 /** 顶部两枚“筹码”：左边风格名，右边章节；开场、五个词、片尾让开 */
 const Hud: React.FC<{f: number}> = ({f}) => {
@@ -66,7 +66,7 @@ const Hud: React.FC<{f: number}> = ({f}) => {
 };
 
 const Stage: React.FC = () => {
-  const f = useCurrentFrame();
+  const f = toSource(useCurrentFrame());
   const on = (a: number, b: number) => f >= a && f < b;
   // 01 → 02：同一张画布向左甩过去
   const whip = tween(f, AT.shadow - 18, 18, 0, 1, WHIP);
