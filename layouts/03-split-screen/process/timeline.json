@@ -1,0 +1,10 @@
+{"fps": 60, "bpm": 120, "frames": 1200, "title": "布局 03 · 时间轴：每次换幕都在拍点上落定（1 拍 = 30 帧，落定帧 = 章节起点）",
+ "segments": [
+  {"label": "01 定义", "start": 0, "dur": 150, "color": "#0E0E10"},
+  {"label": "来历", "start": 150, "dur": 180, "color": "#F1EDE4"},
+  {"label": "02 比例", "start": 330, "dur": 210, "color": "#2B35FF"},
+  {"label": "03 反差", "start": 540, "dur": 150, "color": "#8E95FF"},
+  {"label": "04 滚动", "start": 690, "dur": 180, "color": "#0E0E10"},
+  {"label": "05 响应式", "start": 870, "dur": 180, "color": "#F1EDE4"},
+  {"label": "片尾", "start": 1050, "dur": 150, "color": "#2B35FF"}
+ ]}

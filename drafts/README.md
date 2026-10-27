@@ -1,6 +1,6 @@
-# 待做风格（草稿）
+# 待做风格与布局（草稿）
 
-选题时做过、本期没选上的风格。三张风格图（海报 / 速查卡 / App 概念）已经做完，可以直接接着做成一期。
+选题时做过、本期没选上的风格和布局。风格有三张图（海报 / 速查卡 / App 概念），布局有一张海报，都可以直接接着做成一期。
 
 正式开做时：
 
@@ -41,16 +41,32 @@
 
 ---
 
-## 布局 03 候选 · `layout-03/`
+# 待做布局（草稿）
 
-下一期布局（03）的三个候选，各一张海报（1080×1350，图本身就是它讲的那种布局）。选定一个后再做成完整一期：`git mv` 到 `layouts/03-xxx/`，补视频、四张图、指南、配乐与文档。
+布局 03 做的是分屏（[`layouts/03-split-screen`](../layouts/03-split-screen)）。那次“先给三张图选”里落选的两个候选留在这里，各有一张海报，可以直接接着做成布局 04、05。流程同上：取下一个空期号，`git mv drafts/broken-grid layouts/04-broken-grid`，补第 2—4 张图、视频、配乐与文档，海报里的 `布局 03` 改成新期号后重跑 `python3 layouts/NN-name/images/make_svgs.py && python3 scripts/build_images.py layouts/NN-name/images`。
 
-| A · 分屏 Split Screen | B · 破格 Broken Grid | C · 层叠 Stacked Cards |
-|:-:|:-:|:-:|
-| <img src="layout-03/images/preview/a-split.svg" width="260" alt="分屏布局" /> | <img src="layout-03/images/preview/b-broken.svg" width="260" alt="破格布局" /> | <img src="layout-03/images/preview/c-stack.svg" width="260" alt="层叠布局" /> |
+字体已在 `scripts/build_images.py` 登记；Bodoni Moda 与 Noto Serif SC 还没进 `scripts/fetch_fonts.sh`，开做时加上（Bodoni Moda Italic：`ofl/bodonimoda/BodoniModa-Italic[opsz,wght].ttf`）。
 
-- **A 分屏：** 一条 61.8% 的中线，两种声音。墨黑 × 钴蓝，硬色块；Archivo 900 + Space Mono。
-- **B 破格：** 先立 12 列网格，再让一两个元素冲出边距。纸色 × 荧光黄，Bodoni Moda 斜体 + 真实照片。
-- **C 层叠：** 后一张压住前一张，只露一条边（步长 76px、每层缩小 4%）。夜色 × 糖果色；Inter Display + JetBrains Mono。
+## 破格布局 Broken Grid · `broken-grid/`
 
-重新生成：`python3 drafts/layout-03/images/make_svgs.py && python3 scripts/build_images.py drafts/layout-03/images`（Bodoni Moda Italic 需另外下载到 `public/fonts/BodoniModa-Italic.ttf`）。
+| 海报 |
+|:-:|
+| <img src="broken-grid/images/preview/poster.svg" width="300" alt="破格布局海报" /> |
+
+- **一句话：** 先立一张严格的 12 列网格，再让一两个元素冲出去。
+- **对设计师有用的地方：** 杂志、品牌页、作品集里“有个性但不乱”的版面。五条规则：先立网格 · 只破一两处 · 重叠要分层（`z-index`）· 同向破格 · 手机上回到单列。能量化的东西都量出来：出血 −50px、边距 72、栏距 12。
+- **色板：** 纸 `#EEEAE0` · 墨 `#121212` · 荧光黄 `#E4FF3A`（只给“破”的那一块）
+- **字：** Bodoni Moda 800（正体 + 斜体）· Space Mono · Noto Serif SC / Noto Sans SC
+- **动效设想（20 秒）：** 十二列网格线逐条画出 → “Broken”从左边距冲出去，标注线实时量出出血量 → 照片按网格落位，再被另一张压住（`z-index` 的动画）→ 荧光黄块盖在交界处 → 窄屏：所有重叠被“收回”成单列。签名动作：元素冲出边距 + 标注线量出冲出去多少。
+
+## 层叠布局 Stacked Cards · `stacked-cards/`
+
+| 海报 |
+|:-:|
+| <img src="stacked-cards/images/preview/poster.svg" width="300" alt="层叠布局海报" /> |
+
+- **一句话：** 后一张压住前一张，只露一条边：用深度代替翻页。
+- **对设计师有用的地方：** 价格表、功能列表、流程步骤；iOS 钱包（2012 年的 Passbook）和 Android 的“最近任务”（2014 年的 Lollipop）都是这个排法。三个参数写得出来：每层露出 76px、每退一层缩小 4%、最多 5 张；`position: sticky` + `top: calc(var(--i) * 76px)` 就能做。
+- **色板：** 夜 `#0D0E12` · 珊瑚 `#FF6B4A` · 奶油黄 `#FFD84D` · 薄荷 `#7BE0B0` · 淡紫 `#B9A7FF` · 纸白 `#F5F3EE`
+- **字：** Inter Display 700 · JetBrains Mono · Noto Sans SC
+- **动效设想（20 秒）：** 五张卡从画面下方依次滑上来叠起（真实的 sticky 滚动）→ 每张落位时，前一张缩小 4%、变暗一档 → 标题条逐条露出 → 前卡翻开，露出 CSS 和三个参数 → 反过来：卡片逐张抽走。签名动作：缩放 + 变暗造成的层级深度。

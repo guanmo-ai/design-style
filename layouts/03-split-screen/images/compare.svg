@@ -1,0 +1,65 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1080" height="1350" viewBox="0 0 1080 1350">
+  <!-- Design Style · 布局 03 · 分屏布局 Split Screen —— 分屏 ≠ 两栏：同样两块内容，四种排法 / 1080×1350（由 make_svgs.py 生成） -->
+  <defs>
+    <style>
+      .a { font-family: 'Archivo', 'Noto Sans SC', sans-serif; }
+      .m { font-family: 'Space Mono', 'Noto Sans SC', monospace; }
+      .c { font-family: 'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif; }
+    </style>
+    
+  </defs>
+  <rect width="1080" height="1350" fill="#F1EDE4"/>
+<text x="72" y="96" class="m" font-size="21" font-weight="400" fill="#6B675E" >Design Style · 布局 03</text>
+<text x="1008" y="96" class="c" font-size="21" font-weight="500" fill="#6B675E" text-anchor="end" >分屏 vs 两栏 / 侧栏 / 便当盒</text>
+<text x="68" y="238" class="c" font-size="118" font-weight="900" fill="#0E0E10" letter-spacing="-3" >分屏 ≠ 两栏</text>
+<text x="72" y="296" class="c" font-size="24" font-weight="500" fill="#6B675E" >同样两块内容，四种排法：区别不在“两块”，在“边到不到边、谁先谁后”。</text>
+<rect x="64" y="342" width="472" height="434" rx="0" fill="none" stroke="#2B35FF" stroke-width="3"/>
+<rect x="72" y="350" width="281.8" height="270" rx="0" fill="#0E0E10" />
+<rect x="353.8" y="350" width="174.2" height="270" rx="0" fill="#2B35FF" />
+<text x="94" y="470" class="a" font-size="84" font-weight="900" fill="#F1EDE4" letter-spacing="-3" >Split</text>
+<text x="94" y="520" class="c" font-size="22" font-weight="700" fill="#F1EDE4" >左边说话</text>
+<text x="371.8" y="520" class="c" font-size="22" font-weight="700" fill="#F1EDE4" >右边证据</text>
+<line x1="353.8" y1="344" x2="353.8" y2="626" stroke="#F1EDE4" stroke-width="2" />
+<rect x="321.8" y="630" width="64" height="26" rx="0" fill="#2B35FF" />
+<text x="353.8" y="649" class="m" font-size="15" font-weight="700" fill="#F1EDE4" text-anchor="middle" >0 px</text>
+<text x="72" y="696" class="c" font-size="26" font-weight="900" fill="#2B35FF" >01 分屏 Split Screen</text>
+<text x="72" y="728" class="c" font-size="18" font-weight="500" fill="#0E0E10" >边到边、没有缝：每一半是一个整块</text>
+<text x="72" y="754" class="c" font-size="16" font-weight="400" fill="#6B675E" >比例用百分比，中线是全页唯一的线</text>
+<rect x="552" y="350" width="456" height="270" rx="0" fill="#E4E0D5" />
+<rect x="600" y="374" width="360" height="222" rx="0" fill="#F1EDE4" />
+<rect x="624" y="404" width="129.6" height="8" rx="0" fill="#0E0E10" opacity="0.28"/><rect x="624" y="426" width="89.3" height="8" rx="0" fill="#0E0E10" opacity="0.28"/><rect x="624" y="448" width="112.3" height="8" rx="0" fill="#0E0E10" opacity="0.28"/><rect x="624" y="470" width="72" height="8" rx="0" fill="#0E0E10" opacity="0.28"/><rect x="624" y="492" width="100.8" height="8" rx="0" fill="#0E0E10" opacity="0.28"/><rect x="624" y="514" width="121" height="8" rx="0" fill="#0E0E10" opacity="0.28"/><rect x="624" y="536" width="129.6" height="8" rx="0" fill="#0E0E10" opacity="0.28"/><rect x="624" y="558" width="89.3" height="8" rx="0" fill="#0E0E10" opacity="0.28"/><rect x="624" y="580" width="112.3" height="8" rx="0" fill="#0E0E10" opacity="0.28"/>
+<rect x="792" y="404" width="129.6" height="8" rx="0" fill="#0E0E10" opacity="0.28"/><rect x="792" y="426" width="89.3" height="8" rx="0" fill="#0E0E10" opacity="0.28"/><rect x="792" y="448" width="112.3" height="8" rx="0" fill="#0E0E10" opacity="0.28"/><rect x="792" y="470" width="72" height="8" rx="0" fill="#0E0E10" opacity="0.28"/><rect x="792" y="492" width="100.8" height="8" rx="0" fill="#0E0E10" opacity="0.28"/><rect x="792" y="514" width="121" height="8" rx="0" fill="#0E0E10" opacity="0.28"/><rect x="792" y="536" width="129.6" height="8" rx="0" fill="#0E0E10" opacity="0.28"/><rect x="792" y="558" width="89.3" height="8" rx="0" fill="#0E0E10" opacity="0.28"/><rect x="792" y="580" width="112.3" height="8" rx="0" fill="#0E0E10" opacity="0.28"/>
+<rect x="624" y="386" width="72" height="10" rx="0" fill="#0E0E10" />
+<rect x="792" y="386" width="72" height="10" rx="0" fill="#0E0E10" />
+<rect x="554" y="473" width="44" height="24" rx="0" fill="none" />
+<rect x="962" y="473" width="44" height="24" rx="0" fill="none" />
+<text x="576" y="490" class="c" font-size="14" font-weight="700" fill="#6B675E" text-anchor="middle" >边距</text>
+<text x="984" y="490" class="c" font-size="14" font-weight="700" fill="#6B675E" text-anchor="middle" >边距</text>
+<text x="780" y="612" class="c" font-size="14" font-weight="700" fill="#6B675E" text-anchor="middle" >间距</text>
+<text x="552" y="666" class="c" font-size="26" font-weight="900" fill="#0E0E10" >02 两栏网页 Two columns</text>
+<text x="552" y="698" class="c" font-size="18" font-weight="500" fill="#0E0E10" >有边距、有间距：读文章的两列</text>
+<text x="552" y="724" class="c" font-size="16" font-weight="400" fill="#6B675E" >最大宽度 + 居中；不是满幅</text>
+<rect x="72" y="812" width="456" height="270" rx="0" fill="#F1EDE4" stroke="#0E0E10" stroke-width="3"/>
+<rect x="72" y="812" width="112" height="270" rx="0" fill="#0E0E10" />
+<rect x="88" y="842" width="80" height="9" rx="0" fill="#F1EDE4" opacity="0.8"/><rect x="88" y="872" width="64" height="9" rx="0" fill="#F1EDE4" opacity="0.8"/><rect x="88" y="902" width="72" height="9" rx="0" fill="#F1EDE4" opacity="0.8"/><rect x="88" y="932" width="56" height="9" rx="0" fill="#F1EDE4" opacity="0.8"/><rect x="88" y="962" width="80" height="9" rx="0" fill="#F1EDE4" opacity="0.8"/><rect x="88" y="992" width="64" height="9" rx="0" fill="#F1EDE4" opacity="0.8"/><rect x="88" y="1022" width="72" height="9" rx="0" fill="#F1EDE4" opacity="0.8"/><rect x="88" y="1052" width="56" height="9" rx="0" fill="#F1EDE4" opacity="0.8"/>
+<rect x="88" y="842" width="80" height="9" rx="0" fill="#2B35FF" />
+<rect x="208" y="840" width="92" height="70" rx="0" fill="#0E0E10" opacity=".12"/>
+<rect x="312" y="840" width="92" height="70" rx="0" fill="#0E0E10" opacity=".12"/>
+<rect x="416" y="840" width="92" height="70" rx="0" fill="#0E0E10" opacity=".12"/>
+<rect x="208" y="932" width="308" height="126" rx="0" fill="#0E0E10" opacity=".12"/>
+<line x1="72" y1="1094" x2="184" y2="1094" stroke="#0E0E10" stroke-width="2" />
+<text x="128" y="1116" class="m" font-size="14" font-weight="700" fill="#0E0E10" text-anchor="middle" >240 px</text>
+<text x="72" y="1158" class="c" font-size="26" font-weight="900" fill="#0E0E10" >03 侧栏 Sidebar</text>
+<text x="72" y="1190" class="c" font-size="18" font-weight="500" fill="#0E0E10" >固定宽度 + 弹性内容：导航是工具</text>
+<text x="72" y="1216" class="c" font-size="16" font-weight="400" fill="#6B675E" >像素宽度；不是两个并列的主角</text>
+<rect x="552" y="812" width="300" height="176" rx="18" fill="#0E0E10" opacity=".9"/>
+<rect x="864" y="812" width="144" height="82" rx="18" fill="#2B35FF" />
+<rect x="864" y="906" width="144" height="82" rx="18" fill="#0E0E10" opacity=".9"/>
+<rect x="552" y="1000" width="144" height="82" rx="18" fill="#2B35FF" />
+<rect x="708" y="1000" width="300" height="82" rx="18" fill="#0E0E10" opacity=".9"/>
+<text x="552" y="1128" class="c" font-size="26" font-weight="900" fill="#0E0E10" >04 便当盒 Bento Grid</text>
+<text x="552" y="1160" class="c" font-size="18" font-weight="500" fill="#0E0E10" >很多格：一格一事，面积表示主次</text>
+<text x="552" y="1186" class="c" font-size="16" font-weight="400" fill="#6B675E" >见布局 01；分屏只有“两块”</text>
+<rect x="0" y="1252" width="1080" height="98" rx="0" fill="#0E0E10" />
+<text x="72" y="1312" class="c" font-size="34" font-weight="900" fill="#F1EDE4" >分屏：不是两列，是两个舞台。</text>
+<text x="1008" y="1312" class="m" font-size="18" font-weight="400" fill="#8A877F" text-anchor="end" >@guanmo_ai</text></svg>

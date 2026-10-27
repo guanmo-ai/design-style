@@ -1,0 +1,46 @@
+/* 布局 03 · Split Screen 分屏布局 — 设计令牌 + 可直接用的分屏 */
+:root {
+  --split-ink: #0E0E10;
+  --split-paper: #F1EDE4;
+  --split-blue: #2B35FF;
+  --split-peri: #8E95FF;   /* 墨色上的浅钴蓝：小标签、编号（对比度 7.2） */
+  --split-grey: #6B675E;   /* 纸上的次要文字（对比度 4.8） */
+
+  --split-ratio: 1.618fr 1fr;   /* 规则 02：默认黄金分割；见下面的三个修饰类 */
+  --split-breakpoint: 768px;    /* 规则 05：窄过它，左右叠成上下（媒体查询里不能用变量，仅作记录） */
+
+  --font-display: 'Archivo', 'Arial Black', 'Noto Sans SC', sans-serif;
+  --font-sc: 'Noto Sans SC', 'PingFang SC', sans-serif;
+  --font-mono: 'Space Mono', ui-monospace, monospace;
+}
+
+/* ① 分屏：整页一个 Grid，两半满幅、没有缝（规则 01） */
+.split {
+  display: grid;
+  grid-template-columns: var(--split-ratio);
+  min-height: 100vh;
+  min-height: 100svh;          /* 手机浏览器的地址栏会让 100vh 偏高，svh 取“最小可视高度” */
+}
+.split > * { min-width: 0; }   /* 防止长内容把某一半撑爆 */
+.split--even { --split-ratio: 1fr 1fr; }       /* 50 : 50 对等：登录、对比 */
+.split--main { --split-ratio: 7fr 3fr; }       /* 70 : 30 内容 + 侧栏：后台、文档 */
+.split--flip { --split-ratio: 1fr 1.618fr; }   /* 38 : 62 反过来：左边窄、右边宽 */
+
+/* ② 两半各一个颜色（规则 03：反差；一次只选一对） */
+.split__a { background: var(--split-ink);  color: var(--split-paper); }
+.split__b { background: var(--split-blue); color: var(--split-paper); }
+
+/* ③ 一边固定，一边滚（规则 04）
+   注意：Grid 子项默认会拉伸到整行高，sticky 就没有“可以动的空间”了——必须 align-self: start，并且祖先不能有 overflow: hidden */
+.split__pinned {
+  position: sticky;
+  top: 0;
+  height: 100svh;
+  align-self: start;
+}
+
+/* ④ 手机：叠成上下，谁重要谁在 HTML 里排前面（规则 05） */
+@media (max-width: 767px) {
+  .split { grid-template-columns: 1fr; min-height: 0; }
+  .split__pinned { position: static; height: auto; }
+}

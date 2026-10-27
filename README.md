@@ -112,8 +112,9 @@ by 观默 [@guanmo_ai](https://x.com/guanmo_ai)
 |:-:|---|---|---|---|
 | **01** | [**便当盒布局 Bento Grid**](layouts/01-bento-grid) | 2020s— | 大小不一的圆角格子，一格一事，用面积告诉你谁最重要 | [🎬 视频](https://github.com/guanmo-ai/design-style/releases/tag/layout-01) · [🛠 过程](layouts/01-bento-grid/PROCESS.md) |
 | **02** | [**瀑布流布局 Masonry**](layouts/02-masonry) | 2009— | 列宽固定、高度跟着内容走，每一张都落进最短的那一列 | [🎬 视频](https://github.com/guanmo-ai/design-style/releases/tag/layout-02) · [🛠 过程](layouts/02-masonry/PROCESS.md) |
+| **03** | [**分屏布局 Split Screen**](layouts/03-split-screen) | 1927— | 一条中线，两种声音：左边说话，右边给证据 | 视频待发布（见 [交接清单](docs/HANDOFF.md)） · [🛠 过程](layouts/03-split-screen/PROCESS.md) · [🧰 从 0 到 1](layouts/03-split-screen/MAKING.md) |
 
-计划中（顺序可能调整）：装饰艺术 Art Deco · 新粗野主义网页 Neo-Brutalism · Y2K · 日式极简 …… 想看哪个，来 X 上告诉我。
+计划中（顺序可能调整）：装饰艺术 Art Deco · 欧普艺术 Op Art · 破格布局 Broken Grid · 层叠布局 Stacked Cards · 日式极简 …… 想看哪个，来 X 上告诉我。（前四项的海报已在 [`drafts/`](drafts)）
 
 ## 本地运行
 
@@ -162,6 +163,8 @@ npm run render:L01             # 布局 01：生成配乐 → 渲染 out/01-bent
 npm run images:L01             # 布局 01：生成 4 张布局图 → preview SVG + 2x PNG
 npm run render:L02             # 布局 02：生成配乐 → 渲染 out/02-masonry-master.mp4
 npm run images:L02             # 布局 02：生成 4 张布局图 → preview SVG（内嵌字体和照片）+ 2x PNG
+npm run render:L03             # 布局 03：生成配乐 → 渲染 out/03-split-screen-master.mp4（运动模糊 10 次采样，4 核约 6 分钟）
+npm run images:L03             # 布局 03：生成 4 张布局图 → preview SVG（内嵌字体和照片）+ 2x PNG
 
 # 制作过程里的过程图
 npx remotion bundle src/index.ts --out-dir out/bundle
@@ -203,6 +206,7 @@ design-style/
 │     ├─ audio/make_music.py
 │     └─ images/           # poster / cheatsheet / skins / templates（make_svgs.py 生成）
   └─ 02-masonry/           # 同上；短片：26 张卡片在 13 种排法之间流动（落雨 → 砌石墙 → 算法 → Pinterest → 手机 → 规则 → 响应式）
+  └─ 03-split-screen/      # 同上，另有 MAKING.md；短片：全片只有一条中线——拉链拉合“Split” → 来历（年份滚轮）→ 比例（文字真实折行）→ 反差（从中线撕开）→ 滚动（反向滚动）→ 响应式（中线转 90°）→ 片尾；左半向上、右半向下的“反向传送带”换幕，20 秒
 ├─ gallery/                # 网页画廊（静态站点源码与作品数据 works.json）
 ├─ scripts/                # 字体下载 · SVG → PNG · 关键帧截图 · 联系表 · 节拍时间轴
 ├─ docs/PROCESS_TEMPLATE.md # 每期制作过程的模板

@@ -1,5 +1,5 @@
 <svg xmlns="http://www.w3.org/2000/svg" width="1080" height="1350" viewBox="0 0 1080 1350">
-  <!-- Design Style · 布局 03 候选 · 层叠布局 Stacked Cards / 1080×1350（由 make_svgs.py 生成） -->
+  <!-- Design Style · 布局候选（落选于布局 03）· 层叠布局 Stacked Cards / 1080×1350（由 make_svgs.py 生成） -->
   <defs>
     <style>
       .d { font-family: 'Inter Display', 'Noto Sans SC', sans-serif; }

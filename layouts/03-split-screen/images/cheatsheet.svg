@@ -1,0 +1,94 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1080" height="1350" viewBox="0 0 1080 1350">
+  <!-- Design Style · 布局 03 · 分屏布局 Split Screen —— 速查：比例、断点、规则、CSS、色板、无障碍 / 1080×1350（由 make_svgs.py 生成） -->
+  <defs>
+    <style>
+      .a { font-family: 'Archivo', 'Noto Sans SC', sans-serif; }
+      .m { font-family: 'Space Mono', 'Noto Sans SC', monospace; }
+      .c { font-family: 'Noto Sans SC', 'PingFang SC', 'Microsoft YaHei', sans-serif; }
+    </style>
+    
+  </defs>
+  <rect width="1080" height="1350" fill="#F1EDE4"/>
+<rect x="0" y="0" width="413" height="1350" rx="0" fill="#2B35FF" />
+<text x="52" y="96" class="m" font-size="20" font-weight="400" fill="#C0BFEB" >Design Style</text>
+<text x="52" y="126" class="c" font-size="24" font-weight="700" fill="#F1EDE4" >布局 03 · 速查</text>
+<text x="48" y="300" class="a" font-size="140" font-weight="900" fill="#F1EDE4" letter-spacing="-6" >61.8</text>
+<text x="52" y="346" class="c" font-size="20" font-weight="500" fill="#F1EDE4" >黄金分割：默认的中线位置</text>
+<text x="52" y="372" class="c" font-size="16" font-weight="400" fill="#C9C8E9" >1 : 1.618，左大右小或反过来都行</text>
+<text x="52" y="460" class="m" font-size="18" font-weight="700" fill="#F1EDE4" letter-spacing="3" >三种比例</text>
+<line x1="52" y1="476" x2="361" y2="476" stroke="#8488F3" stroke-width="1.5" />
+<rect x="52" y="500" width="154.5" height="22" rx="0" fill="#0E0E10" />
+<rect x="206.5" y="500" width="154.5" height="22" rx="0" fill="#F1EDE4" />
+<text x="52" y="550" class="c" font-size="19" font-weight="700" fill="#F1EDE4" >50 : 50  对等</text>
+<text x="52" y="574" class="m" font-size="15" font-weight="400" fill="#C9C8E9" >1fr 1fr</text>
+<rect x="52" y="612" width="191" height="22" rx="0" fill="#0E0E10" />
+<rect x="243" y="612" width="118" height="22" rx="0" fill="#F1EDE4" />
+<text x="52" y="662" class="c" font-size="19" font-weight="700" fill="#F1EDE4" >62 : 38  主次</text>
+<text x="52" y="686" class="m" font-size="15" font-weight="400" fill="#C9C8E9" >1.618fr 1fr</text>
+<rect x="52" y="724" width="216.3" height="22" rx="0" fill="#0E0E10" />
+<rect x="268.3" y="724" width="92.7" height="22" rx="0" fill="#F1EDE4" />
+<text x="52" y="774" class="c" font-size="19" font-weight="700" fill="#F1EDE4" >70 : 30  内容 + 侧栏</text>
+<text x="52" y="798" class="m" font-size="15" font-weight="400" fill="#C9C8E9" >7fr 3fr</text>
+<text x="52" y="862" class="m" font-size="18" font-weight="700" fill="#F1EDE4" letter-spacing="3" >断点</text>
+<line x1="52" y1="878" x2="361" y2="878" stroke="#8488F3" stroke-width="1.5" />
+<text x="50" y="984" class="a" font-size="110" font-weight="900" fill="#F1EDE4" letter-spacing="-4" >768</text>
+<text x="56" y="1018" class="c" font-size="19" font-weight="500" fill="#F1EDE4" >px · 窄过它，左右叠成上下</text>
+<text x="56" y="1044" class="m" font-size="15" font-weight="400" fill="#C9C8E9" >@media (max-width: 767px)</text>
+<text x="52" y="1112" class="m" font-size="18" font-weight="700" fill="#F1EDE4" letter-spacing="3" >色板</text>
+<line x1="52" y1="1128" x2="361" y2="1128" stroke="#8488F3" stroke-width="1.5" />
+<rect x="52" y="1148" width="96.3" height="64" rx="0" fill="#0E0E10" stroke="#F1EDE4" stroke-width="2"/>
+<text x="52" y="1236" class="c" font-size="17" font-weight="700" fill="#F1EDE4" >墨</text>
+<text x="52" y="1258" class="m" font-size="13" font-weight="400" fill="#C9C8E9" >#0E0E10</text>
+<rect x="158.3" y="1148" width="96.3" height="64" rx="0" fill="#F1EDE4" stroke="#F1EDE4" stroke-width="2"/>
+<text x="158.3" y="1236" class="c" font-size="17" font-weight="700" fill="#F1EDE4" >纸</text>
+<text x="158.3" y="1258" class="m" font-size="13" font-weight="400" fill="#C9C8E9" >#F1EDE4</text>
+<rect x="264.7" y="1148" width="96.3" height="64" rx="0" fill="#2B35FF" stroke="#F1EDE4" stroke-width="2"/>
+<text x="264.7" y="1236" class="c" font-size="17" font-weight="700" fill="#F1EDE4" >蓝</text>
+<text x="264.7" y="1258" class="m" font-size="13" font-weight="400" fill="#C9C8E9" >#2B35FF</text>
+<text x="52" y="1304" class="m" font-size="14" font-weight="400" fill="#C9C8E9" >墨 / 纸 16.5 : 1 · 纸 / 蓝 5.9 : 1</text>
+<text x="469" y="96" class="c" font-size="40" font-weight="900" fill="#0E0E10" >分屏布局 速查</text>
+<text x="469" y="130" class="c" font-size="18" font-weight="500" fill="#6B675E" >一条中线，两种声音；左边说话，右边给证据</text>
+<line x1="469" y1="156" x2="1024" y2="156" stroke="#0E0E10" stroke-width="3" />
+<text x="469" y="206" class="m" font-size="19" font-weight="700" fill="#2B35FF" >01</text>
+<text x="513" y="207" class="c" font-size="26" font-weight="800" fill="#0E0E10" >只有一条中线</text>
+<text x="513" y="236" class="c" font-size="16" font-weight="400" fill="#6B675E" >不加阴影和描边，让色块自己说话</text>
+<text x="469" y="282" class="m" font-size="19" font-weight="700" fill="#2B35FF" >02</text>
+<text x="513" y="283" class="c" font-size="26" font-weight="800" fill="#0E0E10" >比例要有意思</text>
+<text x="513" y="312" class="c" font-size="16" font-weight="400" fill="#6B675E" >对等 50:50 · 主次 62:38 · 侧栏 70:30</text>
+<text x="469" y="358" class="m" font-size="19" font-weight="700" fill="#2B35FF" >03</text>
+<text x="513" y="359" class="c" font-size="26" font-weight="800" fill="#0E0E10" >两边要有反差</text>
+<text x="513" y="388" class="c" font-size="16" font-weight="400" fill="#6B675E" >明暗 / 图文 / 静动，一次只选一对</text>
+<text x="469" y="434" class="m" font-size="19" font-weight="700" fill="#2B35FF" >04</text>
+<text x="513" y="435" class="c" font-size="26" font-weight="800" fill="#0E0E10" >一边固定，一边滚</text>
+<text x="513" y="464" class="c" font-size="16" font-weight="400" fill="#6B675E" >固定的一半 sticky，滚的一半放长内容</text>
+<text x="469" y="510" class="m" font-size="19" font-weight="700" fill="#2B35FF" >05</text>
+<text x="513" y="511" class="c" font-size="26" font-weight="800" fill="#0E0E10" >手机上叠成上下</text>
+<text x="513" y="540" class="c" font-size="16" font-weight="400" fill="#6B675E" >文字在上，一屏只讲一件事；DOM 顺序 = 阅读顺序</text>
+<rect x="469" y="606" width="555" height="338" rx="0" fill="#0E0E10" />
+<text x="489" y="638" class="m" font-size="14" font-weight="700" fill="#8E95FF" letter-spacing="3" >CSS</text>
+<text x="489" y="672" class="m" font-size="15" font-weight="400" fill="#F1EDE4" >.split {</text>
+<text x="511" y="698" class="m" font-size="15" font-weight="400" fill="#F1EDE4" >display: grid;</text>
+<text x="511" y="724" class="m" font-size="15" font-weight="400" fill="#8E95FF" >grid-template-columns: 1.618fr 1fr;</text>
+<text x="511" y="750" class="m" font-size="15" font-weight="400" fill="#F1EDE4" >min-height: 100svh;</text>
+<text x="489" y="776" class="m" font-size="15" font-weight="400" fill="#F1EDE4" >}</text>
+<text x="489" y="802" class="m" font-size="15" font-weight="400" fill="#F1EDE4" >.split &gt; :first-child {  /* 固定的一半 */</text>
+<text x="511" y="828" class="m" font-size="15" font-weight="400" fill="#8E95FF" >position: sticky; top: 0; height: 100svh;</text>
+<text x="489" y="854" class="m" font-size="15" font-weight="400" fill="#F1EDE4" >}</text>
+<text x="489" y="880" class="m" font-size="15" font-weight="400" fill="#F1EDE4" >@media (max-width: 767px) {</text>
+<text x="511" y="906" class="m" font-size="15" font-weight="400" fill="#8E95FF" >.split { grid-template-columns: 1fr; }</text>
+<text x="489" y="932" class="m" font-size="15" font-weight="400" fill="#F1EDE4" >}</text>
+<text x="469" y="1020" class="m" font-size="18" font-weight="700" fill="#2B35FF" letter-spacing="3" >别忘了</text>
+<line x1="469" y1="1034" x2="1024" y2="1034" stroke="#0E0E10" stroke-width="1.5" />
+<rect x="469" y="1055" width="12" height="12" rx="0" fill="#2B35FF" />
+<text x="495" y="1068" class="c" font-size="18" font-weight="800" fill="#0E0E10" >阅读顺序</text>
+<text x="581" y="1068" class="c" font-size="15" font-weight="400" fill="#6B675E" >叠起来后谁在上，就把谁写在 HTML 前面</text>
+<rect x="469" y="1101" width="12" height="12" rx="0" fill="#2B35FF" />
+<text x="495" y="1114" class="c" font-size="18" font-weight="800" fill="#0E0E10" >对比度</text>
+<text x="563" y="1114" class="c" font-size="15" font-weight="400" fill="#6B675E" >每一半的文字与底色 ≥ 4.5 : 1（WCAG AA）</text>
+<rect x="469" y="1147" width="12" height="12" rx="0" fill="#2B35FF" />
+<text x="495" y="1160" class="c" font-size="18" font-weight="800" fill="#0E0E10" >不只靠颜色</text>
+<text x="599" y="1160" class="c" font-size="15" font-weight="400" fill="#6B675E" >两半之间加标题或标签，色盲也分得清</text>
+<rect x="469" y="1193" width="12" height="12" rx="0" fill="#2B35FF" />
+<text x="495" y="1206" class="c" font-size="18" font-weight="800" fill="#0E0E10" >别把重点放中线</text>
+<text x="635" y="1206" class="c" font-size="15" font-weight="400" fill="#6B675E" >中线是分界，不是放按钮和关键数字的地方</text>
+<text x="469" y="1304" class="m" font-size="15" font-weight="400" fill="#6B675E" >@guanmo_ai · github.com/guanmo-ai/design-style</text></svg>
