@@ -2,24 +2,22 @@
 Design Style · 风格 013 · 装饰艺术 Art Deco —— 配乐与音效（纯代码合成，无外部音源）
 
 120 BPM 摇摆（1 拍 = 0.5 秒 = 30 帧，反拍落在 2/3 拍；全片不变速）· 20 秒 = 10 小节 · F 大调
-声部：低音提琴走路贝斯、钢琴查尔斯顿式反拍和弦、刷子军鼓、摇摆叮叮镲、钢片琴（金色高光）、竖琴（放射线）、弱音小号齐奏（换城）。
-镜像也写进声音里：画面上左右同时长出来的东西，声音也是一左一右成对出现（声像 ±）。
-和弦：Fmaj9（开场 / 01）| Dm9 | Gm9 C13 Fmaj9（02 楼长高）| B♭maj9 A7♭13（03 放射）| Dm9 Gm9 C13（04 三座城）
-     | Fmaj9 Dm9 Gm9 C13（05 应用）| B♭maj9 A7♭13（五条规则）| Gm9 C13 → Fmaj9（片尾：门合上，“叮”）
-  0–2s       开场：f6 中缝一亮（钢片琴）· f14 门向两边滑开（一左一右两道风声）· f66 一粒光顺着中轴落下（钢片琴下行）
-  2–5s       01 中轴：f120 光落地“叮”，乐队进来 · 三线向两边拉开（左右两道风声）· 落定、四个角花
-  5–8s       02 阶梯：台基三级、翼楼、主楼、收分——每长一级，钢琴往上走一级；五层拱冠一串钢片琴；尖顶“叮”
-  8–10s      03 放射：镜头拉远（反向镲）· 射线像折扇打开（竖琴左右同时往外刷）· 拱窗合拢“叮”
-  10–13s     04 来历：每换一座城，旧楼顶缩回、新楼顶升起，弱音小号齐奏一记
-  13–16s     05 应用：楼缩进手机 · 界面元素成对打开（左右轻响）· 光标按网页按钮 · 手机选日期、按“预订”（门铃）
-  16–18s     五条规则：中间一块、两边一对、再两边一对，每一块一声钢琴 + 钢片琴
-  18–20s     片尾：门从两边合上，“咚”一声 + 电梯“叮”，F 大九和弦的余音折回开头
+声部：低音提琴走路贝斯、钢琴查尔斯顿式反拍和弦、刷子军鼓、摇摆叮叮镲、钢片琴（金色的光）、竖琴（放射）、弱音小号齐奏（重音）。
+镜像也写进声音里：画面上左右成对出现的东西，声音也一左一右成对出现（声像 ±）。
+  0–1.5s     开场：光顺着画框往两边跑（钢片琴左右上行）· 星芒“叮” · 楼沉下去（下行）· 推进拱窗（上扬的风声）
+  1.5–4.5s   01 三线：f120 乐队进来；每半拍擦过一道门——门两边一左一右两道风声，门上的光一声钢片琴，连成一句旋律 · f270 玫瑰窗“叮”
+  4.5–8s     02 放射：万花筒每拍一次脉冲 · f420 射线射出（竖琴左右往外刷 + 镲）· 塌成太阳（下行 + 一记定音鼓）
+  8–13s      03 阶梯：楼从外往里成对升起（钢琴往上走，声像往里收）· f540 主楼落地（小号 + 低音）· 镜头上升（渐强）+ 年份滴答
+             · 拱冠五声 · 尖顶星芒（小号 + 镲）· 拉远
+  13–16s     五条规则：牌子飞到面前（钢琴和弦 + 风声，声像从中间往两边）· 冲向镜头（上扬）
+  16–20s     片尾：中轴落下“叮” · 描字（竖琴）· 楼重新长高（钢琴往上走）· 光跑一圈 · F 大九和弦的余音折回开头
 所有时间点与 video/*.tsx 的关键帧对齐（帧 / 60 = 秒）。
 
 用法：python3 styles/013-art-deco/audio/make_music.py
 输出：public/013-art-deco/music.wav（响度 −14 LUFS，真峰值 < −1 dBTP）
 """
 import json
+import math
 import os
 import shutil
 import subprocess
@@ -37,8 +35,7 @@ MUS = np.zeros((2, N))
 SFX = np.zeros((2, N))
 SEND = np.zeros((2, N))
 
-AT = {'open': 0, 'axis': 120, 'zig': 300, 'sun': 480, 'lineage': 600, 'apps': 780, 'words': 960, 'end': 1080}
-SWEEPS = [6, 452, 560, 735, 900, 1146]
+AT = {'open': 0, 'tunnel': 90, 'kaleido': 270, 'city': 480, 'rules': 780, 'title': 960}
 
 
 def fr(frame):
@@ -261,13 +258,11 @@ VOICE = {
 TONES = {'F': [0, 4, 7, 9], 'Dm': [0, 3, 7, 10], 'Gm': [0, 3, 7, 10], 'C': [0, 4, 7, 10], 'Bb': [0, 4, 7, 9], 'A': [0, 4, 7, 10]}
 # (起始帧, 和弦)
 PROG = [
-    (120, 'F'), (240, 'Dm'),
-    (300, 'Gm'), (360, 'C'), (420, 'F'),
-    (480, 'Bb'), (540, 'A'),
-    (600, 'Dm'), (660, 'Gm'), (720, 'C'),
-    (780, 'F'), (840, 'Dm'), (900, 'Gm'), (930, 'C'),
-    (960, 'Bb'), (1020, 'A'),
-    (1080, 'Gm'), (1110, 'C'), (1140, 'F'),
+    (120, 'Dm'), (180, 'Gm'), (240, 'C'),
+    (270, 'F'), (330, 'Dm'), (390, 'Bb'), (420, 'A'), (450, 'Dm'),
+    (480, 'Gm'), (540, 'C'), (600, 'F'), (660, 'Bb'), (690, 'A'), (720, 'Dm'), (750, 'Gm'),
+    (780, 'C'), (840, 'F'), (900, 'Dm'), (930, 'Gm'),
+    (960, 'C'), (1020, 'Bb'), (1080, 'Gm'), (1110, 'C'), (1140, 'F'),
 ]
 BAND_END = 1140
 
@@ -317,99 +312,106 @@ place(chord([41, 53] + VOICE['F'][1] + [76], 1.6, 1.1, 0.9), fr(1140), send=0.45
 place(upright(29, 1.4, 1.0), fr(1140), send=0.1)
 
 # ───────── 音效（跟画面） ─────────
-# 金色高光扫过：钢片琴快速上行（F 大调五声）
-PENTA = [77, 79, 81, 84, 86, 89, 91, 93]
-for s in SWEEPS:
-    for i, m in enumerate(PENTA[2:7] if s else PENTA[3:8]):
-        place(celesta(m, 0.35, 0.5), fr(s) + i * 0.045, pan=-0.5 + i * 0.25, send=0.5)
+PENTA = [77, 79, 81, 84, 86, 89, 91, 93, 96]
 
-# 开场：门向两边滑开——风声一左一右；中缝落下一粒光
-for p in (-0.7, 0.7):
-    sfx(whoosh(0.9, 200, 3000, 0.8, 0.45), fr(14), pan=p, send=0.3)
-    sfx(thud(0.25, 70, 40), fr(66), pan=p, send=0.2)
-for i, m in enumerate([93, 89, 86, 84, 81, 79, 77, 74]):
-    place(celesta(m, 0.5, 0.45), fr(66) + i * 0.105, send=0.55)
-# 01：光落地——叮；三线劈开（一对细的“铮”）
-sfx(bell(84, 1.0, 1.4), fr(120), send=0.5)
-sfx(bell(91, 0.4, 0.9), fr(121), send=0.5)
-pair(celesta(96, 0.6, 0.3), fr(124), width=0.3)
-# 三线向两边拉开：两道风声往外走；落定：一对轻响 + 钢琴和弦
-for p in (-0.85, 0.85):
-    sfx(whoosh(0.75, 400, 7000, 0.7, 0.55), fr(205), pan=p, send=0.25)
-pair(tick(0.9, False), fr(251), width=0.9)
-pair(celesta(88, 0.5, 0.4), fr(252), width=0.9)
-pair(celesta(93, 0.4, 0.35), fr(255), width=0.95)
-pair(celesta(86, 0.35, 0.35), fr(263), width=0.95)
 
-# 02：楼一级级长高，钢琴一级级往上走
-Z = AT['zig']
-for i, (dt, m) in enumerate([(0, 41), (6, 45), (12, 48)]):
-    sfx(thud(0.32, 80, 45), fr(Z + dt), send=0.15)
-    place(piano(m, 0.5, 0.9), fr(Z + dt), send=0.2)
-for dt, ms in [(18, [53, 60]), (30, [57, 64]), (45, [60, 67, 72]), (75, [64, 69]), (90, [67, 72])]:
-    place(chord(ms, 0.45, 1.0, 1.0), fr(Z + dt), send=0.25)
-sfx(whoosh(0.55, 150, 1500, 0.6, 0.6), fr(Z + 40), send=0.2)
-for i, m in enumerate([81, 84, 86, 88, 91]):
-    place(celesta(m, 0.6, 0.5), fr(Z + 105 + i * 7), pan=(-1) ** i * 0.15, send=0.45)
-sfx(whoosh(0.3, 1500, 9000, 0.4, 0.8), fr(Z + 140), send=0.3)
-sfx(bell(96, 0.6, 1.2), fr(Z + 156), send=0.6)
+def gliss(t, notes, gap=0.045, level=0.35, pan0=-0.5, pan1=0.5, mirror_=False):
+    for i, m in enumerate(notes):
+        p = pan0 + (pan1 - pan0) * i / max(1, len(notes) - 1)
+        if mirror_:
+            pair(celesta(m, level, 0.5), t + i * gap, width=abs(p) + 0.1, send=0.5, bus=MUS)
+        else:
+            place(celesta(m, level, 0.5), t + i * gap, pan=p, send=0.5)
 
-# 03：拉远（反向镲）→ 射线像折扇打开：竖琴左右同时往外刷 → 拱窗合拢“叮”
-S = AT['sun']
-sfx(reverse_cym(0.9, 1.0), fr(S) - 0.1, send=0.3)
+
+# 开场：光顺着画框从中轴往两边跑（左右同时上行）· 尖顶星芒 · 楼沉下去 · 推进拱窗
+gliss(fr(2), PENTA[1:8], 0.07, 0.3, 0.1, 0.9, mirror_=True)
+sfx(bell(96, 0.5, 1.0), fr(4), send=0.6)
+for i, m in enumerate([65, 62, 58, 55, 53]):
+    place(piano(m, 0.3, 0.5), fr(28) + i * 0.08, pan=0.1, send=0.3)
+sfx(whoosh(0.5, 2500, 200, 0.4, 0.3), fr(28), send=0.2)
+sfx(whoosh(0.85, 200, 9000, 0.8, 0.85), fr(52), send=0.35)
+place(reverse_cym(0.9, 1.0), fr(120) - 0.9, send=0.2)
+sfx(thud(0.7, 85, 42), fr(120), send=0.25)
+
+# 01 三线：每半拍擦过一道门。门两边一左一右两道风声；门上的光一声钢片琴，连成一句上行旋律
+TUNE = [81, 84, 86, 89, 86, 89, 91, 93, 91, 96, 98]
+for i in range(11):
+    passf = 120 + 15 * i
+    for p in (-0.85, 0.85):
+        sfx(whoosh(0.28, 600, 6000, 0.32, 0.75), fr(passf) - 0.2, pan=p, send=0.15)
+    place(celesta(TUNE[i], 0.42, 0.45), fr(passf - 40 + 6), pan=(-1) ** i * 0.25, send=0.5)
+sfx(bell(89, 0.9, 1.6), fr(262), send=0.6)
+sfx(bell(96, 0.5, 1.2), fr(263), send=0.6)
+place(reverse_cym(0.5, 0.8), fr(270) - 0.5, send=0.2)
+
+# 02 放射：万花筒每拍一次脉冲（钢片琴轻点）· 射线射出（竖琴左右往外刷 + 镲）· 塌成太阳
+K = AT['kaleido']
+for b in range(5):
+    fm = K + 30 * b
+    place(celesta(PENTA[(b * 2) % 8] + 12, 0.22, 0.3), fr(fm), pan=0.0, send=0.5)
 HARP = [65, 69, 72, 74, 77, 81, 84, 86, 89, 93, 96]
 for i, m in enumerate(HARP):
-    w = 0.15 + 0.08 * i
-    pair(harp(m, 0.55), fr(S + 30 + i * 2.4), width=w, send=0.4, bus=MUS)
-place(pad([62, 65, 69, 72], 1.0, 0.8, att=0.5, rel=0.6), fr(S + 62), send=0.4)
-sfx(bell(89, 0.6, 1.3), fr(S + 108), send=0.55)
+    pair(harp(m, 0.5), fr(K + 150) + i * 0.035, width=0.15 + 0.08 * i, send=0.4, bus=MUS)
+place(ride(2.2), fr(K + 150), send=0.4)
+sfx(bell(98, 0.5, 1.2), fr(K + 150), send=0.6)
+for i, m in enumerate([93, 89, 86, 81, 77, 74]):
+    place(celesta(m, 0.35, 0.5), fr(K + 180) + i * 0.07, send=0.5)
+sfx(whoosh(0.5, 3000, 300, 0.4, 0.4), fr(K + 180), send=0.2)
+sfx(thud(0.8, 70, 38), fr(K + 204), send=0.35)
 
-# 04：每换一座城：旧楼顶缩回（下滑），新楼顶升起（上滑）+ 弱音小号一记
-for k, (fm, ms) in enumerate([(600, [62, 65, 69, 72]), (660, [62, 65, 70, 74]), (720, [64, 67, 70, 74, 79])]):
-    sfx(whoosh(0.22, 3000, 400, 0.45, 0.3), fr(fm), send=0.2)
-    sfx(whoosh(0.35, 400, 5000, 0.5, 0.7), fr(fm + 8), send=0.2)
-    place(brass(ms, 0.32 if k < 2 else 0.5, 1.0 if k < 2 else 1.3), fr(fm + 12), send=0.35)
-    place(brass(ms, 0.12, 0.7), fr(fm + 12 + 20), send=0.35)
-# 上海：一句五声音阶（钢片琴），不模仿民乐
-for i, m in enumerate([86, 88, 91, 93, 91]):
-    place(celesta(m, 0.35, 0.4), fr(672) + i * 0.11, pan=0.2, send=0.4)
+# 03 阶梯：楼从外往里成对升起（钢琴往上走，声像往里收）· 主楼落地
+C0 = AT['city']
+for k, (dt, m) in enumerate([(2, 53), (8, 57), (14, 60), (22, 62), (30, 65), (40, 69), (50, 72)]):
+    w = 0.9 - k * 0.12
+    pair(piano(m, 0.35, 0.7), fr(C0 + dt), width=w, send=0.25, bus=MUS)
+place(pad([58, 64, 69, 74], 1.6, 0.8, att=0.6, rel=0.8), fr(C0 + 40), send=0.4)
+sfx(thud(1.0, 80, 38), fr(C0 + 62), send=0.3)
+place(brass([58, 64, 69, 74], 0.45, 1.2), fr(C0 + 60), send=0.35)
+place(upright(24, 0.8, 1.0), fr(C0 + 60), send=0.1)
+# 镜头上升：一路渐强的长音 + 年份每变一次轻轻一声
+place(pad([53, 60, 65, 69, 72], 1.7, 1.0, att=1.4, rel=0.4), fr(C0 + 110), send=0.35)
+sfx(whoosh(1.6, 300, 8000, 0.5, 0.85), fr(C0 + 112), send=0.25)
+for y in range(15):
+    p = y / 14
+    # 年份按 inOut 缓动推进：反解出每一年出现的帧
+    t = math.acos(1 - 2 * p) / math.pi if p < 1 else 1.0
+    sfx(tick(0.45), fr(C0 + 120 + 80 * t), pan=0.0, send=0.1)
+# 拱冠五层亮起 · 尖顶 · 星芒
+CR = C0 + 206
+for i, m in enumerate([84, 86, 89, 91, 93]):
+    place(celesta(m, 0.5, 0.5), fr(CR + i * 3), pan=(-1) ** i * 0.2, send=0.55)
+sfx(whoosh(0.3, 1500, 9000, 0.4, 0.8), fr(CR + 12), send=0.3)
+place(brass([57, 61, 65, 70, 76], 0.6, 1.4), fr(CR + 26), send=0.4)
+place(ride(2.5), fr(CR + 26), send=0.45)
+sfx(bell(96, 0.7, 1.4), fr(CR + 26), send=0.6)
+sfx(whoosh(0.8, 4000, 300, 0.45, 0.3), fr(C0 + 238), send=0.3)
 
-# 05：楼缩进手机；界面成对打开；按钮
-A = AT['apps']
-sfx(whoosh(0.9, 3000, 300, 0.5, 0.35), fr(A), send=0.3)
-for p in (-0.25, 0.25):
-    sfx(whoosh(0.6, 500, 4000, 0.25, 0.6), fr(A + 18), pan=p + 0.4, send=0.2)
-for dt in (46, 52, 56, 62, 68, 74, 80):
-    sfx(tick(0.35), fr(A + dt), pan=0.5, send=0.15)
-pair(whoosh(0.4, 400, 5000, 0.35, 0.5), fr(A + 60), width=0.5)
-for dt in (76, 82, 86, 92, 98, 102, 106, 112):
-    sfx(tick(0.3), fr(A + dt), pan=-0.45, send=0.15)
-sfx(tick(0.9, False), fr(A + 132), pan=-0.4, send=0.2)
-sfx(tick(0.8, False), fr(A + 144), pan=0.5, send=0.2)
-sfx(tick(0.9, False), fr(A + 162), pan=0.5, send=0.2)
-sfx(bell(88, 0.5, 0.8), fr(A + 163), pan=0.5, send=0.5)
-sfx(bell(84, 0.45, 1.0), fr(A + 171), pan=0.5, send=0.5)
-
-# 五条规则：中间一块，再两边一对、一对——每块一声钢琴 + 钢片琴，声像跟着牌子往外走
-WD = AT['words']
-for k, (dt, w, m) in enumerate([(6, 0.0, 84), (30, 0.4, 88), (54, 0.8, 91)]):
+# 五条规则：牌子飞到面前（钢琴和弦 + 风声，声像从中间往两边）· 一起冲向镜头
+R0 = AT['rules']
+for k, (dt, w, m) in enumerate([(8, 0.0, 84), (23, 0.45, 88), (38, 0.85, 91)]):
     if w == 0:
-        place(piano(m, 0.6, 0.9), fr(WD + dt), send=0.35)
-        place(celesta(m + 12, 0.4, 0.5), fr(WD + dt), send=0.5)
+        sfx(whoosh(0.4, 400, 5000, 0.35, 0.8), fr(R0 + dt) - 0.25, send=0.2)
+        place(chord([72, 76, 79, 84], 0.5, 0.8), fr(R0 + dt + 6), send=0.35)
+        place(celesta(m + 12, 0.4, 0.5), fr(R0 + dt + 6), send=0.5)
     else:
-        pair(piano(m, 0.6, 0.9), fr(WD + dt), width=w, send=0.35, bus=MUS)
-        pair(celesta(m + 12, 0.4, 0.5), fr(WD + dt), width=w, send=0.5, bus=MUS)
+        for p in (-w, w):
+            sfx(whoosh(0.4, 400, 5000, 0.28, 0.8), fr(R0 + dt) - 0.25, pan=p, send=0.2)
+        pair(celesta(m + 12, 0.4, 0.5), fr(R0 + dt + 6), width=w, send=0.5, bus=MUS)
+        pair(piano(m - 12, 0.5, 0.7), fr(R0 + dt + 6), width=w, send=0.35, bus=MUS)
+sfx(whoosh(0.5, 300, 9000, 0.6, 0.9), fr(AT['title'] - 28), send=0.3)
 
-# 片尾：牌子合上 → 门从两边合上，“咚” + 电梯“叮”
-E_ = AT['end']
-pair(tick(0.5), fr(E_ + 2), width=0.8)
-pair(tick(0.5), fr(E_ + 8), width=0.4)
-for p in (-0.8, 0.8):
-    sfx(whoosh(0.85, 300, 3500, 0.75, 0.55), fr(E_ + 10), pan=p, send=0.3)
-sfx(thud(1.0, 95, 42), fr(E_ + 60), send=0.25)
-sfx(bell(88, 1.0, 1.6), fr(E_ + 62), send=0.6)
-sfx(bell(84, 0.8, 1.8), fr(E_ + 62) + 0.32, send=0.6)
-
+# 片尾：中轴落下 · 描字 · 楼重新长高 · 光跑一圈 · 星芒 · 回到第一帧
+T0 = AT['title']
+sfx(bell(84, 0.8, 1.4), fr(T0), send=0.6)
+for i, m in enumerate(HARP[:9]):
+    pair(harp(m, 0.4), fr(T0 + 6) + i * 0.06, width=0.2 + 0.08 * i, send=0.4, bus=MUS)
+for dt, ms in [(50, [53]), (53, [57]), (56, [60]), (58, [53, 60]), (63, [57, 64]), (68, [60, 67, 72]), (76, [64, 69]), (81, [67, 72])]:
+    place(chord(ms, 0.4, 0.8, 1.0), fr(T0 + dt), send=0.25)
+for i, m in enumerate([81, 84, 86, 88, 91]):
+    place(celesta(m, 0.45, 0.5), fr(T0 + 86 + i * 4), pan=(-1) ** i * 0.15, send=0.45)
+gliss(fr(T0 + 128), PENTA[1:8], 0.06, 0.28, 0.1, 0.9, mirror_=True)
+sfx(bell(96, 0.6, 1.2), fr(T0 + 158), send=0.6)
 
 # ================= 混响 + 母带 =================
 def reverb(x, seed, dec=0.6, length=2.4):

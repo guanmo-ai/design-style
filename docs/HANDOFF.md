@@ -10,8 +10,8 @@
 
 设计侧全部完成（短片、配乐、4 张风格图、tokens、中英文档），在分支 `claude/fervent-meitner-efjuvg`。下面是工程侧：
 
-1. **渲染成片**：`npm ci && npm run fonts && npm run render:013` → `out/013-art-deco-master.mp4`（20.0 秒，1920×1080，60 fps，h264 crf 16 + AAC；设计侧本机渲染约 2 分 20 秒、约 8 MB）。`npm run fonts` 已加 Poiret One、Noto Serif SC 两支；若 `github.com/.../raw/` 被拦，可改用 `raw.githubusercontent.com/google/fonts/main/ofl/...`。
-2. **质检**：首帧与末帧应几乎一致（设计侧逐像素最大差 4 / 255）；配乐 −14 LUFS、真峰值 < −1 dBTP（`python3 styles/013-art-deco/audio/make_music.py` 会打印响度）。
+1. **渲染成片**：`npm ci && npm run fonts && npm run render:013` → `out/013-art-deco-master.mp4`（20.0 秒，1920×1080，60 fps，h264 crf 16 + AAC，bt709；8 次采样运动模糊，设计侧本机渲染约 10 分钟）。`npm run fonts` 已加 Poiret One、Noto Serif SC 两支；若 `github.com/.../raw/` 被拦，可改用 `raw.githubusercontent.com/google/fonts/main/ofl/...`。
+2. **质检**：首帧与末帧应逐像素一致（设计侧已核对）；配乐 −14 LUFS、真峰值 < −1 dBTP（`python3 styles/013-art-deco/audio/make_music.py` 会打印响度）。
 3. **封面**：`styles/013-art-deco/video/cover.jpg` 已由设计侧从首帧导出（1920×1080），不用再做。
 4. **Release**：新建 `day-13`，上传 `013-art-deco.mp4`（即上面的 master），说明文字可用 README §9 的第一段。
 5. **画廊**：在 `gallery/data/works.json` 末尾加一条，`publishedAt` / `sha256` 按实际填，其余照抄：
@@ -26,8 +26,8 @@
   "years": "1925—1939",
   "category": "建筑与海报",
   "categoryEn": "Architecture & posters",
-  "description": "先立一条中轴，阶梯、放射和三线从中轴往两边同时长出来；金色是材质，只给线。一支 20 秒短片，全片只有一条规矩——镜像：海报像电梯门一样打开，一条金线变成三线、再拉成画框；摩天楼一级级长高，太阳藏在楼后，射线像折扇打开；楼顶从巴黎 1925 换到上海 1929、纽约 1930；最后整座楼缩进手机的拱窗，网页从自己的中轴打开。",
-  "descriptionEn": "Draw one central axis, then grow steps, sunbursts and triple lines out of it on both sides at once; gold is a material, used only for lines. A 20-second film with a single rule — mirroring: the poster opens like elevator doors, one gold line splits into three and slides out to become the frame, a skyscraper rises setback by setback, sunburst rays open like a folding fan behind it, the crown changes from Paris 1925 to Shanghai 1929 and New York 1930, and the whole tower shrinks into a phone app's arched header while a landing page opens from its own axis.",
+  "description": "先立一条中轴，阶梯、放射和三线从中轴往两边同时长出来；金色是材质，只给线。一支 20 秒一镜到底的短片：光顺着海报的金线跑一圈，镜头推进拱窗、穿过一串三线拱门；玫瑰窗变成十二瓣万花筒，再塌成地平线上的太阳；夜景天际线三层纵深升起，探照灯成对交叉，镜头贴着主楼一路升到尖顶；五条规则翻转着飞来；最后海报一笔一笔重新长回去。",
+  "descriptionEn": "Draw one central axis, then grow steps, sunbursts and triple lines out of it on both sides at once; gold is a material, used only for lines. A 20-second single-shot film: light races along the poster's gold lines, the camera pushes through the arch into a tunnel of triple-line portals, a rose window turns into a twelve-fold Busby Berkeley kaleidoscope that collapses into a sun on the horizon, a night skyline rises in three layers of depth under crossing searchlights while the camera rides the hero tower up to its spire, five rule plaques flip in from the distance, and the poster redraws itself stroke by stroke.",
   "tags": ["中轴对称", "阶梯", "放射", "三线", "金色", "海报", "品牌"],
   "tagsEn": ["symmetry", "ziggurat", "sunburst", "triple line", "gold", "posters", "branding"],
   "publishedAt": "<发布时间>",
