@@ -24,6 +24,8 @@ npm run gallery:test    # 目录、筛选、路径边界与视频 Range 请求�
 npm run gallery:check   # 构建后检查发布文件、Pages 子路径链接、锚点与媒体哈希
 ```
 
+`gallery:sync` 只通过已认证的 `gh api` 调用 REST：先按 tag 读取 Release，匹配目录中的准确附件名，再以 `Accept: application/octet-stream` 下载。二进制直接写临时文件，SHA-256 与 `works.json` 一致后才替换缓存；失败保留原缓存并清理临时文件。它不依赖 `gh release download` 或 GraphQL，适用于限制 GraphQL 的云端会话；调用账号仍须有读取对应仓库 Release 的权限。
+
 阅读页从每期现有 `README.md` 与 `PROCESS.md` 构建到 `dist/read/<作品 ID>/`。无需另写网页正文。构建时处理 Markdown、清理不安全 HTML，并校验与复制文档引用的本期图片；两份文档之间的相对链接和章节锚点转换为站内链接。其他源码链接保留 GitHub 入口。
 
 英文阅读页从每期 `README.en.md`（英文简明指南）与 `PROCESS.en.md`（英文制作概览）构建为 `guide.en.html` / `process.en.html`，提供双向语言切换、英文目录与返回作品入口。英文概览注明其与详细中文原文的关系；现有视频、图解及过程图保留原版中文标注，不把它们描述为已翻译媒体。根目录 `README.md` 与 `README.en.md` 均提供语言入口，`gallery:readme` 同时更新两份预览表。
@@ -49,6 +51,7 @@ npm run gallery:check   # 构建后检查发布文件、Pages 子路径链接、
 1. 完成本期目录：风格为 `styles/NNN-name/`（三位期号），布局为 `layouts/NN-name/`（两位期号）。内含封面 `video/cover.jpg`、风格图或布局图 `images/preview/*.svg` 及对应源文件、中英文 `README.md` / `README.en.md`、`PROCESS.md` / `PROCESS.en.md`、`tokens.json`、`process/timeline.json`。
 2. 在本仓库 Release 发布成片。视频名与目录名一致：风格 `NNN-name.mp4`，布局 `NN-name.mp4`；Release tag 现有 `day-01`（风格 001）与 `layout-01`（布局 01）。
    云端 AI 会话不能直接创建 Release 时，把成片放进 `release-assets` 分支的 `day-NN/`（附件 + `release.json` + `notes.md` + `SHA256SUMS`）并推送：`.github/workflows/publish-release.yml`（只在该分支上）核对 SHA-256 后用仓库自己的权限发布，已有的 tag 不会被改动。
+   发布工作流**只在 `release-assets` 分支**，当前以推送该分支为正式入口，不在 `main` 维护第二份。009 已通过这一入口成功发布。虽然文件含 `workflow_dispatch`，但 [GitHub 要求手动触发工作流先存在于默认分支](https://docs.github.com/en/actions/how-tos/manage-workflow-runs/manually-run-a-workflow)，当前不能把 Actions 的「Run workflow」当作可用入口；若以后确有手动补发需求，再将统一的工作流入口放到 `main`，明确检出 `release-assets`，避免两份逻辑漂移。
 3. 向 `gallery/data/works.json` 添加条目，填写类型 `type`（`style` 或 `layout`，缺省按 `style`）、期号、标题、分类、简介、标签、发布日期、Release tag、视频文件名、SHA-256 与四张图的信息。SHA-256 可由 `gh release view <tag> --repo guanmo-ai/design-style --json assets` 返回的 digest 核对。
 4. 运行同步、测试、构建并进行浏览器检查。视频规格与章节自动读取本期 tokens 和 timeline，不重复手填。`gallery:sync` 同时更新仓库首页的紧凑视频预览：按最新发布排序，每行最多三张，新增作品自动换行；封面与标题均链接到对应作品的画廊详情。只更新 README 时运行 `npm run gallery:readme`，将生成的 README 改动一并提交。
 

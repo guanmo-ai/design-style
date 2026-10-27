@@ -2,13 +2,11 @@
 
 分工：Claude 负责设计与动效（风格选题、风格图、短片画面与配乐的创作）；下面这些工程 / 运维事项交给 Codex。做完一项就把它从这里删掉，并在提交信息里写清楚。
 
+2026-10-27：部署核验、发布入口说明、依赖安全核验和 REST 同步兼容已在本地完成，详见 [交接执行记录](reviews/HANDOFF_20261027.md)。原有未提交的创作内容继续保留。本轮代码和文档尚未推送；线上使用原版本。
+
 ## 待办
 
-1. **核对 009 的 Pages 部署。** PR #14 合并后 `Deploy Design Style` 会自动跑。确认工作流成功，线上首页出现「新粗野主义」，视频能播放、阅读页能打开：<https://guanmo-ai.github.io/design-style/#work-009-neo-brutalism>
-2. **发布工作流放在哪。** 目前 `.github/workflows/publish-release.yml` 只在 `release-assets` 分支上（推送该分支就会核对 SHA-256 并为新 tag 创建 Release，见 `docs/GALLERY.md`「添加下一期」第 2 步）。评估是否需要同步一份到 main 方便手动触发；不需要就在 GALLERY.md 里写明“只在 release-assets 分支”。
-3. **009 配乐 4—5 秒混音（低优先级）。** 01 黑框后半音效太密、压住 BGM。在 `styles/009-neo-brutalism/audio/make_music.py` 的 `# ----- 01 黑框` 段把音效整体降 3—4 dB，或去掉每个框的 whoosh；改完要重新渲染、重新发布（新附件并更新 `works.json` 的 sha256）。动已发布的成片前先问主人。
-4. **依赖安全。** PR #14 用 `overrides` 把 zod 固定到 4.6.7，修了 npm audit 高危告警（GHSA-mrhx-c7xc-m3w5）。Remotion 升级到自带 zod ≥ 4.6.6 的版本后，可以去掉这条 override。
-5. **云端会话的已知限制。** Claude Code 云端会话不能直接创建 GitHub Release（API 返回 403），也不能用 `gh release download`（GraphQL 被禁）；`gallery:sync` 依赖后者。需要时可改用 REST：`gh api repos/{owner}/{repo}/releases/assets/{id} -H "Accept: application/octet-stream"`。
+1. **009 混音试听与发布。** 主人本轮已授权试做音量调整：`audio/make_music.py` 已将 01 黑框（成片 2—5 秒）起音的音效及其混响发送降低 3 dB，保留事件、触发时间与背景音乐编排。本地试听视频为 `out/handoff-20261027/009-neo-brutalism-sfx-minus3db.mp4`，20 秒，原画面码流完整保留；另有 `009-mix-ab.wav`，先原版、半秒静音、再调整版。技术核验通过，尚待主人试听确认并授权替换线上成片；之后才能发布新附件并更新 `works.json` 的 SHA-256。当前目录哈希继续对应原 `day-09`，未提前改成试听版哈希。
 
 ## 设计侧留下的素材（不用动，供下次做新一期）
 
