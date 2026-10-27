@@ -19,6 +19,11 @@ By Guanmo [@guanmo_ai](https://x.com/guanmo_ai)
 <table>
   <tr>
     <td align="center" valign="top" width="33%">
+      <a href="https://guanmo-ai.github.io/design-style/?lang=en#work-009-neo-brutalism"><img src="styles/009-neo-brutalism/video/cover.jpg" width="240" alt="Neo-Brutalism film cover" /></a><br />
+      <a href="https://guanmo-ai.github.io/design-style/?lang=en#work-009-neo-brutalism"><b>Neo-Brutalism</b></a><br />
+      <sub>20 seconds</sub>
+    </td>
+    <td align="center" valign="top" width="33%">
       <a href="https://guanmo-ai.github.io/design-style/?lang=en#work-008-risograph"><img src="styles/008-risograph/video/cover.jpg" width="240" alt="Risograph film cover" /></a><br />
       <a href="https://guanmo-ai.github.io/design-style/?lang=en#work-008-risograph"><b>Risograph</b></a><br />
       <sub>15 seconds</sub>
@@ -28,13 +33,13 @@ By Guanmo [@guanmo_ai](https://x.com/guanmo_ai)
       <a href="https://guanmo-ai.github.io/design-style/?lang=en#work-005-pop-art"><b>Pop Art</b></a><br />
       <sub>18 seconds</sub>
     </td>
+  </tr>
+  <tr>
     <td align="center" valign="top" width="33%">
       <a href="https://guanmo-ai.github.io/design-style/?lang=en#work-004-memphis"><img src="styles/004-memphis/video/cover.jpg" width="240" alt="Memphis film cover" /></a><br />
       <a href="https://guanmo-ai.github.io/design-style/?lang=en#work-004-memphis"><b>Memphis</b></a><br />
       <sub>15 seconds</sub>
     </td>
-  </tr>
-  <tr>
     <td align="center" valign="top" width="33%">
       <a href="https://guanmo-ai.github.io/design-style/?lang=en#work-003-constructivism"><img src="styles/003-constructivism/video/cover.jpg" width="240" alt="Constructivism film cover" /></a><br />
       <a href="https://guanmo-ai.github.io/design-style/?lang=en#work-003-constructivism"><b>Constructivism</b></a><br />
@@ -45,13 +50,13 @@ By Guanmo [@guanmo_ai](https://x.com/guanmo_ai)
       <a href="https://guanmo-ai.github.io/design-style/?lang=en#work-02-masonry"><b>Masonry</b></a><br />
       <sub>15 seconds</sub>
     </td>
+  </tr>
+  <tr>
     <td align="center" valign="top" width="33%">
       <a href="https://guanmo-ai.github.io/design-style/?lang=en#work-002-swiss-style"><img src="styles/002-swiss-style/video/cover.jpg" width="240" alt="Swiss Style film cover" /></a><br />
       <a href="https://guanmo-ai.github.io/design-style/?lang=en#work-002-swiss-style"><b>Swiss Style</b></a><br />
       <sub>15 seconds</sub>
     </td>
-  </tr>
-  <tr>
     <td align="center" valign="top" width="33%">
       <a href="https://guanmo-ai.github.io/design-style/?lang=en#work-01-bento-grid"><img src="layouts/01-bento-grid/video/cover.jpg" width="240" alt="Bento Grid film cover" /></a><br />
       <a href="https://guanmo-ai.github.io/design-style/?lang=en#work-01-bento-grid"><b>Bento Grid</b></a><br />
@@ -94,7 +99,7 @@ The gallery interface, descriptions, search, and reading pages support **Chinese
 | 005 | [Pop Art](styles/005-pop-art/README.en.md) | [Production overview](styles/005-pop-art/PROCESS.en.md) | 1956–1970 |
 | 006 | [Y2K Futurism — video pending, not yet published](styles/006-y2k/README.en.md) | [Production overview](styles/006-y2k/PROCESS.en.md) | 1997–2004 |
 | 008 | [Risograph](styles/008-risograph/README.en.md) | [Production overview](styles/008-risograph/PROCESS.en.md) | 1946–today |
-| 009 | [Neo-Brutalism — video pending, not yet published](styles/009-neo-brutalism/README.en.md) | [Production overview](styles/009-neo-brutalism/PROCESS.en.md) | 2021–today |
+| 009 | [Neo-Brutalism](styles/009-neo-brutalism/README.en.md) | [Production overview](styles/009-neo-brutalism/PROCESS.en.md) | 2021–today |
 
 ### Layouts
 

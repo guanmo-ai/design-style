@@ -7,6 +7,11 @@
 <table>
   <tr>
     <td align="center" valign="top" width="33%">
+      <a href="https://guanmo-ai.github.io/design-style/?lang=zh#work-009-neo-brutalism"><img src="styles/009-neo-brutalism/video/cover.jpg" width="240" alt="新粗野主义 视频封面" /></a><br />
+      <a href="https://guanmo-ai.github.io/design-style/?lang=zh#work-009-neo-brutalism"><b>新粗野主义</b></a><br />
+      <sub>Neo-Brutalism · 20 秒</sub>
+    </td>
+    <td align="center" valign="top" width="33%">
       <a href="https://guanmo-ai.github.io/design-style/?lang=zh#work-008-risograph"><img src="styles/008-risograph/video/cover.jpg" width="240" alt="孔版印刷 视频封面" /></a><br />
       <a href="https://guanmo-ai.github.io/design-style/?lang=zh#work-008-risograph"><b>孔版印刷</b></a><br />
       <sub>Risograph · 15 秒</sub>
@@ -16,13 +21,13 @@
       <a href="https://guanmo-ai.github.io/design-style/?lang=zh#work-005-pop-art"><b>波普艺术</b></a><br />
       <sub>Pop Art · 18 秒</sub>
     </td>
+  </tr>
+  <tr>
     <td align="center" valign="top" width="33%">
       <a href="https://guanmo-ai.github.io/design-style/?lang=zh#work-004-memphis"><img src="styles/004-memphis/video/cover.jpg" width="240" alt="孟菲斯 视频封面" /></a><br />
       <a href="https://guanmo-ai.github.io/design-style/?lang=zh#work-004-memphis"><b>孟菲斯</b></a><br />
       <sub>Memphis · 15 秒</sub>
     </td>
-  </tr>
-  <tr>
     <td align="center" valign="top" width="33%">
       <a href="https://guanmo-ai.github.io/design-style/?lang=zh#work-003-constructivism"><img src="styles/003-constructivism/video/cover.jpg" width="240" alt="构成主义 视频封面" /></a><br />
       <a href="https://guanmo-ai.github.io/design-style/?lang=zh#work-003-constructivism"><b>构成主义</b></a><br />
@@ -33,13 +38,13 @@
       <a href="https://guanmo-ai.github.io/design-style/?lang=zh#work-02-masonry"><b>瀑布流布局</b></a><br />
       <sub>Masonry · 15 秒</sub>
     </td>
+  </tr>
+  <tr>
     <td align="center" valign="top" width="33%">
       <a href="https://guanmo-ai.github.io/design-style/?lang=zh#work-002-swiss-style"><img src="styles/002-swiss-style/video/cover.jpg" width="240" alt="瑞士国际主义 视频封面" /></a><br />
       <a href="https://guanmo-ai.github.io/design-style/?lang=zh#work-002-swiss-style"><b>瑞士国际主义</b></a><br />
       <sub>Swiss Style · 15 秒</sub>
     </td>
-  </tr>
-  <tr>
     <td align="center" valign="top" width="33%">
       <a href="https://guanmo-ai.github.io/design-style/?lang=zh#work-01-bento-grid"><img src="layouts/01-bento-grid/video/cover.jpg" width="240" alt="便当盒布局 视频封面" /></a><br />
       <a href="https://guanmo-ai.github.io/design-style/?lang=zh#work-01-bento-grid"><b>便当盒布局</b></a><br />
@@ -99,7 +104,7 @@ by 观默 [@guanmo_ai](https://x.com/guanmo_ai)
 | **005** | [**波普艺术 Pop Art**](styles/005-pop-art) | 1956—1970 | 网点代替渐变、粗黑线圈住每块颜色：普通的东西，也能上墙 | [🎬 视频](https://github.com/guanmo-ai/design-style/releases/tag/day-05) · [🛠 过程](styles/005-pop-art/PROCESS.md) · [🧰 从 0 到 1](styles/005-pop-art/MAKING.md) |
 | **006** | [**千禧未来主义 Y2K**](styles/006-y2k) | 1997—2004 | 铬、果冻和半透明塑料：把对 2000 年的期待做进屏幕——未来，正在加载 | 视频待补齐，暂未上线 · [🛠 过程](styles/006-y2k/PROCESS.md) · [🧰 从 0 到 1](styles/006-y2k/MAKING.md) |
 | **008** | [**孔版印刷 Risograph**](styles/008-risograph) | 1946—今天 | 三种油墨、一张会呼吸的纸：荧光粉印不进 CMYK，套不准是这台机器的口音 | [🎬 视频](https://github.com/guanmo-ai/design-style/releases/tag/day-08) · [🛠 过程](styles/008-risograph/PROCESS.md) |
-| **009** | [**新粗野主义 Neo-Brutalism**](styles/009-neo-brutalism) | 2021—今天 | 黑框描到底，阴影是一块偏移的黑：按下去，就是滑到阴影的位置 | 视频待发布 · [🛠 过程](styles/009-neo-brutalism/PROCESS.md) |
+| **009** | [**新粗野主义 Neo-Brutalism**](styles/009-neo-brutalism) | 2021—今天 | 黑框描到底，阴影是一块偏移的黑：按下去，就是滑到阴影的位置 | [🎬 视频](https://github.com/guanmo-ai/design-style/releases/tag/day-09) · [🛠 过程](styles/009-neo-brutalism/PROCESS.md) |
 
 ### 布局方式 · Layout
 
@@ -188,7 +193,7 @@ design-style/
 │  └─ 005-pop-art/         # 同上，含 MAKING.md；短片：一切都像印出来的——网点代替渐变、粗黑线 + 硬投影，网点长满接力换幕；整体放慢 1.2 倍到 18 秒
 │  └─ 006-y2k/             # 同上，含 MAKING.md；短片：开机 → 铬字 → 果冻 iMac → Aqua → 像素表情 → 千年虫 → 今天；铬、果冻、泡泡、玻璃由 WebGL2 着色器逐帧算出（video/material.js），18 秒
 │  └─ 008-risograph/       # 同上；短片：三张版砸在一起 → 热敏头烧孔 → 分色过机 → 叠印 → 小志出纸 → 五个词；每色一张版，正片叠底
-│  └─ 009-neo-brutalism/   # 同上；短片：没写 CSS 的网页 → 黑框 → 硬影 → 按下 → 来历 → 五个词；每一章是一张整屏卡片
+│  └─ 009-neo-brutalism/   # 同上；短片：键帽 → 元素从框里长出来 → 抬起与阶梯 → 按压水波 → 混凝土 / 网页 / 按钮 → 网页与 App → 五个词；阴影长度 = 高度，20 秒
 ├─ layouts/                # 布局：结构同 styles/，期号两位
 │  └─ 01-bento-grid/
 │     ├─ README.md         # 布局指南
