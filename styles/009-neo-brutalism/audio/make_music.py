@@ -1,16 +1,17 @@
 """
 Design Style · 风格 009 · 新粗野主义 Neo-Brutalism —— 配乐与音效（纯代码合成，无外部音源）
 
-120 BPM（1 拍 = 0.5 秒 = 30 帧）· E 小调 → G 大调
-和弦：开场只有键帽与重击 | Em（2–4s）| C（4–6s）| G（6–8s）| D（8–10s）| C D Em C D（每拍一个，10–12.5s）| G（12.5s 起）
+120 BPM（1 拍 = 0.5 秒 = 30 帧）· 19.5 秒 · E 小调 → G 大调
+和弦：开场只有键帽与重击 | Em（01）| C（02）| G（03）| D（04）| Em C（05）| C D Em C D（五个词，每拍一个）| G（片尾）
 音色：方波贝斯（只留奇次谐波，像一块没打磨的混凝土）、909 式底鼓 + 拍手、反拍的方波和弦“戳”、木琴旋律。
-  0–2s      开场：f8 海报被按下 · f14 炸开 · 十三颗键帽依次落稳 · 一道打字的波 · f75 一起按下 · f84 一起弹起 · f96 钻进 O
-  2–4s      01 黑框：马克笔一笔画过去，框一个一声盖章，音高沿五声音阶往上 · 甩镜头
-  4–6s      02 硬影：拉滑块的拉链声 → 咔嗒 → 抬起“嘣” → 落地 → 四层阶梯依次落下 → 蓝卡撑满
-  6–8s      03 按下：二十颗按钮落下 · 两道按压的水波（一颗一声，按距离排开）· f450 全部按下，“断电”
-  8–10s     04 来历：混凝土落地 · 里程表滚动 · 翻牌哗啦 · 二十个色块依次弹出
-  10–12.5s  五个词：每拍一张卡片砸下来，和弦重音 + 旋律往上爬
-  12.5–15s  片尾：卡片掉下去；NEO / BRUTAL / ISM 半拍一块砸回来；f870 全部按下——音乐断一下——f880 弹回 G 大和弦
+  0–2s       开场：f8 海报被按下 · f14 炸开 · 十三颗键帽依次落稳 · 一道打字的波 · f75 一起按下 · f84 一起弹起 · f96 钻进 O
+  2–4.5s     01 黑框：马克笔画一个框、“咚”一声盖章、木琴往上走一格；打字、开关、复选框；f244 按“注册”，三声铃 · 甩镜头
+  4.5–7s     02 硬影：拉滑块的拉链声 → 咔嗒 → 抬起“嘣” → 落地 → 四层阶梯依次落下 → 蓝卡撑满
+  7–9.5s     03 按下：二十颗按钮落下 · 两道按压的水波（一颗一声，按距离排开）· 全部按下，“断电”
+  9.5–12s    04 来历：混凝土落地 · 里程表滚动 · 翻牌哗啦 · 二十个色块依次弹出
+  12–15s     05 应用：浏览器落地、导航、标题、按钮、功能卡依次落下；手机落下，余额数字往上跳；网页按一下、手机按一下、收银“叮”
+  15–17.5s   五个词：每拍一张卡片砸下来，和弦重音 + 旋律往上爬
+  17.5–19.5s 片尾：卡片掉下去；NEO / BRUTAL / ISM 从高处落下；全部按下——音乐断一下——弹回 G 大和弦
 所有时间点与 video/*.tsx 的关键帧对齐（帧 / 60 = 秒）。
 
 用法：python3 styles/009-neo-brutalism/audio/make_music.py
@@ -25,7 +26,7 @@ import wave
 import numpy as np
 
 SR = 48000
-DUR = 15.0
+DUR = 19.5
 NV = int(SR * DUR)  # 成片长度
 N = int(SR * (DUR + 1.5))  # 多算 1.5 秒余音，最后折回开头：循环播放时首尾无缝
 rng = np.random.default_rng(2021)
@@ -297,11 +298,15 @@ KICK, CLAP, SNARE, CRASH, BOOM = kick(), clap(), snare(), crash(), boom()
 CHAT, OHAT = hat(1.0, 0.02), hat(1.0, 0.07)
 
 BEAT, S8, S16 = 30, 15, 7.5
+# 与 video/timeline.ts 的 AT 一一对应
+AT = {'border': 120, 'shadow': 270, 'press': 420, 'lineage': 570, 'apps': 720, 'words': 900, 'end': 1050}
 ROOT = {'Em': 28, 'C': 24, 'G': 31, 'D': 26}
 STABV = {'Em': [64, 67, 71, 76], 'C': [64, 67, 72, 76], 'G': [62, 67, 71, 74], 'D': [62, 66, 69, 74]}
 PADV = {'Em': [52, 59, 64, 67], 'C': [48, 55, 64, 67], 'G': [55, 59, 62, 67], 'D': [50, 57, 62, 66]}
-PROG = [(120, 'Em'), (240, 'C'), (360, 'G'), (480, 'D'), (600, 'C'), (630, 'D'), (660, 'Em'), (690, 'C'), (720, 'D'), (750, 'G')]
-GROOVE_START, GROOVE_END = 120, 744
+W0 = AT['words']
+PROG = [(120, 'Em'), (270, 'C'), (420, 'G'), (570, 'D'), (720, 'Em'), (810, 'C'),
+        (W0, 'C'), (W0 + 30, 'D'), (W0 + 60, 'Em'), (W0 + 90, 'C'), (W0 + 120, 'D'), (AT['end'], 'G')]
+GROOVE_START, GROOVE_END = 120, AT['end'] - 6
 KICKS = []
 
 
@@ -361,25 +366,25 @@ sfx(whoosh(fr(22), 150, 10000, 0.55, 0.9), fr(96))
 for k in range(4):
     place(SNARE * (0.18 + 0.08 * k), fr(105 + k * 3.75), send=0.15)
 
-# ================= 律动 120–744 =================
+# ================= 律动 120 → 片尾前 =================
 for b in range(GROOVE_START // BEAT, GROOVE_END // BEAT + 1):
     fm = b * BEAT
     if fm >= GROOVE_END:
         break
     kick_at(fm, 1.0)
-    words = fm >= 600
+    words = fm >= W0
     if (fm // BEAT) % 2 == 1 or words:
         place(CLAP * (0.55 if not words else 0.62), fr(fm), send=0.18)
-    for s in range(4):
-        t16 = fm + s * S16
+    for st in range(4):
+        t16 = fm + st * S16
         if t16 >= GROOVE_END:
             break
-        if s == 2:
+        if st == 2:
             place(OHAT * 0.2, fr(t16), pan=0.25, send=0.04)
         else:
-            place(CHAT * (0.12 if s == 0 else 0.08), fr(t16), pan=-0.25 if s == 1 else 0.2)
-for fm, lv in ((120, 0.6), (240, 0.5), (360, 0.55), (480, 0.5), (600, 0.65)):
-    place(CRASH * lv, fr(fm), send=0.3)
+            place(CHAT * (0.12 if st == 0 else 0.08), fr(t16), pan=-0.25 if st == 1 else 0.2)
+for k in ('border', 'shadow', 'press', 'lineage', 'apps', 'words'):
+    place(CRASH * (0.65 if k == 'words' else 0.5), fr(AT[k]), send=0.3)
 
 # 方波贝斯：八分音符，根音—八度—根音—五度
 BASS_PAT = [0, 12, 0, 7, 0, 12, 10, 7]
@@ -396,18 +401,19 @@ for k in range(int((GROOVE_END - GROOVE_START) / BEAT)):
     for pan in (-0.4, 0.4):
         place(stab(STABV[chord_at(fm)], 0.1, 0.16), fr(fm), pan=pan, send=0.12, bus=PUMP)
 
-# 木琴旋律（每章一句）
+# 木琴旋律：每章一句（16 个十六分音符的位置）
 HOOK = {
-    120: [(0, 76), (2, 79), (3, 76), (4, 83), (6, 81), (8, 79), (10, 76), (12, 74), (14, 76)],
-    240: [(0, 76), (2, 79), (3, 76), (4, 84), (6, 83), (8, 79), (10, 76), (12, 79), (14, 84)],
-    360: [(0, 83), (2, 81), (3, 79), (4, 74), (6, 79), (8, 83), (10, 86), (12, 83), (14, 79)],
-    480: [(0, 81), (2, 78), (3, 74), (4, 78), (6, 81), (8, 86), (10, 85), (12, 81), (14, 78)],
+    AT['border']: [(0, 76), (2, 79), (3, 76), (4, 83), (6, 81), (8, 79), (10, 76), (12, 74), (14, 76), (16, 79), (18, 83)],
+    AT['shadow']: [(0, 76), (2, 79), (3, 76), (4, 84), (6, 83), (8, 79), (10, 76), (12, 79), (14, 84), (16, 83), (18, 79)],
+    AT['press']: [(0, 83), (2, 81), (3, 79), (4, 74), (6, 79), (8, 83), (10, 86), (12, 83), (14, 79), (16, 81), (18, 83)],
+    AT['lineage']: [(0, 81), (2, 78), (3, 74), (4, 78), (6, 81), (8, 86), (10, 85), (12, 81), (14, 78), (16, 81), (18, 86)],
+    AT['apps']: [(0, 79), (2, 83), (4, 86), (6, 83), (8, 88), (10, 86), (12, 83), (16, 84), (18, 88), (20, 91), (22, 88)],
 }
-for s, notes in HOOK.items():
-    for p, m in notes:
-        place(marimba(midi(m), 0.2, 0.2), fr(s + p * S16), pan=0.15, send=0.22, bus=LEAD)
+for st, notes in HOOK.items():
+    for pos, m in notes:
+        place(marimba(midi(m), 0.2, 0.2), fr(st + pos * S16), pan=0.15, send=0.22, bus=LEAD)
 
-# ----- 01 黑框：一支笔一笔画过去，框一个变一个 -----
+
 def scribble(d, level=1.0):
     """马克笔在纸上走：带颗粒的窄带噪声，按笔画节奏起伏"""
     t = tt(d)
@@ -417,65 +423,117 @@ def scribble(d, level=1.0):
     return norm(n) * am * env * level
 
 
-for i, m in enumerate([64, 67, 69, 71, 74, 76]):
-    pen, hit = 130 + i * 15, 141 + i * 15
-    sfx(scribble(fr(hit - pen), 0.1), fr(pen), pan=-0.1 + 0.12 * (i % 3), send=0.05)
-    sfx(stamp(0.55, 240 + 20 * i, 70), fr(hit), pan=-0.1 + 0.12 * (i % 3), send=0.15)
-    sfx(marimba(midi(m + 12), 0.16, 0.12), fr(hit), pan=-0.1 + 0.12 * (i % 3), send=0.3)
-# 画布向左甩
-sfx(whoosh(fr(18), 200, 9000, 0.6, 0.6), fr(222), pan=0.6)
-sfx(whoosh(fr(16), 300, 7000, 0.35, 0.5), fr(224), pan=-0.6)
+# ----- 01 黑框：笔先画框，元素一个个从框里长出来 -----
+B = AT['border']
+STROKES = [(B + 8, 18), (B + 38, 12), (B + 58, 10), (B + 78, 5), (B + 83, 5), (B + 88, 5), (B + 98, 12)]
+for i, (t0, d) in enumerate(STROKES):
+    pn = 0.2 + 0.06 * i
+    sfx(scribble(fr(d), 0.11), fr(t0), pan=pn, send=0.05)
+    sfx(stamp(0.5, 240 + 18 * i, 70), fr(t0 + d), pan=pn, send=0.15)
+    sfx(marimba(midi([76, 79, 81, 83, 84, 86, 88][i]), 0.13, 0.12), fr(t0 + d), pan=pn, send=0.3)
+    sfx(whoosh(fr(6), 1200, 7000, 0.06, 0.8), fr(t0 + d), pan=pn)
+for k in range(13):  # JOIN THE CLUB 一个字一个字弹出来
+    sfx(keyclick(0.07, 1.3 + 0.03 * k), fr(B + 32 + k), pan=0.3)
+for k in range(12):  # 打 you@site.com
+    sfx(keyclick(0.09, 0.9 + 0.2 * rng.random()), fr(B + 54 + k / 1.6), pan=0.35)
+sfx(zip_(fr(8), 500, 1600, 0.08), fr(B + 78), pan=0.3)  # 开关滑过去
+sfx(click(0.4), fr(B + 94), pan=0.3)
+sfx(click(0.4), fr(B + 98), pan=0.35)
+sfx(click(1.0, deep=True), fr(B + 124), pan=0.3, send=0.15)
+sfx(stamp(0.6, 300, 80), fr(B + 130), pan=0.4, send=0.2)
+for k, m in enumerate((84, 88, 91)):
+    sfx(bell(midi(m), 0.12, 0.5), fr(B + 130 + k * 3), pan=0.4, send=0.45)
+sfx(whoosh(fr(18), 200, 9000, 0.6, 0.6), fr(AT['shadow'] - 18), pan=0.6)
+sfx(whoosh(fr(16), 300, 7000, 0.35, 0.5), fr(AT['shadow'] - 16), pan=-0.6)
 
 # ----- 02 硬影：模糊归零 → 抬起来 → 落下 → 摊成阶梯 → 蓝卡撑满 -----
-sfx(zip_(fr(26), 220, 1800, 0.12), fr(244), pan=-0.3, send=0.1)
-sfx(click(0.6), fr(270), send=0.2)
-sfx(whoosh(fr(16), 400, 4000, 0.22, 0.9), fr(272))
-sfx(boing(midi(55), 0.3, up=True, d=0.35), fr(274), send=0.25)
-sfx(stamp(0.85, 200, 50), fr(300), send=0.25)
+S = AT['shadow']
+sfx(zip_(fr(28), 220, 1800, 0.12), fr(S + 2), pan=-0.3, send=0.1)
+sfx(click(0.6), fr(S + 30), send=0.2)
+sfx(whoosh(fr(18), 400, 4000, 0.22, 0.9), fr(S + 34))
+sfx(boing(midi(55), 0.3, up=True, d=0.35), fr(S + 36), send=0.25)
+sfx(stamp(0.85, 200, 50), fr(S + 70), send=0.25)
 for k, m in enumerate([67, 71, 74, 79]):
-    t = 304 + k * 5
-    sfx(whoosh(fr(12), 600, 5000, 0.12, 0.8), fr(t), pan=0.2 + 0.1 * k)
-    sfx(stamp(0.4, 260 - 30 * k, 60 - 5 * k), fr(t + 14), pan=0.2 + 0.1 * k, send=0.2)
-    sfx(marimba(midi(m + 12), 0.14, 0.12), fr(t + 14), pan=0.2 + 0.1 * k, send=0.3)
-sfx(stamp(0.5, 300, 80), fr(316), pan=-0.5, send=0.2)
-sfx(whoosh(fr(14), 200, 8000, 0.5, 0.95), fr(346))
-sfx(BOOM * 0.7, fr(360), send=0.3)
+    t = S + 80 + k * 6
+    sfx(whoosh(fr(14), 600, 5000, 0.12, 0.8), fr(t), pan=0.2 + 0.1 * k)
+    sfx(stamp(0.4, 260 - 30 * k, 60 - 5 * k), fr(t + 16), pan=0.2 + 0.1 * k, send=0.2)
+    sfx(marimba(midi(m + 12), 0.14, 0.12), fr(t + 16), pan=0.2 + 0.1 * k, send=0.3)
+sfx(stamp(0.5, 300, 80), fr(S + 102), pan=-0.5, send=0.2)
+sfx(whoosh(fr(14), 200, 8000, 0.5, 0.95), fr(AT['press'] - 14))
+sfx(BOOM * 0.7, fr(AT['press']), send=0.3)
 
 # ----- 03 按下：二十颗按钮落下 → 两道水波 → 全部按下、褪成混凝土 -----
+P = AT['press']
 GRID = [(n % 5, n // 5) for n in range(20)]
 for c, r in GRID:
-    sfx(keyclick(0.12, 0.65 + 0.03 * (c + r)), fr(374 + (c + r) * 2.2), pan=-0.2 + c * 0.15, send=0.04)
-for at, (cc, rr) in ((396, (2, 1)), (426, (4, 3))):
+    sfx(keyclick(0.12, 0.65 + 0.03 * (c + r)), fr(P + 14 + (c + r) * 2.2), pan=-0.2 + c * 0.15, send=0.04)
+for at, (cc, rr) in ((P + 44, (2, 1)), (P + 80, (4, 3))):
     sfx(click(0.9, deep=True), fr(at), pan=0.2, send=0.15)
     for c, r in GRID:
         dist = ((c - cc) ** 2 + (r - rr) ** 2) ** 0.5
         sfx(keyclick(0.1, 0.9 + 0.1 * dist), fr(at + dist * 3), pan=-0.2 + c * 0.15, send=0.05)
-sfx(click(1.0, deep=True), fr(450), send=0.2)
-sfx(BOOM * 0.8, fr(450), send=0.3)
+ALL = P + 112
+sfx(click(1.0, deep=True), fr(ALL), send=0.2)
+sfx(BOOM * 0.8, fr(ALL), send=0.3)
 for c, r in GRID:
     dist = ((c - 2) ** 2 + (r - 2) ** 2) ** 0.5
-    sfx(keyclick(0.08, 0.7), fr(450 + dist * 1.2), pan=-0.2 + c * 0.15)
-# 颜色褪掉：一个往下掉的“断电”
+    sfx(keyclick(0.08, 0.7), fr(ALL + dist * 1.2), pan=-0.2 + c * 0.15)
 t = tt(0.4)
-sfx(np.sin(glide(320 * 2 ** (-2.2 * t / 0.4))) * np.exp(-t / 0.25) * 0.25, fr(452), send=0.2)
+sfx(np.sin(glide(320 * 2 ** (-2.2 * t / 0.4))) * np.exp(-t / 0.25) * 0.25, fr(ALL + 2), send=0.2)  # “断电”
 
 # ----- 04 来历 -----
-sfx(BOOM * 0.6, fr(470), send=0.3)
-sfx(onepole_lp(noise(0.5), 600) * np.exp(-tt(0.5) / 0.12) * 0.4, fr(470), send=0.2)
-# 里程表滚动：每次换年份，一串机械齿轮声
-for at in (520, 556):
+L = AT['lineage']
+sfx(BOOM * 0.6, fr(ALL + 14), send=0.3)
+sfx(onepole_lp(noise(0.5), 600) * np.exp(-tt(0.5) / 0.12) * 0.4, fr(ALL + 14), send=0.2)
+for at in (L + 50, L + 96):  # 里程表滚动
     for k in range(10):
         sfx(keyclick(0.07, 1.6 + 0.05 * k), fr(at + k * 1.6), pan=-0.6, send=0.03)
 for c, r in GRID:
     d = (c + r) * 2
-    sfx(keyclick(0.1, 0.7 + 0.03 * (c + r)), fr(520 + d + 4), pan=-0.2 + c * 0.15, send=0.05)
+    sfx(keyclick(0.1, 0.7 + 0.03 * (c + r)), fr(L + 50 + d + 4), pan=-0.2 + c * 0.15, send=0.05)
 PENTA = [76, 79, 81, 83, 86, 88, 91]
 for c, r in GRID:
     d = (c + r) * 2
-    sfx(pop(midi(PENTA[(c + r) % 7] - 12), 0.12), fr(556 + d), pan=-0.2 + c * 0.15, send=0.2)
+    sfx(pop(midi(PENTA[(c + r) % 7] - 12), 0.12), fr(L + 96 + d), pan=-0.2 + c * 0.15, send=0.2)
 
-# ================= 五个词 600–744 =================
-CLIMB = [(600, 79), (630, 81), (660, 83), (690, 84), (720, 86)]
+# ----- 05 应用：网页 + 手机 -----
+A = AT['apps']
+sfx(whoosh(fr(14), 200, 8000, 0.5, 0.95), fr(A - 14))
+sfx(BOOM * 0.6, fr(A + 2), send=0.3)
+sfx(stamp(0.7, 200, 55), fr(A + 2), pan=-0.3, send=0.25)
+sfx(pop(midi(79), 0.2), fr(A + 14), pan=-0.4, send=0.2)
+sfx(stamp(0.3, 320, 100), fr(A + 14), pan=-0.1)
+for at in (A + 20, A + 26):
+    sfx(whoosh(fr(10), 800, 6000, 0.14, 0.9), fr(at), pan=-0.4)
+sfx(zip_(fr(12), 400, 2600, 0.08), fr(A + 30), pan=-0.1)
+for at, pn in ((A + 44, -0.5), (A + 48, -0.3)):
+    sfx(stamp(0.45, 260, 70), fr(at), pan=pn, send=0.2)
+for k, at in enumerate((A + 54, A + 60, A + 66)):
+    sfx(whoosh(fr(12), 600, 6000, 0.14, 0.8), fr(at - 12), pan=0.2)
+    sfx(stamp(0.45, 240 - 20 * k, 65), fr(at), pan=0.1, send=0.2)
+    sfx(marimba(midi([79, 83, 86][k] + 12), 0.13, 0.12), fr(at), pan=0.1, send=0.3)
+sfx(whoosh(fr(16), 150, 6000, 0.45, 0.9), fr(A + 54), pan=0.7)
+sfx(BOOM * 0.75, fr(A + 68), send=0.3)
+sfx(stamp(0.8, 180, 50), fr(A + 68), pan=0.6, send=0.25)
+for k in range(12):  # 余额从 0 数到 3,280
+    sfx(keyclick(0.07, 1.2 + 0.06 * k), fr(A + 78 + k * 1.3), pan=0.6)
+sfx(bell(midi(88), 0.14, 0.4), fr(A + 94), pan=0.6, send=0.4)
+for k in range(3):
+    sfx(pop(midi(76 + 3 * k), 0.16), fr(A + 82 + 2 * k), pan=0.6, send=0.2)
+for k in range(3):
+    sfx(stamp(0.3, 300 - 20 * k, 90), fr(A + 88 + 4 * k), pan=0.6, send=0.15)
+sfx(stamp(0.5, 240, 70), fr(A + 102), pan=0.6, send=0.2)
+START, ADD = A + 112, A + 136
+sfx(click(1.0, deep=True), fr(START), pan=-0.4, send=0.15)
+sfx(stamp(0.5, 300, 80), fr(START + 6), pan=-0.4, send=0.2)
+sfx(bell(midi(91), 0.12, 0.5), fr(START + 8), pan=-0.4, send=0.45)
+sfx(whoosh(fr(14), 500, 6000, 0.2, 0.7), fr(START + 8), pan=0.3)
+sfx(click(1.0, deep=True), fr(ADD), pan=0.6, send=0.15)
+sfx(pop(midi(84), 0.35), fr(ADD + 6), pan=0.6, send=0.3)
+sfx(cashier(0.32), fr(ADD + 12), pan=0.6, send=0.3)
+
+# ================= 五个词 =================
+CLIMB = [(W0, 79), (W0 + 30, 81), (W0 + 60, 83), (W0 + 90, 84), (W0 + 120, 86)]
 for fm, m in CLIMB:
     n = chord_at(fm)
     sfx(whoosh(fr(12), 500, 8000, 0.3, 0.85), fr(fm - 12))
@@ -485,34 +543,34 @@ for fm, m in CLIMB:
     place(marimba(midi(m), 0.32, 0.3), fr(fm), send=0.3, bus=LEAD)
     sfx(bell(midi(m + 12), 0.08, 0.4), fr(fm), pan=0.2, send=0.4)
 for k in range(8):
-    place(SNARE * (0.14 + 0.04 * k), fr(728 + k * 1.9), send=0.15)
+    place(SNARE * (0.14 + 0.04 * k), fr(W0 + 128 + k * 1.9), send=0.15)
 
-# ================= 片尾 744–900 =================
-sfx(whoosh(fr(18), 150, 5000, 0.5, 0.6), fr(744))
-END_HITS = [(756, 43, 0.9), (771, 47, 0.95), (786, 50, 1.0)]
-for fm, m, lv in END_HITS:
+# ================= 片尾 =================
+E_ = AT['end']
+sfx(whoosh(fr(18), 150, 5000, 0.5, 0.6), fr(E_ - 8))
+for fm, m, lv in ((E_ + 6, 43, 0.9), (E_ + 18, 47, 0.95), (E_ + 30, 50, 1.0)):
     kick_at(fm, lv)
     sfx(stamp(0.85 * lv, 220, 55), fr(fm), send=0.25)
     place(square_bass(m, 0.3, 0.45), fr(fm))
     place(CRASH * 0.35 * lv, fr(fm), send=0.3)
     for pan in (-0.5, 0.5):
         place(stab([67 + (m - 43), 71 + (m - 43), 74 + (m - 43)], 0.16, 0.18), fr(fm), pan=pan, send=0.3)
-sfx(pop(midi(83), 0.3), fr(795), send=0.25)
-sfx(zip_(fr(12), 400, 2600, 0.12), fr(810), pan=0.6)
-sfx(stamp(0.45, 300, 90), fr(816), pan=0.6, send=0.2)
-sfx(whoosh(fr(14), 300, 5000, 0.3, 0.6), fr(826))
-# G 大和弦铺底：f870 按下时断开，f880 弹回来
+sfx(pop(midi(83), 0.3), fr(E_ + 40), send=0.25)
+sfx(zip_(fr(12), 400, 2600, 0.12), fr(E_ + 56), pan=0.6)
+sfx(stamp(0.45, 300, 90), fr(E_ + 62), pan=0.6, send=0.2)
+sfx(whoosh(fr(14), 300, 5000, 0.3, 0.6), fr(E_ + 62))
+for pan in (-0.5, 0.5):  # G 大和弦铺底：按下时断开，弹回来时再响
+    place(pad([midi(m) for m in [43, 55, 59, 62, 67]], fr(66), 0.5, att=0.4, rel=0.06), fr(E_ + 30), pan=pan, send=0.35)
+sfx(click(1.0, deep=True), fr(E_ + 96), send=0.2)
+REL = E_ + 106
+kick_at(REL, 1.0)
+sfx(BOOM * 0.9, fr(REL), send=0.4)
+place(CRASH * 0.6, fr(REL), send=0.45)
 for pan in (-0.5, 0.5):
-    place(pad([midi(m) for m in [43, 55, 59, 62, 67]], fr(870 - 790), 0.5, att=0.4, rel=0.06), fr(790), pan=pan, send=0.35)
-sfx(click(1.0, deep=True), fr(870), send=0.2)
-kick_at(880, 1.0)
-sfx(BOOM * 0.9, fr(880), send=0.4)
-place(CRASH * 0.6, fr(880), send=0.45)
-for pan in (-0.5, 0.5):
-    place(stab([55, 59, 62, 67, 71, 74, 79], 0.6, 0.3), fr(880), pan=pan, send=0.5)
-    place(pad([midi(m) for m in [43, 55, 59, 62, 67, 71]], 0.3, 0.55, att=0.005, rel=0.3), fr(880), pan=pan, send=0.5)
-place(marimba(midi(91), 0.3, 0.5), fr(880), send=0.5, bus=LEAD)
-sfx(bell(midi(98), 0.1, 0.9), fr(882), send=0.6)
+    place(stab([55, 59, 62, 67, 71, 74, 79], 0.6, 0.3), fr(REL), pan=pan, send=0.5)
+    place(pad([midi(m) for m in [43, 55, 59, 62, 67, 71]], 0.3, 0.55, att=0.005, rel=0.3), fr(REL), pan=pan, send=0.5)
+place(marimba(midi(91), 0.3, 0.5), fr(REL), send=0.5, bus=LEAD)
+sfx(bell(midi(98), 0.1, 0.9), fr(REL + 2), send=0.6)
 
 # ================= 侧链 + 延迟 + 混响 =================
 tsec = np.arange(N) / SR
@@ -550,12 +608,12 @@ mix[0] += reverb(SEND[0], 1) * 0.45
 mix[1] += reverb(SEND[1], 2) * 0.45
 for ch in range(2):
     mix[ch] = hp(hp(mix[ch], 30), 30)
-# f870—880 断一下：所有声部压低（按下去的那 10 帧），音效除外
+# 片尾按下去的那几帧：所有声部压低，音效除外
 gap = np.ones(N)
-g0, g1 = int(fr(871) * SR), int(fr(880) * SR)
+g0, g1 = int(fr(AT['end'] + 97) * SR), int(fr(AT['end'] + 106) * SR)
 gap[g0:g1] = 0.12
 mix = (mix - SFX) * gap[None, :] + SFX
-# 循环：15 秒之后的余音（最后那记 G 大和弦、混响尾巴）折回开头，和第一帧的海报接上
+# 循环：成片之后的余音（最后那记 G 大和弦、混响尾巴）折回开头，和第一帧的海报接上
 mix[:, : N - NV] += mix[:, NV:]
 mix = mix[:, :NV]
 mix = mix.T
