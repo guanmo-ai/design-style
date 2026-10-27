@@ -1,0 +1,86 @@
+/* 009 · 新粗野主义 Neo-Brutalism — CSS 设计令牌（与 tokens.ts / tokens.json 同源）
+   整个风格只有一个秘密：阴影 = 同形黑块向右下偏移，模糊永远是 0。 */
+:root {
+  /* 颜色：纯黑描边 + 暖白底 + 五个平涂色 */
+  --nb-ink: #000000;      /* 描边、阴影、正文：只用纯黑 */
+  --nb-paper: #FFF6E5;    /* 底 */
+  --nb-white: #FFFFFF;    /* 卡片 */
+  --nb-yellow: #FFD23F;   /* 主色：最重要的一块 */
+  --nb-pink: #FF8FD6;     /* 按下 / 选中 */
+  --nb-lime: #B8F15A;     /* 成功 */
+  --nb-blue: #7AA2FF;     /* 信息 */
+  --nb-orange: #FF7A45;   /* 贴纸 / 警告 */
+
+  /* 形状：描边 3–4，阴影 4 / 8，圆角只选一档 */
+  --nb-border: 4px;
+  --nb-shadow-1: 4px;
+  --nb-shadow-2: 8px;
+  --nb-radius: 0;          /* 或 8px，或胶囊 999px；同一界面只用一档 */
+  --nb-press: 100ms;       /* 按下：线性，不弹 */
+
+  /* 字：宽体标题 + Grotesk 界面 + 等宽代码 + 中文黑体 */
+  --nb-font-display: 'Archivo', 'Arial Black', 'Noto Sans SC', sans-serif;
+  --nb-font: 'Space Grotesk', 'Archivo', 'Noto Sans SC', sans-serif;
+  --nb-font-mono: 'Space Mono', 'JetBrains Mono', ui-monospace, monospace;
+  --nb-font-cjk: 'Noto Sans SC', 'Source Han Sans SC', 'PingFang SC', sans-serif;
+}
+
+/* 底：可见的网格（30px 点阵） */
+.nb-page {
+  background-color: var(--nb-paper);
+  background-image: radial-gradient(rgba(0, 0, 0, 0.16) 1.5px, transparent 1.8px);
+  background-size: 30px 30px;
+  color: var(--nb-ink);
+  font-family: var(--nb-font), var(--nb-font-cjk);
+}
+
+/* 卡片：黑框 + 硬阴影 */
+.nb-card {
+  background: var(--nb-white);
+  border: var(--nb-border) solid var(--nb-ink);
+  border-radius: var(--nb-radius);
+  box-shadow: var(--nb-shadow-2) var(--nb-shadow-2) 0 var(--nb-ink);
+}
+
+/* 按钮：三态。按下 = 元素滑到阴影的位置，阴影归零 */
+.nb-button {
+  --s: var(--nb-shadow-1);
+  padding: 12px 22px;
+  background: var(--nb-yellow);
+  border: var(--nb-border) solid var(--nb-ink);
+  border-radius: var(--nb-radius);
+  box-shadow: var(--s) var(--s) 0 var(--nb-ink);
+  font: 700 18px/1 var(--nb-font), var(--nb-font-cjk);
+  color: var(--nb-ink);
+  cursor: pointer;
+  transition: transform var(--nb-press) linear, box-shadow var(--nb-press) linear;
+}
+.nb-button:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: calc(var(--s) + 2px) calc(var(--s) + 2px) 0 var(--nb-ink);
+}
+.nb-button:active {
+  transform: translate(var(--s), var(--s));
+  box-shadow: none;
+}
+/* 焦点环：直接加粗，不用发光 */
+.nb-button:focus-visible {
+  outline: 4px solid var(--nb-ink);
+  outline-offset: 4px;
+}
+
+/* 选中 = 反色，不是变灰 */
+.nb-chip[aria-pressed='true'] {
+  background: var(--nb-ink);
+  color: var(--nb-paper);
+  box-shadow: none;
+}
+
+/* 贴纸：全页只歪一个 */
+.nb-sticker {
+  transform: rotate(-4deg);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .nb-button { transition: none; }
+}
