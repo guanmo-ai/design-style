@@ -4,7 +4,7 @@
  * 同一个世界、同一台镜头：
  *   84—118   镜头从 2.4 倍拉回 1 倍；开场留下的 I 变长、变细，成了狗绳
  *   100—124  狗一块块搭出来：身子落下 → 项圈 → 头 → 耳朵 → 尾巴 → 四条腿（落地带 5% 过冲）
- *   126—172  人和狗一起走（加速 14 帧 → 匀速 24 px/帧 → 刹车 12 帧）；镜头跟拍（一阶滞后 10 帧）
+ *   126—162  人和狗一起走（加速 12 帧 → 匀速 24 px/帧 → 刹车 12 帧）；镜头锁在狗身上跟拍
  *            残影在“镜头里”算：身子跟镜头一起走，几乎没有残影；腿摆得最快，扇开成巴拉画里的“多腿”
  *            刹车：步态相位冻结、摆幅归零，腿上的残影自己收拢；腿旁的标注实时数层数
  *   178—     狗绳脱手落地；人重新起步、越走越快，镜头拉远上摇到全身（02）
@@ -38,7 +38,7 @@ const dogPose = (t: number): DogPose => {
   const phase = (2 * Math.PI * (x - XD0)) / DOG_CYCLE;
   const drop = [0, 1, 2, 3, 4, 5, 6, 7].map((i) => land(t, BUILD[i], 16));
   drop[8] = land(t, BUILD[9], 14);
-  return {x, y: G, phase, amp, drop, bob: -3 * amp * Math.abs(Math.sin(phase))};
+  return {x, y: G, phase, amp, drop, bob: 0};
 };
 
 /** 步态相位的起点：让定格那一刻正好是步子迈得最开的时候 */
@@ -67,7 +67,8 @@ const IREST = (() => {
     w: (r.x1 - r.x0) / Z0,
   };
 })();
-const dogCam = (t: number): Cam => ({cx: follow(dogX, t, 4, 0.5) + 60, cy: 540, z: 1});
+/** 跟拍锁在狗身上（像画家跟着狗一起走）：身子在画面里不动、没有残影，只有摆动的腿留下残影 */
+const dogCam = (t: number): Cam => ({cx: dogX(t) + 60, cy: 540, z: 1});
 const figCam = (t: number): Cam => ({cx: follow(walkerX, t, 12, 1) + 60, cy: G - 1080, z: 0.37 * zoomLerp(1, 1.1, ease.inOut(prog(t, 250, 40)))});
 export const camAt = (t: number): Cam => {
   if (t < 118) {
