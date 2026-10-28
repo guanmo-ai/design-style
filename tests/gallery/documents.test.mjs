@@ -50,6 +50,8 @@ test('中英文阅读标题使用上架期号，保留原文锚点和源码标�
   }
   const layout = {...work, id:'07-example', type:'layout', number:'03'};
   assert.match(renderDocument('# 07 · Example', layout, 'guide').html, /<h1 id="doc-07--example">03 · Example<\/h1>/);
+  assert.match(renderDocument('# 布局 07 · Example', layout, 'guide').html, /<h1 id="doc-布局-07--example">布局 03 · Example<\/h1>/);
+  assert.match(renderDocument('# Layout 07 · Example', layout, 'guide', 'en').html, /<h1 id="doc-layout-07--example">Layout 03 · Example<\/h1>/);
   assert.match(renderDocument('# 1925 · Art Deco', work, 'guide').html, /<h1 id="doc-1925--art-deco">1925 · Art Deco<\/h1>/);
 });
 
