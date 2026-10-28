@@ -124,7 +124,7 @@ export const Root: React.FC = () => (
       height={1080}
       defaultProps={{music: true}}
     />
-    {/* 草稿预览：30fps、不做运动模糊；渲染时再加 --scale=0.5（npm run preview:014） */}
+    {/* 草稿预览：30fps、内部半分辨率、不做运动模糊；渲染时加 --scale=0.5（npm run preview:014） */}
     <Composition
       id="S014-LiquidGlass-Preview"
       component={LiquidGlass}
@@ -132,7 +132,7 @@ export const Root: React.FC = () => (
       fps={30}
       width={1920}
       height={1080}
-      defaultProps={{music: true, blur: 1, step: 2}}
+      defaultProps={{music: true, blur: 1, step: 2, res: 0.5}}
     />
   </>
 );

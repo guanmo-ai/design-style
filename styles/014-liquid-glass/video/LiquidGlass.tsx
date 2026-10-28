@@ -99,10 +99,11 @@ const icon = (c: CanvasRenderingContext2D, kind: NonNullable<Label['icon']>, x: 
 };
 
 /** 压在玻璃上的字：color = 'auto' 时读“玻璃后面”（src）在字底下的亮度，0.42 以下转白、0.55 以上转黑 */
-const paintLabels = (ov: HTMLCanvasElement, src: HTMLCanvasElement, labels: Label[]) => {
+const paintLabels = (ov: HTMLCanvasElement, src: HTMLCanvasElement, labels: Label[], px = 1) => {
   const c = ov.getContext('2d')!;
   c.setTransform(1, 0, 0, 1, 0, 0);
   c.clearRect(0, 0, ov.width, ov.height);
+  c.setTransform(px, 0, 0, px, 0, 0);
   const s = src.getContext('2d', {willReadFrequently: true})!;
   for (const l of labels) {
     const a = l.alpha ?? 1;
@@ -114,9 +115,9 @@ const paintLabels = (ov: HTMLCanvasElement, src: HTMLCanvasElement, labels: Labe
       const w = l.icon ? l.size : c.measureText(l.text).width;
       const x0 = l.icon ? l.x - w / 2 : l.align === 'center' ? l.x - w / 2 : l.align === 'right' ? l.x - w : l.x;
       const y0 = l.icon ? l.y - l.size / 2 : l.y - l.size;
-      const bx = Math.max(0, Math.min(src.width - 1, Math.round(x0)));
-      const by = Math.max(0, Math.min(src.height - 1, Math.round(y0)));
-      const L = lum(s.getImageData(bx, by, Math.max(1, Math.min(src.width - bx, Math.round(w))), Math.max(1, Math.min(src.height - by, Math.round(l.size)))).data);
+      const bx = Math.max(0, Math.min(src.width - 1, Math.round(x0 * px)));
+      const by = Math.max(0, Math.min(src.height - 1, Math.round(y0 * px)));
+      const L = lum(s.getImageData(bx, by, Math.max(1, Math.min(src.width - bx, Math.round(w * px))), Math.max(1, Math.min(src.height - by, Math.round(l.size * px)))).data);
       const t = Math.min(1, Math.max(0, (L - 0.42) / 0.13));
       const v = Math.round(255 * (1 - t) + 11 * t);
       col = `rgb(${v},${v},${Math.round(255 * (1 - t) + 16 * t)})`;
@@ -140,18 +141,18 @@ type Res = {
   browserOv: HTMLCanvasElement;
 };
 
-const renderSample = (R: Res, F: Frame, t: number, blend: number) => {
+const renderSample = (R: Res, F: Frame, t: number, blend: number, px: number) => {
   const st = {bend: F.bend, merge: F.merge, rule: F.rule};
-  drawPlane(R.main.getContext('2d')!, F.main, t, st);
+  drawPlane(R.main.getContext('2d')!, F.main, t, st, W, H, px);
   let src = R.r.upload('main', R.main);
   let altTex: WebGLTexture | null = null;
   if (F.alt) {
-    drawPlane(R.alt.getContext('2d')!, F.alt, t, st);
+    drawPlane(R.alt.getContext('2d')!, F.alt, t, st, W, H, px);
     altTex = R.r.upload('alt', R.alt);
   }
   const phase = (t / DURATION) * Math.PI * 2;
   if (F.devices.length) {
-    const comp = R.r.target('comp', W, H);
+    const comp = R.r.target('comp', Math.round(W * px), Math.round(H * px), px);
     R.r.drawQuad(comp, src, null, null);
     F.devices.forEach((d: DeviceFrame) => {
       const isPhone = d.kind === 'phone';
@@ -170,17 +171,19 @@ const renderSample = (R: Res, F: Frame, t: number, blend: number) => {
     R.r.mip(comp);
     src = comp.tex!;
   }
-  R.r.drawGlass(R.r.screen(), src, altTex, F.shapes, F.groups, F.ripples, F.light, phase, blend);
+  R.r.drawGlass(R.r.screen(px), src, altTex, F.shapes, F.groups, F.ripples, F.light, phase, blend);
 };
 
 /**
  * step：一帧走几帧剧本时间。正片 1；草稿预览用 30fps 合成、step = 2（再配合 --scale=0.5、blur = 1），整片快十几倍
  */
-export const LiquidGlass: React.FC<{music?: boolean; blur?: number; step?: number}> = ({music = true, blur = 6, step = 1}) => {
+export const LiquidGlass: React.FC<{music?: boolean; blur?: number; step?: number; res?: number}> = ({music = true, blur = 6, step = 1, res = 1}) => {
+  const w = Math.round(W * res);
+  const h = Math.round(H * res);
   const f = useCurrentFrame() * step;
   const glRef = useRef<HTMLCanvasElement>(null);
   const ovRef = useRef<HTMLCanvasElement>(null);
-  const [res] = useState<{R: Res | null}>(() => ({R: null}));
+  const [store] = useState<{R: Res | null}>(() => ({R: null}));
   const [ready, setReady] = useState(false);
   const [fontHandle] = useState(() => delayRender('liquid-glass-fonts'));
   useEffect(() => {
@@ -191,19 +194,19 @@ export const LiquidGlass: React.FC<{music?: boolean; blur?: number; step?: numbe
   }, [fontHandle]);
   useEffect(() => {
     if (!ready) return;
-    const h = delayRender(`frame-${f}`);
-    if (!res.R) {
-      res.R = {
+    const handle = delayRender(`frame-${f}`);
+    if (!store.R) {
+      store.R = {
         r: new Renderer(glRef.current!),
-        main: mk(W, H),
-        alt: mk(W, H),
+        main: mk(w, h),
+        alt: mk(w, h),
         phone: mk(PHONE.w, PHONE.h),
         browser: mk(BROWSER.w, BROWSER.h),
         phoneOv: mk(PHONE.w, PHONE.h),
         browserOv: mk(BROWSER.w, BROWSER.h),
       };
     }
-    const R = res.R;
+    const R = store.R;
     // 运动模糊：快门半帧，按这一帧最快的东西决定取几个子帧
     const v = blur > 1 ? speedAt(f) : 0;
     const n = v > 3 ? Math.min(blur, 2 + Math.round(v / 14)) : 1;
@@ -211,15 +214,15 @@ export const LiquidGlass: React.FC<{music?: boolean; blur?: number; step?: numbe
       let t = n === 1 ? f : f - 0.5 * (1 - i / (n - 1));
       // 子帧不跨过换平面的那一刻
       if (frameAt(t).main.plane !== frameAt(f).main.plane) t = f;
-      renderSample(R, frameAt(t), t, 1 / (i + 1));
+      renderSample(R, frameAt(t), t, 1 / (i + 1), res);
     }
-    paintLabels(ovRef.current!, R.main, frameAt(f).labels);
-    continueRender(h);
-  }, [f, ready, res, blur]);
+    paintLabels(ovRef.current!, R.main, frameAt(f).labels, res);
+    continueRender(handle);
+  }, [f, ready, store, blur, res, w, h]);
   return (
     <AbsoluteFill style={{background: '#EEEAF6'}}>
-      <canvas ref={glRef} width={W} height={H} style={{position: 'absolute', inset: 0}} />
-      <canvas ref={ovRef} width={W} height={H} style={{position: 'absolute', inset: 0}} />
+      <canvas ref={glRef} width={w} height={h} style={{position: 'absolute', inset: 0, width: '100%', height: '100%'}} />
+      <canvas ref={ovRef} width={w} height={h} style={{position: 'absolute', inset: 0, width: '100%', height: '100%'}} />
       {music && <Audio src={staticFile('014-liquid-glass/music.wav')} />}
     </AbsoluteFill>
   );
