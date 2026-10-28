@@ -16,6 +16,17 @@
 2. 直接采用 `review-renders` 上的成片，不重新渲染、不改音画；按 014 的做法通过 `release-assets/day-15/` 发布 Release `day-15`（成片 + 完整项目源码包 + SHA256SUMS），画廊登记并同步中英文目录与预览。
 3. 合并注意：另一个会话在做 016，`package.json`（新增 `music:015` / `render:015` / `render:015:gpu` / `preview:015` / `images:015`）和 `src/Root.tsx`（新增 `S015-Futurism` / `S015-Futurism-Preview`）可能和 016 冲突，两边的条目都保留。
 
+## 设计侧待办（下一个 Claude 会话做，不是 Codex）
+
+- **把 015 的通用部件解耦出来**，放到共用的地方供后面每一期复用，并在 `DESIGN_NOTES.md` 的“复用”一节登记：
+  - `styles/015-futurism/video/kit.tsx`：Echoes（按真实轨迹取样的残影）、Word（逐字排、wdth 跟速度走，配 `make_metrics.py` 生成的字宽表）、ForceLines、Rise（遮罩升起，不用 id）、camT / zoomLerp / mixHex
+  - `motion.ts`：kin（分段匀加速）、path1（速度连续的轨迹）、springOf / leanOf（惯性前倾）、land / anticLand / wobble / follow
+  - `Futurism.tsx` + `scenes.ts` + `hud.tsx`：按时间挂载各段、自适应运动模糊（按最快速度取子帧、不跨段）、step / blur / res 参数、右上角读数、底栏进度
+  - `curves.ts` + `scripts/plot_probe.py`：probe(f) 式的剧本曲线
+  - `audio/make_music.py`：鼓 / 贝斯 / 钢琴 / 钟琴 / 铺底 / 弹拨弦 / 各种音效、侧链、余音折回、−14 LUFS 母带——抽成乐器库，每期只写“哪一帧响什么”
+  - 再加一个新一期起步脚本（生成 video/ 骨架、注册合成、加 render / preview 命令）
+- 解耦时不要改 015 的成片画面；改完用 `npm run preview:015` 对比一遍。
+
 ## 设计侧留下的素材（不用动，供下次做新一期）
 
 - `drafts/op-art`、`drafts/dither`：两套已完成三张风格图的候选风格，说明见 `drafts/README.md`（未来主义已做成 015）。
