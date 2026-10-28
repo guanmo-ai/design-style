@@ -27,7 +27,10 @@ export function renderDocument(markdown, work, kind, language = 'zh') {
       const id = `doc-${slug}${count ? `-${count}` : ''}`;
       if (depth === 2) headings.push({id, label});
       // 标题显示上架期号；原文锚点和代码中的制作编号继续保留。
-      const displayText = depth === 1 ? text.replace(new RegExp(`^${work.id.split('-')[0]}(?=\\s*·)`), h(work.number)) : text;
+      const displayText = depth === 1 ? text.replace(
+        new RegExp(`^((?:风格|布局|Style|Layout)\\s+)?${work.id.split('-')[0]}(?=\\s*·)`),
+        (match, prefix = '') => prefix + h(work.number)
+      ) : text;
       return `<h${depth} id="${h(id)}">${displayText}</h${depth}>`;
     }
   }});
