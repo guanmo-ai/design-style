@@ -26,7 +26,9 @@ export function renderDocument(markdown, work, kind, language = 'zh') {
       ids.set(slug, count + 1);
       const id = `doc-${slug}${count ? `-${count}` : ''}`;
       if (depth === 2) headings.push({id, label});
-      return `<h${depth} id="${h(id)}">${text}</h${depth}>`;
+      // 标题显示上架期号；原文锚点和代码中的制作编号继续保留。
+      const displayText = depth === 1 ? text.replace(new RegExp(`^${work.id.split('-')[0]}(?=\\s*·)`), h(work.number)) : text;
+      return `<h${depth} id="${h(id)}">${displayText}</h${depth}>`;
     }
   }});
   function rewrite(value, image = false) {

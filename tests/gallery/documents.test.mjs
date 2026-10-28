@@ -37,6 +37,22 @@ test('布局作品的文档从 layouts/ 读取素材', async () => {
   assert.match(guide.html, /href="..\/..\/#work-01-bento-grid">看视频<\/a>/);
 });
 
+test('中英文阅读标题使用上架期号，保留原文锚点和源码标识', () => {
+  const work = {id:'013-art-deco', type:'style', number:'008', title:'装饰艺术', titleEn:'Art Deco', release:'day-13'};
+  const markdown = '# 013 · Art Deco\n\n[标题](#013--art-deco)\n\n[源码](video/ArtDeco.tsx)\n\n`styles/013-art-deco`';
+  for (const language of ['zh', 'en']) {
+    const {html} = renderDocument(markdown, work, 'guide', language);
+    assert.match(html, /<h1 id="doc-013--art-deco">008 · Art Deco<\/h1>/);
+    assert.match(html, language === 'zh' ? /风格 008 \/ 装饰艺术/ : /Style 008 \/ Art Deco/);
+    assert.match(html, /href="#doc-013--art-deco"/);
+    assert.match(html, /href="https:\/\/github.com\/guanmo-ai\/design-style\/blob\/main\/styles\/013-art-deco\/video\/ArtDeco.tsx"/);
+    assert.match(html, /<code>styles\/013-art-deco<\/code>/);
+  }
+  const layout = {...work, id:'07-example', type:'layout', number:'03'};
+  assert.match(renderDocument('# 07 · Example', layout, 'guide').html, /<h1 id="doc-07--example">03 · Example<\/h1>/);
+  assert.match(renderDocument('# 1925 · Art Deco', work, 'guide').html, /<h1 id="doc-1925--art-deco">1925 · Art Deco<\/h1>/);
+});
+
 test('文档渲染移除脚本与危险 URL，同时保留安全链接', () => {
   const work = {id:'001-bauhaus', number:'001', title:'包豪斯', titleEn:'Bauhaus', release:'day-01'};
   const result = renderDocument('# 标题\n\n<script>alert(1)</script>\n\n<a href="javascript:alert(1)" onclick="alert(1)">危险链接</a>\n\n[官方](https://example.com/)\n\n## 相同标题\n\n## 相同标题', work, 'guide');

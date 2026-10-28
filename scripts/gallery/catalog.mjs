@@ -26,6 +26,13 @@ export function validateEntries(works) {
     if (!Array.isArray(work.images) || work.images.length !== 4 || new Set(work.images.map(image => image.file)).size !== 4 || work.images.some(image => !/^[a-z0-9-]+$/.test(image.file) || !image.title || !image.kind)) throw new Error('风格图配置无效');
     if (work.images.some(image => !['titleEn','kindEn'].every(key => typeof image[key] === 'string' && image[key].trim()))) throw new Error('英文图解配置不完整');
   }
+  for (const type of Object.keys(TYPES)) {
+    const numbers = works.filter(work => work.type === type).map(work => work.number).sort((a, b) => Number(a) - Number(b));
+    const width = type === 'style' ? 3 : 2;
+    if (numbers.some((number, index) => number !== String(index + 1).padStart(width, '0'))) {
+      throw new Error(`${TYPES[type].name}的上架期号必须从 ${'1'.padStart(width, '0')} 开始连续编号，不能重复或跳号`);
+    }
+  }
 }
 export async function loadCatalog() {
   const works = JSON.parse(await readFile(path.join(root, 'gallery/data/works.json'), 'utf8'));

@@ -448,7 +448,7 @@
   {
     "id": "008-risograph",
     "type": "style",
-    "number": "008",
+    "number": "006",
     "title": "孔版印刷",
     "titleEn": "Risograph",
     "years": "1946—今天",
@@ -496,7 +496,7 @@
   {
     "id": "009-neo-brutalism",
     "type": "style",
-    "number": "009",
+    "number": "007",
     "title": "新粗野主义",
     "titleEn": "Neo-Brutalism",
     "years": "2021—今天",
@@ -560,7 +560,7 @@
   {
     "id": "013-art-deco",
     "type": "style",
-    "number": "013",
+    "number": "008",
     "title": "装饰艺术",
     "titleEn": "Art Deco",
     "years": "1925—1939",
