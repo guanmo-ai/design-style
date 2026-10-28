@@ -51,14 +51,14 @@
 |:-:|---|---|---|
 | 1 | Claude | 分镜、代码；每改一轮只出关键帧静帧（`scripts/stills_batch.mjs`）和剧本曲线（`motion_curves.mjs` + `plot_curves.py`），查构图、跳变、死区、过冲 | 每轮几分钟 |
 | 2 | Claude | 动作要看连续性时，只出那一段的胶片条（`stills_batch.mjs 起-止:步长` + `strip.py`），不渲整片 | 每段 2—5 分钟 |
-| 3 | Claude | 需要看整体节奏时，渲**草稿预览**：30fps、半分辨率、不做运动模糊（`npm run preview:NNN`，合成 `SNNN-…-Preview`） | 估计 10—15 分钟 |
+| 3 | Claude | 需要看整体节奏时，渲**草稿预览**：30fps、内部半分辨率、不做运动模糊（`npm run preview:NNN`，合成 `SNNN-…-Preview`） | 实测 014 约 10 分钟（正片在同一台机器上约 2 小时 20 分钟） |
 | 4 | Codex | 关键帧和预览都过了，才渲**正片**：在 Mac 上 `npm run render:NNN:gpu`（`--gl=angle` 走显卡），把成片推到 `review-renders` 分支的 `NNN/` 目录 | 几分钟 |
 | 5 | Claude | 拉下成片审片：首尾接缝、每段抽帧联系表、关键动作连续帧、字幕、和预览对比有没有显卡与软件渲染的差异；有问题改代码，回到第 4 步 | 每轮十几分钟 |
 | 6 | 主人 | 看成片，提意见或通过；通过后 Codex 发布 Release、上架画廊 | — |
 
 - **Claude 不在云端渲正片。** 除非 Codex 不可用；那样就分段渲（见下一节）。
 - **Codex 只执行渲染，不改设计。** 渲染报错或画面和预览不一致，把现象和截图记进 `docs/HANDOFF.md`，由 Claude 修代码。
-- 每期新短片都要提供三条命令：`render:NNN`（云端软件渲染，兜底）、`render:NNN:gpu`（Mac 显卡）、`preview:NNN`（草稿预览）；合成里留 `step` / `blur` 参数，预览合成用 30fps、`step: 2`、`blur: 1`。
+- 每期新短片都要提供三条命令：`render:NNN`（云端软件渲染，兜底）、`render:NNN:gpu`（Mac 显卡）、`preview:NNN`（草稿预览）；合成里留 `step` / `blur` / `res` 参数，预览合成用 30fps、`step: 2`、`blur: 1`、`res: 0.5`。注意：Remotion 的 `--scale` 只缩小最后的截图，着色器和画布要靠 `res` 真的按小尺寸算才会快。
 
 ## 渲染：网页版会话里的时长上限（014 踩过的坑）
 
