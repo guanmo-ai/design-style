@@ -1,20 +1,20 @@
 /**
- * 014 · 液态玻璃 Liquid Glass —— 20 秒短片
+ * 014 · 液态玻璃 Liquid Glass —— 20 秒短片（第三版）
  *
- * 三层画布，每帧从上一帧无关地重画（Remotion 可以乱序、多进程渲染）：
- *   content  Canvas2D：玻璃后面的一切（彩色场、网格、字、手机、网页），镜头甩动时做运动模糊
- *   glass    WebGL2：把 content 当贴图，按玻璃的形状真折射（gl.ts）
- *   overlay  Canvas2D：压在玻璃上面的字与图标；color = 'auto' 的字按玻璃后面的亮度自动选黑 / 白
- * 渲染要加 --gl=swangle（无显卡环境下的 WebGL）。
+ * 每一帧（运动快时取 2—6 个子帧求平均 = 运动模糊）：
+ *   1. 按镜头画世界（planes.ts）；穿过玻璃时再画一张“下一个世界”给镜片取样
+ *   2. 有设备时：手机 / 浏览器屏幕各画一张，各自过一遍玻璃着色器进离屏缓冲，压上自适应颜色的字，
+ *      再用单应矩阵以 3D 透视贴进内容（gl.ts 的 QUAD）
+ *   3. 主玻璃着色器：涟漪、光池（影子 + 焦散）、折射、色散、磨砂、高光
+ *   4. 最上面一层画布：压在主玻璃上的字与图标
+ * 剧本见 scene.ts，分镜见 STORYBOARD.md。渲染要加 --gl=swangle。
  */
 import React, {useEffect, useRef, useState} from 'react';
 import {AbsoluteFill, Audio, continueRender, delayRender, staticFile, useCurrentFrame} from 'remotion';
 import {loadFont} from '@remotion/fonts';
-import {LIGHT} from '../tokens';
-import {drawWorld} from './content';
-import {GlassRenderer} from './gl';
-import {Label, glassAt} from './glass';
-import {DURATION, camV, camX, thumpY} from './timeline';
+import {Renderer} from './gl';
+import {BROWSER, PHONE, drawBrowser, drawPhone, drawPlane} from './planes';
+import {DURATION, DeviceFrame, Frame, Label, frameAt, speedAt} from './scene';
 
 export const LIQUIDGLASS_DURATION = DURATION;
 const W = 1920;
@@ -39,43 +39,17 @@ const loadFonts = () => {
   return fontsP;
 };
 
-const mk = (w = W, h = H) => {
+const mk = (w: number, h: number) => {
   const c = document.createElement('canvas');
   c.width = w;
   c.height = h;
   return c;
 };
 
-/** 内容层：镜头快时把 6 个子帧叠起来（第 k 层不透明度 1/k，结果是平均值；不动的像素逐像素不变） */
-const paintContent = (content: HTMLCanvasElement, scratch: HTMLCanvasElement, f: number, ro: Record<string, number>) => {
-  const ctx = content.getContext('2d')!;
-  const v = Math.abs(camV(f));
-  const n = v > 3 ? Math.min(8, 3 + Math.round(v / 10)) : 1;
-  const dy = thumpY(f);
-  const one = (c: CanvasRenderingContext2D, ff: number) => {
-    const x = camX(ff);
-    c.setTransform(1, 0, 0, 1, -x, dy);
-    drawWorld(c, x, f, ro);
-    c.setTransform(1, 0, 0, 1, 0, 0);
-  };
-  if (n === 1) {
-    one(ctx, f);
-    return;
-  }
-  const s = scratch.getContext('2d')!;
-  for (let i = 0; i < n; i++) {
-    const ff = f - 0.6 * (1 - i / (n - 1));
-    one(s, ff);
-    ctx.globalAlpha = 1 / (i + 1);
-    ctx.drawImage(scratch, 0, 0);
-  }
-  ctx.globalAlpha = 1;
-};
-
-const lum = (data: Uint8ClampedArray) => {
+const lum = (d: Uint8ClampedArray) => {
   let s = 0;
-  for (let i = 0; i < data.length; i += 4) s += 0.2126 * data[i] + 0.7152 * data[i + 1] + 0.0722 * data[i + 2];
-  return s / (data.length / 4) / 255;
+  for (let i = 0; i < d.length; i += 4) s += 0.2126 * d[i] + 0.7152 * d[i + 1] + 0.0722 * d[i + 2];
+  return s / (d.length / 4) / 255;
 };
 
 const icon = (c: CanvasRenderingContext2D, kind: NonNullable<Label['icon']>, x: number, y: number, s: number) => {
@@ -111,13 +85,25 @@ const icon = (c: CanvasRenderingContext2D, kind: NonNullable<Label['icon']>, x: 
   } else if (kind === 'plus') {
     c.fillRect(x - s * 0.36, y - s * 0.06, s * 0.72, s * 0.12);
     c.fillRect(x - s * 0.06, y - s * 0.36, s * 0.12, s * 0.72);
+  } else if (kind === 'home') {
+    c.moveTo(x - s * 0.36, y - s * 0.02);
+    c.lineTo(x, y - s * 0.36);
+    c.lineTo(x + s * 0.36, y - s * 0.02);
+    c.lineTo(x + s * 0.24, y - s * 0.02);
+    c.lineTo(x + s * 0.24, y + s * 0.32);
+    c.lineTo(x - s * 0.24, y + s * 0.32);
+    c.lineTo(x - s * 0.24, y - s * 0.02);
+    c.closePath();
+    c.fill();
   }
 };
 
-const paintOverlay = (ov: HTMLCanvasElement, content: HTMLCanvasElement, labels: Label[]) => {
+/** 压在玻璃上的字：color = 'auto' 时读“玻璃后面”（src）在字底下的亮度，0.42 以下转白、0.55 以上转黑 */
+const paintLabels = (ov: HTMLCanvasElement, src: HTMLCanvasElement, labels: Label[]) => {
   const c = ov.getContext('2d')!;
-  c.clearRect(0, 0, W, H);
-  const src = content.getContext('2d', {willReadFrequently: true})!;
+  c.setTransform(1, 0, 0, 1, 0, 0);
+  c.clearRect(0, 0, ov.width, ov.height);
+  const s = src.getContext('2d', {willReadFrequently: true})!;
   for (const l of labels) {
     const a = l.alpha ?? 1;
     if (a <= 0.001) continue;
@@ -128,8 +114,9 @@ const paintOverlay = (ov: HTMLCanvasElement, content: HTMLCanvasElement, labels:
       const w = l.icon ? l.size : c.measureText(l.text).width;
       const x0 = l.icon ? l.x - w / 2 : l.align === 'center' ? l.x - w / 2 : l.align === 'right' ? l.x - w : l.x;
       const y0 = l.icon ? l.y - l.size / 2 : l.y - l.size;
-      const L = lum(src.getImageData(Math.max(0, Math.round(x0)), Math.max(0, Math.round(y0)), Math.max(1, Math.round(w)), Math.max(1, Math.round(l.size))).data);
-      // 0.42 以下转白，0.55 以上转黑，中间按比例过渡
+      const bx = Math.max(0, Math.min(src.width - 1, Math.round(x0)));
+      const by = Math.max(0, Math.min(src.height - 1, Math.round(y0)));
+      const L = lum(s.getImageData(bx, by, Math.max(1, Math.min(src.width - bx, Math.round(w))), Math.max(1, Math.min(src.height - by, Math.round(l.size)))).data);
       const t = Math.min(1, Math.max(0, (L - 0.42) / 0.13));
       const v = Math.round(255 * (1 - t) + 11 * t);
       col = `rgb(${v},${v},${Math.round(255 * (1 - t) + 16 * t)})`;
@@ -143,11 +130,54 @@ const paintOverlay = (ov: HTMLCanvasElement, content: HTMLCanvasElement, labels:
   c.globalAlpha = 1;
 };
 
-export const LiquidGlass: React.FC<{music?: boolean}> = ({music = true}) => {
+type Res = {
+  r: Renderer;
+  main: HTMLCanvasElement;
+  alt: HTMLCanvasElement;
+  phone: HTMLCanvasElement;
+  browser: HTMLCanvasElement;
+  phoneOv: HTMLCanvasElement;
+  browserOv: HTMLCanvasElement;
+};
+
+const renderSample = (R: Res, F: Frame, t: number, blend: number) => {
+  const st = {bend: F.bend, merge: F.merge, rule: F.rule};
+  drawPlane(R.main.getContext('2d')!, F.main, t, st);
+  let src = R.r.upload('main', R.main);
+  let altTex: WebGLTexture | null = null;
+  if (F.alt) {
+    drawPlane(R.alt.getContext('2d')!, F.alt, t, st);
+    altTex = R.r.upload('alt', R.alt);
+  }
+  const phase = (t / DURATION) * Math.PI * 2;
+  if (F.devices.length) {
+    const comp = R.r.target('comp', W, H);
+    R.r.drawQuad(comp, src, null, null);
+    F.devices.forEach((d: DeviceFrame) => {
+      const isPhone = d.kind === 'phone';
+      const cv = isPhone ? R.phone : R.browser;
+      const ov = isPhone ? R.phoneOv : R.browserOv;
+      const size = isPhone ? PHONE : BROWSER;
+      (isPhone ? drawPhone : drawBrowser)(cv.getContext('2d', {willReadFrequently: true})!, t, d.scroll);
+      const tex = R.r.upload(d.kind, cv);
+      const fb = R.r.target(`${d.kind}FB`, size.w, size.h);
+      R.r.drawGlass(fb, tex, null, d.shapes, d.groups, d.ripples, d.light, phase);
+      R.r.mip(fb);
+      paintLabels(ov, cv, d.labels);
+      const ovTex = R.r.upload(`${d.kind}Ov`, ov);
+      R.r.drawQuad(comp, fb.tex!, ovTex, d.dev);
+    });
+    R.r.mip(comp);
+    src = comp.tex!;
+  }
+  R.r.drawGlass(R.r.screen(), src, altTex, F.shapes, F.groups, F.ripples, F.light, phase, blend);
+};
+
+export const LiquidGlass: React.FC<{music?: boolean; blur?: number}> = ({music = true, blur = 6}) => {
   const f = useCurrentFrame();
   const glRef = useRef<HTMLCanvasElement>(null);
   const ovRef = useRef<HTMLCanvasElement>(null);
-  const [res] = useState(() => ({content: null as HTMLCanvasElement | null, scratch: null as HTMLCanvasElement | null, gl: null as GlassRenderer | null}));
+  const [res] = useState<{R: Res | null}>(() => ({R: null}));
   const [ready, setReady] = useState(false);
   const [fontHandle] = useState(() => delayRender('liquid-glass-fonts'));
   useEffect(() => {
@@ -159,22 +189,30 @@ export const LiquidGlass: React.FC<{music?: boolean}> = ({music = true}) => {
   useEffect(() => {
     if (!ready) return;
     const h = delayRender(`frame-${f}`);
-    if (!res.content) {
-      res.content = mk();
-      res.scratch = mk();
-      res.gl = new GlassRenderer(glRef.current!);
+    if (!res.R) {
+      res.R = {
+        r: new Renderer(glRef.current!),
+        main: mk(W, H),
+        alt: mk(W, H),
+        phone: mk(PHONE.w, PHONE.h),
+        browser: mk(BROWSER.w, BROWSER.h),
+        phoneOv: mk(PHONE.w, PHONE.h),
+        browserOv: mk(BROWSER.w, BROWSER.h),
+      };
     }
-    const dy = thumpY(f);
-    const g = glassAt(f, dy);
-    paintContent(res.content, res.scratch!, f, g.readout);
-    // 高光跟着运动偏一点：镜头往右甩，光像是从左边被甩过去
-    const a = Math.max(-0.35, Math.min(0.35, -camV(f) * 0.006));
-    const lx = LIGHT.x * Math.cos(a) - LIGHT.y * Math.sin(a);
-    const ly = LIGHT.x * Math.sin(a) + LIGHT.y * Math.cos(a);
-    res.gl!.render(res.content, g.shapes, g.groups, [lx, ly]);
-    paintOverlay(ovRef.current!, res.content, g.labels);
+    const R = res.R;
+    // 运动模糊：快门半帧，按这一帧最快的东西决定取几个子帧
+    const v = blur > 1 ? speedAt(f) : 0;
+    const n = v > 3 ? Math.min(blur, 2 + Math.round(v / 14)) : 1;
+    for (let i = 0; i < n; i++) {
+      let t = n === 1 ? f : f - 0.5 * (1 - i / (n - 1));
+      // 子帧不跨过换平面的那一刻
+      if (frameAt(t).main.plane !== frameAt(f).main.plane) t = f;
+      renderSample(R, frameAt(t), t, 1 / (i + 1));
+    }
+    paintLabels(ovRef.current!, R.main, frameAt(f).labels);
     continueRender(h);
-  }, [f, ready, res]);
+  }, [f, ready, res, blur]);
   return (
     <AbsoluteFill style={{background: '#EEEAF6'}}>
       <canvas ref={glRef} width={W} height={H} style={{position: 'absolute', inset: 0}} />

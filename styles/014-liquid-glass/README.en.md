@@ -6,7 +6,11 @@
 
 ## Overview
 
-Glass that does not glow and has no color of its own — it only bends what is behind it. The amount of bending equals the slope of the edge: the middle is flat and stays readable, the rim gets steeper and bends harder. The 20-second film follows **one glass droplet** from start to finish in a single shot: it rolls across a wall of type, flattens into a lens while a bevel readout counts 44 → 0 → 44, changes material five times through 2001 Aqua, 2007 Aero, 2013 iOS 7, 2020 Glassmorphism and 2025 Liquid Glass, splits into three drops, lets two of them merge through a gooey neck while the third grows into a menu, then becomes the floating mini player of a music app next to a web page whose nav bar switches its text between black and white as content scrolls underneath. The glass is real: every frame is refracted in a WebGL shader from the shape's distance field, not a texture.
+Glass that does not glow and has no color of its own — it only bends what is behind it. The amount of bending equals the slope of the edge: the middle is flat and stays readable, the rim gets steeper and bends harder.
+
+The 20-second film follows **one glass droplet** in a single shot that passes *through* glass twice. The droplet hangs over a wall of type and drops onto it: the whole wall ripples, three satellite drops splash out and are pulled back by surface tension. The puddle becomes a magnifying lens that wanders over “Aa” while a bevel readout counts 44 → 0 → 44 and the light source circles once. The camera then pushes into the lens, and inside it is already the next world. There the lens shrinks into a 2001 Aqua button and hops along a timeline, changing material in mid-air (Aero, iOS 7, Glassmorphism) until it lands as a 2025 liquid droplet. It splits into three; two merge through a neck, and the third grows into a menu when tapped. It becomes the mini player of a phone that swings in in 3D, beside a browser; content scrolls under the glass and the labels flip between black and white. It flies out, the camera dives through it again into the five rules, read one beat at a time by a magnifier bar, and finally it lifts off back to where it started.
+
+Everything glass can do is used: ripples across the whole frame, caustic light pools (shadow plus focused light) that separate from the glass as it rises, necks and satellite drops, specular sheen sliding over tilted devices. Every frame is computed in a WebGL shader from signed distance fields; fast frames average 2–6 sub-frames for motion blur.
 
 Series: **Design styles**. Period shown: **2013—today**, with its ancestors back to 2001.
 
@@ -58,14 +62,15 @@ All four sheets keep their original Chinese labels. The glass in them is real re
 
 ## Timing
 
-| Time | Frames | Chapter | On screen |
+| Time | Frames | Shot | On screen |
 |---|---|---|---|
-| 0–2.5 s | 0–150 | Opening | Type wall LIQUID / GLASS; a droplet already rolling left bends the letters; the capsule labelled “液态玻璃” folds away; whip pan |
-| 2.5–6.5 s | 150–390 | 01 Bend | The droplet becomes a lens over “Aa”; bevel 44 → 0 (a flat window, nothing bends) → 44 with a live cross-section; chromatic aberration 0 → 6% |
-| 6.5–10.5 s | 390–630 | 02 Twenty-five years | One piece of glass, five materials: Aqua button, Aero window, iOS 7 control center, Glassmorphism card, Liquid Glass droplet |
-| 10.5–13.5 s | 630–810 | 03 Merge | One drop splits into three; two merge through a neck (gap 66 → 0); the “more” drop grows into a menu |
-| 13.5–18 s | 810–1080 | 04 UI | Phone mini player, merged tab bar + search, web nav bar and a round button; content scrolls under the glass and text flips black/white |
-| 18–20 s | 1080–1200 | Ending | Whip pan back to the type wall; everything folds back into the droplet and the capsule — the first frame |
+| 0–2.5 s | 0–150 | The drop | A hanging droplet rises, falls (shrinking, shadow converging), hits the type wall: splash, light-pool flash, a ripple bends LIQUID GLASS; three satellites fly and are pulled back with necks; the puddle becomes a lens and the camera follows it |
+| 2.5–5 s | 150–300 | 01 Bend | The lens wanders over “Aa”; bevel 44 → 0 (flat window) → 44 with a live cross-section; chromatic aberration 0 → 6%; the light circles once; the camera dives through the lens |
+| 5–9 s | 300–540 | 02 Twenty-five years | The lens shrinks into an Aqua button and hops along a timeline, morphing mid-air: Aero, iOS 7, Glassmorphism, Liquid Glass. Only liquid glass casts a caustic pool |
+| 9–11.5 s | 540–690 | 03 Merge | One drop splits into three; two merge through a neck (gap 140 → 0); a tap grows the third into a menu |
+| 11.5–15 s | 690–900 | 04 UI | Phone and browser swing in in 3D; the tab bar shrinks on scroll and the player drops into its row; a click ripples the page; labels flip white over dark content |
+| 15–17.7 s | 900–1060 | Five rules | The player flies out toward the camera, second dive; a magnifier bar reads the five rules one beat each |
+| 17.7–20 s | 1060–1200 | Back to start | The magnifier becomes a drop and lifts off; the camera tilts back up to the type wall — the first frame |
 
 | Property | Value |
 |---|---|
@@ -73,7 +78,7 @@ All four sheets keep their original Chinese labels. The glass in them is real re
 | Frame rate | 60 fps |
 | Duration | 20 s / 1200 frames |
 | Tempo | 120 BPM throughout |
-| Loop | First frame = last frame (page 6 is page 1); the music's tail folds back into the start |
+| Loop | The last frame flows into the first (the drop returns to where it hangs); the music's tail folds back into the start |
 
 ## Reproduce
 

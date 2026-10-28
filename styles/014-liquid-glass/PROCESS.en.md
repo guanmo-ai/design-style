@@ -12,30 +12,33 @@
 | 2 | Research | Five generations of UI “glass” (2001–2025), five rules, contrast, mix-ups | [`README.en.md`](README.en.md) |
 | 3 | Tokens | Glass parameters (bevel / edge / mag / chroma / frost / tint), three thicknesses, five era recipes | `tokens.ts / .css / .json` |
 | 4 | Images ×4 | Poster · cheatsheet · music app · five-step tutorial | `images/make_svgs.py`, `images/glass.py` |
-| 5 | Film | Type wall → lens → five eras → split and merge → phone + web → type wall, one continuous shot | `video/*` |
+| 5 | Film (v3) | The drop → bend → dive → twenty-five years → merge → 3D phone and web → second dive → five rules → back to start | `video/*`, [`STORYBOARD.md`](video/STORYBOARD.md) |
 | 6 | Music | 120 BPM, D major, FM glass plucks, −14 LUFS, effects synced to keyframes | `audio/make_music.py` |
 
 ![Contact sheet](process/01-contact.jpg)
 
-## The glass is real
+## Why version 2 was thrown away
 
-Earlier issues are drawn as SVG. Refraction needs per-pixel sampling of whatever is behind the glass, every frame, with changing shapes — so this film uses a shader.
+Version 2 laid six pages side by side and whip-panned between them while the glass stayed on screen. The owner's verdict was “ordinary motion”. In review: the skeleton was still a slideshow (same layout per chapter, the whip pan just a fancier page turn); almost every move was an interpolation plus a spring, with no anticipation, overlap, tempo contrast or camera depth; the glass never did anything only glass can do; and reviewing stills hides timing problems.
 
-- **Content layer (Canvas2D):** everything behind the glass. During whip pans it averages 3–8 sub-frames for motion blur.
-- **Glass layer (WebGL2):** each piece is a smooth-min union of rounded-rect / circle distance fields. Inside the bevel ring it samples inward by slope t^2.4, once per color channel (6% apart), magnifies the middle, takes frost from mipmaps, then adds a 1px rim highlight from one light source and a drop shadow.
-- **Label layer (Canvas2D):** text and icons on top of the glass. Labels marked `auto` read the luminance of the content under them and pick black or white.
+## Version 3: only moves glass can make
 
-The same displacement formula drives the images: `images/glass.py` builds displacement maps with numpy and SVG `feDisplacementMap` applies them per channel.
+- **The drop and the ripple:** the drop rises (anticipation), falls toward the wall shrinking with its shadow converging, splashes, and a wave packet in the shader bends the whole frame.
+- **Satellites and necks:** three drops fly as their own group (with their own height and shadow), land, rejoin the main group and are pulled back; inside the smooth-min radius a neck grows.
+- **Caustic light pools:** each piece of glass has a height; its shadow shifts and softens with height and contains a focused ring plus a flowing caustic web (the classic iterative water-caustic, with integer time factors so it loops over the film). Only liquid glass gets a pool; the frosted eras do not.
+- **Diving through glass:** a lens can blend between two textures. As the camera pushes in, the lens shows the next world; when it covers the frame the plane switches and the covering lens shrinks into the next chapter's protagonist. Used twice.
+- **Hops and mid-air morphs** along the timeline, **3D devices** (each screen runs its own glass pass into an FBO, then is mapped onto a perspective quad with a sliding sheen), and **motion blur** on every fast move (2–6 sub-frames, never across a plane switch).
 
-## One shot, one droplet
+Motion primitives live in `video/motion.ts`: anticipation, a ~5% overshoot landing (analytic damped spring), liquid wobble, ballistic arcs, and a lagged follow — all pure functions of time.
 
-Six pages sit side by side in world space; the camera drifts right at 0.8 px/frame and whip-pans between chapters along a cubic Hermite curve whose end velocities match the drift. The glass stays on screen while the pages slide under it, so the refraction is always alive — the whip pans are where it looks best. Page 6 is page 1, so frame 1200 is frame 0 and the droplet keeps rolling at the same speed: a seamless loop.
+## Eyes on time
 
-The droplet is the protagonist throughout: droplet → lens → Aqua button → Aero window → iOS 7 control center → Glassmorphism card → liquid droplet → three drops (two merge, one grows into a menu) → phone mini player and web nav bar → droplet.
+- `scripts/motion_curves.mjs` + `scripts/plot_curves.py` export and plot the protagonist's position, size, speed, height and the camera per frame, with beat lines. The first plot caught three bugs invisible in stills: a one-frame position spike at the dive, motion blur mixing two worlds at the plane switch, and a camera lagging so far that the lens left the frame.
+- `scripts/stills_batch.mjs` (one bundle, many frames) + `scripts/strip.py` render consecutive-frame film strips for checking anticipation, landings and rhythm.
 
 ## Sound
 
-FM glass plucks (modulator ratio 3.5 for inharmonic, glassy partials) in sixteenth-note arpeggios; drums enter at chapter 01 and leave before the ending so the loop also matches in sound. Each whip pan has a whoosh; bevel flattening and rising are a falling and a rising glide; each era has its own timbre; the split is three panned “bloops” and the merge a gooey “glub”. The effects bus sits 3 dB under the music.
+FM glass plucks (modulator ratio 3.5 for inharmonic, glassy partials). Drums enter at f120 and leave before the drop lifts off, so the loop also matches in sound. Effects follow the picture: an inhale, a falling whistle, a heavy “plop” with sub boom and a descending wet sweep for the ripple; three chimes for the satellites flying out, three plops as they land, three rising bloops as they are pulled back; an inhale, whoosh and thump for each dive; one timbre per era; a gooey “glub” for the merge; a click and a short wet sweep for each tap; a chime rising one step per rule. The effects bus sits 4 dB under the music.
 
 ## Pitfalls
 
@@ -43,5 +46,7 @@ FM glass plucks (modulator ratio 3.5 for inharmonic, glassy partials) in sixteen
 - Frost from mipmaps: regenerate mipmaps each frame and take five taps on the matching level.
 - Everything is a pure function of the frame number so Remotion can render out of order in parallel.
 - Adaptive text reads the content layer before the glass is drawn, with a soft 0.42–0.55 luminance band to avoid flicker.
-- Pages and the color-field drift are indexed modulo 5 so the last page matches the first.
+- A caustic web built from `1 − |sin|` peaks looks like contour lines; the iterative water-caustic formula gives real cells.
+- Never motion-blur across a plane switch: speed estimation returns 0 there and sub-frames do not cross it.
+- Render targets keep the canvas orientation (flip only when drawing to the screen); overlays are uploaded without premultiplied alpha.
 - Embed displacement maps as PNG data URIs; the image build would otherwise convert them to lossy WebP.
