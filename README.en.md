@@ -19,6 +19,11 @@ By Guanmo [@guanmo_ai](https://x.com/guanmo_ai)
 <table>
   <tr>
     <td align="center" valign="top" width="33%">
+      <a href="https://guanmo-ai.github.io/design-style/?lang=en#work-014-liquid-glass"><img src="styles/014-liquid-glass/video/cover.jpg" width="240" alt="Liquid Glass film cover" /></a><br />
+      <a href="https://guanmo-ai.github.io/design-style/?lang=en#work-014-liquid-glass"><b>Liquid Glass</b></a><br />
+      <sub>20 seconds</sub>
+    </td>
+    <td align="center" valign="top" width="33%">
       <a href="https://guanmo-ai.github.io/design-style/?lang=en#work-013-art-deco"><img src="styles/013-art-deco/video/cover.jpg" width="240" alt="Art Deco film cover" /></a><br />
       <a href="https://guanmo-ai.github.io/design-style/?lang=en#work-013-art-deco"><b>Art Deco</b></a><br />
       <sub>20 seconds</sub>
@@ -28,13 +33,13 @@ By Guanmo [@guanmo_ai](https://x.com/guanmo_ai)
       <a href="https://guanmo-ai.github.io/design-style/?lang=en#work-009-neo-brutalism"><b>Neo-Brutalism</b></a><br />
       <sub>20 seconds</sub>
     </td>
+  </tr>
+  <tr>
     <td align="center" valign="top" width="33%">
       <a href="https://guanmo-ai.github.io/design-style/?lang=en#work-008-risograph"><img src="styles/008-risograph/video/cover.jpg" width="240" alt="Risograph film cover" /></a><br />
       <a href="https://guanmo-ai.github.io/design-style/?lang=en#work-008-risograph"><b>Risograph</b></a><br />
       <sub>15 seconds</sub>
     </td>
-  </tr>
-  <tr>
     <td align="center" valign="top" width="33%">
       <a href="https://guanmo-ai.github.io/design-style/?lang=en#work-005-pop-art"><img src="styles/005-pop-art/video/cover.jpg" width="240" alt="Pop Art film cover" /></a><br />
       <a href="https://guanmo-ai.github.io/design-style/?lang=en#work-005-pop-art"><b>Pop Art</b></a><br />
@@ -45,13 +50,13 @@ By Guanmo [@guanmo_ai](https://x.com/guanmo_ai)
       <a href="https://guanmo-ai.github.io/design-style/?lang=en#work-004-memphis"><b>Memphis</b></a><br />
       <sub>15 seconds</sub>
     </td>
+  </tr>
+  <tr>
     <td align="center" valign="top" width="33%">
       <a href="https://guanmo-ai.github.io/design-style/?lang=en#work-003-constructivism"><img src="styles/003-constructivism/video/cover.jpg" width="240" alt="Constructivism film cover" /></a><br />
       <a href="https://guanmo-ai.github.io/design-style/?lang=en#work-003-constructivism"><b>Constructivism</b></a><br />
       <sub>15 seconds</sub>
     </td>
-  </tr>
-  <tr>
     <td align="center" valign="top" width="33%">
       <a href="https://guanmo-ai.github.io/design-style/?lang=en#work-02-masonry"><img src="layouts/02-masonry/video/cover.jpg" width="240" alt="Masonry film cover" /></a><br />
       <a href="https://guanmo-ai.github.io/design-style/?lang=en#work-02-masonry"><b>Masonry</b></a><br />
@@ -62,13 +67,13 @@ By Guanmo [@guanmo_ai](https://x.com/guanmo_ai)
       <a href="https://guanmo-ai.github.io/design-style/?lang=en#work-002-swiss-style"><b>Swiss Style</b></a><br />
       <sub>15 seconds</sub>
     </td>
+  </tr>
+  <tr>
     <td align="center" valign="top" width="33%">
       <a href="https://guanmo-ai.github.io/design-style/?lang=en#work-01-bento-grid"><img src="layouts/01-bento-grid/video/cover.jpg" width="240" alt="Bento Grid film cover" /></a><br />
       <a href="https://guanmo-ai.github.io/design-style/?lang=en#work-01-bento-grid"><b>Bento Grid</b></a><br />
       <sub>15 seconds</sub>
     </td>
-  </tr>
-  <tr>
     <td align="center" valign="top" width="33%">
       <a href="https://guanmo-ai.github.io/design-style/?lang=en#work-001-bauhaus"><img src="styles/001-bauhaus/video/cover.jpg" width="240" alt="Bauhaus film cover" /></a><br />
       <a href="https://guanmo-ai.github.io/design-style/?lang=en#work-001-bauhaus"><b>Bauhaus</b></a><br />
@@ -108,6 +113,7 @@ The gallery interface, descriptions, search, and reading pages support **Chinese
 | 008 | [Risograph](styles/008-risograph/README.en.md) | [Production overview](styles/008-risograph/PROCESS.en.md) | 1946–today |
 | 009 | [Neo-Brutalism](styles/009-neo-brutalism/README.en.md) | [Production overview](styles/009-neo-brutalism/PROCESS.en.md) | 2021–today |
 | 013 | [Art Deco](styles/013-art-deco/README.en.md) | [Production overview](styles/013-art-deco/PROCESS.en.md) | 1925–1939 |
+| 014 | [Liquid Glass](styles/014-liquid-glass/README.en.md) — Glass bends what is behind it; refraction follows the slope of the edge. | [Production overview](styles/014-liquid-glass/PROCESS.en.md) | 2013–today |
 
 ### Layouts
 
@@ -155,7 +161,7 @@ npx playwright install chromium
 npm run images:001
 ```
 
-Episode suffixes are `001`–`006`, `008`, `009`, `013`, `L01`, and `L02`; for example, `npm run render:L02` renders Masonry. Episode 006 renders its WebGL2 materials with SwiftShader (`--gl=swangle`), so it is slower. Episode 008 is Risograph; 009 is Neo-Brutalism; 013 is Art Deco. Output goes into `out/`. The root `npm ci` applies the browser ZIP extraction security patch. If installation uses `--ignore-scripts`, run `npm run postinstall` before rendering or running the security tests.
+Episode suffixes are `001`–`006`, `008`, `009`, `013`, `014`, `L01`, and `L02`; for example, `npm run render:L02` renders Masonry. Episodes 006 and 014 render their WebGL2 materials with SwiftShader (`--gl=swangle`), so software rendering is slower. Episode 008 is Risograph; 009 is Neo-Brutalism; 013 is Art Deco; 014 is Liquid Glass. For 014, use `npm run render:014:gpu` on a Mac GPU, or `npm run preview:014` for a 30 fps, half-resolution draft. Output goes into `out/`. The root `npm ci` applies the browser ZIP extraction security patch. If installation uses `--ignore-scripts`, run `npm run postinstall` before rendering or running the security tests.
 
 ```bash
 npm test

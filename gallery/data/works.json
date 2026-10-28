@@ -580,5 +580,69 @@
       {"file": "app-ui", "title": "如果装饰艺术来做 App", "kind": "界面应用", "titleEn": "Art Deco in an app", "kindEn": "UI application"},
       {"file": "steps", "title": "五步，从一条中轴到一张装饰艺术", "kind": "设计教程", "titleEn": "Five steps from one axis to Art Deco", "kindEn": "Design tutorial"}
     ]
+  },
+  {
+    "id": "014-liquid-glass",
+    "type": "style",
+    "number": "009",
+    "title": "液态玻璃",
+    "titleEn": "Liquid Glass",
+    "years": "2013—今天",
+    "category": "当代界面",
+    "categoryEn": "Contemporary interfaces",
+    "description": "玻璃不发光，只把后面的东西弯过来：折射量 = 边缘的坡度。一支 20 秒短片，同一滴玻璃从头接力到尾：落下激起涟漪，镜头两次穿过玻璃，从 Aqua 到液态玻璃的二十五年，靠近融合、按钮展开成菜单，再落进 3D 手机与网页；五条规则由放大镜逐条读过，最后升回开场。",
+    "descriptionEn": "Glass does not glow; it bends what is behind it, with refraction following the slope of the edge. One droplet carries this 20-second film: a rippling impact, two journeys through glass, twenty-five years from Aqua to Liquid Glass, merging drops and a button that grows into a menu, then a 3D phone and browser. A magnifier reads five practical rules before the droplet returns to the opening.",
+    "tags": [
+      "折射",
+      "玻璃",
+      "融合",
+      "厚度",
+      "高光",
+      "界面",
+      "WebGL"
+    ],
+    "tagsEn": [
+      "refraction",
+      "glass",
+      "merging",
+      "depth",
+      "highlights",
+      "interfaces",
+      "WebGL"
+    ],
+    "release": "day-14",
+    "asset": "014-liquid-glass.mp4",
+    "sha256": "08ff501cb5c597f1097ab9da6512344e936cd37d64c58fa5f5c7b6e303d1e643",
+    "images": [
+      {
+        "file": "poster",
+        "title": "一张海报，认识液态玻璃",
+        "kind": "风格海报",
+        "titleEn": "Liquid Glass at a glance",
+        "kindEn": "Style poster"
+      },
+      {
+        "file": "cheatsheet",
+        "title": "五层结构、三种厚度与设计规则",
+        "kind": "风格速查",
+        "titleEn": "Five layers, three thicknesses, and design rules",
+        "kindEn": "Quick reference"
+      },
+      {
+        "file": "app-ui",
+        "title": "如果液态玻璃来做 App",
+        "kind": "界面应用",
+        "titleEn": "Liquid Glass in a music app",
+        "kindEn": "UI application"
+      },
+      {
+        "file": "steps",
+        "title": "五步做一块液态玻璃",
+        "kind": "设计教程",
+        "titleEn": "Five steps to build liquid glass",
+        "kindEn": "Design tutorial"
+      }
+    ],
+    "publishedAt": "2026-10-28T13:32:21Z"
   }
 ]
