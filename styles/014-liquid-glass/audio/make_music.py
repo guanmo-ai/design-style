@@ -318,8 +318,10 @@ for s_, p_ in zip(shimmer(0.5, 0.8), (-0.5, 0.5)):
     sfx(s_, fr(ERA_LAND[3]), pan=p_, send=0.6)  # Glassmorphism：闪光
 sfx(glass_bell(93, 0.9, 1.4), fr(ERA_LAND[4]), send=0.6)  # 液态玻璃：玻璃铃
 sfx(thud(0.8), fr(ERA_LAND[4]))
+TAKE = [ERA_LAND[0] + 18, ERA_LAND[1] + 8, ERA_LAND[2] + 21, ERA_LAND[3] + 12]
 for k in range(4):
-    sfx(whoosh(0.4, 600, 4000, 0.3, 0.5), fr(ERA_LAND[k] + 18), pan=0.3)
+    sfx(whoosh([0.4, 0.6, 0.35, 0.5][k], 600, 4000, 0.3, 0.5), fr(TAKE[k]), pan=0.3)
+sfx(wet(0.8, 0.5), fr(ERA_LAND[4]), send=0.3)  # 液态玻璃落下：墙起涟漪
 sfx(whoosh(0.6, 400, 6000, 0.4, 0.5), fr(516), pan=0.4)
 
 # 镜 4 · 融合
