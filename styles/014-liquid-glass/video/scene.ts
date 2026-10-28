@@ -206,8 +206,8 @@ export const frameAt = (t: number): Frame => {
     main = {plane: 'B', cx, cy: cy - dy / z, z};
   } else {
     // 规则页 → 往上摇回字墙
-    const u = prog(t, 1064, 88);
-    const cy = u <= 0 ? 1620 : u >= 1 ? 540 : hermite(1620, 540, 0, 0, u, 88);
+    const u = prog(t, 1068, 86);
+    const cy = u <= 0 ? 1620 : u >= 1 ? 540 : hermite(1620, 540, 0, 0, u, 86);
     main = {plane: 'A', cx: 960, cy, z: 1};
   }
   const toScr = (cam: Cam, x: number, y: number) => ({x: (x - cam.cx) * cam.z + W / 2, y: (y - cam.cy) * cam.z + H / 2});
@@ -480,11 +480,12 @@ export const frameAt = (t: number): Frame => {
   if (t >= DIVE2.b) {
     const cam = main;
     // 盖满屏幕的镜片收回成一条横的放大镜，落在第一条规则上，再一拍一条往下走
-    const row = (i: number) => 960 + 24 * i;
+    // 每条停 21 帧，第 5 条也有足够时间（放大镜在 f1068 才离开）
+    const row = (i: number) => 958 + 21 * i;
     let ri = 0;
     for (let i = 1; i < 5; i++) if (t >= row(i)) ri = i;
     const y = lerp(RULE_Y(Math.max(0, ri - 1)), RULE_Y(ri), ri === 0 ? 1 : land(t, row(ri), 16)) - 16;
-    rule = t < 1064 ? ri : -1;
+    rule = t < 1068 ? ri : -1;
     const bar = box(960, y, 800, 84, 84);
     let s: S;
     let m: M = {...CLEAR, mag: 0.12, bevel: 22, height: 0.16};
@@ -493,15 +494,15 @@ export const frameAt = (t: number): Frame => {
       const big = box(960, 1620, (520 * DIVE2.z), (300 * DIVE2.z), 150 * DIVE2.z);
       s = lerpS(big, bar, u);
       m = {...m, mag: lerp(0, 0.12, u), bevel: lerp(44, 22, u)};
-    } else if (t < 1064) {
+    } else if (t < 1068) {
       s = bar;
     } else {
       // 片尾：收成一滴，升起（影子和光池离它越来越远），回到右上挂着
-      const u = land(t, 1064, 84);
+      const u = land(t, 1068, 84);
       const hang = circ(HANG.x, HANG.y, HANG.r, hangModes(t));
       s = lerpS(bar, hang, u);
-      s = {...s, cx: lerp(960, HANG.x, ease.inOut(prog(t, 1064, 86))), cy: lerp(RULE_Y(4) - 16, HANG.y, ease.inOut(prog(t, 1064, 86)))};
-      m = {...CLEAR, mag: lerp(0.12, 0.06, u), bevel: lerp(22, 44, u), height: lerp(0.16, 1, ease.inOut(prog(t, 1070, 80)))};
+      s = {...s, cx: lerp(960, HANG.x, ease.inOut(prog(t, 1068, 84))), cy: lerp(RULE_Y(4) - 16, HANG.y, ease.inOut(prog(t, 1068, 84)))};
+      m = {...CLEAR, mag: lerp(0.12, 0.06, u), bevel: lerp(22, 44, u), height: lerp(0.16, 1, ease.inOut(prog(t, 1072, 78)))};
     }
     add(cam, 1, s);
     setM(cam, 1, m, s.cx, s.cy);

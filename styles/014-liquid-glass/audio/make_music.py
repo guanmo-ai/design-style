@@ -351,11 +351,11 @@ sfx(swell(0.8, 0.8, 400, 9000), fr(900), send=0.2)
 sfx(whoosh(0.7, 200, 9000, 0.6, 0.85), fr(900), send=0.2)
 sfx(thud(0.55, 90, 40), fr(936))
 for i, m in enumerate((81, 83, 85, 88, 90)):
-    sfx(glass_bell(m, 0.5, 0.7), fr(962 + 24 * i), send=0.5)
+    sfx(glass_bell(m, 0.5, 0.7), fr(962 if i == 0 else 958 + 21 * i), send=0.5)
 
 # 镜 7 · 升起、摇回字墙
-sfx(bloop(70, 0.6, up=True, d=0.3), fr(1066), pan=0.2)
-sfx(whoosh(1.4, 200, 5000, 0.45, 0.5), fr(1066), send=0.2)
+sfx(bloop(70, 0.6, up=True, d=0.3), fr(1070), pan=0.2)
+sfx(whoosh(1.4, 200, 5000, 0.45, 0.5), fr(1070), send=0.2)
 
 # ================= 混响 + 母带 =================
 
