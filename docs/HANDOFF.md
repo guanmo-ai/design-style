@@ -6,9 +6,16 @@
 
 ## 待办
 
-### 014 · 液态玻璃（等主人审片通过后再做）
+### 014 · 液态玻璃：用 Mac 的显卡渲染正片（以后每期同样）
 
-- [ ] 渲染成片：`npm run render:014`（需要 WebGL，脚本里已带 `--gl=swangle`；无显卡机器 4 核约 2 小时；若单个命令有时长限制，用 `scripts/render_chunks.sh` 分 4 段各 300 帧渲染、`scripts/concat_chunks.sh` 拼接并配乐）→ `out/014-liquid-glass-master.mp4`，改名 `014-liquid-glass.mp4`
+- [ ] 拉取 `claude/amazing-carson-xe6qyo`，`npm ci && npm run fonts`，然后 `npm run render:014:gpu`（`--gl=angle` 走显卡；脚本会先合成配乐）→ `out/014-liquid-glass-master.mp4`
+- [ ] 推到 `review-renders` 分支：`014/014-liquid-glass-master.mp4`（只放审片用的成片，不触发发布），提交信息写上渲染用的提交号和耗时
+- [ ] 渲染报错、或画面明显和 Claude 发的预览不一致：不要改设计代码，把报错 / 截图记在这里，交给 Claude
+- 设计侧（Claude）拉下成片审片；主人看过、通过后，再做下面的发布
+
+### 014 · 液态玻璃：发布（等主人审片通过后再做）
+
+- [ ] 用审片通过的那一版成片（`review-renders` 分支 `014/`），改名 `014-liquid-glass.mp4`
 - [ ] 发布 Release `day-14`：照 day-13 的方式放进 `release-assets` 分支的 `day-14/`（mp4 + 源码 zip + SHA256SUMS + release.json + notes.md）
 - [ ] 封面 `styles/014-liquid-glass/video/cover.jpg` 已由设计侧从第 0 帧导出；若成片重渲染，核对仍与第 0 帧一致
 - [ ] 画廊上架：`gallery/data/works.json` 加 `014-liquid-glass`（四张图：poster / cheatsheet / app-ui / steps），取下一个上架期号；跑 `npm run gallery:sync && npm test && npm run gallery:build && npm run gallery:check`

@@ -173,8 +173,11 @@ const renderSample = (R: Res, F: Frame, t: number, blend: number) => {
   R.r.drawGlass(R.r.screen(), src, altTex, F.shapes, F.groups, F.ripples, F.light, phase, blend);
 };
 
-export const LiquidGlass: React.FC<{music?: boolean; blur?: number}> = ({music = true, blur = 6}) => {
-  const f = useCurrentFrame();
+/**
+ * step：一帧走几帧剧本时间。正片 1；草稿预览用 30fps 合成、step = 2（再配合 --scale=0.5、blur = 1），整片快十几倍
+ */
+export const LiquidGlass: React.FC<{music?: boolean; blur?: number; step?: number}> = ({music = true, blur = 6, step = 1}) => {
+  const f = useCurrentFrame() * step;
   const glRef = useRef<HTMLCanvasElement>(null);
   const ovRef = useRef<HTMLCanvasElement>(null);
   const [res] = useState<{R: Res | null}>(() => ({R: null}));
