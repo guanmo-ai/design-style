@@ -3,13 +3,15 @@ Design Style · 风格 014 · 液态玻璃 Liquid Glass —— 配乐与音效�
 
 120 BPM 直拍（1 拍 = 0.5 秒 = 30 帧；全片不变速）· 20 秒 = 10 小节 · D 大调
 声部：玻璃拨奏（FM，十六分音符琶音）、温暖铺底、亚低音贝斯、轻底鼓、拍手、闭镲、玻璃铃。
-  0–2.5s     开场：只有铺底与玻璃铃，一滴玻璃滚过字墙
-  2.5–6.5s   01 弯光：f150 甩镜（风声）后鼓进来 · 压平（下滑音）· 加坡（上滑音）· 色散（左右失谐的闪光）
-  6.5–10.5s  02 二十五年：五个年代各一个音色——Aqua 气泡 / Aero 风铃 / iOS 7 轻点 / Glassmorphism 闪光 / Liquid Glass 玻璃铃 + 一记“咚”
-  10.5–13.5s 03 融合：一分三（左中右三声“啵”）· 两滴合一（黏稠的“咕” + 咚）· 菜单展开（上扬）+ 三项依次“嗒”
-  13.5–18s   04 界面：标签栏、按钮弹出 · 字变色时一声轻点
-  18–20s     片尾：鼓退下，只剩铺底与玻璃铃；余音折回开头，循环无缝
-所有时间点与 video/glass.ts、video/timeline.ts 的关键帧对齐（帧 / 60 = 秒）。
+  0—2.5s     落下：玻璃铃的动机 · 吸气（起势）→ 下滑的哨音（落下）→ f30 砸进液体：“啵” + 亚低音 + 一道往下走的水声（涟漪）
+             · 小水珠甩出去（三声高铃）、落回（三声“啵”）、被拉回去（三声上扬的“啵”）· 镜片成形、镜头跟着走（风声）
+  2.5—5s     01 弯光：f120 鼓进来 · 压平（下滑音）· 加坡（上滑音）· 色散（左右失谐）· 穿过玻璃（倒放吸气 + 风声 + f300 闷响）
+  5—9s       02 二十五年：五个年代各一个音色（Aqua 气泡 / Aero 风铃 / iOS 7 轻点 / Glassmorphism 闪光 / 液态玻璃玻璃铃 + 咚）+ 每次起跳一阵轻风
+  9—11.5s    03 融合：一分三（左中右三声“啵”）· 图标三声轻点 · 两滴合一（黏稠的“咕”）· 点一下（轻点 + 水声）· 长成菜单（上扬）
+  11.5—15s   04 界面：横移风声 · 手机、浏览器落定 · 标签栏缩小（“咕”）、展开（上扬）· 点按钮（轻点 + 水声）
+  15—17.7s   五条规则：第二次穿过 · 放大镜一拍一条，玻璃铃一级一级往上
+  17.7—20s   回到开始：鼓退下，水滴升起（上扬）· 玻璃铃的同一句动机；余音折回开头，循环无缝
+所有时间点与 video/scene.ts 的关键帧对齐（帧 / 60 = 秒）。
 
 用法：python3 styles/014-liquid-glass/audio/make_music.py
 输出：public/014-liquid-glass/music.wav（响度 −14 LUFS，真峰值 < −1 dBTP）
@@ -218,27 +220,26 @@ CH = {
 }
 PROG = ['D', 'Bm', 'G', 'A', 'D', 'F#m', 'G', 'A', 'Bm', 'G']  # 最后一小节 G → 循环回 D
 
-DRUMS = (AT['bend'], AT['end'] + 30)  # 鼓：从 01 章进来，片尾前退下
+# 鼓：f120 进来（涟漪散完、镜片成形），片尾水滴升起前退下，开场和片尾只剩铺底与玻璃铃
+DRUMS = (120, 1050)
 
 for bar, name in enumerate(PROG):
     f0 = bar * 120
     root, tones = CH[name]
     place(pad(tones, 2.0, 1.0), fr(f0), send=0.5)
-    # 贝斯：每小节根音，第 3 拍换到五度
     if DRUMS[0] - 30 <= f0 < DRUMS[1]:
         place(sub(root, 0.9), fr(f0))
         place(sub(root + 7, 0.4), fr(f0 + 60))
         place(sub(root, 0.4), fr(f0 + 90))
-    # 玻璃拨奏：十六分音符琶音（每 7.5 帧一个），开场与片尾只弹每拍第一个
     arp = tones + [t + 12 for t in tones[:3]]
-    for s in range(16):
-        fs = f0 + s * 7.5
+    for s_ in range(16):
+        fs = f0 + s_ * 7.5
         dense = DRUMS[0] <= fs < DRUMS[1]
-        if not dense and s % 4:
+        if not dense and s_ % 4:
             continue
-        m = arp[(s * 3 + bar) % len(arp)] + 12
-        vel = 1.0 if s % 4 == 0 else 0.55 if s % 2 == 0 else 0.4
-        place(pluck(m, vel), fr(fs), pan=0.35 * np.sin(s * 1.3 + bar), send=0.35)
+        m = arp[(s_ * 3 + bar) % len(arp)] + 12
+        vel = 1.0 if s_ % 4 == 0 else 0.55 if s_ % 2 == 0 else 0.4
+        place(pluck(m, vel), fr(fs), pan=0.35 * np.sin(s_ * 1.3 + bar), send=0.35)
 
 for b in range(40):
     fb = b * BEAT
@@ -251,52 +252,108 @@ for b in range(40):
     for h in range(2):
         place(hat(0.9 if h else 0.6), fr(fb + 15 * h), pan=0.3, send=0.05)
 
-# 开场 / 片尾：玻璃铃的一句动机（片尾同一句，循环接得上）
+# 开场 / 片尾：玻璃铃的同一句动机（片尾那一句落在水滴挂好之后，余音折回开头）
 MOTIF = [(0, 81), (15, 78), (30, 76), (60, 74)]
-for base in (0, 1080):
+for base in (0, 1150):
     for dt, m in MOTIF:
-        place(glass_bell(m, 0.7), fr(base + dt + 4), pan=0.2, send=0.6)
+        if base == 0 and dt >= 30:
+            continue  # 开场第 30 帧是落下，让给砸下去的声音
+        place(glass_bell(m, 0.7), fr(base + dt + 2), pan=0.2, send=0.6)
 
-# ───────── 音效（对准画面） ─────────
-for p in PANS:
-    sfx(whoosh(0.66, 300, 8000, 0.7, 0.55), fr(p) - 0.36, send=0.15)
 
-# 01 弯光：压平（下滑）· 加坡（上滑）· 色散（左右失谐）
-sfx(glide(76, 64, 0.6, 1.0), fr(158), pan=-0.2)
-sfx(glide(64, 81, 1.3, 1.0), fr(214), pan=0.2)
-for s, p in zip(shimmer(0.75), (-0.7, 0.7)):
-    sfx(s, fr(296), pan=p, send=0.5)
-sfx(glass_bell(88, 0.5, 1.0), fr(290), send=0.5)
+def swell(d, level=1.0, c0=600, c1=6000):
+    """倒放式的吸气：噪声渐强、截止频率往上走"""
+    t = tt(d)
+    return sweep_lp(rng.standard_normal(len(t)), c0, c1) * (t / d) ** 2.5 * level * 0.3
 
-# 02 二十五年：每个年代一个音色
-sfx(bloop(84, 0.9, up=True), fr(ERA_AT[0]), pan=0.25)  # Aqua：冒泡
-sfx(glass_bell(86, 0.45, 0.6) + 0, fr(ERA_AT[1]), pan=0.25, send=0.6)  # Aero：风铃
-for i, m in enumerate((88, 91, 93)):
-    sfx(glass_bell(m, 0.18, 0.4), fr(ERA_AT[1]) + 0.05 * (i + 1), pan=0.1 * i, send=0.6)
-sfx(click(1.0), fr(ERA_AT[2]), pan=0.25)  # iOS 7：轻点
-sfx(pluck(90, 0.6, 0.2, 0.5), fr(ERA_AT[2]), pan=0.25)
-for s, p in zip(shimmer(0.5, 0.8), (-0.5, 0.5)):  # Glassmorphism：闪光
-    sfx(s, fr(ERA_AT[3]), pan=p, send=0.6)
-sfx(glass_bell(93, 0.9, 1.4), fr(ERA_AT[4]), pan=0.25, send=0.6)  # Liquid Glass：玻璃铃
-sfx(thud(0.8), fr(588))
 
-# 03 融合
-for i, (dt, p) in enumerate([(0, -0.5), (6, 0.0), (12, 0.5)]):
-    sfx(bloop(86 - i * 3, 0.8), fr(650 + dt), pan=p)
-sfx(goo(1.0), fr(724), pan=-0.15, send=0.25)
-sfx(thud(0.7), fr(736))
-sfx(bloop(74, 0.8, up=True, d=0.25), fr(752), pan=0.4)
-sfx(whoosh(0.35, 800, 6000, 0.4, 0.4), fr(752), pan=0.4)
+def plop(level=1.0):
+    """玻璃砸进液体：一声下滑的“啵” + 亚低音 + 高频飞溅"""
+    t = tt(0.6)
+    f = 520 * np.exp(-t / 0.035) + 110
+    y = np.sin(2 * np.pi * np.cumsum(f) / SR) * np.exp(-t / 0.13)
+    y += 0.5 * fft_filter(rng.standard_normal(len(t)), lo=4000) * np.exp(-t / 0.05)
+    return y * np.minimum(1, t / 0.002) * level * 0.45
+
+
+def wet(d=1.2, level=1.0):
+    """涟漪扫过：带通噪声的中心频率往下走，像水面一圈圈散开"""
+    t = tt(d)
+    y = sweep_lp(rng.standard_normal(len(t)), 9000, 700) - sweep_lp(rng.standard_normal(len(t)), 2500, 200)
+    return y * np.exp(-t / (d * 0.4)) * np.minimum(1, t / 0.01) * level * 0.22
+
+
+# ───────── 音效（对准画面：video/scene.ts） ─────────
+# 镜 1 · 落下
+sfx(swell(0.22, 0.6, 800, 5000), 0.0, pan=0.3)
+sfx(glide(86, 62, 0.3, 1.4), fr(12), pan=0.3)
+sfx(plop(1.0), fr(30), pan=0.25, send=0.3)
+sfx(thud(0.9, 120, 42), fr(30))
+sfx(wet(1.4, 1.0), fr(31), pan=0.2, send=0.4)
+for i, (dt, p_) in enumerate([(0, -0.6), (1, 0.3), (2, 0.7)]):
+    sfx(glass_bell(93 + 2 * i, 0.25, 0.3), fr(31 + dt), pan=p_, send=0.4)  # 甩出去
+for i, p_ in enumerate((-0.6, 0.3, 0.7)):
+    sfx(bloop(88 - 3 * i, 0.5), fr(56 + 2 * i), pan=p_)  # 落回墙面
+    sfx(bloop(74 + 2 * i, 0.4, up=True, d=0.12), fr(76 + 4 * i), pan=p_ * 0.5)  # 被拉回去
+sfx(whoosh(1.1, 300, 5000, 0.55, 0.5), fr(100), pan=0.4)  # 镜片成形、镜头跟着走
+
+# 镜 2 · 弯光
+sfx(glide(76, 64, 0.45, 0.9), fr(172), pan=-0.2)
+sfx(glide(64, 81, 0.7, 0.9), fr(206), pan=0.2)
+for s_, p_ in zip(shimmer(0.6), (-0.7, 0.7)):
+    sfx(s_, fr(246), pan=p_, send=0.5)
+sfx(swell(1.0, 0.9, 400, 9000), fr(270) - 0.3, send=0.2)  # 穿过玻璃
+sfx(whoosh(0.7, 200, 9000, 0.7, 0.85), fr(268), send=0.2)
+sfx(thud(0.6, 90, 40), fr(300))
+sfx(glass_bell(86, 0.5, 1.0), fr(300), send=0.6)
+
+# 镜 3 · 二十五年：每个年代一个音色 + 起跳的轻风声
+ERA_LAND = [330 + 45 * k for k in range(5)]
+sfx(bloop(84, 0.9, up=True), fr(ERA_LAND[0]), pan=-0.2)  # Aqua：冒泡
+for i, m in enumerate((86, 88, 91, 93)):
+    sfx(glass_bell(m, 0.22, 0.45), fr(ERA_LAND[1]) + 0.04 * i, pan=0.1 * i, send=0.6)  # Aero：风铃
+sfx(click(1.0), fr(ERA_LAND[2]))  # iOS 7：轻点
+sfx(pluck(90, 0.6, 0.2, 0.5), fr(ERA_LAND[2]))
+for s_, p_ in zip(shimmer(0.5, 0.8), (-0.5, 0.5)):
+    sfx(s_, fr(ERA_LAND[3]), pan=p_, send=0.6)  # Glassmorphism：闪光
+sfx(glass_bell(93, 0.9, 1.4), fr(ERA_LAND[4]), send=0.6)  # 液态玻璃：玻璃铃
+sfx(thud(0.8), fr(ERA_LAND[4]))
+for k in range(4):
+    sfx(whoosh(0.4, 600, 4000, 0.3, 0.5), fr(ERA_LAND[k] + 18), pan=0.3)
+sfx(whoosh(0.6, 400, 6000, 0.4, 0.5), fr(516), pan=0.4)
+
+# 镜 4 · 融合
+for i, p_ in enumerate((-0.5, 0.0, 0.5)):
+    sfx(bloop(86 - i * 3, 0.7), fr(552 + 4 * i), pan=p_)
 for i in range(3):
-    sfx(click(0.7), fr(776 + i * 5), pan=0.4)
+    sfx(click(0.5), fr(578 + 4 * i), pan=-0.4 + 0.4 * i)
+sfx(goo(1.0), fr(612), pan=-0.2, send=0.25)
+sfx(click(0.9), fr(628), pan=0.4)
+sfx(wet(0.5, 0.5), fr(630), pan=0.4)
+sfx(bloop(72, 0.8, up=True, d=0.25), fr(636), pan=0.4)
+for i in range(3):
+    sfx(click(0.6), fr(652 + 4 * i), pan=0.45)
 
-# 04 界面：控件弹出 · 字变色
-sfx(bloop(79, 0.6, up=True), fr(AT['ui'] + 30), pan=-0.5)
-sfx(bloop(83, 0.5, up=True), fr(AT['ui'] + 54), pan=0.6)
-sfx(click(0.6), fr(1000), pan=-0.5)
+# 镜 5 · 界面
+sfx(whoosh(0.8, 300, 7000, 0.6, 0.5), fr(690), pan=0.5)
+sfx(thud(0.45, 100, 50), fr(732), pan=-0.4)
+sfx(goo(0.45), fr(772), pan=-0.4)  # 标签栏缩小、播放条落进来
+sfx(whoosh(0.7, 300, 6000, 0.45, 0.5), fr(770), pan=0.6)
+sfx(thud(0.4, 100, 50), fr(806), pan=0.5)
+sfx(bloop(80, 0.45, up=True), fr(836), pan=-0.4)  # 往上滚，标签栏展开
+sfx(click(0.8), fr(856), pan=0.6)
+sfx(wet(0.7, 0.45), fr(860), pan=0.6)
 
-# 片尾：所有玻璃收回去
-sfx(goo(0.6), fr(1110), pan=0.2, send=0.3)
+# 镜 6 · 第二次穿过 → 五条规则：放大镜一拍一条，铃声一级一级往上
+sfx(swell(0.8, 0.8, 400, 9000), fr(900), send=0.2)
+sfx(whoosh(0.7, 200, 9000, 0.6, 0.85), fr(900), send=0.2)
+sfx(thud(0.55, 90, 40), fr(936))
+for i, m in enumerate((81, 83, 85, 88, 90)):
+    sfx(glass_bell(m, 0.5, 0.7), fr(962 + 24 * i), send=0.5)
+
+# 镜 7 · 升起、摇回字墙
+sfx(bloop(70, 0.6, up=True, d=0.3), fr(1066), pan=0.2)
+sfx(whoosh(1.4, 200, 5000, 0.45, 0.5), fr(1066), send=0.2)
 
 # ================= 混响 + 母带 =================
 
@@ -311,7 +368,7 @@ def reverb(x, seed, dec=0.7, length=2.8):
     return np.fft.irfft(np.fft.rfft(x, nfft) * np.fft.rfft(ir, nfft), nfft)[: len(x)]
 
 
-mix = MUS + SFX * 0.7  # 音效让出背景音乐
+mix = MUS + SFX * 0.62  # 音效让出背景音乐
 mix[0] += reverb(SEND[0], 1) * 0.5
 mix[1] += reverb(SEND[1], 2) * 0.5
 for ch in range(2):

@@ -8,7 +8,7 @@
 
 ### 014 · 液态玻璃（等主人审片通过后再做）
 
-- [ ] 渲染成片：`npm run render:014`（需要 WebGL，脚本里已带 `--gl=swangle`；无显卡机器约 25 分钟）→ `out/014-liquid-glass-master.mp4`，改名 `014-liquid-glass.mp4`
+- [ ] 渲染成片：`npm run render:014`（需要 WebGL，脚本里已带 `--gl=swangle`；无显卡机器 4 核约 2 小时）→ `out/014-liquid-glass-master.mp4`，改名 `014-liquid-glass.mp4`
 - [ ] 发布 Release `day-14`：照 day-13 的方式放进 `release-assets` 分支的 `day-14/`（mp4 + 源码 zip + SHA256SUMS + release.json + notes.md）
 - [ ] 封面 `styles/014-liquid-glass/video/cover.jpg` 已由设计侧从第 0 帧导出；若成片重渲染，核对仍与第 0 帧一致
 - [ ] 画廊上架：`gallery/data/works.json` 加 `014-liquid-glass`（四张图：poster / cheatsheet / app-ui / steps），取下一个上架期号；跑 `npm run gallery:sync && npm test && npm run gallery:build && npm run gallery:check`
