@@ -49,6 +49,21 @@ test('目录拒绝路径逃逸、外部视频与重复作品', async () => {
   assert.throws(() => validateEntries([work, work]));
 });
 
+test('网站上架期号按系列连续，制作目录与已发布链接保持独立', async () => {
+  const works = await loadCatalog();
+  const first = works.find(work => work.id === '001-bauhaus');
+  const second = {...first, id:'013-art-deco', asset:'013-art-deco.mp4', release:'day-13', number:'002'};
+  const layout = works.find(work => work.id === '01-bento-grid');
+  assert.doesNotThrow(() => validateEntries([second, layout, first]));
+  assert.equal(workLabel(second), '风格 002');
+  assert.equal(sourceUrl(second, 'video'), 'https://github.com/guanmo-ai/design-style/tree/main/styles/013-art-deco/video');
+  assert.equal(videoUrl(second), './media/013-art-deco.mp4');
+  for (const number of ['001', '003', '013', '2', '000']) {
+    assert.throws(() => validateEntries([first, {...second, number}]), /上架期号/);
+  }
+  assert.throws(() => validateEntries([first, {...layout, number:'02'}]), /上架期号/);
+});
+
 test('搜索支持多关键词和英文，分类、空结果和排序组合生效', async () => {
   const works = (await loadCatalog()).filter(work => work.id === '001-bauhaus');
   assert.equal(selectWorks(works, {query: 'BAUHAUS 几何'}).length, 1);

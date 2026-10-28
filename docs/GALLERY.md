@@ -48,11 +48,15 @@ npm run gallery:check   # 构建后检查发布文件、Pages 子路径链接、
 
 `gallery/data/works.json` 只登记已有 Release 成片的作品。尚未完成的登记保存在 `gallery/data/pending/<作品 ID>.json`，不参与同步、构建、README 视频预览或站点发布，原作品源码继续保留在 `styles/` 或 `layouts/`。恢复发布前先补齐 Release 视频，重新核对 SHA-256 和真实发布时间，再将条目移回 `works.json`。当前 `006-y2k` 因缺少 `day-06` 的成片暂存于此。
 
+网站的 `number` 按**首次上架顺序**连续分配，风格与布局分别从 `001`、`01` 开始；新作品取对应系列的下一个期号，不为开发分支预留。补发成片或恢复待发布作品时同样取下一个上架期号，已上架作品更新 Release 时保留原期号。目录校验会拒绝重复或跳号。
+
+制作目录 `id`、Release tag、媒体文件名和已有直达链接保持稳定，可以与网站期号不同。例如 `013-art-deco` 在网站显示为「风格 008」。卡片、详情及中英文阅读页使用上架期号；原视频、图解和仓库源码保留制作时的编号。阅读页仅转换标题中的期号，保留原文锚点与代码路径。
+
 1. 完成本期目录：风格为 `styles/NNN-name/`（三位期号），布局为 `layouts/NN-name/`（两位期号）。内含封面 `video/cover.jpg`、风格图或布局图 `images/preview/*.svg` 及对应源文件、中英文 `README.md` / `README.en.md`、`PROCESS.md` / `PROCESS.en.md`、`tokens.json`、`process/timeline.json`。
 2. 在本仓库 Release 发布成片。视频名与目录名一致：风格 `NNN-name.mp4`，布局 `NN-name.mp4`；Release tag 现有 `day-01`（风格 001）与 `layout-01`（布局 01）。
    云端 AI 会话不能直接创建 Release 时，把成片放进 `release-assets` 分支的 `day-NN/`（附件 + `release.json` + `notes.md` + `SHA256SUMS`）并推送：`.github/workflows/publish-release.yml`（只在该分支上）核对 SHA-256 后用仓库自己的权限发布，已有的 tag 不会被改动。
    发布工作流**只在 `release-assets` 分支**，当前以推送该分支为正式入口，不在 `main` 维护第二份。009 已通过这一入口成功发布。虽然文件含 `workflow_dispatch`，但 [GitHub 要求手动触发工作流先存在于默认分支](https://docs.github.com/en/actions/how-tos/manage-workflow-runs/manually-run-a-workflow)，当前不能把 Actions 的「Run workflow」当作可用入口；若以后确有手动补发需求，再将统一的工作流入口放到 `main`，明确检出 `release-assets`，避免两份逻辑漂移。
-3. 向 `gallery/data/works.json` 添加条目，填写类型 `type`（`style` 或 `layout`，缺省按 `style`）、期号、标题、分类、简介、标签、发布日期、Release tag、视频文件名、SHA-256 与四张图的信息。SHA-256 可由 `gh release view <tag> --repo guanmo-ai/design-style --json assets` 返回的 digest 核对。
+3. 向 `gallery/data/works.json` 添加条目，填写类型 `type`（`style` 或 `layout`，缺省按 `style`）、该系列下一个上架期号 `number`、标题、分类、简介、标签、发布日期、Release tag、视频文件名、SHA-256 与四张图的信息。不要从制作目录或 Release tag 推导网站期号。SHA-256 可由 `gh release view <tag> --repo guanmo-ai/design-style --json assets` 返回的 digest 核对。
 4. 运行同步、测试、构建并进行浏览器检查。视频规格与章节自动读取本期 tokens 和 timeline，不重复手填。`gallery:sync` 同时更新仓库首页的紧凑视频预览：按最新发布排序，每行最多三张，新增作品自动换行；封面与标题均链接到对应作品的画廊详情。只更新 README 时运行 `npm run gallery:readme`，将生成的 README 改动一并提交。
 
 作品直达链接格式：`?q=包豪斯#work-001-bauhaus`；只看布局：`?type=layout`（只看风格：`?type=style`），可与 `q` 组合；首页始终按最新发布排序，旧链接中的 `category`、`sort` 不再影响首页展示。没有匹配时显示空状态，不展示尚未发布的预告作品。每一期的风格图或布局图只在对应作品详情中展示，首页不展示具体图片或制作资料。
