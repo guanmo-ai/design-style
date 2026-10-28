@@ -1,14 +1,15 @@
 """
-候选风格 · 未来主义 Futurism —— 风格图（1080×1350）
+015 · 未来主义 Futurism —— 风格图（1080×1350）
 
   poster.svg      海报：VELOCITÀ 带着残影冲过去、力线、滚动的轮子、越来越小的拟声字
   cheatsheet.svg  速查卡：残影公式、字宽 = 速度、力线、拟声排版、五种颜色、五条规则
   app-ui.svg      如果未来主义来做 App：一个骑行记录页，带标注
+  steps.svg       四步改造：同一张普通海报，每一步只改一件事
 
 一条物理规则贯穿全部：**动的东西留下它刚才的样子**——
-残影第 k 个的不透明度 = 0.6^k，间距 = 当时的速度 × 时间（加速时越拉越开，刹车时挤在一起）。
+残影第 k 个 = k·Δt 前的样子（Δt = 3 帧 = 1/20 秒），不透明度 0.6^k——间距因此 = 当时的速度 × 时间（加速时越拉越开，刹车时挤在一起）。
 字宽也跟着速度走：Archivo 的 wdth 轴 62（停）→ 125（全速）。
-用法：python3 drafts/futurism/images/make_svgs.py
+用法：python3 styles/015-futurism/images/make_svgs.py
 """
 import math
 import os
@@ -16,7 +17,7 @@ from xml.sax.saxutils import escape
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 W, H = 1080, 1350
-NO = '014'
+NO = '015'
 
 INK = '#16130F'
 PAPER = '#EDE5D3'
@@ -151,7 +152,7 @@ def cheatsheet():
         b.append(f'<line x1="150" y1="{y}" x2="640" y2="{y}" stroke="{INK}" stroke-opacity="0.15" stroke-width="2"/>')
         b.append(echoes(lambda ox, oy, a, k: f'<circle cx="{620 + ox:.1f}" cy="{y}" r="17" fill="{ORANGE if k else INK}" fill-opacity="{a:.3f}"/>',
                         n=6, step=st, accel=acc))
-    vals = [('n', '6 层（慢 3 · 快 8）'), ('αₖ', '0.6^k → 1 · .6 · .36 · .22'), ('Δ', '速度 × 1/60 s'), ('方向', '只往运动反方向拖')]
+    vals = [('n', '6 层（停下全部收进本体）'), ('αₖ', '0.6^k → 1 · .6 · .36 · .22'), ('Δt', '3 帧 = 1/20 s'), ('方向', '只往运动反方向拖')]
     for i, (k, v) in enumerate(vals):
         y = 312 + i * 34
         b.append(t(690, y, 18, k, MONO, 700, ORANGE) + t(750, y, 18, v, SC, 500, INK))
@@ -250,14 +251,104 @@ def app_ui():
         for k, line in enumerate(d.split('\n')):
             b.append(t(664, y + 38 + k * 26, 17, line, SC, 400, MUTE))
     b.append(t(612, 912, 16, 'TOKENS', MONO, 700, ORANGE, '3'))
-    for i, line in enumerate(['--echo-count: 0 – 8', '--echo-alpha: 0.6^k', '--echo-gap: speed × 1/60s', '--wdth: 62 → 125', '@media (prefers-reduced-motion) → 1 层']):
+    for i, line in enumerate(['--echo-count: 0 – 8', '--echo-alpha: 0.6^k', '--echo-gap: speed × Δt (3 帧)', '--wdth: 62 → 125', '@media (prefers-reduced-motion) → 1 层']):
         b.append(t(612, 942 + i * 24, 15, line, MONO, 400, INK))
     b.append(t(72, 1310, 15, f'Design Style 风格 {NO} · @guanmo_ai', MONO, 400, MUTE))
     return doc(''.join(b))
 
 
+# ======================================================================
+# 四步改造：同一张普通海报，每一步只改一件事
+# ======================================================================
+
+PW = 435  # 每格边长
+CELLS = [(90, 222), (555, 222), (90, 758), (555, 758)]
+
+
+def plain_bits(b, title_fill, sub_fill, btn_fill, bg, wheel_col, rounded=True):
+    """原稿里不变的那几样：日期、地点、按钮（左下角水平放，永远好读）"""
+    b.append(t(36, 352, 20, '10 月 24 日 周六 20:00', SC, 700, sub_fill))
+    b.append(t(36, 380, 16, '滨江大道 · 全程 18 公里', SC, 400, sub_fill))
+    r = 22 if rounded else 0
+    b.append(f'<rect x="268" y="346" width="132" height="44" rx="{r}" fill="{btn_fill}"/>')
+    b.append(t(334, 375, 17, '立即报名', SC, 900, PAPER if btn_fill != ORANGE else INK, '0', 'middle'))
+
+
+def step_cell(k):
+    b = []
+    if k == 0:  # 原稿：居中、水平、五种颜色、圆角
+        b.append(f'<rect width="{PW}" height="{PW}" fill="#E9EEF5"/>')
+        b.append(f'<circle cx="60" cy="56" r="26" fill="#F3B6C8"/><circle cx="388" cy="70" r="12" fill="#3DB57A"/>')
+        b.append(wheel(217, 118, 62, 0.3, '#3866D6', 7))
+        b.append(t(217, 252, 64, 'NIGHT RIDE', ARCHIVO, 800, '#3866D6', '0', 'middle', wdth=100))
+        b.append(t(217, 288, 18, '城 市 夜 骑', SC, 700, MUTE, '6', 'middle'))
+        plain_bits(b, '#3866D6', INK, '#3DB57A', '#E9EEF5', '#3866D6')
+    elif k == 1:  # 力线：只加四条楔形，尖端全部收向标题的前方
+        b.append(f'<rect width="{PW}" height="{PW}" fill="#E9EEF5"/>')
+        b.append(f'<circle cx="60" cy="56" r="26" fill="#F3B6C8"/><circle cx="388" cy="70" r="12" fill="#3DB57A"/>')
+        for y0, w0, c in [(40, 70, '#3866D6'), (150, 30, INK), (250, 60, '#F3B6C8'), (300, 26, INK)]:
+            b.append(wedge(-10, y0, 420, 214, w0, 2, c))
+        b.append(wheel(330, 118, 62, 0.3, '#3866D6', 7))
+        b.append(t(40, 238, 64, 'NIGHT RIDE', ARCHIVO, 800, '#3866D6', '0', 'start', wdth=100))
+        b.append(t(42, 274, 18, '城 市 夜 骑', SC, 700, MUTE, '6'))
+        plain_bits(b, '#3866D6', INK, '#3DB57A', '#E9EEF5', '#3866D6')
+    elif k == 2:  # 残影：标题和轮子拖出 0.6^k 的残影，越往后越开 = 在加速
+        b.append(f'<rect width="{PW}" height="{PW}" fill="#E9EEF5"/>')
+        for y0, w0, c in [(40, 70, '#3866D6'), (150, 30, INK), (250, 60, '#F3B6C8'), (300, 26, INK)]:
+            b.append(wedge(-10, y0, 420, 214, w0, 2, c))
+        b.append(echoes(lambda ox, oy, a, kk: wheel(330 + ox, 118, 62, -ox / 62, '#3866D6', 7, a), n=5, step=16, accel=1.35))
+        b.append(echoes(lambda ox, oy, a, kk: t(40 + ox, 238, 64, 'NIGHT RIDE', ARCHIVO, 800, '#3866D6', '0', 'start', f'opacity="{a:.3f}"', wdth=100),
+                        n=5, step=9, accel=1.4))
+        b.append(t(42, 274, 18, '城 市 夜 骑', SC, 700, MUTE, '6'))
+        plain_bits(b, '#3866D6', INK, '#3DB57A', '#E9EEF5', '#3866D6')
+    else:  # 字宽 = 速度 + 拟声 + 五色：纸 / 炭 / 橙 / 钴蓝 / 铬银，去掉圆角
+        b.append(f'<rect width="{PW}" height="{PW}" fill="{PAPER}"/>')
+        for y0, w0, c in [(20, 110, ORANGE), (140, 34, INK), (236, 80, COBALT), (300, 30, INK)]:
+            b.append(wedge(-10, y0, 430, 206, w0, 2, c))
+        b.append(echoes(lambda ox, oy, a, kk: wheel(350 + ox, 104, 60, -ox / 60, INK if kk == 0 else COBALT, 8, a), n=5, step=18, accel=1.35))
+        b.append(echoes(lambda ox, oy, a, kk: t(18 + ox, 236, 54, 'NIGHT RIDE', ARCHIVO, 900, INK if kk == 0 else ORANGE, '-1', 'start', f'opacity="{a:.3f}"', wdth=125 - kk * 9),
+                        n=5, step=10, accel=1.4))
+        b.append(f'<rect x="18" y="250" width="96" height="30" fill="{PAPER}"/>')
+        b.append(t(22, 272, 18, '城市夜骑', SC, 900, INK, '2'))
+        for i, (wd, sz) in enumerate([('VRRR', 44), ('VRR', 29), ('vrr', 20)]):
+            b.append(t(206 + i * 72, 304 + i * 8, sz, wd, ARCHIVO, 900, ORANGE if i == 0 else INK, '0', 'start', f'transform="rotate({-6 + 5 * i} {206 + i * 72} {304 + i * 8})"', wdth=125 - 20 * i))
+        plain_bits(b, INK, INK, ORANGE, PAPER, INK, rounded=False)
+    return ''.join(b)
+
+
+def steps():
+    b = [f'<rect width="{W}" height="{H}" fill="{PAPER}"/>']
+    b.append(t(90, 128, 64, '四步改造', SC, 900, INK))
+    b.append(t(90, 178, 22, '同一张普通海报，每一步只改一件事 —— 改到第四步，它就开始“跑”了', SC, 400, MUTE))
+    b.append(t(990, 178, 18, f'how-to no.{NO}', MONO, 700, MUTE, '1', 'end'))
+    b.append(echoes(lambda ox, oy, a, kk: f'<circle cx="{960 + ox:.1f}" cy="104" r="20" fill="{INK if kk == 0 else ORANGE}" fill-opacity="{a:.3f}"/>', n=5, step=10, accel=1.35))
+    b.append(f'<rect x="90" y="196" width="900" height="5" fill="{INK}"/>')
+    caps = [
+        ('原稿', '居中、水平、五种颜色、圆角', '哪儿都对，哪儿都不动', INK),
+        ('力线', '只加四条楔形，尖端收向标题前方', '日期、地点照样水平，照样好读', INK),
+        ('残影', '标题和轮子拖出 0.6^k 的残影', '越往后越开 = 在加速', INK),
+        ('字宽 = 速度', '标题拉到 wdth 125 + 拟声 ÷1.5', '换成五色：纸 · 炭 · 橙 · 钴蓝 · 铬银', ORANGE),
+    ]
+    for k, (x, y) in enumerate(CELLS):
+        b.append(f'<clipPath id="c{k}"><rect x="{x}" y="{y}" width="{PW}" height="{PW}"/></clipPath>')
+        b.append(f'<g clip-path="url(#c{k})"><g transform="translate({x} {y})">{step_cell(k)}</g></g>')
+        b.append(f'<rect x="{x}" y="{y}" width="{PW}" height="{PW}" fill="none" stroke="{SILVER}" stroke-width="1.5"/>')
+        a, d1, d2, col = caps[k]
+        b.append(f'<path d="M{x} {y + PW + 22}h52l-12 28h-40z" fill="{col}"/>')
+        b.append(t(x + 10, y + PW + 44, 19, f'0{k + 1}', MONO, 700, PAPER))
+        b.append(t(x + 66, y + PW + 46, 24, a, SC, 900, INK))
+        aw = sum(24 if ord(ch) > 0x2E80 else 13 for ch in a)
+        b.append(t(x + 76 + aw, y + PW + 45, 15, d1, SC, 700, INK))
+        b.append(t(x + 76 + aw, y + PW + 70, 15, d2, SC, 400, MUTE))
+        if k % 2 == 0:
+            b.append(f'<path d="M{x + PW + 8} {y + PW / 2 - 9}l14 9-14 9z" fill="{ORANGE}"/>')
+    b.append(t(90, 1300, 16, 'github.com/guanmo-ai/design-style', MONO, 400, MUTE))
+    b.append(t(990, 1300, 16, '@guanmo_ai · 每天一个设计风格', SC, 400, MUTE, '0', 'end'))
+    return doc(''.join(b))
+
+
 if __name__ == '__main__':
-    for name, fn in [('poster', poster), ('cheatsheet', cheatsheet), ('app-ui', app_ui)]:
+    for name, fn in [('poster', poster), ('cheatsheet', cheatsheet), ('app-ui', app_ui), ('steps', steps)]:
         path = os.path.join(HERE, f'{name}.svg')
         with open(path, 'w', encoding='utf-8') as f:
             f.write(fn())

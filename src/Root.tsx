@@ -12,6 +12,7 @@ import {Risograph, RISOGRAPH_DURATION} from '../styles/008-risograph/video/Risog
 import {NeoBrutalism, NEOBRUTAL_DURATION} from '../styles/009-neo-brutalism/video/NeoBrutalism';
 import {ArtDeco, ARTDECO_DURATION} from '../styles/013-art-deco/video/ArtDeco';
 import {LiquidGlass, LIQUIDGLASS_DURATION} from '../styles/014-liquid-glass/video/LiquidGlass';
+import {Futurism, FUTURISM_DURATION} from '../styles/015-futurism/video/Futurism';
 
 // 每期注册为一个 Composition：风格 S{期号}-{名字}，布局 L{期号}-{名字}
 // 统一规格：1920×1080 · 60fps · 15s
@@ -129,6 +130,25 @@ export const Root: React.FC = () => (
       id="S014-LiquidGlass-Preview"
       component={LiquidGlass}
       durationInFrames={LIQUIDGLASS_DURATION / 2}
+      fps={30}
+      width={1920}
+      height={1080}
+      defaultProps={{music: true, blur: 1, step: 2, res: 0.5}}
+    />
+    <Composition
+      id="S015-Futurism"
+      component={Futurism}
+      durationInFrames={FUTURISM_DURATION}
+      fps={60}
+      width={1920}
+      height={1080}
+      defaultProps={{music: true, blur: 6}}
+    />
+    {/* 草稿预览：30fps、step 2、不做运动模糊、内部半分辨率；渲染时加 --scale=0.5（npm run preview:015） */}
+    <Composition
+      id="S015-Futurism-Preview"
+      component={Futurism}
+      durationInFrames={FUTURISM_DURATION / 2}
       fps={30}
       width={1920}
       height={1080}
