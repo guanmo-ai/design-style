@@ -94,16 +94,18 @@ const TumbA: React.FC<{t: number; k: number}> = ({t, k}) => {
 const TS = 150;
 const TU_X = 110;
 const TU_AT = 348;
-const M_GO = 350;
+const M_GO = TU_AT;
 const M_STOP = 378;
-const tuX = (t: number) => path1(t, [[TU_AT - 8, -500, 2 * (TU_X + 500) / 8], [TU_AT, TU_X, 0]]);
+/** TUM 三个字母一起以 100 px/帧 飞进来；f348 T 和 U 撞停，M 带着同样的速度继续往前冲 */
+const TUM_V = 100;
+const tuX = (t: number) => (t < TU_AT ? TU_X + TUM_V * (t - TU_AT) : TU_X);
 const U0 = TU_X + (advOf('T', 62) + advOf('U', 62) - 0.02) * TS;
 const M_END = 1500;
 /**
  * M 的左边：像受阻力一样指数减速 x = U0 + D(1 − e^(−t/τ))，速度和剩下的距离成正比——
  * 所以 M 经过的每个 U，字宽从 125 一路线性地缩到 62（最后几个挤成窄窄的一条）
  */
-const M_V0 = 100;
+const M_V0 = TUM_V;
 const M_TAU = (M_END - U0) / M_V0;
 export const mX = (t: number) => {
   if (t < M_GO) return U0 + tuX(t) - TU_X;
@@ -137,12 +139,13 @@ const gapOpen = (t: number) => ease.inOut(prog(t, 388, 16));
 const shiftOf = (i: number, t: number) => GAPS.filter((g) => i > g).length * GAP_W * gapOpen(t);
 
 const Tuuum: React.FC<{t: number; k: number}> = ({t, k}) => {
-  if (t < TU_AT - 8) return null;
+  if (t < TU_AT - 22) return null;
   const ink = k ? C.orange : C.ink;
   const out: React.ReactNode[] = [];
   const tx = tuX(t);
-  out.push(<Word key="T" text="T" x={tx + shiftOf(0, t)} y={GY} size={TS} wdth={wdthOf(vel(tuX, t))} sy={growOf(0, t)} fill={ink} />);
-  out.push(<Word key="U0" text="U" x={tx + (advOf('T', 62) - 0.01) * TS + shiftOf(1, t)} y={GY} size={TS} wdth={62} sy={growOf(1, t)} fill={ink} />);
+  const tl = leanOf(tuX, t);
+  out.push(<Word key="T" text="T" x={tx + shiftOf(0, t)} y={GY} size={TS} wdth={62} sy={growOf(0, t)} fill={ink} lean={tl} />);
+  out.push(<Word key="U0" text="U" x={tx + (advOf('T', 62) - 0.01) * TS + shiftOf(1, t)} y={GY} size={TS} wdth={62} sy={growOf(1, t)} fill={ink} lean={tl} />);
   if (k === 0) {
     US.forEach((u, i) => {
       if (mX(t) < u.x + 20) return;

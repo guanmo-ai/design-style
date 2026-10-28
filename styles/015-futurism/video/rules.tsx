@@ -62,7 +62,7 @@ const Demo1: Demo = ({ta}) => (
     </Txt>
   </Clip>
 );
-const ballX = (u: number) => path1(u, [[-30, -1300, 30], [24, 320, 0]]);
+const ballX = (u: number) => -420 + 26 * u; // 匀速：相邻两层的间距一直是 26 × 3 = 78px
 const Demo2: Demo = ({ta}) => {
   const lbl = ['1', '.6', '.36', '.22', '.13', '.08', '.05'];
   return (
