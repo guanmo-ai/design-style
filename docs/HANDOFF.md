@@ -6,12 +6,10 @@
 
 ## 待办
 
-### 014 · 液态玻璃：用 Mac 的显卡渲染正片（以后每期同样）
+### 014 · 液态玻璃：成片已渲好，不用重渲
 
-- [ ] 拉取 `claude/amazing-carson-xe6qyo`，`npm ci && npm run fonts`，然后 `npm run render:014:gpu`（`--gl=angle` 走显卡；脚本会先合成配乐）→ `out/014-liquid-glass-master.mp4`
-- [ ] 推到 `review-renders` 分支：`014/014-liquid-glass-master.mp4`（只放审片用的成片，不触发发布），提交信息写上渲染用的提交号和耗时
-- [ ] 渲染报错、或画面明显和 Claude 发的预览不一致：不要改设计代码，把报错 / 截图记在这里，交给 Claude
-- 设计侧（Claude）拉下成片审片；主人看过、通过后，再做下面的发布
+- 第三版成片已在云端分段渲好，放在 `review-renders` 分支 `014/014-liquid-glass-master.mp4`（附 SHA256SUMS）。主人审片通过后直接用它发布；只有设计再改动时才需要重渲。
+- 以后每期：Claude 推代码后，Codex 在 Mac 上 `npm run render:NNN:gpu`（`--gl=angle` 走显卡），把成片推到 `review-renders` 分支的 `NNN/`；渲染报错或画面和 Claude 的预览不一致时，不改设计代码，把报错 / 截图记在这里交给 Claude。
 
 ### 014 · 液态玻璃：发布（等主人审片通过后再做）
 
