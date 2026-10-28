@@ -24,6 +24,13 @@
 5. **一定要有落到网页和手机 App 里的样子。** 让设计师看到风格用在真实界面里的效果。
 6. **手机上要看得清。** 代码和说明用大字，静音也能看懂，每条规则都写在画面上。
 
+## 013 装饰艺术留下的经验
+
+- 装饰艺术第二版增加纵深、沿线扫光、万花筒与多层视差来丰富中轴构图的变化。
+- **不要用 `@remotion/motion-blur` 的 `CameraMotionBlur`。** 它用 plus-lighter 叠加 1/n 不透明度的采样，深色渐变会被量化成偏绿的色带。用 013 的 `Blur`（`styles/013-art-deco/video/ArtDeco.tsx`）：普通叠加，第 k 层不透明度 1/k；静止像素不变，首尾帧逐像素一致。渲染加 `--color-space=bt709`。
+- **成片直接发布，不用 Codex 重新渲染。** 在 `release-assets` 分支建 `day-NN/`（mp4 + 源码 zip + SHA256SUMS + release.json + notes.md，照 day-09 / day-13），推送后 `publish-release.yml` 自动建 Release。
+- **字体：** 云端环境里 `github.com/.../raw/` 会 403，改用 `raw.githubusercontent.com/google/fonts/main/ofl/...`。
+
 ## 配乐
 
 - **全片一个速度，不变速。** 画面要放慢只能按整拍放，后面的剪辑点仍要落在拍点上；不要让某一段的 BGM 跟着变慢。
