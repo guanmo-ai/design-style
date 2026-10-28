@@ -7,6 +7,11 @@
 <table>
   <tr>
     <td align="center" valign="top" width="33%">
+      <a href="https://guanmo-ai.github.io/design-style/?lang=zh#work-014-liquid-glass"><img src="styles/014-liquid-glass/video/cover.jpg" width="240" alt="液态玻璃 视频封面" /></a><br />
+      <a href="https://guanmo-ai.github.io/design-style/?lang=zh#work-014-liquid-glass"><b>液态玻璃</b></a><br />
+      <sub>Liquid Glass · 20 秒</sub>
+    </td>
+    <td align="center" valign="top" width="33%">
       <a href="https://guanmo-ai.github.io/design-style/?lang=zh#work-013-art-deco"><img src="styles/013-art-deco/video/cover.jpg" width="240" alt="装饰艺术 视频封面" /></a><br />
       <a href="https://guanmo-ai.github.io/design-style/?lang=zh#work-013-art-deco"><b>装饰艺术</b></a><br />
       <sub>Art Deco · 20 秒</sub>
@@ -16,13 +21,13 @@
       <a href="https://guanmo-ai.github.io/design-style/?lang=zh#work-009-neo-brutalism"><b>新粗野主义</b></a><br />
       <sub>Neo-Brutalism · 20 秒</sub>
     </td>
+  </tr>
+  <tr>
     <td align="center" valign="top" width="33%">
       <a href="https://guanmo-ai.github.io/design-style/?lang=zh#work-008-risograph"><img src="styles/008-risograph/video/cover.jpg" width="240" alt="孔版印刷 视频封面" /></a><br />
       <a href="https://guanmo-ai.github.io/design-style/?lang=zh#work-008-risograph"><b>孔版印刷</b></a><br />
       <sub>Risograph · 15 秒</sub>
     </td>
-  </tr>
-  <tr>
     <td align="center" valign="top" width="33%">
       <a href="https://guanmo-ai.github.io/design-style/?lang=zh#work-005-pop-art"><img src="styles/005-pop-art/video/cover.jpg" width="240" alt="波普艺术 视频封面" /></a><br />
       <a href="https://guanmo-ai.github.io/design-style/?lang=zh#work-005-pop-art"><b>波普艺术</b></a><br />
@@ -33,13 +38,13 @@
       <a href="https://guanmo-ai.github.io/design-style/?lang=zh#work-004-memphis"><b>孟菲斯</b></a><br />
       <sub>Memphis · 15 秒</sub>
     </td>
+  </tr>
+  <tr>
     <td align="center" valign="top" width="33%">
       <a href="https://guanmo-ai.github.io/design-style/?lang=zh#work-003-constructivism"><img src="styles/003-constructivism/video/cover.jpg" width="240" alt="构成主义 视频封面" /></a><br />
       <a href="https://guanmo-ai.github.io/design-style/?lang=zh#work-003-constructivism"><b>构成主义</b></a><br />
       <sub>Constructivism · 15 秒</sub>
     </td>
-  </tr>
-  <tr>
     <td align="center" valign="top" width="33%">
       <a href="https://guanmo-ai.github.io/design-style/?lang=zh#work-02-masonry"><img src="layouts/02-masonry/video/cover.jpg" width="240" alt="瀑布流布局 视频封面" /></a><br />
       <a href="https://guanmo-ai.github.io/design-style/?lang=zh#work-02-masonry"><b>瀑布流布局</b></a><br />
@@ -50,13 +55,13 @@
       <a href="https://guanmo-ai.github.io/design-style/?lang=zh#work-002-swiss-style"><b>瑞士国际主义</b></a><br />
       <sub>Swiss Style · 15 秒</sub>
     </td>
+  </tr>
+  <tr>
     <td align="center" valign="top" width="33%">
       <a href="https://guanmo-ai.github.io/design-style/?lang=zh#work-01-bento-grid"><img src="layouts/01-bento-grid/video/cover.jpg" width="240" alt="便当盒布局 视频封面" /></a><br />
       <a href="https://guanmo-ai.github.io/design-style/?lang=zh#work-01-bento-grid"><b>便当盒布局</b></a><br />
       <sub>Bento Grid · 15 秒</sub>
     </td>
-  </tr>
-  <tr>
     <td align="center" valign="top" width="33%">
       <a href="https://guanmo-ai.github.io/design-style/?lang=zh#work-001-bauhaus"><img src="styles/001-bauhaus/video/cover.jpg" width="240" alt="包豪斯 视频封面" /></a><br />
       <a href="https://guanmo-ai.github.io/design-style/?lang=zh#work-001-bauhaus"><b>包豪斯</b></a><br />
@@ -113,6 +118,7 @@ by 观默 [@guanmo_ai](https://x.com/guanmo_ai)
 | **008** | [**孔版印刷 Risograph**](styles/008-risograph) | 1946—今天 | 三种油墨、一张会呼吸的纸：荧光粉印不进 CMYK，套不准是这台机器的口音 | [🎬 视频](https://github.com/guanmo-ai/design-style/releases/tag/day-08) · [🛠 过程](styles/008-risograph/PROCESS.md) |
 | **009** | [**新粗野主义 Neo-Brutalism**](styles/009-neo-brutalism) | 2021—今天 | 黑框描到底，阴影是一块偏移的黑：按下去，就是滑到阴影的位置 | [🎬 视频](https://github.com/guanmo-ai/design-style/releases/tag/day-09-audio-v2) · [🛠 过程](styles/009-neo-brutalism/PROCESS.md) |
 | **013** | [**装饰艺术 Art Deco**](styles/013-art-deco) | 1925—1939 | 先立一条中轴，阶梯、放射、三线从中轴往两边同时长出来；金色只给线 | [🎬 视频](https://github.com/guanmo-ai/design-style/releases/tag/day-13) · [🛠 过程](styles/013-art-deco/PROCESS.md) |
+| **014** | [**液态玻璃 Liquid Glass**](styles/014-liquid-glass) | 2013—今天 | 玻璃不发光，只把后面的东西弯过来：折射量 = 边缘的坡度 | [🎬 视频](https://github.com/guanmo-ai/design-style/releases/tag/day-14) · [🛠 过程](styles/014-liquid-glass/PROCESS.md) |
 
 ### 布局方式 · Layout
 
@@ -168,6 +174,9 @@ npm run render:009             # 风格 009：生成配乐 → 渲染 out/009-ne
 npm run images:009             # 风格 009：生成 4 张风格图 → preview SVG + 2x PNG
 npm run render:013             # 风格 013：生成配乐 → 渲染 out/013-art-deco-master.mp4
 npm run images:013             # 风格 013：生成 4 张风格图 → preview SVG + 2x PNG
+npm run render:014:gpu         # 风格 014：Mac 显卡渲染；软件渲染用 render:014
+npm run preview:014            # 风格 014：30fps、半分辨率草稿预览
+npm run images:014             # 风格 014：生成 4 张风格图 → preview SVG + 2x PNG
 npm run render:L01             # 布局 01：生成配乐 → 渲染 out/01-bento-grid-master.mp4
 npm run images:L01             # 布局 01：生成 4 张布局图 → preview SVG + 2x PNG
 npm run render:L02             # 布局 02：生成配乐 → 渲染 out/02-masonry-master.mp4
