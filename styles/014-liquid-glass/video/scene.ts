@@ -125,14 +125,17 @@ const LENS = {hw: 400, hh: 280, r: 140};
 const DIVE1 = {a: 266, b: 300, z: 2.6};
 const DIVE2 = {a: 900, b: 936, z: 2.6};
 
+/** 四跳各自的起跳帧与水平缓动：弧线跳 / 贴地滑（早走、匀）/ 高高跃起（晚走、快）/ 从高处落下（先冲后落） */
+const TAKE = [ERA_LAND(0) + 18, ERA_LAND(1) + 8, ERA_LAND(2) + 21, ERA_LAND(3) + 12];
+const HOP_EASE = [ease.inOut, ease.sine, ease.inOut5, (u: number) => ease.out(ease.sine(u))];
 /** 平面 B：跟着跳跃的玻璃走（带滞后），再到融合、界面 */
 const objX = (t: number) => {
   // 每个年代之间的一跳
   if (t < ERA_LAND(0)) return ERA_X(0);
   for (let k = 0; k < 4; k++) {
-    const take = ERA_LAND(k) + 18;
+    const take = TAKE[k];
     if (t < take) return ERA_X(k);
-    if (t < ERA_LAND(k + 1)) return lerp(ERA_X(k), ERA_X(k + 1), ease.inOut(prog(t, take, ERA_LAND(k + 1) - take)));
+    if (t < ERA_LAND(k + 1)) return lerp(ERA_X(k), ERA_X(k + 1), HOP_EASE[k](prog(t, take, ERA_LAND(k + 1) - take)));
   }
   return lerp(ERA_X(4), MERGE_C.x, tw(t, 516, 36, ease.inOut));
 };
@@ -336,21 +339,33 @@ export const frameAt = (t: number): Frame => {
     } else {
       const shapesK: S[] = [box(0, 560, 300, 72, 72), box(0, 560, 360, 236, 16), box(0, 560, 270, 290, 56), box(0, 560, 330, 210, 40), circ(0, 560, 170)];
       let k = 0;
-      for (let i = 0; i < 4; i++) if (t >= ERA_LAND(i) + 18) k = i + 1;
-      const take = ERA_LAND(Math.max(0, k - 1)) + 18;
+      for (let i = 0; i < 4; i++) if (t >= TAKE[i]) k = i + 1;
+      const take = TAKE[Math.max(0, k - 1)];
       if (k > 0 && t < ERA_LAND(k)) {
         // 空中：划弧线，边飞边换形状与材质
         const u = prog(t, take, ERA_LAND(k) - take);
         const e = ease.inOut(u);
+        const arc = 4 * u * (1 - u);
         s = lerpS(shapesK[k - 1], shapesK[k], e);
         m = lerpM(ERA_M[k - 1], ERA_M[k], e);
-        Hh = 0.12 + 0.85 * 4 * u * (1 - u);
+        // 四跳各不相同：弧线跳 → 贴地滑（被速度拉长）→ 高高跃起（离镜头近、变大）→ 从高处落下
+        if (k === 1) Hh = 0.12 + 0.85 * arc;
+        else if (k === 2) {
+          Hh = 0.12 + 0.08 * arc;
+          s = {...s, hw: s.hw * (1 + 0.16 * Math.sin(Math.PI * u)), hh: s.hh * (1 - 0.1 * Math.sin(Math.PI * u))};
+        } else if (k === 3) {
+          Hh = 0.12 + 1.25 * arc;
+          s = {...s, hw: s.hw * (1 + 0.2 * arc), hh: s.hh * (1 + 0.2 * arc), r: s.r * (1 + 0.2 * arc)};
+        } else {
+          Hh = 0.12 + 1.3 * Math.pow(1 - u, 1.6) * Math.min(1, u * 4);
+          s = {...s, hw: s.hw * (1 + 0.25 * (1 - u) * Math.min(1, u * 4)), hh: s.hh * (1 + 0.25 * (1 - u) * Math.min(1, u * 4))};
+        }
       } else {
         s = shapesK[k];
         m = ERA_M[k];
         // 起跳前压扁（起势）
         if (k < 4) {
-          const pre = ease.sine(prog(t, ERA_LAND(k) + 10, 8));
+          const pre = ease.sine(prog(t, TAKE[k] - 8, 8));
           s = {...s, hw: s.hw * (1 + 0.06 * pre), hh: s.hh * (1 - 0.12 * pre)};
         }
       }
@@ -365,6 +380,11 @@ export const frameAt = (t: number): Frame => {
       }
       s = {...s, cx: objX(t), cy: 640};
       eraLabels(labels, cam, toScr, t, k, s);
+      // 只有液态玻璃落下时会让墙起涟漪（和开场呼应）
+      if (t >= ERA_LAND(4)) {
+        const rp = toScr(cam, ERA_X(4), 640);
+        ripples.push({cx: rp.x, cy: rp.y, age: t - ERA_LAND(4), amp: 12, speed: 22, lambda: 82, decay: 34});
+      }
     }
     add(cam, 1, s);
     setM(cam, 1, {...m, height: Hh}, s.cx, s.cy);
@@ -495,7 +515,7 @@ export const frameAt = (t: number): Frame => {
 
 // ───────── 年代按钮上的字 ─────────
 const eraLabels = (labels: Label[], cam: Cam, toScr: (c: Cam, x: number, y: number) => {x: number; y: number}, t: number, k: number, s: S) => {
-  const a = tw(t, ERA_LAND(k) - 2, 10) * (k < 4 ? 1 - tw(t, ERA_LAND(k) + 18, 6) : 1);
+  const a = tw(t, ERA_LAND(k) - 2, 10) * (k < 4 ? 1 - tw(t, TAKE[k], 6) : 1);
   const p = toScr(cam, s.cx, s.cy);
   const x0 = p.x - s.hw * cam.z;
   const y0 = p.y - s.hh * cam.z;
