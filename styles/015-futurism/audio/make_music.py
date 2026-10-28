@@ -1,23 +1,22 @@
 """
-Design Style · 风格 015 · 未来主义 Futurism —— 配乐与音效（纯代码合成，无外部音源）
+Design Style · 风格 015 · 未来主义 Futurism —— 配乐与音效（第二版，纯代码合成，无外部音源）
 
-144 BPM 直拍（1 拍 = 25 帧 = 0.4167 秒；全片不变速）· 20 秒 = 48 拍 = 12 小节 · A 弗里几亚（A–B♭–C–D–E–F–G）
-音色向鲁索洛的“噪音机”（Intonarumori，1913）致敬：嚎叫器（音高滑动的带通噪声）、轰鸣器（低频锯齿 + 噪声）、
-爆裂器（噪声爆发 + 低频冲击）、嘶声器（高频噪声）、噼啪器（短促的金属碎响）；底下是一台 16 分音符的“马达”贝斯和机械鼓。
-
-  0—1.7s     开场：刹车尖啸一路往下滑（接在片尾 1180 帧起的那一声上，循环无缝）→ f25 铁砧 + 爆裂（停死）· 鼓进来
-             f75 吸气（起势）→ f83 马达拉高（冲出去）
-  1.7—3.3s   01 狗：每一步一声小“嗒”（脚步按真实步态算）· 刹车一声短促的吱 · 人重新起步：轰鸣器往上推
-  3.3—5s     02 雕塑：f245 定格——整首歌“磁带停转”（音高往下掉、滤波收拢），只剩余音 · 262 / 275 两声 TUMB（低音鼓，第二声 ÷ 1.5）
-             284 起 TUMB 冲向镜头（上扬的嘶声）→ 300 砸进书页
-  5—6.7s     03 文学：ZANG = 爆裂器（f325）· TUMB / tumb 一声比一声轻（每级 −3.5 dB ≈ ÷ 1.5）· TUUUUUUM = 嚎叫器一路往下滑 · 字往上飞走
-  6.7—8.3s   04 建筑：退台块一块一声“咚”· 电梯井拉长（拉链声）· 天桥“嚓”· 电梯起步（马达上行）· 冲进地下（下行）
-  8.3—10s    05 火车：轮子每半圈一声 TA（越来越慢、越来越低）· 刹车尖啸 · PSSSH 泄汽 · 蒸汽往上冲
-  10—11.7s   06 天空：破云（风）· 俯冲：风声越来越高 · 飞机掠过（多普勒：音高往下掉）· 冲进屏幕
-  11.7—14.2s 07 今天：界面轻点 · 速度上升的滑音 · 冲刺（嗖 + 点）· 网页落定 · 滚动的棘轮声（越快越密）· 代码打字声
-  14.2—18.3s 规则：每张卡撞进来一声铁砧，音高一级级往上（A C D E G）
-  18.3—20s   片尾：一句话；起势吸气 → 马达拉高冲出去 → f1180 刹车尖啸（折回开头）
-所有时间点与 video/ 里的关键帧对齐（帧 / 60 = 秒）。
+144 BPM 直拍（1 拍 = 25 帧；全片不变速）· 20 秒 = 12 小节 · D 大调，轻快的律动
+  D | A | Bm | G | D | A | Bm | G | Em | G | A | Asus4 → 回到 D
+乐器：四踩底鼓、二四拍拍手、反拍开镲、十六分沙锤；八度弹跳的贝斯（被底鼓“压”一下 = 侧链）；
+      反拍的钢琴和弦；一句钟琴主题（开场落地后、规则段各来一次）；温暖的铺底只在“定格”和天空段出现。
+结构（帧 / 60 = 秒）：
+  0—25      前奏：慢动作的“呜——”、横幅撕开、八个字母一个个贴上镜头 = 八个调好音的“咚”，一级级往上
+  25        落地：底鼓、贝斯、镲片一起进来（车头灯亮一下）
+  25—285    律动 A：赛车起步的引擎从远到近 → 橙色车身甩走的“嗖” → 狗的小碎步（按真实步态算的每一步）、
+            太太的鞋跟、闻东西、狗绳“嘣”一声（弹拨弦）、被拽走、小碎步追上 → 推近鞋子的上扬 → 匹配剪辑“锵”
+  285—300   定格：鼓和贝斯一下停住，只剩铺底和一声带混响的聚光灯“哐”
+  300       底座 TUMB 落在小节线上，鼓回来；312 第二声 TUMB（−3.5 dB = ÷1.5）；330 起上扬，344 白纸一闪
+  350—650   律动 B：书页（ZANG 爆裂）、城（落块、电梯）、火车（每半圈一声 TA，越来越慢）
+  650—750   天空：鼓收成只剩底鼓，风声越来越高、飞机掠过（多普勒）→ 冲进屏幕
+  750—850   今天：轻一点的律动，界面轻点、速度往上的滑音、滚动的棘轮、打字声
+  850—1100  规则：律动 C，每张卡撞进来一声铁砧（A C D E G A）
+  1100—1200 片尾：最后一个和弦；片尾卡冲走；夜路上引擎从远处冲过来，接回开头（余音折回第 0 帧，循环无缝）
 
 用法：python3 styles/015-futurism/audio/make_music.py
 输出：public/015-futurism/music.wav（响度 −14 LUFS，峰值 < −1.5 dBFS）
@@ -39,18 +38,19 @@ rng = np.random.default_rng(15)
 MUS = np.zeros((2, N))
 SFX = np.zeros((2, N))
 SEND = np.zeros((2, N))
-BEAT = 25  # 帧
+DUCK = np.ones(N)  # 侧链：底鼓一响，贝斯 / 和弦 / 铺底让一下
+BEAT = 25
 
 
-def fr(frame):
-    return frame / 60.0
+def fr(f):
+    return f / 60.0
 
 
 def place(sig, t, gain=1.0, pan=0.0, send=0.0, bus=None):
     bus = MUS if bus is None else bus
     i = int(round(t * SR))
-    if i < 0:  # 落在 0 之前的声音折到结尾（循环）
-        i += NV
+    if i < 0:
+        i += NV  # 落在 0 之前的声音折到结尾
     if i >= N:
         return
     sig = sig[: N - i]
@@ -63,7 +63,7 @@ def place(sig, t, gain=1.0, pan=0.0, send=0.0, bus=None):
         SEND[1, i: i + len(sig)] += sig * gr * send
 
 
-def sfx(sig, t, gain=1.0, pan=0.0, send=0.25):
+def sfx(sig, t, gain=1.0, pan=0.0, send=0.2):
     place(sig, t, gain, pan, send, SFX)
 
 
@@ -87,9 +87,9 @@ def fft_filter(x, lo=None, hi=None):
     return np.fft.irfft(X * g, n)
 
 
-def onepole(x, c):
-    """一阶低通，截止频率可以随时间变（c 可以是数组）"""
-    c = np.broadcast_to(np.asarray(c, dtype=float), x.shape)
+def sweep(x, c0, c1):
+    """一阶低通，截止频率从 c0 指数滑到 c1（逐样本，用在短的声音上）"""
+    c = np.geomspace(c0, c1, len(x))
     a = np.exp(-2 * np.pi * c / SR)
     y = np.empty_like(x)
     acc = 0.0
@@ -99,313 +99,408 @@ def onepole(x, c):
     return y
 
 
-def bandnoise(f, q=8.0):
-    """带通噪声，中心频率 f（数组）：两个一阶低通相减，近似“嚎叫器”的音色"""
-    n = rng.standard_normal(len(f))
-    return onepole(n, f * (1 + 1 / q)) - onepole(n, f * (1 - 1 / q))
-
-
 def saw(f):
     ph = np.cumsum(f) / SR
     return 2 * (ph % 1.0) - 1
 
 
-# ───────── 噪音机 ─────────
+def env(t, a, d):
+    return np.minimum(1, t / max(a, 1e-4)) * np.exp(-t / d)
 
-def howl(m0, m1, d, level=1.0, curve=1.0):
-    """嚎叫器（ululatore）：音高从 m0 滑到 m1 的窄带噪声 + 一点正弦芯"""
+
+# ───────── 鼓 ─────────
+
+def kick(level=1.0):
+    t = tt(0.32)
+    f = 48 + 120 * np.exp(-t / 0.03)
+    y = np.sin(2 * np.pi * np.cumsum(f) / SR) * np.exp(-t / 0.14)
+    y[: int(0.003 * SR)] += fft_filter(rng.standard_normal(int(0.003 * SR)), lo=2000) * 0.3
+    return y * level * 0.62
+
+
+def clap(level=1.0):
+    t = tt(0.22)
+    e = sum(np.exp(-np.maximum(0, t - d) / 0.007) * (t >= d) for d in (0, 0.008, 0.017)) + 0.7 * np.exp(-np.maximum(0, t - 0.025) / 0.05) * (t >= 0.025)
+    return fft_filter(rng.standard_normal(len(t)), lo=900, hi=7000) * e * level * 0.16
+
+
+def hat(level=1.0, d=0.03, open_=False):
+    t = tt(0.4 if open_ else d * 4)
+    y = fft_filter(rng.standard_normal(len(t)), lo=7000)
+    return y * np.exp(-t / (0.11 if open_ else d)) * level * (0.04 if open_ else 0.04)
+
+
+def shaker(level=1.0):
+    t = tt(0.06)
+    return fft_filter(rng.standard_normal(len(t)), lo=5000, hi=12000) * np.sin(np.pi * t / 0.06) ** 2 * level * 0.022
+
+
+def crash(level=1.0):
+    t = tt(2.0)
+    y = fft_filter(rng.standard_normal(len(t)), lo=3500) * np.exp(-t / 0.7)
+    return y * level * 0.09
+
+
+# ───────── 旋律乐器 ─────────
+
+def bass(m, d, level=1.0):
+    t = tt(d)
+    f = midi(m)
+    y = saw(np.full(len(t), f)) * 0.55 + np.sin(2 * np.pi * f * t) * 0.6
+    y = fft_filter(y, hi=900)
+    return y * env(t, 0.004, 0.16) * level * 0.3
+
+
+def piano(ms, d=0.5, level=1.0):
+    """钢琴和弦：几个泛音、快起慢落，高泛音先消失"""
+    t = tt(d)
+    y = np.zeros_like(t)
+    for m in ms:
+        f = midi(m)
+        for n, a in ((1, 1.0), (2, 0.45), (3, 0.25), (4, 0.12), (5, 0.06)):
+            y += a * np.sin(2 * np.pi * f * n * t + n) * np.exp(-t / (0.35 / n ** 0.6))
+    return y * np.minimum(1, t / 0.002) * level * 0.055 / np.sqrt(len(ms))
+
+
+def bell(m, level=1.0, dec=0.9):
+    """钟琴：FM，调制比 3.5，亮"""
+    f0 = midi(m)
+    t = tt(dec * 3)
+    idx = 1.6 * np.exp(-t / 0.08)
+    y = np.sin(2 * np.pi * f0 * t + idx * np.sin(2 * np.pi * 3.5 * f0 * t))
+    return y * np.minimum(1, t / 0.001) * np.exp(-t / dec) * level * 0.14
+
+
+def pad(ms, d, level=1.0, att=0.4, rel=0.8):
+    t = tt(d + rel * 3)
+    y = np.zeros_like(t)
+    for m in ms:
+        for det in (-0.07, 0.0, 0.08):
+            f = midi(m + det)
+            for n in range(1, 5):
+                y += (1 / n ** 1.8) * np.sin(2 * np.pi * n * f * t + rng.random() * 6)
+    e = np.minimum(1, t / att) * np.where(t < d, 1.0, np.exp(-(t - d) / rel))
+    return fft_filter(y, hi=2800) * e * level * 0.028 / np.sqrt(len(ms))
+
+
+def pluck_string(m, d=0.8, level=1.0, bright=0.5):
+    """弹拨弦（Karplus-Strong）：狗绳“嘣”的一声"""
+    f = midi(m)
+    L = int(SR / f)
+    buf = rng.uniform(-1, 1, L)
+    out = np.zeros(int(d * SR))
+    for i in range(len(out)):
+        j = i % L
+        nxt = (j + 1) % L
+        v = buf[j]
+        buf[j] = 0.996 * (bright * buf[j] + (1 - bright) * buf[nxt]) if i >= L else buf[j]
+        out[i] = v
+    return out * level * 0.25
+
+
+# ───────── 音效 ─────────
+
+def whoosh(d=0.6, c0=300, c1=7000, level=1.0, peak=0.5):
+    t = tt(d)
+    e = np.sin(np.pi * np.clip(t / d, 0, 1) ** (np.log(0.5) / np.log(peak))) ** 2
+    return sweep(rng.standard_normal(len(t)), c0, c1) * e * level * 0.45
+
+
+def riser(d, level=1.0, c0=400, c1=9000):
+    t = tt(d)
+    y = sweep(rng.standard_normal(len(t)), c0, c1)
+    f = 200 * (8 ** (t / d))
+    y += 0.25 * np.sin(2 * np.pi * np.cumsum(f) / SR)
+    return y * (t / d) ** 2.2 * level * 0.3
+
+
+def boom(level=1.0, f0=120, f1=38, d=0.9):
+    t = tt(d)
+    f = f1 + (f0 - f1) * np.exp(-t / 0.05)
+    y = np.sin(2 * np.pi * np.cumsum(f) / SR) * np.exp(-t / 0.3)
+    y += 0.25 * fft_filter(rng.standard_normal(len(t)), lo=200, hi=3000) * np.exp(-t / 0.04)
+    return y * level * 0.6
+
+
+def thock(m, level=1.0):
+    """字母贴上镜头：木块一样的“咚”，调好了音"""
+    t = tt(0.25)
+    f = midi(m)
+    y = np.sin(2 * np.pi * f * t) * np.exp(-t / 0.06) + 0.5 * np.sin(2 * np.pi * 2.7 * f * t) * np.exp(-t / 0.02)
+    y[: int(0.002 * SR)] += rng.standard_normal(int(0.002 * SR)) * 0.4
+    return y * level * 0.28
+
+
+def click(level=1.0, lo=1800, hi=9000, d=0.004):
+    t = tt(0.03)
+    return fft_filter(rng.standard_normal(len(t)), lo=lo, hi=hi) * np.exp(-t / d) * level * 0.25
+
+
+def heel(level=1.0):
+    t = tt(0.12)
+    y = np.sin(2 * np.pi * 1900 * t) * np.exp(-t / 0.012) + fft_filter(rng.standard_normal(len(t)), lo=2500) * np.exp(-t / 0.006)
+    return y * level * 0.12
+
+
+def rip(d=0.5, level=1.0):
+    """横幅撕开：噼啪的纸声"""
+    t = tt(d)
+    y = np.zeros_like(t)
+    for _ in range(60):
+        i = int(rng.random() ** 1.6 * len(t) * 0.9)
+        n = min(len(t) - i, int(0.004 * SR))
+        y[i: i + n] += rng.standard_normal(n) * np.exp(-np.arange(n) / (0.001 * SR)) * (1 - i / len(t))
+    return fft_filter(y, lo=1500, hi=10000) * level * 0.5
+
+
+def screech(d, m0=98, m1=86, level=1.0):
+    t = tt(d)
+    f = midi(m0) * (midi(m1) / midi(m0)) ** (t / d)
+    y = np.sin(2 * np.pi * np.cumsum(f) / SR + 0.7 * np.sin(2 * np.pi * 41 * t))
+    e = np.minimum(1, t / 0.03) * np.minimum(1, (d - t) / 0.05)
+    return y * e * level * 0.05
+
+
+def engine(d, f0, f1, level=1.0, curve=1.0, near=None):
+    """引擎：两个失谐的锯齿 + 低频噪声，音高 f0 → f1；near 给出“越来越近”的音量包络"""
     t = tt(d)
     u = (t / d) ** curve
-    f = midi(m0) * (midi(m1) / midi(m0)) ** u
-    y = bandnoise(f, 10) * 3.0 + 0.35 * np.sin(2 * np.pi * np.cumsum(f) / SR)
-    e = np.minimum(1, t / 0.02) * np.minimum(1, (d - t) / 0.08)
-    return y * e * level * 0.16
+    f = f0 * (f1 / f0) ** u
+    y = saw(f) * 0.5 + saw(f * 1.5) * 0.25 + saw(f * 0.5) * 0.3
+    y = fft_filter(y, hi=2400) + 0.12 * fft_filter(rng.standard_normal(len(t)), hi=500)
+    e = near if near is not None else np.minimum(1, t / 0.05) * np.minimum(1, (d - t) / 0.05)
+    return y * e * level * 0.12
 
 
-def roar(d, f0=55, f1=110, level=1.0):
-    """轰鸣器（rombatore）：低频锯齿 + 噪声，音高往上推"""
+def slowmo(d, level=1.0):
+    """慢动作的“呜——”：一个往下掉的低音 + 倒放的噪声"""
     t = tt(d)
-    f = f0 * (f1 / f0) ** (t / d)
-    y = 0.6 * saw(f) + 0.5 * saw(f * 1.01) + 0.4 * onepole(rng.standard_normal(len(t)), 300)
-    y = onepole(y, 200 + 1800 * (t / d))
-    e = np.minimum(1, t / 0.05) * np.minimum(1, (d - t) / 0.05)
-    return y * e * level * 0.3
+    f = 160 * (0.35 ** (t / d))
+    y = np.sin(2 * np.pi * np.cumsum(f) / SR) * 0.8 + 0.3 * sweep(rng.standard_normal(len(t)), 3000, 300)
+    return y * np.sin(np.pi * t / d) * level * 0.4
 
 
-def burst(level=1.0, d=0.9):
-    """爆裂器（scoppiatore）：噪声爆发 + 低频冲击"""
+def shimmer(d, level=1.0):
     t = tt(d)
-    n = rng.standard_normal(len(t))
-    y = fft_filter(n, lo=200, hi=9000) * np.exp(-t / 0.12) * 0.7
-    f = 40 + 120 * np.exp(-t / 0.05)
-    y += np.sin(2 * np.pi * np.cumsum(f) / SR) * np.exp(-t / 0.25) * 1.1
-    return y * level * 0.5
+    y = sum(np.sin(2 * np.pi * midi(m) * t + m) for m in (93, 97, 100)) / 3
+    return y * np.sin(np.pi * t / d) ** 2 * level * 0.06
 
 
-def hiss(d, level=1.0, c0=3000, c1=9000):
-    """嘶声器（sibilatore）"""
-    t = tt(d)
-    y = onepole(rng.standard_normal(len(t)), np.geomspace(c0, c1, len(t))) - onepole(rng.standard_normal(len(t)), 1200)
-    e = np.minimum(1, t / 0.03) * np.exp(-np.maximum(0, t - d * 0.6) / (d * 0.25))
-    return y * e * level * 0.3
-
-
-def crackle(level=1.0):
-    """噼啪器（crepitatore）：一小串金属碎响"""
-    t = tt(0.06)
-    y = fft_filter(rng.standard_normal(len(t)), lo=3000, hi=12000) * np.exp(-t / 0.008)
+def clank(level=1.0):
+    t = tt(1.2)
+    f0 = 180
+    y = sum(a * np.sin(2 * np.pi * f0 * r * t) * np.exp(-t / k) for r, a, k in ((1, 1, 0.5), (2.76, 0.6, 0.25), (5.4, 0.35, 0.1)))
+    y += 0.6 * fft_filter(rng.standard_normal(len(t)), lo=500, hi=6000) * np.exp(-t / 0.03)
     return y * level * 0.3
 
 
-def anvil(m=69, level=1.0, d=0.9):
-    """铁砧：不和谐的金属泛音（1 : 2.76 : 5.4 : 8.93）"""
+def anvil(m=69, level=1.0, d=0.8):
     t = tt(d)
     f0 = midi(m)
-    y = sum(a * np.sin(2 * np.pi * f0 * r * t) * np.exp(-t / (d * k)) for r, a, k in ((1, 1, 0.5), (2.76, 0.6, 0.25), (5.4, 0.4, 0.12), (8.93, 0.25, 0.06)))
-    y += 0.5 * fft_filter(rng.standard_normal(len(t)), lo=2000) * np.exp(-t / 0.01)
-    return y * np.minimum(1, t / 0.0005) * level * 0.22
-
-
-def thud(level=1.0, f0=110, f1=42, d=0.5):
-    t = tt(d)
-    f = f1 + (f0 - f1) * np.exp(-t / 0.04)
-    return np.sin(2 * np.pi * np.cumsum(f) / SR) * np.exp(-t / 0.15) * level * 0.6
+    y = sum(a * np.sin(2 * np.pi * f0 * r * t) * np.exp(-t / (d * k)) for r, a, k in ((1, 1, 0.5), (2.76, 0.55, 0.25), (5.4, 0.35, 0.12)))
+    y += 0.4 * fft_filter(rng.standard_normal(len(t)), lo=2000) * np.exp(-t / 0.01)
+    return y * np.minimum(1, t / 0.0005) * level * 0.2
 
 
 def tom(m, level=1.0):
     t = tt(0.6)
     f = midi(m) * (1 + 0.6 * np.exp(-t / 0.03))
     y = np.sin(2 * np.pi * np.cumsum(f) / SR) * np.exp(-t / 0.22)
-    y += 0.3 * fft_filter(rng.standard_normal(len(t)), lo=800, hi=5000) * np.exp(-t / 0.02)
-    return y * level * 0.55
+    return y * level * 0.5
 
 
-def click(level=1.0, hi=9000):
-    t = tt(0.03)
-    return fft_filter(rng.standard_normal(len(t)), lo=1800, hi=hi) * np.exp(-t / 0.004) * level * 0.25
-
-
-def screech(d, m0=100, m1=76, level=1.0):
-    """刹车尖啸：高音嚎叫 + 粗糙的调制，往下滑"""
+def hiss(d, level=1.0):
     t = tt(d)
-    f = midi(m0) * (midi(m1) / midi(m0)) ** ((t / d) ** 0.7)
-    y = np.sin(2 * np.pi * np.cumsum(f) / SR + 0.8 * np.sin(2 * np.pi * 37 * t)) * 0.5
-    y += bandnoise(f * 1.5, 6) * 2.0
-    e = np.minimum(1, t / 0.08) ** 2 * np.minimum(1, (d - t) / 0.02)
-    return y * e * level * 0.12
-
-
-def rev_up(d, f0=60, f1=420, level=1.0):
-    """马达拉高：锯齿 + 次谐波，音高指数上升（起步）"""
-    t = tt(d)
-    f = f0 * (f1 / f0) ** ((t / d) ** 1.4)
-    y = saw(f) * 0.6 + saw(f * 0.5) * 0.4
-    y = onepole(y, 600 + 5000 * (t / d))
-    e = np.minimum(1, t / 0.03) * np.minimum(1, (d - t) / 0.04)
-    return y * e * level * 0.22
-
-
-def inhale(d, level=1.0):
-    t = tt(d)
-    return onepole(rng.standard_normal(len(t)), np.geomspace(500, 6000, len(t))) * (t / d) ** 2.5 * level * 0.35
-
-
-def whoosh(d=0.6, c0=300, c1=7000, level=1.0, peak=0.5):
-    t = tt(d)
-    e = np.sin(np.pi * np.clip(t / d, 0, 1) ** (np.log(0.5) / np.log(peak))) ** 2
-    return onepole(rng.standard_normal(len(t)), np.geomspace(c0, c1, len(t))) * e * level * 0.5
+    y = fft_filter(rng.standard_normal(len(t)), lo=3500, hi=11000)
+    return y * np.minimum(1, t / 0.02) * np.exp(-np.maximum(0, t - d * 0.5) / (d * 0.25)) * level * 0.2
 
 
 def glide(m0, m1, d, level=1.0):
     t = tt(d)
     f = midi(m0) * (midi(m1) / midi(m0)) ** (t / d)
-    e = np.sin(np.pi * np.clip(t / d, 0, 1)) ** 0.6
-    return (np.sin(2 * np.pi * np.cumsum(f) / SR) + 0.3 * np.sin(4 * np.pi * np.cumsum(f) / SR)) * e * level * 0.08
+    return np.sin(2 * np.pi * np.cumsum(f) / SR) * np.sin(np.pi * np.clip(t / d, 0, 1)) ** 0.6 * level * 0.07
 
 
-# ───────── 乐队：马达贝斯 + 机械鼓 + 金属和弦 ─────────
+# ───────── 编排 ─────────
+CH = {
+    'D': (38, [62, 66, 69, 74]), 'A': (33, [61, 64, 69, 73]), 'Bm': (35, [62, 66, 71, 74]), 'G': (31, [62, 67, 71, 74]),
+    'Em': (40, [64, 67, 71, 76]), 'Asus': (33, [62, 64, 69, 74]),
+}
+PROG = ['D', 'A', 'Bm', 'G', 'D', 'A', 'Bm', 'G', 'Em', 'G', 'A', 'Asus']
 
-def kick(level=1.0):
-    t = tt(0.35)
-    f = 46 + 110 * np.exp(-t / 0.025)
-    y = np.sin(2 * np.pi * np.cumsum(f) / SR) * np.exp(-t / 0.15)
-    return y * level * 0.6
-
-
-def snare(level=1.0):
-    t = tt(0.22)
-    y = fft_filter(rng.standard_normal(len(t)), lo=1200, hi=8000) * np.exp(-t / 0.05)
-    y += 0.4 * np.sin(2 * np.pi * 190 * t) * np.exp(-t / 0.04)
-    return y * level * 0.28
-
-
-def hat(level=1.0, d=0.03):
-    t = tt(d * 3)
-    return fft_filter(rng.standard_normal(len(t)), lo=7500) * np.exp(-t / d) * level * 0.08
+# 鼓怎么打：每一段一种密度
+def drums_at(f):
+    if f < 25 or 285 <= f < 300 or 344 <= f < 352 or f >= 1150:
+        return 'none'
+    if 650 <= f < 750:
+        return 'kick'  # 天空：只剩底鼓
+    if 750 <= f < 850:
+        return 'light'
+    return 'full'
 
 
-def bass(m, d, level=1.0):
-    t = tt(d)
-    f = midi(m)
-    y = saw(np.full(len(t), f)) * 0.7 + np.sin(2 * np.pi * f * t) * 0.5
-    y = onepole(y, 300 + 1700 * np.exp(-t / 0.05))
-    return y * np.minimum(1, t / 0.003) * np.exp(-t / 0.12) * level * 0.28
+for b in range(48):
+    fb = b * BEAT
+    for sub_ in range(4):
+        f = fb + sub_ * 6.25
+        mode = drums_at(f)
+        if mode == 'none':
+            continue
+        if sub_ == 0:
+            place(kick(), fr(f))
+            i = int(fr(f) * SR)
+            n = int(0.18 * SR)
+            DUCK[i: i + n] = np.minimum(DUCK[i: i + n], 0.45 + 0.55 * (np.arange(n) / n) ** 0.7)
+            if mode in ('full', 'light') and b % 2 == 1:
+                place(clap(0.8 if mode == 'light' else 1.0), fr(f), send=0.15)
+        if mode == 'full':
+            if sub_ == 2:
+                place(hat(1.0, open_=True), fr(f), pan=0.25, send=0.05)
+            place(shaker(0.9 if sub_ % 2 else 0.6), fr(f), pan=-0.3)
+        elif mode == 'light' and sub_ == 2:
+            place(hat(0.8), fr(f), pan=0.25)
 
-
-def stab(ms, d, level=1.0):
-    """金属和弦：方波 + 失谐，像机器里的簧片"""
-    t = tt(d)
-    y = np.zeros_like(t)
-    for m in ms:
-        for det in (-0.06, 0.06):
-            f = midi(m + det)
-            y += np.sign(np.sin(2 * np.pi * f * t)) * 0.5
-    y = onepole(y, 900 + 3000 * np.exp(-t / 0.08))
-    return y * np.minimum(1, t / 0.004) * np.exp(-t / (d * 0.5)) * level * 0.05 / np.sqrt(len(ms))
-
-
-# A 弗里几亚：Am – B♭ – G – Am · Am – F – G – E（每小节 4 拍 = 100 帧）
-PROG = [('Am', 45, [57, 60, 64]), ('Bb', 46, [58, 62, 65]), ('G', 43, [55, 59, 62]), ('Am', 45, [57, 60, 64]),
-        ('F', 41, [53, 57, 60]), ('G', 43, [55, 59, 62]), ('E', 40, [56, 59, 64]), ('Am', 45, [57, 60, 64]),
-        ('Bb', 46, [58, 62, 65]), ('G', 43, [55, 59, 62]), ('F', 41, [53, 57, 60]), ('E', 40, [56, 59, 64])]
-BAND = (25, 1180)  # 鼓和贝斯：开场停死那一下进来，片尾冲出去时收
-FREEZE = (245, 262)  # 定格：乐队停转
-TAPE = 241  # 磁带停转从这里开始往下掉
-
-
-def silent(f):
-    return FREEZE[0] <= f < FREEZE[1] or not (BAND[0] <= f < BAND[1])
-
-
-BASS_PAT = [0, 0, 12, 0, 0, 7, 0, 12, 0, 0, 12, 0, 10, 7, 0, 3]
-for bar, (name, root, tones) in enumerate(PROG):
+BASSPAT = [0, 12, 0, 12, 0, 12, 7, 12]
+for bar, name in enumerate(PROG):
+    root, tones = CH[name]
     f0 = bar * 100
-    for s_ in range(16):
-        fs = f0 + s_ * 6.25
-        if silent(fs):
+    for k in range(8):
+        f = f0 + k * 12.5
+        mode = drums_at(f)
+        if mode in ('none',) and not (285 <= f < 300):
             continue
-        place(bass(root + BASS_PAT[s_], 0.14, 1.0 if s_ % 4 == 0 else 0.7), fr(fs))
-    for b in range(4):
-        fb = f0 + b * BEAT
-        if silent(fb):
+        if 285 <= f < 300:
             continue
-        place(kick(), fr(fb))
-        if b % 2:
-            place(snare(), fr(fb), send=0.15)
-        for h in range(2):
-            place(hat(0.9 if h else 0.5), fr(fb + 12.5 * h), pan=0.35, send=0.05)
-        if b in (0, 2) or (b == 3 and bar % 2):
-            place(stab([m + 12 for m in tones], 0.3, 0.9), fr(fb + (6.25 if b == 3 else 0)), pan=-0.3, send=0.35)
+        lvl = 0.75 if mode == 'light' else 1.0
+        place(bass(root + BASSPAT[k], 0.2, lvl), fr(f))
+    for k in range(4):  # 反拍的钢琴和弦
+        f = f0 + k * BEAT + 12.5
+        if drums_at(f) in ('none',) or drums_at(f) == 'kick':
+            continue
+        place(piano([m + 12 for m in tones], 0.45, 0.9), fr(f), pan=0.2, send=0.3)
 
-# 磁带停转：把定格前 4 帧到定格的那一小段音乐按音高往下掉的方式拉长，填进 245—262
-i0 = int(fr(TAPE) * SR)
-i1 = int(fr(FREEZE[0]) * SR)
-seg = MUS[:, i0:i1].copy()
-L = int(fr(FREEZE[1] - TAPE) * SR)
-pos = np.cumsum(np.linspace(1.0, 0.05, L))
-pos = pos / pos[-1] * (seg.shape[1] - 1) * 0.98
-for ch in range(2):
-    MUS[ch, i0: i0 + L] = np.interp(pos, np.arange(seg.shape[1]), seg[ch]) * np.linspace(1, 0, L) ** 1.5
+# 铺底：定格、天空、片尾
+place(pad([62, 66, 69, 73], fr(18), 0.9), fr(285), send=0.5)
+place(pad([59, 62, 66, 71], fr(100), 0.8, att=0.8), fr(650), send=0.5)
+place(pad([62, 66, 69, 74], fr(60), 0.8, att=0.1), fr(1100), send=0.5)
 
-# ───────── 音效（帧号来自 video/ 的轨迹） ─────────
-sfx(screech(fr(45), 100, 74, 1.0), fr(1180), pan=-0.2, send=0.2)  # 片尾起、折回开头：FUTURISM 一路刹车
-sfx(anvil(69, 1.0), fr(25), send=0.4)
-sfx(burst(0.8), fr(25), send=0.3)
-sfx(inhale(fr(8), 0.6), fr(75))
-sfx(rev_up(fr(30), 55, 480, 1.0), fr(83), pan=0.3, send=0.2)
-sfx(whoosh(0.5, 300, 6000, 0.5), fr(88), pan=0.5)
+# 钟琴主题：落地之后、规则段、片尾
+MOTIF = [(0, 78), (12.5, 81), (25, 85), (37.5, 83), (50, 81), (62.5, 78), (75, 76), (87.5, 78)]
+for base in (25, 850, 950):
+    for dt, m in MOTIF:
+        place(bell(m, 0.7), fr(base + dt), pan=-0.2, send=0.4)
+place(bell(86, 0.8, 1.5), fr(1100), send=0.6)
 
-# 01 狗：真实步态的落脚（每走 45px 一步）
-STEPS = [135.5, 139.5, 143.25, 147, 151, 156]
-for i, s_ in enumerate(STEPS):
-    for half in (0, 1):
-        sfx(click(0.6 if half else 0.9, 7000), fr(s_ + half * 2), pan=0.2 + 0.1 * half)
-for i, f_ in enumerate([106, 109, 112, 113, 118, 119.5, 121, 122.5]):  # 狗一块块落下来
-    sfx(thud(0.25, 160 + 20 * i, 80, 0.25), fr(f_ + 10), pan=0.1)
-sfx(screech(fr(12), 92, 84, 0.35), fr(150), pan=0.2)
-sfx(roar(fr(60), 45, 120, 0.9), fr(186), pan=-0.2, send=0.2)
+# ───────── 音效（帧号来自 video/ 里的轨迹） ─────────
+# 片尾—开场：引擎从远处冲过来（1150 起，越来越近），撞开横幅
+t_ = tt(fr(52))
+near = (t_ / t_[-1]) ** 3
+sfx(engine(fr(52), 70, 150, 2.0, 1.0, near), fr(1150), pan=0.1)
+sfx(riser(fr(50), 1.4), fr(1150))
+sfx(rip(0.5, 1.0), fr(0), send=0.3)
+sfx(boom(0.7, 90, 35, 1.0), fr(0))
+sfx(slowmo(fr(24), 1.0), fr(0), send=0.3)
+sfx(screech(fr(14), 96, 88, 1.0), fr(1), pan=0.1)
+LETTERS = [14.5, 15.7, 17, 18.2, 19.5, 20.8, 22, 23.3]
+for i, (f, m) in enumerate(zip(LETTERS, [62, 64, 66, 69, 71, 74, 76, 78])):
+    sfx(thock(m, 0.9), fr(f), pan=-0.6 + i * 0.17)
+place(crash(1.0), fr(25), send=0.3)
+sfx(shimmer(0.5, 1.0), fr(25), send=0.5)  # 车头灯亮一下
+# 起步：往后一坐、轰油门、越来越近，车身盖满画面
+sfx(engine(fr(36), 55, 220, 1.3, 1.5, np.minimum(1, (tt(fr(36)) / fr(36)) ** 1.5 + 0.2)), fr(56), pan=0.0)
+sfx(whoosh(fr(22), 300, 9000, 0.9, 0.85), fr(76))
+sfx(whoosh(fr(16), 6000, 300, 0.8, 0.2), fr(92), pan=-0.6)  # 橙色车身往左甩走
 
-# 02 雕塑
-sfx(hiss(0.5, 0.4, 6000, 2000), fr(245), send=0.6)
-sfx(tom(40, 1.0), fr(262), send=0.3)
-sfx(tom(40, 10 ** (-3.5 / 20)), fr(275), send=0.3)
-sfx(whoosh(fr(16), 400, 9000, 0.9, 0.9), fr(284), send=0.2)
-sfx(burst(0.6), fr(300))
+# 01 狗：真实步态的每一步、太太的鞋跟
+PAWS = [104.9, 108.4, 111.9, 115.4, 118.9, 122.4, 125.9, 129.3, 132.8, 136.3, 139.8, 143.3, 146.8, 150.3, 153.8, 157.2, 160.7, 164.2, 167.7, 171.3,
+        188.9, 190.6, 192.3, 193.8, 195.4, 196.9, 198.4, 199.9, 201.4, 202.9, 204.5, 206.1, 207.9, 209.7, 211.9, 214.4, 217.2, 220]
+for i, f in enumerate(PAWS):
+    sfx(click(0.55, 2500, 8000, 0.003), fr(f), pan=0.25 + 0.05 * (i % 2))
+HEELS = [103.8, 115, 126.3, 137.5, 148.8, 160, 171.3, 182.5, 193.8, 205, 216.3, 227.5, 238.8]
+for f in HEELS:
+    sfx(heel(0.8), fr(f), pan=-0.3)
+sfx(screech(fr(6), 90, 84, 0.5), fr(170), pan=0.2)  # 狗急刹
+for f in (175, 179, 183):
+    sfx(click(0.5, 600, 2500, 0.012), fr(f), pan=0.3)  # 闻
+sfx(pluck_string(40, 0.7, 1.0, 0.55), fr(187), pan=0.1, send=0.2)  # 狗绳绷直“嘣”
+sfx(whoosh(fr(10), 800, 5000, 0.6, 0.3), fr(188), pan=0.3)  # 被拽走
+sfx(riser(fr(36), 0.6, 600, 7000), fr(214))  # 推近鞋子
+sfx(heel(1.4), fr(250), pan=0.0, send=0.4)  # 鞋落地 = 铬银的脚落地
+sfx(anvil(81, 0.6, 1.0), fr(250), send=0.5)
 
-# 03 文学
-sfx(whoosh(fr(13), 1500, 9000, 0.7, 0.9), fr(312), pan=-0.6)
-sfx(burst(1.1), fr(325), send=0.4)  # ZANG
-sfx(anvil(64, 0.6), fr(325), send=0.4)
-for k, f_ in enumerate([331, 337]):
-    sfx(tom(45 - 3 * k, 10 ** (-3.5 * (k + 1) / 20)), fr(f_), pan=0.3 + 0.2 * k)  # TUMB · tumb：每级 ÷1.5
-sfx(tom(47, 0.6), fr(348), pan=-0.5)  # TU
-sfx(howl(76, 52, fr(44), 1.1, 0.6), fr(350), pan=0.2, send=0.3)  # UUUUUUM
-sfx(whoosh(0.45, 400, 8000, 0.5), fr(374), pan=-0.2)
-for i in range(13):  # 字母一个个长高
-    sfx(click(0.45, 6000), fr(384 + i * 1.4), pan=-0.6 + 0.1 * i)
-sfx(glide(57, 69, 0.4, 0.8), fr(384))
+# 02 雕塑：跑步的落脚、定格、聚光灯、底座、TUMB
+for k in range(1, 3):
+    sfx(boom(0.25, 140, 60, 0.3), fr(285 - 16.13 * k), pan=0.1)
+sfx(clank(1.0), fr(285), send=0.7)
+sfx(shimmer(fr(15), 1.2), fr(285), send=0.6)
+sfx(boom(1.0), fr(300), send=0.3)
+place(crash(0.8), fr(300), send=0.3)
+sfx(boom(10 ** (-3.5 / 20), 110, 40), fr(312), send=0.3)
+sfx(riser(fr(14), 0.9), fr(330))
+sfx(whoosh(fr(10), 2000, 9000, 0.6, 0.9), fr(340))
 
-# 04 建筑
+# 03—06：第一版的剧本整体往后挪 50 帧
+S = 50
+sfx(whoosh(fr(13), 1500, 9000, 0.6, 0.9), fr(312 + S), pan=-0.6)
+sfx(boom(1.1, 140, 40), fr(325 + S), send=0.3)  # ZANG
+place(crash(1.0), fr(325 + S), send=0.3)
+for k, f in enumerate([331, 337]):
+    sfx(tom(45 - 3 * k, 10 ** (-3.5 * (k + 1) / 20)), fr(f + S), pan=0.3 + 0.2 * k)
+sfx(tom(47, 0.6), fr(348 + S), pan=-0.5)
+sfx(glide(76, 52, fr(40), 1.4), fr(350 + S), pan=0.2)  # UUUUUUM 一路往下滑
+sfx(whoosh(0.45, 400, 8000, 0.5), fr(374 + S), pan=-0.2)
+for i in range(13):
+    sfx(click(0.4, 2000, 7000), fr(384 + S + i * 1.4), pan=-0.6 + 0.1 * i)
 for n in range(5):
     for j in range(2):
-        sfx(thud(0.35, 130, 60, 0.3), fr(404 + n * 5 + j * 2.5), pan=-0.5 + 0.25 * n)
+        sfx(boom(0.25, 150, 70, 0.3), fr(404 + S + n * 5 + j * 2.5), pan=-0.5 + 0.25 * n)
 for n in range(3):
-    sfx(glide(45, 69, 0.25, 0.7), fr(410 + n * 4), pan=-0.4 + 0.4 * n)  # 电梯井拉长
+    sfx(glide(57, 69, 0.25, 0.7), fr(410 + S + n * 4), pan=-0.4 + 0.4 * n)
     for j in range(2):
-        sfx(whoosh(0.15, 2000, 7000, 0.3, 0.8), fr(419 + n * 3 + j * 2), pan=0.5 - j)  # 天桥滑进来
-        sfx(click(0.5), fr(428 + n * 3 + j * 2), pan=0.5 - j)
-sfx(rev_up(fr(24), 90, 360, 0.7), fr(444), pan=-0.2)  # 电梯 1 上冲
-sfx(click(0.8), fr(468))
-sfx(rev_up(fr(38), 300, 50, 0.7), fr(462), pan=0.2)  # 电梯 2 往下冲
-
-# 05 火车：轮子每半圈一声 TA
+        sfx(click(0.5), fr(428 + S + n * 3 + j * 2), pan=0.5 - j)
+sfx(engine(fr(24), 120, 360, 0.6), fr(444 + S), pan=-0.2)  # 电梯上冲
+sfx(click(0.8), fr(468 + S))
+sfx(engine(fr(38), 300, 60, 0.6), fr(462 + S), pan=0.2)  # 往下冲
 TAS = [502, 506.35, 511.1, 516.5, 522.9, 531.15, 547.25]
-for i, f_ in enumerate(TAS):
-    sfx(tom(50 - i, 0.75), fr(f_), pan=0.4 - 0.1 * i)
-    sfx(crackle(0.6), fr(f_ + 1), pan=0.3)
-sfx(roar(fr(52), 70, 40, 0.8), fr(500), pan=0.2)
-sfx(screech(fr(24), 98, 88, 0.6), fr(528), pan=0.2, send=0.2)
-sfx(hiss(1.0, 1.0, 9000, 2500), fr(554), pan=0.3, send=0.3)  # PSSSH
-sfx(whoosh(fr(38), 300, 6000, 0.6, 0.8), fr(562), send=0.2)
-
-# 06 天空
-sfx(whoosh(0.5, 2000, 400, 0.6, 0.3), fr(612), send=0.3)  # 破云
-t_ = tt(fr(78))
-wind = onepole(rng.standard_normal(len(t_)), np.geomspace(300, 4000, len(t_))) * (t_ / t_[-1]) ** 1.5 * 0.3
-sfx(wind, fr(612), send=0.2)
+for i, f in enumerate(TAS):
+    sfx(tom(50 - i, 0.7), fr(f + S), pan=0.4 - 0.1 * i)
+    sfx(click(0.5, 3000, 11000), fr(f + S + 1), pan=0.3)
+sfx(engine(fr(52), 80, 45, 0.7), fr(500 + S), pan=0.2)
+sfx(screech(fr(24), 96, 86, 0.7), fr(528 + S), pan=0.2)
+sfx(hiss(1.0, 1.0), fr(554 + S), pan=0.3, send=0.3)  # PSSSH
+sfx(whoosh(fr(38), 300, 6000, 0.6, 0.8), fr(562 + S), send=0.2)
+sfx(whoosh(0.5, 2000, 400, 0.6, 0.3), fr(612 + S), send=0.3)  # 破云
+sfx(riser(fr(80), 1.0, 300, 8000), fr(614 + S))
 t_ = tt(fr(70))
-fpl = 140 * np.where(t_ < fr(56), 1.0 + 0.3 * t_ / fr(56), 1.3 * (0.55 ** ((t_ - fr(56)) / fr(14))))
-plane = (saw(fpl) * 0.5 + saw(fpl * 1.5) * 0.3) * np.minimum(1, t_ / 0.2) * np.minimum(1, (t_[-1] - t_) / 0.1) * 0.12
-sfx(onepole(plane, 2500), fr(616), pan=0.0)
-sfx(whoosh(fr(18), 300, 9000, 0.6, 0.85), fr(686))
+fpl = 140 * np.where(t_ < fr(54), 1.0 + 0.3 * t_ / fr(54), 1.3 * (0.55 ** ((t_ - fr(54)) / fr(16))))
+plane = (saw(fpl) * 0.5 + saw(fpl * 1.5) * 0.3) * np.minimum(1, t_ / 0.2) * np.minimum(1, (t_[-1] - t_) / 0.1) * 0.1
+sfx(fft_filter(plane, hi=2500), fr(616 + S))
+sfx(whoosh(fr(18), 300, 9000, 0.7, 0.85), fr(686 + S))
 
 # 07 今天
-sfx(click(0.6), fr(724))
-sfx(glide(57, 76, fr(30), 0.9), fr(726), pan=-0.4)  # 速度往上走
-sfx(whoosh(0.2, 1500, 8000, 0.4, 0.4), fr(758), pan=-0.4)  # 冲刺
-sfx(click(1.0), fr(758), pan=-0.4)
-sfx(thud(0.4, 120, 60, 0.3), fr(780), pan=0.5)
-# 滚动的棘轮：每滚 40px 一声，越快越密
-d_acc = 0.0
-last = 0.0
-for f_ in np.arange(786, 814, 0.1):
-    v = 3.2 * (f_ - 786) if f_ < 800 else max(0.0, 44.8 - 3.2 * (f_ - 800))
+sfx(click(0.6), fr(770))
+sfx(glide(57, 76, fr(24), 0.9), fr(770), pan=-0.4)
+sfx(whoosh(0.2, 1500, 8000, 0.4, 0.4), fr(790), pan=-0.4)
+sfx(click(1.0), fr(790), pan=-0.4)
+sfx(boom(0.35, 140, 70, 0.3), fr(792), pan=0.5)
+d_acc = last = 0.0
+for f in np.arange(796, 818, 0.1):
+    v = 4 * (f - 796) if f < 807 else max(0.0, 44 - 4 * (f - 807))
     d_acc += v * 0.1
     if d_acc - last >= 40:
         last = d_acc
-        sfx(click(0.35, 5000), fr(f_), pan=0.5)
-for i in range(18):
-    sfx(click(0.3, 8000), fr(816 + i * 1.9 + (i % 3) * 0.4), pan=0.4)  # 代码打出来
+        sfx(click(0.35, 3000, 6000), fr(f), pan=0.5)
+for i in range(16):
+    sfx(click(0.3, 4000, 9000), fr(818 + i * 1.9 + (i % 3) * 0.4), pan=0.4)
 
-# 规则：每张卡撞进来一声铁砧，音高 A C D E G
+# 规则：每张卡撞进来一声铁砧
 for i, m in enumerate([69, 72, 74, 76, 79, 81]):
     stop = 872 + 50 * i
-    contact = stop - 28 + 9
-    sfx(anvil(m, 0.8), fr(contact), send=0.35)
-    sfx(thud(0.5, 120, 50), fr(contact))
-    sfx(whoosh(fr(26), 400, 7000, 0.35, 0.3), fr(stop - 28), pan=-0.4)
-sfx(inhale(fr(8), 0.5), fr(1148))
-sfx(rev_up(fr(26), 60, 520, 0.9), fr(1156), pan=0.4, send=0.2)
+    sfx(anvil(m, 0.8), fr(stop - 28 + 9), send=0.35)
+    sfx(boom(0.4, 130, 50, 0.4), fr(stop - 28 + 9))
+    sfx(whoosh(fr(26), 400, 7000, 0.3, 0.3), fr(stop - 28), pan=-0.4)
+sfx(whoosh(fr(12), 300, 4000, 0.4, 0.5), fr(1128))  # 片尾卡撑满画面
+sfx(whoosh(fr(26), 6000, 300, 0.8, 0.2), fr(1156), pan=0.6)  # 冲出右边
 
 
 def reverb(x, seed, dec=0.6, length=2.4):
@@ -419,9 +514,11 @@ def reverb(x, seed, dec=0.6, length=2.4):
     return np.fft.irfft(np.fft.rfft(x, nfft) * np.fft.rfft(ir, nfft), nfft)[: len(x)]
 
 
-mix = MUS + SFX * 0.7  # 音效让出背景音乐
-mix[0] += reverb(SEND[0], 1) * 0.45
-mix[1] += reverb(SEND[1], 2) * 0.45
+# 侧链只压“乐队”里除了鼓以外的部分：简单起见对整个 MUS 用一个更轻的版本，鼓本身的瞬态在压之前已经过去
+duck = 0.65 + 0.35 * DUCK
+mix = MUS * duck + SFX * 0.62  # 音效让出背景音乐
+mix[0] += reverb(SEND[0], 1) * 0.4
+mix[1] += reverb(SEND[1], 2) * 0.4
 for ch in range(2):
     mix[ch] = fft_filter(mix[ch], lo=30)
 mix[:, : N - NV] += mix[:, NV:]  # 余音折回开头

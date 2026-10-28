@@ -165,3 +165,9 @@ export const kin = (t: number, x0: number, v0: number, segs: [number, number][])
   }
   return x;
 };
+
+/** 惯性前倾（度）：倾角 = −k · 加速度，过二阶弹簧（ζ = 0.69，过冲约 5%）；软限幅 ±lim */
+export const leanOf = (x: (t: number) => number, t: number, k = 7, lim = 14, omega = 0.42) => {
+  const raw = springOf((u) => -k * clamp(acc(x, u), -4, 4), t, omega, 0.69, 40, 0.5);
+  return lim * Math.tanh(raw / lim);
+};
