@@ -1,0 +1,65 @@
+/* 014 · 液态玻璃 Liquid Glass — CSS 设计令牌（与 tokens.ts / tokens.json 同源）
+   整个风格只有一条物理规则：玻璃不发光，只把后面的东西弯过来——折射量 = 边缘的坡度。玻璃本身无色。 */
+:root {
+  /* 颜色：玻璃无色，颜色全在后面的内容里 */
+  --lg-ink: #0B0C10;
+  --lg-paper: #F3F2EE;
+  --lg-mute: #6B6E78;       /* 次要文字：在纸上 4.5:1 */
+  --lg-orange: #FF5A1F;
+  --lg-pink: #FF2E7E;
+  --lg-blue: #2E4BFF;       /* 上面只放白字 */
+  --lg-mint: #2BD9A0;
+  --lg-violet: #8B5CFF;
+
+  /* 厚度 = 层级：越靠上越厚 */
+  --lg-bevel-thin: 12px;    /* 列表行、标签 */
+  --lg-bevel: 26px;         /* 按钮、导航栏 */
+  --lg-bevel-thick: 44px;   /* 浮层、播放器 */
+  --lg-chroma: 0.06;        /* R / G / B 弯曲量差 6% */
+
+  /* 玻璃自己的光：一层极淡的白、1px 边缘高光、往下的投影 */
+  --lg-tint: rgb(255 255 255 / 0.06);
+  --lg-tint-label: rgb(255 255 255 / 0.36);   /* 要压字的浮层 */
+  --lg-rim: inset 1px 1px 0 rgb(255 255 255 / 0.6), inset -1px -1px 0 rgb(255 255 255 / 0.15);
+  --lg-shadow: 0 10px 32px rgb(0 0 0 / 0.18);
+  --lg-frost-label: 6px;    /* 液态玻璃本身不模糊，压字的地方才给一点 */
+  --lg-frost-player: 14px;
+  --lg-radius: 999px;       /* 胶囊；卡片 28–44px */
+  --lg-merge-gap: 24px;     /* 小于它就融成一块 */
+
+  --lg-font-display: 'Inter Display', 'Inter', 'Noto Sans SC', sans-serif;
+  --lg-font-text: 'Inter', 'Noto Sans SC', sans-serif;
+  --lg-font-mono: 'Geist Mono', 'JetBrains Mono', monospace;
+  --lg-font-cjk: 'Noto Sans SC', 'PingFang SC', sans-serif;
+
+  --lg-spring: cubic-bezier(0.34, 1.32, 0.64, 1);  /* 约 5% 过冲 */
+}
+
+/* 一块玻璃。折射用 SVG 滤镜（feDisplacementMap），位移贴图见 images/glass.py；
+   backdrop-filter: url() 目前只有 Chromium 支持，其他浏览器退回磨砂 */
+.lg-glass {
+  border-radius: var(--lg-radius);
+  background: var(--lg-tint);
+  box-shadow: var(--lg-rim), var(--lg-shadow);
+  backdrop-filter: blur(var(--lg-frost-label)) saturate(1.5);
+}
+@supports (backdrop-filter: url(#lens)) {
+  .lg-glass--clear {
+    backdrop-filter: url(#lens) saturate(1.5);
+  }
+}
+
+/* 压字的玻璃：后面亮用黑字，后面暗用白字（由脚本按亮度切换 data-on） */
+.lg-glass--label { background: var(--lg-tint-label); color: var(--lg-ink); }
+.lg-glass--label[data-on='dark'] { color: #FFFFFF; background: rgb(0 0 0 / 0.2); }
+
+/* 按下：形状连续地长成菜单，不是换一张图 */
+.lg-glass { transition: border-radius 0.5s var(--lg-spring), width 0.5s var(--lg-spring), height 0.5s var(--lg-spring); }
+
+/* 无障碍：系统要求降低透明度时，玻璃变实 */
+@media (prefers-reduced-transparency: reduce) {
+  .lg-glass { backdrop-filter: none; background: rgb(243 242 238 / 0.94); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .lg-glass { transition: none; }
+}

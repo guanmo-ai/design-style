@@ -311,8 +311,60 @@ def app_ui():
     return doc(''.join(defs), ''.join(body))
 
 
+# ======================================================================
+# 教程：五步做一块液态玻璃（每一步只加一层）
+# ======================================================================
+
+def steps():
+    defs, body = [], []
+    body.append(f'<rect width="{W}" height="{H}" fill="{PAPER}"/>')
+    body.append(t(72, 112, 20, 'LIQUID GLASS · HOW TO', MONO, 500, ORANGE, '3'))
+    body.append(t(72, 178, 54, '五步做一块液态玻璃', SC, 900, INK))
+    body.append(t(72, 222, 22, '每一步只加一层。同一块形状、同一张背景，看它一点点“变成玻璃”。', SC, 400, MUTE))
+
+    # 同一张背景：彩色 + 网格 + 一行字，五个小样共用
+    sw, shh = 400, 170
+    fd, fb = field('sf', sw, shh, [(0.05, 0.1, ORANGE, 0.9), (0.6, 1.0, PINK, 0.7), (1.0, 0.0, BLUE, 0.8)])
+    defs.append(fd)
+    defs.append(f'<g id="sbg">{fb}{grid(0, 0, sw, shh, 20)}{t(14, 116, 92, "Glass", DISPLAY, 700, INK, "-4")}</g>')
+    defs.append(f'<clipPath id="sclip"><rect width="{sw}" height="{shh}" rx="16"/></clipPath>')
+    shape = sdf_round_rect(70, 36, 260, 98, 49)
+    bb = (70, 36, 260, 98)
+    rows = [
+        ('形状', '先只有一块胶囊：白 6%，什么都不弯', 'border-radius: 999px;  background: #fff1;',
+         dict(bevel=26, edge=0.0, mag=0.0, rim=0.0, shadow=0.0, tint=(255, 255, 255, 0.06)), 0.0),
+        ('折射', '边缘 26px 一圈按坡度往里取样，中间放大 4%', 'filter: url(#lens);  /* feDisplacementMap */',
+         dict(bevel=26, edge=0.9, mag=0.04, rim=0.0, shadow=0.0, tint=(255, 255, 255, 0.06)), 0.0),
+        ('色散', 'R / G / B 弯得差 6%，边上出一道彩边', 'scale: 1.06 / 1.00 / 0.94  (R / G / B)',
+         dict(bevel=26, edge=0.9, mag=0.04, rim=0.0, shadow=0.0, tint=(255, 255, 255, 0.06)), 0.06),
+        ('高光', '光从左上来：迎光一侧亮 1px，背光一侧透出一点', 'box-shadow: inset 1px 1px 0 #fff9;',
+         dict(bevel=26, edge=0.9, mag=0.04, rim=0.9, shadow=0.0, tint=(255, 255, 255, 0.06)), 0.06),
+        ('投影', '往下 10px、柔 32px、18% 黑——它浮起来了', 'box-shadow: 0 10px 32px #0002;',
+         dict(bevel=26, edge=0.9, mag=0.04, rim=0.9, shadow=0.2, tint=(255, 255, 255, 0.06)), 0.06),
+    ]
+    for i, (name, desc, code, kw, chroma) in enumerate(rows):
+        y = 266 + i * 190
+        body.append(f'<g transform="translate(72 {y})" clip-path="url(#sclip)"><use href="#sbg"/>')
+        L = lens(shape, bb, pad=24, **kw)
+        d, b = svg_lens(f'S{i}', L, '#sbg', chroma=chroma)
+        defs.append(d)
+        body.append(b + '</g>')
+        x = 510
+        body.append(f'<circle cx="{x + 20}" cy="{y + 36}" r="20" fill="{INK}"/>' + t(x + 20, y + 43, 19, str(i + 1), MONO, 500, '#FFF', '0', 'middle'))
+        body.append(t(x + 56, y + 46, 34, name, SC, 900, INK))
+        body.append(t(x, y + 96, 20, desc, SC, 400, INK))
+        body.append(f'<rect x="{x}" y="{y + 118}" width="498" height="40" rx="8" fill="{INK}"/>')
+        body.append(t(x + 14, y + 144, 14.5, code, MONO, 400, '#E8E9EE'))
+    # 常见误区
+    y = 1262
+    body.append(f'<rect x="72" y="{y - 30}" width="936" height="64" rx="14" fill="#FFFFFF"/>')
+    body.append(t(96, y + 10, 20, '误区', SC, 900, PINK) + t(160, y + 10, 19, '整块模糊 + 白边 = 2020 年的 Glassmorphism。液态玻璃靠“弯”，不靠“糊”。', SC, 500, INK))
+    body.append(t(72, 1322, 15, f'Design Style 风格 {NO} · @guanmo_ai', TEXT, 400, MUTE))
+    return doc(''.join(defs), ''.join(body))
+
+
 if __name__ == '__main__':
-    for name, fn in [('poster', poster), ('cheatsheet', cheatsheet), ('app-ui', app_ui)]:
+    for name, fn in [('poster', poster), ('cheatsheet', cheatsheet), ('app-ui', app_ui), ('steps', steps)]:
         path = os.path.join(HERE, f'{name}.svg')
         with open(path, 'w', encoding='utf-8') as f:
             f.write(fn())
