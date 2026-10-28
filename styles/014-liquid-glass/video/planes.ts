@@ -274,8 +274,9 @@ const uiBackdrop = (ctx: Ctx, t: number) => {
 };
 
 /** 画一个平面在镜头下的样子（ctx 未变换；画布尺寸 vw × vh） */
-export const drawPlane = (ctx: Ctx, cam: Cam, t: number, st: {bend: BendState; merge: MergeState; rule: number}, vw = 1920, vh = 1080) => {
-  ctx.setTransform(cam.z, 0, 0, cam.z, vw / 2 - cam.cx * cam.z, vh / 2 - cam.cy * cam.z);
+export const drawPlane = (ctx: Ctx, cam: Cam, t: number, st: {bend: BendState; merge: MergeState; rule: number}, vw = 1920, vh = 1080, px = 1) => {
+  // px：画布像素 / 逻辑像素（草稿预览用 0.5）
+  ctx.setTransform(cam.z * px, 0, 0, cam.z * px, px * (vw / 2 - cam.cx * cam.z), px * (vh / 2 - cam.cy * cam.z));
   field(ctx, cam, t, vw, vh);
   const x0 = cam.cx - vw / 2 / cam.z;
   const x1 = cam.cx + vw / 2 / cam.z;

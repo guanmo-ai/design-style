@@ -64,7 +64,8 @@ const GLASS_FS = `#version 300 es
 precision highp float;
 uniform sampler2D uTex;
 uniform sampler2D uAlt;
-uniform vec2 uRes;
+uniform vec2 uRes; // 逻辑尺寸（1920×1080）；实际像素 = 逻辑 × uScale
+uniform float uScale;
 uniform float uFlip;
 uniform float uPhase; // 0—2π，周期 = 全片长度（光网首尾一致）
 uniform int uN;
@@ -199,7 +200,8 @@ vec3 lit(sampler2D t, vec2 p, float lod){
 }
 
 void main(){
-  vec2 p = vec2(gl_FragCoord.x, uFlip > 0.5 ? uRes.y - gl_FragCoord.y : gl_FragCoord.y);
+  vec2 fc = gl_FragCoord.xy / uScale;
+  vec2 p = vec2(fc.x, uFlip > 0.5 ? uRes.y - fc.y : fc.y);
   vec3 col = lit(uTex, p, 0.0);
 
   for (int g = 0; g < ${MAX_GROUPS}; g++){
@@ -217,7 +219,7 @@ void main(){
     float t = clamp(1.0 - depth / bevel, 0.0, 1.0);
     float slope = pow(t, 2.4) * step(0.5, uMA[g].x);
     vec2 off = -n * slope * uMA[g].x * uMA[g].y - (p - uME[g]) * uMA[g].z;
-    float lod = uMA[g].w > 0.5 ? log2(uMA[g].w) : 0.0;
+    float lod = uMA[g].w > 0.5 ? max(0.0, log2(uMA[g].w * uScale)) : 0.0;
     float ch = uMC[g].x;
     vec3 gc;
     if (uMF[g].z > 0.5){
@@ -267,6 +269,7 @@ uniform sampler2D uSrc;
 uniform sampler2D uOv;
 uniform float uHasOv;
 uniform vec2 uRes;
+uniform float uScale;
 uniform float uFlip;
 uniform mat3 uH; // 屏幕 → 贴图 UV（0—1）
 uniform vec2 uSize; // 贴图像素尺寸（圆角、边框按它算）
@@ -279,7 +282,8 @@ uniform float uAlpha;
 out vec4 o;
 float sdRR(vec2 p, vec2 h, float r){ vec2 q = abs(p) - (h - r); return length(max(q, 0.0)) + min(max(q.x, q.y), 0.0) - r; }
 void main(){
-  vec2 p = vec2(gl_FragCoord.x, uFlip > 0.5 ? uRes.y - gl_FragCoord.y : gl_FragCoord.y);
+  vec2 fc = gl_FragCoord.xy / uScale;
+  vec2 p = vec2(fc.x, uFlip > 0.5 ? uRes.y - fc.y : fc.y);
   vec3 h = uH * vec3(p, 1.0);
   vec2 uv = h.xy / h.z;
   vec2 px = uv * uSize;
@@ -328,7 +332,8 @@ const locs = (gl: WebGL2RenderingContext, p: WebGLProgram, names: string[]): Loc
   return o;
 };
 
-export type Target = {fb: WebGLFramebuffer | null; tex: WebGLTexture | null; w: number; h: number};
+/** w / h：实际像素；s：实际像素 / 逻辑像素（草稿预览用 0.5） */
+export type Target = {fb: WebGLFramebuffer | null; tex: WebGLTexture | null; w: number; h: number; s: number};
 
 export type Device = {
   /** 屏幕上四个角（左上、右上、右下、左下） */
@@ -387,8 +392,8 @@ export class Renderer {
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 1, -1, -1, 1, 1, 1]), gl.STATIC_DRAW);
     gl.enableVertexAttribArray(0);
     gl.vertexAttribPointer(0, 2, gl.FLOAT, false, 0, 0);
-    this.lg = locs(gl, this.glass, ['uTex', 'uAlt', 'uRes', 'uFlip', 'uPhase', 'uN', 'uSA', 'uSB', 'uSM', 'uMA', 'uMB', 'uMC', 'uMD', 'uME', 'uMF', 'uBox', 'uRA', 'uRB', 'uLight']);
-    this.lq = locs(gl, this.quad, ['uSrc', 'uOv', 'uHasOv', 'uRes', 'uFlip', 'uH', 'uSize', 'uRadius', 'uBezel', 'uBezelColor', 'uSheen', 'uSheenAmt', 'uAlpha']);
+    this.lg = locs(gl, this.glass, ['uTex', 'uAlt', 'uRes', 'uScale', 'uFlip', 'uPhase', 'uN', 'uSA', 'uSB', 'uSM', 'uMA', 'uMB', 'uMC', 'uMD', 'uME', 'uMF', 'uBox', 'uRA', 'uRB', 'uLight']);
+    this.lq = locs(gl, this.quad, ['uSrc', 'uOv', 'uHasOv', 'uRes', 'uScale', 'uFlip', 'uH', 'uSize', 'uRadius', 'uBezel', 'uBezelColor', 'uSheen', 'uSheenAmt', 'uAlpha']);
   }
 
   /** 上传一张画布到命名贴图（带 mipmap） */
@@ -413,10 +418,10 @@ export class Renderer {
   }
 
   /** 命名的离屏缓冲（贴图同向于画布） */
-  target(name: string, w: number, h: number): Target {
+  target(name: string, w: number, h: number, s = 1): Target {
     const gl = this.gl;
     const old = this.targets.get(name);
-    if (old && old.w === w && old.h === h) return old;
+    if (old && old.w === w && old.h === h && old.s === s) return old;
     const tex = gl.createTexture()!;
     gl.bindTexture(gl.TEXTURE_2D, tex);
     gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA8, w, h, 0, gl.RGBA, gl.UNSIGNED_BYTE, null);
@@ -428,13 +433,13 @@ export class Renderer {
     gl.bindFramebuffer(gl.FRAMEBUFFER, fb);
     gl.framebufferTexture2D(gl.FRAMEBUFFER, gl.COLOR_ATTACHMENT0, gl.TEXTURE_2D, tex, 0);
     gl.bindFramebuffer(gl.FRAMEBUFFER, null);
-    const t = {fb, tex, w, h};
+    const t = {fb, tex, w, h, s};
     this.targets.set(name, t);
     return t;
   }
 
-  screen(): Target {
-    return {fb: null, tex: null, w: this.gl.drawingBufferWidth, h: this.gl.drawingBufferHeight};
+  screen(s = 1): Target {
+    return {fb: null, tex: null, w: this.gl.drawingBufferWidth, h: this.gl.drawingBufferHeight, s};
   }
 
   private bind(t: Target) {
@@ -474,7 +479,8 @@ export class Renderer {
     gl.activeTexture(gl.TEXTURE1);
     gl.bindTexture(gl.TEXTURE_2D, alt ?? src);
     gl.uniform1i(L.uAlt, 1);
-    gl.uniform2f(L.uRes, dst.w, dst.h);
+    gl.uniform2f(L.uRes, dst.w / dst.s, dst.h / dst.s);
+    gl.uniform1f(L.uScale, dst.s);
     gl.uniform1f(L.uFlip, dst.fb ? 0 : 1);
     gl.uniform1f(L.uPhase, phase);
     const n = Math.min(MAX_SHAPES, shapes.length);
@@ -544,10 +550,13 @@ export class Renderer {
     gl.bindTexture(gl.TEXTURE_2D, ov ?? src);
     gl.uniform1i(L.uOv, 1);
     gl.uniform1f(L.uHasOv, ov ? 1 : 0);
-    gl.uniform2f(L.uRes, dst.w, dst.h);
+    const lw = dst.w / dst.s;
+    const lh = dst.h / dst.s;
+    gl.uniform2f(L.uRes, lw, lh);
+    gl.uniform1f(L.uScale, dst.s);
     gl.uniform1f(L.uFlip, dst.fb ? 0 : 1);
     const d: Device = dev ?? {
-      corners: [[0, 0], [dst.w, 0], [dst.w, dst.h], [0, dst.h]], size: [dst.w, dst.h], radius: 0, bezel: 0,
+      corners: [[0, 0], [lw, 0], [lw, lh], [0, lh]], size: [lw, lh], radius: 0, bezel: 0,
       bezelColor: [0, 0, 0], sheen: -5, sheenAmt: 0, alpha: 1,
     };
     gl.uniformMatrix3fv(L.uH, false, homography(d.corners));
