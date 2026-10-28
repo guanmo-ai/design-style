@@ -1,12 +1,12 @@
 /**
- * 07 今天 · App 与网页（698—900）
+ * 07 今天 · App 与网页（748—900）
  *
- *   698—724  镜头从手机屏幕里退出来（上一章俯冲的灭点就是这块屏幕）
- *   724—790  骑行页：速度 0 → 48 km/h —— 数字越来越宽（wdth 跟速度走）、残影越拉越开（间距 = 速度 × Δt）、
- *            背后的力线变长；路线上只有“现在”那个点拖残影；758 按下冲刺键：按钮往前一冲，留下 3 层残影
- *   768—780  网页从右边冲进来刹停
- *   786—814  网页快速滚动再刹停：吸顶的大标题字宽 = 滚动速度，残影沿滚动方向拖；停下压窄
- *   812—     代码从遮罩里升起：font-variation-settings + text-shadow 两行就能做
+ *   748—770  镜头从手机屏幕里退出来（上一章俯冲的灭点就是这块屏幕）
+ *   770—800  骑行页：速度 0 → 48 km/h —— 数字越来越宽（wdth 跟速度走）、残影越拉越开（间距 = 速度 × Δt）、
+ *            背后的力线变长；路线上只有“现在”那个点拖残影；790 按下冲刺键：按钮往前一冲，留下 3 层残影
+ *   780—792  网页从右边冲进来刹停
+ *   796—818  网页快速滚动再刹停：吸顶的大标题字宽 = 滚动速度，残影沿滚动方向拖；停下压窄
+ *   816—     代码从遮罩里升起：font-variation-settings + text-shadow 两行就能做
  *   ~860     第一张规则卡撞进来，把手机和网页一起撞出右边
  */
 import React from 'react';
@@ -23,18 +23,18 @@ const f1 = (v: number) => v.toFixed(1);
 
 /** 速度（km/h）：起步 → 48 → 冲刺到 56 → 回到 48 */
 const kmh = (t: number) => {
-  const a = 48 * ease.inOut(prog(t, 726, 30));
-  const b = 8 * Math.sin(Math.PI * clamp((t - 758) / 26));
+  const a = 48 * ease.inOut(prog(t, 770, 24));
+  const b = 8 * Math.sin(Math.PI * clamp((t - 790) / 20));
   return a + b;
 };
 const numWdth = (t: number) => wdthOf(kmh(t) * 1.15);
-const scrollY = (t: number) => kin(t, 0, 0, [[786, 3.2], [800, -3.2], [814, 0]]);
+const scrollY = (t: number) => kin(t, 0, 0, [[796, 4], [807, -4], [818, 0]]);
 const scrollV = (t: number) => vel(scrollY, t);
-const browserDX = (t: number) => path1(t, [[766, 1300, -2 * 1300 / 14], [780, 0, 0]]);
-const btnDX = (t: number) => 22 * Math.sin(Math.PI * clamp((t - 758) / 8)) * (t < 762 ? 1 : 1);
+const browserDX = (t: number) => path1(t, [[780, 1300, -2 * 1300 / 12], [792, 0, 0]]);
+const btnDX = (t: number) => 22 * Math.sin(Math.PI * clamp((t - 790) / 8));
 
 /** 镜头：从屏幕里退出来（以屏幕中心为原点，4.6 倍 → 1 倍） */
-const zoomOut = (t: number) => zoomLerp(5.2, 1, ease.out(prog(t, 698, 26)));
+const zoomOut = (t: number) => zoomLerp(5.2, 1, ease.out(prog(t, 748, 22)));
 
 /* ───────── 手机：骑行页 ───────── */
 const route = (p: number) => {
@@ -43,7 +43,7 @@ const route = (p: number) => {
   const y = 700 - 90 * Math.sin(p * Math.PI * 1.6) - p * 120;
   return [x, y];
 };
-const routeP = (t: number) => clamp(0.15 + 0.0011 * Math.max(0, t - 726) * (kmh(t) / 30 + 0.2));
+const routeP = (t: number) => clamp(0.15 + 0.0016 * Math.max(0, t - 770) * (kmh(t) / 30 + 0.2));
 const Phone: React.FC<{t: number}> = ({t}) => {
   const s = kmh(t);
   const L = s / 48;
@@ -115,7 +115,7 @@ const Phone: React.FC<{t: number}> = ({t}) => {
 
 /* ───────── 网页：滚得越快，标题越宽 ───────── */
 const Browser: React.FC<{t: number; k: number}> = ({t, k}) => {
-  if (t < 766) return null;
+  if (t < 780) return null;
   const dx = browserDX(t);
   if (k) return <rect x={BR.x + dx} y={BR.y} width={BR.w} height={BR.h} rx={18} fill={C.orange} />;
   const sv = scrollV(t);
@@ -160,7 +160,7 @@ const Browser: React.FC<{t: number; k: number}> = ({t, k}) => {
           {`scroll ${Math.abs(sv).toFixed(0)} px/帧 · wdth ${wd.toFixed(0)}`}
         </Txt>
       </svg>
-      <Rise t={t} at={814} box={[30, 490, BR.w - 60, 270]}>
+      <Rise t={t} at={816} box={[30, 490, BR.w - 60, 270]}>
         <rect x={30} y={490} width={BR.w - 60} height={270} rx={10} fill={C.ink} />
         {[
           ['h1 {', C.orange],
@@ -192,12 +192,12 @@ export const Today: React.FC<{t: number}> = ({t}) => {
           k ? (
             <g transform={`translate(${f1(pushToday(u) - push)} 0)`}>
               <rect x={PT.x} y={PT.y} width={PH.w * PS} height={PH.h * PS} rx={56} fill={C.orange} />
-              {u >= 766 && <rect x={BR.x + browserDX(u)} y={BR.y} width={BR.w} height={BR.h} rx={18} fill={C.orange} />}
+              {u >= 780 && <rect x={BR.x + browserDX(u)} y={BR.y} width={BR.w} height={BR.h} rx={18} fill={C.orange} />}
             </g>
           ) : null
         }
       />
-      <g transform={`translate(${f1(lerp(W / 2, PT.x + (PH.w * PS) / 2, ease.out(prog(t, 698, 26))))} ${f1(lerp(540, PT.y + (PH.h * PS) / 2, ease.out(prog(t, 698, 26))))}) scale(${(z * PS).toFixed(4)}) translate(${-cx} ${-cy})`}>
+      <g transform={`translate(${f1(lerp(W / 2, PT.x + (PH.w * PS) / 2, ease.out(prog(t, 748, 22))))} ${f1(lerp(540, PT.y + (PH.h * PS) / 2, ease.out(prog(t, 748, 22))))}) scale(${(z * PS).toFixed(4)}) translate(${-cx} ${-cy})`}>
         <Phone t={t} />
       </g>
       {push === 0 ? <Echoes t={t} state={(u) => [browserDX(u)]} render={(u, k) => <Browser t={u} k={k} />} /> : <Browser t={t} k={0} />}
@@ -206,7 +206,7 @@ export const Today: React.FC<{t: number}> = ({t}) => {
 };
 
 export const todayProbe = (t: number) => {
-  if (t < 784) {
+  if (t < 794) {
     const v = kmh(t) * 1.15;
     return {v, wdth: wdthOf(v), n: Math.round(6 * clamp(kmh(t) / 10))};
   }
@@ -217,4 +217,4 @@ export const todayProbe = (t: number) => {
   const v = vel(pushToday, t);
   return {v, wdth: wdthOf(v), n: echoCount(t, (u) => [pushToday(u)], 3)};
 };
-export const todaySpeed = (t: number) => Math.max(Math.abs(vel(pushToday, t)), Math.abs(vel(browserDX, t)) * (t > 766 ? 1 : 0), t < 712 ? 40 : 0);
+export const todaySpeed = (t: number) => Math.max(Math.abs(vel(pushToday, t)), Math.abs(vel(browserDX, t)) * (t > 780 ? 1 : 0), t < 762 ? 40 : 0);

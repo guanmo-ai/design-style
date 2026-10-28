@@ -14,7 +14,8 @@ export const Hud: React.FC<{t: number; probe: Probe | null; dark: boolean}> = ({
   const ink = dark ? C.paperHi : C.ink;
   const halo = dark ? C.ink : C.paper; // 字后面描一圈底色：背景再花也读得清
   const cr = CREDITS.find((c) => t >= c.at - 2 && t < c.to + 14);
-  const idx = CREDITS.findIndex((c) => t >= c.at - 8 && t < c.to + 8);
+  const idx = CREDITS.findIndex((c) => c.n !== '00' && t >= c.at - 8 && t < c.to + 8);
+  const chapters = CREDITS.filter((c) => c.n !== '00');
   return (
     <g stroke={halo} strokeWidth={7} strokeLinejoin="round" paintOrder="stroke">
       {cr && (
@@ -56,8 +57,8 @@ export const Hud: React.FC<{t: number; probe: Probe | null; dark: boolean}> = ({
       )}
       {idx >= 0 && (
         <g>
-          {CREDITS.map((c, i) => (
-            <rect key={c.n} x={80 + i * 64} y={1022} width={52} height={6} fill={i === idx ? C.orange : ink} opacity={i === idx ? 1 : i < idx ? 0.55 : 0.18} />
+          {chapters.map((c, i) => (
+            <rect key={c.n} x={80 + i * 64} y={1022} width={52} height={6} fill={i === idx - 1 ? C.orange : ink} opacity={i === idx - 1 ? 1 : i < idx - 1 ? 0.55 : 0.18} />
           ))}
           <Txt x={80 + 7 * 64 + 12} y={1031} size={20} fam="mono" w={700} fill={ink}>
             {`${CREDITS[idx].n} / 07`}

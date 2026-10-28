@@ -36,7 +36,7 @@ export const cardX = (i: number, t: number) => {
   if (i === N - 1) {
     if (t < LAUNCH) return enterX(i, t);
     if (t < LAUNCH + 8) return CX - 30 * ease.sine(prog(t, LAUNCH, 8));
-    return kin(t, CX - 30, 0, [[LAUNCH + 8, 6]]);
+    return kin(t, CX - 30, 0, [[LAUNCH + 8, 6.4]]);
   }
   const next = CONTACT[i + 1];
   if (t < next.t) return enterX(i, t);
@@ -44,7 +44,7 @@ export const cardX = (i: number, t: number) => {
 };
 /** “今天”那一章被第一张卡撞走的位移 */
 export const pushToday = (t: number) => (t < CONTACT[0].t ? 0 : CONTACT[0].v * (t - CONTACT[0].t));
-const alive = (i: number, t: number) => t >= STOPS[i] - IN - 1 && cardX(i, t) - CW / 2 < W + 40;
+const alive = (i: number, t: number) => t >= STOPS[i] - IN - 1 && cardX(i, t) - (i === N - 1 ? W / 2 : CW / 2) < W + 40;
 
 /* ───────── 卡上的演示（ta = 卡停下之后过了几帧） ───────── */
 type Demo = React.FC<{ta: number}>;
@@ -154,12 +154,18 @@ const Card: React.FC<{i: number; t: number; k: number}> = ({i, t, k}) => {
   if (!alive(i, t)) return null;
   const x = cardX(i, t);
   const c = CARDS[i];
-  if (k) return <rect x={x - CW / 2} y={CY - CH / 2} width={CW} height={CH} fill={C.orange} />;
-  const ta = t - STOPS[i];
   const end = i === N - 1;
+  // 片尾卡：停下后撑满整个画面，再起势冲出右边——露出后面的夜路（和开场的橙色车身对称）
+  const g = end ? ease.inOut(prog(t, 1128, 12)) : 0;
+  const cw = CW + (W + 4 - CW) * g;
+  const ch = CH + (1084 - CH) * g;
+  const cy = CY + (540 - CY) * g;
+  const left = x - cw / 2;
+  if (k) return <rect x={left} y={cy - ch / 2} width={cw} height={ch} fill={C.orange} />;
+  const ta = t - STOPS[i];
   return (
-    <g transform={`translate(${x.toFixed(1)} ${CY})`}>
-      <rect x={-CW / 2} y={-CH / 2} width={CW} height={CH} fill={C.ink} />
+    <g transform={`translate(${(left + cw / 2).toFixed(1)} ${cy.toFixed(1)})`}>
+      <rect x={-cw / 2} y={-ch / 2} width={cw} height={ch} fill={C.ink} />
       {end ? (
         <>
           <Txt x={0} y={-10} size={82} anchor="middle" fill={C.paperHi}>

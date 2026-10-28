@@ -14,8 +14,7 @@
 import React from 'react';
 import {C} from '../tokens';
 import {Echoes, ForceLines, Rise, Txt, Word, advOf, camT, echoCount, mixHex, wdthOf, zoomLerp} from './kit';
-import {leanOf} from './opening';
-import {anticLand, clamp, ease, follow, kin, lerp, path1, prog, thump, vel} from './motion';
+import {anticLand, clamp, ease, follow, kin, leanOf, lerp, path1, prog, thump, vel} from './motion';
 
 const GY = 1000; // 地面 = TUUUM 的基线
 
@@ -75,7 +74,8 @@ const flyState = (w: Fly, i: number) => (u: number) => {
 };
 
 /** 接力来的 TUMB：从 90 倍缩回原位（以 T 的竖画中心为原点） */
-const tumbZoom = (t: number) => zoomLerp(90, 1, ease.out(prog(t, 300, 13)));
+/** 上一章那个 TUMB 的白色竖画盖满画面 = 这一页的纸；从 4 倍缩回原位 */
+const tumbZoom = (t: number) => zoomLerp(4, 1, ease.out(prog(t, 300, 12)));
 const TumbA: React.FC<{t: number; k: number}> = ({t, k}) => {
   const z = tumbZoom(t);
   if (k && z > 2.5) return null; // 太大的残影只会把画面糊成一片橙

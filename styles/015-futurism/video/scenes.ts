@@ -5,37 +5,50 @@
 import React from 'react';
 import {C} from '../tokens';
 import type {Probe} from './hud';
-import {Opening, openProbe} from './opening';
-import {Walk, openCam, walkProbe, walkSpeed} from './walk';
+import {Night, nightProbe, nightSpeed} from './night';
+import {Balla, ballaProbe, ballaSpeed} from './balla';
+import {Boccioni, bocProbe, bocSpeed} from './boccioni';
 import {Type, typeProbe, typeSpeed} from './type';
 import {Train, trainProbe, trainSpeed} from './train';
 import {Sky, skyProbe, skySpeed} from './sky';
 import {Today, todayProbe, todaySpeed} from './today';
 import {Rules, rulesProbe, rulesSpeed} from './rules';
 
-const OpeningLive: React.FC<{t: number}> = ({t}) => React.createElement(Opening, {t, cam: openCam(t)});
-import {AT, DURATION} from './timeline';
+import {AT, DURATION, SHIFT} from './timeline';
 
 export type Scene = {
   from: number;
   to: number;
   C: React.FC<{t: number}>;
   shift?: number; // 组件拿到的是 t − shift（片尾复用开场：shift = 1200）
-  probe?: (t: number) => Probe;
+  probe?: (t: number) => Probe | null;
   speed?: (t: number) => number;
   bg?: string;
   dark?: boolean;
 };
 
+/** 沿用第一版剧本的段：组件、读数、速度都按 t − SHIFT 取 */
+const late = (sc: Omit<Scene, 'shift'>): Scene => ({
+  ...sc,
+  from: sc.from + SHIFT,
+  to: sc.to + SHIFT,
+  shift: SHIFT,
+  probe: sc.probe ? (t: number) => sc.probe!(t - SHIFT) : undefined,
+  speed: sc.speed ? (t: number) => sc.speed!(t - SHIFT) : undefined,
+});
+
 export const SCENES: Scene[] = [
-  {from: -80, to: AT.dog + 30, C: OpeningLive, probe: openProbe, speed: (t) => Math.abs(openProbe(t).v)},
-  {from: 84, to: AT.words + 1, C: Walk, probe: walkProbe, speed: walkSpeed},
-  {from: AT.words, to: AT.train + 1, C: Type, probe: typeProbe, speed: typeSpeed},
-  {from: AT.train, to: AT.sky + 1, C: Train, probe: trainProbe, speed: trainSpeed, bg: C.ink, dark: true},
-  {from: AT.sky - 2, to: AT.today + 6, C: Sky, probe: skyProbe, speed: skySpeed, bg: C.cobalt, dark: true},
+  // 巴拉画在开场前面：开场最后那块橙色车身要盖在它上面、往左甩出去
+  {from: 92, to: 252, C: Balla, probe: ballaProbe, speed: ballaSpeed, bg: C.ink, dark: true},
+  {from: -60, to: 112, C: Night, probe: nightProbe, speed: nightSpeed, bg: C.ink, dark: true},
+  {from: AT.sculpt, to: AT.words, C: Boccioni, probe: bocProbe, speed: bocSpeed, bg: C.ink, dark: true},
+  late({from: 300, to: 501, C: Type, probe: typeProbe, speed: typeSpeed}),
+  late({from: 500, to: 601, C: Train, probe: trainProbe, speed: trainSpeed, bg: C.ink, dark: true}),
+  late({from: 598, to: 706, C: Sky, probe: skyProbe, speed: skySpeed, bg: C.cobalt, dark: true}),
   {from: AT.today - 2, to: AT.rules + 60, C: Today, probe: todayProbe, speed: todaySpeed},
+  // 片尾：夜路先在片尾卡后面出现，卡起势冲走后露出来（所以画在规则卡之前）
+  {from: DURATION - 60, to: DURATION + 1, C: Night, shift: DURATION, probe: () => null, speed: (t) => nightSpeed(t - DURATION), bg: C.ink, dark: true},
   {from: AT.rules, to: DURATION - 12, C: Rules, probe: rulesProbe, speed: rulesSpeed},
-  {from: DURATION - 60, to: DURATION + 1, C: Opening, shift: DURATION, probe: (t) => openProbe(t - DURATION), speed: (t) => Math.abs(openProbe(t - DURATION).v)},
 ];
 
 /** 读数 / 背景 / 运动模糊跟着“主段”走：这一刻最后开始的那一段 */

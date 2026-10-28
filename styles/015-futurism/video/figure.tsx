@@ -43,7 +43,7 @@ export const dogPaw = (p: DogPose, i: number): P2 => {
  * drop：每个零件的“搭建”进度（0 = 还没出现，1 = 就位；落地带弹簧，会略超 1）
  *   0 身子 · 1 头 · 2 耳朵 · 3 尾巴 · 4—7 四条腿 · 8 项圈
  */
-export const Dog: React.FC<{p: DogPose; ink: string; far: string; part?: 'all' | 'legs' | 'body'}> = ({p, ink, far, part = 'all'}) => {
+export const Dog: React.FC<{p: DogPose; ink: string; far: string; part?: 'all' | 'legs' | 'body'; earBias?: number; tailRate?: number; t?: number}> = ({p, ink, far, part = 'all', earBias = 0, tailRate = 1, t = 0}) => {
   const d = (i: number) => p.drop[i] ?? 1;
   const up = (i: number) => (1 - d(i)) * -260; // 落下：d 过冲到 1.05 时往下多走 13px，再回来
   const legs = (side: number) =>
@@ -60,8 +60,9 @@ export const Dog: React.FC<{p: DogPose; ink: string; far: string; part?: 'all' |
         </g>
       );
     });
-  const tailA = 0.35 * p.amp * 1.6 * Math.sin(p.phase * 2 + 0.6) - 0.5;
-  const earA = 0.5 * p.amp * Math.sin(p.phase * 2 + 1.4);
+  // 尾巴：走路时跟着步子摇；闻东西时（tailRate > 1）按时间摇得飞快
+  const tailA = (tailRate > 1 ? 0.55 * Math.sin(t * 0.95 * tailRate) : 0.35 * p.amp * 1.6 * Math.sin(p.phase * 2 + 0.6)) - 0.5;
+  const earA = 0.5 * p.amp * Math.sin(p.phase * 2 + 1.4) + earBias;
   const [tx, ty] = rot(-110, 0, tailA);
   return (
     <g transform={`translate(${f2(p.x)} ${f2(p.y)})`}>
