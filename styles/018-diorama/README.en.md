@@ -85,7 +85,7 @@ Released film: **1920×1080 · 30 fps · 600 frames · 20 seconds**. `tokens.jso
 | 7.8—11.2 | 03 Model railway | Terrain stacks into a hill, lake flips in, trees pop, sleepers drop, the train runs; tilt-shift snaps on at 8.75 s | Tilt-shift = small |
 | 11.2—14.2 | 04 On screen | The frame closes into a phone; the street is the app; furniture toggle cards pop up | The room is the remote |
 | 14.2—16.4 | 05 Night | Pull back to all three bases; sky turns peach and lavender; windows and street lamps light up | Warm light = someone lives here |
-| 16.4—19.0 | Finale | Push into the room's window; title rises with the byline “观默”; the lamp clicks off at 18.6 s | — |
+| 16.4—19.0 | Finale | Push into the room's window; title rises with the creator's byline; the lamp clicks off at 18.6 s | — |
 | 19.0—20.0 | Rewind | Tape stop; every piece flies back up; frame 20 s = frame 0 | — |
 
 Music: F major, 120 BPM, synthesised in numpy — marimba and pizzicato groove, piano theme, choir and celesta at night, string tutti for the title.

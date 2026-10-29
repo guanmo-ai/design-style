@@ -8,7 +8,10 @@ export const typeOf = work => Object.hasOwn(TYPES, work.type ?? 'style') ? (work
 export const typeInfo = work => TYPES[typeOf(work)];
 export const workDir = work => `${typeInfo(work).dir}/${work.id}`;
 export const workLabel = work => typeInfo(work).label(work.number);
-export const sourceUrl = (work, file = '') => `${REPO}/${/\.[a-z0-9]+$/i.test(file) ? 'blob' : 'tree'}/main/${workDir(work)}/${file}`;
+export const sourceUrl = (work, file = '') => {
+  const source = file === 'video' ? work.videoDir || file : file;
+  return `${REPO}/${/\.[a-z0-9]+$/i.test(source) ? 'blob' : 'tree'}/main/${workDir(work)}/${source}`;
+};
 export const releaseUrl = work => `${REPO}/releases/tag/${work.release}`;
 export const videoUrl = work => `./media/${work.asset}`;
 export const formatTime = seconds => `${Math.floor(seconds / 60)}:${String(Math.floor(seconds % 60)).padStart(2, '0')}`;

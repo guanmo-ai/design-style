@@ -8,6 +8,8 @@
 
 2026-10-28（工程）：标杆几期与 015 的通用部件已抽到 `src/lib/motion/` 和 `scripts/lib/`，原片改用适配层；`new_style.mjs` 起步脚本、复用文档与回归工具已完成。60 张原尺寸静帧逐像素、6 段完整 WAV 逐样本均零差异；40 项 Node 测试、4 项 Python 测试和类型检查通过。独立审查发现的边界问题已修复。2026-10-29 经 Claude 独立复核（结果见执行记录末尾）后合并到 `main`；使用说明见 [REUSE.md](REUSE.md)，证据和交付边界见 [工程执行记录](reviews/REUSE_20261028.md)。
 
+2026-10-29：`claude/admiring-planck-2gmzzh` 已合并到 `main`；018 微缩景观直接采用主人确认的 30fps 审片成片，经 `release-assets/day-18/` 发布 [day-18](https://github.com/guanmo-ai/design-style/releases/tag/day-18)（成片 + 完整项目源码 ZIP + SHA256SUMS）。画廊按首次上架顺序登记为「风格 010」，中英文目录、指南链接与预览同步；019 继续等待主人审片确认。执行与核验证据见 [018 发布记录](reviews/PUBLISH_018_20261029.md)。
+
 ## 待办
 
 ### 015 · 未来主义：审片通过后发布（2026-10-28）
@@ -17,14 +19,6 @@
 1. 等主人看过 `review-renders/015/015-futurism-master.mp4` 并确认通过（这里会更新）。
 2. 直接采用 `review-renders` 上的成片，不重新渲染、不改音画；按 014 的做法通过 `release-assets/day-15/` 发布 Release `day-15`（成片 + 完整项目源码包 + SHA256SUMS），画廊登记并同步中英文目录与预览。
 3. 合并注意：另一个会话在做 016，`package.json`（新增 `music:015` / `render:015` / `render:015:gpu` / `preview:015` / `images:015`）和 `src/Root.tsx`（新增 `S015-Futurism` / `S015-Futurism-Preview`）可能和 016 冲突，两边的条目都保留。
-
-### 018 · 微缩景观：发布（2026-10-29）
-
-这一期是 three.js（WebGL）实时渲染，不走 Remotion。正片由 Claude 在云端用 CPU（SwiftShader）渲了 30fps 1920×1080（片尾署名“观默”），已推到 `review-renders` 分支的 `018/`（附 SHA256SUMS）；**主人已看过并确认，直接发这一版。** **Codex 负责：**
-
-1. 直接采用 `review-renders/018/018-diorama-master.mp4`，按 014 的做法通过 `release-assets/day-18/` 发布 Release `day-18`（成片 + 完整项目源码包 + SHA256SUMS），画廊登记并同步中英文目录与预览（四张图在 `styles/018-diorama/images/preview/`，封面 `video3d/cover.jpg`）。
-2. 可选：在有显卡的机器上重渲 60fps 版本（命令见 `styles/018-diorama/README.md` 第 10 节，把 `render.cjs` 里的 `--use-angle=swiftshader` 换成 `--use-angle=metal` 或去掉；`node render.cjs episode.html out 0 1199 1920 1080 60`，再用 `audio/make_music.py out/events.json` 生成配乐、ffmpeg 合成）。画面和时间轴不用改。
-3. `styles/018-diorama/video3d/node_modules` 不进库：先 `npm i`（three 0.170.0）。
 
 ### 019 · 低多边形：审片通过后发布（2026-10-29）
 

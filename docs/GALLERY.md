@@ -53,6 +53,7 @@ npm run gallery:check   # 构建后检查发布文件、Pages 子路径链接、
 制作目录 `id`、Release tag、媒体文件名和已有直达链接保持稳定，可以与网站期号不同。例如 `013-art-deco` 在网站显示为「风格 008」。卡片、详情及中英文阅读页使用上架期号；原视频、图解和仓库源码保留制作时的编号。阅读页仅转换标题中的期号，保留原文锚点与代码路径。
 
 1. 完成本期目录：风格为 `styles/NNN-name/`（三位期号），布局为 `layouts/NN-name/`（两位期号）。内含封面 `video/cover.jpg`、风格图或布局图 `images/preview/*.svg` 及对应源文件、中英文 `README.md` / `README.en.md`、`PROCESS.md` / `PROCESS.en.md`、`tokens.json`、`process/timeline.json`。
+   three.js 工程可保留 `video3d/`，在作品条目设置 `videoDir: "video3d"`，源码入口会指向该目录；将原封面复制到 `video/cover.jpg` 供画廊与 README 预览读取。`tokens.motion` 的 `fps`、`durationFrames` 与时间轴须对应实际发布版。
 2. 在本仓库 Release 发布成片。视频名与目录名一致：风格 `NNN-name.mp4`，布局 `NN-name.mp4`；Release tag 现有 `day-01`（风格 001）与 `layout-01`（布局 01）。
    云端 AI 会话不能直接创建 Release 时，把成片放进 `release-assets` 分支的 `day-NN/`（附件 + `release.json` + `notes.md` + `SHA256SUMS`）并推送：`.github/workflows/publish-release.yml`（只在该分支上）核对 SHA-256 后用仓库自己的权限发布，已有的 tag 不会被改动。
    发布工作流**只在 `release-assets` 分支**，当前以推送该分支为正式入口，不在 `main` 维护第二份。009 已通过这一入口成功发布。虽然文件含 `workflow_dispatch`，但 [GitHub 要求手动触发工作流先存在于默认分支](https://docs.github.com/en/actions/how-tos/manage-workflow-runs/manually-run-a-workflow)，当前不能把 Actions 的「Run workflow」当作可用入口；若以后确有手动补发需求，再将统一的工作流入口放到 `main`，明确检出 `release-assets`，避免两份逻辑漂移。
