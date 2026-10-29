@@ -4,7 +4,7 @@
 
 > **一句话：** 把世界切成一块底座，一块块搭出来，再用移轴把它变小。
 
-🎬 看视频（Release `day-18`，成片审过后发布）· 🛠 [制作过程](PROCESS.md) · 🎞 [分镜](video3d/STORYBOARD.md)
+🎬 [看视频（Release `day-18`）](https://github.com/guanmo-ai/design-style/releases/tag/day-18)· 🛠 [制作过程](PROCESS.md) · 🎞 [分镜](video3d/STORYBOARD.md)
 
 | 海报 | 速查卡 |
 |:-:|:-:|
@@ -69,7 +69,9 @@
 
 ## 5 · 参数
 
-**视频（1920×1080，120 BPM，three.js 实时渲染）**
+**已发布视频：1920×1080 · 30fps · 600 帧 · 20 秒 · 120 BPM，three.js 渲染。**
+
+`tokens.json` 与 `process/timeline.json` 记录发布版规格；60fps 可按下方命令另行渲染。
 - 镜头：长焦 fov 20—24°，俯视约 30°，每章是桌上同一排底座里的下一块，镜头横移过去
 - 光：一盏暖色太阳（PCF 柔影）+ 半球光；GTAO 环境光遮蔽（底座搭好后才打开）；轻微 bloom
 - 移轴：清楚带在画面 56% 的高度、宽 26%，最大模糊 2.0；第 3 章 8.75 秒“咔”一下打开做前后对比
@@ -158,13 +160,23 @@ three.js：OrthographicCamera 或 fov 20 的长焦，俯视 30°，暖色平行�
 │  ├─ STORYBOARD.md              # 分镜
 │  └─ cover.jpg                  # 封面（第 0 帧）
 ├─ audio/make_music.py           # 配乐：numpy 合成，F 大调 120 BPM，音效按 events.json 对齐，−14 LUFS
+├─ video/cover.jpg              # 与 video3d/cover.jpg 字节一致，供画廊与 README 预览使用
 └─ images/
    ├─ make_svgs.py               # 四张图的生成脚本（内嵌渲染帧）
    └─ preview/                   # poster / cheatsheet / app-ui / steps
 ```
 
-**命令：**
+**环境：** Node.js、Python 3、FFmpeg；先在项目根目录准备依赖、Chromium 与字体（字体采用开源许可证，来源见 `scripts/fetch_fonts.sh`）：
+
+```bash
+npm ci
+npx playwright install chromium
+python3 -m pip install -r requirements.txt
+npm run fonts
 ```
+
+**渲染命令（从项目根目录开始）：**
+```bash
 cd styles/018-diorama/video3d && npm i                      # 装 three 0.170
 PR=1 node render.cjs episode.html out 0 599 1920 1080 30    # 30fps 正片（云端 4 进程并行约 1 小时）
 PR=1 node render.cjs episode.html out 0 1199 1920 1080 60   # 60fps（建议用有显卡的机器）

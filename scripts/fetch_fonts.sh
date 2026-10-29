@@ -38,6 +38,8 @@ curl -fsSL -o Unbounded.ttf          "$GF/unbounded/Unbounded%5Bwght%5D.ttf"
 curl -fsSL -o Michroma-Regular.ttf   "$GF/michroma/Michroma-Regular.ttf"
 curl -fsSL -o Silkscreen-Regular.ttf "$GF/silkscreen/Silkscreen-Regular.ttf"
 curl -fsSL -o Silkscreen-Bold.ttf    "$GF/silkscreen/Silkscreen-Bold.ttf"
+# 风格 018 微缩景观：Inter 可变字重（100—900），供 video3d 的 Inter.ttf 路径使用；OFL
+curl -fsSL -o Inter.ttf "$GF/inter/Inter%5Bopsz,wght%5D.ttf"
 # 布局 01 Bento Grid：Inter Display（标题）+ Inter（正文）+ Geist Mono（数字 / 标注）
 TMP=$(mktemp -d)
 curl -fsSL -o "$TMP/inter.zip" https://github.com/rsms/inter/releases/download/v4.1/Inter-4.1.zip
