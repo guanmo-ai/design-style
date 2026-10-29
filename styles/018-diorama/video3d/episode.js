@@ -99,7 +99,8 @@ function overlay(t) {
   const fin = t > 16.7 && t < 19.2;
   const down = clamp((t - 18.75) / 0.3);
   $('finale').innerHTML = fin ? `<div class="line"><span style="${rise(t, 16.8, 0.35)};${down ? `transform:translateY(${down * 110}%)` : ''};font:900 132px/1.1 NotoSC;color:#FFFDF7;text-shadow:0 6px 30px #3B355255">微缩景观</span></div>
-    <div class="line"><span style="${rise(t, 17.0, 0.35)};${down ? `transform:translateY(${down * 110}%)` : ''};font:800 30px Inter;letter-spacing:.4em;color:#FFFDF7">DIORAMA · 把世界放上桌面</span></div>` : '';
+    <div class="line"><span style="${rise(t, 17.0, 0.35)};${down ? `transform:translateY(${down * 110}%)` : ''};font:800 30px Inter;letter-spacing:.4em;color:#FFFDF7">DIORAMA · 把世界放上桌面</span></div>
+    <div class="line" style="margin-top:34px"><span style="${rise(t, 17.3, 0.35)};${down ? `transform:translateY(${down * 110}%)` : ''};font:700 28px NotoSC;letter-spacing:.5em;color:#FFFDF7">观默</span></div>` : '';
   // 第 4 章：整屏的“洞”收成一部手机，外面是纸
   const e = smooth(clamp((t - 11.3) / 0.6)) * (1 - smooth(clamp((t - 13.95) / 0.5)));
   const SC = W / 1920, pw = lerp(W + 40, 470 * SC, e), ph = lerp(H + 40, 940 * SC, e), r = lerp(0, 62 * SC, e);

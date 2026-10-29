@@ -72,13 +72,14 @@ def finale_text(t):
     if t < 18.45:
         return ''
     out = []
-    for k, (txt, size, fam, wt, y, track) in enumerate([('低多边形', 150, 'NotoSC', 900, 560, 0), ('LOW POLY · 一个面，一个颜色', 34, 'NotoSC', 700, 640, 6)]):
-        dy_in, vis = rise_g(t, 18.5 + k * 0.1, 0.32)
+    for k, (txt, size, fam, wt, y, track) in enumerate([('低多边形', 150, 'NotoSC', 900, 560, 0), ('LOW POLY · 一个面，一个颜色', 34, 'NotoSC', 700, 640, 6),
+                                                        ('观默', 28, 'NotoSC', 700, 740, 14)]):        # 署名
+        dy_in, vis = rise_g(t, 18.5 + k * 0.1 + (0.2 if k == 2 else 0), 0.32)
         if not vis:
             continue
         h = size * 1.3
         out.append(f'<clipPath id="fin{k}"><rect x="0" y="{y - size}" width="{W}" height="{h}"/></clipPath><g clip-path="url(#fin{k})">'
-                   f'<text x="{W / 2}" y="{y + dy_in * h:.1f}" text-anchor="middle" font-family="{fam}" font-weight="{wt}" font-size="{size}" letter-spacing="{track}" fill="{INK}">{txt}</text></g>')
+                   f'<text x="{W / 2}" y="{y + dy_in * h:.1f}" text-anchor="middle" font-family="{fam}" font-weight="{wt}" font-size="{size}" letter-spacing="{track}" fill="{INK if k < 2 else '#8A7FA0'}">{txt}</text></g>')
     return ''.join(out)
 
 
