@@ -1,0 +1,4 @@
+import {probeChannels} from '../../../src/lib/motion/sampling';
+import {land} from '../../../src/lib/motion/kinematics';
+export {DURATION} from './timeline';
+export const probe = (f: number) => probeChannels(f, {opening_scale: {value: (t) => 0.8 + 0.2 * land(t, 0)}});

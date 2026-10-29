@@ -1,0 +1,7 @@
+/** 60fps 剧本；120 BPM，一拍 30 帧。选定分镜后在这里登记各章拍点。 */
+export const W = 1920;
+export const H = 1080;
+export const FPS = 60;
+export const BEAT = 30;
+export const DURATION = 1200;
+export const AT = {opening: 0};

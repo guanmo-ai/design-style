@@ -1,0 +1,30 @@
+import React from 'react';
+import {AbsoluteFill, Audio, staticFile, useCurrentFrame} from 'remotion';
+import {motionBlurTimes} from '../../../src/lib/motion/sampling';
+import {bgAt, SCENES, sceneIndex, speedAt} from './scenes';
+import {Hud} from './hud';
+import {DURATION, H, W} from './timeline';
+
+export const __CONSTANT__ = DURATION;
+export type FilmProps = {music?: boolean; step?: number; blur?: number; res?: number};
+
+/** 剧本统一按 60fps 写；草稿用 step=2、blur=1、res=0.5。 */
+export const __COMPONENT__: React.FC<FilmProps> = ({music = true, step = 1, blur = 6, res = 1}) => {
+  const f = useCurrentFrame() * step;
+  const layers = motionBlurTimes(f, blur, speedAt, sceneIndex);
+  return (
+    <AbsoluteFill style={{background: bgAt(f), overflow: 'hidden'}}>
+      {/* 内部栅格/着色器的尺寸必须乘 res；SVG 本身由 preview 命令的 --scale 栅格化。 */}
+      <svg width="100%" height="100%" viewBox={`0 0 ${W} ${H}`} data-resolution={res}>
+        {layers.map((t, i) => (
+          <g key={i} opacity={i === 0 ? undefined : 1 / (i + 1)}>
+            <rect width={W} height={H} fill={bgAt(t)} />
+            {SCENES.map((s, j) => t >= s.from && t < s.to ? <s.C key={j} t={t - (s.shift ?? 0)} /> : null)}
+          </g>
+        ))}
+        <Hud t={f} />
+      </svg>
+      {music && <Audio src={staticFile('__NAME__/music.wav')} />}
+    </AbsoluteFill>
+  );
+};

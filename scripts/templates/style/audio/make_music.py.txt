@@ -1,0 +1,13 @@
+"""配乐骨架：只编排哪一帧响什么；乐器、音效和母带来自共用库。"""
+import sys
+from pathlib import Path
+ROOT = Path(__file__).resolve().parents[3]
+sys.path.insert(0, str(ROOT / 'scripts'))
+from lib.audio import AudioKit
+
+audio = AudioKit(duration=20.0, seed=int('__ID__'), fps=60)
+BEAT = 30
+for frame in range(0, 1200, BEAT):
+    audio.place(audio.kick(0.7), audio.fr(frame))
+    audio.sidechain(frame)
+audio.master(ROOT / 'public/__NAME__/music.wav')

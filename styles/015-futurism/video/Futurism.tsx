@@ -1,3 +1,4 @@
+import {motionBlurTimes} from '../../../src/lib/motion/sampling';
 /**
  * 015 · 未来主义 Futurism —— 20 秒短片（1920×1080 · 60fps · 144 BPM）
  *
@@ -53,14 +54,7 @@ export const Futurism: React.FC<{music?: boolean; blur?: number; step?: number; 
     loadFonts().then(() => continueRender(handle));
   }, [handle]);
   // 运动模糊：快门半帧；最快的东西每帧走 v px，就取 2 + v/12 个子帧（最多 blur 个）；子帧不跨过换段的那一刻
-  const v = blur > 1 ? speedAt(f) : 0;
-  const n = v > 4 ? Math.min(blur, 2 + Math.round(v / 12)) : 1;
-  const layers: number[] = [];
-  for (let i = 0; i < n; i++) {
-    let t = n === 1 ? f : f - 0.5 * (1 - i / (n - 1));
-    if (sceneIndex(t) !== sceneIndex(f)) t = f;
-    layers.push(t);
-  }
+  const layers = motionBlurTimes(f, blur, speedAt, sceneIndex);
   return (
     <AbsoluteFill style={{background: C.paper}}>
       <svg width="100%" height="100%" viewBox={`0 0 ${W} ${H}`} style={{position: 'absolute', inset: 0}}>

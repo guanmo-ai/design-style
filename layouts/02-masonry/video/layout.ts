@@ -1,3 +1,4 @@
+import {createLayoutFlow, masonry as sharedMasonry, type FlowState, type Placed, type Spec} from '../../../src/lib/motion/layout-flow';
 /**
  * 布局 02 · Masonry —— 同一批 26 张卡片贯穿全片。
  * 每一种“排法”都不是手摆的：都由同一个瀑布流算法 masonry() 现场算出来（列数、列宽、间距不同而已）。
@@ -58,27 +59,8 @@ export const N = ITEMS.length;
  * 瀑布流算法：按源顺序，一张一张放进“当前最短的那一列”（一样短时放最左边）。
  * 返回每张卡片的矩形（count 之后的卡片还没放：null）和每列的高度。
  */
-export type Placed = {rects: (Rect | null)[]; heights: number[]; col: number[]};
-export type Spec = {x0: number; y0: number; cols: number; colW: number; gap: number; r: number; extra?: number; count?: number};
-export const masonry = ({x0, y0, cols, colW, gap, r, extra = 0, count = N}: Spec): Placed => {
-  const heights = Array(cols).fill(0);
-  const rects: (Rect | null)[] = [];
-  const col: number[] = [];
-  ITEMS.forEach((it, i) => {
-    if (i >= count) {
-      rects.push(null);
-      col.push(-1);
-      return;
-    }
-    let c = 0;
-    for (let k = 1; k < cols; k++) if (heights[k] < heights[c] - 0.5) c = k;
-    const h = Math.round(colW * it.ratio + extra);
-    rects.push({x: x0 + c * (colW + gap), y: y0 + heights[c], w: colW, h, r});
-    col.push(c);
-    heights[c] += h + gap;
-  });
-  return {rects, heights, col};
-};
+export type {Placed, Spec} from '../../../src/lib/motion/layout-flow';
+export const masonry = (spec: Spec): Placed => sharedMasonry(ITEMS, spec);
 
 export type Name = 'EMPTY' | 'RAIN' | 'KEY' | 'STONE' | `ALG${number}` | 'PIN' | 'PHONE' | 'WIRE' | 'R5' | 'R3' | 'R2' | 'END';
 export type ThemeName = 'KEY' | 'STONE' | 'ALG' | 'PIN' | 'PHONE' | 'WIRE' | 'RESP' | 'END';
@@ -185,40 +167,9 @@ export const SCENE = {
 export const RULES_AT = [546, 574, 602, 630, 658];
 
 /** 位置缓动：起步稍慢、前段最快、长长地落定（像水流进槽里） */
-export const FLOW = Easing.bezier(0.62, 0, 0.1, 1);
-/** 落下：先加速（重力），在 70% 处落地，再轻轻弹一下 */
-export const dropEase = (t: number) => {
-  if (t <= 0) return 0;
-  if (t < 0.7) return (t / 0.7) ** 2;
-  if (t >= 1) return 1;
-  const u = (t - 0.7) / 0.3;
-  return 1 - 0.045 * Math.sin(Math.PI * u) * (1 - u * 0.3);
-};
+export {FLOW, dropEase} from '../../../src/lib/motion/layout-flow';
 export const COLOR_DUR = 12;
 const COLOR = Easing.bezier(0.45, 0, 0.55, 1);
-
-// —— 每张卡片在每次转场里的出发顺序 ——
-const rankOf = (t: Trans): number[] => {
-  const rects = LAYOUTS[t.to].rects;
-  const idx = ITEMS.map((_, i) => i);
-  const key = (i: number) => {
-    const r = rects[i];
-    if (t.order === 'index' || !r) return i;
-    return t.order === 'x' ? r.x * 10 + r.y * 0.01 : r.y * 10 + r.x * 0.01;
-  };
-  const sorted = [...idx].sort((a, b) => key(a) - key(b));
-  const rank: number[] = [];
-  sorted.forEach((i, k) => (rank[i] = k));
-  return rank;
-};
-const RANKS = TRANS.map(rankOf);
-
-const same = (a: Rect | null, b: Rect | null) => (!a && !b) || (!!a && !!b && a.x === b.x && a.y === b.y && a.w === b.w && a.h === b.h && a.r === b.r);
-const prevName = (k: number): Name => (k === 0 ? 'EMPTY' : TRANS[k - 1].to);
-// 这次转场有没有动到第 i 张（位置、可见性或主题变了）
-const AFFECTS = TRANS.map((t, k) => ITEMS.map((_, i) => !same(LAYOUTS[prevName(k)].rects[i], LAYOUTS[t.to].rects[i]) || themeOf(prevName(k)) !== themeOf(t.to)));
-
-export const startOf = (k: number, i: number) => TRANS[k].at + RANKS[k][i] * TRANS[k].stagger;
 
 /** 每章自己的“滚动”：开场墙慢慢上移，Pinterest 慢慢上移，手机里手指往上一划 */
 const ease = (x: number) => (x <= 0 ? 0 : x >= 1 ? 1 : x * x * (3 - 2 * x));
@@ -236,54 +187,10 @@ export const drift = (n: Name, f: number): number => {
   }
 };
 
-export type State = {rect: Rect; o: number; clip: Rect; from: ThemeName; to: ThemeName; pc: number; p: number; name: Name};
+export type State = FlowState<Name, ThemeName>;
+export const {tileState, startOf} = createLayoutFlow<Name, ThemeName>({
+  layouts: LAYOUTS, transitions: TRANS, itemCount: N, themeOf, drift, bounds: BIG,
+  emptyName: 'EMPTY', emptyTheme: 'KEY', colorDuration: COLOR_DUR, colorEase: COLOR,
+});
 
-const lerp = (a: number, b: number, t: number) => a + (b - a) * t;
-const lerpRect = (a: Rect, b: Rect, t: number): Rect => ({x: lerp(a.x, b.x, t), y: lerp(a.y, b.y, t), w: lerp(a.w, b.w, t), h: lerp(a.h, b.h, t), r: lerp(a.r, b.r, t)});
-
-const target = (n: Name, i: number, f: number): Rect | null => {
-  const r = LAYOUTS[n].rects[i];
-  return r ? {...r, y: r.y + drift(n, f)} : null;
-};
-
-/** 第 i 张卡片在第 f 帧的状态（只看前 upto 次转场）；转场被打断时，从“当时所在的位置”接着走 */
-const stateAt = (f: number, i: number, upto: number): State => {
-  let k = -1;
-  for (let j = upto - 1; j >= 0; j--) {
-    if (AFFECTS[j][i] && f >= startOf(j, i)) {
-      k = j;
-      break;
-    }
-  }
-  if (k < 0) return {rect: {x: 960, y: -400, w: 100, h: 100, r: 20}, o: 0, clip: BIG, from: 'KEY', to: 'KEY', pc: 1, p: 1, name: 'EMPTY'};
-  const t = TRANS[k];
-  const s = startOf(k, i);
-  const prev = stateAt(s, i, k);
-  const x = Math.min(1, Math.max(0, (f - s) / t.dur));
-  const p = t.ease === 'drop' ? dropEase(x) : FLOW(x);
-  const pc = COLOR(Math.min(1, Math.max(0, (f - s) / COLOR_DUR)));
-  const to = target(t.to, i, f);
-  let a = prev.rect;
-  let b = to ?? {...prev.rect, y: prev.rect.y - 70};
-  let oa = prev.o;
-  let ob = to ? 1 : 0;
-  if (to && prev.o < 0.01) {
-    // 从无到有：落下（从画面上方掉进来）或淡入（从下方浮上来）
-    a = t.ease === 'drop' ? {...to, y: -to.h - 80} : {...to, y: to.y + 70};
-    oa = t.ease === 'drop' ? 1 : 0;
-  }
-  const po = t.ease === 'drop' ? 1 : Math.min(1, Math.max(0, (f - s) / (t.dur * 0.5)));
-  return {
-    rect: lerpRect(a, b, p),
-    o: lerp(oa, ob, po),
-    clip: lerpRect(prev.clip, LAYOUTS[t.to].clip, t.clipIn ? Math.min(1, (f - t.at) / t.clipIn) : Math.min(1, p * 1.6)), // 裁切框比卡片先到位：卡片像倒进屏幕里
-    from: themeOf(prev.name),
-    to: themeOf(t.to),
-    pc,
-    p,
-    name: t.to,
-  };
-};
-
-export const tileState = (f: number, i: number) => stateAt(f, i, TRANS.length);
 export const transTo = (n: Name) => TRANS.find((t) => t.to === n)!;

@@ -1,0 +1,10 @@
+# __ID__ Production process
+
+Document the work, sources and licenses, storyboard, motion checks, production revisions, and published version.
+
+## To complete
+
+- Design and motion:
+- Reused and newly extracted components:
+- Verification actually performed:
+- Owner's final review:

@@ -1,3 +1,4 @@
+import {cycleBackgrounds} from '../../../src/lib/motion/shape-wipe';
 /**
  * 001 · 包豪斯 —— 九个章节
  * 每个场景都是 React.FC<{t}>：t 为章节内帧号（0 = 章节起点，落在节拍上），
@@ -805,14 +806,14 @@ export const StageScene: SceneFC = ({t}) => (
 
 export type Chapter = {no: string; cn: string; en: string; credit: string; bg: string; start: number; dur: number; Scene: SceneFC};
 
-export const CHAPTERS: Chapter[] = [
-  {no: '01', cn: '色彩', en: 'colour', credit: '约翰内斯·伊顿 · 色彩课 · 1919—1923', bg: C.paper, start: 120, dur: 60, Scene: ColorScene},
-  {no: '02', cn: '形与色', en: 'form', credit: '瓦西里·康定斯基 · 形与色问卷 · 1923', bg: C.ink, start: 180, dur: 60, Scene: FormScene},
-  {no: '03', cn: '字体', en: 'typography', credit: '赫伯特·拜耶 · universal 通用字体 · 1925', bg: C.paper, start: 240, dur: 90, Scene: TypeScene},
-  {no: '04', cn: '海报', en: 'poster', credit: '致敬 约斯特·施密特 · 赫伯特·拜耶 · 1923—1926', bg: C.blue, start: 330, dur: 90, Scene: PosterScene},
-  {no: '05', cn: '建筑', en: 'architecture', credit: '瓦尔特·格罗皮乌斯 · 德绍校舍 · 1926', bg: C.paper, start: 420, dur: 60, Scene: ArchScene},
-  {no: '06', cn: '家具', en: 'furniture', credit: '马塞尔·布劳耶 · B3 钢管椅 · 1925', bg: C.red, start: 480, dur: 60, Scene: ChairScene},
-  {no: '07', cn: '灯具', en: 'lighting', credit: '威廉·瓦根菲尔德 · WG24 台灯 · 1924', bg: C.ink, start: 540, dur: 60, Scene: LampScene},
-  {no: '08', cn: '纺织', en: 'textile', credit: '安妮·阿尔伯斯 · 壁挂织物 · 1926', bg: C.paper, start: 600, dur: 60, Scene: TextileScene},
-  {no: '09', cn: '舞台', en: 'stage', credit: '奥斯卡·施莱默 · 三元芭蕾 · 1922', bg: C.ink, start: 660, dur: 60, Scene: StageScene},
-];
+export const CHAPTERS: Chapter[] = cycleBackgrounds([
+  {no: '01', cn: '色彩', en: 'colour', credit: '约翰内斯·伊顿 · 色彩课 · 1919—1923', start: 120, dur: 60, Scene: ColorScene},
+  {no: '02', cn: '形与色', en: 'form', credit: '瓦西里·康定斯基 · 形与色问卷 · 1923', start: 180, dur: 60, Scene: FormScene},
+  {no: '03', cn: '字体', en: 'typography', credit: '赫伯特·拜耶 · universal 通用字体 · 1925', start: 240, dur: 90, Scene: TypeScene},
+  {no: '04', cn: '海报', en: 'poster', credit: '致敬 约斯特·施密特 · 赫伯特·拜耶 · 1923—1926', start: 330, dur: 90, Scene: PosterScene},
+  {no: '05', cn: '建筑', en: 'architecture', credit: '瓦尔特·格罗皮乌斯 · 德绍校舍 · 1926', start: 420, dur: 60, Scene: ArchScene},
+  {no: '06', cn: '家具', en: 'furniture', credit: '马塞尔·布劳耶 · B3 钢管椅 · 1925', start: 480, dur: 60, Scene: ChairScene},
+  {no: '07', cn: '灯具', en: 'lighting', credit: '威廉·瓦根菲尔德 · WG24 台灯 · 1924', start: 540, dur: 60, Scene: LampScene},
+  {no: '08', cn: '纺织', en: 'textile', credit: '安妮·阿尔伯斯 · 壁挂织物 · 1926', start: 600, dur: 60, Scene: TextileScene},
+  {no: '09', cn: '舞台', en: 'stage', credit: '奥斯卡·施莱默 · 三元芭蕾 · 1922', start: 660, dur: 60, Scene: StageScene},
+], [C.paper, C.ink, C.paper, C.blue, C.paper, C.red, C.ink, C.paper, C.ink]);

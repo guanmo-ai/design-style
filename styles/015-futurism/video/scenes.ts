@@ -1,3 +1,4 @@
+import {createSceneSampler, type Scene as SharedScene} from '../../../src/lib/motion/sampling';
 /**
  * 各段登记：活着的时间窗 [from, to)、画面组件、读数（右上角 v / wdth / n）、最快的屏幕速度（决定运动模糊取几个子帧）。
  * 相邻两段在接力时会同时活着几帧（上一段的东西变成下一段的主角）。
@@ -16,16 +17,7 @@ import {Rules, rulesProbe, rulesSpeed} from './rules';
 
 import {AT, DURATION, SHIFT} from './timeline';
 
-export type Scene = {
-  from: number;
-  to: number;
-  C: React.FC<{t: number}>;
-  shift?: number; // 组件拿到的是 t − shift（片尾复用开场：shift = 1200）
-  probe?: (t: number) => Probe | null;
-  speed?: (t: number) => number;
-  bg?: string;
-  dark?: boolean;
-};
+export type Scene = SharedScene<Probe>;
 
 /** 沿用第一版剧本的段：组件、读数、速度都按 t − SHIFT 取 */
 const late = (sc: Omit<Scene, 'shift'>): Scene => ({
@@ -52,19 +44,4 @@ export const SCENES: Scene[] = [
 ];
 
 /** 读数 / 背景 / 运动模糊跟着“主段”走：这一刻最后开始的那一段 */
-export const sceneIndex = (t: number) => {
-  let k = 0;
-  for (let i = 0; i < SCENES.length; i++) if (t >= SCENES[i].from && t < SCENES[i].to) k = i;
-  return k;
-};
-export const probeAt = (t: number): Probe | null => {
-  const s = SCENES[sceneIndex(t)];
-  return s.probe ? s.probe(t) : null;
-};
-export const speedAt = (t: number) => {
-  let v = 0;
-  for (const s of SCENES) if (t >= s.from && t < s.to && s.speed) v = Math.max(v, s.speed(t));
-  return v;
-};
-export const bgAt = (t: number) => SCENES[sceneIndex(t)].bg ?? C.paper;
-export const darkAt = (t: number) => !!SCENES[sceneIndex(t)].dark;
+export const {sceneIndex, probeAt, speedAt, bgAt, darkAt} = createSceneSampler<Probe>(SCENES, C.paper);

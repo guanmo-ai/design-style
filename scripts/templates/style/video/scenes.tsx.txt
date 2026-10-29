@@ -1,0 +1,14 @@
+import React from 'react';
+import {land} from '../../../src/lib/motion/kinematics';
+import {createSceneSampler, type Scene} from '../../../src/lib/motion/sampling';
+import {DURATION, H, W} from './timeline';
+
+/** 骨架占位：正式设计在本目录中替换，每章单独一个组件。 */
+const Opening: React.FC<{t: number}> = ({t}) => (
+  <g transform={`translate(${W / 2} ${H / 2}) scale(${0.8 + 0.2 * land(t, 0)})`}>
+    <circle r={160} fill="#3157D5" />
+    <text textAnchor="middle" y={18} fontSize={60} fill="#FFFFFF" fontFamily="sans-serif">__ID__</text>
+  </g>
+);
+export const SCENES: Scene[] = [{from: 0, to: DURATION, C: Opening, speed: () => 0}];
+export const {sceneIndex, speedAt, bgAt} = createSceneSampler(SCENES, '#F4F1EA');

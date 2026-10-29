@@ -1,3 +1,4 @@
+import {WipeShape} from '../../../src/lib/motion/shape-wipe';
 /**
  * Design Style · 001 · 包豪斯 Bauhaus（1919—1933）
  * 15s · 1920×1080 · 60fps · 120 BPM（1 拍 = 30 帧，所有剪辑点都落在拍子上）
@@ -204,22 +205,6 @@ const Chrome: React.FC<{ch: Chapter; i: number; t: number}> = ({ch, i, t}) => {
 };
 
 /** 转场：圆 / 方 / 三角三种形状轮流“长”出下一章 */
-const WipeShape: React.FC<{kind: number; p: number} & React.SVGProps<SVGElement>> = ({kind, p, ...rest}) => {
-  if (kind === 0) return <circle cx={960} cy={540} r={1120 * p} {...(rest as React.SVGProps<SVGCircleElement>)} />;
-  if (kind === 1)
-    return (
-      <rect
-        x={-1100 * p}
-        y={-1100 * p}
-        width={2200 * p}
-        height={2200 * p}
-        transform={`translate(960 540) rotate(${90 * (1 - p)})`}
-        {...(rest as React.SVGProps<SVGRectElement>)}
-      />
-    );
-  return <polygon points={triPoints(4400 * p)} transform="translate(960 600)" {...(rest as React.SVGProps<SVGPolygonElement>)} />;
-};
-
 const ChapterLayer: React.FC<{ch: Chapter; i: number; f: number}> = ({ch, i, f}) => {
   const t = f - ch.start;
   const p = tween(f, ch.start - WIPE, WIPE, 0, 1, E.in);

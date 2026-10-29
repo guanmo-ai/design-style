@@ -1,0 +1,9 @@
+import React from 'react';
+import {DURATION, W} from './timeline';
+export const Hud: React.FC<{t: number}> = ({t}) => (
+  <g fontFamily="sans-serif" fill="#171922">
+    <text x={72} y={80} fontSize={28}>Design Style · __ID__</text>
+    <text x={W - 72} y={80} fontSize={24} textAnchor="end">__COMPONENT__</text>
+    <rect x={72} y={1020} width={(W - 144) * Math.min(1, Math.max(0, t / DURATION))} height={4} />
+  </g>
+);
