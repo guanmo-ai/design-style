@@ -104,12 +104,15 @@ export const barPose = (i: number, t: number): Pose | null => {
   return {x: CX + r * Math.cos(p), y: CY + r * Math.sin(p), a: b.a + da * e + settleA, h: 4 + 36 * Math.pow(arc(u), 0.85), s: sl};
 };
 
-// 黑场 → 钟心：半径从 1600 缩到 96（越缩越快，被吸进去），落定时往外鼓一下
+// 黑场 → 钟心：半径按对数从 1600 缩到 96（每帧缩同样的比例），正弦缓动——黑边扫过辐条用了约 15 帧，看得清；
+// 落定时往外鼓 7% 再回来（单向）
 const R0 = 1600;
+export const DISC0 = 94;
+export const DISC1 = 126;
 export const discR = (t: number) => {
-  if (t < 92) return R0;
-  const e = ease.in(prog(t, 92, 32));
-  return (96 + (R0 - 96) * (1 - e)) * (1 + 0.07 * bump((t - 124) / 4));
+  if (t < DISC0) return R0;
+  const e = ease.sine(prog(t, DISC0, DISC1 - DISC0));
+  return R0 * Math.pow(96 / R0, e) * (1 + 0.07 * bump((t - DISC1) / 4));
 };
 const discTf = (t: number) => `translate(${CX} ${CY}) scale(${(discR(t) / 96).toFixed(5)})`;
 
@@ -268,7 +271,7 @@ export const openingSpeed = (t: number) => {
   let v = 0;
   for (let i = 0; i < Math.min(a.length, b.length); i++) v = Math.max(v, Math.hypot(b[i][0] - a[i][0], b[i][1] - a[i][1]));
   const dR = Math.abs(discR(t + 0.5) - discR(t - 0.5)) * cam(t).s;
-  return Math.min(80, Math.max(v, t > 92 && t < 126 ? dR : 0));
+  return Math.min(80, Math.max(v, t > DISC0 && t < DISC1 + 6 ? dR : 0));
 };
 
 /** “这一刻在看哪一块纸”：给左下角的 h 读数用 */
@@ -311,7 +314,7 @@ const Bars: React.FC<{t: number; fill: string}> = ({t, fill}) => {
 
 export const Opening: React.FC<{t: number; k: number}> = ({t, k}) => {
   const R = discR(t);
-  const inverting = t >= 92 && t < 126;
+  const inverting = t >= DISC0 && t < DISC1 + 2;
   const clipIn = `inv-in-${k}`;
   const maskOut = `inv-out-${k}`;
   const handP = handPose(t);
@@ -351,14 +354,14 @@ export const Opening: React.FC<{t: number; k: number}> = ({t, k}) => {
           </mask>
         </defs>
       )}
-      {t < 92 && <Bars t={t} fill={C.paper} />}
+      {t < DISC0 && <Bars t={t} fill={C.paper} />}
       {inverting && (
         <>
           <g clipPath={`url(#${clipIn})`}><Bars t={t} fill={C.paper} /></g>
           <g mask={`url(#${maskOut})`}><Bars t={t} fill={C.ink} /></g>
         </>
       )}
-      {t >= 126 && <Bars t={t} fill={C.ink} />}
+      {t >= DISC1 + 2 && <Bars t={t} fill={C.ink} />}
 
       {/* 球 */}
       {balls.filter((b) => (b.p.h ?? 4) < 8).map(({i, p}) => <Piece key={i} d={GEO.balls[i]} fill={BALL_COL[i]} p={p} />)}
@@ -411,7 +414,7 @@ export const Subtitle: React.FC<{t: number}> = ({t}) => {
       <svg x={TX + 6} y={MOD_BASE + 22} width={820} height={48} overflow="hidden">
         <g transform={`translate(0 ${(1 - e) * 48})`}>
           <text x={0} y={36} fontFamily="'Noto Sans SC', sans-serif" fontWeight={900} fontSize={34} fill={C.ink} letterSpacing={10}>中世纪现代</text>
-          <text x={250} y={34} fontFamily="'Jost', sans-serif" fontWeight={600} fontSize={22} fill={C.mute} letterSpacing={5}>1945 — 1965 · SCISSORS, NOT RULERS</text>
+          <text x={250} y={34} fontFamily="'Jost', sans-serif" fontWeight={600} fontSize={22} fill={C.mute} letterSpacing={5}>1945 — 1965</text>
         </g>
       </svg>
     </g>
