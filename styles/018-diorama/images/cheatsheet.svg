@@ -1,0 +1,75 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1080" height="1350" viewBox="0 0 1080 1350">
+  <defs>
+    <filter id="sh" x="-20%" y="-20%" width="140%" height="140%"><feDropShadow dx="0" dy="14" stdDeviation="18" flood-color="#7A5C86" flood-opacity=".28"/></filter>
+  </defs>
+  <rect width="1080" height="1350" fill="#F6EEDD"/>
+<text x="64" y="120" font-family="'Noto Sans SC'" font-weight="900" font-size="64" fill="#3B3552" text-anchor="start" letter-spacing="0">微缩景观 · 速查</text>
+<text x="66" y="166" font-family="'Noto Sans SC'" font-weight="700" font-size="20" fill="#8A7FA0" text-anchor="start" letter-spacing="4">DIORAMA CHEAT SHEET · 018</text>
+<circle cx="92" cy="236" r="26" fill="#7FCBA8"/>
+<text x="92" y="246" font-family="'Noto Sans SC'" font-weight="900" font-size="22" fill="#3B3552" text-anchor="middle" letter-spacing="0">01</text>
+<text x="138" y="242" font-family="'Noto Sans SC'" font-weight="900" font-size="32" fill="#3B3552" text-anchor="start" letter-spacing="0">一块块搭</text>
+<text x="138" y="276" font-family="'Noto Sans SC'" font-weight="500" font-size="19" fill="#8A7FA0" text-anchor="start" letter-spacing="0">砸下来：60% 自由落体 · 压扁 16% · 回弹</text>
+<circle cx="92" cy="328" r="26" fill="#F28AA6"/>
+<text x="92" y="338" font-family="'Noto Sans SC'" font-weight="900" font-size="22" fill="#3B3552" text-anchor="middle" letter-spacing="0">02</text>
+<text x="138" y="334" font-family="'Noto Sans SC'" font-weight="900" font-size="32" fill="#3B3552" text-anchor="start" letter-spacing="0">切开一面墙</text>
+<text x="138" y="368" font-family="'Noto Sans SC'" font-weight="500" font-size="19" fill="#8A7FA0" text-anchor="start" letter-spacing="0">底座四边切齐，露出 4 层土</text>
+<circle cx="92" cy="420" r="26" fill="#7DB8E8"/>
+<text x="92" y="430" font-family="'Noto Sans SC'" font-weight="900" font-size="22" fill="#3B3552" text-anchor="middle" letter-spacing="0">03</text>
+<text x="138" y="426" font-family="'Noto Sans SC'" font-weight="900" font-size="32" fill="#3B3552" text-anchor="start" letter-spacing="0">移轴 = 变小</text>
+<text x="138" y="460" font-family="'Noto Sans SC'" font-weight="500" font-size="19" fill="#8A7FA0" text-anchor="start" letter-spacing="0">长焦 fov 20° · 俯视 30° · 清楚带 26%</text>
+<circle cx="92" cy="512" r="26" fill="#F5C451"/>
+<text x="92" y="522" font-family="'Noto Sans SC'" font-weight="900" font-size="22" fill="#3B3552" text-anchor="middle" letter-spacing="0">04</text>
+<text x="138" y="518" font-family="'Noto Sans SC'" font-weight="900" font-size="32" fill="#3B3552" text-anchor="start" letter-spacing="0">房间就是遥控器</text>
+<text x="138" y="552" font-family="'Noto Sans SC'" font-weight="500" font-size="19" fill="#8A7FA0" text-anchor="start" letter-spacing="0">点哪件家具，就开关哪件</text>
+<circle cx="92" cy="604" r="26" fill="#CDB9F0"/>
+<text x="92" y="614" font-family="'Noto Sans SC'" font-weight="900" font-size="22" fill="#3B3552" text-anchor="middle" letter-spacing="0">05</text>
+<text x="138" y="610" font-family="'Noto Sans SC'" font-weight="900" font-size="32" fill="#3B3552" text-anchor="start" letter-spacing="0">暖光 = 有人住</text>
+<text x="138" y="644" font-family="'Noto Sans SC'" font-weight="500" font-size="19" fill="#8A7FA0" text-anchor="start" letter-spacing="0">奶油 → 蜜桃粉 → 薰衣草；灯 #FFC77A</text>
+<text x="64" y="712" font-family="'Noto Sans SC'" font-weight="900" font-size="28" fill="#3B3552" text-anchor="start" letter-spacing="0">签名物理 · slam</text>
+<line x1="64" y1="900" x2="1016" y2="900" stroke="#C99A72" stroke-width="4" stroke-linecap="round"/>
+<ellipse cx="150" cy="904" rx="32.0" ry="9" fill="#7A5C86" opacity=".18"/>
+<path d="M110.0,760 l40.0,-20.0 l40.0,20.0 l-40.0,20.0z" fill="#F7C9D3"/><path d="M110.0,760 l40.0,20.0 v80 l-40.0,-20.0z" fill="#E77895"/><path d="M190.0,760 l-40.0,20.0 v80 l40.0,-20.0z" fill="#F28AA6"/>
+<text x="150" y="946" font-family="'Noto Sans SC'" font-weight="700" font-size="20" fill="#7A5C86" text-anchor="middle" letter-spacing="0">出发</text>
+<ellipse cx="330" cy="904" rx="39.0" ry="9" fill="#7A5C86" opacity=".18"/>
+<path d="M290.0,795 l40.0,-20.0 l40.0,20.0 l-40.0,20.0z" fill="#F7C9D3"/><path d="M290.0,795 l40.0,20.0 v80 l-40.0,-20.0z" fill="#E77895"/><path d="M370.0,795 l-40.0,20.0 v80 l40.0,-20.0z" fill="#F28AA6"/>
+<text x="330" y="946" font-family="'Noto Sans SC'" font-weight="700" font-size="20" fill="#7A5C86" text-anchor="middle" letter-spacing="0">越落越快</text>
+<ellipse cx="510" cy="904" rx="44.0" ry="9" fill="#7A5C86" opacity=".18"/>
+<path d="M466.2913308233478,833 l43.70866917665224,-21.85433458832612 l43.70866917665224,21.85433458832612 l-43.70866917665224,21.85433458832612z" fill="#F7C9D3"/><path d="M466.2913308233478,833 l43.70866917665224,21.85433458832612 v67 l-43.70866917665224,-21.85433458832612z" fill="#E77895"/><path d="M553.7086691766523,833 l-43.70866917665224,21.85433458832612 v67 l43.70866917665224,-21.85433458832612z" fill="#F28AA6"/>
+<text x="510" y="946" font-family="'Noto Sans SC'" font-weight="700" font-size="20" fill="#7A5C86" text-anchor="middle" letter-spacing="0">压扁 16%</text>
+<ellipse cx="690" cy="904" rx="44.0" ry="9" fill="#7A5C86" opacity=".18"/>
+<path d="M650.9639970820587,816 l39.03600291794133,-19.518001458970666 l39.03600291794133,19.518001458970666 l-39.03600291794133,19.518001458970666z" fill="#F7C9D3"/><path d="M650.9639970820587,816 l39.03600291794133,19.518001458970666 v84 l-39.03600291794133,-19.518001458970666z" fill="#E77895"/><path d="M729.0360029179413,816 l-39.03600291794133,19.518001458970666 v84 l39.03600291794133,-19.518001458970666z" fill="#F28AA6"/>
+<text x="690" y="946" font-family="'Noto Sans SC'" font-weight="700" font-size="20" fill="#7A5C86" text-anchor="middle" letter-spacing="0">过冲 5%</text>
+<ellipse cx="870" cy="904" rx="44.0" ry="9" fill="#7A5C86" opacity=".18"/>
+<path d="M830.0,820 l40.0,-20.0 l40.0,20.0 l-40.0,20.0z" fill="#F7C9D3"/><path d="M830.0,820 l40.0,20.0 v80 l-40.0,-20.0z" fill="#E77895"/><path d="M910.0,820 l-40.0,20.0 v80 l40.0,-20.0z" fill="#F28AA6"/>
+<text x="870" y="946" font-family="'Noto Sans SC'" font-weight="700" font-size="20" fill="#7A5C86" text-anchor="middle" letter-spacing="0">停</text>
+<path d="M224,780 l24,0 m-8,-8 l8,8 l-8,8" stroke="#8A7FA0" stroke-width="3" fill="none" stroke-linecap="round"/>
+<path d="M404,780 l24,0 m-8,-8 l8,8 l-8,8" stroke="#8A7FA0" stroke-width="3" fill="none" stroke-linecap="round"/>
+<path d="M584,780 l24,0 m-8,-8 l8,8 l-8,8" stroke="#8A7FA0" stroke-width="3" fill="none" stroke-linecap="round"/>
+<path d="M764,780 l24,0 m-8,-8 l8,8 l-8,8" stroke="#8A7FA0" stroke-width="3" fill="none" stroke-linecap="round"/>
+<text x="64" y="1004" font-family="'Noto Sans SC'" font-weight="900" font-size="28" fill="#3B3552" text-anchor="start" letter-spacing="0">色板</text>
+<rect x="64" y="1032" width="140" height="74" rx="18" fill="#F6EEDD" stroke="#3B355222"/>
+<text x="68" y="1132" font-family="'Noto Sans SC'" font-weight="700" font-size="17" fill="#3B3552" text-anchor="start" letter-spacing="0">#F6EEDD</text>
+<rect x="224" y="1032" width="140" height="74" rx="18" fill="#FFF7EC" stroke="#3B355222"/>
+<text x="228" y="1132" font-family="'Noto Sans SC'" font-weight="700" font-size="17" fill="#3B3552" text-anchor="start" letter-spacing="0">#FFF7EC</text>
+<rect x="384" y="1032" width="140" height="74" rx="18" fill="#C99A72" stroke="#3B355222"/>
+<text x="388" y="1132" font-family="'Noto Sans SC'" font-weight="700" font-size="17" fill="#3B3552" text-anchor="start" letter-spacing="0">#C99A72</text>
+<rect x="544" y="1032" width="140" height="74" rx="18" fill="#7FCBA8" stroke="#3B355222"/>
+<text x="548" y="1132" font-family="'Noto Sans SC'" font-weight="700" font-size="17" fill="#3B3552" text-anchor="start" letter-spacing="0">#7FCBA8</text>
+<rect x="704" y="1032" width="140" height="74" rx="18" fill="#F28AA6" stroke="#3B355222"/>
+<text x="708" y="1132" font-family="'Noto Sans SC'" font-weight="700" font-size="17" fill="#3B3552" text-anchor="start" letter-spacing="0">#F28AA6</text>
+<rect x="864" y="1032" width="140" height="74" rx="18" fill="#CDB9F0" stroke="#3B355222"/>
+<text x="868" y="1132" font-family="'Noto Sans SC'" font-weight="700" font-size="17" fill="#3B3552" text-anchor="start" letter-spacing="0">#CDB9F0</text>
+<rect x="64" y="1164" width="140" height="74" rx="18" fill="#7DB8E8" stroke="#3B355222"/>
+<text x="68" y="1264" font-family="'Noto Sans SC'" font-weight="700" font-size="17" fill="#3B3552" text-anchor="start" letter-spacing="0">#7DB8E8</text>
+<rect x="224" y="1164" width="140" height="74" rx="18" fill="#F5C451" stroke="#3B355222"/>
+<text x="228" y="1264" font-family="'Noto Sans SC'" font-weight="700" font-size="17" fill="#3B3552" text-anchor="start" letter-spacing="0">#F5C451</text>
+<rect x="384" y="1164" width="140" height="74" rx="18" fill="#F27D6A" stroke="#3B355222"/>
+<text x="388" y="1264" font-family="'Noto Sans SC'" font-weight="700" font-size="17" fill="#3B3552" text-anchor="start" letter-spacing="0">#F27D6A</text>
+<rect x="544" y="1164" width="140" height="74" rx="18" fill="#3B3552" stroke="#3B355222"/>
+<text x="548" y="1264" font-family="'Noto Sans SC'" font-weight="700" font-size="17" fill="#3B3552" text-anchor="start" letter-spacing="0">#3B3552</text>
+<rect x="704" y="1164" width="140" height="74" rx="18" fill="#7A5C86" stroke="#3B355222"/>
+<text x="708" y="1264" font-family="'Noto Sans SC'" font-weight="700" font-size="17" fill="#3B3552" text-anchor="start" letter-spacing="0">#7A5C86</text>
+<text x="864" y="1194" font-family="'Noto Sans SC'" font-weight="700" font-size="18" fill="#7A5C86" text-anchor="start" letter-spacing="0">阴影往暖紫里混</text>
+<text x="864" y="1222" font-family="'Noto Sans SC'" font-weight="700" font-size="18" fill="#7A5C86" text-anchor="start" letter-spacing="0">不发灰</text>
+<text x="64" y="1310" font-family="'Noto Sans SC'" font-weight="500" font-size="18" fill="#8A7FA0" text-anchor="start" letter-spacing="0">字体：Noto Sans SC Black · Inter 800    镜头：长焦 + 俯视 + 移轴</text>
+</svg>

@@ -138,12 +138,12 @@ window.renderFrame = (f, fps = 30) => {
   const dusk = smooth(clamp((nightT - 14.2) / 0.5)), night = smooth(clamp((nightT - 14.6) / 0.6));
   const off = t > 18.6 && t < REW0 + 0.05 ? smooth(clamp((t - 18.6) / 0.08)) : 0;   // 结尾：台灯关掉
   sky([0, 1, 2].map(i => '#' + lerpC(lerpC(DAY[i], DUSK[i], dusk), NIGHT[i], night).getHexString()));
-  SUN.color.copy(lerpC(lerpC('#FFF3E0', '#FFC08A', dusk), '#C9B4FF', night)); SUN.intensity = (3.0 - 0.6 * dusk - 0.7 * night) * (1 - 0.45 * off);
-  HEMI.intensity = 1.25 - 0.1 * dusk - 0.15 * night; HEMI.color.copy(lerpC('#E6F0FF', '#B9A8E8', night));
+  SUN.color.copy(lerpC(lerpC('#FFF3E0', '#FFC08A', dusk), '#C9B4FF', night)); SUN.intensity = (3.0 - 0.6 * dusk - 0.7 * night) * (1 - 0.7 * off);
+  HEMI.intensity = (1.25 - 0.1 * dusk - 0.15 * night) * (1 - 0.5 * off); HEMI.color.copy(lerpC('#E6F0FF', '#B9A8E8', night));
   K.emissive.forEach((m, i) => { const on = smooth(clamp((nightT - tOn[i]) / 0.12)) * (1 - off); m.emissiveIntensity = m.userData.base * (0.35 + on * 2.2); });
   const lamp = smooth(clamp((nightT - 14.8) / 0.15)) * (1 - off);
   K.lamps.forEach(l => l.intensity = 30 * lamp); if (K.spot) K.spot.intensity = 45 * lamp;
-  BLOOM.strength = 0.08 + 0.4 * night; BLOOM.threshold = 0.95 - 0.1 * night;
+  BLOOM.strength = 0.08 + 0.4 * night * (1 - 0.6 * off); BLOOM.threshold = 0.95 - 0.1 * night;
   // 镜头 + 阴影框跟着镜头看的地方走
   const C = camera(t);
   let thump = 0;
