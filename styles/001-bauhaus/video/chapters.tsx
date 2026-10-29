@@ -1,4 +1,3 @@
-import {cycleBackgrounds} from '../../../src/lib/motion/shape-wipe';
 /**
  * 001 · 包豪斯 —— 九个章节
  * 每个场景都是 React.FC<{t}>：t 为章节内帧号（0 = 章节起点，落在节拍上），
@@ -10,6 +9,7 @@ import {cycleBackgrounds} from '../../../src/lib/motion/shape-wipe';
  *   04 海报   三张致敬海报            09 舞台   施莱默 三元芭蕾
  *   05 建筑   格罗皮乌斯 德绍校舍
  */
+import {cycleBackgrounds} from '../../../src/lib/motion/shape-wipe';
 import React from 'react';
 import {interpolateColors} from 'remotion';
 import {clamp, E, POP, SMOOTH, SNAP, spr, tween} from '../../../src/lib/anim';

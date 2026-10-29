@@ -1,8 +1,8 @@
-import {createSceneSampler, type Scene as SharedScene} from '../../../src/lib/motion/sampling';
 /**
  * 各段登记：活着的时间窗 [from, to)、画面组件、读数（右上角 v / wdth / n）、最快的屏幕速度（决定运动模糊取几个子帧）。
  * 相邻两段在接力时会同时活着几帧（上一段的东西变成下一段的主角）。
  */
+import {createSceneSampler, type Scene as SharedScene} from '../../../src/lib/motion/sampling';
 import React from 'react';
 import {C} from '../tokens';
 import type {Probe} from './hud';

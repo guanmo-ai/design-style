@@ -1,5 +1,5 @@
-import {createColumnReadout} from '../../../src/lib/motion/column-readout';
 /** 布局 02 · Masonry —— 卡片之外的东西：各章标题、算法演示、图钉墙的鼠标、手机、规则标注、浏览器窗口、片尾、章节栏 */
+import {createColumnReadout} from '../../../src/lib/motion/column-readout';
 import React from 'react';
 import {E, POP, spr, tween} from '../../../src/lib/anim';
 import {C} from '../tokens';
