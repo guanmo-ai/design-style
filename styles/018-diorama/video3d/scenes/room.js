@@ -5,7 +5,7 @@ import { plinth } from '../kit.js';
 export function buildRoom(K, { x = 0, z = 0, T0 = 0 } = {}) {
   K.scene_(x, z, T0);
   const R = rng(8);
-  plinth(K, { T: -0.25, seed: 5, top: '#E8C9A0' });
+  plinth(K, { T: -0.25, seed: 5, top: '#E8C9A0', speed: 0.6 });
   const it = [];
   // 地板：横向木条，从左往右一条条砸下（每条再切成三段，错开一点）
   for (let i = 0; i < 24; i++) for (let k = 0; k < 3; k++)

@@ -1,170 +1,129 @@
-"""018 微缩景观 · 配乐与音效（纯 Python 合成，无外部素材）。
-python3 make_music.py <events.json> <out.wav>
+"""018 微缩景观 · 电影感配乐（F 大调，120 BPM，20 秒 = 10 小节）。
+python3 audio/make_music.py <events.json> <out.wav>
 
-120 BPM、F 大调、一拍 0.5 秒，全片 18 秒 = 36 拍。暖暖的电钢琴和弦 + 轻鼓 + 贝斯；
-每个零件落地一个声音（事件表由 video3d/render.cjs 从时间轴导出），落地声按当前和弦调音。
-17—18 秒倒带：磁带倒放的“呜”声，尾巴折回开头，循环无缝。"""
-import array
+  1—2 小节  街角：马林巴 + 拨弦的八分音符律动，碎块砸下来是定音鼓滚奏，二层砸下那一拍一记冲击
+  3—4       房间：钢琴主题进来，弦乐托着；墙一排排垒高，木头声一格格往上走
+  5—6       模型铁路：弦乐断奏推着火车，移轴“咔”地打开时一声
+  7         App：轻，钢片琴 + 拨弦
+  8         入夜：鼓停，人声垫 + 八音盒，开灯的“咔哒”
+  9         结尾：片名出来时 F 大调全奏 + 冲击，弦乐慢慢落下
+  10        摇篮曲两个音；18.6 秒台灯“咔”地关掉，音乐跟着停；19—20 秒倒带：磁带往下掉的声音，尾巴折回开头
+零件的声音来自时间轴导出的事件表（video3d/render.cjs 写的 events.json）。"""
 import json
 import math
-import random
+import os
 import sys
-import wave
 
-SR, DUR, BPM = 44100, 18.0, 120
-BEAT = 60 / BPM
-N = int(SR * DUR)
-L, R = [0.0] * N, [0.0] * N
-rnd = random.Random(16)
+import numpy as np
 
-
-def add(t0, smp, g=1.0, pan=0.0, wrap=True):
-    i0 = int(t0 * SR)
-    gl, gr = g * min(1, 1 - pan), g * min(1, 1 + pan)
-    for k, v in enumerate(smp):
-        i = i0 + k
-        if wrap:
-            i %= N
-        elif not 0 <= i < N:
-            continue
-        L[i] += v * gl; R[i] += v * gr
+HERE = os.path.dirname(os.path.abspath(__file__))
+sys.path.insert(0, os.path.join(HERE, '..', '..', '..', 'scripts', 'lib'))
+from audio import AudioKit  # noqa: E402
+from audio.orchestra import Orchestra  # noqa: E402
 
 
-def env(n, a, d):
-    return [min(1, k / max(1, a * SR)) * math.exp(-k / (d * SR)) for k in range(n)]
+class Kit(AudioKit, Orchestra):
+    pass
 
 
-def epiano(f, dur, vel=1.0):
-    """电钢琴：基频 + 轻微失谐的二次谐波 + 钟声泛音，带颤音。"""
-    n = int(dur * SR)
-    return [vel * (math.sin(math.tau * f * k / SR) * 0.6 + 0.25 * math.sin(math.tau * f * 2.003 * k / SR) * math.exp(-k / (0.25 * SR))
-                   + 0.12 * math.sin(math.tau * f * 7 * k / SR) * math.exp(-k / (0.04 * SR)))
-            * (1 + 0.12 * math.sin(math.tau * 4.5 * k / SR)) * math.exp(-k / (dur * 0.55 * SR)) * min(1, k / 200) for k in range(n)]
+A = Kit(duration=20.0, seed=18, fps=30.0, tail=4.0)
+BEAT, BAR = 0.5, 2.0
+b = lambda bar, beat=0.0: (bar - 1) * BAR + beat * BEAT
+CH = {1: (29, [65, 69, 72, 76]), 2: (26, [62, 65, 69, 72]), 3: (34, [62, 65, 70, 74]), 4: (36, [64, 67, 72, 76]),
+      5: (33, [64, 69, 72, 76]), 6: (34, [65, 70, 74, 77]), 7: (29, [65, 69, 72, 77]), 8: (28, [64, 67, 72, 76]),
+      9: (29, [65, 69, 72, 77]), 10: (34, [65, 69, 74, 77])}
+LAMP_OFF, REW = 18.6, 19.0
+cut = lambda t: t < LAMP_OFF
 
-
-def glock(f, dur=0.6):
-    n = int(dur * SR)
-    return [(math.sin(math.tau * f * k / SR) + 0.4 * math.sin(math.tau * f * 2.76 * k / SR) * math.exp(-k / (0.05 * SR))) * math.exp(-k / (0.22 * SR)) * min(1, k / 60) for k in range(n)]
-
-
-def kick():
-    n, ph, o = int(0.3 * SR), 0, []
-    for k in range(n):
-        ph += (48 + 90 * math.exp(-k / (SR * 0.025))) / SR
-        o.append(math.sin(ph * math.tau) * math.exp(-k / (SR * 0.11)))
-    return o
-
-
-def noise(dur, lp, decay, attack=0.001):
-    y, o = 0, []
-    for k in range(int(dur * SR)):
-        y = y * lp + (rnd.random() * 2 - 1) * (1 - lp)
-        o.append(y * 4 * math.exp(-k / (SR * decay)) * min(1, k / max(1, attack * SR)))
-    return o
-
-
-def thud(f):
-    n, ph, o = int(0.25 * SR), 0, []
-    for k in range(n):
-        ph += f * (1 + 0.8 * math.exp(-k / (SR * 0.01))) / SR
-        o.append(math.sin(ph * math.tau) * math.exp(-k / (SR * 0.06)))
-    return [a + 0.4 * b for a, b in zip(o, noise(0.25, 0.85, 0.02))]
-
-
-def knock(f):   # 木头敲击
-    n = int(0.12 * SR)
-    return [(math.sin(math.tau * f * k / SR) + 0.5 * math.sin(math.tau * f * 2.4 * k / SR)) * math.exp(-k / (0.025 * SR)) for k in range(n)]
-
-
-def bloop(f):
-    n, ph, o = int(0.22 * SR), 0, []
-    for k in range(n):
-        ph += f * (0.6 + 0.4 * min(1, k / (SR * 0.05))) / SR
-        o.append(math.sin(ph * math.tau) * math.exp(-k / (SR * 0.07)) * min(1, k / 80))
-    return o
-
-
-def hz(m):
-    return 440 * 2 ** ((m - 69) / 12)
-
-
-# 和弦进行（每两拍一个）：Fmaj7 Em7 Dm7 Cmaj7 / Bbmaj7 Am7 Gm7 C7 —— 循环
-PROG = [[53, 57, 60, 64], [52, 55, 59, 62], [50, 53, 57, 60], [48, 52, 55, 59], [46, 50, 53, 57], [45, 48, 52, 55], [43, 46, 50, 53], [48, 52, 55, 58]]
-SCALE = [65, 67, 69, 70, 72, 74, 76, 77, 79, 81]
-
-
-def chord_at(t):
-    return PROG[int(t / (2 * BEAT)) % len(PROG)]
-
-
-NIGHT0, NIGHT1, REW = 15.0, 17.0, 17.0
-for b in range(36):
-    t = b * BEAT
-    if t >= REW:
-        break
-    night = NIGHT0 <= t < NIGHT1
-    ch = chord_at(t)
-    if b % 2 == 0:                                   # 和弦：每两拍弹一次，夜里更轻、更长
-        for i, m in enumerate(ch):
-            add(t + i * 0.012, epiano(hz(m + 12), 1.3 if not night else 2.0, 0.55), 0.09, -0.3 + i * 0.2)
-        add(t, epiano(hz(ch[0] - 12), 1.0), 0.16)      # 贝斯
-    if not night:
-        if b % 2 == 0:
-            add(t, kick(), 0.38)
-        add(t + BEAT / 2, noise(0.05, 0.1, 0.012), 0.08, 0.35)    # 反拍沙锤
-        if b % 4 == 2:
-            add(t, noise(0.15, 0.5, 0.05), 0.12, -0.1)             # 轻军鼓
-    else:
-        add(t, noise(0.08, 0.2, 0.03), 0.03, 0.4)
-
-# 章节开头：钢片琴一个上行三音
-for t0 in (0.0, 5.0, 8.6, 12.0, 15.0):
-    for i, m in enumerate([72, 76, 79]):
-        add(t0 + 0.15 + i * 0.125, glock(hz(m)), 0.10, 0.2)
-
-# 零件的声音
-events = json.load(open(sys.argv[1])) if len(sys.argv) > 1 else []
-ticks = 0
-for e in events:
-    t, kind, pan = e['t'], e['kind'], max(-0.8, min(0.8, e.get('pan', 0)))
-    if t < 0 or t >= REW:
+# ---------- 律动：马林巴 + 拨弦（1—2、5—7 小节） ----------
+for bar in (1, 2, 5, 6, 7):
+    lo, ch = CH[bar]
+    for k in range(8):
+        m = ch[[0, 2, 1, 3, 2, 1, 3, 2][k]] + 12
+        A.place(A.marimba(m, 0.8 if k % 2 == 0 else 0.55), b(bar, k * 0.5), 0.8, pan=0.3 if k % 2 else -0.1, send=0.25)
+        if k % 2 == 0:
+            A.place(A.pizz(lo + 24, 1.0), b(bar, k * 0.5), 0.9, pan=-0.3, send=0.2)
+# ---------- 钢琴主题（3—4、9—10 小节） ----------
+MEL = {3: [(0, 74), (0.5, 77), (1, 81), (2, 79), (2.5, 77), (3, 74)],
+       4: [(0, 76), (1, 79), (1.5, 81), (2, 84), (3, 79)],
+       9: [(0.8, 81), (1.5, 84), (2, 89), (3, 88)],
+       10: [(0, 86), (1, 84)]}
+for bar, notes in MEL.items():
+    for beat, m in notes:
+        if cut(b(bar, beat)):
+            A.place(A.grand(m, 2.2, 0.75), b(bar, beat), 0.9, pan=0.12, send=0.4)
+for bar in (3, 4, 9, 10):
+    lo, ch = CH[bar]
+    if cut(b(bar)):
+        A.place(A.grand(lo + 24, 2.4, 0.6), b(bar), 0.8, pan=-0.15, send=0.3)
+# ---------- 弦乐 ----------
+for bar, (lo, ch) in CH.items():
+    if not cut(b(bar)):
         continue
-    root = chord_at(t)[0]
-    note = hz(SCALE[int(abs(pan * 13) + t * 3) % len(SCALE)])
-    if kind == 'drop' or kind == 'spin':
-        add(t, thud(hz(root - 12)), 0.28, pan)
+    lvl = {1: 0.4, 2: 0.5, 3: 0.7, 4: 0.8, 5: 0.85, 6: 0.95, 7: 0.55, 8: 0.5, 9: 1.2, 10: 0.7}[bar]
+    d = min(BAR + 0.1, LAMP_OFF - b(bar)) if bar == 10 else BAR + 0.1
+    A.place(A.strings([m - 12 for m in ch[:3]], d, lvl, att=0.5, rel=0.9 if bar != 10 else 0.12), b(bar), 1.0, send=0.5)
+    A.place(A.strings([lo + 12, lo + 24], d, lvl * 0.9, att=0.3, rel=0.8 if bar != 10 else 0.1, bright=900), b(bar), 1.0, send=0.3)
+for bar in (5, 6):   # 模型铁路：低音弦乐断奏
+    for k in range(8):
+        A.place(A.strings([CH[bar][0] + 24], 0.16, 0.8, att=0.01, rel=0.08, bright=1500), b(bar, k * 0.5), 1.0, pan=-0.2, send=0.15)
+# ---------- 夜：人声垫 + 八音盒 ----------
+A.place(A.choir([64, 67, 72], 2.4, 0.9, att=0.6), 14.2, 1.0, send=0.6)
+for k, m in enumerate([84, 79, 76, 79, 84, 88, 84, 79]):
+    A.place(A.celesta(m, 1.4), 14.25 + k * 0.27, 0.7, pan=0.3 * math.sin(k), send=0.6)
+# 结尾全奏（片名 16.8）
+A.place(A.choir([65, 69, 72, 77], 2.2, 1.1, att=0.3, rel=0.6), 16.8, 1.0, send=0.6)
+A.place(A.strings([65, 69, 72, 77, 81], 1.8, 1.0, att=0.06, rel=1.0, bright=3200), 16.8, 1.0, send=0.6)
+# ---------- 打击乐与冲击 ----------
+for bar in (1, 2, 3, 4, 5, 6):
+    for k in range(4):
+        A.place(A.kick(0.55 if k % 2 == 0 else 0.3), b(bar, k), 0.8)
+        A.place(A.shaker(0.45), b(bar, k + 0.5), 0.6, pan=0.3)
+for tt, lvl in ((0.0, 0.9), (0.55 + 0.5 + 0.36, 1.0), (3.9 + 2.0 + 0.33, 0.9), (7.5 + 0.6, 0.9), (16.8, 1.4)):
+    A.place(A.hit(lvl), tt, 1.0, send=0.35)
+for tt, bar in ((4.2, 3), (7.8, 5), (11.2, 7), (14.2, 8), (16.8, 9)):
+    A.place(A.swell(CH[bar][1][:3], 1.0, 0.85), tt - 1.0, 1.0, send=0.2)
+# 底座碎块雨：定音鼓滚奏（第 0 帧之前就开始，折回到结尾 → 循环接得上）
+for k in range(16):
+    A.place(A.timpani(29 + (k % 2) * 5, 0.25 + 0.04 * k), -0.4 + k * 0.06, 0.7, send=0.25)
+
+# ---------- 零件的声音 ----------
+ev = json.load(open(sys.argv[1])) if len(sys.argv) > 1 and sys.argv[1].endswith('.json') else []
+scale = [72, 74, 76, 77, 79, 81, 84, 86]
+seen = set()
+for e in ev:
+    t, kind, pan = e['t'], e['kind'], max(-0.8, min(0.8, e.get('pan', 0)))
+    if t < -0.5 or t >= LAMP_OFF:
+        continue
+    q = round(t / 0.0625)
+    if (q, kind) in seen:
+        continue
+    seen.add((q, kind))
+    note = scale[int(abs(pan * 13) + t * 3) % len(scale)]
+    if kind in ('drop', 'spin'):
+        A.sfx(A.thock(48 + int(abs(pan * 7)) % 5, 0.9), t, pan=pan, send=0.2)
+        A.sfx(A.timpani(29, 0.25), t, pan=pan, send=0.2)
     elif kind == 'rumble':
-        add(t, thud(hz(root - 24)), 0.35, 0)
-        add(t, noise(0.3, 0.92, 0.08), 0.18, 0)
+        A.sfx(A.timpani(29, 0.5), t, send=0.25)
     elif kind == 'pop':
-        add(t, bloop(note), 0.10, pan)
+        A.sfx(A.marimba(note, 0.7), t, pan=pan, send=0.3)
     elif kind == 'rise':
-        add(t, [v * (k / (SR * 0.3)) for k, v in enumerate(noise(0.3, 0.9, 1.0, 0.2))], 0.12, pan)
+        A.sfx(A.whoosh(0.35, 300, 3000, 0.4), t, pan=pan, send=0.2)
     elif kind in ('drawx', 'zip'):
-        add(t, [v * min(1, k / (SR * 0.3)) for k, v in enumerate(noise(0.35, 0.5, 0.5, 0.2))], 0.10, pan)
+        A.sfx(A.whoosh(0.4, 600, 8000, 0.5), t, pan=pan, send=0.2)
     elif kind == 'tick':
-        ticks += 1
-        add(t, knock(1400 + (ticks % 5) * 140), 0.05, pan)
+        A.sfx(A.thock(67 + q % 5, 0.35), t, pan=pan, send=0.15)
     elif kind.startswith('note'):
-        add(t, glock(hz(SCALE[int(kind[4:]) + 2])), 0.07, pan)
-
-# 入夜：开灯的“咔哒”和一个低音铺底
+        A.sfx(A.celesta(scale[int(kind[4:]) % 8] + 12, 0.6), t, pan=pan, send=0.5)
+# 移轴打开的“咔”、开灯的“咔哒”
+A.sfx(A.click(1.2), 8.75, send=0.3)
 for k in range(14):
-    add(15.25 + k * 0.065 + rnd.random() * 0.02, knock(2400), 0.05, rnd.uniform(-0.6, 0.6))
-add(15.0, [math.sin(math.tau * hz(41) * k / SR) * min(1, k / (SR * 0.4)) * math.exp(-k / (SR * 1.5)) for k in range(int(2 * SR))], 0.12)
+    A.sfx(A.click(0.7, lo=1500, hi=6000), 14.45 + k * 0.065, pan=float(A.rng.uniform(-0.6, 0.6)), send=0.2)
+# 结尾：台灯关掉 —— 一个开关声，钢片琴最后一个音
+A.sfx(A.click(1.5, lo=900, hi=5000, d=0.01), LAMP_OFF, send=0.5)
+A.place(A.celesta(77, 2.0), LAMP_OFF + 0.05, 0.8, send=0.8)
+# 倒带：磁带往下掉 + 倒放膨胀，正好接回第 0 帧
+A.place(A.tape_stop(1.0, 53, 1.2), REW, 1.0, send=0.2)
+A.place(A.riser2(1.0, 0.6), REW, 1.0)
 
-# 倒带：17—18 秒，一段由高到低的“呜——”（磁带倒放），尾巴折回开头
-n, ph, sw = int(1.0 * SR), 0, []
-for k in range(n):
-    f = 900 * (1 - k / n) ** 1.5 + 60
-    ph += f / SR
-    sw.append((math.sin(ph * math.tau) * 0.5 + (rnd.random() - 0.5) * 0.3) * min(1, k / (SR * 0.05)) * (1 - (k / n) ** 4))
-add(REW, sw, 0.22)
-add(REW, noise(1.0, 0.95, 0.6, 0.3), 0.15)
-
-peak = max(max(map(abs, L)), max(map(abs, R))) or 1
-data = array.array('h')
-for a, b in zip(L, R):
-    data.append(int(a / peak * 0.86 * 32767)); data.append(int(b / peak * 0.86 * 32767))
-w = wave.open(sys.argv[2] if len(sys.argv) > 2 else 'diorama.wav', 'wb')
-w.setnchannels(2); w.setsampwidth(2); w.setframerate(SR); w.writeframes(data.tobytes()); w.close()
+A.master(sys.argv[2] if len(sys.argv) > 2 else os.path.join(HERE, 'diorama.wav'))

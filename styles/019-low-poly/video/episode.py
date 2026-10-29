@@ -5,8 +5,9 @@ python3 episode.py <输出目录> [fps] [起始帧 结束帧]  → fNNNN.svg；�
   02 海边灯塔       4.5— 8.0  规则 2 · 光一转，面就翻
   03 小星球         8.0—11.6  规则 3 · 面越少，越有性格
   04 落到界面      11.6—15.0  规则 4 · 一张卡，一座山
-  05 夜里的山谷    15.0—17.5  规则 5 · 三档明暗就够了
-  回到第 0 帧      17.5—18.0（纸云散开就是开头那张纸，首尾同一帧）
+  05 夜里的山谷    15.0—17.4  规则 5 · 三档明暗就够了
+  结尾            17.4—20.0  火车开走，山谷由远到近一片片翻回一张纸；片名在纸上升起又落下；
+                             最后半秒就是第 1 章开头那张纸（首尾同一帧）
 每一章都从一张纸翻出来，结尾被一团纸云盖住——纸云就是下一章的纸。"""
 import math
 import os
@@ -19,7 +20,7 @@ import ch2_lighthouse as C2  # noqa: E402
 import ch3_planet as C3  # noqa: E402
 import ch4_app as C4  # noqa: E402
 
-DUR = 18.0
+DUR = 20.0
 FONT = 'file://' + os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..', '..', 'public', 'fonts'))
 
 CH = [  # (起, 止, 编号, 名称, 小字, 规则, 说明)
@@ -27,7 +28,7 @@ CH = [  # (起, 止, 编号, 名称, 小字, 规则, 说明)
     (4.5, 8.0, '02', '海边灯塔', 'FLAT SHADING · 平涂着色', '光一转，面就翻', '明暗按面算，光一动，整片面跟着跳'),
     (8.0, 11.6, '03', '小星球', 'POLYGON BUDGET · 面数', '面越少，越有性格', '1280 → 320 → 80：少到刚好认得出'),
     (11.6, 15.0, '04', '落到界面', 'WEATHER APP · 2026', '一张卡，一座山', '图标、插画、空状态都能用'),
-    (15.0, 17.5, '05', '夜里的山谷', 'NIGHT · 三档明暗', '三档明暗就够了', '亮、中、暗三档，阴影混一点暖紫'),
+    (15.0, 17.4, '05', '夜里的山谷', 'NIGHT · 三档明暗', '三档明暗就够了', '亮、中、暗三档，阴影混一点暖紫'),
 ]
 
 
@@ -40,7 +41,7 @@ def rise_g(t, t0, d=0.27):
 def text_block(t):
     c = next((c for c in CH if c[0] <= t < c[1]), None)
     if not c:
-        return ''
+        return finale_text(t)
     t0 = c[0] + 0.15
     out = []
 
@@ -60,9 +61,25 @@ def text_block(t):
     line(82, 990, 44, f'规则 {int(c[2])} · {c[5]}', 900, WHITE, t0 + 0.5, bg=INK)
     line(64, 1040, 28, c[6], 700, INK, t0 + 0.62)
     out.append(f'<text x="{W - 64}" y="1040" text-anchor="end" font-family="Inter" font-weight="800" font-size="28" letter-spacing="3" fill="{INK}">{c[2]} / 05</text>')
-    if t < 4.0 or t > 17.5:
+    if t < 4.0 or t > 19.6:
         out.append(f'<text x="{W - 64}" y="104" text-anchor="end" font-family="NotoSC" font-weight="900" font-size="64" fill="{INK}">低多边形</text>'
                    f'<text x="{W - 64}" y="142" text-anchor="end" font-family="Inter" font-weight="800" font-size="22" letter-spacing="7" fill="{INK}">LOW POLY · 019</text>')
+    return ''.join(out)
+
+
+def finale_text(t):
+    """结尾：纸上居中的大片名，按行升起，停一拍，再沉下去。"""
+    if not 18.3 < t < 19.7:
+        return ''
+    out = []
+    for k, (txt, size, fam, wt, y, track) in enumerate([('低多边形', 150, 'NotoSC', 900, 560, 0), ('LOW POLY · 一个面，一个颜色', 34, 'NotoSC', 700, 640, 6)]):
+        dy_in, vis = rise_g(t, 18.35 + k * 0.1, 0.32)
+        out_e = clamp((t - 19.25 - k * 0.05) / 0.3) ** 2
+        if not vis:
+            continue
+        h = size * 1.3
+        out.append(f'<clipPath id="fin{k}"><rect x="0" y="{y - size}" width="{W}" height="{h}"/></clipPath><g clip-path="url(#fin{k})">'
+                   f'<text x="{W / 2}" y="{y + (dy_in + out_e) * h:.1f}" text-anchor="middle" font-family="{fam}" font-weight="{wt}" font-size="{size}" letter-spacing="{track}" fill="{INK}">{txt}</text></g>')
     return ''.join(out)
 
 
@@ -75,18 +92,18 @@ def world(t):
         return C3.body(t - 8.0)
     if t < 15.0:
         return '', C4.body(t - 11.6)
-    if t < 17.5:
+    if t < 18.6:
         return night(t - 15.0)
-    # 回到第 0 帧：纸云收回去，露出第 1 章开头那张纸（本地时间 -0.5 → 0）
-    w, _ = C1.body(t - 18.0, cover=None)
-    return w, C1.paper_cloud(1 - ease_in_out(clamp((t - 17.5) / 0.5)), W / 2 + 200, H / 2 + 260)
+    # 纸上停一会儿（片名在上面），最后 0.6 秒接回第 1 章开头
+    return C1.body(max(t - 20.0, -0.6), cover=None)
 
 
 def night(tl):
     """第 5 章：回到山谷，天黑。三档明暗压进深蓝紫，车窗亮着；右边列出三档颜色。"""
-    nt = ease_in_out(clamp(tl / 0.6))
+    rt = tl - 2.4                                    # 17.4 起翻回纸
+    nt = ease_in_out(clamp(tl / 0.6)) * (1 - ease_in_out(clamp((rt - 0.2) / 0.9)))
     c = []
-    w, over = C1.body(3.3 + tl * 0.45, cover=None, night=nt, center=c)
+    w, over = C1.body(3.3 + tl * 0.45, cover=None, night=nt, center=c, refold=rt if rt > 0 else None)
     sky = (f'<linearGradient id="ns" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3A3470"/><stop offset="1" stop-color="#8E6FA8"/></linearGradient>'
            f'<rect width="{W}" height="{H}" fill="url(#ns)" opacity="{nt:.2f}"/>')
     stars = ''.join(f'<polygon points="{x},{y - 7} {x + 2},{y - 2} {x + 7},{y} {x + 2},{y + 2} {x},{y + 7} {x - 2},{y + 2} {x - 7},{y} {x - 2},{y - 2}" fill="#FFF4C8" opacity="{nt * (0.5 + 0.5 * math.sin(tl * 6 + k)):.2f}"/>'
@@ -101,10 +118,8 @@ def night(tl):
                f'<rect x="{x + 16}" y="{y + 16}" width="64" height="64" rx="14" fill="{col}"/>'
                f'<text x="{x + 100}" y="{y + 50}" font-family="NotoSC" font-weight="900" font-size="30" fill="{INK}">{name}</text>'
                f'<text x="{x + 100}" y="{y + 80}" font-family="Inter" font-weight="700" font-size="20" fill="#8A7FA0">{col}</text></g>')
-    over2 = ''
-    if c:
-        over2 = C1.paper_cloud(clamp((tl - 2.0) / 0.5), c[0][0], c[0][1])
-    return sky + stars + moon + w, sw + over2
+    sw_out = 1 - clamp(rt / 0.3) if rt > 0 else 1
+    return sky + stars + moon + w, (sw if sw_out > 0 else '')
 
 
 def frame(t):

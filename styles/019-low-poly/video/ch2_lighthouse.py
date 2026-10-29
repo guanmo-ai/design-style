@@ -1,4 +1,5 @@
 """019 低多边形 · 第 2 章 · 海边灯塔（本地 0—3.5 秒）。
+和第 1 章反过来：第 1 章是纸原地翻起来（从下往上），这一章每个三角形带着颜色从天上砸下来，由远到近一排排落。
 规则 2：光一转，所有面跟着翻亮翻暗——太阳从左绕到右，三档明暗在每个三角面上跳。"""
 import math
 import os
@@ -48,7 +49,8 @@ for i in range(NX):
                 col = [LGRN, MINT, YEL, PINK][(i * 3 + j * 5) % 4]
             dist = math.hypot(cx - ORIGIN[0], (cz - ORIGIN[1]) * 1.15)
             hinge = min([(0, 1, 2), (1, 2, 0), (2, 0, 1)], key=lambda e: math.hypot((t[e[0]][0] + t[e[1]][0]) / 2 - ORIGIN[0], (t[e[0]][2] + t[e[1]][2]) / 2 - ORIGIN[1]))
-            TRIS.append((t, hinge, -0.2 + dist / 40 * 1.3, col, sea, (i, j)))
+            back_d = (cz - Z0) / (Z1 - Z0)                       # 由远到近：远处先落
+            TRIS.append((t, hinge, -0.25 + back_d * 0.95 + jit(j * 3, i * 5) * 0.12, col, sea, (i, j)))
 
 LH = (-10.0, land(-10, -7) - 0.3, -7.0)                                 # 灯塔脚下
 
@@ -115,7 +117,7 @@ def body(t, cover=(2.75, 3.5)):
         if sea and t > delay + 0.5:
             tri = tuple((p[0], 0.35 * math.sin(t * 3.2 + p[0] * 0.35 + p[2] * 0.25), p[2]) for p in tri)
         tris.append((tri, hinge, delay, col))
-    unfold(S, tris, t, cam, creases)
+    slam_tris(S, [(tri, d, c) for (tri, h, d, c) in tris], t)
     lamp = lighthouse(S, t)
     boat(S, t)
     # 太阳绕着转：0.9 秒起从左后转到右前，三档明暗跟着在每个面上跳

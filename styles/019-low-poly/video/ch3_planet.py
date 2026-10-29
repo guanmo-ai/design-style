@@ -91,7 +91,7 @@ def body(t, cover=None, R0=7.0):
     for idx, (tri, cen, col) in enumerate(MESH[lv]):
         # 飞回来：按纬度从上往下，一圈圈到位
         lat = (1 - cen[1]) / 2
-        e = clamp((t + 0.15 - lat * 0.8) / 0.4) if lv == 3 else 1
+        e = clamp((t + 0.5 - lat * 0.8) / 0.4) if lv == 3 else 1
         if e <= 0:
             continue
         k = ease_out_back(e, 1.6)

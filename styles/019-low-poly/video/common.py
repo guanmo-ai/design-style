@@ -39,11 +39,14 @@ def rotate_about(p, a, b, ang):
     return (r[0] + a[0], r[1] + a[1], r[2] + a[2])
 
 
-def unfold(S, TRIS, t, cam, creases, dur=0.5, flat_y=0.0):
+def unfold(S, TRIS, t, cam, creases, dur=0.5, flat_y=0.0, refold=None):
     """签名动作“翻牌”：每个三角形原地跳起来转一整圈，前半圈是纸，转回来是颜色，落到最终高度（过冲约 5%）。
     TRIS = [(三个顶点, 铰链边, 开始时间, 颜色)]"""
     for (tri, hinge, delay, col) in TRIS:
         e = clamp((t - delay) / dur)
+        if refold is not None:                    # 结尾：反过来翻回一张纸（由远到近）
+            rt, rdelay = refold
+            e = min(e, 1 - clamp((rt - rdelay(tri)) / dur))
         if e >= 1:
             S.tri(tri[0], tri[1], tri[2], col, back=PAPER)
             continue
@@ -101,3 +104,28 @@ DEFS = ('<defs>'
         + '<filter id="grain" x="0" y="0" width="100%" height="100%"><feTurbulence type="fractalNoise" baseFrequency="1.4" numOctaves="2" seed="9"/>'
           '<feColorMatrix values="0 0 0 0 .45  0 0 0 0 .35  0 0 0 0 .25  0 0 0 .1 0"/></filter>'
         + '</defs>')
+
+
+def slam_tris(S, TRIS, t, dur=0.42, height=14.0):
+    """第 2 章的签名动作“砸”：每个三角形带着颜色从天上翻滚着掉下来，落地往下压一点再弹回。
+    TRIS = [(三个顶点, 开始时间, 颜色)]"""
+    for (tri, delay, col) in TRIS:
+        e = clamp((t - delay) / dur)
+        if e <= 0:
+            continue
+        if e >= 1:
+            S.tri(tri[0], tri[1], tri[2], col, back=PAPER)
+            continue
+        land = 0.62
+        c = tuple(sum(p[i] for p in tri) / 3 for i in range(3))
+        if e < land:
+            k = e / land
+            dy = height * (1 - k * k)
+            ang = (1 - k) * 2.4
+            pts = [rotate_about((p[0], p[1] + dy, p[2]), (c[0], c[1] + dy, c[2]), (c[0] + 1, c[1] + dy, c[2] + 0.6), ang) for p in tri]
+        else:
+            k = (e - land) / (1 - land)
+            dy = -0.45 * math.sin(math.pi * k) * (1 - k)
+            sc = 1 + 0.08 * math.sin(math.pi * k) * (1 - k)
+            pts = [(c[0] + (p[0] - c[0]) * sc, p[1] + dy, c[2] + (p[2] - c[2]) * sc) for p in tri]
+        S.tri(pts[0], pts[1], pts[2], col, back=PAPER)

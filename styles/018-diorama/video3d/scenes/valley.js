@@ -12,7 +12,7 @@ export function heightAt(i, j) {
 export function buildValley(K, { x = 0, z = 0, T0 = 0 } = {}) {
   K.scene_(x, z, T0);
   const R = rng(13);
-  plinth(K, { T: -0.25, seed: 9, top: '#9ED7A8' });
+  plinth(K, { T: -0.25, seed: 9, top: '#9ED7A8', speed: 0.6 });
   const it = [];
   // 12×12 根地形柱，从中间往外一圈圈“顶”上来（slam 从上砸下，柱子越高越晚落定）
   for (let i = 0; i < 12; i++) for (let j = 0; j < 12; j++) {
