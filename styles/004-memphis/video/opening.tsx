@@ -1,5 +1,5 @@
-import {createBurst} from '../../../src/lib/motion/particles';
 /** 004 · Memphis —— 开场（积木一块块掉下来 → MEMPHIS）与 01 唱片 */
+import {createBurst} from '../../../src/lib/motion/particles';
 import React from 'react';
 import {random} from 'remotion';
 import {E, tween} from '../../../src/lib/anim';

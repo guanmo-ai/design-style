@@ -6,7 +6,7 @@
 
 2026-10-28：用户确认 014 液态玻璃第三版审片通过；直接采用 `review-renders` 分支的成片，未重新渲染或改动音画。已通过 `release-assets/day-14/` 发布 [day-14](https://github.com/guanmo-ai/design-style/releases/tag/day-14)，包含成片、完整项目源码包及 SHA256SUMS；画廊按首次上架顺序登记为「风格 009」，中英文目录与预览同步更新。
 
-2026-10-28（工程）：标杆几期与 015 的通用部件已抽到 `src/lib/motion/` 和 `scripts/lib/`，原片改用适配层；`new_style.mjs` 起步脚本、复用文档与回归工具已完成。60 张原尺寸静帧逐像素、6 段完整 WAV 逐样本均零差异；40 项 Node 测试、4 项 Python 测试和类型检查通过。独立审查发现的边界问题已修复。当前保存在本地 `codex/motion-reuse` 分支，未推送、合并或发布；使用说明见 [REUSE.md](REUSE.md)，证据和交付边界见 [工程执行记录](reviews/REUSE_20261028.md)。
+2026-10-28（工程）：标杆几期与 015 的通用部件已抽到 `src/lib/motion/` 和 `scripts/lib/`，原片改用适配层；`new_style.mjs` 起步脚本、复用文档与回归工具已完成。60 张原尺寸静帧逐像素、6 段完整 WAV 逐样本均零差异；40 项 Node 测试、4 项 Python 测试和类型检查通过。独立审查发现的边界问题已修复。2026-10-29 经 Claude 独立复核（结果见执行记录末尾）后合并到 `main`；使用说明见 [REUSE.md](REUSE.md)，证据和交付边界见 [工程执行记录](reviews/REUSE_20261028.md)。
 
 ## 待办
 

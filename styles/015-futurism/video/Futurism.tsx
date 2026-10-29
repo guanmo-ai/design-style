@@ -1,4 +1,3 @@
-import {motionBlurTimes} from '../../../src/lib/motion/sampling';
 /**
  * 015 · 未来主义 Futurism —— 20 秒短片（1920×1080 · 60fps · 144 BPM）
  *
@@ -11,6 +10,7 @@ import {motionBlurTimes} from '../../../src/lib/motion/sampling';
  *   blur  运动模糊最多几个子帧（正片 6；草稿 1 = 不做）：按这一帧最快的东西决定取几个，快门半帧
  *   res   内部分辨率（正片 1；草稿 0.5：颗粒贴图按它缩小，画面本身靠 --scale=0.5 以半分辨率栅格化）
  */
+import {motionBlurTimes} from '../../../src/lib/motion/sampling';
 import React from 'react';
 import {AbsoluteFill, Audio, continueRender, delayRender, staticFile, useCurrentFrame} from 'remotion';
 import {loadFont} from '@remotion/fonts';

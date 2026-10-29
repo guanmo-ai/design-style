@@ -1,5 +1,5 @@
-import {flipScale, Squeegee} from '../../../src/lib/motion/screen-print';
 /** 005 · Pop Art —— 02 汤罐（沃霍尔 1962）· 03 网点（利希滕斯坦 1961—1963）· 04 丝网（沃霍尔《花》1964） */
+import {flipScale, Squeegee} from '../../../src/lib/motion/screen-print';
 import React from 'react';
 import {random} from 'remotion';
 import {E, tween} from '../../../src/lib/anim';

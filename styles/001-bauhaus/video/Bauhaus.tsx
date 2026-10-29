@@ -1,4 +1,3 @@
-import {WipeShape} from '../../../src/lib/motion/shape-wipe';
 /**
  * Design Style · 001 · 包豪斯 Bauhaus（1919—1933）
  * 15s · 1920×1080 · 60fps · 120 BPM（1 拍 = 30 帧，所有剪辑点都落在拍子上）
@@ -12,6 +11,7 @@ import {WipeShape} from '../../../src/lib/motion/shape-wipe';
  *
  * 场景本身在 chapters.tsx，共用小部件在 ui.tsx，配乐在 ../audio/make_music.py。
  */
+import {WipeShape} from '../../../src/lib/motion/shape-wipe';
 import React from 'react';
 import {AbsoluteFill, Audio, staticFile, useCurrentFrame} from 'remotion';
 import {loadFont} from '@remotion/fonts';

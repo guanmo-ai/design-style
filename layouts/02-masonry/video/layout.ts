@@ -1,9 +1,9 @@
-import {createLayoutFlow, masonry as sharedMasonry, type FlowState, type Placed, type Spec} from '../../../src/lib/motion/layout-flow';
 /**
  * 布局 02 · Masonry —— 同一批 26 张卡片贯穿全片。
  * 每一种“排法”都不是手摆的：都由同一个瀑布流算法 masonry() 现场算出来（列数、列宽、间距不同而已）。
  * 卡片编号 = 源顺序，在所有排法里一一对应，所以每次转场都是“同一批卡片重新流一遍”。
  */
+import {createLayoutFlow, masonry as sharedMasonry, type FlowState, type Placed, type Spec} from '../../../src/lib/motion/layout-flow';
 import {Easing} from 'remotion';
 
 export type Rect = {x: number; y: number; w: number; h: number; r: number};
