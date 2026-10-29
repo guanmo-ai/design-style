@@ -15,7 +15,7 @@ HERE = os.path.dirname(os.path.abspath(__file__))
 ROOT = os.path.abspath(os.path.join(HERE, '..', '..', '..'))
 sys.path.insert(0, HERE)
 sys.path.insert(0, os.path.join(ROOT, 'scripts'))
-from cut import (INK, JOST, MUST, MUTE, PAPER, SC, TANG, TEAL, Sheet, bar, boomerang, circle, kidney,  # noqa: E402
+from cut import (INK, JOST, SUN, MUTE, PAPER, SC, RED, TURQ, PINK, BLUE, Sheet, bar, boomerang, circle, kidney,  # noqa: E402
                  move, multiply, overprint, path_d, poly, rect, rot, rough, rrect, star, t, union, word, fit)
 from make_svgs import clock, hand, record, tri  # noqa: E402
 
@@ -49,21 +49,21 @@ def f_bass(sh):
     b.append(sh.piece(rough(arm, 30, lo=10, hi=20), PAPER, 6))
     # 标题字母一个个拍下来
     for p, i in word('MID-', 64, 344, 290, seed=31, tilt=3, bounce=0.03, lift={3: (10, -30, 14)}):
-        b.append(sh.piece(p, TANG, 22 if i == 3 else 4))
+        b.append(sh.piece(p, RED, 22 if i == 3 else 4))
     return ''.join(b)
 
 
 def f_clock(sh):
     """球钟：纸条转成 12 根辐条，12 颗球按十六分音符一颗颗落上去，最后一颗手送。"""
-    b = [f'<rect width="{FW}" height="{FH}" fill="{TANG}"/>']
+    b = [f'<rect width="{FW}" height="{FH}" fill="{PAPER}"/>']
     sun = rough(circle(430, 90, 120), 4, lo=14, hi=28)
-    b.append(sh.piece(sun, MUST, 4))
+    b.append(sh.piece(sun, SUN, 4))
     g = Sheet(FW, FH)
-    c, pos = clock(sh, 250, 160, 0.42, hold=3, lifted=1)
+    c, pos = clock(sh, 250, 160, 0.42, hold=3, lifted=1, cols=[RED, TURQ, BLUE, RED, SUN, TURQ, INK, BLUE, RED, TURQ, SUN, BLUE])
     b.append(c)
     tx, ty = pos[3]
-    b.append(sh.piece(rough(circle(tx + 18, ty - 14, 21), 63, lo=5, hi=10), INK, 22))
-    b.append(hand(sh, tx + 18, ty - 14, 0.44, -12, h=22, r=21))
+    b.append(sh.piece(rough(circle(tx + 18, ty - 14, 21), 63, lo=5, hi=10), RED, 22))
+    b.append(hand(sh, tx + 18, ty - 14, 0.44, -12, h=22, r=21, fill=INK, cuff=PAPER, sleeve=BLUE))
     # 计数：12 颗 = 12 个十六分音符
     for k in range(12):
         x = 30 + k * 16
@@ -75,7 +75,7 @@ def f_clock(sh):
 def f_hang(sh):
     """Eames 挂衣架：球钟的球掉下来，一颗颗弹进挂钩。"""
     b = [f'<rect width="{FW}" height="{FH}" fill="{PAPER}"/>']
-    cols = [TANG, MUST, TEAL, INK, PAPER]
+    cols = [RED, SUN, TURQ, BLUE, PINK]
     # 钢丝框：3 排斜交的折线
     pts = []
     for row in range(3):
@@ -101,17 +101,17 @@ def f_hang(sh):
 
 def f_record(sh):
     """Blue Note 式唱片封套（Reid Miles）：一颗球长成唱片，从封套里滑出来；大字只露一半。"""
-    b = [f'<rect width="{FW}" height="{FH}" fill="{MUST}"/>']
+    b = [f'<rect width="{FW}" height="{FH}" fill="{SUN}"/>']
     rec = rough([circle(360, 158, 120)[0], list(reversed(circle(360, 158, 5)[0]))], 40, lo=12, hi=26)
     sleeve = rough(rect(40, 30, 255, 255), 41, lo=14, hi=30)
     b.append(sh.piece(rec, INK, 18, rule='evenodd'))
-    b.append(sh.piece(rough([circle(360, 158, 42)[0], list(reversed(circle(360, 158, 5)[0]))], 42, lo=8, hi=14), TANG, 0, rule='evenodd'))
+    b.append(sh.piece(rough([circle(360, 158, 42)[0], list(reversed(circle(360, 158, 5)[0]))], 42, lo=8, hi=14), RED, 0, rule='evenodd'))
     b.append(dashed(circle(168, 158, 120), op=0.35))
-    b.append(sh.piece(sleeve, TEAL, 6))
+    b.append(sh.piece(sleeve, TURQ, 6))
     b.append(f'<svg x="40" y="30" width="255" height="255" overflow="hidden">')
     for p, i in word('BLUE', fit('BLUE', 222), 16, 240, seed=43, tilt=2, bounce=0.02):
         b.append(sh.piece(p, PAPER, 3))
-    b.append(sh.piece(rough(circle(196, 64, 46), 44), TANG, 0, 'style="mix-blend-mode:multiply"'))
+    b.append(sh.piece(rough(circle(196, 64, 46), 44), PINK, 0))
     b.append('</svg>')
     b.append(t(56, 60, 12, 'THE RAND QUARTET', JOST, 700, PAPER, '2'))
     return ''.join(b)
@@ -119,9 +119,9 @@ def f_record(sh):
 
 def f_house(sh):
     """Case Study House #22（1960）：唱片变成落日，玻璃盒子悬在山崖上；纸层视差推镜。"""
-    b = [f'<rect width="{FW}" height="{FH}" fill="{TEAL}"/>']
-    b.append(sh.piece(rough(circle(150, 150, 70), 50, lo=10, hi=20), MUST, 4))
-    hills = [(rough(poly((0, 230), (140, 190), (300, 215), (560, 170), (560, 315), (0, 315)), 51, lo=16, hi=30), multiply(TEAL, TEAL), 4),
+    b = [f'<rect width="{FW}" height="{FH}" fill="{BLUE}"/>']
+    b.append(sh.piece(rough(circle(150, 150, 70), 50, lo=10, hi=20), SUN, 4))
+    hills = [(rough(poly((0, 230), (140, 190), (300, 215), (560, 170), (560, 315), (0, 315)), 51, lo=16, hi=30), multiply(BLUE, TURQ), 4),
              (rough(poly((0, 260), (220, 236), (380, 250), (560, 228), (560, 315), (0, 315)), 52, lo=16, hi=30), INK, 6)]
     for p, c, hh in hills:
         b.append(sh.piece(p, c, hh))
@@ -129,7 +129,7 @@ def f_house(sh):
     b.append(sh.piece(rough(rect(250, 150, 270, 14), 53, lo=12, hi=24), PAPER, 10))
     b.append(sh.piece(rough(rect(270, 164, 210, 62), 54, lo=12, hi=24), INK, 10))
     for k in range(5):
-        b.append(sh.piece(rough(rect(282 + k * 40, 174, 28, 42), 55 + k, lo=6, hi=12), MUST if k != 3 else multiply(MUST, PAPER), 0))
+        b.append(sh.piece(rough(rect(282 + k * 40, 174, 28, 42), 55 + k, lo=6, hi=12), SUN if k != 3 else multiply(SUN, PAPER), 0))
     b.append(sh.piece(rough(rect(260, 226, 230, 10), 60, lo=12, hi=24), PAPER, 10))
     b.append(sh.piece(rough(rect(300, 236, 16, 30), 61), PAPER, 6))
     b.append(sh.piece(rough(star(470, 70, 16, 3, 4), 62, lo=3, hi=6), PAPER, 3))
@@ -143,16 +143,16 @@ def f_house(sh):
 def f_app(sh):
     """今天：唱片落进手机，播放键是一张纸——按下去影子收紧。"""
     b = [f'<rect width="{FW}" height="{FH}" fill="{PAPER}"/>']
-    b.append(sh.piece(rough(kidney(90, 250, 80, -10), 70, lo=14, hi=28), TEAL, 4))
+    b.append(sh.piece(rough(kidney(90, 250, 80, -10), 70, lo=14, hi=28), TURQ, 4))
     px, py, pw, ph = 190, 26, 170, 330
     b.append(sh.piece(rrect(px, py, pw, ph, 28, 8), INK, 10))
     b.append(f'<path d="{path_d(rrect(px + 7, py + 7, pw - 14, ph - 14, 22, 8))}" fill="{PAPER}"/>')
-    b.append(sh.piece(rect(px + 20, py + 34, pw - 40, pw - 40), MUST, 3))
-    b.append(record(sh, px + pw / 2, py + 34 + (pw - 40) / 2, 52, TEAL, TANG, True, 71, h=3))
+    b.append(sh.piece(rect(px + 20, py + 34, pw - 40, pw - 40), SUN, 3))
+    b.append(record(sh, px + pw / 2, py + 34 + (pw - 40) / 2, 52, TURQ, RED, True, 71, h=3))
     for k in range(12):
         hh = 6 + 14 * abs(math.sin(k * 0.9))
         b.append(f'<rect x="{px + 22 + k * 10.5}" y="{py + 206 - hh}" width="7" height="{hh}" fill="{INK if k < 7 else "#D8C7A2"}"/>')
-    b.append(sh.piece(rough(circle(px + pw / 2, py + 252, 22), 72, lo=5, hi=10), TANG, 0))
+    b.append(sh.piece(rough(circle(px + pw / 2, py + 252, 22), 72, lo=5, hi=10), RED, 0))
     b.append(sh.piece(rough(tri(px + pw / 2 + 3, py + 252, 10), 73, lo=3, hi=6), PAPER, 0))
     # 按下去的那一刻：虚线是平时（提起）的位置
     b.append(dashed(circle(px + pw / 2 - 6, py + 240, 22), op=0.6))
@@ -182,7 +182,7 @@ def storyboard():
     for k, (a, v) in enumerate(rules):
         x = 1360 + 0 * k
         y = 52 + k * 30
-        b.append(t(x, y, 16, a, SC, 900, TANG) + t(x + 112, y, 15, v, SC, 500, INK))
+        b.append(t(x, y, 16, a, SC, 900, RED) + t(x + 112, y, 15, v, SC, 500, INK))
     b.append(f'<rect x="{L}" y="150" width="{W - 2 * L}" height="3" fill="{INK}"/>')
 
     for k, (fn, tc, chap, work, act, relay) in enumerate(FRAMES):
@@ -194,12 +194,12 @@ def storyboard():
         b.append(f'<rect x="{x + 12}" y="{y + 12}" width="62" height="26" fill="{PAPER}"/>')
         b.append(t(x + 43, y + 31, 15, tc, JOST, 700, INK, anchor='middle'))
         ty = y + FH + 36
-        b.append(t(x, ty, 15, f'0{k + 1}', JOST, 700, TANG, '1.5') + t(x + 30, ty, 21, chap, SC, 900, INK)
+        b.append(t(x, ty, 15, f'0{k + 1}', JOST, 700, RED, '1.5') + t(x + 30, ty, 21, chap, SC, 900, INK)
                  + t(x + 80, ty - 1, 15, work, SC, 700, MUTE))
         b.append(t(x, ty + 30, 16, act, SC, 500, INK))
-        b.append(t(x, ty + 58, 14, f'接力 → {relay}', SC, 700, TEAL))
+        b.append(t(x, ty + 58, 14, f'接力 → {relay}', SC, 700, TURQ))
         if col < 2:
-            b.append(sh.piece(rough(tri(x + FW + 30, y + FH / 2, 12), 95 + k), TANG, 3))
+            b.append(sh.piece(rough(tri(x + FW + 30, y + FH / 2, 12), 95 + k), RED, 3))
 
     b.append(sh.texture(0.8))
     return sh.doc('\n'.join(b))
