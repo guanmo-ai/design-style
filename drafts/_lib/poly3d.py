@@ -127,8 +127,10 @@ class Camera:
 
 
 def render(scene, cam, light=(-0.5, 0.85, -0.35), sun='#FFF3DC', sky='#BFD8FF', ground='#6B5A4A',
-           amb=0.42, fog=None, fog_near=40, fog_far=160, seam=0.6, cull=True, bands=None):
-    """bands = (暗, 中, 亮) 三个亮度系数：把光照压成三档平面色块（平面设计的明暗，不是写实渐变）。"""
+           amb=0.42, fog=None, fog_near=40, fog_far=160, seam=0.6, cull=True, bands=None, tint=None, overlay=None):
+    """bands = (暗, 中, 亮) 三个亮度系数：把光照压成三档平面色块（平面设计的明暗，不是写实渐变）。
+    tint 给了时，bands 改为“往这个暖色阴影里混多少”，暗面发暖不发灰。
+    overlay = {原色: 图案 id}：这些面再叠一层图案（田垄条纹等）。"""
     """返回 SVG 片段。fog = (颜色, 近, 远) 让远处的面渐渐融进天色。"""
     L = norm(light)
     sunc, skyc, grc = hex2rgb(sun), hex2rgb(sky), hex2rgb(ground)
@@ -148,9 +150,15 @@ def render(scene, cam, light=(-0.5, 0.85, -0.35), sun='#FFF3DC', sky='#BFD8FF', 
             k = bands[0] if lam < 0.35 else bands[1] if lam < 0.75 else bands[2]
             P = [cam.proj(p) for p in pts]
             depth = sum(p[2] for p in P) / len(P)
-            hx = rgb2hex(mix(tuple(min(1, x * k) for x in col), col, emit)) if emit else rgb2hex(tuple(min(1, x * k) for x in col))
+            sh = mix(col, hex2rgb(tint), k) if tint else tuple(min(1, x * k) for x in col)
+            hx = rgb2hex(mix(sh, col, emit)) if emit else rgb2hex(sh)
             d = 'M' + 'L'.join(f'{x:.1f},{y:.1f}' for x, y, _ in P) + 'Z'
-            out.append((layer, -depth, f'<path d="{d}" fill="{hx}" stroke="{hx}" stroke-width="{seam}" stroke-linejoin="round"/>'))
+            svg = f'<path d="{d}" fill="{hx}" stroke="{hx}" stroke-width="{seam}" stroke-linejoin="round"/>'
+            if overlay:
+                pid = overlay.get(rgb2hex(col))
+                if pid:
+                    svg += f'<path d="{d}" fill="url(#{pid})"/>'
+            out.append((layer, -depth, svg))
             continue
         hemi = 0.5 + 0.5 * n[1]
         amb_c = mix(grc, skyc, hemi)

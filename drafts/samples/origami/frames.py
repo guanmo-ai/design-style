@@ -16,8 +16,11 @@ from poly3d import Camera, Scene, render  # noqa: E402
 
 FPS, N = 30, 150
 W, H = 1920, 1080
-PAPER, BG = '#FFF4E0', '#F7EBD6'
-RED, YEL, BLUE, GRN, LGRN, INK, WHITE, SKY = '#E8473B', '#F5C330', '#2F62D6', '#3DAE5B', '#8DCC57', '#23243A', '#FFFFFF', '#5AA6F0'
+# 配色：参考“成都平原”小动画 + 004 孟菲斯的糖果色，压柔一点：奶油纸、粉彩田块、一条宝蓝的河
+PAPER, BG = '#FBF4E6', '#F6EEDD'
+RED, YEL, BLUE, GRN, LGRN, INK, WHITE, SKY = '#EE6B57', '#F4C54F', '#2F5FD8', '#4DAF72', '#9ED7A8', '#3B3552', '#FFFDF7', '#8CC8EE'
+PINK, LILAC, MINT, PERI = '#F49DB6', '#C9A6EC', '#A9DDB4', '#8F9DEA'
+SHADE = '#7A5C86'                                              # 暖紫阴影：暗面往这里混，不发灰
 
 
 def clamp(x, a=0.0, b=1.0):
@@ -61,19 +64,21 @@ for i in range(NX + 1):
         V[i, j] = (x, height(x, z), z)
 
 
-def face_color(a, b, c):
+def face_color(a, b, c, i=0, j=0):
     y = (a[1] + b[1] + c[1]) / 3
     cx, cz = (a[0] + b[0] + c[0]) / 3, (a[2] + b[2] + c[2]) / 3
     if y < 0.25 and cz > RAIL_Z:
         return SKY                                            # 湖
     if abs(cz - RAIL_Z) < 1.8:
-        return '#F2D9A6'                                      # 路基
+        return '#F3E2C2'                                      # 路基
     if y > 10.5:
         return WHITE                                          # 雪顶
+    if y > 7.5:
+        return '#B3B9F0'                                      # 山腰：淡长春花蓝
     if y > 4.5:
-        return BLUE                                           # 山
-    k = (int((cx + 30) / 6) + int((cz + 30) / 5)) % 3         # 田块拼布
-    return [GRN, LGRN, YEL][k]
+        return PERI                                           # 山脚：长春花蓝
+    k = ((i // 2) * 7 + j * 5 + (i // 2) * j) % 8                    # 田块：两格一块，整块同色（像一畦一畦的田）
+    return [YEL, GRN, PINK, YEL, MINT, LILAC, GRN, '#7DB8E8'][k]
 
 
 TRIS = []
@@ -87,7 +92,7 @@ for i in range(NX):
             # 铰链：离起点最近的那条边（像多米诺一样往外倒）
             edges = [(0, 1, 2), (1, 2, 0), (2, 0, 1)]
             hinge = min(edges, key=lambda e: math.hypot((t[e[0]][0] + t[e[1]][0]) / 2 - ORIGIN[0], (t[e[0]][2] + t[e[1]][2]) / 2 - ORIGIN[1]))
-            TRIS.append((t, hinge, -0.55 + dist / 40 * 1.5, face_color(*t)))
+            TRIS.append((t, hinge, -0.55 + dist / 40 * 1.5, face_color(*t, i, j)))
 
 
 def tri_flat(t):
@@ -117,7 +122,7 @@ for n in range(70):
         continue
     group = n % 3                                             # 三拍里各冒一簇
     kind = 'pine' if n % 5 < 3 else 'round'
-    TREES.append((x, y, z, 1.5 + group * 0.5 + (n % 4) * 0.04, kind, [RED, YEL, LGRN][n % 3], 1.25 + (n % 5) * 0.15))
+    TREES.append((x, y, z, 1.5 + group * 0.5 + (n % 4) * 0.04, kind, [PINK, YEL, LGRN][n % 3], 1.25 + (n % 5) * 0.15))
 
 
 def pop(e):
@@ -136,11 +141,11 @@ def add_tree(S, x, y, z, kind, col, s, sx, sy):
         return
     w = s * sx
     if kind == 'pine':
-        S.box(x - 0.12 * w, y, z - 0.12 * w, 0.24 * w, 0.24 * w, 0.6 * s * sy, '#7A4A30')
-        S.cone(x, y + 0.45 * s * sy, z, 1.0 * w, 1.6 * s * sy, '#1E8A4C', n=6)
-        S.cone(x, y + 1.25 * s * sy, z, 0.72 * w, 1.3 * s * sy, '#26A158', n=6)
+        S.box(x - 0.12 * w, y, z - 0.12 * w, 0.24 * w, 0.24 * w, 0.6 * s * sy, '#A0715A')
+        S.cone(x, y + 0.45 * s * sy, z, 1.0 * w, 1.6 * s * sy, '#3E9A68', n=6)
+        S.cone(x, y + 1.25 * s * sy, z, 0.72 * w, 1.3 * s * sy, '#52B27C', n=6)
     else:
-        S.box(x - 0.12 * w, y, z - 0.12 * w, 0.24 * w, 0.24 * w, 0.9 * s * sy, '#7A4A30')
+        S.box(x - 0.12 * w, y, z - 0.12 * w, 0.24 * w, 0.24 * w, 0.9 * s * sy, '#A0715A')
         S.ico(x, y + 1.5 * s * sy, z, 0.85 * w, col, jitter=0, sy=sy / max(sx, 0.01))
 
 
@@ -163,9 +168,9 @@ def add_train(S, fx):
     S.box(fx - 3.15, y + 3.0, z + 0.4, 0.75, 0.75, 0.25, INK)
     S.box(fx - 4.2, y + 1.7, z - 0.02, 0.8, 1.94, 0.6, '#FFE9A8', emit=0.5)
     for wx in (fx - 3.2, fx - 2.2, fx - 1.2):
-        S.box(wx - 0.35, y - 0.05, z - 0.05, 0.7, 1.9, 0.7, '#B8352C')
+        S.box(wx - 0.35, y - 0.05, z - 0.05, 0.7, 1.9, 0.7, '#C9503F')
     # 两节车厢（黄、蓝），白顶
-    for k, col in enumerate([YEL, BLUE]):
+    for k, col in enumerate([YEL, SKY]):
         x0 = fx - 5.2 - (k + 1) * 4.4
         S.box(x0, y + 0.4, z + 0.05, 4.1, 1.7, 1.7, col)
         S.box(x0 - 0.1, y + 2.1, z - 0.05, 4.3, 1.9, 0.25, WHITE)
@@ -188,12 +193,12 @@ def add_track(S, t, fx):
         if e <= 0:
             continue
         drop = (1 - ease_out_back(e, 1.6)) * 4
-        S.box(x - 0.2, 0.5 + drop, RAIL_Z - 1.5, 0.4, 3.0, 0.22, '#9A5B3A')
+        S.box(x - 0.2, 0.5 + drop, RAIL_Z - 1.5, 0.4, 3.0, 0.22, '#B98466')
         if e >= 1:
             front = max(front, x)
     if front > -40:
         for dz in (-0.9, 0.9):
-            S.box(-31, 0.72, RAIL_Z + dz - 0.08, front + 31, 0.16, 0.14, '#6B6E80')
+            S.box(-31, 0.72, RAIL_Z + dz - 0.08, front + 31, 0.16, 0.14, '#8E89A8')
 
 
 def add_steam(S, t, chimney):
@@ -217,6 +222,21 @@ def camera(t):
     eye = (-12 + 14 * e, 38 - 22 * e, 44 - 16 * e)
     tgt = (0 + 1 * e, 2.0 + 0.5 * e, 0 + 4.5 * e)
     return Camera(eye=eye, target=tgt, fov=34 - 6 * e)
+
+
+ROWS = {k.lower(): v for k, v in {YEL: 'rY', MINT: 'rM', PINK: 'rP', GRN: 'rG', LILAC: 'rL', '#7DB8E8': 'rM'}.items()}
+DEFS = ('<defs>'
+        + ''.join(f'<pattern id="{pid}" width="16" height="16" patternUnits="userSpaceOnUse" patternTransform="rotate({ang})">'
+                  f'<rect width="16" height="3.5" fill="{c}" opacity=".26"/></pattern>'
+                  for pid, ang, c in [('rY', 28, '#FFFFFF'), ('rM', -32, '#FFFFFF'), ('rP', 61, '#FFFFFF'), ('rG', -58, '#2E8A57'), ('rL', 15, '#FFFFFF')])
+        + '<filter id="soft" x="-10%" y="-10%" width="120%" height="120%"><feGaussianBlur stdDeviation="70"/></filter>'
+        + '<filter id="speck" x="0" y="0" width="100%" height="100%"><feTurbulence type="fractalNoise" baseFrequency=".75" numOctaves="1" seed="4" result="n"/>'
+          '<feComposite in="SourceGraphic" in2="n" operator="arithmetic" k2="1.6" k3="1.2" k4="-.75" result="m"/>'
+          '<feComponentTransfer in="m"><feFuncR type="discrete" tableValues="0 1"/><feFuncG type="discrete" tableValues="0 1"/><feFuncB type="discrete" tableValues="0 1"/><feFuncA type="linear" slope="0" intercept="1"/></feComponentTransfer></filter>'
+        + f'<mask id="edge"><g filter="url(#speck)"><rect width="{W}" height="{H}" fill="#000"/><rect x="120" y="100" width="{W - 240}" height="{H - 200}" rx="80" fill="#fff" filter="url(#soft)"/></g></mask>'
+        + '<filter id="grain" x="0" y="0" width="100%" height="100%"><feTurbulence type="fractalNoise" baseFrequency="1.4" numOctaves="2" seed="9"/>'
+          '<feColorMatrix values="0 0 0 0 .45  0 0 0 0 .35  0 0 0 0 .25  0 0 0 .1 0"/></filter>'
+        + '</defs>')
 
 
 def frame(f):
@@ -244,7 +264,7 @@ def frame(f):
                 creases.append([cam.proj(p) for p in tri_flat(tri)])
                 S.tri(*tri_flat(tri), PAPER)
                 continue
-            S.tri(pts[0], pts[1], pts[2], col if k > 0.5 else PAPER, back='#EBD8B8')
+            S.tri(pts[0], pts[1], pts[2], col if k > 0.5 else PAPER, back='#EFDFC4')
             continue
         S.tri(pts[0], pts[1], pts[2], col, back=PAPER)
     for (x, y, z, tpop, kind, col, s) in TREES:
@@ -256,8 +276,8 @@ def frame(f):
     if t >= 2.0:
         ch = add_train(S, fx)
         add_steam(S, t, ch)
-    body = render(S, cam, light=(-0.45, 0.8, 0.4), cull=True, bands=(0.74, 0.9, 1.0), seam=0.8)
-    cr = ''.join('<path d="M' + 'L'.join(f'{x:.1f},{y:.1f}' for x, y, _ in P) + 'Z" fill="none" stroke="#E4CFAE" stroke-width="1.6"/>' for P in creases)
+    body = render(S, cam, light=(-0.45, 0.8, 0.4), cull=True, bands=(0.26, 0.1, 0.0), tint=SHADE, seam=0.8, overlay=ROWS)
+    cr = ''.join('<path d="M' + 'L'.join(f'{x:.1f},{y:.1f}' for x, y, _ in P) + 'Z" fill="none" stroke="#E9D9BC" stroke-width="1.6"/>' for P in creases)
     # 结尾：烟囱口喷出一团团低多边形的奶油色云，最后一帧正好铺满（= 第 0 帧的纸，循环）
     over = ''
     e = clamp((t - 3.85) / (4.97 - 3.85))
@@ -274,9 +294,10 @@ def frame(f):
                 aa = q / 9 * math.tau + m
                 rr = r * (0.88 + 0.12 * math.sin(q * 3.1 + m))
                 pts.append(f'{cx + math.cos(aa) * rr:.0f},{cy + math.sin(aa) * rr:.0f}')
-            over += f'<polygon points="{" ".join(pts)}" fill="{"#EAD9BD" if m % 3 == 0 else BG}"/>'
+            over += f'<polygon points="{" ".join(pts)}" fill="{"#F1E4CC" if m % 3 == 0 else BG}"/>'
         over += f'<circle cx="{sx - 200 * g:.0f}" cy="{sy - 260 * g:.0f}" r="{max(0, 2600 * (e - 0.55) / 0.45):.0f}" fill="{BG}"/>'
-    return f'<svg xmlns="http://www.w3.org/2000/svg" width="{W}" height="{H}" viewBox="0 0 {W} {H}"><rect width="{W}" height="{H}" fill="{BG}"/>{cr}{body}{over}</svg>'
+    return (f'<svg xmlns="http://www.w3.org/2000/svg" width="{W}" height="{H}" viewBox="0 0 {W} {H}">{DEFS}<rect width="{W}" height="{H}" fill="{BG}"/>'
+            f'<g mask="url(#edge)">{cr}{body}</g>{over}<rect width="{W}" height="{H}" filter="url(#grain)"/></svg>')
 
 
 if __name__ == '__main__':

@@ -1,11 +1,11 @@
 // ---------- 时间轴（5 秒，120 BPM，一拍 0.5 秒） ----------
 const cam = new THREE.PerspectiveCamera(20, W / H, 1, 400);
-const comp = makeComposer(ctx, cam, { ao: true, aoRadius: 0.5, aoDist: 0.3, bloom: 0.5, bloomRadius: 0.45, bloomThreshold: 0.86, vig: 0.2, grain: 0.012, tilt: { focus: 0.56, band: 0.26, amount: 2.0 } });
+const comp = makeComposer(ctx, cam, { ao: true, aoRadius: 0.5, aoDist: 0.3, bloom: 0.5, bloomRadius: 0.45, bloomThreshold: 0.86, vig: 0.2, grain: 0.012, tilt: { focus: 0.56, band: 0.26, amount: 2.0 }, edge: 0.11, paper: '#F7F0E2' });
 const clamp = (x, a = 0, b = 1) => Math.max(a, Math.min(b, x));
 const back = (e, s = 1.2) => { e -= 1; return 1 + (s + 1) * e ** 3 + s * e ** 2; };          // 过冲约 5%
 const smooth = e => e * e * (3 - 2 * e);
 const lerpC = (a, b, t) => new THREE.Color(a).lerp(new THREE.Color(b), t);
-const DAY = ['#FFF4E2', '#FFE6CF', '#FFD3BE'], DUSK = ['#FFD9A6', '#FFB57E', '#F29368'], NIGHT = ['#14204A', '#1C2C5E', '#26386E'];
+const DAY = ['#F8F1E3', '#F6EEDD', '#F3E8D6'], DUSK = ['#FBE3C4', '#F8C9A8', '#F2B29C'], NIGHT = ['#B3A2EA', '#E3B6DA', '#FBCDBA'];   // 暮色：薰衣草到蜜桃粉，不用深蓝
 function sky(t) {
   const a = smooth(clamp((t - 3.0) / 0.6)), b = smooth(clamp((t - 3.5) / 0.7));
   return [0, 1, 2].map(i => '#' + lerpC(lerpC(DAY[i], DUSK[i], a), NIGHT[i], b).getHexString());
@@ -36,10 +36,10 @@ window.renderFrame = (f, fps = 30) => {
   // 白天 → 傍晚 → 入夜
   window.__sky(sky(t));
   const dusk = smooth(clamp((t - 3.0) / 0.6)), night = smooth(clamp((t - 3.5) / 0.7));
-  moon.color.copy(lerpC(lerpC('#FFF3E0', '#FFB07A', dusk), '#8FA8FF', night)); moon.intensity = 3.0 - 1.2 * dusk - 1.3 * night;
-  HEMI.intensity = 1.25 - 0.3 * dusk - 0.55 * night; HEMI.color.copy(lerpC('#E6F0FF', '#7F95D8', night));
+  moon.color.copy(lerpC(lerpC('#FFF3E0', '#FFC08A', dusk), '#C9B4FF', night)); moon.intensity = 3.0 - 0.6 * dusk - 0.7 * night;
+  HEMI.intensity = 1.25 - 0.1 * dusk - 0.15 * night; HEMI.color.copy(lerpC('#E6F0FF', '#B9A8E8', night));
   EMISSIVE.forEach((m, i) => { const on = smooth(clamp((t - tOn[i]) / 0.12)); m.emissiveIntensity = m.userData.base * (0.35 + on * 2.2); });
-  BLOOM.strength = 0.08 + 0.55 * night; BLOOM.threshold = 0.95 - 0.1 * night;
+  BLOOM.strength = 0.08 + 0.4 * night; BLOOM.threshold = 0.95 - 0.1 * night;
   const lamp = smooth(clamp((t - 4.0) / 0.15));
   LAMPS.forEach(l => l.intensity = 30 * lamp);
   window.__spot.intensity = 45 * smooth(clamp((t - 3.9) / 0.1));
