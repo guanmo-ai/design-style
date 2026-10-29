@@ -4,12 +4,12 @@
  *   python3 scripts/plot_probe.py out/curves-017.json out/curves-017.png
  */
 import {probeChannels} from '../../../src/lib/motion/sampling';
-import {ballPose, barPose, cam, discR, handPose, midPose, modPose} from './opening';
+import {cam, modPose, spokePose} from './film';
 import {speedAt} from './scenes';
 import {DURATION} from './timeline';
 
 export {DURATION};
-const v = (p: (t: number) => {x: number; y: number} | null, t: number) => {
+const v = (p: (t: number) => {x: number; y: number} | null | undefined, t: number) => {
   const a = p(t - 0.5);
   const b = p(t + 0.5);
   return a && b ? Math.hypot(b.x - a.x, b.y - a.y) : NaN;
@@ -18,14 +18,7 @@ const v = (p: (t: number) => {x: number; y: number} | null, t: number) => {
 export const probe = (f: number) => probeChannels(f, {
   blur_speed: {value: () => speedAt(f)},
   cam_s: {value: () => cam(f).s * 100},
-  cam_x: {value: () => cam(f).x / 10},
-  disc_r: {value: () => discR(f) / 10, to: 140},
-  bar2_v: {value: () => v((t) => barPose(2, t), f), to: 130},
-  bar2_h: {value: () => barPose(2, f)?.h ?? NaN, to: 130},
-  ball7_v: {value: () => v((t) => ballPose(7, t), f), from: 120, to: 220},
-  ball7_h: {value: () => ballPose(7, f)?.h ?? NaN, from: 120, to: 220},
-  hand_v: {value: () => v(handPose, f), from: 186, to: 290},
-  hand_h: {value: () => handPose(f).h ?? NaN, from: 186, to: 290},
-  M_h: {value: () => midPose(0, f)?.h ?? NaN, from: 260, to: 320},
-  O_h: {value: () => modPose(1, f)?.h ?? NaN, from: 340, to: 410},
-}, );
+  spoke3_v: {value: () => v((t) => spokePose(3, t)?.p, f), to: 220},
+  spoke3_h: {value: () => spokePose(3, f)?.p.h ?? NaN, to: 220},
+  O_h: {value: () => modPose(1, f)?.h ?? NaN, from: 40, to: 100},
+});

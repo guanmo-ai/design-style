@@ -5,7 +5,8 @@
 import React from 'react';
 import {C, PAPER} from '../tokens';
 
-export type Pose = {x: number; y: number; a?: number; s?: number; h?: number};
+/** sx / sy：只沿纸条长边 / 短边缩放（sy 为负 = 翻到背面） */
+export type Pose = {x: number; y: number; a?: number; s?: number; h?: number; sx?: number; sy?: number};
 export type Part = {d: string; fill: string};
 
 const MAXH = 120;
@@ -21,7 +22,8 @@ export const PaperDefs: React.FC = () => (
   </defs>
 );
 
-export const tf = (x: number, y: number, a: number, s: number) => `translate(${x.toFixed(2)} ${y.toFixed(2)}) rotate(${a.toFixed(3)}) scale(${s.toFixed(4)})`;
+export const tf = (x: number, y: number, a: number, s: number, sx = 1, sy = 1) =>
+  `translate(${x.toFixed(2)} ${y.toFixed(2)}) rotate(${a.toFixed(3)}) scale(${(s * sx).toFixed(4)} ${(s * sy).toFixed(4)})`;
 
 export const Shadow: React.FC<{parts: Part[]; p: Pose}> = ({parts, p}) => {
   const h = Math.max(0, p.h ?? PAPER.rest);
@@ -29,7 +31,7 @@ export const Shadow: React.FC<{parts: Part[]; p: Pose}> = ({parts, p}) => {
   const s = p.s ?? 1;
   return (
     <g opacity={PAPER.opacity(h)} filter={`url(#pb${Math.min(MAXH, Math.round(h))})`}>
-      <g transform={tf(p.x + PAPER.dx * h, p.y + PAPER.dy * h, p.a ?? 0, s)}>
+      <g transform={tf(p.x + PAPER.dx * h, p.y + PAPER.dy * h, p.a ?? 0, s, p.sx, p.sy)}>
         {parts.map((q, i) => <path key={i} d={q.d} fill={C.shadow} />)}
       </g>
     </g>
@@ -40,7 +42,7 @@ export const Body: React.FC<{parts: Part[]; p: Pose; style?: React.CSSProperties
   const h = Math.max(0, p.h ?? PAPER.rest);
   const s = (p.s ?? 1) * (1 + PAPER.persp * h);
   return (
-    <g transform={tf(p.x, p.y, p.a ?? 0, s)} style={style}>
+    <g transform={tf(p.x, p.y, p.a ?? 0, s, p.sx, p.sy)} style={style}>
       {parts.map((q, i) => <path key={i} d={q.d} fill={q.fill} />)}
     </g>
   );
@@ -66,7 +68,7 @@ export const Sheet: React.FC<{parts: Part[]; p: Pose}> = ({parts, p}) => (
 );
 
 /** Body 用的同一个变换（给裁切路径用） */
-export const bodyTf = (p: Pose) => tf(p.x, p.y, p.a ?? 0, (p.s ?? 1) * (1 + PAPER.persp * Math.max(0, p.h ?? PAPER.rest)));
+export const bodyTf = (p: Pose) => tf(p.x, p.y, p.a ?? 0, (p.s ?? 1) * (1 + PAPER.persp * Math.max(0, p.h ?? PAPER.rest)), p.sx, p.sy);
 
 /** 叠印色：两种油墨逐通道相乘 */
 export const multiply = (a: string, b: string) => {

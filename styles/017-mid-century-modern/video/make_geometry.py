@@ -47,8 +47,8 @@ out['hand'] = {'palm': d(rough(union(index, thumb, back), 90)), 'cuff': d(rough(
                'sleeve': d(rough(bar(300, -20, 1300, 10, 132, 170), 92))}
 
 # 大字：每个字母以自己的中心为原点；x / y 是中心相对“基线起点”的位置
-def letters(text, width, seed, tracking=0.02):
-    size = fit(text, width, tracking=tracking)
+def letters(text, width, seed, tracking=0.02, size=None):
+    size = size or fit(text, width, tracking=tracking)
     res = []
     for p, i in word(text, size, 0, 0, seed=seed, tilt=0, bounce=0, tracking=tracking):
         c, cx, cy = centered(p)
@@ -57,8 +57,16 @@ def letters(text, width, seed, tracking=0.02):
     return {'size': round(size, 1), 'letters': res}
 
 
-out['midCentury'] = letters('MID-CENTURY', 760, 11)
-out['modern'] = letters('MODERN', 820, 12)
+# 海报开场：MODERN 横跨画面（1560 宽），MID- / CENTURY 两行叠在左上
+out['modern'] = letters('MODERN', 1560, 12)
+sz = fit('CENTURY', 400)
+out['mid'] = letters('MID-', 0, 11, size=sz)
+out['century'] = letters('CENTURY', 0, 13, size=sz)
+
+out['y1955'] = letters('1955', 560, 21)
+
+# 换章用的大张纸：左边是剪出来的毛边，其余三边在画外
+out['sheet'] = d(rough([[(0, -300), (2700, -300), (2700, 1400), (0, 1400)]], 5, amp=7))
 
 # 背景纸：太阳、腰果、星芒、月牙边角料
 out['sun'] = d(rough(circle(0, 0, 250), 4))
