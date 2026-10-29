@@ -40,7 +40,7 @@ def f_bass(sh):
             (330, 196, 600, 196, 22)]
     for k, (x0, y0, x1, y1, w) in enumerate(bars):
         b.append(sh.piece(rough(bar(x0, y0, x1, y1, w), 10 + k, lo=10, hi=22), PAPER, 4))
-    # 正在扎进来的一根：前一张的位置留虚线（一秒 12 张），影子长 = 还在空中
+    # 正在扎进来的一根：虚线是它要落的位置，影子长 = 还在空中
     b.append(f'<g stroke="{PAPER}">' + dashed(bar(-20, 150, 120, 150, 22), op=0.6).replace(f'stroke="{INK}"', f'stroke="{PAPER}"') + '</g>')
     b.append(sh.piece(rough(bar(-20, 150, 220, 150, 22), 20, lo=10, hi=22), PAPER, 22))
     # 折线手臂（Bass 的“金臂”）：一张纸剪出来的锯齿
@@ -178,7 +178,7 @@ def storyboard():
         b.append(sh.piece(p, INK, 4))
     b.append(t(L + 262, 84, 34, '动效分镜 · 中世纪现代（草案）', SC, 900, INK))
     b.append(t(L + 262, 118, 17, '一章一件真实代表作；整片只有一种物理：纸片。虚线 = 要落的位置，影子越长 = 离桌面越高 = 正在动。', SC, 500, MUTE))
-    rules = [('影子 = 高度', '(0.5h, h) · 模糊 0.4h'), ('一秒 12 张', '零件走台阶，镜头走 60 帧'), ('先蓄后落', '提起 6 帧 → 落下 → 歪一下停住')]
+    rules = [('影子 = 高度', '(0.5h, h) · 模糊 0.4h'), ('60 帧连续', '快的地方加运动模糊'), ('先蓄后落', '提起 6 帧 → 落下 → 歪一下停住')]
     for k, (a, v) in enumerate(rules):
         x = 1360 + 0 * k
         y = 52 + k * 30

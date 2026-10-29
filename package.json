@@ -51,7 +51,6 @@
     "render:015:gpu": "npm run music:015 && remotion render src/index.ts S015-Futurism out/015-futurism-master.mp4 --codec=h264 --crf=16 --color-space=bt709 --gl=angle --concurrency=50% --timeout=120000",
     "preview:015": "npm run music:015 && remotion render src/index.ts S015-Futurism-Preview out/015-preview.mp4 --scale=0.5 --codec=h264 --crf=20 --concurrency=4 --timeout=120000",
     "images:015": "python3 styles/015-futurism/images/make_svgs.py && python3 scripts/build_images.py styles/015-futurism/images",
-    "images:017": "python3 styles/017-mid-century-modern/images/make_svgs.py && python3 scripts/build_images.py styles/017-mid-century-modern/images && python3 styles/017-mid-century-modern/images/make_storyboard.py",
     "music:L01": "python3 layouts/01-bento-grid/audio/make_music.py",
     "render:L01": "npm run music:L01 && remotion render src/index.ts L01-BentoGrid out/01-bento-grid-master.mp4 --codec=h264 --crf=16",
     "images:L01": "python3 layouts/01-bento-grid/images/make_svgs.py && python3 scripts/build_images.py layouts/01-bento-grid/images",
@@ -63,7 +62,12 @@
     "test:security": "node --test tests/security/*.test.mjs",
     "new:style": "node scripts/new_style.mjs",
     "test:motion": "node --test tests/motion/*.test.mjs",
-    "test:media": "python3 -m unittest discover -s tests/motion -p 'test_*.py'"
+    "test:media": "python3 -m unittest discover -s tests/motion -p 'test_*.py'",
+    "music:017": "python3 styles/017-mid-century-modern/audio/make_music.py",
+    "render:017": "npm run music:017 && remotion render src/index.ts S017-MidCenturyModern out/017-mid-century-modern-master.mp4 --codec=h264 --crf=16 --color-space=bt709 --concurrency=4 --timeout=120000",
+    "render:017:gpu": "npm run music:017 && remotion render src/index.ts S017-MidCenturyModern out/017-mid-century-modern-master.mp4 --codec=h264 --crf=16 --color-space=bt709 --gl=angle --concurrency=50% --timeout=120000",
+    "preview:017": "npm run music:017 && remotion render src/index.ts S017-MidCenturyModern-Preview out/017-preview.mp4 --scale=0.5 --codec=h264 --crf=20 --concurrency=4 --timeout=120000",
+    "images:017": "python3 styles/017-mid-century-modern/images/make_svgs.py && python3 scripts/build_images.py styles/017-mid-century-modern/images && python3 styles/017-mid-century-modern/images/make_storyboard.py"
   },
   "dependencies": {
     "@remotion/cli": "4.0.538",
