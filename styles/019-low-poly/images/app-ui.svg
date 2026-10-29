@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1080" height="1350" viewBox="0 0 1080 1350">
+  <defs>
+    <filter id="sh" x="-20%" y="-20%" width="140%" height="140%"><feDropShadow dx="0" dy="14" stdDeviation="18" flood-color="#7A5C86" flood-opacity=".28"/></filter>
+  </defs>
+  <rect width="1080" height="1350" fill="#F6EEDD"/>
+<text x="64" y="120" font-family="'Noto Sans SC'" font-weight="900" font-size="52" fill="#3B3552" text-anchor="start" letter-spacing="0">如果低多边形来做 App</text>
+<text x="66" y="166" font-family="'Noto Sans SC'" font-weight="700" font-size="24" fill="#7A5C86" text-anchor="start" letter-spacing="0">天气：一张卡，一座山</text>
+<clipPath id="c-phone-96-210"><rect x="96" y="210" width="560" height="1056" rx="48"/></clipPath><rect x="96" y="210" width="560" height="1056" rx="48" fill="#FBF4E6" filter="url(#sh)"/><image href="frames/phone.jpg" x="96" y="210" width="560" height="1056" preserveAspectRatio="xMidYMid slice" clip-path="url(#c-phone-96-210)"/>
+<polygon points="690,300 712,326 668,326" fill="#EE6B57"/>
+<text x="726" y="322" font-family="'Noto Sans SC'" font-weight="900" font-size="26" fill="#3B3552" text-anchor="start" letter-spacing="0">天气就是光</text>
+<text x="726" y="356" font-family="'Noto Sans SC'" font-weight="700" font-size="16" fill="#8A7FA0" text-anchor="start" letter-spacing="0">晴天三档明暗偏暖，下雪整座山换一套冷色</text>
+<polygon points="690,510 712,536 668,536" fill="#EE6B57"/>
+<text x="726" y="532" font-family="'Noto Sans SC'" font-weight="900" font-size="26" fill="#3B3552" text-anchor="start" letter-spacing="0">一张卡，一座山</text>
+<text x="726" y="566" font-family="'Noto Sans SC'" font-weight="700" font-size="16" fill="#8A7FA0" text-anchor="start" letter-spacing="0">插画、图标、空状态用同一套三角面</text>
+<polygon points="690,720 712,746 668,746" fill="#EE6B57"/>
+<text x="726" y="742" font-family="'Noto Sans SC'" font-weight="900" font-size="26" fill="#3B3552" text-anchor="start" letter-spacing="0">面越少越像图标</text>
+<text x="726" y="776" font-family="'Noto Sans SC'" font-weight="700" font-size="16" fill="#8A7FA0" text-anchor="start" letter-spacing="0">星球 80 个面就是 App 图标</text>
+<polygon points="690,930 712,956 668,956" fill="#EE6B57"/>
+<text x="726" y="952" font-family="'Noto Sans SC'" font-weight="900" font-size="26" fill="#3B3552" text-anchor="start" letter-spacing="0">切换时面一片片翻</text>
+<text x="726" y="986" font-family="'Noto Sans SC'" font-weight="700" font-size="16" fill="#8A7FA0" text-anchor="start" letter-spacing="0">换城市、换天气：三角面像纸牌一样翻过去</text>
+<polygon points="690,1140 712,1166 668,1166" fill="#EE6B57"/>
+<text x="726" y="1162" font-family="'Noto Sans SC'" font-weight="900" font-size="26" fill="#3B3552" text-anchor="start" letter-spacing="0">不画渐变</text>
+<text x="726" y="1196" font-family="'Noto Sans SC'" font-weight="700" font-size="16" fill="#8A7FA0" text-anchor="start" letter-spacing="0">天空也是两三块平涂色，不用渐变</text>
+</svg>

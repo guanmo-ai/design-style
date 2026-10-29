@@ -20,13 +20,19 @@
 
 ### 018 · 微缩景观：发布（2026-10-29）
 
-这一期是 three.js（WebGL）实时渲染，不走 Remotion。正片由 Claude 在云端用 CPU（SwiftShader）渲了 30fps 1920×1080，推到 `review-renders` 分支的 `018/`；主人要马上发，所以先用这一版。**Codex 负责：**
+这一期是 three.js（WebGL）实时渲染，不走 Remotion。正片由 Claude 在云端用 CPU（SwiftShader）渲了 30fps 1920×1080（片尾署名“观默”），已推到 `review-renders` 分支的 `018/`（附 SHA256SUMS）；**主人已看过并确认，直接发这一版。** **Codex 负责：**
 
 1. 直接采用 `review-renders/018/018-diorama-master.mp4`，按 014 的做法通过 `release-assets/day-18/` 发布 Release `day-18`（成片 + 完整项目源码包 + SHA256SUMS），画廊登记并同步中英文目录与预览（四张图在 `styles/018-diorama/images/preview/`，封面 `video3d/cover.jpg`）。
 2. 可选：在有显卡的机器上重渲 60fps 版本（命令见 `styles/018-diorama/README.md` 第 10 节，把 `render.cjs` 里的 `--use-angle=swiftshader` 换成 `--use-angle=metal` 或去掉；`node render.cjs episode.html out 0 1199 1920 1080 60`，再用 `audio/make_music.py out/events.json` 生成配乐、ffmpeg 合成）。画面和时间轴不用改。
 3. `styles/018-diorama/video3d/node_modules` 不进库：先 `npm i`（three 0.170.0）。
 
-019 · 低多边形还在做（配乐重做中），先不要发布。
+### 019 · 低多边形：审片通过后发布（2026-10-29）
+
+全片是 SVG、不需要显卡，正片由 Claude 在云端渲（60fps 1920×1080，约 40 分钟），推到 `review-renders` 分支的 `019/` 并自审。**Codex 只负责发布**：
+
+1. 等主人看过 `review-renders/019/019-low-poly-master.mp4` 并确认通过（这里会更新）。
+2. 直接采用 `review-renders` 上的成片，不重新渲染、不改音画；按 014 的做法通过 `release-assets/day-19/` 发布 Release `day-19`（成片 + 完整项目源码包 + SHA256SUMS），画廊登记并同步中英文目录与预览（四张图在 `styles/019-low-poly/images/preview/`，封面 `video/cover.jpg`）。
+3. 配乐用到 `scripts/lib/audio/mix.py` 新加的 `master(..., loop=False)`；默认 `loop=True`，旧的各期输出不变。
 
 ## 设计侧留下的素材（不用动，供下次做新一期）
 
