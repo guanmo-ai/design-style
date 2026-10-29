@@ -66,7 +66,7 @@ const Frame: React.FC<{t: number; ink: string; soft: string}> = ({t, ink, soft})
 
 export const Hud: React.FC<{t: number}> = ({t}) => {
   // 黑场盖住的地方用白字，其余用墨字；黑场缩回时，黑边扫过外框
-  const dark = t < 126;
+  const dark = t < 128;
   if (!dark) return <Frame t={t} ink={C.ink} soft={C.mute} />;
   return (
     <>
