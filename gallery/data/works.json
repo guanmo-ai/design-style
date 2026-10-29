@@ -644,5 +644,70 @@
       }
     ],
     "publishedAt": "2026-10-28T13:32:21Z"
+  },
+  {
+    "id": "018-diorama",
+    "videoDir": "video3d",
+    "type": "style",
+    "number": "010",
+    "title": "微缩景观",
+    "titleEn": "Diorama",
+    "years": "1950s—今天",
+    "category": "三维场景",
+    "categoryEn": "3D scenes",
+    "description": "把世界切成一块底座，一块块搭出来，再用移轴把它变小。一支 20 秒短片：街角、房间剖面与模型铁路在同一张桌上逐块搭起，收成手机界面，再一起入夜；台灯熄灭后，零件倒着飞回开场。",
+    "descriptionEn": "Cut the world into a block on a base, build it piece by piece, then make it small with tilt-shift. In this 20-second film, a street corner, a cutaway room and a model railway assemble on one table, become a phone interface and turn to night. The lamp clicks off, then every piece rewinds to the opening.",
+    "tags": [
+      "微缩模型",
+      "底座",
+      "移轴",
+      "逐块搭建",
+      "剖面",
+      "暖光",
+      "three.js"
+    ],
+    "tagsEn": [
+      "miniatures",
+      "base",
+      "tilt-shift",
+      "build-up",
+      "cutaway",
+      "warm light",
+      "three.js"
+    ],
+    "release": "day-18",
+    "asset": "018-diorama.mp4",
+    "sha256": "1ab674051cf56ad2c7f85780da2a131daa829b3e142278c0a819287f44b93c29",
+    "images": [
+      {
+        "file": "poster",
+        "title": "一张海报，认识微缩景观",
+        "kind": "风格海报",
+        "titleEn": "Diorama at a glance",
+        "kindEn": "Style poster"
+      },
+      {
+        "file": "cheatsheet",
+        "title": "底座、移轴、逐块搭建与五条规则",
+        "kind": "风格速查",
+        "titleEn": "Bases, tilt-shift, build-up, and five rules",
+        "kindEn": "Quick reference"
+      },
+      {
+        "file": "app-ui",
+        "title": "如果微缩景观来做 App",
+        "kind": "界面应用",
+        "titleEn": "Diorama in a smart-home app",
+        "kindEn": "UI application"
+      },
+      {
+        "file": "steps",
+        "title": "四步，从普通 3D 到微缩景观",
+        "kind": "设计教程",
+        "titleEn": "Four steps from plain 3D to Diorama",
+        "kindEn": "Design tutorial"
+      }
+    ],
+    "publishedAt": "2026-10-29T18:23:56Z"
   }
 ]

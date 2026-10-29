@@ -19,6 +19,11 @@ By Guanmo [@guanmo_ai](https://x.com/guanmo_ai)
 <table>
   <tr>
     <td align="center" valign="top" width="33%">
+      <a href="https://guanmo-ai.github.io/design-style/?lang=en#work-018-diorama"><img src="styles/018-diorama/video/cover.jpg" width="240" alt="Diorama film cover" /></a><br />
+      <a href="https://guanmo-ai.github.io/design-style/?lang=en#work-018-diorama"><b>Diorama</b></a><br />
+      <sub>20 seconds</sub>
+    </td>
+    <td align="center" valign="top" width="33%">
       <a href="https://guanmo-ai.github.io/design-style/?lang=en#work-014-liquid-glass"><img src="styles/014-liquid-glass/video/cover.jpg" width="240" alt="Liquid Glass film cover" /></a><br />
       <a href="https://guanmo-ai.github.io/design-style/?lang=en#work-014-liquid-glass"><b>Liquid Glass</b></a><br />
       <sub>20 seconds</sub>
@@ -28,13 +33,13 @@ By Guanmo [@guanmo_ai](https://x.com/guanmo_ai)
       <a href="https://guanmo-ai.github.io/design-style/?lang=en#work-013-art-deco"><b>Art Deco</b></a><br />
       <sub>20 seconds</sub>
     </td>
+  </tr>
+  <tr>
     <td align="center" valign="top" width="33%">
       <a href="https://guanmo-ai.github.io/design-style/?lang=en#work-009-neo-brutalism"><img src="styles/009-neo-brutalism/video/cover.jpg" width="240" alt="Neo-Brutalism film cover" /></a><br />
       <a href="https://guanmo-ai.github.io/design-style/?lang=en#work-009-neo-brutalism"><b>Neo-Brutalism</b></a><br />
       <sub>20 seconds</sub>
     </td>
-  </tr>
-  <tr>
     <td align="center" valign="top" width="33%">
       <a href="https://guanmo-ai.github.io/design-style/?lang=en#work-008-risograph"><img src="styles/008-risograph/video/cover.jpg" width="240" alt="Risograph film cover" /></a><br />
       <a href="https://guanmo-ai.github.io/design-style/?lang=en#work-008-risograph"><b>Risograph</b></a><br />
@@ -45,13 +50,13 @@ By Guanmo [@guanmo_ai](https://x.com/guanmo_ai)
       <a href="https://guanmo-ai.github.io/design-style/?lang=en#work-005-pop-art"><b>Pop Art</b></a><br />
       <sub>18 seconds</sub>
     </td>
+  </tr>
+  <tr>
     <td align="center" valign="top" width="33%">
       <a href="https://guanmo-ai.github.io/design-style/?lang=en#work-004-memphis"><img src="styles/004-memphis/video/cover.jpg" width="240" alt="Memphis film cover" /></a><br />
       <a href="https://guanmo-ai.github.io/design-style/?lang=en#work-004-memphis"><b>Memphis</b></a><br />
       <sub>15 seconds</sub>
     </td>
-  </tr>
-  <tr>
     <td align="center" valign="top" width="33%">
       <a href="https://guanmo-ai.github.io/design-style/?lang=en#work-003-constructivism"><img src="styles/003-constructivism/video/cover.jpg" width="240" alt="Constructivism film cover" /></a><br />
       <a href="https://guanmo-ai.github.io/design-style/?lang=en#work-003-constructivism"><b>Constructivism</b></a><br />
@@ -62,13 +67,13 @@ By Guanmo [@guanmo_ai](https://x.com/guanmo_ai)
       <a href="https://guanmo-ai.github.io/design-style/?lang=en#work-02-masonry"><b>Masonry</b></a><br />
       <sub>15 seconds</sub>
     </td>
+  </tr>
+  <tr>
     <td align="center" valign="top" width="33%">
       <a href="https://guanmo-ai.github.io/design-style/?lang=en#work-002-swiss-style"><img src="styles/002-swiss-style/video/cover.jpg" width="240" alt="Swiss Style film cover" /></a><br />
       <a href="https://guanmo-ai.github.io/design-style/?lang=en#work-002-swiss-style"><b>Swiss Style</b></a><br />
       <sub>15 seconds</sub>
     </td>
-  </tr>
-  <tr>
     <td align="center" valign="top" width="33%">
       <a href="https://guanmo-ai.github.io/design-style/?lang=en#work-01-bento-grid"><img src="layouts/01-bento-grid/video/cover.jpg" width="240" alt="Bento Grid film cover" /></a><br />
       <a href="https://guanmo-ai.github.io/design-style/?lang=en#work-01-bento-grid"><b>Bento Grid</b></a><br />
@@ -89,7 +94,7 @@ By Guanmo [@guanmo_ai](https://x.com/guanmo_ai)
 
 | Resource | What you get |
 |---|---|
-| Motion film | A 15–18 second film at 1920 × 1080, 60 fps, built with Remotion. Music and sound effects are synthesized in Python. Download finished films from [Releases](https://github.com/guanmo-ai/design-style/releases). |
+| Motion film | A 15–20 second film at 1920 × 1080, 30 or 60 fps, built with Remotion, three.js, or scripted SVG animation. Music and sound effects are synthesized in Python. Download finished films from [Releases](https://github.com/guanmo-ai/design-style/releases). |
 | Four visual references | Editable 1080 × 1350 SVGs: poster, quick reference, applications, and a pattern, comparison, or tutorial. Preview SVGs embed font subsets. |
 | Design guide | Practical rules, project palette, typography, pitfalls, and an AI prompt. Each episode has an English quick guide and a detailed Chinese guide. |
 | Making of | An English production overview, plus the detailed Chinese production log with revisions, contact sheets, and timing charts. |
@@ -114,6 +119,7 @@ The gallery interface, descriptions, search, and reading pages support **Chinese
 | 009 | [Neo-Brutalism](styles/009-neo-brutalism/README.en.md) | [Production overview](styles/009-neo-brutalism/PROCESS.en.md) | 2021–today |
 | 013 | [Art Deco](styles/013-art-deco/README.en.md) | [Production overview](styles/013-art-deco/PROCESS.en.md) | 1925–1939 |
 | 014 | [Liquid Glass](styles/014-liquid-glass/README.en.md) — Glass bends what is behind it; refraction follows the slope of the edge. | [Production overview](styles/014-liquid-glass/PROCESS.en.md) | 2013–today |
+| 018 | [Diorama](styles/018-diorama/README.en.md) — Build a world on a base, piece by piece; tilt-shift makes it small. [Film](https://github.com/guanmo-ai/design-style/releases/tag/day-18) | [Production overview](styles/018-diorama/PROCESS.en.md) | 1950s–today |
 
 ### Layouts
 

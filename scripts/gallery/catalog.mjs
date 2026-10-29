@@ -18,6 +18,7 @@ export function validateEntries(works) {
     if (!Object.hasOwn(TYPES, work.type)) throw new Error(`${work.id} 的类型必须是 ${Object.keys(TYPES).join(' / ')}`);
     if (!TYPES[work.type].id.test(work.id) || ids.has(work.id)) throw new Error('作品 ID 无效或重复');
     ids.add(work.id);
+    if (work.videoDir !== undefined && !['video', 'video3d'].includes(work.videoDir)) throw new Error(`${work.id} 的视频源码目录无效`);
     if (!/^[\w.-]+$/.test(work.release) || work.asset !== `${work.id}.mp4` || !/^[a-f0-9]{64}$/.test(work.sha256)) throw new Error(`${work.id} 的 Release 配置无效`);
     for (const key of ['number', 'title', 'titleEn', 'years', 'category', 'categoryEn', 'description', 'descriptionEn']) if (typeof work[key] !== 'string' || !work[key].trim()) throw new Error(`${work.id} 缺少 ${key}`);
     if (!Number.isFinite(Date.parse(work.publishedAt))) throw new Error('发布日期无效');
@@ -49,7 +50,7 @@ export async function loadCatalog() {
       end = segment.start + segment.dur;
     }
     if (end !== durationFrames) throw new Error(`${work.id} 时间轴未覆盖完整视频`);
-    await Promise.all(['video/cover.jpg', 'README.md', 'PROCESS.md', 'README.en.md', 'PROCESS.en.md', ...work.images.flatMap(image => [`images/preview/${image.file}.svg`, `images/${image.file}.svg`])].map(file => access(path.join(base, file))));
+    await Promise.all([work.videoDir || 'video', 'video/cover.jpg', 'README.md', 'PROCESS.md', 'README.en.md', 'PROCESS.en.md', ...work.images.flatMap(image => [`images/preview/${image.file}.svg`, `images/${image.file}.svg`])].map(file => access(path.join(base, file))));
     return {...work, type: typeOf(work), duration: durationFrames / fps, fps, width: size[0], height: size[1], chapters: timeline.segments.map(segment => ({label: segment.label, start: segment.start / fps}))};
   }));
 }

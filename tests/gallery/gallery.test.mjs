@@ -24,6 +24,17 @@ test('作品来自本仓库，规格和章节来自现有源文件', async () =>
   assert.equal(work.type, 'style');
 });
 
+test('018 使用发布版 30fps 时间轴，源码入口指向 three.js 工程', async () => {
+  const works = await loadCatalog();
+  const work = works.find(work => work.id === '018-diorama');
+  assert.equal(work.fps, 30);
+  assert.equal(work.duration, 20);
+  assert.equal(work.chapters.find(chapter => chapter.label === '02 房间剖面').start, 4.2);
+  assert.equal(sourceUrl(work, 'video'), 'https://github.com/guanmo-ai/design-style/tree/main/styles/018-diorama/video3d');
+  assert.equal(sourceUrl(work, 'README.md'), 'https://github.com/guanmo-ai/design-style/blob/main/styles/018-diorama/README.md');
+  assert.throws(() => validateEntries(works.map(item => item === work ? {...item, videoDir: '../private'} : item)), /源码目录/);
+});
+
 test('布局作品放在 layouts/，编号独立，标签和源码路径随类型变化', async () => {
   const works = await loadCatalog();
   const bento = works.find(item => item.id === '01-bento-grid');
