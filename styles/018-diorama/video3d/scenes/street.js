@@ -2,7 +2,7 @@
 import { THREE, mesh, mat, lowpoly, rng, mergeGeometries } from '../lib.js';
 import { plinth } from '../kit.js';
 
-export function buildStreet(K, { x = 0, z = 0, T0 = 0, BASE = 1.3 } = {}) {
+export function buildStreet(K, { x = 0, z = 0, T0 = 0, BASE = 0.55 } = {}) {
   K.scene_(x, z, T0);
   const R = rng(21);
   ground(K, R);
@@ -204,7 +204,7 @@ export function buildStreet(K, { x = 0, z = 0, T0 = 0, BASE = 1.3 } = {}) {
 
 // 地面：底座碎块从上往下砸；方砖一波波砸下来；柏油从左往右推；斑马线翻下来
 function ground(K, R) {
-  plinth(K, { T: -0.35, seed: 3 });
+  plinth(K, { T: -0.3, seed: 3, speed: 0.45 });
   const it = [];
   for (let i = 0; i < 12; i++) for (let j = 0; j < 6; j++)
     it.push({ x: -11 + i * 2, y: 0, z: -11 + j * 2, w: 1.96, h: 0.1, d: 1.96, c: (i + j) % 2 ? '#E9DFCB' : '#E2D5BD', t0: 0.42 + (i + j) * 0.026, dur: 0.3, type: 'slam', hgt: 6 });
@@ -214,8 +214,10 @@ function ground(K, R) {
   for (const z of [3.0, 9.0]) for (let i = 0; i < 12; i++) it.push({ x: -11 + i * 2, y: 0, z, w: 1.96, h: 0.24, d: 0.2, c: '#9E968C', t0: 1.0 + i * 0.02 + (z > 5 ? 0.06 : 0), dur: 0.25, type: 'slam', hgt: 4 });
   let k = 0; for (let x = -11; x < 12; x += 2.4) it.push({ x, y: 0.01, z: 6, w: 1.2, h: 0.03, d: 0.18, c: '#E8E2D0', t0: 1.25 + (k++) * 0.03, dur: 0.22, type: 'pop' });
   for (let k2 = 0; k2 < 7; k2++) it.push({ x: 5.2 + k2 * 0.95, y: 0.01, z: 6, w: 0.55, h: 0.03, d: 5.2, c: '#EDE8DA', t0: 1.32 + k2 * 0.05, dur: 0.28, type: 'flip' });
+  const SP = 0.42;   // 地面整体压缩：第一秒里地板、房子一起来，不让人等
+  for (const o of it) o.t0 = o.t0 * SP - 0.12;
   K.shards(it);
-  for (let i = 0; i < 24; i += 2) K.ev(K.T0 + 0.6 + i * 0.02 + 0.2, 'tick', -0.8 + i / 15);
-  for (let k2 = 0; k2 < 7; k2++) K.ev(K.T0 + 1.32 + k2 * 0.05 + 0.24, 'note' + k2, 0.4);
-  K.ev(K.T0 + 0.92, 'zip', 0);
+  for (let i = 0; i < 24; i += 2) K.ev(K.T0 + (0.6 + i * 0.02 + 0.2) * SP - 0.12, 'tick', -0.8 + i / 15);
+  for (let k2 = 0; k2 < 7; k2++) K.ev(K.T0 + (1.32 + k2 * 0.05) * SP - 0.12 + 0.24, 'note' + k2, 0.4);
+  K.ev(K.T0 + 0.92 * SP - 0.12, 'zip', 0);
 }

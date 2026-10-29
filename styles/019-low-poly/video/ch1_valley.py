@@ -188,17 +188,25 @@ def camera(t):
     return Camera(eye=eye, target=tgt, fov=34 - 6 * e)
 
 
-def body(t, cover=(3.85, 4.97), night=0.0, center=None):
+def body(t, cover=(3.85, 4.97), night=0.0, center=None, refold=None):
+    """refold = 结尾翻回纸的本地秒数（0 开始）。"""
     """第 1 章的世界层（不含 defs / 遮罩 / 颗粒 / 文字）。返回 (svg, 纸云)。"""
     S = Scene()
     creases = []
     cam = camera(t)
-    unfold(S, TRIS, t, cam, creases)
+    rf = None
+    if refold is not None:                        # 由远到近翻回纸：远处（z 小）先翻
+        rf = (refold, lambda tri: 0.25 + (sum(p[2] for p in tri) / 3 - Z0) / (Z1 - Z0) * 0.8)
+    unfold(S, TRIS, t, cam, creases, refold=rf)
     for (x, y, z, tpop, kind, col, s) in TREES:
         sx, sy = pop((t - tpop) / 0.45)
+        if refold is not None:
+            k = 1 - clamp((refold - (0.1 + (z - Z0) / (Z1 - Z0) * 0.8)) / 0.3)
+            sx, sy = sx * k, sy * k
         add_tree(S, x, y, z, kind, col, s, sx, sy)
-    fx = train_x(t)
-    add_track(S, t, fx)
+    fx = train_x(t) + (60 * clamp(refold / 1.0) ** 2 if refold is not None else 0)   # 结尾：火车先开走
+    if refold is None or refold < 0.6:
+        add_track(S, t, fx)
     ch = None
     if t >= 2.0:
         ch = add_train(S, fx)

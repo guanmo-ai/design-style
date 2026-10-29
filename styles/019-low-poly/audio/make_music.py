@@ -1,136 +1,139 @@
-"""019 低多边形 · 配乐与音效（纯 Python 合成）。python3 audio/make_music.py out.wav
-120 BPM、C 大调，明快的木琴 + 拨弦 + 轻鼓；每个动作一个声音，时间直接从各章脚本里取。"""
-import array
+"""019 低多边形 · 电影感配乐（D 大调，120 BPM，20 秒 = 10 小节）。
+python3 audio/make_music.py <out.wav>
+
+结构（跟着画面走）：
+  1—2 小节  山谷：钢琴主题 + 竖琴分解和弦 + 轻弦乐；三角形翻到位是纸声
+  3—4       灯塔：三角形从天上砸下 —— 定音鼓 + 低音弦乐断奏推动；灯塔一节节弹上去，钢片琴往上走
+  5—6       小星球：上升音效一路推到减面那两拍，每次减面一记电影冲击
+  7—8       App：拨弦 + 钢片琴，轻快
+  8—9       夜：八音盒 + 人声垫，鼓全部停
+  9—10      结尾：弦乐渐强，18.4 秒片名出现时 D 大调全奏 + 冲击，最后钢琴独奏主题的前两个音，尾巴折回开头
+所有音色在 scripts/lib/audio/orchestra.py；音效时间直接从各章脚本里取。"""
 import math
 import os
-import random
 import sys
-import wave
 
 HERE = os.path.dirname(os.path.abspath(__file__))
+ROOT = os.path.join(HERE, '..', '..', '..')
+sys.path.insert(0, os.path.join(ROOT, 'scripts', 'lib'))
 sys.path.insert(0, os.path.join(HERE, '..', 'video'))
+from audio import AudioKit  # noqa: E402
+from audio.orchestra import Orchestra  # noqa: E402
 import ch1_valley as C1  # noqa: E402
 import ch2_lighthouse as C2  # noqa: E402
 import ch3_planet as C3  # noqa: E402
 
-SR, DUR, BEAT = 44100, 18.0, 0.5
-N = int(SR * DUR)
-L, R = [0.0] * N, [0.0] * N
-rnd = random.Random(19)
+
+class Kit(AudioKit, Orchestra):
+    pass
 
 
-def add(t0, smp, g=1.0, pan=0.0):
-    i0 = int(t0 * SR)
-    gl, gr = g * min(1, 1 - pan), g * min(1, 1 + pan)
-    for k, v in enumerate(smp):
-        i = (i0 + k) % N                     # 折回开头：循环无缝
-        L[i] += v * gl; R[i] += v * gr
+A = Kit(duration=20.0, seed=19, fps=30.0, tail=4.0)
+BEAT, BAR = 0.5, 2.0
+b = lambda bar, beat=0.0: (bar - 1) * BAR + beat * BEAT   # 第几小节第几拍 → 秒
+
+# 和弦（低音, [和弦音]）
+CH = {1: (38, [62, 66, 69, 76]), 2: (35, [59, 62, 66, 69]), 3: (31, [59, 62, 67, 71]), 4: (33, [61, 64, 69, 73]),
+      5: (35, [59, 62, 66, 71]), 6: (31, [62, 67, 71, 74]), 7: (38, [62, 66, 69, 74]), 8: (37, [61, 64, 69, 73]),
+      9: (35, [59, 62, 66, 71]), 10: (33, [61, 64, 69, 76])}
+
+# ---------- 钢琴主题 ----------
+MEL = {1: [(0, 74), (0.5, 78), (1, 81), (1.5, 86), (2.5, 85), (3, 81)],
+       2: [(0, 83), (1, 81), (1.5, 78), (2, 81), (3, 74)],
+       3: [(0, 79), (0.5, 83), (1, 86), (2, 88), (3, 86)],
+       4: [(0, 85), (1, 81), (2, 88), (2.5, 86), (3, 85)],
+       7: [(0, 86), (0.5, 85), (1, 81), (2, 78), (3, 81)],
+       9: [(0, 83), (2, 86)],
+       10: [(0, 88), (1, 86), (1.5, 85)]}
+for bar, notes in MEL.items():
+    for beat, m in notes:
+        A.place(A.grand(m, 2.2, 0.75), b(bar, beat), 0.9, pan=0.12, send=0.35)
+# 结尾 19.4 秒起：主题前两个音，弱，接回开头
+for beat, m in [(2.75, 74), (3.25, 78)]:
+    A.place(A.grand(m, 2.0, 0.55), b(10, beat), 0.8, pan=0.12, send=0.45)
+
+# 钢琴左手：每小节根音 + 五度
+for bar, (lo, ch) in CH.items():
+    if bar in (8,):
+        continue
+    A.place(A.grand(lo + 12, 2.4, 0.6), b(bar), 0.8, pan=-0.15, send=0.3)
+    A.place(A.grand(lo + 19, 1.6, 0.45), b(bar, 2), 0.6, pan=-0.15, send=0.3)
+
+# ---------- 竖琴分解和弦（山谷、App） ----------
+for bar in (1, 2, 7):
+    ch = CH[bar][1]
+    for k in range(8):
+        m = ch[[0, 1, 2, 3, 2, 1, 2, 3][k]] + (12 if k in (3, 4) else 0)
+        A.place(A.harp(m, 1.6), b(bar, k * 0.5), 0.55, pan=0.35, send=0.4)
+
+# ---------- 弦乐 ----------
+for bar, (lo, ch) in CH.items():
+    lvl = {1: 0.45, 2: 0.55, 3: 0.75, 4: 0.85, 5: 0.9, 6: 1.0, 7: 0.6, 8: 0.5, 9: 0.9, 10: 1.25}[bar]
+    A.place(A.strings([m - 12 for m in ch[:3]], BAR + 0.1, lvl, att=0.5 if bar not in (9,) else 1.6, rel=0.9, swell=bar in (5, 9)), b(bar), 1.0, send=0.5)
+    A.place(A.strings([lo, lo + 12], BAR + 0.1, lvl * 0.9, att=0.3, rel=0.8, bright=900), b(bar), 1.0, send=0.3)
+# 灯塔章：低音弦乐八分音符断奏（推动“砸下来”）
+for bar in (3, 4, 5, 6):
+    lo = CH[bar][0] + 12
+    for k in range(8):
+        A.place(A.strings([lo], 0.16, 0.9, att=0.01, rel=0.08, bright=1500), b(bar, k * 0.5), 1.0, pan=-0.2, send=0.15)
+# 结尾全奏：高八度旋律线 + 人声
+A.place(A.strings([88, 86, 85][:1], 1.0, 0.8, att=0.3), b(10), 1.0, pan=0.2, send=0.6)
+A.place(A.choir([62, 66, 69, 74], 3.5, 1.2, att=0.4, rel=2.0), 18.4, 1.0, send=0.6)
+A.place(A.strings([62, 66, 69, 74, 78], 1.6, 1.1, att=0.08, rel=1.8, bright=3200), 18.4, 1.0, send=0.6)
+
+# ---------- 夜：八音盒 + 人声垫，鼓停 ----------
+A.place(A.choir([61, 64, 69], 2.6, 0.9, att=0.6), 15.0, 1.0, send=0.6)
+for k, m in enumerate([88, 85, 81, 85, 90, 88, 85, 81]):
+    A.place(A.celesta(m, 1.4), 15.05 + k * 0.29, 0.8, pan=0.3 * math.sin(k), send=0.6)
+
+# ---------- 打击乐与冲击 ----------
+for bar in (3, 4, 5, 6, 7):
+    for k in range(4):
+        A.place(A.kick(0.6 if k % 2 == 0 else 0.35), b(bar, k), 0.8)
+        A.place(A.shaker(0.5), b(bar, k + 0.5), 0.6, pan=0.3)
+    A.place(A.timpani(38 if bar % 2 else 33, 0.7), b(bar), 0.8, send=0.3)
+for tt, lvl in ((4.5, 1.0), (8.0, 0.9), (8.0 + 1.75, 1.1), (8.0 + 2.25, 1.2), (18.4, 1.5)):
+    A.place(A.hit(lvl), tt, 1.0, send=0.35)
+# 换章：倒放膨胀落在下一章第一拍；减面前一路上升
+for tt, bar in ((4.5, 3), (8.0, 5), (11.6, 7), (15.0, 8), (18.4, 10)):
+    A.place(A.swell(CH[bar][1][:3], 1.0, 0.9), tt - 1.0, 1.0, send=0.2)
+A.place(A.riser2(1.6, 1.0), 8.0 + 1.75 - 1.6, 1.0)
+A.place(A.riser2(1.0, 0.8), 18.4 - 1.0, 1.0)
+
+# ---------- 音效（跟画面同步，量化到十六分音符，避免太密） ----------
+def paper(level=1.0):
+    t = A.tt(0.05)
+    return A._bp(A.rng.standard_normal(len(t)), 1500, 5500) * __import__('numpy').exp(-t / 0.012) * level * 0.12
 
 
-def hz(m): return 440 * 2 ** ((m - 69) / 12)
-
-
-def mallet(f, d=0.35):
-    n = int(d * SR)
-    return [(math.sin(math.tau * f * k / SR) + 0.3 * math.sin(math.tau * f * 4 * k / SR) * math.exp(-k / (0.02 * SR))) * math.exp(-k / (d * 0.35 * SR)) * min(1, k / 60) for k in range(n)]
-
-
-def pluck(f, d=0.5):
-    n = int(d * SR)
-    return [(math.sin(math.tau * f * k / SR) * 0.7 + 0.3 * math.sin(math.tau * f * 2 * k / SR)) * math.exp(-k / (d * 0.3 * SR)) * min(1, k / 80) for k in range(n)]
-
-
-def noise(d, lp, decay, attack=0.001):
-    y, o = 0, []
-    for k in range(int(d * SR)):
-        y = y * lp + (rnd.random() * 2 - 1) * (1 - lp)
-        o.append(y * 4 * math.exp(-k / (SR * decay)) * min(1, k / max(1, attack * SR)))
-    return o
-
-
-def kick():
-    n, ph, o = int(0.3 * SR), 0, []
-    for k in range(n):
-        ph += (50 + 100 * math.exp(-k / (SR * 0.025))) / SR
-        o.append(math.sin(ph * math.tau) * math.exp(-k / (SR * 0.1)))
-    return o
-
-
-def paper(d=0.03):   # 纸翻过去的“嚓”
-    return noise(d, 0.3, 0.008)
-
-
-PROG = [[60, 64, 67], [57, 60, 64], [65, 69, 72], [67, 71, 74]]   # C Am F G
-SCALE = [72, 74, 76, 79, 81, 84, 86, 88]
-K = kick()
-for b in range(36):
-    t = b * BEAT
-    ch = PROG[(b // 2) % 4]
-    night = 15.0 <= t < 17.5
-    add(t, K, 0.42 if not night else 0.15)
-    add(t + 0.25, noise(0.05, 0.1, 0.012), 0.08 if not night else 0.03, 0.3)
-    if b % 2 == 0:
-        add(t, pluck(hz(ch[0] - 24), 0.9), 0.22)
-        for i, m in enumerate(ch):
-            add(t + 0.25 + i * 0.0, pluck(hz(m), 0.4), 0.06, -0.3 + i * 0.3)
-    # 木琴分解和弦，一拍两个音
-    for h in range(2):
-        m = ch[(b * 2 + h) % 3] + 12
-        add(t + h * 0.25, mallet(hz(m), 0.3 if not night else 0.8), 0.06 if not night else 0.08, 0.2 if h else -0.2)
-
-# 章节开头：上行三音
-for t0 in (0.0, 4.5, 8.0, 11.6, 15.0):
-    for i, m in enumerate([79, 84, 88]):
-        add(t0 + 0.12 + i * 0.1, mallet(hz(m), 0.4), 0.09)
-
-# 第 1 章：三角形翻到位（只取一部分，按十六分音符量化，避免太密）
-def flips(TRIS, off, dur=0.5):
-    seen = set()
-    for item in TRIS:
-        tt = off + item[2] + dur * 0.82
-        q = round(tt / 0.0625)
-        if q in seen or not 0 <= tt < DUR:
-            continue
-        seen.add(q)
-        add(q * 0.0625, paper(), 0.10, rnd.uniform(-0.6, 0.6))
-        add(q * 0.0625, mallet(hz(SCALE[q % len(SCALE)]), 0.15), 0.025)
-
-
-flips(C1.TRIS, 0.0)
+seen = set()
+for item in C1.TRIS:
+    tt = item[2] + 0.5 * 0.82
+    q = round(tt / 0.0625)
+    if q in seen or not 0 <= tt < 4.5:
+        continue
+    seen.add(q)
+    A.sfx(paper(0.7), q * 0.0625, pan=A.rng.uniform(-0.6, 0.6), send=0.1)
 for (x, y, z, tpop, kind, col, s) in C1.TREES:
-    add(tpop + 0.06, pluck(hz(SCALE[int(abs(x)) % len(SCALE)]), 0.25), 0.04, max(-0.8, min(0.8, x / 30)))
+    A.sfx(A.marimba(CH[2][1][int(abs(x)) % 4] + 12, 0.6), tpop + 0.06, pan=max(-0.8, min(0.8, x / 30)), send=0.3)
 for k in range(9):
-    add(2.0 + k * 0.25, noise(0.16, 0.92, 0.05), 0.14)      # 火车“哧”
-for t0, l in ((3.65, 0.85), (7.25, 0.75), (17.0, 0.5)):       # 纸云盖屏的“呼——”
-    n = int(l * SR)
-    add(t0, [v * (k / n) ** 1.5 for k, v in enumerate(noise(l, 0.96, 2.0, 0.1))], 0.5)
-# 第 2 章
-flips([(None, None, d) for (_, _, d, *_r) in C2.TRIS], 4.5)
+    A.sfx(A.hiss(0.16, 0.6), 2.0 + k * 0.25, pan=0.2)
+seen = set()
+for (_, _, d, *_r) in C2.TRIS:                               # 灯塔章：三角形砸下来的“嗒”
+    tt = 4.5 + d + 0.42 * 0.62
+    q = round(tt / 0.0625)
+    if q in seen or not 4.5 <= tt < 8.0:
+        continue
+    seen.add(q)
+    A.sfx(A.thock(60 + (q % 5) * 2, 0.7), q * 0.0625, pan=A.rng.uniform(-0.5, 0.5), send=0.15)
 for n in range(6):
-    add(4.5 + 1.15 + n * 0.06 + 0.12, mallet(hz(72 + n * 2), 0.25), 0.08)
-add(4.5 + 1.9, [math.sin(math.tau * hz(84) * k / SR) * math.exp(-k / (0.6 * SR)) for k in range(int(1.2 * SR))], 0.08)
-# 第 3 章：面飞回来是一串细碎的“叮”，每次减面一声闷响 + 一个低音
-for k in range(40):
-    add(8.0 + 0.1 + k * 0.02 + rnd.random() * 0.02, mallet(hz(SCALE[k % len(SCALE)] + 12), 0.08), 0.02, rnd.uniform(-0.7, 0.7))
-for t0, l in C3.LEVEL_T[1:]:
-    add(8.0 + t0, K, 0.6)
-    add(8.0 + t0, pluck(hz(48 if l == 2 else 43), 0.8), 0.3)
-add(8.0 + 3.0, [math.sin(math.tau * (300 + 900 * k / (0.5 * SR)) * k / SR) * 0.4 * (1 - k / (0.5 * SR)) for k in range(int(0.5 * SR))], 0.15)
-# 第 4 章：手机弹出、预报一格格弹出、下雪“叮铃”
-add(11.6, K, 0.5)
-for k in range(5):
-    add(11.6 + 0.55 + k * 0.08 + 0.08, pluck(hz(SCALE[k + 2]), 0.2), 0.08)
-for k in range(8):
-    add(11.6 + 1.75 + k * 0.06, mallet(hz(SCALE[(k * 3) % len(SCALE)] + 12), 0.4), 0.04, rnd.uniform(-0.5, 0.5))
-# 第 5 章：夜里一个长和弦铺底，三档颜色各一声
-for m in (48, 55, 60, 64):
-    add(15.0, [math.sin(math.tau * hz(m) * k / SR) * min(1, k / (0.5 * SR)) * math.exp(-k / (2.2 * SR)) for k in range(int(2.5 * SR))], 0.05)
-for k in range(3):
-    add(15.0 + 0.8 + k * 0.12 + 0.08, mallet(hz([76, 72, 67][k]), 0.5), 0.12)
+    A.sfx(A.celesta(81 + [0, 2, 4, 7, 9, 12][n], 1.0), 4.5 + 1.15 + n * 0.06 + 0.12, 0.8, send=0.4)
+for k in range(30):                                          # 星球的面飞回来：一串钢片琴碎音
+    A.sfx(A.celesta(86 + [0, 2, 4, 7, 9][k % 5] + (12 if k % 3 == 0 else 0), 0.4), 8.0 + 0.05 + k * 0.025, 0.25, pan=A.rng.uniform(-0.7, 0.7), send=0.5)
+for k in range(5):                                           # App：天气预报一格格弹出
+    A.sfx(A.pizz(74 + [0, 2, 4, 7, 9][k], 1.0), 11.6 + 0.55 + k * 0.08 + 0.08, pan=-0.4 + k * 0.2, send=0.3)
+for k in range(3):                                           # 夜：三档颜色
+    A.sfx(A.celesta([88, 85, 81][k], 0.9), 15.0 + 0.8 + k * 0.12 + 0.08, send=0.5)
+A.sfx(A.whoosh(1.0, 400, 5000, 0.7), 17.4, send=0.3)          # 山谷翻回一张纸
 
-peak = max(max(map(abs, L)), max(map(abs, R))) or 1
-data = array.array('h')
-for a, b in zip(L, R):
-    data.append(int(a / peak * 0.86 * 32767)); data.append(int(b / peak * 0.86 * 32767))
-w = wave.open(sys.argv[1] if len(sys.argv) > 1 else 'lowpoly.wav', 'wb')
-w.setnchannels(2); w.setsampwidth(2); w.setframerate(SR); w.writeframes(data.tobytes()); w.close()
+A.master(sys.argv[1] if len(sys.argv) > 1 else os.path.join(HERE, 'lowpoly.wav'))

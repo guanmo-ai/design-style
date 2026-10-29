@@ -38,6 +38,7 @@ export class Kit {
     this.PIV = [px, py, pz]; this.root.add(g); this.groups.push(g); this.G = g;
     const tt = this.T0 + t0;
     this.ev(tt + (type === 'drop' ? dur * 0.6 : type === 'pop' ? 0.05 : 0), type, px / 14);
+    if ((type === 'drop' || type === 'spin') && opt.dust !== false) { const G = this.G; this.G = null; this.puff(px, Math.max(0, py - (opt.dustDrop ?? 0)), pz, t0 + dur * 0.6, opt.dustR || 2.2); this.G = G; }
   }
   add(...ms) {
     for (const m of ms) {
@@ -64,6 +65,18 @@ export class Kit {
     return m;
   }
 
+  // ---- 扬尘：在 (x, z) 处、时间 t 落地，半径 r ----
+  puff(x, y, z, t, r = 2.5, n = 9) {
+    const pm = new THREE.MeshStandardMaterial({ color: '#FFF7EC', flatShading: true, roughness: 1 });
+    const list = [];
+    for (let k = 0; k < n; k++) {
+      const m = mesh(lowpoly(new THREE.IcosahedronGeometry(1, 0), 0.25, k * 7 + Math.round(x * 13)), pm, { cast: false });
+      const a = k / n * Math.PI * 2 + (k % 2) * 0.3;
+      m.userData = { a, t: this.T0 + t, x, y, z, r, s: 0.35 + (k % 3) * 0.12 };
+      this.root.add(m); list.push(m);
+    }
+    this.puffs = (this.puffs || []).concat(list);
+  }
   // ---- 每帧 ----
   update(T, timeOf = () => T) {
     for (const g of this.groups) {
@@ -79,6 +92,14 @@ export class Kit {
       else if (type === 'drop') { const s = slam(e, h); g.position.y = base + s.dy; g.scale.set(s.sx, s.sy, s.sx); }
       else if (type === 'spin') { const s = slam(e, h); g.position.y = base + s.dy; g.rotation.y = (1 - smooth(clamp(e / 0.6))) * Math.PI; g.scale.set(s.sx, s.sy, s.sx); }
     }
+    for (const p of this.puffs || []) {
+      const { a, t: tp, x, y, z, r, s } = p.userData, tt = timeOf(p.userData), e = clamp((tt - tp) / 0.55);
+      if (e <= 0 || e >= 1) { p.visible = false; continue; }
+      p.visible = true;
+      const d = r * (0.5 + 0.9 * (1 - (1 - e) ** 3));
+      p.position.set(x + Math.cos(a) * d, y + 0.2 + 0.6 * e, z + Math.sin(a) * d);
+      p.scale.setScalar(s * Math.sin(Math.PI * Math.min(1, e * 1.2)) * (1 - e * 0.3));
+    }
     for (const S of this.shardSets) {
       const { m, items, dummy } = S;
       items.forEach((it, i) => {
@@ -86,7 +107,7 @@ export class Kit {
         let e = clamp((t - it.t0) / it.dur);
         dummy.position.set(it.x, it.y, it.z); dummy.rotation.set(0, 0, 0); dummy.scale.set(it.w, it.h, it.d);
         if (e <= 0) { dummy.position.y = -1e4; dummy.scale.set(1e-4, 1e-4, 1e-4); }
-        else if (it.type === 'slam') { const s = slam(e, it.hgt ?? 9); dummy.position.y = it.y + s.dy; dummy.scale.set(it.w * s.sx, it.h * s.sy, it.d * s.sx); dummy.rotation.y = (1 - clamp(e / 0.6)) * (it.spin || 0); }
+        else if (it.type === 'slam') { const s = slam(e, it.hgt ?? 9); dummy.position.y = it.y + s.dy; dummy.scale.set(it.w * s.sx, it.h * s.sy, it.d * s.sx); const fall = 1 - clamp(e / 0.6); dummy.rotation.set(fall * (it.tumble || 0), fall * (it.spin || 0), fall * (it.tumble || 0) * 0.6); }
         else if (it.type === 'slide') dummy.position.x = it.x - 24 * (1 - back(e, 1.1));
         else if (it.type === 'flip') { dummy.position.y = it.y + 2.6 * (1 - smooth(e)); dummy.rotation.x = Math.PI * (1 - back(e, 1.2)); }
         else if (it.type === 'pop') { const k = Math.max(1e-4, back(e, 2.4)); dummy.scale.set(it.w * k, it.h * k, it.d * k); }
@@ -98,12 +119,12 @@ export class Kit {
 }
 
 // 底座：木框 + 四层土，全部切成 2×2 的小块，从上往下一层层砸（土层）+ 从左往右推（木框条）
-export function plinth(K, { size = 24, T = 0, seed = 1, top = '#A9C98A', layers } = {}) {
+export function plinth(K, { size = 24, T = 0, seed = 1, top = '#A9C98A', layers, speed = 1 } = {}) {
   const R = rng(seed), half = size / 2, n = size / 2, items = [];
   layers = layers || [['#C99A72', 1.4], ['#DDB48A', 0.9], ['#EED0A6', 0.6], [top, 0.3]];   // 合计 3.2：顶面正好在 y=0
   // 木框：四周 16 根木条，从左往右推进来
   for (let k = 0; k < 8; k++) {
-    items.push({ x: -half - 1 + k * (size + 2) / 8 + (size + 2) / 16, y: -4.4, z: 0, w: (size + 2) / 8 - 0.04, h: 1.2, d: size + 2, c: k % 2 ? '#FFF7EC' : '#F6EBDA', t0: T + k * 0.035, dur: 0.3, type: 'slide' });
+    items.push({ x: -half - 1 + k * (size + 2) / 8 + (size + 2) / 16, y: -4.4, z: 0, w: (size + 2) / 8 - 0.04, h: 1.2, d: size + 2, c: k % 2 ? '#FFF7EC' : '#F6EBDA', t0: T + k * 0.035 * speed, dur: 0.3 * Math.max(0.6, speed), type: 'slide' });
   }
   let ly = -3.2, li = 0;
   for (const [c, h] of layers) {
@@ -111,11 +132,11 @@ export function plinth(K, { size = 24, T = 0, seed = 1, top = '#A9C98A', layers 
       const x = -half + 1 + i * 2, z = -half + 1 + j * 2;
       const d = Math.hypot(i - n / 2, j - n / 2) / n;   // 从中间往外，一圈圈砸下来
       const col = new THREE.Color(c).offsetHSL(0, 0, (R() - 0.5) * 0.05).getStyle();
-      items.push({ x, y: ly, z, w: 1.96, h, d: 1.96, c: col, t0: T + 0.22 + li * 0.14 + d * 0.32 + R() * 0.05, dur: 0.32, type: 'slam', hgt: 7 + R() * 3, spin: (R() - 0.5) * 1.2 });
+      items.push({ x, y: ly, z, w: 1.96, h, d: 1.96, c: col, t0: T + (0.22 + li * 0.14 + d * 0.32 + R() * 0.05) * speed, dur: 0.32 * Math.max(0.7, speed), type: 'slam', hgt: 7 + R() * 3, spin: (R() - 0.5) * 1.2, tumble: (R() - 0.5) * 2.2 });
     }
     ly += h; li++;
   }
   K.shards(items);
-  for (let li2 = 0; li2 < layers.length; li2++) K.ev(T + 0.22 + li2 * 0.14 + 0.2, 'rumble', 0);
+  for (let li2 = 0; li2 < layers.length; li2++) K.ev(T + (0.22 + li2 * 0.14 + 0.2) * speed, 'rumble', 0);
   return ly;   // 顶面高度
 }
