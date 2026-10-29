@@ -84,7 +84,12 @@ export function setup({ W = 1920, H = 1080, pr = 2, bg = '#bcd', exposure = 1.0,
   return { renderer, scene, W, H, pr };
 }
 
-export function finish(ctx, camera, { ao = true, aoRadius = 0.6, aoDist = 0.25, bloom = 0, bloomRadius = 0.5, bloomThreshold = 0.85, tilt = null, vig = 0.35, grain = 0.03, lift = [0, 0, 0] } = {}) {
+export function finish(ctx, camera, opts = {}) {
+  makeComposer(ctx, camera, opts).render();
+  window.__done = true;
+}
+
+export function makeComposer(ctx, camera, { ao = true, aoRadius = 0.6, aoDist = 0.25, bloom = 0, bloomRadius = 0.5, bloomThreshold = 0.85, tilt = null, vig = 0.35, grain = 0.03, lift = [0, 0, 0] } = {}) {
   const { renderer, scene, W, H, pr } = ctx;
   const comp = new EffectComposer(renderer);
   comp.setPixelRatio(pr); comp.setSize(W, H);
@@ -109,8 +114,7 @@ export function finish(ctx, camera, { ao = true, aoRadius = 0.6, aoDist = 0.25, 
   const gr = new ShaderPass(Grade); gr.uniforms.vig.value = vig; gr.uniforms.grain.value = grain; gr.uniforms.lift.value.set(...lift);
   comp.addPass(gr);
   comp.addPass(new SMAAPass(W * pr, H * pr));
-  comp.render();
-  window.__done = true;
+  return comp;
 }
 
 // 平行光的阴影框收紧到场景范围，阴影才锐利
