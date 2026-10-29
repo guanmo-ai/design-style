@@ -64,12 +64,18 @@ const TiltShift = {
 };
 // 暗角 + 胶片颗粒 + 轻微调色
 const Grade = {
-  uniforms: { tDiffuse: { value: null }, vig: { value: 0.35 }, grain: { value: 0.035 }, lift: { value: new THREE.Vector3(0, 0, 0) }, seed: { value: 1.0 } },
+  uniforms: { tDiffuse: { value: null }, vig: { value: 0.35 }, grain: { value: 0.035 }, lift: { value: new THREE.Vector3(0, 0, 0) }, seed: { value: 1.0 }, edge: { value: 0 }, paper: { value: new THREE.Vector3(0.97, 0.94, 0.87) }, aspect: { value: 16 / 9 } },
   vertexShader: 'varying vec2 vUv; void main(){ vUv=uv; gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.); }',
-  fragmentShader: `uniform sampler2D tDiffuse; uniform float vig, grain, seed; uniform vec3 lift; varying vec2 vUv;
+  fragmentShader: `uniform sampler2D tDiffuse; uniform float vig, grain, seed, edge, aspect; uniform vec3 lift, paper; varying vec2 vUv;
   float h(vec2 p){ return fract(sin(dot(p, vec2(12.9898,78.233)) + seed) * 43758.5453); }
   void main(){ vec4 c = texture2D(tDiffuse, vUv); vec2 q = vUv - .5; float v = 1. - vig * dot(q, q) * 2.2;
-    c.rgb = c.rgb * v + lift; c.rgb += (h(vUv * 1000.) - .5) * grain; gl_FragColor = c; }`,
+    c.rgb = c.rgb * v + lift; c.rgb += (h(vUv * 1000.) - .5) * grain;
+    if (edge > 0.) {   // 画面边缘碎成纸屑点：圆角矩形距离 + 像素噪声阈值
+      vec2 p = (vUv - .5) * vec2(aspect, 1.); vec2 b = vec2(aspect * .5 - edge, .5 - edge * .8);
+      vec2 d = abs(p) - b + .06; float dist = length(max(d, 0.)) + min(max(d.x, d.y), 0.) - .06;
+      float k = clamp(dist / (edge * .9) + .5, 0., 1.); float n = h(floor(vUv * vec2(1920., 1080.)) * .37);
+      c.rgb = mix(c.rgb, paper, step(n, k)); }
+    gl_FragColor = c; }`,
 };
 
 export function setup({ W = 1920, H = 1080, pr = 2, bg = '#bcd', exposure = 1.0, tone = 'neutral' } = {}) {
@@ -89,7 +95,7 @@ export function finish(ctx, camera, opts = {}) {
   window.__done = true;
 }
 
-export function makeComposer(ctx, camera, { ao = true, aoRadius = 0.6, aoDist = 0.25, bloom = 0, bloomRadius = 0.5, bloomThreshold = 0.85, tilt = null, vig = 0.35, grain = 0.03, lift = [0, 0, 0] } = {}) {
+export function makeComposer(ctx, camera, { ao = true, aoRadius = 0.6, aoDist = 0.25, bloom = 0, bloomRadius = 0.5, bloomThreshold = 0.85, tilt = null, vig = 0.35, grain = 0.03, lift = [0, 0, 0], edge = 0, paper = '#F7F0E2' } = {}) {
   const { renderer, scene, W, H, pr } = ctx;
   const comp = new EffectComposer(renderer);
   comp.setPixelRatio(pr); comp.setSize(W, H);
@@ -111,7 +117,8 @@ export function makeComposer(ctx, camera, { ao = true, aoRadius = 0.6, aoDist = 
       comp.addPass(p);
     }
   }
-  const gr = new ShaderPass(Grade); gr.uniforms.vig.value = vig; gr.uniforms.grain.value = grain; gr.uniforms.lift.value.set(...lift);
+  const gr = new ShaderPass(Grade); gr.uniforms.vig.value = vig; gr.uniforms.grain.value = grain; gr.uniforms.lift.value.set(...lift); gr.uniforms.edge.value = edge; gr.uniforms.aspect.value = W / H;
+  { const pc = new THREE.Color(paper); gr.uniforms.paper.value.set(pc.r, pc.g, pc.b); }
   comp.addPass(gr);
   comp.addPass(new SMAAPass(W * pr, H * pr));
   return comp;
