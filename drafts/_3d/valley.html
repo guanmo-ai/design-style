@@ -1,0 +1,305 @@
+<!doctype html><meta charset="utf-8"><style>html,body{margin:0;overflow:hidden;background:#000}</style>
+<script type="importmap">{"imports":{"three":"./node_modules/three/build/three.module.js","three/addons/":"./node_modules/three/examples/jsm/"}}</script>
+<script type="module">
+// 低多边形 · 黄昏山谷：蒸汽小火车开上石拱高架桥（第 0 帧）
+import { THREE, setup, finish, sun, mesh, mat, lowpoly, rng, noise2, mergeGeometries } from './lib.js';
+import { Reflector } from 'three/addons/objects/Reflector.js';
+const Q = new URLSearchParams(location.search);
+const W = +(Q.get('w') || 1920), H = +(Q.get('h') || 1080);
+const ctx = setup({ W, H, pr: +(Q.get('pr') || 2), exposure: 1.0 });
+const { scene } = ctx;
+const R = rng(11), N = noise2(5);
+
+// ---------- 天空：竖向渐变 + 太阳光晕 ----------
+{
+  const c = document.createElement('canvas'); c.width = 2; c.height = 512;
+  const g = c.getContext('2d'), gr = g.createLinearGradient(0, 0, 0, 512);
+  gr.addColorStop(0, '#7EC4F2'); gr.addColorStop(.45, '#B8E0F6'); gr.addColorStop(.75, '#FFF1DC'); gr.addColorStop(1, '#FFE7CC');
+  g.fillStyle = gr; g.fillRect(0, 0, 2, 512);
+  const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace;
+  scene.background = t;
+}
+scene.fog = new THREE.Fog('#BFE0F4', 140, 520);
+scene.add(new THREE.HemisphereLight('#DDEEFF', '#C9A27A', 1.3));
+const S = sun(scene, { color: '#FFF0D8', intensity: 3.4, pos: [-100, 90, 30], target: [0, 0, -20], size: 110 });
+const fill = new THREE.DirectionalLight('#CFE2FF', 0.5); fill.position.set(40, 30, 60); scene.add(fill);
+
+// 太阳盘 + 光晕（背景里）
+{
+  const c = document.createElement('canvas'); c.width = c.height = 256; const g = c.getContext('2d');
+  const gr = g.createRadialGradient(128, 128, 0, 128, 128, 128);
+  gr.addColorStop(0, 'rgba(255,248,220,1)'); gr.addColorStop(.12, 'rgba(255,236,190,1)'); gr.addColorStop(.3, 'rgba(255,200,150,.45)'); gr.addColorStop(1, 'rgba(255,180,150,0)');
+  g.fillStyle = gr; g.fillRect(0, 0, 256, 256);
+  const sp = new THREE.Sprite(new THREE.SpriteMaterial({ map: new THREE.CanvasTexture(c), fog: false, depthWrite: false, transparent: true }));
+  
+}
+
+// ---------- 地形 ----------
+const LAKE_Y = 0.6;
+function height(x, z) {
+  const hills = (N(x * 0.025, z * 0.025, 5) - 0.45) * 22;
+  const back = Math.max(0, (-z - 60) / 70) ** 1.6 * 70;                    // 远处抬成山
+  const peaks = 55 * Math.exp(-(((x + 40) / 26) ** 2) - (((z + 150) / 22) ** 2)) + 62 * Math.exp(-(((x - 45) / 24) ** 2) - (((z + 165) / 26) ** 2)) + 40 * Math.exp(-(((x - 5) / 18) ** 2) - (((z + 190) / 18) ** 2));
+  const lake = -10 * Math.exp(-(((x + 22) / 26) ** 2) - (((z + 28) / 14) ** 2));
+  const river = -7 * Math.exp(-(((x - (z + 30) * 0.18 + 6) / 6) ** 2)) * (z > -30 ? 1 : 0);
+  const sideL = Math.max(0, (-x - 50) / 30) * 14, sideR = Math.max(0, (x - 38) / 25) * 18;
+  return Math.max(-3, 3 + hills + back + peaks + lake + river + sideL + sideR);
+}
+{
+  const geo = new THREE.PlaneGeometry(420, 360, 170, 150); geo.rotateX(-Math.PI / 2); geo.translate(0, 0, -110);
+  const p = geo.attributes.position;
+  for (let i = 0; i < p.count; i++) {
+    const x = p.getX(i) + (R() - .5) * 1.4, z = p.getZ(i) + (R() - .5) * 1.4;
+    p.setXYZ(i, x, height(x, z), z);
+  }
+  const g = lowpoly(geo);
+  const pos = g.attributes.position, cols = [];
+  const C = (h) => new THREE.Color(h);
+  const grassA = [C('#86BF4C'), C('#93C855'), C('#7AB546'), C('#9DCC5E')], forest = C('#5A9440'), rock = C('#9FB07E'), rock2 = C('#AEBE8A'), snow = C('#F6F0F4'), sand = C('#F2DDA6'), dirt = C('#78AA48');
+  for (let i = 0; i < pos.count; i += 3) {
+    const a = new THREE.Vector3().fromBufferAttribute(pos, i), b = new THREE.Vector3().fromBufferAttribute(pos, i + 1), c = new THREE.Vector3().fromBufferAttribute(pos, i + 2);
+    const n = new THREE.Vector3().subVectors(b, a).cross(new THREE.Vector3().subVectors(c, a)).normalize();
+    const y = (a.y + b.y + c.y) / 3, slope = 1 - Math.abs(n.y);
+    let col;
+    if (y > 48 - N(a.x * .1, a.z * .1) * 10) col = snow;
+    else if (y > 30 || slope > 0.72) col = (i / 3) % 2 ? rock : rock2;
+    else if (y < LAKE_Y + 0.9) col = sand;
+    else if (slope > 0.38) col = dirt;
+    else col = N(a.x * .06, a.z * .06) > .55 ? forest : grassA[(i / 3) % 4];
+    const v = col.clone().offsetHSL(0, 0, (R() - .5) * 0.035);
+    for (let k = 0; k < 3; k++) cols.push(v.r, v.g, v.b);
+  }
+  g.setAttribute('color', new THREE.Float32BufferAttribute(cols, 3));
+  scene.add(mesh(g, mat('#ffffff', { vc: true, rough: .95 }), { cast: true }));
+}
+
+// ---------- 湖：镜面 + 半透明的碎面波纹 ----------
+{
+  const m = new Reflector(new THREE.PlaneGeometry(400, 300), { color: '#BFE6EE', textureWidth: 1024, textureHeight: 1024 });
+  m.rotation.x = -Math.PI / 2; m.position.set(0, LAKE_Y, -60); scene.add(m);
+  const wg = new THREE.PlaneGeometry(400, 300, 120, 90); wg.rotateX(-Math.PI / 2);
+  const p = wg.attributes.position;
+  for (let i = 0; i < p.count; i++) p.setY(i, (R() - .5) * 0.18);
+  const w = mesh(lowpoly(wg), mat('#3FC1D8', { rough: .25, metal: .1, opacity: .62 }), { cast: false });
+  w.position.set(0, LAKE_Y + 0.05, -60); scene.add(w);
+}
+
+// ---------- 树 ----------
+const pineParts = [], roundParts = { o: [], y: [], r: [], g: [] }, trunkParts = [];
+function pine(x, z, s) {
+  const y = height(x, z) - 0.2;
+  trunkParts.push(new THREE.CylinderGeometry(0.18 * s, 0.25 * s, 1.4 * s, 5).translate(x, y + 0.7 * s, z));
+  for (let k = 0; k < 3; k++) {
+    const r = (1.5 - k * 0.38) * s, h = (2.0 - k * 0.3) * s;
+    const g = new THREE.ConeGeometry(r, h, 7).rotateY(R() * 6).translate(x, y + (1.3 + k * 1.05) * s, z);
+    pineParts.push(lowpoly(g, 0.12 * s, (R() * 1e6) | 0));
+  }
+}
+function round(x, z, s, kind) {
+  const y = height(x, z) - 0.2;
+  trunkParts.push(new THREE.CylinderGeometry(0.16 * s, 0.24 * s, 1.8 * s, 5).translate(x, y + 0.9 * s, z));
+  roundParts[kind].push(lowpoly(new THREE.IcosahedronGeometry(1.3 * s, 0).scale(1, 1.15, 1).translate(x, y + 2.6 * s, z), 0.3 * s, (R() * 1e6) | 0));
+  if (R() > .5) roundParts[kind].push(lowpoly(new THREE.IcosahedronGeometry(0.85 * s, 0).translate(x + 0.7 * s, y + 2.1 * s, z + 0.4 * s), 0.2 * s, (R() * 1e6) | 0));
+}
+for (let i = 0; i < 2600; i++) {
+  const x = (R() - .5) * 300, z = 40 - R() * 210;
+  const y = height(x, z);
+  if (y < LAKE_Y + 1.2 || y > 30) continue;
+  if (Math.abs(x - ((z + 30) * 0.18 - 6)) < 9 && z > -34) continue;      // 河道
+  if (z > -6 && z < 12 && Math.abs(x) < 40) continue;                     // 桥
+  if (x > -56 && x < -12 && z > -70 && z < -46) continue;                  // 村子
+  const dense = N(x * .06, z * .06);
+  if (R() > dense * 1.25) continue;
+  const s = 0.8 + R() * 0.8 + (z < -80 ? 0.6 : 0);
+  if (R() < 0.62) pine(x, z, s); else round(x, z, s, ['o', 'y', 'r', 'g'][(R() * 4) | 0]);
+}
+const merge = (arr, m) => arr.length && scene.add(mesh(mergeGeometries(arr.map(g => g.index ? g.toNonIndexed() : g)), m));
+
+// 岩石
+{
+  const rocks = [];
+  for (let i = 0; i < 260; i++) {
+    const x = (R() - .5) * 260, z = 30 - R() * 130, y = height(x, z);
+    if (y < LAKE_Y || y > 22) continue;
+    const s = 0.3 + R() * 1.1;
+    rocks.push(lowpoly(new THREE.DodecahedronGeometry(s, 0).scale(1, .7, 1).translate(x, y + s * .3, z), s * .35, i));
+  }
+  merge(rocks, mat('#A89590'));
+}
+
+// ---------- 石拱高架桥 ----------
+const BZ = 4, DECK = 13.5, X0 = -46, X1 = 40;
+{
+  const span = 10.75, n = 8;
+  const shape = new THREE.Shape();
+  shape.moveTo(X0, -8); shape.lineTo(X1, -8); shape.lineTo(X1, DECK); shape.lineTo(X0, DECK); shape.lineTo(X0, -8);
+  for (let i = 0; i < n; i++) {
+    const cx = X0 + span * (i + .5), hw = span * 0.36, top = DECK - 4.2;
+    const hole = new THREE.Path();
+    hole.moveTo(cx - hw, -8); hole.lineTo(cx - hw, top - hw); hole.absarc(cx, top - hw, hw, Math.PI, 0, true); hole.lineTo(cx + hw, -8); hole.lineTo(cx - hw, -8);
+    shape.holes.push(hole);
+  }
+  const g = new THREE.ExtrudeGeometry(shape, { depth: 3.2, bevelEnabled: false, curveSegments: 6 }).translate(0, 0, BZ - 1.6);
+  scene.add(mesh(lowpoly(g), mat('#F1DDBF')));
+  const stones = [], keys = [];
+  for (let i = 0; i < n; i++) {
+    const cx = X0 + span * (i + .5), hw = span * 0.36, top = DECK - 4.2, cy = top - hw;
+    for (let k = 0; k <= 10; k++) {                     // 拱券：沿半圆排一圈楔形石
+      const a = Math.PI - k / 10 * Math.PI, r0 = hw + 0.05;
+      for (const dz of [-1.62, 1.62]) keys.push(new THREE.BoxGeometry(0.55, 0.9, 0.12).rotateZ(a - Math.PI / 2).translate(cx + Math.cos(a) * (r0 + 0.4), cy + Math.sin(a) * (r0 + 0.4), BZ + dz));
+    }
+  }
+  const SR = rng(77);
+  for (let y = -6; y < DECK - 0.3; y += 0.62) for (let x = X0 + ((y * 7) % 1.1); x < X1 - 0.5; x += 1.15) {
+    if (SR() < 0.45) continue;
+    let inHole = false;
+    for (let i = 0; i < n; i++) { const cx = X0 + span * (i + .5), hw = span * 0.36 + 0.9, top = DECK - 4.2; if (Math.abs(x - cx) < hw && (y < top - hw || Math.hypot(x - cx, y - (top - hw)) < hw)) inHole = true; }
+    if (inHole) continue;
+    for (const dz of [-1.62, 1.62]) stones.push(new THREE.BoxGeometry(1.0, 0.5, 0.08).translate(x, y, BZ + dz));
+  }
+  const sm = mergeGeometries(stones), km = mergeGeometries(keys);
+  scene.add(mesh(sm, mat('#E4CBA8'), { cast: false })); scene.add(mesh(km, mat('#D6B48C'), { cast: false }));
+  scene.add(mesh(new THREE.BoxGeometry(X1 - X0 + 1, 0.7, 4.2).translate((X0 + X1) / 2, DECK + 0.35, BZ), mat('#DCC3A2')));   // 桥面檐
+  for (const dz of [-1.9, 1.9]) scene.add(mesh(new THREE.BoxGeometry(X1 - X0, 0.5, 0.25).translate((X0 + X1) / 2, DECK + 0.95, BZ + dz), mat('#8C7564')));
+  for (let x = X0; x < X1; x += 1.6) for (const dz of [-1.9, 1.9]) scene.add(mesh(new THREE.BoxGeometry(0.18, 0.6, 0.18).translate(x, DECK + 0.95, BZ + dz), mat('#8C7564')));
+  // 轨道
+  for (const dz of [-0.6, 0.6]) scene.add(mesh(new THREE.BoxGeometry(X1 - X0 + 30, 0.12, 0.12).translate((X0 + X1) / 2 + 10, DECK + 0.82, BZ + dz), mat('#6B6B72', { metal: .6, rough: .4 })));
+  for (let x = X0; x < X1 + 20; x += 0.9) scene.add(mesh(new THREE.BoxGeometry(0.3, 0.1, 1.8).translate(x, DECK + 0.73, BZ), mat('#6A4A36')));
+}
+// 隧道口（右边山体）
+{
+  const s = new THREE.Shape(); s.moveTo(-3.6, 0); s.lineTo(-3.6, 6.2); s.lineTo(3.6, 6.2); s.lineTo(3.6, 0); s.lineTo(-3.6, 0);
+  const h = new THREE.Path(); h.moveTo(-2.3, 0); h.lineTo(-2.3, 3.4); h.absarc(0, 3.4, 2.3, Math.PI, 0, true); h.lineTo(2.3, 0); h.lineTo(-2.3, 0); s.holes.push(h);
+  const g = new THREE.ExtrudeGeometry(s, { depth: 1.2, bevelEnabled: false, curveSegments: 7 }).rotateY(Math.PI / 2).translate(X1 + 1, DECK + 0.7, BZ);
+  scene.add(mesh(lowpoly(g), mat('#9E8775')));
+  const dark = mesh(new THREE.BoxGeometry(0.4, 5.6, 4.6).translate(X1 + 2.2, DECK + 3.3, BZ), mat('#120D10'), { cast: false });
+  scene.add(dark);
+  // 山体把隧道口包住
+  {
+    const hill = lowpoly(new THREE.IcosahedronGeometry(15, 2).scale(1.35, 0.95, 1.1).translate(X1 + 14, DECK - 3, BZ - 2), 1.6, 9);
+    const pp = hill.attributes.position, cc = [], G = [new THREE.Color('#86BF4C'), new THREE.Color('#93C855'), new THREE.Color('#7AB546')], Rk = new THREE.Color('#C2B8AE');
+    for (let i = 0; i < pp.count; i += 3) {
+      const ny = hill.attributes.normal.getY(i), c = ny < 0.45 ? Rk : G[(i / 3) % 3];
+      for (let k = 0; k < 3; k++) cc.push(c.r, c.g, c.b);
+    }
+    hill.setAttribute('color', new THREE.Float32BufferAttribute(cc, 3));
+    scene.add(mesh(hill, mat('#ffffff', { vc: true })));
+    for (let k = 0; k < 14; k++) { const a = R() * 6.28, rr = 4 + R() * 9; const x = X1 + 14 + Math.cos(a) * rr * 1.2, z = BZ - 2 + Math.sin(a) * rr; const y = DECK - 3 + Math.sqrt(Math.max(0, 15 * 15 - (rr * 1.05) ** 2)) * 0.9 - 0.6;
+      const s2 = 0.9 + R() * 0.6; for (let j = 0; j < 3; j++) pineParts.push(lowpoly(new THREE.ConeGeometry((1.5 - j * .38) * s2, (2 - j * .3) * s2, 7).translate(x, y + (1.3 + j * 1.05) * s2, z), .1, k * 9 + j)); }
+  }
+}
+
+// ---------- 蒸汽小火车（往左开，车头刚出隧道口不远） ----------
+const TY = DECK + 0.85;
+function wheel(x, z, r, c = '#B23A2E') {
+  const g = new THREE.CylinderGeometry(r, r, 0.22, 12).rotateX(Math.PI / 2).translate(x, TY + r, z);
+  scene.add(mesh(g, mat(c, { rough: .5 })));
+  scene.add(mesh(new THREE.CylinderGeometry(r * .35, r * .35, 0.26, 8).rotateX(Math.PI / 2).translate(x, TY + r, z), mat('#2A2A30')));
+}
+const LX = -2;   // 车头前端 x
+{
+  const red = '#C8372D', black = '#2B2A30', brass = '#D9A441';
+  // 锅炉
+  scene.add(mesh(new THREE.CylinderGeometry(1.05, 1.05, 5.4, 12).rotateZ(Math.PI / 2).translate(LX + 3.0, TY + 2.3, BZ), mat(black, { rough: .45, metal: .3 })));
+  scene.add(mesh(new THREE.CylinderGeometry(1.12, 1.12, 0.25, 12).rotateZ(Math.PI / 2).translate(LX + 1.4, TY + 2.3, BZ), mat(brass, { metal: .7, rough: .3 })));
+  scene.add(mesh(new THREE.CylinderGeometry(1.12, 1.12, 0.25, 12).rotateZ(Math.PI / 2).translate(LX + 3.6, TY + 2.3, BZ), mat(brass, { metal: .7, rough: .3 })));
+  scene.add(mesh(new THREE.CylinderGeometry(1.1, 1.1, 0.5, 12).rotateZ(Math.PI / 2).translate(LX + 0.4, TY + 2.3, BZ), mat('#3A3A42')));       // 烟箱门
+  scene.add(mesh(new THREE.CylinderGeometry(0.42, 0.3, 1.5, 10).translate(LX + 1.1, TY + 3.9, BZ), mat(black)));                               // 烟囱
+  scene.add(mesh(new THREE.CylinderGeometry(0.62, 0.42, 0.35, 10).translate(LX + 1.1, TY + 4.75, BZ), mat(black)));
+  scene.add(mesh(new THREE.SphereGeometry(0.45, 10, 6, 0, Math.PI * 2, 0, Math.PI / 2).translate(LX + 2.9, TY + 3.3, BZ), mat(brass, { metal: .7, rough: .3 })));   // 汽包
+  scene.add(mesh(new THREE.BoxGeometry(5.8, 0.5, 2.5).translate(LX + 3.2, TY + 1.0, BZ), mat(red)));                                          // 底架
+  scene.add(mesh(new THREE.BoxGeometry(0.4, 0.9, 2.4).translate(LX - 0.1, TY + 0.65, BZ), mat(red)));                                          // 排障
+  // 驾驶室
+  scene.add(mesh(new THREE.BoxGeometry(2.4, 2.8, 2.6).translate(LX + 6.6, TY + 2.65, BZ), mat(red)));
+  scene.add(mesh(new THREE.BoxGeometry(2.9, 0.25, 3.0).translate(LX + 6.6, TY + 4.15, BZ), mat(black)));
+  for (const dz of [-1.31, 1.31]) scene.add(mesh(new THREE.BoxGeometry(1.2, 1.0, 0.04).translate(LX + 6.6, TY + 3.2, BZ + dz), mat('#FFD58A', { emissive: '#FFB54A', ei: 0.3 }), { cast: false }));
+  for (const x of [LX + 1.6, LX + 3.2, LX + 4.8]) for (const dz of [-1.0, 1.0]) wheel(x, BZ + dz, 0.75);
+  for (const dz of [-1.12, 1.12]) scene.add(mesh(new THREE.BoxGeometry(3.4, 0.14, 0.08).translate(LX + 3.2, TY + 0.85, BZ + dz), mat('#C9C9D0', { metal: .8, rough: .3 })));   // 连杆
+  // 煤水车
+  scene.add(mesh(new THREE.BoxGeometry(3.2, 1.8, 2.5).translate(LX + 9.8, TY + 1.7, BZ), mat(black)));
+  scene.add(mesh(lowpoly(new THREE.BoxGeometry(2.8, 0.5, 2.1, 4, 1, 3).translate(LX + 9.8, TY + 2.75, BZ), 0.2, 3), mat('#1A1A1E')));
+  for (const x of [LX + 9.0, LX + 10.6]) for (const dz of [-1.0, 1.0]) wheel(x, BZ + dz, 0.5, black);
+  // 客车 ×3
+  const cars = ['#2F6DB5', '#E2A33C', '#2F8A63'];
+  cars.forEach((c, k) => {
+    const x = LX + 13.6 + k * 7.4;
+    scene.add(mesh(new THREE.BoxGeometry(6.6, 2.5, 2.6).translate(x, TY + 2.05, BZ), mat(c)));
+    scene.add(mesh(new THREE.CylinderGeometry(1.5, 1.5, 6.9, 12, 1, false, -Math.PI / 2, Math.PI).rotateZ(Math.PI / 2).scale(1, 0.35, 1).translate(x, TY + 3.3, BZ), mat('#F1E7D6')));
+    scene.add(mesh(new THREE.BoxGeometry(6.7, 0.18, 2.7).translate(x, TY + 2.0, BZ), mat('#F1E7D6')));
+    for (let w = 0; w < 4; w++) for (const dz of [-1.31, 1.31])
+      scene.add(mesh(new THREE.BoxGeometry(0.9, 0.85, 0.04).translate(x - 2.3 + w * 1.55, TY + 2.65, BZ + dz), mat('#FFE0A0', { emissive: '#FFB24A', ei: 0.25 }), { cast: false }));
+    for (const xx of [x - 2.2, x + 2.2]) for (const dz of [-1.0, 1.0]) wheel(xx, BZ + dz, 0.45, black);
+    scene.add(mesh(new THREE.BoxGeometry(0.8, 0.3, 0.4).translate(x - 3.7, TY + 1.0, BZ), mat(black)));
+  });
+  // 蒸汽：沿着车顶往后拉长、变大
+  const puffs = [];
+  for (let k = 0; k < 16; k++) {
+    const t = k / 15, x = LX + 1.1 + t * 26 + Math.sin(k * 1.7) * 0.6, y = TY + 5.3 + t * 7 + Math.sin(k) * 0.8, z = BZ - t * 6 + Math.cos(k * 1.3) * 0.8;
+    const r = 0.8 + t * 2.6 + R() * 0.5;
+    puffs.push(lowpoly(new THREE.IcosahedronGeometry(r, 1).translate(x, y, z), r * 0.25, k));
+    if (k > 3) puffs.push(lowpoly(new THREE.IcosahedronGeometry(r * .7, 1).translate(x + r * .6, y - r * .2, z + r * .5), r * 0.2, k + 50));
+  }
+  const pm = new THREE.MeshStandardMaterial({ color: '#FFF4EA', flatShading: true, roughness: 1, emissive: '#B8C4D8', emissiveIntensity: 0.3, transparent: true, opacity: 0.94 });
+  scene.add(mesh(mergeGeometries(puffs.map(g => g.index ? g.toNonIndexed() : g)), pm, { cast: true, receive: false }));
+}
+
+// ---------- 湖边村子 ----------
+function chalet(x, z, rot, s, wall, roof) {
+  const y = height(x, z) - 0.3, g = new THREE.Group();
+  g.add(mesh(new THREE.BoxGeometry(3 * s, 0.5 * s, 2.6 * s).translate(0, 0.25 * s, 0), mat('#8E8076')));
+  g.add(mesh(new THREE.BoxGeometry(2.8 * s, 2.2 * s, 2.4 * s).translate(0, 1.6 * s, 0), mat(wall)));
+  const r = new THREE.CylinderGeometry(0.01, 2.2 * s, 1.6 * s, 4, 1).rotateY(Math.PI / 4).scale(1.0, 1, 0.78).translate(0, 3.5 * s, 0);
+  g.add(mesh(lowpoly(r), mat(roof)));
+  g.add(mesh(new THREE.BoxGeometry(0.45 * s, 1.2 * s, 0.45 * s).translate(0.7 * s, 3.9 * s, 0.3 * s), mat('#7A6A60')));
+  for (const dx of [-0.7, 0.7]) g.add(mesh(new THREE.BoxGeometry(0.55 * s, 0.6 * s, 0.05).translate(dx * s, 1.9 * s, 1.22 * s), mat('#FFD890', { emissive: '#FFAA40', ei: 0.3 }), { cast: false }));
+  g.add(mesh(new THREE.BoxGeometry(0.6 * s, 1.0 * s, 0.05).translate(0, 1.0 * s, 1.22 * s), mat('#5B3A28')));
+  g.add(mesh(new THREE.BoxGeometry(2.9 * s, 0.12 * s, 0.6 * s).translate(0, 2.6 * s, 1.45 * s), mat('#7A5038')));    // 阳台
+  g.position.set(x, y, z); g.rotation.y = rot; scene.add(g);
+}
+const walls = ['#F3E6D0', '#E9D6B8', '#F6EEE2', '#E7C9A6'], roofs = ['#B4473A', '#8A3E3A', '#C2643A', '#5B5A70'];
+[[-46, -52], [-40, -57], [-33, -54], [-26, -58], [-50, -60], [-19, -55], [-43, -64], [-30, -63]].forEach(([x, z], i) => chalet(x, z, (R() - .5) * 0.6, 0.95 + R() * 0.3, walls[i % 4], roofs[i % 4]));
+// 小教堂 + 尖塔
+{
+  const x = -36, z = -68, y = height(x, z) - 0.3;
+  scene.add(mesh(new THREE.BoxGeometry(4, 3.4, 6).translate(x, y + 1.7, z), mat('#F4EEE6')));
+  scene.add(mesh(lowpoly(new THREE.CylinderGeometry(0.01, 3.4, 2.2, 4).rotateY(Math.PI / 4).scale(0.85, 1, 1.25).translate(x, y + 4.5, z)), mat('#6E4A3A')));
+  scene.add(mesh(new THREE.BoxGeometry(1.8, 6.2, 1.8).translate(x, y + 3.1, z + 3.6), mat('#F4EEE6')));
+  scene.add(mesh(new THREE.ConeGeometry(1.35, 4.2, 4).rotateY(Math.PI / 4).translate(x, y + 8.3, z + 3.6), mat('#2F4E78')));
+  scene.add(mesh(new THREE.BoxGeometry(0.7, 0.7, 0.05).translate(x, y + 5.0, z + 4.52), mat('#FFE7A8', { emissive: '#FFC060', ei: 0.3 }), { cast: false }));
+}
+// 栈桥 + 小船
+{
+  for (let i = 0; i < 9; i++) scene.add(mesh(new THREE.BoxGeometry(1.4, 0.18, 0.5).translate(-12 + i * 0.0, LAKE_Y + 0.6, -36 + i * 0.55), mat('#8A6446')));
+  for (const [x, z, c, r] of [[-8, -30, '#C8372D', 0.4], [-16, -27, '#2F6DB5', -0.3], [-3, -24, '#F2C14A', 0.9]]) {
+    const b = new THREE.Group();
+    b.add(mesh(lowpoly(new THREE.CylinderGeometry(0.9, 0.5, 0.6, 6, 1).scale(2.2, 1, 1)), mat(c)));
+    b.add(mesh(new THREE.BoxGeometry(2.6, 0.12, 1.2).translate(0, 0.32, 0), mat('#8A6446')));
+    b.position.set(x, LAKE_Y + 0.25, z); b.rotation.y = r; scene.add(b);
+  }
+}
+
+// ---------- 云（被夕阳从左边打亮） ----------
+{
+  const cl = [];
+  const cloud = (x, y, z, s, seed) => {
+    const r = rng(seed);
+    for (let k = 0; k < 9; k++) { const rr = s * (0.55 + r() * 0.6); cl.push(lowpoly(new THREE.IcosahedronGeometry(rr, 1).scale(1, 0.72, 1).translate(x + (r() - .5) * s * 3.2, y + r() * s * 0.7, z + (r() - .5) * s * 1.4), rr * .2, seed * 10 + k)); }
+  };
+  cloud(-110, 62, -200, 9, 1); cloud(40, 70, -230, 11, 2); cloud(110, 56, -180, 8, 3); cloud(-20, 80, -260, 10, 4); cloud(-160, 48, -150, 7, 5);
+  const m = new THREE.MeshStandardMaterial({ color: '#FFFFFF', flatShading: true, roughness: 1, emissive: '#C8D8EE', emissiveIntensity: 0.35 });
+  scene.add(mesh(mergeGeometries(cl.map(g => g.index ? g.toNonIndexed() : g)), m, { cast: false, receive: false }));
+}
+// 飞鸟
+for (let i = 0; i < 7; i++) {
+  const g = new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(-0.8, 0.25, 0), new THREE.Vector3(0, 0, 0), new THREE.Vector3(0.8, 0.25, 0)]);
+  const l = new THREE.Line(g, new THREE.LineBasicMaterial({ color: '#3A4A60' }));
+  l.position.set(-30 + i * 3.2 + R() * 2, 34 + R() * 4 - i * 0.6, -40 - R() * 6); l.scale.setScalar(1 + R() * .6); scene.add(l);
+}
+
+merge(pineParts, mat('#2E8A55'));
+merge(roundParts.o, mat('#5DB548')); merge(roundParts.y, mat('#F4C23A')); merge(roundParts.r, mat('#EE6A4A')); merge(roundParts.g, mat('#79C24A'));
+merge(trunkParts, mat('#5E4130'));
+const cam = new THREE.PerspectiveCamera(42, W / H, 0.5, 1200);
+cam.position.set(-44, 34, 44); cam.lookAt(4, 17, -34);
+finish(ctx, cam, { ao: true, aoRadius: 1.2, aoDist: 0.25, bloom: 0.1, bloomRadius: 0.4, bloomThreshold: 0.95, vig: 0.2, grain: 0.012, tilt: { focus: 0.5, band: 0.16, amount: 2.2 } });
+</script>
