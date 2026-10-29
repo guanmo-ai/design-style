@@ -39,6 +39,12 @@ jobs:
               echo "skip $tag (already published)"
               continue
             fi
+            # Git 单文件限制为 100 MiB；完整源码包可分片入库，上传前还原为一个附件。
+            for first_part in "$dir"/*-source.zip.part-00; do
+              [ -f "$first_part" ] || continue
+              archive="${first_part%.part-00}"
+              cat "$archive".part-* > "$archive"
+            done
             (cd "$dir" && sha256sum --check --strict SHA256SUMS)
             title=$(jq -r .title "$dir/release.json")
             target=$(jq -r .target "$dir/release.json")
