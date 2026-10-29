@@ -1,5 +1,5 @@
 /**
- * 017 · 中世纪现代 Mid-Century Modern —— 短片（1920×1080 · 60fps · 120 BPM）
+ * 017 · 中世纪现代 Mid-Century Modern —— 短片（1920×1080 · 60fps · 144 BPM）
  *
  * 一条物理规则：每一块都是一张纸。纸离桌面 h px，影子往右下偏 (0.5h, h)、模糊 0.4h，纸放大 1 + 0.0032h；
  * 东西被提起来，影子就离开它；落下时影子和它合上，轻压一下。所有动作 60 帧连续（不抽帧），快的地方加运动模糊。
@@ -16,12 +16,13 @@ import {loadFont} from '@remotion/fonts';
 import {motionBlurTimes} from '../../../src/lib/motion/sampling';
 import {C} from '../tokens';
 import {Hud} from './hud';
-import {Opening, Subtitle} from './opening';
+import {Film} from './film';
 import {PaperDefs} from './paper';
 import {sceneIndex, speedAt} from './scenes';
 import {DURATION, H, W} from './timeline';
 
 export const MIDCENTURYMODERN_DURATION = DURATION;
+
 export type FilmProps = {music?: boolean; step?: number; blur?: number; res?: number};
 
 let fontsP: Promise<unknown> | null = null;
@@ -75,10 +76,9 @@ export const MidCenturyModern: React.FC<FilmProps> = ({music = true, step = 1, b
         <PaperDefs />
         {layers.map((t, i) => (
           <g key={i} opacity={i === 0 ? undefined : 1 / (i + 1)}>
-            <Opening t={t} k={i} />
+            <Film t={t} k={i} />
           </g>
         ))}
-        <Subtitle t={f} />
         <Hud t={f} />
       </svg>
       <PaperGrain opacity={0.06} />
