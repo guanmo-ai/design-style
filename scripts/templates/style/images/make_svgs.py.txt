@@ -1,0 +1,5 @@
+"""风格图骨架；选题确定后，生成 poster / cheatsheet / app-ui 的可编辑 SVG。"""
+from pathlib import Path
+ROOT = Path(__file__).resolve().parent
+for name in ('poster', 'cheatsheet', 'app-ui'):
+    (ROOT / (name + '.svg')).write_text('<svg xmlns="http://www.w3.org/2000/svg" width="1920" height="1080" viewBox="0 0 1920 1080"><rect width="1920" height="1080" fill="#F4F1EA"/><text x="96" y="200" font-size="72" fill="#171922">__ID__ · __COMPONENT__</text></svg>', encoding='utf-8')

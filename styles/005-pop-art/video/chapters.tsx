@@ -1,3 +1,4 @@
+import {flipScale, Squeegee} from '../../../src/lib/motion/screen-print';
 /** 005 · Pop Art —— 02 汤罐（沃霍尔 1962）· 03 网点（利希滕斯坦 1961—1963）· 04 丝网（沃霍尔《花》1964） */
 import React from 'react';
 import {random} from 'remotion';
@@ -51,7 +52,7 @@ export const Soup: React.FC<P> = ({f}) => {
         // 在拍点（270）上一列一列翻面换色：翻到一半（侧面）时换配色
         const ts = T + 60 + c * 2 + r;
         const u = f - ts;
-        const flip = u < 0 ? 1 : u < 10 ? Math.abs(Math.cos((u / 10) * Math.PI)) : 1;
+        const flip = flipScale(u);
         const set = u < 5 ? SETS[0] : SETS[1 + ((c + r * 3) % 4)];
         return (
           <g key={i} transform={`translate(${260 + c * 200} ${410 + r * 150}) scale(${(1.08 * k * Math.max(0.04, flip)).toFixed(3)} ${(1.08 * k).toFixed(3)})`}>
@@ -282,12 +283,7 @@ export const Screen: React.FC<P> = ({f}) => {
       ))}
       {/* 刮板 */}
       {showSq && (
-        <g transform={`translate(${n1(sq)} 0) rotate(${pass2 ? 4 : -4} 0 640)`}>
-          <rect x={pass2 ? -34 : 14} y={300} width={20} height={680} fill={pass2 ? C.ink : C.magenta} opacity={0.9} />
-          <rect x={-22} y={290} width={30} height={700} rx={6} fill={OBJ.bun} stroke={C.ink} strokeWidth={5} />
-          <rect x={pass2 ? -32 : 8} y={296} width={12} height={688} fill="#3A3A3A" stroke={C.ink} strokeWidth={3} />
-          <rect x={-40} y={600} width={66} height={80} rx={14} fill={C.white} stroke={C.ink} strokeWidth={5} />
-        </g>
+        <Squeegee x={sq} reverse={pass2} ink={C.ink} color={C.magenta} handle={OBJ.bun} paper={C.white} />
       )}
       <Box x={110} y={430} w={500} h={84} fill={C.magenta} k={k1} rot={-2}>
         <Txt x={28} y={57} size={40}>第 1 遍 · 颜色版</Txt>

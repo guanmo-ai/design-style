@@ -1,3 +1,4 @@
+import {createColumnReadout} from '../../../src/lib/motion/column-readout';
 /** 布局 02 · Masonry —— 卡片之外的东西：各章标题、算法演示、图钉墙的鼠标、手机、规则标注、浏览器窗口、片尾、章节栏 */
 import React from 'react';
 import {E, POP, spr, tween} from '../../../src/lib/anim';
@@ -6,6 +7,7 @@ import {ALG_BASE, ALG_LAND, FEED, FLOW, HIT, ITEMS, LAYOUTS, PHONE, RIGHT, RULES
 import {Kicker, mono, Pill, Rise, sc, serif, Show, ui} from './ui';
 
 type P = {f: number};
+const ColumnReadout = createColumnReadout({accent: C.accent, sc, mono});
 const L = 96; // 左边距
 
 /* ───────────── 01 什么是瀑布流 ───────────── */
@@ -160,19 +162,7 @@ export const AlgOverlay: React.FC<P> = ({f}) => {
         return <div key={j} style={{position: 'absolute', left: r.x - 3, top: r.y - 3, width: r.w + 6, height: r.h + 6, borderRadius: 19, boxShadow: `0 0 0 3px ${C.accent}`, opacity: fl}} />;
       })}
       {/* 高度读数：每列底边下面一颗胶囊，最短的那一列是红的 */}
-      {hs.map((h, c) => {
-        const x = RIGHT.x0 + c * (RIGHT.colW + RIGHT.gap) + RIGHT.colW / 2;
-        const y = RIGHT.y0 + h - RIGHT.gap + 34;
-        if (y > 1060) return null;
-        const isMin = c === shortest && next >= 0;
-        const pop = isMin && next < 3 ? spr(f, ALG_LAND[next] - 30, POP, 24) : 0;
-        return (
-          <div key={c} style={{position: 'absolute', left: x, top: y, transform: `translate(-50%,-50%) scale(${1 + 0.12 * pop * (1 - tween(f, ALG_LAND[Math.max(0, next)] - 14, 10))})`, display: 'flex', alignItems: 'center', gap: 8, padding: '8px 13px 9px', borderRadius: 999, background: isMin ? C.accent : 'rgba(255,255,255,.08)', boxShadow: isMin ? '0 6px 18px rgba(242,70,46,.35)' : 'inset 0 0 0 1px rgba(255,255,255,.1)', whiteSpace: 'nowrap'}}>
-            {isMin && <span style={{...sc(16, 700, 0.06), color: '#fff'}}>最短</span>}
-            <span style={{...mono(18, 500), color: isMin ? '#fff' : 'rgba(244,242,238,.7)'}}>{Math.round(h - RIGHT.gap)}</span>
-          </div>
-        );
-      })}
+      <ColumnReadout f={f} hs={hs} shortest={shortest} next={next} RIGHT={RIGHT} ALG_LAND={ALG_LAND} />
     </div>
   );
 };

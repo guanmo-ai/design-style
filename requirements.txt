@@ -1,0 +1,6 @@
+# 现有配乐、图片、字体度量和曲线脚本使用的 Python 依赖。
+numpy>=1.26
+scipy>=1.11
+Pillow>=10
+fonttools>=4.50
+matplotlib>=3.9,<4

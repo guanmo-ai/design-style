@@ -6,3 +6,4 @@ public/fonts/
 dist/
 .gallery-cache/
 __pycache__/
+.venv/

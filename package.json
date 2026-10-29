@@ -58,8 +58,11 @@
     "render:L02": "npm run music:L02 && remotion render src/index.ts L02-Masonry out/02-masonry-master.mp4 --codec=h264 --crf=16",
     "images:L02": "python3 layouts/02-masonry/images/make_svgs.py && python3 scripts/build_images.py layouts/02-masonry/images",
     "postinstall": "node scripts/apply-renderer-security-patch.mjs",
-    "test": "npm run gallery:test && npm run test:security",
-    "test:security": "node --test tests/security/*.test.mjs"
+    "test": "npm run gallery:test && npm run test:security && npm run test:motion",
+    "test:security": "node --test tests/security/*.test.mjs",
+    "new:style": "node scripts/new_style.mjs",
+    "test:motion": "node --test tests/motion/*.test.mjs",
+    "test:media": "python3 -m unittest discover -s tests/motion -p 'test_*.py'"
   },
   "dependencies": {
     "@remotion/cli": "4.0.538",
