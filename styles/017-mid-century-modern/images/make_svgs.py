@@ -2,7 +2,7 @@
 017 · 中世纪现代 Mid-Century Modern —— 风格图（1080×1350）
 
   poster.svg      海报：一只剪纸的手把最后一颗球按上球钟，大字 MODERN 的 O 还拿在半空
-  cheatsheet.svg  速查卡：剪 · 影子 = 高度 · 叠印 · 一秒 12 张 · 形状库 · 色板 · CSS
+  cheatsheet.svg  速查卡：剪 · 影子 = 高度 · 叠印 · 动起来 · 形状库 · 色板 · CSS
   app-ui.svg      如果中世纪现代来做 App：一个爵士电台播放页，带标注
   steps.svg       四步改造：同一张普通海报，每一步只改一件事
 
@@ -164,7 +164,7 @@ def cheatsheet():
         b.append(sh.piece(p, INK, 4))
     b.append(t(R, 76, 16, f'NO. {NO}  ·  1945 — 1965', JOST, 600, INK, '2.5', 'end'))
     b.append(t(R, 118, 26, '速查卡', SC, 900, INK, '2', 'end'))
-    b.append(t(R, 148, 15, '剪 · 影子 · 叠印 · 一秒 12 张 · 形状 · 颜色', SC, 500, MUTE, '0', 'end'))
+    b.append(t(R, 148, 15, '剪 · 影子 · 叠印 · 动起来 · 形状 · 颜色', SC, 500, MUTE, '0', 'end'))
     b.append(f'<rect x="{L}" y="178" width="{R - L}" height="3" fill="{INK}"/>')
 
     # 01 剪
@@ -213,37 +213,40 @@ def cheatsheet():
     b.append(t(x0, 740, 14, f'向日葵黄 × 绿松石 = {multiply(SUN, TURQ)}', JOST, 600, INK))
     b.append(t(R, 718, 14, 'mix-blend-mode: multiply', MONO, 500, MUTE, anchor='end'))
 
-    # 04 一秒 12 张
+    # 04 动起来：提起 → 飞 → 落下（60 帧连续，影子先离开、再合上）
     y0 = 786
-    b.append(sec(L, y0, '04', '一秒 12 张：零件走台阶，镜头走平滑', 'Bass 的片头一秒 24 帧、每张画拍两帧；60fps 里每张停 5 帧，每张重剪一次边'))
-    sx, sy, cw, chh = L, 846, 96, 92
-    n = 6
-    b.append(sh.piece(rect(sx - 8, sy - 22, n * (cw + 8) + 8, chh + 44), INK, 4))
-    hs = [44, 30, 18, 8, 4, 4]
-    angs = [-14, -10, -6, -2, 3, 0]
+    b.append(sec(L, y0, '04', '动起来：影子先离开，再合上', '一张纸被抛进来：越高，影子离得越远、越虚；落地时和纸合上，轻压 3%。全部 60 帧连续'))
+    sx, sy, sw_, sh_ = L, 838, 628, 120
+    b.append(sh.piece(rect(sx, sy, sw_, sh_), TURQ, 4))
+    n = 7
     for k in range(n):
-        x = sx + k * (cw + 8)
-        for hx in range(3):
-            b.append(f'<rect x="{x + 12 + hx * 30}" y="{sy - 15}" width="14" height="8" rx="2" fill="{PAPER}" opacity=".85"/>')
-            b.append(f'<rect x="{x + 12 + hx * 30}" y="{sy + chh + 7}" width="14" height="8" rx="2" fill="{PAPER}" opacity=".85"/>')
-        b.append(f'<rect x="{x}" y="{sy}" width="{cw}" height="{chh}" fill="{TURQ}"/>')
-        # 一根辐条 + 球往下落：越低影子越短
-        b.append(sh.piece(rough(bar(x + 10, sy + 80, x + 70, sy + 80, 7, 6), 300 + k), INK, 4))
-        hh = hs[k]
-        b.append(sh.piece(rough(rot(circle(x + 70, sy + 80 - 18 - hh * 0.9, 17), angs[k], x + 70, sy + 60), 310 + k, lo=5, hi=10), SUN, hh))
-        b.append(t(x + cw / 2, sy + chh + 34, 13, f'f{k * 5}—{k * 5 + 4}', JOST, 600, MUTE, anchor='middle'))
-    # 右边：台阶 vs 平滑
-    gx, gy, gw, gh = 712, 846, 312, 92
+        u = k / (n - 1)
+        hh = 4 + 82 * (1 - u * u)
+        x = sx + 56 + (sw_ - 130) * u
+        y = sy + 58 - 16 * math.sin(math.pi * u)
+        hv = hh * 0.4  # 画在小条里，按 0.4 缩小
+        last = k == n - 1
+        op = '' if last else f'opacity="{0.28 + 0.1 * k:.2f}"'
+        b.append(f'<g {op}>' + sh.piece(rough(circle(x, y, 22 * (1 + 0.0032 * hh)), 310 + k), SUN, hv) + '</g>')
+        b.append(t(x, sy + sh_ - 10, 12, f'f{k * 3} · h {hh:.0f}', JOST, 600, PAPER, anchor='middle', extra='opacity=".9"'))
+    b.append(t(sx + 14, sy + 24, 13, 'h 86 → 4', JOST, 700, PAPER))
+    # 右边：h 随时间（起势 → 提起 → 落下 → 轻压）
+    gx, gy, gw, gh = 712, 838, 312, 120
     b.append(f'<rect x="{gx}" y="{gy}" width="{gw}" height="{gh}" fill="none" stroke="{INK}" stroke-width="1.5" opacity=".35"/>')
-    smooth = ' '.join(f'{gx + gw * i / 60:.1f},{gy + gh - gh * (0.5 - 0.5 * math.cos(math.pi * i / 60)):.1f}' for i in range(61))
-    stair = []
-    for i in range(0, 60, 5):
-        v = gy + gh - gh * (0.5 - 0.5 * math.cos(math.pi * i / 60))
-        stair += [f'{gx + gw * i / 60:.1f},{v:.1f}', f'{gx + gw * (i + 5) / 60:.1f},{v:.1f}']
-    b.append(f'<polyline points="{smooth}" fill="none" stroke="{TURQ}" stroke-width="3"/>')
-    b.append(f'<polyline points="{" ".join(stair)}" fill="none" stroke="{RED}" stroke-width="3.5"/>')
-    b.append(t(gx + 10, gy + 22, 14, '零件 12 张/秒', SC, 700, RED) + t(gx + gw - 10, gy + gh - 12, 14, '镜头 60 帧', SC, 700, TURQ, anchor='end'))
-    b.append(t(gx, gy + gh + 34, 13, 'animation-timing-function: steps(12)', MONO, 500, MUTE))
+
+    def hcurve(f):
+        if f < 8:
+            return 4 - 2.2 * math.sin(math.pi * f / 8)
+        if f < 48:
+            return 4 + 36 * math.sin(math.pi * (f - 8) / 40) ** 0.85
+        return 4
+    pts = ' '.join(f'{gx + 10 + (gw - 20) * f / 64:.1f},{gy + gh - 18 - (gh - 40) * hcurve(f) / 40:.1f}' for f in range(65))
+    b.append(f'<line x1="{gx + 10}" y1="{gy + gh - 18 - (gh - 40) * 4 / 40:.1f}" x2="{gx + gw - 10}" y2="{gy + gh - 18 - (gh - 40) * 4 / 40:.1f}" stroke="{INK}" stroke-dasharray="3 4" opacity=".4"/>')
+    b.append(f'<polyline points="{pts}" fill="none" stroke="{RED}" stroke-width="3.5" stroke-linejoin="round"/>')
+    b.append(t(gx + 12, gy + 20, 13, 'h', JOST, 700, RED) + t(gx + gw - 10, gy + gh - 4, 12, '帧', SC, 700, MUTE, anchor='end'))
+    for fx, label in [(4, '起势'), (28, '提起'), (52, '落定 h=4')]:
+        b.append(t(gx + 10 + (gw - 20) * fx / 64, gy + gh - 2, 12, label, SC, 700, INK, anchor='middle'))
+    b.append(t(gx, gy + gh + 22, 13, 'cubic-bezier(.65, 0, .35, 1) · 670ms', MONO, 500, MUTE))
 
     # 05 形状库
     y0 = 1010
@@ -427,7 +430,7 @@ def app_ui():
 
     # 令牌（右上空处）
     tk = [('--paper', PAPER), ('--pink', PINK), ('--sun', SUN), ('--cut', '1–1.6px / 50–110px'), ('--tilt', '±3deg'),
-          ('--shadow', '0.5h h 0.8h'), ('--pieces-fps', '12  /* 镜头 60 */')]
+          ('--shadow', '0.5h h 0.8h'), ('--persp', '1 + 0.0032h')]
     ty0 = 250
     b.append(t(ax, ty0, 14, 'TOKENS', JOST, 700, RED, '3'))
     for k, (kk, vv) in enumerate(tk):
