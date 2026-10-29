@@ -1,0 +1,26 @@
+<!doctype html><meta charset="utf-8">
+<style>
+@font-face{font-family:Inter;src:url(/public/fonts/Inter.ttf);font-weight:100 900}
+@font-face{font-family:NotoSC;src:url(/public/fonts/NotoSansSC-Black.otf);font-weight:900}
+@font-face{font-family:NotoSC;src:url(/public/fonts/NotoSansSC-Bold.otf);font-weight:700}
+@font-face{font-family:NotoSC;src:url(/public/fonts/NotoSansSC-Medium.otf);font-weight:500}
+html,body{margin:0;overflow:hidden;background:#F6EEDD}
+#ui{position:absolute;inset:0;pointer-events:none;font-family:Inter,NotoSC;color:#3B3552}
+.hole{position:absolute;box-shadow:0 0 0 3000px #F6EEDD;}
+.phone{position:absolute;border:14px solid #3B3552;box-sizing:border-box;box-shadow:0 30px 60px #3B355233}
+.chip{position:absolute;background:#FFFDF7;border-radius:18px;padding:12px 18px;box-shadow:0 8px 20px #3B35521f;font:700 22px NotoSC;white-space:nowrap}
+.chip small{display:block;font:600 15px Inter;letter-spacing:.06em;color:#8A7FA0;margin-top:2px}
+.dot{display:inline-block;width:14px;height:14px;border-radius:50%;margin-right:10px;vertical-align:1px}
+.line{overflow:hidden}.line>span{display:inline-block}
+</style>
+<div id="ui">
+  <div class="hole" id="hole"></div>
+  <div class="phone" id="phone"></div>
+  <div id="appui"></div>
+  <div id="chap" style="position:absolute;left:64px;top:52px"></div>
+  <div id="rule" style="position:absolute;left:64px;bottom:58px"></div>
+  <div id="count" style="position:absolute;right:64px;bottom:58px;font:800 28px Inter;letter-spacing:.12em"></div>
+  <div id="title" style="position:absolute;right:64px;top:48px;text-align:right"></div>
+</div>
+<script type="importmap">{"imports":{"three":"./node_modules/three/build/three.module.js","three/addons/":"./node_modules/three/examples/jsm/"}}</script>
+<script type="module" src="./episode.js"></script>
