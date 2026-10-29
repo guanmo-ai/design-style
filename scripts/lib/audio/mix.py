@@ -105,7 +105,8 @@ class Mixer:
         g = (c[hi] - c[lo]) / np.maximum(hi - lo, 1)
         return y * g[:, None]
 
-    def master(self, output):
+    def master(self, output, loop=True):
+        """loop=False：余音不折回开头，最后 0.3 秒淡出（不循环的片子用）"""
         self.final = os.fspath(output)
         os.makedirs(os.path.dirname(os.path.abspath(self.final)), exist_ok=True)
         duck = 0.65 + 0.35 * self.DUCK
@@ -114,8 +115,12 @@ class Mixer:
         mix[1] += self.reverb(self.SEND[1], 2) * 0.4
         for ch in range(2):
             mix[ch] = self.fft_filter(mix[ch], lo=30)
-        mix[:, :self.N - self.NV] += mix[:, self.NV:]
+        if loop:
+            mix[:, :self.N - self.NV] += mix[:, self.NV:]
         mix = mix[:, :self.NV]
+        if not loop:
+            n = int(0.3 * self.SR)
+            mix[:, -n:] *= np.linspace(1, 0, n) ** 2
         mix = mix.T
         mix /= np.abs(mix).max() + 1e-09
         mix = np.tanh(mix * 1.2) / np.tanh(1.2)
