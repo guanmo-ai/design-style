@@ -1,0 +1,6 @@
+{
+  "name": "s018-diorama-video3d",
+  "private": true,
+  "description": "018 微缩景观：three.js 场景 + Playwright 逐帧截图。npm install 后 node render.cjs。",
+  "dependencies": { "three": "0.170.0" }
+}
