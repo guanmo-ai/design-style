@@ -1,0 +1,6 @@
+{
+  "name": "drafts-3d",
+  "private": true,
+  "description": "候选图用的 three.js 场景（低多边形 / 微缩景观）。npm install 后用 node shoot.cjs 截图。",
+  "dependencies": { "three": "0.170.0" }
+}
