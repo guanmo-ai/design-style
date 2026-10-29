@@ -1,0 +1,60 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1080" height="1350" viewBox="0 0 1080 1350">
+  <defs>
+    <filter id="sh" x="-20%" y="-20%" width="140%" height="140%"><feDropShadow dx="0" dy="14" stdDeviation="18" flood-color="#7A5C86" flood-opacity=".28"/></filter>
+  </defs>
+  <rect width="1080" height="1350" fill="#F6EEDD"/>
+<text x="64" y="120" font-family="'Noto Sans SC'" font-weight="900" font-size="64" fill="#3B3552" text-anchor="start" letter-spacing="0">低多边形 · 速查</text>
+<text x="66" y="166" font-family="'Noto Sans SC'" font-weight="700" font-size="20" fill="#8A7FA0" text-anchor="start" letter-spacing="4">LOW POLY CHEAT SHEET · 019</text>
+<polygon points="92,206 120,256 64,256" fill="#EE6B57"/>
+<text x="92" y="248" font-family="'Noto Sans SC'" font-weight="900" font-size="20" fill="#3B3552" text-anchor="middle" letter-spacing="0">1</text>
+<text x="138" y="242" font-family="'Noto Sans SC'" font-weight="900" font-size="32" fill="#3B3552" text-anchor="start" letter-spacing="0">一个面，一个颜色</text>
+<text x="138" y="276" font-family="'Noto Sans SC'" font-weight="700" font-size="19" fill="#8A7FA0" text-anchor="start" letter-spacing="0">不画渐变：每个三角面只有一种颜色</text>
+<polygon points="92,298 120,348 64,348" fill="#F4C54F"/>
+<text x="92" y="340" font-family="'Noto Sans SC'" font-weight="900" font-size="20" fill="#3B3552" text-anchor="middle" letter-spacing="0">2</text>
+<text x="138" y="334" font-family="'Noto Sans SC'" font-weight="900" font-size="32" fill="#3B3552" text-anchor="start" letter-spacing="0">光一转，面就翻</text>
+<text x="138" y="368" font-family="'Noto Sans SC'" font-weight="700" font-size="19" fill="#8A7FA0" text-anchor="start" letter-spacing="0">明暗按面算，光一动，整片面跟着跳</text>
+<polygon points="92,390 120,440 64,440" fill="#8CC8EE"/>
+<text x="92" y="432" font-family="'Noto Sans SC'" font-weight="900" font-size="20" fill="#3B3552" text-anchor="middle" letter-spacing="0">3</text>
+<text x="138" y="426" font-family="'Noto Sans SC'" font-weight="900" font-size="32" fill="#3B3552" text-anchor="start" letter-spacing="0">面越少，越有性格</text>
+<text x="138" y="460" font-family="'Noto Sans SC'" font-weight="700" font-size="19" fill="#8A7FA0" text-anchor="start" letter-spacing="0">1280 → 320 → 80：少到刚好认得出</text>
+<polygon points="92,482 120,532 64,532" fill="#4DAF72"/>
+<text x="92" y="524" font-family="'Noto Sans SC'" font-weight="900" font-size="20" fill="#3B3552" text-anchor="middle" letter-spacing="0">4</text>
+<text x="138" y="518" font-family="'Noto Sans SC'" font-weight="900" font-size="32" fill="#3B3552" text-anchor="start" letter-spacing="0">一张卡，一座山</text>
+<text x="138" y="552" font-family="'Noto Sans SC'" font-weight="700" font-size="19" fill="#8A7FA0" text-anchor="start" letter-spacing="0">图标、插画、空状态都能用</text>
+<polygon points="92,574 120,624 64,624" fill="#C9A6EC"/>
+<text x="92" y="616" font-family="'Noto Sans SC'" font-weight="900" font-size="20" fill="#3B3552" text-anchor="middle" letter-spacing="0">5</text>
+<text x="138" y="610" font-family="'Noto Sans SC'" font-weight="900" font-size="32" fill="#3B3552" text-anchor="start" letter-spacing="0">三档明暗就够了</text>
+<text x="138" y="644" font-family="'Noto Sans SC'" font-weight="700" font-size="19" fill="#8A7FA0" text-anchor="start" letter-spacing="0">亮、中、暗三档，阴影混一点暖紫</text>
+<text x="64" y="712" font-family="'Noto Sans SC'" font-weight="900" font-size="28" fill="#3B3552" text-anchor="start" letter-spacing="0">面数 · 1280 → 320 → 80</text>
+<clipPath id="c-p1280-64-736"><rect x="64" y="736" width="300" height="260" rx="26"/></clipPath><rect x="64" y="736" width="300" height="260" rx="26" fill="#FBF4E6" filter="url(#sh)"/><image href="frames/p1280.jpg" x="64" y="736" width="300" height="260" preserveAspectRatio="xMidYMid slice" clip-path="url(#c-p1280-64-736)"/>
+<text x="214" y="1032" font-family="'Noto Sans SC'" font-weight="900" font-size="20" fill="#3B3552" text-anchor="middle" letter-spacing="0">1280 个三角面</text>
+<clipPath id="c-p320-388-736"><rect x="388" y="736" width="300" height="260" rx="26"/></clipPath><rect x="388" y="736" width="300" height="260" rx="26" fill="#FBF4E6" filter="url(#sh)"/><image href="frames/p320.jpg" x="388" y="736" width="300" height="260" preserveAspectRatio="xMidYMid slice" clip-path="url(#c-p320-388-736)"/>
+<text x="538" y="1032" font-family="'Noto Sans SC'" font-weight="900" font-size="20" fill="#3B3552" text-anchor="middle" letter-spacing="0">320 个三角面</text>
+<clipPath id="c-p80-712-736"><rect x="712" y="736" width="300" height="260" rx="26"/></clipPath><rect x="712" y="736" width="300" height="260" rx="26" fill="#FBF4E6" filter="url(#sh)"/><image href="frames/p80.jpg" x="712" y="736" width="300" height="260" preserveAspectRatio="xMidYMid slice" clip-path="url(#c-p80-712-736)"/>
+<text x="862" y="1032" font-family="'Noto Sans SC'" font-weight="900" font-size="20" fill="#3B3552" text-anchor="middle" letter-spacing="0">80 个三角面</text>
+<text x="64" y="1100" font-family="'Noto Sans SC'" font-weight="900" font-size="28" fill="#3B3552" text-anchor="start" letter-spacing="0">色板</text>
+<rect x="64" y="1124" width="140" height="56" rx="16" fill="#FBF4E6" stroke="#3B355222"/>
+<text x="68" y="1204" font-family="'Noto Sans SC'" font-weight="700" font-size="16" fill="#3B3552" text-anchor="start" letter-spacing="0">#FBF4E6</text>
+<rect x="224" y="1124" width="140" height="56" rx="16" fill="#EE6B57" stroke="#3B355222"/>
+<text x="228" y="1204" font-family="'Noto Sans SC'" font-weight="700" font-size="16" fill="#3B3552" text-anchor="start" letter-spacing="0">#EE6B57</text>
+<rect x="384" y="1124" width="140" height="56" rx="16" fill="#F4C54F" stroke="#3B355222"/>
+<text x="388" y="1204" font-family="'Noto Sans SC'" font-weight="700" font-size="16" fill="#3B3552" text-anchor="start" letter-spacing="0">#F4C54F</text>
+<rect x="544" y="1124" width="140" height="56" rx="16" fill="#4DAF72" stroke="#3B355222"/>
+<text x="548" y="1204" font-family="'Noto Sans SC'" font-weight="700" font-size="16" fill="#3B3552" text-anchor="start" letter-spacing="0">#4DAF72</text>
+<rect x="704" y="1124" width="140" height="56" rx="16" fill="#9ED7A8" stroke="#3B355222"/>
+<text x="708" y="1204" font-family="'Noto Sans SC'" font-weight="700" font-size="16" fill="#3B3552" text-anchor="start" letter-spacing="0">#9ED7A8</text>
+<rect x="864" y="1124" width="140" height="56" rx="16" fill="#8CC8EE" stroke="#3B355222"/>
+<text x="868" y="1204" font-family="'Noto Sans SC'" font-weight="700" font-size="16" fill="#3B3552" text-anchor="start" letter-spacing="0">#8CC8EE</text>
+<rect x="64" y="1224" width="140" height="56" rx="16" fill="#F49DB6" stroke="#3B355222"/>
+<text x="68" y="1304" font-family="'Noto Sans SC'" font-weight="700" font-size="16" fill="#3B3552" text-anchor="start" letter-spacing="0">#F49DB6</text>
+<rect x="224" y="1224" width="140" height="56" rx="16" fill="#C9A6EC" stroke="#3B355222"/>
+<text x="228" y="1304" font-family="'Noto Sans SC'" font-weight="700" font-size="16" fill="#3B3552" text-anchor="start" letter-spacing="0">#C9A6EC</text>
+<rect x="384" y="1224" width="140" height="56" rx="16" fill="#8F9DEA" stroke="#3B355222"/>
+<text x="388" y="1304" font-family="'Noto Sans SC'" font-weight="700" font-size="16" fill="#3B3552" text-anchor="start" letter-spacing="0">#8F9DEA</text>
+<rect x="544" y="1224" width="140" height="56" rx="16" fill="#2F5FD8" stroke="#3B355222"/>
+<text x="548" y="1304" font-family="'Noto Sans SC'" font-weight="700" font-size="16" fill="#3B3552" text-anchor="start" letter-spacing="0">#2F5FD8</text>
+<rect x="704" y="1224" width="140" height="56" rx="16" fill="#3B3552" stroke="#3B355222"/>
+<text x="708" y="1304" font-family="'Noto Sans SC'" font-weight="700" font-size="16" fill="#3B3552" text-anchor="start" letter-spacing="0">#3B3552</text>
+<rect x="864" y="1224" width="140" height="56" rx="16" fill="#7A5C86" stroke="#3B355222"/>
+<text x="868" y="1304" font-family="'Noto Sans SC'" font-weight="700" font-size="16" fill="#3B3552" text-anchor="start" letter-spacing="0">#7A5C86</text>
+</svg>
