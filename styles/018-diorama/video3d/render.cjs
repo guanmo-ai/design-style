@@ -23,8 +23,10 @@ const MIME = { '.html': 'text/html', '.js': 'text/javascript', '.mjs': 'text/jav
   const t0 = Date.now();
   const step = +(process.env.STEP || 1);
   for (let f = +f0; f <= +f1; f += step) {
+    const file = path.join(out, `f${String(f).padStart(4, '0')}.png`);
+    if (process.env.RESUME && fs.existsSync(file)) continue;
     await page.evaluate(([f, fps]) => window.renderFrame(f, fps), [f, +fps]);
-    await page.screenshot({ path: path.join(out, `f${String(f).padStart(4, '0')}.png`) });
+    await page.screenshot({ path: file, timeout: 300000 });
   }
   console.log(`frames in ${((Date.now() - t0) / 1000).toFixed(0)} s`);
   await browser.close(); srv.close();
