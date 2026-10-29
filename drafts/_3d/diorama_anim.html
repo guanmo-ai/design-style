@@ -34,29 +34,56 @@ scene.add(moon);
 const dusk = new THREE.DirectionalLight('#CFE2FF', 0.6); dusk.position.set(30, 20, -30); scene.add(dusk);   // 天边残阳，从后面勾一道暖边
 
 const LAMPS = [];
-// ---------- 底座：木框 + 切开的土层 ----------
-B(26, 1.2, 26, 0, -4.4, 0, '#FFF7EC', { rough: .6 });
-B(25.4, 0.15, 25.4, 0, -3.25, 0, '#F6EBDA');
-const layers = [['#C99A72', 1.4], ['#DDB48A', 0.9], ['#EED0A6', 0.5], ['#A9C98A', 0.25]];
-let ly = -3.1; for (const [c, h] of layers) { B(24, h, 24, 0, ly, 0, c); ly += h; }
-for (let i = 0; i < 70; i++) {   // 土层里的小石子（切面上看得见）
-  const s = 0.15 + R() * 0.3, side = R() < .5;
-  T().add(mesh(lowpoly(new THREE.DodecahedronGeometry(s, 0).translate(side ? -12 + R() * 24 : 12.02, -2.9 + R() * 2.2, side ? 12.02 : -12 + R() * 24), s * .3, i), mat('#C9B6A4')));
+// ---------- 底座
+// ---------- 底座和路面：一块块拼出来（逐块动画，时间轴见 anim_timeline.js 的 PIECES） ----------
+const PIECES = [];
+// pivot：'b' 底面中心（落下 / 翻转 / 弹出），'l' 左端（从左往右铺开）
+function P(w, h, d, x, y, z, color, type, t0, dur = 0.34, o = {}, pivot = 'b') {
+  const g = new THREE.BoxGeometry(w, h, d).translate(pivot === 'l' ? w / 2 : 0, h / 2, 0);
+  const m = mesh(g, typeof color === 'string' ? mat(color, o) : color, o);
+  m.position.set(pivot === 'l' ? x - w / 2 : x, y, z);
+  m.userData = { type, t0, dur, y, x: m.position.x };
+  T().add(m); PIECES.push(m); return m;
 }
-
-// ---------- 路面 ----------
-B(24, 0.02, 6, 0, 0, 6, '#B9B6C6', { rough: .8 });                                   // 柏油
-for (let x = -11; x < 12; x += 2.4) B(1.2, 0.03, 0.18, x, 0.01, 6, '#E8E2D0');         // 中线
-for (let k = 0; k < 7; k++) B(0.55, 0.03, 5.2, 5.2 + k * 0.95, 0.01, 6, '#EDE8DA');     // 斑马线
-const tile = (x0, z0, w, d) => { for (let x = x0; x < x0 + w - 0.01; x += 1) for (let z = z0; z < z0 + d - 0.01; z += 1) B(0.96, 0.18, 0.96, x + 0.5, 0, z + 0.5, (Math.floor(x) + Math.floor(z)) % 2 ? '#EFE4D2' : '#F7EEE0'); };
-tile(-12, 0, 24, 3); tile(-12, 9, 24, 3);
-B(24, 0.24, 0.2, 0, 0, 3.0, '#9E968C'); B(24, 0.24, 0.2, 0, 0, 9.0, '#9E968C');           // 路缘石
-B(24, 0.1, 12, 0, 0, -6, '#E9DFCB');                                                     // 后半块地面
+// 1) 底板和顶面的木框：第 0 帧底板刚落地、正压扁
+P(26, 1.2, 26, 0, -4.4, 0, '#FFF7EC', 'drop', -0.32, 0.4, { rough: .6 });
+P(25.4, 0.15, 25.4, 0, -3.25, 0, '#F6EBDA', 'drop', -0.18, 0.34);
+// 2) 土层：每层切成四块，从左边一块块推进来，一层压一层
+{
+  const layers = [['#C99A72', 1.4], ['#DDB48A', 0.9], ['#EED0A6', 0.5], ['#A9C98A', 0.25]];
+  let ly = -3.1;
+  layers.forEach(([c, h], li) => {
+    for (let k = 0; k < 4; k++) P(5.96, h, 24, -9 + k * 6, ly, 0, c, 'slide', -0.12 + li * 0.13 + k * 0.045, 0.32);
+    ly += h;
+  });
+  for (let i = 0; i < 70; i++) {   // 切面上的小石子：土层铺好后一颗颗“啵”出来
+    const s = 0.15 + R() * 0.3, side = R() < .5;
+    const m = mesh(lowpoly(new THREE.DodecahedronGeometry(s, 0), s * .3, i), mat('#C9B6A4'));
+    m.position.set(side ? -12 + R() * 24 : 12.02, -2.9 + R() * 2.2, side ? 12.02 : -12 + R() * 24);
+    m.userData = { type: 'pop', t0: 0.55 + R() * 0.6, dur: 0.25, y: m.position.y, x: m.position.x }; T().add(m); PIECES.push(m);
+  }
+}
+// 3) 后半块地面：2×2 的方砖，从左后角像波浪一样落下
+for (let i = 0; i < 12; i++) for (let j = 0; j < 6; j++) {
+  const x = -11 + i * 2, z = -11 + j * 2;
+  P(1.96, 0.1, 1.96, x, 0, z, (i + j) % 2 ? '#E9DFCB' : '#E2D5BD', 'drop', 0.4 + (i + j) * 0.028, 0.3);
+}
+// 4) 人行道：一块块方砖翻着落下（翻 180°），从左往右一排排铺
+for (const [z0, lag] of [[0, 0.62], [9, 0.78]]) for (let i = 0; i < 24; i++) for (let j = 0; j < 3; j++) {
+  const x = -11.5 + i, z = z0 + 0.5 + j;
+  P(0.96, 0.18, 0.96, x, 0, z, (i + j) % 2 ? '#EFE4D2' : '#F7EEE0', 'flip', lag + i * 0.022 + j * 0.03, 0.3);
+}
+// 5) 柏油：十二条，从左往右“刷”开；路缘石跟着拉出来
+for (let i = 0; i < 12; i++) P(2.0, 0.02, 6, -11 + i * 2, 0, 6, '#B9B6C6', 'unroll', 0.95 + i * 0.035, 0.2, { rough: .8 }, 'l');
+P(24, 0.24, 0.2, 0, 0, 3.0, '#9E968C', 'unroll', 1.0, 0.45, {}, 'l'); P(24, 0.24, 0.2, 0, 0, 9.0, '#9E968C', 'unroll', 1.08, 0.45, {}, 'l');
+// 6) 中线一段段弹出，斑马线一条条翻下来
+{ let k = 0; for (let x = -11; x < 12; x += 2.4) P(1.2, 0.03, 0.18, x, 0.01, 6, '#E8E2D0', 'pop', 1.3 + (k++) * 0.03, 0.22); }
+for (let k = 0; k < 7; k++) P(0.55, 0.03, 5.2, 5.2 + k * 0.95, 0.01, 6, '#EDE8DA', 'flip', 1.38 + k * 0.05, 0.28);
 
 // ---------- 咖啡店（左后）----------
 {
   const x0 = -11.2, x1 = -1.6, z0 = -10, z1 = -0.6, cx = (x0 + x1) / 2, w = x1 - x0, d = z1 - z0;
-  begin('cafe1','rise',0.0,0.5,0,0,0);
+  begin('cafe1','rise',1.30,0.5,0,0,0);
   B(w, 3.4, d, cx, 0.1, (z0 + z1) / 2, '#7FCBA8');                                       // 一层（深色外框）
   B(w * 0.86, 2.5, 0.1, cx - 0.4, 0.4, z1 + 0.02, mat('#BFE4F2', { rough: .15, metal: .2 }));                   // 橱窗玻璃
   for (let k = 0; k <= 5; k++) B(0.12, 2.6, 0.16, x0 + 0.65 + k * 1.55, 0.35, z1 + 0.06, '#F7F2E8');   // 窗棂
@@ -65,11 +92,11 @@ B(24, 0.1, 12, 0, 0, -6, '#E9DFCB');                                            
   // 店里：吧台、吊灯、两个人影
   B(4.0, 1.0, 0.8, cx - 1.2, 0.1, z1 - 1.2, '#7A4E34'); 
   for (const dx of [-3, -1, 1]) { B(0.04, 0.8, 0.04, cx + dx, 2.4, z1 - 0.9, '#222'); T().add(mesh(new THREE.SphereGeometry(0.22, 10, 6).translate(cx + dx, 2.3, z1 - 0.9), glow('#FFE6B0', 3))); }
-begin('awning','pop',1.0,0.45,(x0+x1)/2,3.3,z1);
+begin('awning','pop',2.30,0.45,(x0+x1)/2,3.3,z1);
   // 条纹遮阳篷
   for (let k = 0; k < 12; k++) { const g = new THREE.BoxGeometry(w / 12, 0.08, 1.7).rotateX(0.42).translate(x0 + (k + .5) * w / 12, 3.25, z1 + 0.75); T().add(mesh(g, mat(k % 2 ? '#FFFDF7' : '#F28AA6'))); }
   for (let k = 0; k < 12; k++) { const g = new THREE.CylinderGeometry(w / 24, w / 24, 0.06, 8, 1, false, 0, Math.PI).rotateZ(Math.PI / 2).rotateY(Math.PI / 2).translate(x0 + (k + .5) * w / 12, 2.92, z1 + 1.52); T().add(mesh(g, mat(k % 2 ? '#FFFDF7' : '#F28AA6'))); }
-begin('cafe2','drop',0.5,0.6,0,3.5,0);
+begin('cafe2','drop',1.80,0.6,0,3.5,0);
   // 二层
   B(w, 3.0, d, cx, 3.5, (z0 + z1) / 2, '#F7C9D3');
   B(w + 0.2, 0.25, d + 0.2, cx, 3.4, (z0 + z1) / 2, '#C9B79C');
@@ -84,23 +111,23 @@ begin('cafe2','drop',0.5,0.6,0,3.5,0);
   B(0.9, 0.6, 0.45, x0 + 1.6, 3.65, z1 + 0.5, '#E8E8EA');                                // 空调外机
   T().add(mesh(new THREE.CylinderGeometry(0.22, 0.22, 0.05, 12).rotateX(Math.PI / 2).translate(x0 + 1.6, 3.95, z1 + 0.74), mat('#8A8A90')));
   for (let k = 0; k < 3; k++) { B(0.35, 0.35, 0.35, x0 + 3.4 + k * 0.6, 3.65, z1 + 1.0, '#C46A4A'); T().add(mesh(lowpoly(new THREE.IcosahedronGeometry(0.32, 0).translate(x0 + 3.4 + k * 0.6, 4.25, z1 + 1.0), .08, k), mat('#4E9A5A'))); }
-begin('laundry','pop',2.75,0.45,x0+6.2,5.3,z1+0.9);
+begin('laundry','pop',4.05,0.45,x0+6.2,5.3,z1+0.9);
   // 晾衣杆 + 衣服
   B(3.6, 0.04, 0.04, x0 + 6.2, 5.3, z1 + 0.9, '#666');
   [['#F2C14A', 0.6], ['#5B8DE0', 0.8], ['#F4F0E8', 0.55]].forEach(([c, h], k) => B(0.6, h, 0.05, x0 + 5.0 + k * 1.0, 5.28 - h, z1 + 0.9, c));
-begin('cafeRoof','drop',1.0,0.6,0,6.5,0);
+begin('cafeRoof','drop',2.30,0.6,0,6.5,0);
   // 屋顶：女儿墙、水箱、天线
   B(w + 0.2, 0.5, d + 0.2, cx, 6.5, (z0 + z1) / 2, '#FFF7EC');
   B(w - 0.6, 0.1, d - 0.6, cx, 6.9, (z0 + z1) / 2, '#8A8580');
   T().add(mesh(new THREE.CylinderGeometry(0.9, 0.9, 1.6, 12).translate(x0 + 2.5, 8.1, z0 + 2.5), mat('#B9C2CC', { metal: .4, rough: .4 })));
   for (const [dx, dz] of [[-0.6, -0.6], [0.6, -0.6], [-0.6, 0.6], [0.6, 0.6]]) B(0.08, 0.9, 0.08, x0 + 2.5 + dx, 6.9, z0 + 2.5 + dz, '#555');
   B(0.06, 2.2, 0.06, x1 - 1.5, 6.9, z0 + 1.5, '#444'); B(1.2, 0.05, 0.05, x1 - 1.5, 8.6, z0 + 1.5, '#444'); B(0.8, 0.05, 0.05, x1 - 1.5, 8.2, z0 + 1.5, '#444');
-begin('sign','pop',1.25,0.45,x1+0.2,3.7,z1-0.4);
+begin('sign','pop',2.55,0.45,x1+0.2,3.7,z1-0.4);
   // 竖招牌（无字：一只杯子的图形）
   B(0.25, 2.6, 1.0, x1 + 0.2, 3.7, z1 - 0.4, '#F5C451');
   B(0.06, 2.4, 0.85, x1 + 0.36, 3.8, z1 - 0.4, '#FFFFFF');
   T().add(mesh(new THREE.CylinderGeometry(0.28, 0.22, 0.5, 10).translate(x1 + 0.42, 4.9, z1 - 0.4), mat('#E8483B'), { cast: false }));
-begin('tables','pop',2.5,0.45,x0+3.5,0.18,1.4);
+begin('tables','pop',3.80,0.45,x0+3.5,0.18,1.4);
   // 门口：两张小桌、四把椅子、立式黑板
   for (const tx of [x0 + 2.0, x0 + 5.0]) {
     T().add(mesh(new THREE.CylinderGeometry(0.45, 0.45, 0.06, 12).translate(tx, 0.95, 1.4), mat('#F4EEE2')));
@@ -114,7 +141,7 @@ begin('tables','pop',2.5,0.45,x0+3.5,0.18,1.4);
 // ---------- 民居（中后）：瓦屋顶、木格子、拉门 ----------
 {
   const x0 = 0.4, x1 = 6.4, z0 = -9.5, z1 = -1.6, cx = (x0 + x1) / 2, cz = (z0 + z1) / 2, w = x1 - x0, d = z1 - z0;
-  begin('house','rise',0.25,0.55,0,0,0);
+  begin('house','rise',1.55,0.55,0,0,0);
   B(w, 2.8, d, cx, 0.1, cz, '#FFF7EC');
   B(w, 2.6, d, cx, 2.9, cz, '#CDB9F0');
   B(w + 0.4, 0.12, d + 0.4, cx, 2.85, cz, '#5A4A40');
@@ -122,7 +149,7 @@ begin('tables','pop',2.5,0.45,x0+3.5,0.18,1.4);
   B(2.4, 2.1, 0.06, x0 + 1.6, 0.35, z1 + 0.03, '#F6E9CF');                                   // 拉门透光
   B(1.8, 1.0, 0.06, x1 - 1.4, 3.6, z1 + 0.03, mat('#BFE4F2', { rough: .15, metal: .2 }));
   B(2.0, 0.1, 0.4, x1 - 1.4, 3.5, z1 + 0.2, '#5A4A40');
-begin('houseRoof','drop',1.25,0.6,0,5.5,0);
+begin('houseRoof','drop',2.55,0.6,0,5.5,0);
   // 瓦屋顶：两坡，表面一道道瓦楞
   const roof = (side) => { for (let k = 0; k < 9; k++) { const g = new THREE.CylinderGeometry(0.16, 0.16, w + 0.8, 6).rotateZ(Math.PI / 2).translate(0, 0, (side * (k + .5) * (d / 2 + 0.5)) / 9).rotateX(side * 0.5).translate(cx, 7.35, cz); T().add(mesh(g, mat('#7E9BE6', { rough: .5 }))); }
     const p = new THREE.BoxGeometry(w + 0.8, 0.14, d / 2 + 0.6).translate(0, -0.12, side * (d / 4 + 0.3)).rotateX(side * 0.5).translate(cx, 7.35, cz); T().add(mesh(p, mat('#6A86D6'))); };
@@ -130,7 +157,7 @@ begin('houseRoof','drop',1.25,0.6,0,5.5,0);
   B(w + 0.9, 0.3, 0.4, cx, 7.3, cz, '#6A86D6');
   // 山墙（两端的三角）
   for (const ex of [x0 + 0.01, x1 - 0.01]) { const sh = new THREE.Shape(); sh.moveTo(-d / 2, 0); sh.lineTo(d / 2, 0); sh.lineTo(0, 1.85); sh.lineTo(-d / 2, 0); T().add(mesh(new THREE.ShapeGeometry(sh).rotateY(Math.PI / 2).translate(ex, 5.5, cz), new THREE.MeshStandardMaterial({ color: '#CDB9F0', side: THREE.DoubleSide, flatShading: true }))); }
-begin('houseProps','pop',2.5,0.45,x0+3,0.18,z1+0.6);
+begin('houseProps','pop',3.80,0.45,x0+3,0.18,z1+0.6);
   // 门口：盆栽、自行车、红色邮筒
   for (let k = 0; k < 4; k++) { B(0.4, 0.4, 0.4, x0 + 3.6 + k * 0.55, 0.18, z1 + 0.5, k % 2 ? '#B85C3C' : '#8A5A3C'); T().add(mesh(lowpoly(new THREE.IcosahedronGeometry(0.3 + R() * .1, 0).translate(x0 + 3.6 + k * 0.55, 0.85, z1 + 0.5), .1, 40 + k), mat(['#3E8A4A', '#5AA05A'][k % 2]))); }
   const bike = new THREE.Group();
@@ -145,10 +172,10 @@ begin('houseProps','pop',2.5,0.45,x0+3,0.18,z1+0.6);
 
 // ---------- 右后：小院子 + 樱花树 + 售货机 ----------
 {
-  begin('yard','rise',0.5,0.45,0,0,0);
+  begin('yard','rise',1.80,0.45,0,0,0);
   B(4.6, 1.2, 0.3, 9.4, 0.1, -2.2, '#F2EADF'); B(0.3, 1.2, 7.4, 11.75, 0.1, -5.6, '#F2EADF');
   for (let i = 0; i < 40; i++) B(0.18, 0.04 + R() * 0.05, 0.18, 7.5 + R() * 4, 0.1, -9 + R() * 6.5, R() < .5 ? '#D9D2C6' : '#E6DFD3');   // 碎石
-begin('tree','pop',2.0,0.6,9.2,0.1,-6);
+begin('tree','pop',3.30,0.6,9.2,0.1,-6);
   // 樱花树：扭一点的树干 + 一团团粉色
   const trunk = new THREE.CatmullRomCurve3([new THREE.Vector3(9.2, 0.1, -6), new THREE.Vector3(9.0, 2, -5.8), new THREE.Vector3(9.5, 3.6, -6.2), new THREE.Vector3(9.1, 4.8, -5.8)]);
   T().add(mesh(new THREE.TubeGeometry(trunk, 12, 0.3, 6), mat('#9C7158')));
@@ -161,12 +188,12 @@ begin('tree','pop',2.0,0.6,9.2,0.1,-6);
   for (let i = 0; i < 160; i++) petals.push(new THREE.BoxGeometry(0.12, 0.02, 0.1).rotateY(R() * 3).translate(6 + R() * 6, 0.13 + R() * 0.03, -8 + R() * 11));
   for (let i = 0; i < 30; i++) petals.push(new THREE.BoxGeometry(0.12, 0.02, 0.1).rotateX(R() * 3).rotateZ(R() * 3).translate(7 + R() * 5, 1 + R() * 4, -5 + R() * 6));   // 空中飘落的
   T().add(mesh(mergeGeometries(petals), mat('#F7D36E'), { cast: false }));
-begin('lantern','pop',2.25,0.45,8.8,0.1,-6);
+begin('lantern','pop',3.55,0.45,8.8,0.1,-6);
   // 石灯笼 + 长椅
   B(0.6, 0.15, 0.6, 7.6, 0.1, -8, '#9A948A'); B(0.25, 0.9, 0.25, 7.6, 0.25, -8, '#9A948A'); B(0.7, 0.55, 0.7, 7.6, 1.15, -8, '#A9A398');
   B(0.4, 0.3, 0.4, 7.6, 1.25, -7.82, glow('#FFD08A', 2.2)); T().add(mesh(new THREE.ConeGeometry(0.62, 0.45, 4).rotateY(Math.PI / 4).translate(7.6, 1.92, -8), mat('#8E887E')));
   B(2.0, 0.1, 0.6, 10.2, 0.6, -3.6, '#8A5A3C'); for (const dx of [-0.8, 0.8]) B(0.1, 0.5, 0.5, 10.2 + dx, 0.1, -3.6, '#333');
-begin('vending','drop',2.0,0.6,8.3,0.18,-1.45);
+begin('vending','drop',3.30,0.6,8.3,0.18,-1.45);
   // 售货机 ×2（人行道上，背靠院墙）
   [['#F27D6A', 7.6], ['#7DB8E8', 9.0]].forEach(([c, x]) => {
     B(1.25, 2.3, 0.9, x, 0.18, -1.45, c);
@@ -177,7 +204,7 @@ begin('vending','drop',2.0,0.6,8.3,0.18,-1.45);
 }
 
 // ---------- 电线杆 + 下垂的电线 ----------
-  begin('poles','rise',1.5,0.45,0,0,0);
+  begin('poles','rise',2.80,0.45,0,0,0);
 function pole(x, z) {
   T().add(mesh(new THREE.CylinderGeometry(0.16, 0.2, 9.5, 8).translate(x, 4.75 + 0.1, z), mat('#D9D2C6')));
   B(2.2, 0.14, 0.14, x, 8.4, z, '#5A5A5E'); B(1.6, 0.14, 0.14, x, 7.6, z, '#5A5A5E');
@@ -185,7 +212,7 @@ function pole(x, z) {
   for (const dx of [-0.9, 0, 0.9]) T().add(mesh(new THREE.CylinderGeometry(0.06, 0.06, 0.18, 6).translate(x + dx, 8.62, z), mat('#EDEDED')));
 }
 pole(-0.9, 2.2); pole(11.0, 2.2); pole(-11.4, 2.2);
-begin('wires','drawx',1.75,0.5,-11.4,8.5,2.2);
+begin('wires','drawx',3.05,0.5,-11.4,8.5,2.2);
 const wires = [];
 for (const [xa, xb] of [[-11.4, -0.9], [-0.9, 11.0]]) for (const [dy, dz] of [[8.7, 0], [8.7, -0.0], [7.7, 0]]) for (const dx of [-0.9, 0, 0.9]) {
   if (dy === 7.7 && dx === 0) continue;
@@ -194,7 +221,7 @@ for (const [xa, xb] of [[-11.4, -0.9], [-0.9, 11.0]]) for (const [dy, dz] of [[8
   wires.push(new THREE.TubeGeometry(new THREE.CatmullRomCurve3(pts), 24, 0.025, 4));
 }
 T().add(mesh(mergeGeometries(wires), mat('#1E1E22'), { receive: false }));
-begin('lamps','rise',1.5,0.45,0,0,0);
+begin('lamps','rise',2.80,0.45,0,0,0);
 // 路灯（前人行道）
 for (const x of [-7, 6.5]) {
   T().add(mesh(new THREE.CylinderGeometry(0.08, 0.1, 5.2, 8).translate(x, 2.7, 10.4), mat('#3A3E46')));
@@ -202,7 +229,7 @@ for (const x of [-7, 6.5]) {
   B(0.6, 0.18, 0.4, x - 1.0, 5.05, 10.4, glow('#FFE2A8', 3));
   const pl = new THREE.PointLight('#FFC77A', 0, 9, 1.6); LAMPS.push(pl); pl.position.set(x - 1.0, 4.7, 10.4); T().add(pl);
 }
-begin('mirror','rise',1.6,0.45,0,0,0);
+begin('mirror','rise',2.90,0.45,0,0,0);
 // 反射镜（橙色杆）
 T().add(mesh(new THREE.CylinderGeometry(0.06, 0.06, 3.2, 8).translate(4.4, 1.7, 2.6), mat('#F07A2A')));
 T().add(mesh(new THREE.CylinderGeometry(0.5, 0.5, 0.08, 16).rotateX(Math.PI / 2).rotateY(-0.6).translate(4.4, 3.3, 2.6), mat('#CFE6F2', { metal: .9, rough: .1 })));
@@ -210,7 +237,7 @@ T().add(mesh(new THREE.TorusGeometry(0.5, 0.05, 6, 20).rotateY(-0.6).translate(4
 
 // ---------- 路上：一辆小卡车（车灯亮着）+ 两个行人 ----------
 {
-  begin('truck','drive',2.6,0.6,0,0,0);
+  begin('truck','drive',3.90,0.6,0,0,0);
   const g = new THREE.Group(), c = '#F4F1EA';
   g.add(mesh(new THREE.BoxGeometry(1.5, 1.3, 1.5).translate(0, 0.95, 0), mat(c)));
   g.add(mesh(new THREE.BoxGeometry(0.06, 0.6, 1.3).translate(0.76, 1.25, 0), mat('#5B7A9A', { metal: .3, rough: .2 })));
@@ -224,7 +251,7 @@ T().add(mesh(new THREE.TorusGeometry(0.5, 0.05, 6, 20).rotateY(-0.6).translate(4
   g.position.set(-3.5, 0.02, 4.6); T().add(g);
   const spot = new THREE.SpotLight('#FFF0D0', 0, 12, 0.45, 0.6, 1.4); spot.position.set(-2.6, 0.7, 4.6); spot.target.position.set(4, 0, 4.6); T().add(spot, spot.target); window.__spot = spot;
 }
-begin('people','drop',2.75,0.55,0,0.18,0);
+begin('people','drop',4.05,0.55,0,0.18,0);
 const person = (x, z, shirt, rot) => {
   const g = new THREE.Group();
   g.add(mesh(new THREE.CapsuleGeometry(0.2, 0.55, 4, 8).translate(0, 0.95, 0), mat(shirt)));
@@ -234,7 +261,7 @@ const person = (x, z, shirt, rot) => {
   g.position.set(x, 0.18, z); g.rotation.y = rot; T().add(g);
 };
 person(-4.6, 1.8, '#E26B4A', 0.4); person(-4.0, 2.0, '#F2D35A', -0.6); person(8.3, 10.5, '#4A7FD8', 1.6);
-begin('cat','drop',3.0,0.55,8.4,1.32,-2.2);
+begin('cat','drop',4.30,0.55,8.4,1.32,-2.2);
 // 猫（院墙上）
 { const g = new THREE.Group(); g.add(mesh(new THREE.BoxGeometry(0.55, 0.28, 0.24).translate(0, 0.14, 0), mat('#F08A3A'))); g.add(mesh(new THREE.BoxGeometry(0.24, 0.22, 0.22).translate(0.32, 0.3, 0), mat('#F08A3A')));
   for (const dz of [-0.07, 0.07]) g.add(mesh(new THREE.ConeGeometry(0.05, 0.1, 4).translate(0.34, 0.45, dz), mat('#E07A2E')));
@@ -252,21 +279,23 @@ const clamp = (x, a = 0, b = 1) => Math.max(a, Math.min(b, x));
 const back = (e, s = 1.2) => { e -= 1; return 1 + (s + 1) * e ** 3 + s * e ** 2; };          // 过冲约 5%
 const smooth = e => e * e * (3 - 2 * e);
 const lerpC = (a, b, t) => new THREE.Color(a).lerp(new THREE.Color(b), t);
-const DAY = ['#F8F1E3', '#F6EEDD', '#F3E8D6'], DUSK = ['#FBE3C4', '#F8C9A8', '#F2B29C'], NIGHT = ['#B3A2EA', '#E3B6DA', '#FBCDBA'];   // 暮色：薰衣草到蜜桃粉，不用深蓝
+const DAY = ['#F8F1E3', '#F6EEDD', '#F3E8D6'], DUSK = ['#FBE3C4', '#F8C9A8', '#F2B29C'], NIGHT = ['#C3A6E6', '#F0BCD2', '#FFD3B4'];   // 暮色：薰衣草到蜜桃粉，不用深蓝
 function sky(t) {
-  const a = smooth(clamp((t - 3.0) / 0.6)), b = smooth(clamp((t - 3.5) / 0.7));
+  const a = smooth(clamp((t - 3.0 - D) / 0.6)), b = smooth(clamp((t - 3.5 - D) / 0.7));
   return [0, 1, 2].map(i => '#' + lerpC(lerpC(DAY[i], DUSK[i], a), NIGHT[i], b).getHexString());
 }
 const BLOOM = comp.passes.find(p => p.constructor.name === 'UnrealBloomPass');
-const SHIFT = 0.3;   // 整条时间轴提前 0.3 s：第 0 帧店面已经在往上长
-const tOn = EMISSIVE.map((m, i) => 3.55 + ((i * 7) % 11) / 11 * 0.9);                  // 窗户一盏盏亮，散在 3.55—4.45 s
+const GTAO = comp.passes.find(p => p.constructor.name === 'GTAOPass'), AO_FULL = GTAO.blendIntensity;
+const SHIFT = 0.0, DUR = 6.5, D = 1.3;   // D：底座拼装占用的时间，后面的事件整体往后挪 D
+const tOn = EMISSIVE.map((m, i) => D + 3.55 + ((i * 7) % 11) / 11 * 0.9);                  // 窗户一盏盏亮，散在 3.55—4.45 s
 window.renderFrame = (f, fps = 30) => {
   const t = f / fps + SHIFT;
   for (const g of GROUPS) {
     const { type, t0, dur, base } = g.userData;
     const e = clamp((t - t0) / dur);
     g.visible = e > 0;
-    g.scale.set(1, 1, 1); g.position.y = base;
+    g.scale.set(1, 1, 1); g.position.y = g.visible ? base : -1e4;
+    if (!g.visible) continue;
     if (type === 'rise') g.scale.y = Math.max(0.001, back(e));
     else if (type === 'pop') { const k = Math.max(0.001, back(e, 2.2)); g.scale.set(k, Math.max(0.001, back(clamp((t - t0 - 0.05) / dur), 2.6)), k); }
     else if (type === 'drawx') g.scale.x = Math.max(0.001, smooth(e));
@@ -277,26 +306,42 @@ window.renderFrame = (f, fps = 30) => {
     } else if (type === 'drive') {                    // 小卡车：先落到路上，入夜后亮着灯开走
       const land = 0.55;
       if (e < land) g.position.y = base + 9 * (1 - (e / land) ** 2);
-      g.position.x = 13 * clamp((t - 4.35) / 0.95) ** 2;
+      g.position.x = 13 * clamp((t - 4.35 - D) / 1.1) ** 2;
     }
   }
+  for (const m of PIECES) {
+    const { type, t0, dur, y, x } = m.userData, e = clamp((t - t0) / dur);
+    m.visible = e > 0; m.scale.set(1, 1, 1); m.position.y = y; m.position.x = x; m.rotation.set(0, 0, 0);
+    if (!m.visible) { m.position.y = -1e4; continue; }   // 藏起来的也挪远：GTAO 的法线 / 深度通道会画到“隐藏”的物体
+    if (type === 'drop') {
+      const land = 0.6;
+      if (e < land) m.position.y = y + 6 * (1 - (e / land) ** 2);
+      else { const k = (e - land) / (1 - land), sq = 0.16 * Math.sin(Math.PI * k) * (1 - k); m.scale.set(1 + sq * 0.4, 1 - sq, 1 + sq * 0.4); }
+    } else if (type === 'flip') {                    // 翻着落下：转半圈，落地带 5% 过冲
+      const k = back(e, 1.2); m.position.y = y + 2.4 * (1 - smooth(e)); m.rotation.x = Math.PI * (1 - k);
+    } else if (type === 'slide') { m.position.x = x - 30 * (1 - back(e, 1.1)); }
+    else if (type === 'unroll') m.scale.x = Math.max(0.001, back(e, 0.9));
+    else if (type === 'pop') { const k = Math.max(0.001, back(e, 2.4)); m.scale.set(k, k, k); }
+  }
+  // 环境光遮蔽：底座拼装时关着（大块平板在掠射角下 GTAO 会出方形空洞），房子长出来时再打开
+  GTAO.enabled = t > 1.25; GTAO.blendIntensity = AO_FULL * smooth(clamp((t - 1.25) / 0.4));
   // 白天 → 傍晚 → 入夜
   window.__sky(sky(t));
-  const dusk = smooth(clamp((t - 3.0) / 0.6)), night = smooth(clamp((t - 3.5) / 0.7));
+  const dusk = smooth(clamp((t - 3.0 - D) / 0.6)), night = smooth(clamp((t - 3.5 - D) / 0.7));
   moon.color.copy(lerpC(lerpC('#FFF3E0', '#FFC08A', dusk), '#C9B4FF', night)); moon.intensity = 3.0 - 0.6 * dusk - 0.7 * night;
   HEMI.intensity = 1.25 - 0.1 * dusk - 0.15 * night; HEMI.color.copy(lerpC('#E6F0FF', '#B9A8E8', night));
   EMISSIVE.forEach((m, i) => { const on = smooth(clamp((t - tOn[i]) / 0.12)); m.emissiveIntensity = m.userData.base * (0.35 + on * 2.2); });
   BLOOM.strength = 0.08 + 0.4 * night; BLOOM.threshold = 0.95 - 0.1 * night;
-  const lamp = smooth(clamp((t - 4.0) / 0.15));
+  const lamp = smooth(clamp((t - 4.0 - D) / 0.15));
   LAMPS.forEach(l => l.intensity = 30 * lamp);
-  window.__spot.intensity = 45 * smooth(clamp((t - 3.9) / 0.1));
+  window.__spot.intensity = 45 * smooth(clamp((t - 3.9 - D) / 0.1));
   // 镜头：慢慢绕过去、推近
-  const k = smooth(clamp((t - SHIFT) / 5));
-  const ang = 0.68 - 0.22 * k, rad = 64 - 10 * k;
-  cam.position.set(Math.sin(ang) * rad - 0.5, 30 - 4 * k, Math.cos(ang) * rad + 0.2); cam.lookAt(-0.5, 0.8 + 0.6 * k, 0.2);
+  const k = smooth(clamp(t / DUR));
+  const ang = 0.74 - 0.28 * k, rad = 62 - 15 * k;
+  cam.position.set(Math.sin(ang) * rad - 0.5, 34 - 8 * k, Math.cos(ang) * rad + 0.2); cam.lookAt(-0.5, 0.8 + 0.6 * k, 0.2);
   comp.render();
   return true;
 };
-window.__ready = true;
+window.__ready = true; window.__scene = scene; window.__comp = comp;
 { const q = new URLSearchParams(location.search); if (!q.get('anim')) { window.renderFrame(+(q.get('f') || 0)); window.__done = true; } }
 </script>

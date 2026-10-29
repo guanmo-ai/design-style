@@ -24,6 +24,9 @@ marks = [
     ("// 猫（院墙上）", "begin('cat','drop',3.0,0.55,8.4,1.32,-2.2);"),
     ("// 店门口洒到人行道上的暖光", "begin(null);"),
 ]
+OFFSET = 1.3
+import re
+marks = [(m, re.sub(r"begin\('(\w+)','(\w+)',([\d.]+)", lambda g: f"begin('{g[1]}','{g[2]}',{float(g[3]) + OFFSET:.2f}", c)) for m, c in marks]
 out, pend = [], None
 for ln in src.split('\n'):
     if pend:                                    # AFTER2：放在下一行（块的 { 之后）
@@ -38,6 +41,8 @@ for ln in src.split('\n'):
     out.append(ln)
 s = '\n'.join(out)
 head, body = s.split('// ---------- 底座', 1)
+a_ = body.index('// ---------- 咖啡店')
+body = '\n' + open('base_build.js').read() + '\n' + body[a_:]
 s = head + 'const LAMPS = [];\n// ---------- 底座' + body.replace('scene.add(', 'T().add(')
 rep = {
  "const B = (w, h, d, x, y, z, color, o = {}) => { const m = mesh(new THREE.BoxGeometry(w, h, d).translate(x, y + h / 2, z), typeof color === 'string' ? mat(color, o) : color, o); scene.add(m); return m; };":
