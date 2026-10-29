@@ -9,20 +9,20 @@
 <circle cx="104" cy="260" r="24" fill="#3B3552"/>
 <text x="104" y="269" font-family="'Noto Sans SC'" font-weight="900" font-size="24" fill="#FFF7EC" text-anchor="middle" letter-spacing="0">1</text>
 <text x="68" y="690" font-family="'Noto Sans SC'" font-weight="900" font-size="32" fill="#3B3552" text-anchor="start" letter-spacing="0">碎块砸下来</text>
-<text x="68" y="726" font-family="'Noto Sans SC'" font-weight="500" font-size="19" fill="#8A7FA0" text-anchor="start" letter-spacing="0">先有一堆小块：自由落体、压扁、回弹</text>
+<text x="68" y="726" font-family="'Noto Sans SC'" font-weight="700" font-size="19" fill="#8A7FA0" text-anchor="start" letter-spacing="0">先有一堆小块：自由落体、压扁、回弹</text>
 <clipPath id="c-base-548-220"><rect x="548" y="220" width="468" height="420" rx="30"/></clipPath><rect x="548" y="220" width="468" height="420" rx="30" fill="#FFF7EC" filter="url(#sh)"/><image href="frames/base.jpg" x="548" y="220" width="468" height="420" preserveAspectRatio="xMidYMid slice" clip-path="url(#c-base-548-220)"/>
 <circle cx="588" cy="260" r="24" fill="#3B3552"/>
 <text x="588" y="269" font-family="'Noto Sans SC'" font-weight="900" font-size="24" fill="#FFF7EC" text-anchor="middle" letter-spacing="0">2</text>
 <text x="552" y="690" font-family="'Noto Sans SC'" font-weight="900" font-size="32" fill="#3B3552" text-anchor="start" letter-spacing="0">底座切齐</text>
-<text x="552" y="726" font-family="'Noto Sans SC'" font-weight="500" font-size="19" fill="#8A7FA0" text-anchor="start" letter-spacing="0">四边切齐，看到土层和木框</text>
+<text x="552" y="726" font-family="'Noto Sans SC'" font-weight="700" font-size="19" fill="#8A7FA0" text-anchor="start" letter-spacing="0">四边切齐，看到土层和木框</text>
 <clipPath id="c-street-64-780"><rect x="64" y="780" width="468" height="420" rx="30"/></clipPath><rect x="64" y="780" width="468" height="420" rx="30" fill="#FFF7EC" filter="url(#sh)"/><image href="frames/street.jpg" x="64" y="780" width="468" height="420" preserveAspectRatio="xMidYMid slice" clip-path="url(#c-street-64-780)"/>
 <circle cx="104" cy="820" r="24" fill="#3B3552"/>
 <text x="104" y="829" font-family="'Noto Sans SC'" font-weight="900" font-size="24" fill="#FFF7EC" text-anchor="middle" letter-spacing="0">3</text>
 <text x="68" y="1250" font-family="'Noto Sans SC'" font-weight="900" font-size="32" fill="#3B3552" text-anchor="start" letter-spacing="0">一块块搭好</text>
-<text x="68" y="1286" font-family="'Noto Sans SC'" font-weight="500" font-size="19" fill="#8A7FA0" text-anchor="start" letter-spacing="0">房子升起、屋顶砸下、电线拉过去</text>
+<text x="68" y="1286" font-family="'Noto Sans SC'" font-weight="700" font-size="19" fill="#8A7FA0" text-anchor="start" letter-spacing="0">房子升起、屋顶砸下、电线拉过去</text>
 <clipPath id="c-night-548-780"><rect x="548" y="780" width="468" height="420" rx="30"/></clipPath><rect x="548" y="780" width="468" height="420" rx="30" fill="#FFF7EC" filter="url(#sh)"/><image href="frames/night.jpg" x="548" y="780" width="468" height="420" preserveAspectRatio="xMidYMid slice" clip-path="url(#c-night-548-780)"/>
 <circle cx="588" cy="820" r="24" fill="#3B3552"/>
 <text x="588" y="829" font-family="'Noto Sans SC'" font-weight="900" font-size="24" fill="#FFF7EC" text-anchor="middle" letter-spacing="0">4</text>
 <text x="552" y="1250" font-family="'Noto Sans SC'" font-weight="900" font-size="32" fill="#3B3552" text-anchor="start" letter-spacing="0">移轴 + 入夜</text>
-<text x="552" y="1286" font-family="'Noto Sans SC'" font-weight="500" font-size="19" fill="#8A7FA0" text-anchor="start" letter-spacing="0">长焦、上下变虚；窗户一盏盏亮</text>
+<text x="552" y="1286" font-family="'Noto Sans SC'" font-weight="700" font-size="19" fill="#8A7FA0" text-anchor="start" letter-spacing="0">长焦、上下变虚；窗户一盏盏亮</text>
 </svg>

@@ -9,7 +9,7 @@
 <rect x="138" y="238" width="484" height="1024" rx="48" fill="#FFF7EC"/>
 <text x="174" y="290" font-family="'Noto Sans SC'" font-weight="700" font-size="20" fill="#3B3552" text-anchor="start" letter-spacing="0">9:41</text>
 <text x="174" y="354" font-family="'Noto Sans SC'" font-weight="900" font-size="38" fill="#3B3552" text-anchor="start" letter-spacing="0">我的房间</text>
-<text x="174" y="388" font-family="'Noto Sans SC'" font-weight="500" font-size="19" fill="#8A7FA0" text-anchor="start" letter-spacing="0">3 盏灯亮着 · 22°C</text>
+<text x="174" y="388" font-family="'Noto Sans SC'" font-weight="700" font-size="19" fill="#8A7FA0" text-anchor="start" letter-spacing="0">3 盏灯亮着 · 22°C</text>
 <clipPath id="c-app-room"><rect x="158" y="416" width="444" height="420" rx="30"/></clipPath><rect x="158" y="416" width="444" height="420" rx="30" fill="#FFF7EC" filter="url(#sh)"/><image href="frames/room.jpg" x="158" y="416" width="444" height="420" preserveAspectRatio="xMidYMid slice" clip-path="url(#c-app-room)"/>
 <circle cx="468" cy="538" r="20" fill="#F5C451" stroke="#FFF7EC" stroke-width="5"/>
 <circle cx="318" cy="658" r="20" fill="#F28AA6" stroke="#FFF7EC" stroke-width="5"/>
@@ -17,37 +17,37 @@
 <rect x="158" y="862" width="216" height="160" rx="28" fill="#F5C451" stroke="#3B35521a"/>
 <path d="M182.0,900 l20.0,-10.0 l20.0,10.0 l-20.0,10.0z" fill="#FFF7EC"/><path d="M182.0,900 l20.0,10.0 v26 l-20.0,-10.0z" fill="#7A5C86"/><path d="M222.0,900 l-20.0,10.0 v26 l20.0,-10.0z" fill="#3B3552"/>
 <text x="182" y="970" font-family="'Noto Sans SC'" font-weight="900" font-size="26" fill="#3B3552" text-anchor="start" letter-spacing="0">落地灯</text>
-<text x="182" y="1000" font-family="'Noto Sans SC'" font-weight="500" font-size="17" fill="#3B3552" text-anchor="start" letter-spacing="0">开 · 暖光 2700K</text>
+<text x="182" y="1000" font-family="'Noto Sans SC'" font-weight="700" font-size="17" fill="#3B3552" text-anchor="start" letter-spacing="0">开 · 暖光 2700K</text>
 <rect x="292" y="886" width="60" height="34" rx="17" fill="#3B3552"/>
 <circle cx="335" cy="903" r="12" fill="#FFFDF7"/>
 <rect x="386" y="862" width="216" height="160" rx="28" fill="#F28AA6" stroke="#3B35521a"/>
 <path d="M410.0,900 l20.0,-10.0 l20.0,10.0 l-20.0,10.0z" fill="#FFF7EC"/><path d="M410.0,900 l20.0,10.0 v26 l-20.0,-10.0z" fill="#7A5C86"/><path d="M450.0,900 l-20.0,10.0 v26 l20.0,-10.0z" fill="#3B3552"/>
 <text x="410" y="970" font-family="'Noto Sans SC'" font-weight="900" font-size="26" fill="#3B3552" text-anchor="start" letter-spacing="0">唱片机</text>
-<text x="410" y="1000" font-family="'Noto Sans SC'" font-weight="500" font-size="17" fill="#3B3552" text-anchor="start" letter-spacing="0">正在播放</text>
+<text x="410" y="1000" font-family="'Noto Sans SC'" font-weight="700" font-size="17" fill="#3B3552" text-anchor="start" letter-spacing="0">正在播放</text>
 <rect x="520" y="886" width="60" height="34" rx="17" fill="#3B3552"/>
 <circle cx="563" cy="903" r="12" fill="#FFFDF7"/>
 <rect x="158" y="1038" width="216" height="160" rx="28" fill="#FFFDF7" stroke="#3B35521a"/>
 <path d="M182.0,1076 l20.0,-10.0 l20.0,10.0 l-20.0,10.0z" fill="#FFF7EC"/><path d="M182.0,1076 l20.0,10.0 v26 l-20.0,-10.0z" fill="#7A5C86"/><path d="M222.0,1076 l-20.0,10.0 v26 l20.0,-10.0z" fill="#7DB8E8"/>
 <text x="182" y="1146" font-family="'Noto Sans SC'" font-weight="900" font-size="26" fill="#3B3552" text-anchor="start" letter-spacing="0">空调</text>
-<text x="182" y="1176" font-family="'Noto Sans SC'" font-weight="500" font-size="17" fill="#8A7FA0" text-anchor="start" letter-spacing="0">22°C · 自动</text>
+<text x="182" y="1176" font-family="'Noto Sans SC'" font-weight="700" font-size="17" fill="#8A7FA0" text-anchor="start" letter-spacing="0">22°C · 自动</text>
 <rect x="292" y="1062" width="60" height="34" rx="17" fill="#E6DED0"/>
 <circle cx="309" cy="1079" r="12" fill="#FFFDF7"/>
 <rect x="386" y="1038" width="216" height="160" rx="28" fill="#FFFDF7" stroke="#3B35521a"/>
 <path d="M410.0,1076 l20.0,-10.0 l20.0,10.0 l-20.0,10.0z" fill="#FFF7EC"/><path d="M410.0,1076 l20.0,10.0 v26 l-20.0,-10.0z" fill="#7A5C86"/><path d="M450.0,1076 l-20.0,10.0 v26 l20.0,-10.0z" fill="#CDB9F0"/>
 <text x="410" y="1146" font-family="'Noto Sans SC'" font-weight="900" font-size="26" fill="#3B3552" text-anchor="start" letter-spacing="0">窗帘</text>
-<text x="410" y="1176" font-family="'Noto Sans SC'" font-weight="500" font-size="17" fill="#8A7FA0" text-anchor="start" letter-spacing="0">关</text>
+<text x="410" y="1176" font-family="'Noto Sans SC'" font-weight="700" font-size="17" fill="#8A7FA0" text-anchor="start" letter-spacing="0">关</text>
 <rect x="520" y="1062" width="60" height="34" rx="17" fill="#E6DED0"/>
 <circle cx="537" cy="1079" r="12" fill="#FFFDF7"/>
 <line x1="650" y1="550" x2="684" y2="550" stroke="#7A5C86" stroke-width="3"/>
 <text x="696" y="560" font-family="'Noto Sans SC'" font-weight="900" font-size="26" fill="#3B3552" text-anchor="start" letter-spacing="0">模型就是控件</text>
-<text x="696" y="594" font-family="'Noto Sans SC'" font-weight="500" font-size="17" fill="#8A7FA0" text-anchor="start" letter-spacing="0">点哪件家具，就开关哪件</text>
+<text x="696" y="594" font-family="'Noto Sans SC'" font-weight="700" font-size="17" fill="#8A7FA0" text-anchor="start" letter-spacing="0">点哪件家具，就开关哪件</text>
 <line x1="650" y1="770" x2="684" y2="770" stroke="#7A5C86" stroke-width="3"/>
 <text x="696" y="780" font-family="'Noto Sans SC'" font-weight="900" font-size="26" fill="#3B3552" text-anchor="start" letter-spacing="0">颜色一一对应</text>
-<text x="696" y="814" font-family="'Noto Sans SC'" font-weight="500" font-size="17" fill="#8A7FA0" text-anchor="start" letter-spacing="0">卡片的颜色 = 家具的颜色</text>
+<text x="696" y="814" font-family="'Noto Sans SC'" font-weight="700" font-size="17" fill="#8A7FA0" text-anchor="start" letter-spacing="0">卡片的颜色 = 家具的颜色</text>
 <line x1="650" y1="990" x2="684" y2="990" stroke="#7A5C86" stroke-width="3"/>
 <text x="696" y="1000" font-family="'Noto Sans SC'" font-weight="900" font-size="26" fill="#3B3552" text-anchor="start" letter-spacing="0">开着的灯会亮</text>
-<text x="696" y="1034" font-family="'Noto Sans SC'" font-weight="500" font-size="17" fill="#8A7FA0" text-anchor="start" letter-spacing="0">暖光 #FFC77A，关掉就暗</text>
+<text x="696" y="1034" font-family="'Noto Sans SC'" font-weight="700" font-size="17" fill="#8A7FA0" text-anchor="start" letter-spacing="0">暖光 #FFC77A，关掉就暗</text>
 <line x1="650" y1="1170" x2="684" y2="1170" stroke="#7A5C86" stroke-width="3"/>
 <text x="696" y="1180" font-family="'Noto Sans SC'" font-weight="900" font-size="26" fill="#3B3552" text-anchor="start" letter-spacing="0">进场一块块搭</text>
-<text x="696" y="1214" font-family="'Noto Sans SC'" font-weight="500" font-size="17" fill="#8A7FA0" text-anchor="start" letter-spacing="0">打开 App 时房间从碎块里搭起来</text>
+<text x="696" y="1214" font-family="'Noto Sans SC'" font-weight="700" font-size="17" fill="#8A7FA0" text-anchor="start" letter-spacing="0">打开 App 时房间从碎块里搭起来</text>
 </svg>
