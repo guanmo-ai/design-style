@@ -16,12 +16,14 @@ sys.path.insert(0, os.path.dirname(os.path.abspath(__file__)))
 from glyphs import Font, bbox, path_d  # noqa: E402,F401
 
 # ---------------------------------------------------------------- 色板
-PAPER = '#F1E4C8'   # 奶油纸
-INK = '#1B1714'     # 墨
-TANG = '#E4532C'    # 橘
-MUST = '#EBA628'    # 芥末黄
-TEAL = '#23736E'    # 孔雀绿
-MUTE = '#8C7B62'    # 说明文字（纸上）
+PAPER = '#FBF3E3'   # 暖白纸
+INK = '#1E1B19'     # 墨
+RED = '#F2542D'     # 番茄红
+SUN = '#FFC62E'     # 向日葵黄
+PINK = '#F57AA8'    # Girard 粉
+TURQ = '#1FB3A6'    # 泳池绿松石
+BLUE = '#2F6BD8'    # 钴蓝
+MUTE = '#8A7F72'    # 说明文字（纸上）
 
 JOST = "'Jost', 'Noto Sans SC', sans-serif"
 SC = "'Noto Sans SC', 'PingFang SC', sans-serif"
@@ -35,40 +37,58 @@ def multiply(a, b):
 
 
 # ---------------------------------------------------------------- 剪
-def _resample(poly, rng, lo, hi, jitter):
+def _corners(poly):
     n = len(poly)
-    segs, total = [], 0.0
-    for i in range(n):
-        a, b = poly[i], poly[(i + 1) % n]
-        d = math.dist(a, b)
-        segs.append((a, b, d))
-        total += d
-    if total < lo * 3:
-        return [(x + rng.uniform(-jitter, jitter), y + rng.uniform(-jitter, jitter)) for x, y in poly]
-    corners = set()
+    out = set()
     for i in range(n):
         p0, p1, p2 = poly[i - 1], poly[i], poly[(i + 1) % n]
         v1 = (p1[0] - p0[0], p1[1] - p0[1])
         v2 = (p2[0] - p1[0], p2[1] - p1[1])
         l1, l2 = math.hypot(*v1), math.hypot(*v2)
         if l1 and l2 and (v1[0] * v2[0] + v1[1] * v2[1]) / (l1 * l2) < 0.75:
-            corners.add(i)
-    out, pos, target = [], 0.0, rng.uniform(0, lo)
-    for i, (a, b, d) in enumerate(segs):
-        if i in corners:
-            out.append(a)
-            target = pos + rng.uniform(lo, hi)
-        while target <= pos + d:
-            t = (target - pos) / d if d else 0
-            out.append((a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t))
-            target += rng.uniform(lo, hi)
-        pos += d
-    return [(x + rng.uniform(-jitter, jitter), y + rng.uniform(-jitter, jitter)) for x, y in out]
+            out.add(i)
+    return out
 
 
-def rough(polys, seed=1, lo=14, hi=34, jitter=1.5):
+def _cut(poly, rng, amp):
+    """手剪的边：平滑地慢慢抖（两层正弦，周期取整，首尾闭合），尖角留着。"""
+    n = len(poly)
+    segs = [(poly[i], poly[(i + 1) % n]) for i in range(n)]
+    P = sum(math.dist(a, b) for a, b in segs)
+    if P < 8:
+        return poly
+    a = amp if amp is not None else min(1.6, max(0.5, P / 500))
+    step = min(5.0, max(2.0, P / 220))
+    corners = _corners(poly)
+    pts, ss, s = [], [], 0.0
+    for i, (p, q) in enumerate(segs):
+        d = math.dist(p, q)
+        k = max(1, int(d / step)) if (i not in corners and (i + 1) % n not in corners) or d > step * 2 else 1
+        for j in range(k):
+            t = j / k
+            pts.append((p[0] + (q[0] - p[0]) * t, p[1] + (q[1] - p[1]) * t))
+            ss.append(s + d * t)
+        s += d
+    k1 = max(2, round(P / rng.uniform(50, 110)))
+    k2 = max(3, round(P / rng.uniform(18, 30)))
+    f1, f2 = rng.uniform(0, math.tau), rng.uniform(0, math.tau)
+    m = len(pts)
+    out = []
+    for i in range(m):
+        (x0, y0), (x1, y1) = pts[i - 1], pts[(i + 1) % m]
+        L = math.hypot(x1 - x0, y1 - y0) or 1
+        nx, ny = (y1 - y0) / L, -(x1 - x0) / L
+        u = ss[i] / P * math.tau
+        d = a * (0.85 * math.sin(k1 * u + f1) + 0.18 * math.sin(k2 * u + f2))
+        out.append((pts[i][0] + nx * d, pts[i][1] + ny * d))
+    return out
+
+
+def rough(polys, seed=1, lo=None, hi=None, jitter=None, amp=None):
+    """把轮廓变成剪刀剪的纸边。seed 换一个 = 重剪一遍（视频里每张画换一次，边缘轻轻“沸腾”）。
+    lo / hi / jitter 是旧参数，保留只为兼容。"""
     rng = random.Random(seed)
-    return [_resample(c, rng, lo, hi, jitter) for c in polys]
+    return [_cut(c, rng, amp) for c in polys]
 
 
 # ---------------------------------------------------------------- 形状（都返回“轮廓列表”）
@@ -244,8 +264,7 @@ def word(text, size, x, y, f='anton', seed=1, tilt=2.5, bounce=0.02, tracking=0.
         p = rot(p, ang, x + gx + w / 2, y - size * 0.36)
         p = move(p, dx, dy)
         if cut:
-            lo, hi = max(3, min(12, size * 0.035)), max(6, min(26, size * 0.085))
-            p = rough(p, seed * 100 + i, lo=lo, hi=hi, jitter=min(1.4, size * 0.01))
+            p = rough(p, seed * 100 + i, amp=min(1.4, max(0.35, size * 0.008)))
         out.append((p, i))
     return out
 
@@ -283,23 +302,31 @@ class Sheet:
     def defs(self, extra=''):
         f = []
         for h in sorted(self.heights):
-            op = max(0.2, 0.4 - h * 0.004)
-            f.append(f'<filter id="h{h}" x="-30%" y="-30%" width="170%" height="170%">'
-                     f'<feDropShadow dx="{0.5 * h:.1f}" dy="{h:.1f}" stdDeviation="{0.4 * h:.1f}" '
-                     f'flood-color="#2A1205" flood-opacity="{op:.2f}"/></filter>')
+            op = max(0.16, 0.3 - h * 0.004)
+            f.append(
+                f'<filter id="h{h}" x="-30%" y="-30%" width="170%" height="170%" color-interpolation-filters="sRGB">'
+                f'<feGaussianBlur in="SourceAlpha" stdDeviation="{0.4 * h:.1f}"/>'
+                f'<feOffset dx="{0.5 * h:.1f}" dy="{h:.1f}" result="o"/>'
+                f'<feFlood flood-color="#3A1C0C" flood-opacity="{op:.2f}"/><feComposite in2="o" operator="in" result="sh"/>'
+                # 纸边：左上缘一道 1px 的亮边，纸就有了厚度
+                '<feOffset in="SourceAlpha" dx=".8" dy=".8" result="sa"/>'
+                '<feComposite in="SourceAlpha" in2="sa" operator="out" result="rim"/>'
+                '<feFlood flood-color="#FFFFFF" flood-opacity=".3"/><feComposite in2="rim" operator="in" result="rc"/>'
+                '<feMerge><feMergeNode in="sh"/><feMergeNode in="SourceGraphic"/><feMergeNode in="rc"/></feMerge></filter>')
         return (
             '<filter id="grain" x="0" y="0" width="100%" height="100%">'
-            '<feTurbulence type="fractalNoise" baseFrequency=".7" numOctaves="2" seed="4"/>'
-            '<feColorMatrix values="0 0 0 0 .1  0 0 0 0 .08  0 0 0 0 .05  0 0 0 .55 0"/></filter>'
-            '<filter id="fiber" x="0" y="0" width="100%" height="100%">'
-            '<feTurbulence type="fractalNoise" baseFrequency=".011 .07" numOctaves="2" seed="9"/>'
-            '<feColorMatrix values="0 0 0 0 .2  0 0 0 0 .14  0 0 0 0 .06  0 0 0 .5 -.12"/></filter>'
+            '<feTurbulence type="fractalNoise" baseFrequency=".9" numOctaves="1" seed="4"/>'
+            '<feColorMatrix values="0 0 0 0 .12  0 0 0 0 .09  0 0 0 0 .06  0 0 0 .6 0"/></filter>'
+            '<filter id="mottle" x="0" y="0" width="100%" height="100%">'
+            '<feTurbulence type="fractalNoise" baseFrequency=".004" numOctaves="2" seed="9"/>'
+            '<feColorMatrix values="0 0 0 0 .4  0 0 0 0 .3  0 0 0 0 .2  0 0 0 .9 -.3"/></filter>'
             + ''.join(f) + extra
         )
 
     def texture(self, op=1.0):
-        return (f'<rect width="{self.w}" height="{self.h}" filter="url(#fiber)" opacity="{0.16 * op:.2f}" style="mix-blend-mode:multiply"/>'
-                f'<rect width="{self.w}" height="{self.h}" filter="url(#grain)" opacity="{0.14 * op:.2f}" style="mix-blend-mode:multiply"/>')
+        """干净的纸：一层很细的颗粒 + 一层很淡的大块明暗，不要纤维条纹。"""
+        return (f'<rect width="{self.w}" height="{self.h}" filter="url(#mottle)" opacity="{0.10 * op:.2f}" style="mix-blend-mode:multiply"/>'
+                f'<rect width="{self.w}" height="{self.h}" filter="url(#grain)" opacity="{0.09 * op:.2f}" style="mix-blend-mode:multiply"/>')
 
     def doc(self, body, extra_defs=''):
         return (
