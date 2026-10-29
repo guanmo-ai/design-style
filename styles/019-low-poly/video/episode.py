@@ -6,8 +6,8 @@ python3 episode.py <输出目录> [fps] [起始帧 结束帧]  → fNNNN.svg；�
   03 小星球         8.0—11.6  规则 3 · 面越少，越有性格
   04 落到界面      11.6—15.0  规则 4 · 一张卡，一座山
   05 夜里的山谷    15.0—17.4  规则 5 · 三档明暗就够了
-  结尾            17.4—20.0  火车开走，山谷由远到近一片片翻回一张纸；片名在纸上升起又落下；
-                             最后半秒就是第 1 章开头那张纸（首尾同一帧）
+  结尾            17.4—20.0  火车开走，山谷由远到近一片片翻回一张纸；18.5 秒片名在纸上升起，
+                             落在配乐的主和弦上，停到最后（不接回开头）
 每一章都从一张纸翻出来，结尾被一团纸云盖住——纸云就是下一章的纸。"""
 import math
 import os
@@ -61,25 +61,24 @@ def text_block(t):
     line(82, 990, 44, f'规则 {int(c[2])} · {c[5]}', 900, WHITE, t0 + 0.5, bg=INK)
     line(64, 1040, 28, c[6], 700, INK, t0 + 0.62)
     out.append(f'<text x="{W - 64}" y="1040" text-anchor="end" font-family="Inter" font-weight="800" font-size="28" letter-spacing="3" fill="{INK}">{c[2]} / 05</text>')
-    if t < 4.0 or t > 19.6:
+    if t < 4.0:
         out.append(f'<text x="{W - 64}" y="104" text-anchor="end" font-family="NotoSC" font-weight="900" font-size="64" fill="{INK}">低多边形</text>'
                    f'<text x="{W - 64}" y="142" text-anchor="end" font-family="Inter" font-weight="800" font-size="22" letter-spacing="7" fill="{INK}">LOW POLY · 019</text>')
     return ''.join(out)
 
 
 def finale_text(t):
-    """结尾：纸上居中的大片名，按行升起，停一拍，再沉下去。"""
-    if not 18.3 < t < 19.7:
+    """结尾：纸上居中的大片名，按行升起，停到最后。"""
+    if t < 18.45:
         return ''
     out = []
     for k, (txt, size, fam, wt, y, track) in enumerate([('低多边形', 150, 'NotoSC', 900, 560, 0), ('LOW POLY · 一个面，一个颜色', 34, 'NotoSC', 700, 640, 6)]):
-        dy_in, vis = rise_g(t, 18.35 + k * 0.1, 0.32)
-        out_e = clamp((t - 19.25 - k * 0.05) / 0.3) ** 2
+        dy_in, vis = rise_g(t, 18.5 + k * 0.1, 0.32)
         if not vis:
             continue
         h = size * 1.3
         out.append(f'<clipPath id="fin{k}"><rect x="0" y="{y - size}" width="{W}" height="{h}"/></clipPath><g clip-path="url(#fin{k})">'
-                   f'<text x="{W / 2}" y="{y + (dy_in + out_e) * h:.1f}" text-anchor="middle" font-family="{fam}" font-weight="{wt}" font-size="{size}" letter-spacing="{track}" fill="{INK}">{txt}</text></g>')
+                   f'<text x="{W / 2}" y="{y + dy_in * h:.1f}" text-anchor="middle" font-family="{fam}" font-weight="{wt}" font-size="{size}" letter-spacing="{track}" fill="{INK}">{txt}</text></g>')
     return ''.join(out)
 
 
@@ -92,10 +91,7 @@ def world(t):
         return C3.body(t - 8.0)
     if t < 15.0:
         return '', C4.body(t - 11.6)
-    if t < 18.6:
-        return night(t - 15.0)
-    # 纸上停一会儿（片名在上面），最后 0.6 秒接回第 1 章开头
-    return C1.body(max(t - 20.0, -0.6), cover=None)
+    return night(t - 15.0)                           # 结尾也在这里：山谷翻回纸后停在纸上
 
 
 def night(tl):

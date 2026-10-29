@@ -165,7 +165,7 @@ def add_track(S, t, fx):
             S.box(-31, 0.72, RAIL_Z + dz - 0.08, front + 31, 0.16, 0.14, '#8E89A8')
 
 
-def add_steam(S, t, chimney):
+def add_steam(S, t, chimney, fade=1.0):
     if t < 2.0:
         return 0
     k = 0
@@ -175,7 +175,9 @@ def add_steam(S, t, chimney):
         if age < 0 or age > 1.6:
             continue
         cx = train_x(t0) - 2.8
-        r = 0.4 + age * 1.6 + (0.2 if n % 3 == 0 else 0)
+        r = (0.4 + age * 1.6 + (0.2 if n % 3 == 0 else 0)) * fade
+        if r < 0.05:
+            continue
         S.ico(cx - age * 2.5, chimney[1] + age * 3.2, chimney[2] - age * 1.4, r, WHITE, jitter=0.15, seed=n)
         k += 1
     return k
@@ -210,7 +212,7 @@ def body(t, cover=(3.85, 4.97), night=0.0, center=None, refold=None):
     ch = None
     if t >= 2.0:
         ch = add_train(S, fx)
-        add_steam(S, t, ch)
+        add_steam(S, t, ch, 1 - ease_in_out(clamp(refold / 0.8)) if refold is not None else 1.0)   # 结尾：烟一团团缩没
     if night:   # 夜里：三档明暗整体往深蓝紫里压，亮窗不压
         bands = (0.26 + 0.42 * night, 0.1 + 0.4 * night, 0.0 + 0.32 * night)
         tint = '#' + ''.join(f'{round(int(SHADE[i:i + 2], 16) * (1 - night) + int("2E2A58"[i - 1:i + 1], 16) * night):02x}' for i in (1, 3, 5))
