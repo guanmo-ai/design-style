@@ -1,6 +1,6 @@
 /**
  * 外框：左上章节标题（编号 · 领域 / 作者 · 作品 · 年份 / 这一章教什么），左下 h 读数（一块小纸 + 它的影子，数字实时变），
- * 右上期号。黑场缩回钟心时，黑边扫过外框，字也跟着黑白反转（和纸条同一个遮罩）。
+ * 右上期号。红场缩回钟心时，红边扫过外框，字也跟着反转（和纸条同一个遮罩）。
  */
 import React from 'react';
 import {C, FONT, PAPER} from '../tokens';
@@ -11,8 +11,8 @@ import {AT, W} from './timeline';
 
 type Credit = {n: string; field: string; who: string; work: string; year: string; trick: string; at: number; to: number};
 const CREDITS: Credit[] = [
-  {n: '00', field: '片头', who: 'Saul Bass', work: '《金臂人》片头', year: '1955', trick: '白纸条一根根扎进黑场', at: -30, to: 104},
-  {n: '01', field: '产品', who: 'George Nelson', work: '球钟', year: '1949', trick: '12 根辐条、12 颗球，一颗颗放上去', at: 140, to: 296},
+  {n: '00', field: '片头', who: 'Saul Bass', work: '《金臂人》片头', year: '1955', trick: '纸条一根根扎进来', at: -30, to: 70},
+  {n: '01', field: '产品', who: 'George Nelson', work: '球钟', year: '1949', trick: '12 根辐条、12 颗球，一颗颗放上去', at: 100, to: 196},
 ];
 
 /** 一行字从遮罩里升起、再沉下去 */
@@ -32,7 +32,7 @@ const Line: React.FC<{x: number; y: number; size: number; t: number; at: number;
   );
 };
 
-const Frame: React.FC<{t: number; ink: string; soft: string}> = ({t, ink, soft}) => {
+const Frame: React.FC<{t: number; ink: string; soft: string; accent: string}> = ({t, ink, soft, accent}) => {
   const f = focusAt(t);
   const h = Math.max(0, f.p?.h ?? 4);
   const sq = 30;
@@ -43,7 +43,7 @@ const Frame: React.FC<{t: number; ink: string; soft: string}> = ({t, ink, soft})
     <g>
       {CREDITS.map((c, i) => (
         <g key={i}>
-          <Line x={72} y={88} size={20} t={t} at={c.at} to={c.to} color={C.red} family={FONT.sans} weight={700} ls={3}>{`${c.n} · ${c.field}`}</Line>
+          <Line x={72} y={88} size={20} t={t} at={c.at} to={c.to} color={accent} family={FONT.sans} weight={700} ls={3}>{`${c.n} · ${c.field}`}</Line>
           <Line x={72} y={130} size={32} t={t} at={c.at + 3} to={c.to} color={ink}>{`${c.who} ${c.work} · ${c.year}`}</Line>
           <Line x={72} y={166} size={20} t={t} at={c.at + 6} to={c.to} color={soft} weight={500}>{c.trick}</Line>
         </g>
@@ -65,9 +65,9 @@ const Frame: React.FC<{t: number; ink: string; soft: string}> = ({t, ink, soft})
 };
 
 export const Hud: React.FC<{t: number}> = ({t}) => {
-  // 黑场盖住的地方用白字，其余用墨字；黑场缩回时，黑边扫过外框
-  const dark = t < 128;
-  if (!dark) return <Frame t={t} ink={C.ink} soft={C.mute} />;
+  // 红场盖住的地方用白字，其余用墨字；红场缩回时，红边扫过外框
+  const dark = t < AT.clock + 2;
+  if (!dark) return <Frame t={t} ink={C.ink} soft={C.mute} accent={C.red} />;
   return (
     <>
       <defs>
@@ -75,13 +75,13 @@ export const Hud: React.FC<{t: number}> = ({t}) => {
           <path d={GEO.disc} transform={discScreenTf(t)} />
         </clipPath>
       </defs>
-      <g clipPath="url(#hud-in)"><Frame t={t} ink={C.paper} soft="#B9AE9E" /></g>
+      <g clipPath="url(#hud-in)"><Frame t={t} ink={C.paper} soft="#FFD6C8" accent={C.sun} /></g>
       <g>
         <mask id="hud-out" maskUnits="userSpaceOnUse" x={-3000} y={-3000} width={9000} height={9000}>
           <rect x={-3000} y={-3000} width={9000} height={9000} fill="#fff" />
           <path d={GEO.disc} transform={discScreenTf(t)} fill="#000" />
         </mask>
-        <g mask="url(#hud-out)"><Frame t={t} ink={C.ink} soft={C.mute} /></g>
+        <g mask="url(#hud-out)"><Frame t={t} ink={C.ink} soft={C.mute} accent={C.red} /></g>
       </g>
     </>
   );

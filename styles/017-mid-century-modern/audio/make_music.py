@@ -2,15 +2,14 @@
 Design Style · 风格 017 · 中世纪现代 Mid-Century Modern —— 配乐与音效（纯代码合成，无外部音源）
 
 120 BPM（1 拍 = 30 帧）· F 大调 · 摇摆的冷爵士（cool jazz）：
-  前奏 0—120   Bass《金臂人》式的紧张：低音提琴 8 分音符的固定音型（F F A♭ F B♭ F A♭ F），
-               纸条每扎下一根 = 一声调好音的木块（十六分音符，一级级往上）
-  74—120       纸条旋进钟里：刷子“沙——”地扫一圈 + 上扬
-  120          落定（第 4 拍）：低音“咚”+ 钹 + 颤音琴 Fmaj9；鼓（摇摆的叮叮镲 + 二四拍响指）和行走低音进来
-  132—207      11 颗球落上去 = 11 个颤音琴音（F 大调五声音阶往上走），声像跟着球在钟上的位置
-  240          手把红球按下（Gm7 进来）；244—300 指针转两圈：棘轮“咔哒”跟着分针每 30° 一声，先快后慢，第 10 拍“叮”
-  284—322      MID-CENTURY 十一个字母：三十二分音符的小木块
-  330—368      MODERN：钢琴和弦音一个一个按下去；390 的 O：全队一起落在第 2 拍（钹 + 低音 + Fmaj9）
-  405—450      6 点的球掉下去：往下滑的“呜”
+  前奏 0—90    Bass《金臂人》式的紧张：低音提琴 F F A♭ F + 半音上行；纸条每扎下一根 = 一声调好音的木块（十六分音符）
+  50—90        纸条旋进钟里：刷子“沙——”地扫一圈 + 上扬
+  90           落定（第 3 拍）：低音“咚”+ 钹 + 颤音琴 Fmaj9；鼓（摇摆的叮叮镲 + 二四拍响指）和行走低音进来
+  96—146       11 颗球落上去 = 11 个颤音琴音（F 大调五声音阶往上走，5 帧一颗），声像跟着球在钟上的位置
+  150          手把红球按下（第 5 拍）；154—194 指针转两圈：分针每 30° 一声“咔哒”，最后“叮”
+  174—212      MID-CENTURY 十一个字母：三十二分音符的小木块
+  216—246      MODERN：钢琴和弦音十六分音符按下去；270 的 O：全队一起落在第 9 拍（钹 + 低音 + Fmaj9）
+  285—330      6 点的球掉下去：往下滑的“呜”
 和弦：前奏 C7sus（F 持续音）| Fmaj7 | Gm7 C7 | Fmaj7 …（每小节 120 帧）
 
 用法：python3 styles/017-mid-century-modern/audio/make_music.py
@@ -71,11 +70,12 @@ def ride(level=1.0):
 
 
 # ───────── 画面上的时刻（与 video/opening.tsx 一致） ─────────
-land_a = [-15 + 7.5 * i for i in range(12)]
+land_a = [-37.5 + 7.5 * i for i in range(12)]
 BALL_ORDER = [0, 1, 2, 4, 5, 6, 7, 8, 9, 10, 11]
-ball_land = [132 + 7.5 * j for j in range(11)]
-mid_land = [284 + 3.75 * i for i in range(11)]
-MOD_LAND = {0: 330, 2: 345, 3: 352.5, 4: 360, 5: 367.5, 1: 390}
+ball_land = [96 + 5 * j for j in range(11)]
+mid_land = [174 + 3.75 * i for i in range(11)]
+MOD_LAND = {0: 216, 2: 223.5, 3: 231, 4: 238.5, 5: 246, 1: 270}
+CLOCK, PLACE, SPIN0, SPIN1, BIG, TEASE = 90, 150, 154, 194, 270, 285
 
 
 def pan_of(i):
@@ -84,33 +84,33 @@ def pan_of(i):
 
 
 # ───────── 前奏：固定音型 + 纸条木块 ─────────
-OST = [41, 41, 44, 41, 46, 41, 44, 41]
-for k in range(8):
+OST = [41, 41, 44, 41]
+for k in range(4):
     place(upright(OST[k], 0.22, 1.0), fr(k * 15))
 for k, m in enumerate([40, 41, 42, 43]):  # 落定前的半音上行
-    place(upright(m, 0.18, 0.8), fr(60 + k * 15))
+    place(upright(m, 0.18, 0.8), fr(30 + k * 15))
 PENTA = [65, 67, 69, 72, 74, 77, 79, 81, 84, 86, 89, 91]
 for i, f in enumerate(land_a):
     sfx(audio.thock(PENTA[i] - 12, 1.0), fr(f), pan=-0.5 + 0.09 * i, send=0.15)
     sfx(audio.click(0.35, 1200, 5000, 0.004), fr(f), pan=-0.5 + 0.09 * i)
-for k in range(4):  # 前奏的二四拍响指
+for k in range(3):  # 前奏的二四拍响指
     if k % 2 == 1:
         place(snap(0.9), fr(k * BEAT), pan=0.3, send=0.2)
-place(audio.pad([58, 62, 65, 67], fr(120), 0.35, att=0.6), 0, send=0.4)  # C7sus 铺底
+place(audio.pad([58, 62, 65, 67], fr(90), 0.35, att=0.3), 0, send=0.4)  # C7sus 铺底
 
-# 74—120：纸条一起提起来、旋进去
-sfx(brush(fr(46), 1.4), fr(74), pan=-0.2)
-sfx(audio.riser(fr(44), 0.6, 500, 6000), fr(76))
-sfx(audio.whoosh(fr(30), 300, 4000, 0.5, 0.7), fr(92), pan=0.2)
+# 50—90：纸条一起提起来、旋进去
+sfx(brush(fr(40), 1.4), fr(50), pan=-0.2)
+sfx(audio.riser(fr(38), 0.6, 500, 6000), fr(52))
+sfx(audio.whoosh(fr(26), 300, 4000, 0.5, 0.7), fr(64), pan=0.2)
 
-# 120：落定
-sfx(audio.boom(0.9, 110, 40, 0.8), fr(120))
-place(audio.crash(0.55), fr(120), send=0.3)
+# 90：落定（第 3 拍）
+sfx(audio.boom(0.9, 110, 40, 0.8), fr(CLOCK))
+place(audio.crash(0.55), fr(CLOCK), send=0.3)
 for m in (57, 60, 64, 67, 72):
-    place(vibe(m, 0.8, 2.0), fr(120), pan=-0.1, send=0.35)
+    place(vibe(m, 0.8, 2.0), fr(CLOCK), pan=-0.1, send=0.35)
 
-# ───────── 节奏组：从 120 起 ─────────
-for b in range(4, 40):
+# ───────── 节奏组：从第 3 拍起 ─────────
+for b in range(3, 40):
     f = b * BEAT
     if f >= 1150:
         break
@@ -119,7 +119,7 @@ for b in range(4, 40):
         place(ride(0.55), fr(f + SWING), pan=0.35)
         place(snap(0.85), fr(f), pan=-0.25, send=0.2)
         place(audio.hat(0.5, d=0.02), fr(f), pan=0.1)
-    if b % 4 == 0:
+    if b % 4 == 3:
         place(audio.kick(0.45), fr(f))
 
 CH = {  # 和弦：根音（行走低音用）+ 钢琴的无根音位
@@ -129,7 +129,7 @@ CH = {  # 和弦：根音（行走低音用）+ 钢琴的无根音位
 }
 PROG = ['F', 'F', 'Gm', 'Gm', 'C7', 'C7', 'F', 'F'] + ['F', 'F', 'Gm', 'C7'] * 4  # 每半小节一个
 for h, name in enumerate(PROG):
-    f0 = 120 + h * 60
+    f0 = CLOCK + h * 60
     if f0 >= 1140:
         break
     walk, voicing = CH[name]
@@ -148,30 +148,30 @@ for j, f in enumerate(ball_land):
     place(vibe(PENTA[j], 0.9, 1.1), fr(f), pan=pan_of(i), send=0.3)
     sfx(audio.click(0.25, 600, 2400, 0.008), fr(f), pan=pan_of(i))  # 纸落在桌上的“啪”
 # 背景纸滑进来
-sfx(brush(fr(40), 0.7), fr(150), pan=0.4)
-sfx(brush(fr(40), 0.7), fr(158), pan=-0.6)
+sfx(brush(fr(36), 0.7), fr(104), pan=0.4)
+sfx(brush(fr(36), 0.7), fr(110), pan=-0.6)
 
 # ───────── 手：送球、按下、抽走 ─────────
-sfx(audio.whoosh(fr(34), 200, 2500, 0.35, 0.8), fr(190), pan=0.7)
-sfx(audio.thock(53, 1.1), fr(240), pan=0.4, send=0.2)
-place(vibe(84, 1.0, 1.6), fr(240), pan=0.45, send=0.4)
-sfx(audio.whoosh(fr(28), 2500, 300, 0.35, 0.3), fr(252), pan=0.8)
+sfx(audio.whoosh(fr(24), 200, 2500, 0.35, 0.8), fr(120), pan=0.7)
+sfx(audio.thock(53, 1.1), fr(PLACE), pan=0.4, send=0.2)
+place(vibe(84, 1.0, 1.6), fr(PLACE), pan=0.45, send=0.4)
+sfx(audio.whoosh(fr(22), 2500, 300, 0.35, 0.3), fr(PLACE + 10), pan=0.8)
 
 # 指针转两圈：分针每过 30° 一声“咔哒”
 def minute_angle(t):
-    u = min(1, max(0, (t - 244) / 56))
+    u = min(1, max(0, (t - SPIN0) / (SPIN1 - SPIN0)))
     e = 4 * u ** 3 if u < 0.5 else 1 - (-2 * u + 2) ** 3 / 2
     return 720 * e
 
 
 last = 0
-for k in range(244 * 8, 300 * 8):
+for k in range(SPIN0 * 8, SPIN1 * 8):
     t = k / 8
     a = minute_angle(t)
     if a >= last + 30:
         last += 30
         sfx(audio.click(0.5, 2500, 9000, 0.003), fr(t), pan=0.1)
-place(audio.bell(88, 0.6, 1.2), fr(300), pan=0.0, send=0.5)
+place(audio.bell(88, 0.6, 1.2), fr(SPIN1), pan=0.0, send=0.5)
 
 # ───────── 片名 ─────────
 for i, f in enumerate(mid_land):
@@ -182,16 +182,16 @@ for i, f in MOD_LAND.items():
         continue
     place(audio.piano([MOD_NOTE[i], MOD_NOTE[i] + 12], 0.4, 0.75), fr(f), pan=0.3, send=0.3)
     sfx(audio.click(0.3, 500, 2000, 0.01), fr(f), pan=0.3)
-sfx(audio.whoosh(fr(26), 300, 5000, 0.4, 0.75), fr(364), pan=0.4)
-# O：第 13 拍
-sfx(audio.boom(1.0, 95, 38, 0.9), fr(390))
-place(audio.crash(0.8), fr(390), send=0.35)
-place(upright(29, 0.9, 1.3), fr(390))
-place(audio.piano([53, 57, 60, 64, 67, 72], 1.2, 0.8), fr(390), pan=0.1, send=0.4)
+sfx(audio.whoosh(fr(26), 300, 5000, 0.4, 0.75), fr(BIG - 26), pan=0.4)
+# O：第 9 拍
+sfx(audio.boom(1.0, 95, 38, 0.9), fr(BIG))
+place(audio.crash(0.8), fr(BIG), send=0.35)
+place(upright(29, 0.9, 1.3), fr(BIG))
+place(audio.piano([53, 57, 60, 64, 67, 72], 1.2, 0.8), fr(BIG), pan=0.1, send=0.4)
 for m in (69, 72, 76, 79):
-    place(vibe(m, 0.6, 2.2), fr(392), pan=-0.2, send=0.45)
+    place(vibe(m, 0.6, 2.2), fr(BIG + 2), pan=-0.2, send=0.45)
 
 # 6 点的球掉下去
-sfx(audio.glide(79, 55, fr(40), 0.5), fr(410), pan=-0.1, send=0.3)
+sfx(audio.glide(79, 55, fr(32), 0.5), fr(TEASE + 6), pan=-0.1, send=0.3)
 
 audio.master(ROOT / 'public/017-mid-century-modern/music.wav')
