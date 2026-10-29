@@ -37,11 +37,11 @@ class Scene:
         self.faces = []   # (点, rgb, 自发光, 图层)
         self.layer = 1    # 图层小的先画：房间外壳 0、地毯 1、家具 2……画家算法排不对时用它兜底
 
-    def tri(self, a, b, c, col, emit=0.0):
-        self.faces.append(([a, b, c], hex2rgb(col) if isinstance(col, str) else col, emit, self.layer))
+    def tri(self, a, b, c, col, emit=0.0, back=None):
+        self.faces.append(([a, b, c], hex2rgb(col) if isinstance(col, str) else col, emit, self.layer, back and hex2rgb(back)))
 
     def quad(self, a, b, c, d, col, emit=0.0):
-        self.faces.append(([a, b, c, d], hex2rgb(col) if isinstance(col, str) else col, emit, self.layer))
+        self.faces.append(([a, b, c, d], hex2rgb(col) if isinstance(col, str) else col, emit, self.layer, None))
 
     # ---------- 基本体 ----------
     def box(self, x, y, z, w, d, h, col, top=None, emit=0.0):
@@ -109,8 +109,8 @@ class Camera:
     def __init__(self, eye, target, fov=40, W=1920, H=1080, ortho=None, up=(0, 1, 0)):
         self.eye, self.W, self.H, self.ortho = eye, W, H, ortho
         self.f = norm(v_sub(target, eye))
-        self.r = norm(cross(up, self.f))
-        self.u = cross(self.f, self.r)
+        self.r = norm(cross(self.f, up))
+        self.u = cross(self.r, self.f)
         self.k = (H / 2) / math.tan(math.radians(fov) / 2)
 
     def view(self, p):
@@ -127,20 +127,31 @@ class Camera:
 
 
 def render(scene, cam, light=(-0.5, 0.85, -0.35), sun='#FFF3DC', sky='#BFD8FF', ground='#6B5A4A',
-           amb=0.42, fog=None, fog_near=40, fog_far=160, seam=0.6, cull=True):
+           amb=0.42, fog=None, fog_near=40, fog_far=160, seam=0.6, cull=True, bands=None):
+    """bands = (暗, 中, 亮) 三个亮度系数：把光照压成三档平面色块（平面设计的明暗，不是写实渐变）。"""
     """返回 SVG 片段。fog = (颜色, 近, 远) 让远处的面渐渐融进天色。"""
     L = norm(light)
     sunc, skyc, grc = hex2rgb(sun), hex2rgb(sky), hex2rgb(ground)
     out = []
-    for pts, col, emit, layer in scene.faces:
+    for pts, col, emit, layer, back in scene.faces:
         n = norm(cross(v_sub(pts[1], pts[0]), v_sub(pts[2], pts[0])))
         c = v_mul(v_add(v_add(pts[0], pts[1]), pts[2]), 1 / 3)
         to_cam = v_sub(cam.eye, c) if not cam.ortho else v_mul(cam.f, -1)
         if dot(n, to_cam) < 0:
-            if cull:
+            if cull and back is None:
                 continue
             n = v_mul(n, -1)
+            if back is not None:
+                col = back
         lam = max(0.0, dot(n, L))
+        if bands:
+            k = bands[0] if lam < 0.35 else bands[1] if lam < 0.75 else bands[2]
+            P = [cam.proj(p) for p in pts]
+            depth = sum(p[2] for p in P) / len(P)
+            hx = rgb2hex(mix(tuple(min(1, x * k) for x in col), col, emit)) if emit else rgb2hex(tuple(min(1, x * k) for x in col))
+            d = 'M' + 'L'.join(f'{x:.1f},{y:.1f}' for x, y, _ in P) + 'Z'
+            out.append((layer, -depth, f'<path d="{d}" fill="{hx}" stroke="{hx}" stroke-width="{seam}" stroke-linejoin="round"/>'))
+            continue
         hemi = 0.5 + 0.5 * n[1]
         amb_c = mix(grc, skyc, hemi)
         lit = tuple(col[i] * (amb * amb_c[i] * 1.6 + lam * sunc[i] * (1 - amb) * 1.15) for i in range(3))
