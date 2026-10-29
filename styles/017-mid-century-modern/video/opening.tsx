@@ -1,14 +1,14 @@
 /**
- * 开场 0—450（7.5 秒）：00 片头（Saul Bass《金臂人》，1955）→ 01 产品（George Nelson 球钟，1949）→ 片名
+ * 开场 0—330（5.5 秒）：00 片头（Saul Bass《金臂人》，1955）→ 01 产品（George Nelson 球钟，1949）→ 片名
  *
- *   0—70     12 根白纸条按十六分音符从画外扎进黑场（第 0 帧正好扎下第 3 根），每根落下都轻压一下、转角回正
- *   66—125   起势：纸条先往桌面一压，再一起提起来，绕着钟心旋进 12 根辐条；
- *            同时黑场缩成钟心——黑边扫过的地方，白纸条翻成墨色（Bass 式的黑白反转）。第 4 拍（120）全部落定
- *   126—210  11 颗球从画外抛进来，十六分音符一颗：影子先离开球、落地时和球合上（影子 = 高度）
- *   188—282  一只剪纸的手把最后一颗红球送到 3 点，按下（第 8 拍）、松手、抽走
- *   244—300  指针转两圈，第 10 拍停；背景的太阳和腰果滑进来，重叠处叠印出橘色
- *   282—400  MID-CENTURY 一个个落下（三十二分音符），MODERN 八分音符；O 最后、最高，第 13 拍落下
- *   405—450  6 点那颗球被碰掉，往下掉出画面 → 下一章
+ *   0—45     12 根彩色纸条按十六分音符从画外扎进番茄红的场（第 0 帧已落 5 根、正扎下第 6 根），每根落下都轻压一下、转角回正
+ *   42—92    起势：纸条先往桌面一压，再一起提起来，绕着钟心旋进 12 根辐条；
+ *            同时红场按对数缩成钟心——红边扫过的地方，彩色纸条翻成墨色。第 3 拍（90）全部落定
+ *   80—146   11 颗球从画外抛进来，5 帧一颗：影子先离开球、落地时和球合上（影子 = 高度）
+ *   118—190  一只剪纸的手把最后一颗红球送到 3 点，按下（第 5 拍）、松手、抽走；指针转两圈
+ *   104—160  背景的太阳和腰果滑进来，重叠处叠印出橘色
+ *   150—275  MID-CENTURY 一个个落下（三十二分音符），MODERN 十六分音符；O 最后、最高，第 9 拍落下
+ *   285—330  6 点那颗球被碰掉，往下掉出画面 → 下一章
  *
  * 所有位置都是时间 t（帧，可为小数）的纯函数，运动模糊直接取过去的时刻。
  */
@@ -25,10 +25,10 @@ const D2R = Math.PI / 180;
 
 // ───────── 镜头（世界坐标的取景中心 + 缩放 + 转角）─────────
 // 片头贴得很近（纸条又粗又大），纸条旋进钟里时一路拉远；手送球时推近；片名落下时拉开
-const camX = spline([[-60, 620], [0, 615], [70, 605], [126, 700], [180, 760], [240, 742], [312, 960], [450, 960]]);
-const camY = spline([[-60, 540], [126, 540], [312, 540], [450, 556]]);
-const camS = spline([[-60, 1.8], [0, 1.74], [70, 1.62], [126, 1.1], [180, 1.06], [240, 1.12], [312, 1.0], [450, 1.0]]);
-const camR = spline([[-60, -2], [0, -1.2], [70, -0.4], [126, 0], [450, 0]]);
+const camX = spline([[-60, 620], [0, 615], [45, 605], [92, 700], [125, 760], [150, 742], [205, 960], [330, 960]]);
+const camY = spline([[-60, 540], [92, 540], [205, 540], [330, 556]]);
+const camS = spline([[-60, 1.8], [0, 1.74], [45, 1.64], [92, 1.1], [125, 1.06], [150, 1.12], [205, 1.0], [330, 1.0]]);
+const camR = spline([[-60, -2], [0, -1.2], [45, -0.4], [92, 0], [330, 0]]);
 /** 唯一的一次“咚”：O 落地时画面往下沉 7px 再回来（单向） */
 const camBump = (t: number) => 7 * bump((t - AT.big) / 3.5);
 
@@ -65,11 +65,13 @@ const BASS: {x: number; y: number; a: number; from: From}[] = [
 const DIR: Record<From, [number, number]> = {L: [-1, 0], R: [1, 0], T: [0, -1], B: [0, 1]};
 export const spokeAng = (i: number) => i * 30 - 90;
 export const tipOf = (i: number) => ({x: CX + GEO.spokeLen[i] * Math.cos(spokeAng(i) * D2R), y: CY + GEO.spokeLen[i] * Math.sin(spokeAng(i) * D2R)});
-/** 第 i 根扎下的时刻：十六分音符（7.5 帧）一根 */
-export const landA = (i: number) => -15 + 7.5 * i;
-const ENTRY = 13;
-const g0 = (i: number) => AT.gather + i;
-const g1 = (i: number) => AT.gather + 40 + i;
+/** 第 i 根扎下的时刻：十六分音符（7.5 帧）一根；第 0 帧正好是第 6 根 */
+export const landA = (i: number) => -37.5 + 7.5 * i;
+const ENTRY = 12;
+const g0 = (i: number) => AT.gather + 0.75 * i;
+const g1 = (i: number) => AT.gather + 32 + 0.75 * i;
+/** 纸条的颜色（红场里）；红场缩走之后一律是墨色的辐条 */
+const BAR_COL = [C.paper, C.sun, C.blue, C.turq, C.ink, C.paper, C.sun, C.blue, C.turq, C.ink, C.paper, C.sun];
 
 export const barPose = (i: number, t: number): Pose | null => {
   const b = BASS[i];
@@ -104,11 +106,11 @@ export const barPose = (i: number, t: number): Pose | null => {
   return {x: CX + r * Math.cos(p), y: CY + r * Math.sin(p), a: b.a + da * e + settleA, h: 4 + 36 * Math.pow(arc(u), 0.85), s: sl};
 };
 
-// 黑场 → 钟心：半径按对数从 1600 缩到 96（每帧缩同样的比例），正弦缓动——黑边扫过辐条用了约 15 帧，看得清；
+// 红场 → 钟心：半径按对数从 1600 缩到 96（每帧缩同样的比例），正弦缓动——黑边扫过辐条用了约 15 帧，看得清；
 // 落定时往外鼓 7% 再回来（单向）
 const R0 = 1600;
-export const DISC0 = 94;
-export const DISC1 = 126;
+export const DISC0 = 62;
+export const DISC1 = AT.clock;
 export const discR = (t: number) => {
   if (t < DISC0) return R0;
   const e = ease.sine(prog(t, DISC0, DISC1 - DISC0));
@@ -119,26 +121,28 @@ const discTf = (t: number) => `translate(${CX} ${CY}) scale(${(discR(t) / 96).to
 // ───────── 01 球钟：11 颗球抛进来，第 12 颗由手送 ─────────
 const BALL_COL = [C.sun, C.turq, C.blue, C.red, C.pink, C.sun, C.ink, C.blue, C.red, C.turq, C.pink, C.blue];
 export const BALL_ORDER = [0, 1, 2, 4, 5, 6, 7, 8, 9, 10, 11];
-const FLIGHT = 20;
-export const ballLand = (i: number) => (i === 3 ? AT.place : AT.balls + 6 + 7.5 * BALL_ORDER.indexOf(i));
+const FLIGHT = 16;
+const BALL_STEP = 5;
+export const ballLand = (i: number) => (i === 3 ? AT.place : AT.balls + BALL_STEP * BALL_ORDER.indexOf(i));
 
 export const handPose = (t: number): Pose => {
   const tip = tipOf(3);
-  const e = ease.out(prog(t, AT.hand, 42));
+  const P = AT.place;
+  const e = ease.out(prog(t, AT.hand, 26));
   let x = lerp(2350, tip.x, e);
   let y = lerp(250, tip.y, e);
   let a = lerp(-26, -10, e);
   let h = 34;
-  if (t >= 230) h = 34 - 30 * ease.in2(prog(t, 230, 10));
-  if (t >= 242) {
-    const u = ease.out(prog(t, 242, 10));
+  if (t >= P - 6) h = 34 - 30 * ease.in2(prog(t, P - 6, 6));
+  if (t >= P + 2) {
+    const u = ease.out(prog(t, P + 2, 8));
     h = 4 + 28 * u;
     x += 26 * u;
   }
-  if (t >= 250) {
+  if (t >= P + 9) {
     // 抽走：越来越快，出画后保持速度（不在画外急停）
-    const d = t - 250;
-    const u = d < 34 ? Math.pow(d / 34, 3) : 1 + (3 / 34) * (d - 34);
+    const d = t - P - 9;
+    const u = d < 20 ? Math.pow(d / 20, 3) : 1 + (3 / 20) * (d - 20);
     x += 1750 * u;
     y -= 280 * u;
     a -= 16 * Math.min(1, u);
@@ -179,16 +183,17 @@ export const ballPose = (i: number, t: number): Pose | null => {
   let p: Pose = {x: tip.x, y: tip.y, a: 0, h: 4, s: slap(t, la, 0.045, 4)};
   if (i === 6 && t >= AT.tease) {
     // 片尾钩子：6 点的球被碰起来，晃一下，往下掉出画面
-    const up = ease.out(prog(t, AT.tease, 12));
-    const fall = ease.in(prog(t, AT.tease + 12, 34));
+    const up = ease.out(prog(t, AT.tease, 10));
+    const fall = ease.in(prog(t, AT.tease + 10, 30));
     p = {x: tip.x + 14 * up + 40 * fall, y: tip.y + 900 * fall, a: wobble(t, AT.tease, 9, 18, 14) + 80 * fall, h: 4 + 32 * up};
   }
   return p;
 };
 
-// 指针：10:10 落下，第 8 拍后转两圈，第 10 拍停
-const minuteA = (t: number) => -30 + 720 * ease.inOut(prog(t, AT.spin, 56)) + wobble(t, AT.spin + 56, 3, 16, 9);
-const hourA = (t: number) => -150 + 60 * ease.inOut(prog(t, AT.spin, 56)) + wobble(t, AT.spin + 56, 1.5, 16, 9);
+// 指针：10:10 落下，按下红球后转两圈
+const SPIN = 40;
+const minuteA = (t: number) => -30 + 720 * ease.inOut(prog(t, AT.spin, SPIN)) + wobble(t, AT.spin + SPIN, 3, 16, 9);
+const hourA = (t: number) => -150 + 60 * ease.inOut(prog(t, AT.spin, SPIN)) + wobble(t, AT.spin + SPIN, 1.5, 16, 9);
 const dropH = (t: number, t0: number, d = 10, from = 50, to = 6) => to + (from - to) * (1 - ease.in2(prog(t, t0, d)));
 
 // ───────── 片名 ─────────
@@ -196,7 +201,7 @@ const TX = 1030;
 const MID_BASE = 470;
 const MOD_BASE = 760;
 const MOD_COL = [C.red, C.blue, C.sun, C.turq, C.pink, C.ink];
-const MOD_LAND = [330, AT.big, 345, 352.5, 360, 367.5];
+const MOD_LAND = [216, AT.big, 223.5, 231, 238.5, 246];
 const midLand = (i: number) => AT.title + 2 + 3.75 * i;
 
 const letterPose = (cx: number, cy: number, land: number, seed: number, t: number, flight = 16, hmax = 72): Pose | null => {
@@ -231,11 +236,11 @@ export const modPose = (i: number, t: number) => {
 
 // 背景纸：太阳从上滑下、腰果从左滑进（贴着桌面滑，h = 4）
 const sunPose = (t: number): Pose => {
-  const e = ease.out(prog(t, 150, 52));
+  const e = ease.out(prog(t, 104, 48));
   return {x: 905, y: lerp(-420, 300, e), a: lerp(-24, 0, e), h: 4};
 };
 const beanPose = (t: number): Pose => {
-  const e = ease.out(prog(t, 158, 56));
+  const e = ease.out(prog(t, 110, 50));
   return {x: lerp(-760, 330, e), y: 800, a: lerp(10, -14, e), h: 4};
 };
 
@@ -260,7 +265,7 @@ export const openingSpeed = (t: number) => {
     for (let i = 0; i < 6; i++) add(modPose(i, u));
     add(sunPose(u));
     add(beanPose(u));
-    if (u > 124) {
+    if (u > AT.clock) {
       out.push(toScreen(u, CX + 236 * Math.cos(minuteA(u) * D2R), CY + 236 * Math.sin(minuteA(u) * D2R)));
     }
     out.push(toScreen(u, 0, 0), toScreen(u, W, H));
@@ -279,17 +284,17 @@ export const focusAt = (t: number): {p: Pose | null; fill: string} => {
   if (t < AT.gather - 8) {
     let k = 0;
     for (let i = 0; i < 12; i++) if (landA(i) - ENTRY <= t) k = i;
-    return {p: barPose(k, t), fill: C.paper};
+    return {p: barPose(k, t), fill: BAR_COL[k]};
   }
-  if (t < AT.balls + 2) return {p: barPose(6, t), fill: C.paper};
+  if (t < AT.balls - FLIGHT + 2) return {p: barPose(6, t), fill: BAR_COL[6]};
   if (t < AT.hand + 10) {
-    const j = clamp(Math.floor((t - AT.balls - 6 + FLIGHT) / 7.5), 0, 10);
+    const j = clamp(Math.floor((t - AT.balls + FLIGHT) / BALL_STEP), 0, 10);
     return {p: ballPose(BALL_ORDER[j], t), fill: BALL_COL[BALL_ORDER[j]]};
   }
   if (t < AT.title) return {p: ballPose(3, t), fill: C.red};
   if (t < AT.tease) {
-    if (t >= 345 && t < AT.big + 6) return {p: modPose(1, t), fill: C.blue};
-    if (t >= 318) {
+    if (t >= MOD_LAND[5] && t < AT.big + 6) return {p: modPose(1, t), fill: C.blue};
+    if (t >= MOD_LAND[0] - 16) {
       const order = [0, 2, 3, 4, 5];
       let k = 0;
       for (const i of order) if (MOD_LAND[i] - 16 <= t) k = i;
@@ -302,12 +307,12 @@ export const focusAt = (t: number): {p: Pose | null; fill: string} => {
 };
 
 // ───────── 画面 ─────────
-const Bars: React.FC<{t: number; fill: string}> = ({t, fill}) => {
+const Bars: React.FC<{t: number; fill?: string}> = ({t, fill}) => {
   const items = BASS.map((_, i) => ({i, p: barPose(i, t)})).filter((x) => x.p) as {i: number; p: Pose}[];
   items.sort((a, b) => (a.p.h ?? 4) - (b.p.h ?? 4));
   return (
     <>
-      {items.map(({i, p}) => <Piece key={i} d={GEO.spokes[i]} fill={fill} p={p} />)}
+      {items.map(({i, p}) => <Piece key={i} d={GEO.spokes[i]} fill={fill ?? BAR_COL[i]} p={p} />)}
     </>
   );
 };
@@ -320,13 +325,13 @@ export const Opening: React.FC<{t: number; k: number}> = ({t, k}) => {
   const handP = handPose(t);
   const balls = Array.from({length: 12}, (_, i) => ({i, p: ballPose(i, t)})).filter((x) => x.p) as {i: number; p: Pose}[];
   balls.sort((a, b) => (a.p.h ?? 4) - (b.p.h ?? 4));
-  const showClock = t >= 120;
+  const showClock = t >= AT.clock - 4;
   return (
     <g transform={camTransform(t)}>
       <rect x={-2000} y={-2000} width={W + 4000} height={H + 4000} fill={C.paper} />
       {/* 背景纸：太阳 + 腰果（叠印） */}
-      {t >= 150 && <Piece d={GEO.sun} fill={C.sun} p={sunPose(t)} />}
-      {t >= 158 && (
+      {t >= 104 && <Piece d={GEO.sun} fill={C.sun} p={sunPose(t)} />}
+      {t >= 110 && (
         <>
           <Piece d={GEO.bean} fill={C.pink} p={beanPose(t)} />
           {/* 叠印：腰果压在太阳上的那一块 = 粉 × 黄 */}
@@ -338,11 +343,11 @@ export const Opening: React.FC<{t: number; k: number}> = ({t, k}) => {
           </g>
         </>
       )}
-      {t >= 168 && <Piece d={GEO.star} fill={C.blue} p={{x: 1760, y: 930, a: 12 + wobble(t, 182, 6, 18, 10), h: dropH(t, 168, 14, 70, 4)}} />}
-      {t >= 176 && <Piece d={GEO.starS} fill={C.red} p={{x: 1690, y: 990, a: -10 + wobble(t, 190, 8, 16, 10), h: dropH(t, 176, 14, 70, 4)}} />}
+      {t >= 124 && <Piece d={GEO.star} fill={C.blue} p={{x: 1760, y: 930, a: 12 + wobble(t, 138, 6, 18, 10), h: dropH(t, 124, 14, 70, 4)}} />}
+      {t >= 132 && <Piece d={GEO.starS} fill={C.red} p={{x: 1690, y: 990, a: -10 + wobble(t, 146, 8, 16, 10), h: dropH(t, 132, 14, 70, 4)}} />}
 
-      {/* 黑场 / 钟心 */}
-      {R > 300 ? <path d={GEO.disc} transform={discTf(t)} fill={C.ink} /> : <Piece d={GEO.disc} fill={C.ink} p={{x: CX, y: CY, s: R / 96, h: 4}} />}
+      {/* 红场 / 钟心 */}
+      {R > 300 ? <path d={GEO.disc} transform={discTf(t)} fill={C.red} /> : <Piece d={GEO.disc} fill={C.red} p={{x: CX, y: CY, s: R / 96, h: 4}} />}
       {inverting && (
         <defs>
           <clipPath id={clipIn}>
@@ -354,10 +359,10 @@ export const Opening: React.FC<{t: number; k: number}> = ({t, k}) => {
           </mask>
         </defs>
       )}
-      {t < DISC0 && <Bars t={t} fill={C.paper} />}
+      {t < DISC0 && <Bars t={t} />}
       {inverting && (
         <>
-          <g clipPath={`url(#${clipIn})`}><Bars t={t} fill={C.paper} /></g>
+          <g clipPath={`url(#${clipIn})`}><Bars t={t} /></g>
           <g mask={`url(#${maskOut})`}><Bars t={t} fill={C.ink} /></g>
         </>
       )}
@@ -366,13 +371,13 @@ export const Opening: React.FC<{t: number; k: number}> = ({t, k}) => {
       {/* 球 */}
       {balls.filter((b) => (b.p.h ?? 4) < 8).map(({i, p}) => <Piece key={i} d={GEO.balls[i]} fill={BALL_COL[i]} p={p} />)}
 
-      {/* 钟心盖在辐条上（黑场里看不见，缩到 96 时正好接上） */}
-      {t >= 88 && <Body parts={[{d: GEO.disc, fill: C.ink}]} p={{x: CX, y: CY, s: R > 110 ? 1 : R / 96, h: 0}} />}
+      {/* 钟心盖在辐条上（红场里看不见，缩到 96 时正好接上） */}
+      {t >= DISC0 - 4 && <Body parts={[{d: GEO.disc, fill: C.red}]} p={{x: CX, y: CY, s: R > 110 ? 1 : R / 96, h: 0}} />}
       {showClock && (
         <>
-          <Piece d={GEO.hour} fill={C.paper} p={{x: CX, y: CY, a: hourA(t), h: dropH(t, 124, 12, 46, 6)}} />
-          <Piece d={GEO.minute} fill={C.paper} p={{x: CX, y: CY, a: minuteA(t), h: dropH(t, 128, 12, 50, 7)}} />
-          <Piece d={GEO.discDot} fill={C.sun} p={{x: CX, y: CY, h: dropH(t, 132, 10, 56, 8), s: slap(t, 142, 0.06, 3)}} />
+          <Piece d={GEO.hour} fill={C.paper} p={{x: CX, y: CY, a: hourA(t), h: dropH(t, AT.clock - 4, 10, 46, 6)}} />
+          <Piece d={GEO.minute} fill={C.paper} p={{x: CX, y: CY, a: minuteA(t), h: dropH(t, AT.clock, 10, 50, 7)}} />
+          <Piece d={GEO.discDot} fill={C.sun} p={{x: CX, y: CY, h: dropH(t, AT.clock + 3, 9, 56, 8), s: slap(t, AT.clock + 12, 0.06, 3)}} />
         </>
       )}
 
@@ -390,7 +395,7 @@ export const Opening: React.FC<{t: number; k: number}> = ({t, k}) => {
       })}
 
       {/* 手（最上层） */}
-      {t >= AT.hand && t < 290 && (
+      {t >= AT.hand && t < AT.place + 50 && (
         <Sheet
           p={handP}
           parts={[
