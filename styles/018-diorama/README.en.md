@@ -4,7 +4,7 @@
 
 > **In one line:** cut the world into a block on a base, build it piece by piece, then make it small with tilt-shift.
 
-🎬 Video (Release `day-18`, published after review) · 🛠 [Process](PROCESS.en.md) · 🎞 [Storyboard](video3d/STORYBOARD.md)
+🎬 [Video (Release `day-18`)](https://github.com/guanmo-ai/design-style/releases/tag/day-18) · 🛠 [Process](PROCESS.en.md) · 🎞 [Storyboard](video3d/STORYBOARD.md)
 
 | Poster | Cheat sheet |
 |:-:|:-:|
@@ -62,6 +62,8 @@ Chinese: **Noto Sans SC** Black · Latin: **Inter** 800. Labels are white on ink
 
 ## 5 · Parameters
 
+Released film: **1920×1080 · 30 fps · 600 frames · 20 seconds**. `tokens.json` and `process/timeline.json` describe this version; 60 fps is an optional render.
+
 - Camera: long lens, fov 20—24°, about 30° from above; each chapter is the next base on the same table and the camera slides across
 - Light: one warm sun (PCF soft shadows) + hemisphere light; GTAO switched on after the base is built; light bloom
 - Tilt-shift: sharp band at 56% of frame height, 26% wide, max blur 2.0; snaps on at 8.75 s as a before/after demo
@@ -89,5 +91,7 @@ Chinese: **Noto Sans SC** Black · Latin: **Inter** 800. Labels are white on ink
 Music: F major, 120 BPM, synthesised in numpy — marimba and pizzicato groove, piano theme, choir and celesta at night, string tutti for the title.
 
 ## 8 · Files & commands
+
+Requires Node.js, Python 3, FFmpeg, Playwright Chromium, the root Python dependencies and fonts, and the local Three.js dependency. `video/cover.jpg` is an identical copy of `video3d/cover.jpg` for gallery previews.
 
 See the file tree and commands in the [Chinese README](README.md#10--文件).
