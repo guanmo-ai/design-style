@@ -57,6 +57,6 @@ Paper `#FBF4E6` · background `#F6EEDD` · green `#4DAF72` · light green `#9ED7
 | 8.0—11.6 | 03 Planet | Faces fly in to form a planet; 1280 → 320 → 80; shrinks into an icon | Fewer faces, more character |
 | 11.6—15.0 | 04 On screen | Weather app: a mountain in a card turns snowy | One card, one mountain |
 | 15.0—17.4 | 05 Night | All three shades darken; train windows glow; three swatches pop up | Three shades are enough |
-| 17.4—20.0 | Finale | The valley flips back into paper; the title rises on the tonic chord; byline “观默” | — |
+| 17.4—20.0 | Finale | The valley flips back into paper; the title rises on the tonic chord; the author's byline | — |
 
 See the file tree and commands in the [Chinese README](README.md#10--文件).

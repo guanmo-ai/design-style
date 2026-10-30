@@ -12,6 +12,8 @@
 
 2026-10-30：按主人反馈修复 018 线上屋面闪烁（两层顶面共面）与重复电线。完整重渲 1080p / 30fps / 20 秒并复用原音轨，通过规范与需求两个轴的发布前审查、修复前后连续帧、全片解码和回归检查后发布 [day-18-flicker-v2](https://github.com/guanmo-ai/design-style/releases/tag/day-18-flicker-v2)。画廊继续登记为「风格 010」，切换修复版媒体哈希，并用哈希视频 URL 防止复用旧缓存；原 `day-18` 保留回退，019 继续待确认。详见 [修复与审查记录](reviews/018_FLICKER_20261030.md)。
 
+2026-10-30：主人明确 019 低多边形已审片同意；直接采用 `review-renders` 的 60fps 成片，经 `release-assets/day-19/` 发布 [day-19](https://github.com/guanmo-ai/design-style/releases/tag/day-19)（成片 + 完整项目源码 ZIP + SHA256SUMS），音画字节与审片版一致。画廊登记为「风格 011」，中英文目录与预览同步，时间轴对齐 60fps / 1200 帧；本项交接关闭。详见 [019 发布记录](reviews/PUBLISH_019_20261030.md)。
+
 ## 待办
 
 ### 015 · 未来主义：审片通过后发布（2026-10-28）
@@ -21,14 +23,6 @@
 1. 等主人看过 `review-renders/015/015-futurism-master.mp4` 并确认通过（这里会更新）。
 2. 直接采用 `review-renders` 上的成片，不重新渲染、不改音画；按 014 的做法通过 `release-assets/day-15/` 发布 Release `day-15`（成片 + 完整项目源码包 + SHA256SUMS），画廊登记并同步中英文目录与预览。
 3. 合并注意：另一个会话在做 016，`package.json`（新增 `music:015` / `render:015` / `render:015:gpu` / `preview:015` / `images:015`）和 `src/Root.tsx`（新增 `S015-Futurism` / `S015-Futurism-Preview`）可能和 016 冲突，两边的条目都保留。
-
-### 019 · 低多边形：审片通过后发布（2026-10-29）
-
-全片是 SVG、不需要显卡，正片由 Claude 在云端渲（60fps 1920×1080，约 40 分钟），推到 `review-renders` 分支的 `019/` 并自审。**Codex 只负责发布**：
-
-1. 等主人看过 `review-renders/019/019-low-poly-master.mp4` 并确认通过（这里会更新）。
-2. 直接采用 `review-renders` 上的成片，不重新渲染、不改音画；按 014 的做法通过 `release-assets/day-19/` 发布 Release `day-19`（成片 + 完整项目源码包 + SHA256SUMS），画廊登记并同步中英文目录与预览（四张图在 `styles/019-low-poly/images/preview/`，封面 `video/cover.jpg`）。
-3. 配乐用到 `scripts/lib/audio/mix.py` 新加的 `master(..., loop=False)`；默认 `loop=True`，旧的各期输出不变。
 
 ## 设计侧留下的素材（不用动，供下次做新一期）
 
