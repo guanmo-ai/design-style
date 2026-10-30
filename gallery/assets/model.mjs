@@ -13,7 +13,7 @@ export const sourceUrl = (work, file = '') => {
   return `${REPO}/${/\.[a-z0-9]+$/i.test(source) ? 'blob' : 'tree'}/main/${workDir(work)}/${source}`;
 };
 export const releaseUrl = work => `${REPO}/releases/tag/${work.release}`;
-export const videoUrl = work => `./media/${work.asset}`;
+export const videoUrl = work => `./media/${work.asset}?v=${work.sha256}`;
 export const formatTime = seconds => `${Math.floor(seconds / 60)}:${String(Math.floor(seconds % 60)).padStart(2, '0')}`;
 export const escapeHtml = value => String(value).replace(/[&<>"']/g, char => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
 export function selectWorks(works, {query = '', type = 'all', category = 'all', sort = 'latest'} = {}) {

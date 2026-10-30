@@ -12,7 +12,7 @@ const MIME = { '.html': 'text/html', '.js': 'text/javascript', '.mjs': 'text/jav
     if (!p.startsWith(ROOT) || !fs.existsSync(p) || fs.statSync(p).isDirectory()) { res.writeHead(404); return res.end(); }
     res.writeHead(200, { 'Content-Type': MIME[path.extname(p)] || 'application/octet-stream' }); fs.createReadStream(p).pipe(res);
   }).listen(0);
-  const browser = await chromium.launch({ args: ['--use-gl=angle', '--use-angle=swiftshader', '--enable-unsafe-swiftshader', '--ignore-gpu-blocklist'] });
+  const browser = await chromium.launch({ args: ['--use-gl=angle', `--use-angle=${process.env.ANGLE_BACKEND || 'swiftshader'}`, '--enable-unsafe-swiftshader', '--ignore-gpu-blocklist'] });
   const page = await browser.newPage({ viewport: { width: +w, height: +h } });
   page.on('pageerror', e => console.log('[err]', e.message));
   const rel = path.relative(ROOT, path.resolve(page_)).split(path.sep).join('/');
