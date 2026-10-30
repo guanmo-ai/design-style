@@ -23,7 +23,7 @@
 | 1 | Entry direction | Coloured triangles now slam down from the sky, back rows first |
 | 1 | Ending and score | A real ending (the valley flips back into paper + title); version 2 score with synthesized orchestra |
 | 2 | Final score and ending | Version 3 score (below); the ending now holds on the title |
-| 3 | Always sign videos with “观默” | Byline under the title, added to the design notes |
+| 3 | End credit | Byline under the title, added to the design notes |
 
 ## Why the score was rebuilt
 

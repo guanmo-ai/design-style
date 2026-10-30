@@ -709,5 +709,69 @@
       }
     ],
     "publishedAt": "2026-10-30T08:29:40Z"
+  },
+  {
+    "id": "019-low-poly",
+    "type": "style",
+    "number": "011",
+    "title": "低多边形",
+    "titleEn": "Low Poly",
+    "years": "1993—今天",
+    "category": "三维场景",
+    "categoryEn": "3D scenes",
+    "description": "一个面，一个颜色。一支 20 秒短片：三角面从纸上翻起拼成山谷与小火车，从空中落下搭成灯塔；小星球从 1280 面减到 80 面，收进天气 App，再回到入夜的山谷，翻回纸面、停在片名与署名。",
+    "descriptionEn": "One face, one colour. In this 20-second film, triangles flip up from paper into a valley and a train, then fall from the sky to build a lighthouse. A planet drops from 1280 to 80 faces, becomes a weather app and returns to the valley at night before folding back to paper for the title and byline.",
+    "tags": [
+      "三角面",
+      "平涂",
+      "翻牌",
+      "三档明暗",
+      "减面",
+      "天气 App",
+      "SVG"
+    ],
+    "tagsEn": [
+      "triangles",
+      "flat shading",
+      "card flip",
+      "three shades",
+      "polygon reduction",
+      "weather app",
+      "SVG"
+    ],
+    "release": "day-19",
+    "asset": "019-low-poly.mp4",
+    "sha256": "2165d41e8502ab973e79fe61d415544b843d73ccbd43559ade534600878e5353",
+    "images": [
+      {
+        "file": "poster",
+        "title": "一张海报，认识低多边形",
+        "kind": "风格海报",
+        "titleEn": "Low Poly at a glance",
+        "kindEn": "Style poster"
+      },
+      {
+        "file": "cheatsheet",
+        "title": "三角面、三档明暗与五条规则",
+        "kind": "风格速查",
+        "titleEn": "Triangle faces, three shades, and five rules",
+        "kindEn": "Quick reference"
+      },
+      {
+        "file": "app-ui",
+        "title": "如果低多边形来做 App",
+        "kind": "界面应用",
+        "titleEn": "Low Poly in a weather app",
+        "kindEn": "UI application"
+      },
+      {
+        "file": "steps",
+        "title": "四步，从一张纸到低多边形",
+        "kind": "设计教程",
+        "titleEn": "Four steps from paper to Low Poly",
+        "kindEn": "Design tutorial"
+      }
+    ],
+    "publishedAt": "2026-10-30T12:56:23Z"
   }
 ]
