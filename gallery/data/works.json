@@ -675,9 +675,9 @@
       "warm light",
       "three.js"
     ],
-    "release": "day-18",
+    "release": "day-18-flicker-v2",
     "asset": "018-diorama.mp4",
-    "sha256": "1ab674051cf56ad2c7f85780da2a131daa829b3e142278c0a819287f44b93c29",
+    "sha256": "e424c9cef2b86d90b53d1669f4f73cc0dd03308bc66075af60339f6bed1bca18",
     "images": [
       {
         "file": "poster",
@@ -708,6 +708,6 @@
         "kindEn": "Design tutorial"
       }
     ],
-    "publishedAt": "2026-10-29T18:23:56Z"
+    "publishedAt": "2026-10-30T08:29:40Z"
   }
 ]

@@ -10,6 +10,8 @@
 
 2026-10-29：`claude/admiring-planck-2gmzzh` 已合并到 `main`；018 微缩景观直接采用主人确认的 30fps 审片成片，经 `release-assets/day-18/` 发布 [day-18](https://github.com/guanmo-ai/design-style/releases/tag/day-18)（成片 + 完整项目源码 ZIP + SHA256SUMS）。画廊按首次上架顺序登记为「风格 010」，中英文目录、指南链接与预览同步；019 继续等待主人审片确认。执行与核验证据见 [018 发布记录](reviews/PUBLISH_018_20261029.md)。
 
+2026-10-30：按主人反馈修复 018 线上屋面闪烁（两层顶面共面）与重复电线。完整重渲 1080p / 30fps / 20 秒并复用原音轨，通过规范与需求两个轴的发布前审查、修复前后连续帧、全片解码和回归检查后发布 [day-18-flicker-v2](https://github.com/guanmo-ai/design-style/releases/tag/day-18-flicker-v2)。画廊继续登记为「风格 010」，切换修复版媒体哈希，并用哈希视频 URL 防止复用旧缓存；原 `day-18` 保留回退，019 继续待确认。详见 [修复与审查记录](reviews/018_FLICKER_20261030.md)。
+
 ## 待办
 
 ### 015 · 未来主义：审片通过后发布（2026-10-28）
