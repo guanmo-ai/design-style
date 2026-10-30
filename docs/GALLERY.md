@@ -42,7 +42,7 @@ npm run gallery:check   # 构建后检查发布文件、Pages 子路径链接、
 
 首次需将仓库 Pages 的发布来源设为 GitHub Actions。后续更新内容并推送 `main` 即自动部署；应等待工作流完成，并核对线上首页、视频和站内阅读页。当前视频随站点同源发布，站点总大小受 [GitHub Pages 的 1 GB 限制](https://docs.github.com/en/pages/getting-started-with-github-pages/github-pages-limits)约束，发布检查会在超限时停止。
 
-视频缓存在 `.gallery-cache/`，不进入 Git。构建将已校验视频复制到 `dist/media/`，浏览器同源播放；本地服务器支持 HTTP Range，便于拖动播放进度。下载不成功或校验不一致时停止构建，不把不可播放的条目当作成功。
+视频缓存在 `.gallery-cache/`，不进入 Git。视频 URL 带上目录中的 SHA-256 版本查询，同名媒体更新后会请求新 URL，避免继续播放缓存的旧版。构建将已校验视频复制到 `dist/media/`，浏览器同源播放；本地服务器支持 HTTP Range，便于拖动播放进度。下载不成功或校验不一致时停止构建，不把不可播放的条目当作成功。
 
 ## 添加下一期
 
