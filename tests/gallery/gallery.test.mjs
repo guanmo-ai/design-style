@@ -20,7 +20,7 @@ test('作品来自本仓库，规格和章节来自现有源文件', async () =>
   assert.equal(work.images.length, 4);
   assert.equal(sourceUrl(work, 'video'), 'https://github.com/guanmo-ai/design-style/tree/main/styles/001-bauhaus/video');
   assert.equal(sourceUrl(work, 'README.md'), 'https://github.com/guanmo-ai/design-style/blob/main/styles/001-bauhaus/README.md');
-  assert.equal(videoUrl(work), './media/001-bauhaus.mp4');
+  assert.equal(videoUrl(work), `./media/001-bauhaus.mp4?v=${work.sha256}`);
   assert.equal(work.type, 'style');
 });
 
@@ -45,7 +45,7 @@ test('布局作品放在 layouts/，编号独立，标签和源码路径随类�
   assert.equal(bento.chapters.find(chapter => chapter.label === '05 五条规则').start, 7.4);
   assert.equal(sourceUrl(bento, 'video'), 'https://github.com/guanmo-ai/design-style/tree/main/layouts/01-bento-grid/video');
   assert.equal(sourceUrl(bento, 'PROCESS.md'), 'https://github.com/guanmo-ai/design-style/blob/main/layouts/01-bento-grid/PROCESS.md');
-  assert.equal(videoUrl(bento), './media/01-bento-grid.mp4');
+  assert.equal(videoUrl(bento), `./media/01-bento-grid.mp4?v=${bento.sha256}`);
   assert.deepEqual(selectWorks(works, {type: 'layout'}).map(work => work.id), ['02-masonry', '01-bento-grid']);
   assert.ok(selectWorks(works, {type: 'style'}).every(work => work.type === 'style'));
   assert.equal(selectWorks(works, {query: '布局 便当'}).length, 1);
@@ -68,7 +68,7 @@ test('网站上架期号按系列连续，制作目录与已发布链接保持�
   assert.doesNotThrow(() => validateEntries([second, layout, first]));
   assert.equal(workLabel(second), '风格 002');
   assert.equal(sourceUrl(second, 'video'), 'https://github.com/guanmo-ai/design-style/tree/main/styles/013-art-deco/video');
-  assert.equal(videoUrl(second), './media/013-art-deco.mp4');
+  assert.equal(videoUrl(second), `./media/013-art-deco.mp4?v=${second.sha256}`);
   for (const number of ['001', '003', '013', '2', '000']) {
     assert.throws(() => validateEntries([first, {...second, number}]), /上架期号/);
   }
@@ -132,4 +132,11 @@ test('静态预览支持视频范围请求、HEAD，并阻止站点外文件', a
   const head = await fetch(`${base}/sample.mp4`, {method:'HEAD'});
   assert.equal(head.headers.get('content-length'), '10'); assert.equal(await head.text(), '');
   for (const route of ['/.secret', '/link.txt', '/%2e%2e%2fpackage.json', '/.git/config']) assert.equal((await fetch(`${base}${route}`)).status, 404);
+});
+
+test('同名视频更新哈希后使用不同 URL，避免继续播放缓存的旧版', async () => {
+  const [work] = await loadCatalog();
+  const updated = {...work, sha256: 'f'.repeat(64)};
+  assert.notEqual(videoUrl(work), videoUrl(updated));
+  assert.equal(new URL(videoUrl(updated), 'https://example.com/').pathname, `/media/${work.asset}`);
 });

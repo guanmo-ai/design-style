@@ -5,7 +5,7 @@
 > 这一期怎么从几轮候选里被选中，从一个 5 秒的街角小样长成 20 秒短片和配乐——以及每一处“为什么这样动”。
 > 可复现的代码在 `video3d/` `audio/` `images/`，候选和小样在 `drafts/`。
 
-🎬 [看成片（Release `day-18`）](https://github.com/guanmo-ai/design-style/releases/tag/day-18)· 📐 [风格指南](README.md) · 🎞 [分镜](video3d/STORYBOARD.md)
+🎬 [看成片（Release `day-18-flicker-v2`）](https://github.com/guanmo-ai/design-style/releases/tag/day-18-flicker-v2)· 📐 [风格指南](README.md) · 🎞 [分镜](video3d/STORYBOARD.md)
 
 ---
 

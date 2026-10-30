@@ -4,7 +4,7 @@
 
 > **一句话：** 把世界切成一块底座，一块块搭出来，再用移轴把它变小。
 
-🎬 [看视频（Release `day-18`）](https://github.com/guanmo-ai/design-style/releases/tag/day-18)· 🛠 [制作过程](PROCESS.md) · 🎞 [分镜](video3d/STORYBOARD.md)
+🎬 [看视频（Release `day-18-flicker-v2`）](https://github.com/guanmo-ai/design-style/releases/tag/day-18-flicker-v2)· 🛠 [制作过程](PROCESS.md) · 🎞 [分镜](video3d/STORYBOARD.md)
 
 | 海报 | 速查卡 |
 |:-:|:-:|
@@ -178,7 +178,9 @@ npm run fonts
 **渲染命令（从项目根目录开始）：**
 ```bash
 cd styles/018-diorama/video3d && npm i                      # 装 three 0.170
-PR=1 node render.cjs episode.html out 0 599 1920 1080 30    # 30fps 正片（云端 4 进程并行约 1 小时）
+PR=1 node render.cjs episode.html out 0 599 1920 1080 30    # 30fps 正片（默认 SwiftShader）
+ANGLE_BACKEND=metal PR=1 node render.cjs episode.html out 0 599 1920 1080 30  # Mac GPU，同一画幅与时间轴
+node --test geometry.test.mjs                            # 屋面深度与重复电线回归检查
 PR=1 node render.cjs episode.html out 0 1199 1920 1080 60   # 60fps（建议用有显卡的机器）
 python3 ../audio/make_music.py out/events.json out/music.wav
 ffmpeg -framerate 30 -i out/f%04d.png -i out/music.wav -c:v libx264 -crf 16 -pix_fmt yuv420p -c:a aac -b:a 256k -shortest 018.mp4

@@ -4,7 +4,7 @@
 
 > **In one line:** cut the world into a block on a base, build it piece by piece, then make it small with tilt-shift.
 
-🎬 [Video (Release `day-18`)](https://github.com/guanmo-ai/design-style/releases/tag/day-18) · 🛠 [Process](PROCESS.en.md) · 🎞 [Storyboard](video3d/STORYBOARD.md)
+🎬 [Video (Release `day-18-flicker-v2`)](https://github.com/guanmo-ai/design-style/releases/tag/day-18-flicker-v2) · 🛠 [Process](PROCESS.en.md) · 🎞 [Storyboard](video3d/STORYBOARD.md)
 
 | Poster | Cheat sheet |
 |:-:|:-:|

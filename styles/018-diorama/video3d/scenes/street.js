@@ -45,7 +45,8 @@ export function buildStreet(K, { x = 0, z = 0, T0 = 0, BASE = 0.55 } = {}) {
   K.begin('cafeRoof','drop',1.0,0.6,0,6.5,0);
     // 屋顶：女儿墙、水箱、天线
     K.B(w + 0.2, 0.5, d + 0.2, cx, 6.5, (z0 + z1) / 2, '#FFF7EC');
-    K.B(w - 0.6, 0.1, d - 0.6, cx, 6.9, (z0 + z1) / 2, '#8A8580');
+    // 灰色屋面顶端高于奶油色基底 0.02，避免两个顶面共面而随镜头闪烁。
+    K.B(w - 0.6, 0.1, d - 0.6, cx, 6.92, (z0 + z1) / 2, '#8A8580');
     K.add(mesh(new THREE.CylinderGeometry(0.9, 0.9, 1.6, 12).translate(x0 + 2.5, 8.1, z0 + 2.5), mat('#B9C2CC', { metal: .4, rough: .4 })));
     for (const [dx, dz] of [[-0.6, -0.6], [0.6, -0.6], [-0.6, 0.6], [0.6, 0.6]]) K.B(0.08, 0.9, 0.08, x0 + 2.5 + dx, 6.9, z0 + 2.5 + dz, '#555');
     K.B(0.06, 2.2, 0.06, x1 - 1.5, 6.9, z0 + 1.5, '#444'); K.B(1.2, 0.05, 0.05, x1 - 1.5, 8.6, z0 + 1.5, '#444'); K.B(0.8, 0.05, 0.05, x1 - 1.5, 8.2, z0 + 1.5, '#444');
@@ -141,7 +142,7 @@ export function buildStreet(K, { x = 0, z = 0, T0 = 0, BASE = 0.55 } = {}) {
   pole(-0.9, 2.2); pole(11.0, 2.2); pole(-11.4, 2.2);
   K.begin('wires','drawx',1.75,0.5,-11.4,8.5,2.2);
   const wires = [];
-  for (const [xa, xb] of [[-11.4, -0.9], [-0.9, 11.0]]) for (const [dy, dz] of [[8.7, 0], [8.7, -0.0], [7.7, 0]]) for (const dx of [-0.9, 0, 0.9]) {
+  for (const [xa, xb] of [[-11.4, -0.9], [-0.9, 11.0]]) for (const [dy, dz] of [[8.7, 0], [7.7, 0]]) for (const dx of [-0.9, 0, 0.9]) {
     if (dy === 7.7 && dx === 0) continue;
     const a = new THREE.Vector3(xa + dx * (dy > 8 ? 1 : 0.7), dy, 2.2), b = new THREE.Vector3(xb + dx * (dy > 8 ? 1 : 0.7), dy, 2.2);
     const pts = []; for (let t = 0; t <= 1.0001; t += 0.05) pts.push(new THREE.Vector3().lerpVectors(a, b, t).add(new THREE.Vector3(0, -0.9 * 4 * t * (1 - t), 0)));
