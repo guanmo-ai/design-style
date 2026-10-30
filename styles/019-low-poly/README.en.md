@@ -4,7 +4,7 @@
 
 > **In one line:** one face, one colour.
 
-🎬 Video (Release `day-19`, published after review) · 🛠 [Process](PROCESS.en.md) · 🎞 [Storyboard](video/STORYBOARD.md)
+🎬 [Watch the film](https://github.com/guanmo-ai/design-style/releases/tag/day-19) · 🛠 [Process](PROCESS.en.md) · 🎞 [Storyboard](video/STORYBOARD.md)
 
 | Poster | Cheat sheet |
 |:-:|:-:|

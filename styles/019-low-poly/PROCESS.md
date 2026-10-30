@@ -5,7 +5,7 @@
 > 这一期和 018 微缩景观是同一轮选题选出来的。怎么从 5 秒小样长成 20 秒短片，配乐为什么重做了两次。
 > 代码在 `video/` `audio/` `images/`，小样在 `drafts/low-poly` 和 `drafts/samples`。
 
-🎬 看成片（Release `day-19`，审片通过后发布）· 📐 [风格指南](README.md) · 🎞 [分镜](video/STORYBOARD.md)
+🎬 [看成片](https://github.com/guanmo-ai/design-style/releases/tag/day-19)· 📐 [风格指南](README.md) · 🎞 [分镜](video/STORYBOARD.md)
 
 ---
 

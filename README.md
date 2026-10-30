@@ -125,6 +125,7 @@ by 观默 [@guanmo_ai](https://x.com/guanmo_ai)
 | **013** | [**装饰艺术 Art Deco**](styles/013-art-deco) | 1925—1939 | 先立一条中轴，阶梯、放射、三线从中轴往两边同时长出来；金色只给线 | [🎬 视频](https://github.com/guanmo-ai/design-style/releases/tag/day-13) · [🛠 过程](styles/013-art-deco/PROCESS.md) |
 | **014** | [**液态玻璃 Liquid Glass**](styles/014-liquid-glass) | 2013—今天 | 玻璃不发光，只把后面的东西弯过来：折射量 = 边缘的坡度 | [🎬 视频](https://github.com/guanmo-ai/design-style/releases/tag/day-14) · [🛠 过程](styles/014-liquid-glass/PROCESS.md) |
 | **018** | [**微缩景观 Diorama**](styles/018-diorama) | 1950s—今天 | 把世界切成一块底座，一块块搭出来，再用移轴把它变小 | [🎬 视频](https://github.com/guanmo-ai/design-style/releases/tag/day-18-flicker-v2) · [🛠 过程](styles/018-diorama/PROCESS.md) |
+| **019** | [**低多边形 Low Poly**](styles/019-low-poly) | 1993—今天 | 一个面，一个颜色：三角面从纸上翻起，拼成山谷、灯塔与小星球 | [🎬 视频](https://github.com/guanmo-ai/design-style/releases/tag/day-19) · [🛠 过程](styles/019-low-poly/PROCESS.md) |
 
 ### 布局方式 · Layout
 
