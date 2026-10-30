@@ -4,7 +4,7 @@
 
 > **一句话：** 一个面，一个颜色。
 
-🎬 看视频（Release `day-19`，成片审过后发布）· 🛠 [制作过程](PROCESS.md) · 🎞 [分镜](video/STORYBOARD.md)
+🎬 [看视频](https://github.com/guanmo-ai/design-style/releases/tag/day-19)· 🛠 [制作过程](PROCESS.md) · 🎞 [分镜](video/STORYBOARD.md)
 
 | 海报 | 速查卡 |
 |:-:|:-:|
@@ -145,7 +145,16 @@ a weather app card with a low poly mountain turning snowy; night falls; the vall
 └─ images/make_svgs.py · preview/ # 四张图
 ```
 
-**命令：**
+**环境：** Node.js 22.12+、Python 3.10+、FFmpeg；先从项目根目录准备依赖、Chromium 和开源字体（来源与许可证见 `scripts/fetch_fonts.sh`）：
+
+```bash
+npm ci
+npx playwright install chromium
+python3 -m pip install -r requirements.txt
+npm run fonts
+```
+
+**渲染命令（从项目根目录开始）：**
 ```
 cd styles/019-low-poly/video
 python3 episode.py out 60 && node render.cjs out           # 60fps 正片（纯 SVG，云端 4 进程约 40 分钟）

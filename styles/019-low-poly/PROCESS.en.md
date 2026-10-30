@@ -2,6 +2,8 @@
 
 [中文](PROCESS.md) · **English**
 
+🎬 [Watch the film](https://github.com/guanmo-ai/design-style/releases/tag/day-19) · 📐 [Style guide](README.en.md)
+
 > Picked in the same round as 018 Diorama. How a 5-second sample became a 20-second film, and why the score was rebuilt twice.
 
 ## Overview

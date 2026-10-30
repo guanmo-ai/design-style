@@ -120,6 +120,7 @@ The gallery interface, descriptions, search, and reading pages support **Chinese
 | 013 | [Art Deco](styles/013-art-deco/README.en.md) | [Production overview](styles/013-art-deco/PROCESS.en.md) | 1925–1939 |
 | 014 | [Liquid Glass](styles/014-liquid-glass/README.en.md) — Glass bends what is behind it; refraction follows the slope of the edge. | [Production overview](styles/014-liquid-glass/PROCESS.en.md) | 2013–today |
 | 018 | [Diorama](styles/018-diorama/README.en.md) — Build a world on a base, piece by piece; tilt-shift makes it small. [Film](https://github.com/guanmo-ai/design-style/releases/tag/day-18-flicker-v2) | [Production overview](styles/018-diorama/PROCESS.en.md) | 1950s–today |
+| 019 | [Low Poly](styles/019-low-poly/README.en.md) — One face, one colour: triangles flip up from paper into a valley, a lighthouse and a planet. [Film](https://github.com/guanmo-ai/design-style/releases/tag/day-19) | [Production overview](styles/019-low-poly/PROCESS.en.md) | 1993–today |
 
 ### Layouts
 
