@@ -8,8 +8,8 @@
  *   314—396   03 唱片 · Reid Miles / Blue Note 1956（黄纸）——蓝球放大翻面成唱片，封套、BOP、叠印（ch345.tsx）
  *   414—496   04 建筑 · Case Study House #22 1960（粉纸）——唱片翻成落日，山、楼板、玻璃盒子、窗
  *   514—616   05 今天 · App（蓝纸）——玻璃盒子翻面成手机，界面一块块落进去，手按下播放键
- *   634—770   五条规则（白纸，rules.tsx）
- *   770—850   卡片飞走，海报的前奏重新落下 → 接回第 0 帧
+ *   650—826   五条规则（白纸，rules.tsx）
+ *   826—900   卡片飞走，海报的前奏重新落下 → 接回第 0 帧
  *
  * 签名物理：影子 = 高度（paper.tsx）。所有位置都是时间 t 的纯函数；60 帧连续 + 运动模糊。
  */
@@ -17,8 +17,8 @@ import React from 'react';
 import {C} from '../tokens';
 import {Air345, Ch03, Ch04, Ch05, focus345, pts345} from './ch345';
 import {GEO} from './geo';
-import {camTransform, covered, SHEET_DUR, SHEETS, sheetX, toScreen} from './kit';
-import {Body, type Pose, Shadow} from './paper';
+import {camTransform, covered, IMPACTS, scrapPose, SCRAP_COLS, SHEET_DUR, SHEETS, sheetPose, toScreen} from './kit';
+import {Body, Piece, type Pose, Shadow} from './paper';
 import {Poster, posterFocus, posterPts} from './poster';
 import {Rules, rulesFocus, rulesPts} from './rules';
 import {AirSpokes, Ch01, Ch02, PosterSpokes, spokesFocus, spokesPts} from './spokes';
@@ -26,16 +26,32 @@ import {AT, DURATION, W} from './timeline';
 
 export {camTransform};
 
-const SheetIn: React.FC<{t: number; t0: number; fill: string}> = ({t, t0, fill}) => {
-  if (t < t0) return null;
-  const p: Pose = {x: sheetX(t, t0), y: 0, h: t < t0 + SHEET_DUR ? 14 : 4};
+const SheetIn: React.FC<{t: number; s: (typeof SHEETS)[number]}> = ({t, s}) => {
+  if (t < s.t0) return null;
+  const p = sheetPose(t, s);
   return (
     <>
-      <Shadow parts={[{d: GEO.sheet, fill}]} p={p} />
-      <Body parts={[{d: GEO.sheet, fill}]} p={{...p, h: 0}} />
+      <Shadow parts={[{d: GEO.sheet, fill: s.fill}]} p={p} />
+      <Body parts={[{d: GEO.sheet, fill: s.fill}]} p={{...p, h: 0}} />
     </>
   );
 };
+
+/** 重击溅起的碎片：落定的画在本章里（会被下一张纸盖住），还在空中的画在最上面 */
+const Scraps: React.FC<{t: number; ch?: number; air: boolean}> = ({t, ch, air}) => (
+  <>
+    {IMPACTS.map((m, i) => {
+      if (m.ch === undefined || (ch !== undefined && m.ch !== ch) || t < m.t) return null;
+      const bg = m.ch === 0 || m.ch === 6 ? C.paper : SHEETS[m.ch - 1].fill;
+      const cols = SCRAP_COLS.filter((c) => c !== bg);
+      return Array.from({length: 12}, (_, j) => {
+        const p = scrapPose(m, j, t);
+        if (!p || ((p.h ?? 4) > 6) !== air) return null;
+        return <Piece key={`${i}-${j}`} d={GEO.scraps[j % GEO.scraps.length]} fill={cols[(j + i) % cols.length]} p={p} />;
+      });
+    })}
+  </>
+);
 
 /** 每一章画在它那张纸上、下一张纸下面；下一张纸盖满以后就不再画 */
 const CHAPTERS: React.FC<{t: number; k: number}>[] = [
@@ -59,26 +75,31 @@ export const Film: React.FC<{t: number; k: number}> = ({t, k}) => {
         if (next && covered(t, next.t0)) return null;
         return (
           <React.Fragment key={i}>
-            {prev && <rect x={-2000} y={-2000} width={6000} height={5000} fill={prev.fill} />}
+            {prev && covered(t, prev.t0) && <rect x={-2000} y={-2000} width={6000} height={5000} fill={prev.fill} />}
             <Ch t={t} k={k} />
-            {next && <SheetIn t={t} t0={next.t0} fill={next.fill} />}
+            <Scraps t={t} ch={i} air={false} />
+            {next && <SheetIn t={t} s={next} />}
           </React.Fragment>
         );
       })}
       {outro && <Poster t={t - DURATION} spokes={<PosterSpokes t={t - DURATION} />} />}
       <AirSpokes t={t} />
       <Air345 t={t} />
+      <Scraps t={t} air />
     </g>
   );
 };
 
-/** 外框用：这一刻新纸的左边缘在屏幕上的 x、新纸和旧纸的颜色 */
+/** 外框用：这一刻最新的一张纸（屏幕坐标下的变换）、它和旧纸的颜色 */
 export const sheetEdge = (t: number) => {
   for (let i = SHEETS.length - 1; i >= 0; i--) {
     const s = SHEETS[i];
-    if (t >= s.t0) return {x: toScreen(t, sheetX(t, s.t0), 0)[0], bg: s.fill, under: i ? SHEETS[i - 1].fill : C.paper};
+    if (t >= s.t0) {
+      const p = sheetPose(t, s);
+      return {tf: `${camTransform(t)} translate(${p.x.toFixed(1)} ${p.y.toFixed(1)}) rotate(${(p.a ?? 0).toFixed(2)})`, bg: s.fill, under: i ? SHEETS[i - 1].fill : C.paper, done: covered(t, s.t0)};
+    }
   }
-  return {x: W + 100, bg: C.paper, under: C.paper};
+  return {tf: '', bg: C.paper, under: C.paper, done: true};
 };
 
 const allPts = (t: number, shift: number): (Pose | null)[] => [...posterPts(t + shift), ...spokesPts(t), ...pts345(t), ...rulesPts(t)];
@@ -97,7 +118,19 @@ export const filmSpeed = (t: number) => {
     const [x1, y1] = toScreen(t + 0.5, q.x, q.y);
     v = Math.max(v, Math.hypot(x1 - x0, y1 - y0));
   }
-  for (const s of SHEETS) v = Math.max(v, Math.abs(sheetX(t + 0.5, s.t0) - sheetX(t - 0.5, s.t0)));
+  for (const s of SHEETS) {
+    const p = sheetPose(t - 0.5, s);
+    const q = sheetPose(t + 0.5, s);
+    v = Math.max(v, Math.hypot(q.x - p.x, q.y - p.y));
+  }
+  for (const m of IMPACTS) {
+    if (m.ch === undefined || t < m.t || t > m.t + 24) continue;
+    for (let j = 0; j < 12; j += 3) {
+      const p = scrapPose(m, j, t - 0.5);
+      const q = scrapPose(m, j, t + 0.5);
+      if (p && q) v = Math.max(v, Math.hypot(q.x - p.x, q.y - p.y));
+    }
+  }
   return Math.min(80, v);
 };
 
