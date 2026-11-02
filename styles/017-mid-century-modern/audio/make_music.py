@@ -11,7 +11,7 @@ Design Style · 风格 017 · 中世纪现代 Mid-Century Modern —— 配乐�
   96—114   蓝纸滑进来：颤音琴滑奏
   114—178  01 Bass《金臂人》：贝斯换成 F A♭ B♭ 的固定音型，手臂七节 = 木琴七声往上爬，1955 = 四个钢琴重和弦
   196—900  02 挂衣架 · 03 唱片 · 04 建筑 · 05 今天 · 五条规则：每一块纸落下都对一个调好音的木琴 / 颤音琴 / 钢琴音
-  900      最后一个音的余音折回第 0 帧（循环无缝）
+  850      最后一个音的余音折回第 0 帧（循环无缝）
 和弦（每半小节 50 帧）：F6/9 F6/9 | D♭9 C13 …
 
 用法：python3 styles/017-mid-century-modern/audio/make_music.py
@@ -27,7 +27,8 @@ ROOT = Path(__file__).resolve().parents[3]
 sys.path.insert(0, str(ROOT / 'scripts'))
 from lib.audio import AudioKit  # noqa: E402
 
-audio = AudioKit(duration=15.0, seed=17, fps=60)
+DURATION = 850
+audio = AudioKit(duration=DURATION / 60, seed=17, fps=60)
 SR = audio.SR
 BEAT = 25
 SWING = 16.7  # 摇摆的后半拍：一拍的 2/3 处
@@ -110,7 +111,7 @@ CH = {
 PROG = ['F', 'F', 'Db9', 'C13'] * 5
 for h, name in enumerate(PROG):
     f0 = h * 50
-    if f0 >= 900:
+    if f0 >= DURATION:
         break
     walk, voicing = CH[name]
     in_bass = BASS <= f0 < SHEET2
@@ -210,11 +211,11 @@ for k in range(4):  # 2026
 gliss(616, [65, 69, 72, 77, 81, 84], 3)
 RULE_CH = [[53, 57, 60, 64], [55, 58, 62, 65], [57, 60, 64, 67], [58, 62, 65, 69], [60, 64, 67, 72]]
 for k in range(5):
-    f = 644 + 31.25 * k
+    f = 644 + 18.75 * k
     place(piano(RULE_CH[k], 0.5, 0.8), fr(f), send=0.3)
     place(soft_kick(0.7), fr(f))
     place(bass([41, 43, 45, 46, 48][k], 0.4, 1.0), fr(f))
 for k, m in enumerate([84, 81, 77, 72, 69]):  # 卡片飞走
-    place(vibe(m, 0.4, 0.5), fr(836 + 3 * k), pan=-0.4 + 0.2 * k, send=0.35)
+    place(vibe(m, 0.4, 0.5), fr(782 + 3 * k), pan=-0.4 + 0.2 * k, send=0.35)
 
 audio.master(ROOT / 'public/017-mid-century-modern/music.wav')
