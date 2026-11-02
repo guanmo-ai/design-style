@@ -10,7 +10,8 @@ Design Style · 风格 017 · 中世纪现代 Mid-Century Modern —— 配乐�
            MID- / CENTURY = 木琴小音阶；MODERN 五个字 = 钢琴五个和弦往上走；O = 全队落在 F6/9（第 3 拍）
   96—114   蓝纸滑进来：颤音琴滑奏
   114—178  01 Bass《金臂人》：贝斯换成 F A♭ B♭ 的固定音型，手臂七节 = 木琴七声往上爬，1955 = 四个钢琴重和弦
-  178      绿松石纸：颤音琴滑奏 → 02
+  196—900  02 挂衣架 · 03 唱片 · 04 建筑 · 05 今天 · 五条规则：每一块纸落下都对一个调好音的木琴 / 颤音琴 / 钢琴音
+  900      最后一个音的余音折回第 0 帧（循环无缝）
 和弦（每半小节 50 帧）：F6/9 F6/9 | D♭9 C13 …
 
 用法：python3 styles/017-mid-century-modern/audio/make_music.py
@@ -26,7 +27,7 @@ ROOT = Path(__file__).resolve().parents[3]
 sys.path.insert(0, str(ROOT / 'scripts'))
 from lib.audio import AudioKit  # noqa: E402
 
-audio = AudioKit(duration=20.0, seed=17, fps=60)
+audio = AudioKit(duration=15.0, seed=17, fps=60)
 SR = audio.SR
 BEAT = 25
 SWING = 16.7  # 摇摆的后半拍：一拍的 2/3 处
@@ -90,7 +91,7 @@ MID = [22 + 2 * i for i in range(4)]
 CENT = [30 + 2 * i for i in range(7)]
 MOD = [37.5, 43.75, 50, 56.25, 62.5]
 BIG = 75
-SHEET1, BASS, SHEET2 = 96, 114, 178
+SHEET1, BASS, SHEET2 = 96, 114, 196
 ARM = [BASS + 6 + 1.6 * k for k in range(7)]
 BARS = [131, 137.25, 143.5, 149.75, 156]
 YEAR = [158 + 4 * i for i in range(4)]
@@ -106,10 +107,10 @@ CH = {
     'Db9': ([37, 41, 44, 47], [53, 59, 60, 65]),  # D♭9（无根：F B C F）
     'C13': ([36, 40, 43, 46], [52, 58, 62, 69]),  # C13（E B♭ D A）
 }
-PROG = ['F', 'F', 'Db9', 'C13'] * 12
+PROG = ['F', 'F', 'Db9', 'C13'] * 5
 for h, name in enumerate(PROG):
     f0 = h * 50
-    if f0 >= 1150:
+    if f0 >= 900:
         break
     walk, voicing = CH[name]
     in_bass = BASS <= f0 < SHEET2
@@ -151,5 +152,69 @@ for k, f in enumerate(YEAR):  # 1955：四个钢琴重和弦
     place(piano(ms + [ms[-1] + 12], 0.4, 0.8), fr(f), pan=0.15, send=0.25)
 gliss(SHEET2, [65, 69, 72, 77, 81, 84], 3)
 place(piano([41, 53, 57, 60, 62, 67], 0.9, 0.7), fr(SHEET2 + 18), send=0.3)
+
+# ───────── 02 挂衣架 ─────────
+for i in range(12):  # 纸条翻回墨色、落成钢丝折线
+    place(marimba(60 + [0, 2, 4, 7, 9, 12, 14, 16, 19, 21, 24, 26][i], 0.45), fr(222 + 1.2 * i), pan=-0.5 + 0.09 * i)
+for j in range(14):  # 14 颗球
+    place(vibe([77, 74, 72, 69, 67, 65, 69, 72, 74, 77, 79, 81, 84, 86][j], 0.6, 0.7), fr(236 + 2.5 * j), pan=-0.6 + 0.09 * (j % 7) * 2, send=0.25)
+for k in range(4):  # 1953
+    place(piano([[52, 57, 60], [53, 57, 60], [55, 58, 62], [53, 57, 60, 65]][k], 0.35, 0.7), fr(272 + 4 * k), pan=0.2, send=0.2)
+
+# ───────── 03 唱片 ─────────
+gliss(296, [65, 69, 72, 77, 81, 84], 3)
+for k, m in enumerate([84, 81, 77, 72, 69, 65, 60]):  # 球越飞越大：往下滑
+    place(vibe(m, 0.4, 0.5), fr(292 + 5 * k), pan=0.1, send=0.3)
+place(bass(29, 0.8, 1.2), fr(330))
+place(soft_kick(0.8), fr(330))
+place(piano([51, 55, 58, 62], 0.5, 0.7), fr(330), send=0.25)  # E♭maj7：蓝调一点
+for k in range(3):  # B · O · P
+    place(piano([[48, 51, 55], [51, 55, 58], [53, 56, 60]][k], 0.3, 0.85), fr(348 + 4 * k), pan=-0.3, send=0.2)
+    place(soft_kick(0.4), fr(348 + 4 * k))
+place(vibe(86, 0.6, 0.8), fr(362), pan=-0.5, send=0.4)  # 粉圆叠印
+for k in range(4):  # 1956
+    place(piano([[52, 57, 60], [53, 57, 60], [55, 58, 62], [55, 60, 64]][k], 0.35, 0.7), fr(366 + 4 * k), pan=0.3, send=0.2)
+
+# ───────── 04 建筑 ─────────
+gliss(396, [65, 69, 72, 77, 81, 84], 3)
+place(bass(34, 0.6, 1.0), fr(416))
+place(bass(29, 0.6, 1.0), fr(422))
+for m in (69, 72, 76, 81):  # 落日落定
+    place(vibe(m, 0.45, 1.4), fr(430), pan=-0.4, send=0.4)
+for k, f in enumerate([446, 448, 452, 456]):  # 柱、楼板、盒子、屋顶
+    place(marimba(48 + [0, 5, 7, 12][k], 0.6), fr(f), pan=0.4)
+for k in range(6):  # 窗一盏盏亮
+    place(vibe(84 + [0, 2, 4, 7, 9, 12][k], 0.45, 0.6), fr(460 + 3.125 * k), pan=0.3 + 0.05 * k, send=0.35)
+for k in range(4):  # 1960
+    place(piano([[50, 57, 60], [52, 57, 60], [53, 57, 62], [52, 57, 60, 64]][k], 0.35, 0.7), fr(466 + 4 * k), pan=-0.4, send=0.2)
+for f, m in ((476, 96), (482, 93)):
+    place(vibe(m, 0.3, 0.6), fr(f), pan=0.6, send=0.5)
+
+# ───────── 05 今天 ─────────
+gliss(496, [65, 69, 72, 77, 81, 84], 3)
+place(bass(29, 0.7, 1.2), fr(528))
+place(soft_kick(0.8), fr(528))
+for k, f in enumerate([536, 542, 548]):  # 屏幕、封面、小唱片
+    place(marimba(65 + [0, 4, 7][k], 0.55), fr(f), pan=0.1)
+for i in range(6):  # ATOMIC
+    place(marimba(72 + [0, 2, 4, 7, 9, 12][i], 0.45), fr(554 + 1.5 * i), pan=-0.2 + 0.08 * i)
+for k in range(16):  # 波形条立起来
+    place(vibe(89 + (k % 5) * 2, 0.18, 0.3), fr(560 + 1.5 * k), pan=-0.3 + 0.04 * k)
+place(marimba(77, 0.6), fr(570))
+place(soft_kick(1.0), fr(598))  # 手按下播放键
+place(piano([53, 57, 60, 62, 67, 72], 0.8, 0.8), fr(598), send=0.35)
+for k in range(4):  # 2026
+    place(piano([[57, 60, 64], [58, 62, 65], [57, 60, 64], [60, 64, 67, 72]][k], 0.35, 0.7), fr(574 + 4 * k), pan=-0.3, send=0.2)
+
+# ───────── 五条规则 → 回到第 0 帧 ─────────
+gliss(616, [65, 69, 72, 77, 81, 84], 3)
+RULE_CH = [[53, 57, 60, 64], [55, 58, 62, 65], [57, 60, 64, 67], [58, 62, 65, 69], [60, 64, 67, 72]]
+for k in range(5):
+    f = 644 + 31.25 * k
+    place(piano(RULE_CH[k], 0.5, 0.8), fr(f), send=0.3)
+    place(soft_kick(0.7), fr(f))
+    place(bass([41, 43, 45, 46, 48][k], 0.4, 1.0), fr(f))
+for k, m in enumerate([84, 81, 77, 72, 69]):  # 卡片飞走
+    place(vibe(m, 0.4, 0.5), fr(836 + 3 * k), pan=-0.4 + 0.2 * k, send=0.35)
 
 audio.master(ROOT / 'public/017-mid-century-modern/music.wav')

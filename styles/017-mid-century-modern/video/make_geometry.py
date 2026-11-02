@@ -11,7 +11,7 @@ import sys
 
 HERE = os.path.dirname(os.path.abspath(__file__))
 sys.path.insert(0, os.path.join(HERE, '..', 'images'))
-from cut import (bar, bbox, circle, crescent, fit, kidney, move, path_d, rect, rough, rrect, star, union, word)  # noqa: E402
+from cut import (bar, bbox, boomerang, circle, crescent, fit, kidney, move, path_d, rect, rough, rrect, star, union, word)  # noqa: E402
 
 
 def d(polys):
@@ -64,6 +64,45 @@ out['mid'] = letters('MID-', 0, 11, size=sz)
 out['century'] = letters('CENTURY', 0, 13, size=sz)
 
 out['y1955'] = letters('1955', 560, 21)
+for yr, sd in (('1953', 22), ('1956', 23), ('1960', 24), ('2026', 25)):
+    out['y' + yr] = letters(yr, 520, sd)
+out['bop'] = letters('BOP', 540, 26)
+out['atomic'] = letters('ATOMIC', 300, 27)
+
+
+def cen(polys, seed, amp=None):
+    return d(rough(centered(polys)[0], seed, amp=amp))
+
+
+# 02 挂衣架：钢丝用辐条（翻面后变细），球用球钟的球
+# 03 唱片封套
+out['sleeve'] = cen(rect(0, 0, 640, 640), 30)
+# 04 Case Study House #22：两层山、楼板、玻璃盒子、窗、柱
+def hill(w, base, amps, seed):
+    pts = [(x, base - sum(a * math.sin(x / l + p) for a, l, p in amps)) for x in range(0, w + 1, 40)]
+    return [pts + [(w, base + 700), (0, base + 700)]]
+out['hillFar'] = d(rough(move(hill(2600, 0, [(70, 260, 0.4), (30, 120, 1.3)], 1), -1300, 0), 31, amp=4))
+out['hillNear'] = d(rough(move(hill(2600, 0, [(50, 300, 2.1), (24, 90, 0.2)], 2), -1300, 0), 32, amp=4))
+out['slab'] = cen(rect(0, 0, 780, 26), 33)
+out['box'] = cen(rect(0, 0, 560, 150), 34)
+out['win'] = cen(rect(0, 0, 70, 112), 35)
+# 玻璃盒子上的 6 扇窗（以盒子中心为原点）：盒子飞走时和盒子是同一张纸
+out['wins'] = [d(rough(rect(-245 + 84 * k, -56, 70, 112), 60 + k)) for k in range(6)]
+out['col'] = cen(rect(0, 0, 18, 170), 36)
+# 05 App：手机、屏幕、封面、波形条、播放键
+out['phone'] = cen(rrect(0, 0, 420, 860, 60, 10), 40)
+out['screen'] = cen(rrect(0, 0, 384, 824, 44, 10), 41)
+out['cover'] = cen(rect(0, 0, 300, 300), 42)
+out['strip'] = cen(rect(0, 0, 12, 60), 43, amp=0.6)
+out['play'] = d(rough(circle(0, 0, 48), 44))
+out['tri'] = d(rough([[(-14, -20), (24, 0), (-14, 20)]], 45, amp=0.6))
+# 规则卡
+out['card'] = cen(rrect(0, 0, 320, 440, 18, 6), 50)
+out['swatch'] = cen(rect(0, 0, 210, 30), 51, amp=0.8)
+out['square'] = cen(rect(0, 0, 110, 110), 52)
+out['boomerang'] = d(rough(centered(boomerang(0, 0, 56, -12))[0], 53))
+out['kidneyS'] = d(rough(centered(kidney(0, 0, 50, -10))[0], 54))
+out['circleL'] = d(rough(circle(0, 0, 80), 55))
 
 # 换章用的大张纸：左边是剪出来的毛边，其余三边在画外
 out['sheet'] = d(rough([[(0, -300), (2700, -300), (2700, 1400), (0, 1400)]], 5, amp=7))

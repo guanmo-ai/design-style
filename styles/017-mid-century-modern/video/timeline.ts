@@ -6,14 +6,24 @@ export const W = 1920;
 export const H = 1080;
 export const FPS = 60;
 export const BEAT = 25;
-export const DURATION = 1200;
+export const DURATION = 900;
 
 export const AT = {
   poster: 0, // 开场：太阳落下、辐条从钟心炸开、12 颗球 2.5 帧一颗落满、字从镜头上方砸下来
   big: 75, // MODERN 的 O 最后砸下（第 3 拍），镜头沉一下
   lift: 90, // 辐条从钟上弹起来
-  sheet1: 96, // 蓝纸从右边滑进来盖住桌面（18 帧）
-  bass: 114, // 01 片头 · Bass：辐条在空中翻面（墨 → 白），落成折线手臂（第 5 拍）
-  sheet2: 178, // 绿松石纸滑进来 → 02
-  end: 210,
+  sheet1: 96, // 蓝纸 → 01
+  bass: 114, // 01 片头 · Saul Bass《金臂人》1955：辐条翻面（墨 → 白）拼成折线手臂
+  sheet2: 196, // 绿松石纸 → 02
+  eames: 214, // 02 家具 · Eames 挂衣架 1953：手臂再翻回墨色，拼成两排钢丝折线；14 颗球落上去
+  sheet3: 296, // 黄纸 → 03
+  record: 314, // 03 唱片 · Reid Miles / Blue Note 1956：一颗蓝球放大、翻面成唱片，封套滑进来，BOP 砸下
+  sheet4: 396, // 粉纸 → 04
+  house: 414, // 04 建筑 · Case Study House #22 1960：唱片翻到背面（黄）飞上去当落日，山、楼板、玻璃盒子、窗一盏盏亮
+  sheet5: 496, // 蓝纸 → 05
+  app: 514, // 05 今天 · App：玻璃盒子立起来变成手机，界面一块块落进去，手按下播放键
+  sheet6: 616, // 白纸 → 规则
+  rules: 634, // 五条规则：五张卡一拍一张砸下来
+  out: 836, // 卡片飞走；海报的太阳、腰果、辐条重新落下 → 接回第 0 帧
+  end: 900,
 };

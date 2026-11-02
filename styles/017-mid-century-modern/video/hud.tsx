@@ -11,6 +11,10 @@ import {AT, H, W} from './timeline';
 type Credit = {n: string; field: string; who: string; work: string; year: string; trick: string; at: number; to: number};
 const CREDITS: Credit[] = [
   {n: '01', field: '片头', who: 'Saul Bass', work: '《金臂人》片头', year: '1955', trick: '纸条拼成一条折线手臂', at: AT.bass + 4, to: AT.sheet2 + 6},
+  {n: '02', field: '家具', who: 'Charles & Ray Eames', work: 'Hang-It-All 挂衣架', year: '1953', trick: '钢丝折线 + 14 颗彩球', at: AT.eames + 4, to: AT.sheet3 + 6},
+  {n: '03', field: '唱片', who: 'Reid Miles', work: 'Blue Note 封套', year: '1956—', trick: '大字出血，两层油墨叠印', at: AT.record + 4, to: AT.sheet4 + 6},
+  {n: '04', field: '建筑', who: 'Pierre Koenig', work: 'Case Study House #22', year: '1960', trick: '玻璃盒子悬在崖边：越近的纸层走得越快', at: AT.house + 4, to: AT.sheet5 + 6},
+  {n: '05', field: '今天', who: '爵士电台', work: 'App', year: '2026', trick: '按钮 = 一张纸：按下去，影子收紧', at: AT.app + 4, to: AT.sheet6 + 6},
 ];
 
 /** 一行字从遮罩里升起、再沉下去 */
@@ -46,7 +50,7 @@ const Frame: React.FC<{t: number; ink: string; soft: string; accent: string}> = 
           <Line x={72} y={166} size={20} t={t} at={c.at + 6} to={c.to} color={soft} weight={500}>{c.trick}</Line>
         </g>
       ))}
-      {t >= AT.sheet1 && <text x={W - 72} y={88} textAnchor="end" fontFamily={FONT.sans} fontWeight={700} fontSize={18} letterSpacing={4} fill={ink}>MID-CENTURY MODERN · 017</text>}
+      {t >= AT.sheet1 && t < AT.out + 30 && <text x={W - 72} y={88} textAnchor="end" fontFamily={FONT.sans} fontWeight={700} fontSize={18} letterSpacing={4} fill={ink}>MID-CENTURY MODERN · 017</text>}
 
       {/* 左下：影子 = 高度（读数） */}
       <g>
