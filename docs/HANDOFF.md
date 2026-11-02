@@ -14,24 +14,9 @@
 
 2026-10-30：主人明确 019 低多边形已审片同意；直接采用 `review-renders` 的 60fps 成片，经 `release-assets/day-19/` 发布 [day-19](https://github.com/guanmo-ai/design-style/releases/tag/day-19)（成片 + 完整项目源码 ZIP + SHA256SUMS），音画字节与审片版一致。画廊登记为「风格 011」，中英文目录与预览同步，时间轴对齐 60fps / 1200 帧；本项交接关闭。详见 [019 发布记录](reviews/PUBLISH_019_20261030.md)。
 
+2026-11-02：按主人指令完成 018 微缩景观第三版 1080p / 60fps / 1200 帧正片，设计与配乐代码保持 `1606f5c`；与 `review-renders` 提交 `430b92a` 的第三版审片同秒对照，云端与本机 WAV、事件表 SHA-256 完全一致。已通过 `release-assets/day-18-v3/` 发布 [day-18-v3](https://github.com/guanmo-ai/design-style/releases/tag/day-18-v3)（成片 + 完整项目源码 ZIP + SHA256SUMS），旧版保留回退；画廊维持「风格 010」，同步 60fps 时间轴、新封面、中英文入口和预览。本项交接关闭，部署与核验证据见 [第三版发布记录](reviews/PUBLISH_018_V3_20261102.md)。
+
 ## 待办
-
-### 018 · 微缩景观第三版：主人审片通过后，显卡渲 60fps 正片并发布（2026-11-02）
-
-主人反馈“音效和 BGM 不流畅、要丝滑；往电影感 / 顶尖动画电影靠；细节少、建筑僵硬、要圆润”。Claude 已在分支 `claude/diorama-audio-style-polish-cppqt4` 改完画面（圆角平滑造型、电影布光、桌面、几十件带二级动画的小道具、样条镜头、去掉倒带的结尾）和配乐（整首重写），并在云端用软件渲染出 30fps 审片版交给主人。改动说明见 `styles/018-diorama/PROCESS.md` 第 3.5 节。**Codex 只执行渲染和发布，不改设计：**
-
-**2026-11-02 Codex 执行进度：** 用户已明确指令渲染并发布；60fps 正片、本地验证及云端第三版 30fps 审片同秒对照完成，发布包准备完毕，Release 与线上切换待执行。后端差异主要在纸屑边缘、颗粒和阴影，未见场景、镜头或字幕时序偏移，未修改设计代码。详见 [第三版执行记录](reviews/PUBLISH_018_V3_20261102.md)。
-
-1. 等主人确认第三版审片通过（这里会更新）。
-2. 在 Mac 上用显卡渲 60fps 正片（同一时间轴，每一帧是时间的纯函数）：
-   `cd styles/018-diorama/video3d && npm i && node --test geometry.test.mjs`
-   `ANGLE_BACKEND=metal PR=1 node render.cjs episode.html out 0 1199 1920 1080 60`
-   `python3 ../audio/make_music.py out/events.json out/music.wav`
-   `ffmpeg -framerate 60 -i out/f%04d.png -i out/music.wav -c:v libx264 -crf 16 -pix_fmt yuv420p -c:a aac -b:a 256k -shortest 018-diorama.mp4`
-   画面与云端 30fps 审片版对比（同一秒数抽帧）；有差异记在这里，由 Claude 修代码。
-3. 经 `release-assets/day-18-v3/` 发布新 Release `day-18-v3`（成片 + 完整项目源码 ZIP + SHA256SUMS），旧 `day-18-flicker-v2` 保留回退。
-4. 画廊：`works.json` 里 018 的 `release`、`sha256` 换成新版本，期号仍是「风格 010」；`tokens.json` 的 `motion` / `video` 改成 60fps / 1200 帧，`process/timeline.json` 的帧号按 60fps 翻倍；README / PROCESS（中英）顶部的 Release 链接换成 `day-18-v3`；封面换成新版第 0 帧（`video3d/cover.jpg` 与 `video/cover.jpg` 字节一致）。
-
 
 ### 015 · 未来主义：审片通过后发布（2026-10-28）
 
