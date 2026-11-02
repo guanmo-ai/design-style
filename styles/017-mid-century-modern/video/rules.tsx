@@ -1,6 +1,6 @@
 /**
- * 五条规则（白纸，634—836）：五张卡一拍半一张砸下来，每张卡用自己的方法演示自己；836 起卡片一张张飞走，
- * 海报的前奏（t − 900）在同一张白纸上重新落下 → 接回第 0 帧。
+ * 五条规则（白纸，634—770）：五张卡 ¾ 拍一张砸下来，每张卡用自己的方法演示自己；770 起卡片一张张飞走，
+ * 海报的前奏（t − 850）在同一张白纸上重新落下 → 接回第 0 帧。
  */
 import React from 'react';
 import {C, FONT} from '../tokens';
@@ -18,7 +18,7 @@ const CARDS: Card[] = [
   {fill: C.turq, ink: C.paper, n: '04', title: ['原子时代', '的形状'], note: '腰果 · 回旋镖 · 星芒'},
   {fill: C.blue, ink: C.paper, n: '05', title: ['七种', '颜色'], note: '白纸 40% · 其余各一小块'},
 ];
-const cardLand = (k: number) => AT.rules + 10 + 31.25 * k;
+const cardLand = (k: number) => AT.rules + 10 + 18.75 * k;
 const cardLeave = (k: number) => AT.out + 3 * k;
 const CXS = [230, 595, 960, 1325, 1690];
 
