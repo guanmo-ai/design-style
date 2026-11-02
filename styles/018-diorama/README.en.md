@@ -4,7 +4,7 @@
 
 > **In one line:** cut the world into a block on a base, build it piece by piece, then make it small with tilt-shift.
 
-🎬 [Video (Release `day-18-flicker-v2`)](https://github.com/guanmo-ai/design-style/releases/tag/day-18-flicker-v2) · 🛠 [Process](PROCESS.en.md) · 🎞 [Storyboard](video3d/STORYBOARD.md)
+🎬 [Video (Release `day-18-v3`)](https://github.com/guanmo-ai/design-style/releases/tag/day-18-v3) · 🛠 [Process](PROCESS.en.md) · 🎞 [Storyboard](video3d/STORYBOARD.md)
 
 | Poster | Cheat sheet |
 |:-:|:-:|
@@ -62,7 +62,7 @@ Chinese: **Noto Sans SC** Black · Latin: **Inter** 800. Labels are white on ink
 
 ## 5 · Parameters
 
-Released film: **1920×1080 · 30 fps · 600 frames · 20 seconds**. `tokens.json` and `process/timeline.json` describe this version; 60 fps is an optional render.
+Released film: **1920×1080 · 60 fps · 1200 frames · 20 seconds**. `tokens.json` and `process/timeline.json` describe this released version.
 
 - Camera: long lens, fov 20—24°, about 30° from above; each chapter is the next base on the same table and the camera slides across
 - Camera path: a monotone cubic spline through the key frames, so velocity is continuous and the camera never stops and starts

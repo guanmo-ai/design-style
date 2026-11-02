@@ -454,7 +454,14 @@
     "years": "1946—今天",
     "category": "印刷工艺",
     "description": "三种油墨、一张会呼吸的纸。一支 15 秒短片，从对版、制版、分色过机到叠印出纸：荧光粉印不进 CMYK，套不准是这台机器的口音。",
-    "tags": ["孔版", "专色", "叠印", "套不准", "网点", "小志"],
+    "tags": [
+      "孔版",
+      "专色",
+      "叠印",
+      "套不准",
+      "网点",
+      "小志"
+    ],
     "publishedAt": "2026-10-24T11:43:20Z",
     "release": "day-08",
     "asset": "008-risograph.mp4",
@@ -491,7 +498,14 @@
     ],
     "categoryEn": "Print process",
     "descriptionEn": "Three soy inks on a sheet of paper that still breathes. A 15-second film runs a Risograph: plates slam into register, a thermal head burns a master, colors reprint one drum at a time, and overprints mix by multiplying.",
-    "tagsEn": ["stencil", "spot color", "overprint", "misregistration", "halftone", "zine"]
+    "tagsEn": [
+      "stencil",
+      "spot color",
+      "overprint",
+      "misregistration",
+      "halftone",
+      "zine"
+    ]
   },
   {
     "id": "009-neo-brutalism",
@@ -568,17 +582,57 @@
     "categoryEn": "Architecture & posters",
     "description": "先立一条中轴，阶梯、放射和三线从中轴往两边同时长出来；金色是材质，只给线。一支 20 秒一镜到底的短片：光顺着海报的金线跑一圈，镜头推进拱窗、穿过一串三线拱门；玫瑰窗变成十二瓣万花筒，再塌成地平线上的太阳；夜景天际线三层纵深升起，探照灯成对交叉，镜头贴着主楼一路升到尖顶；五条规则翻转着飞来；最后海报一笔一笔重新长回去。",
     "descriptionEn": "Draw one central axis, then grow steps, sunbursts and triple lines out of it on both sides at once; gold is a material, used only for lines. A 20-second single-shot film: light races along the poster's gold lines, the camera pushes through the arch into a tunnel of triple-line portals, a rose window turns into a twelve-fold Busby Berkeley kaleidoscope that collapses into a sun on the horizon, a night skyline rises in three layers of depth under crossing searchlights while the camera rides the hero tower up to its spire, five rule plaques flip in from the distance, and the poster redraws itself stroke by stroke.",
-    "tags": ["中轴对称", "阶梯", "放射", "三线", "金色", "海报", "品牌"],
-    "tagsEn": ["symmetry", "ziggurat", "sunburst", "triple line", "gold", "posters", "branding"],
+    "tags": [
+      "中轴对称",
+      "阶梯",
+      "放射",
+      "三线",
+      "金色",
+      "海报",
+      "品牌"
+    ],
+    "tagsEn": [
+      "symmetry",
+      "ziggurat",
+      "sunburst",
+      "triple line",
+      "gold",
+      "posters",
+      "branding"
+    ],
     "publishedAt": "2026-10-27T16:31:08Z",
     "release": "day-13",
     "asset": "013-art-deco.mp4",
     "sha256": "9df3171271f51ce6a2af8281e3307fb3f00c4974642c3d7473ad2060181ec05d",
     "images": [
-      {"file": "poster", "title": "一张海报，认识装饰艺术", "kind": "风格海报", "titleEn": "Art Deco at a glance", "kindEn": "Style poster"},
-      {"file": "cheatsheet", "title": "五种颜色、三种字、五个母题、五条规则", "kind": "风格速查", "titleEn": "Five colors, three typefaces, five motifs, five rules", "kindEn": "Quick reference"},
-      {"file": "app-ui", "title": "如果装饰艺术来做 App", "kind": "界面应用", "titleEn": "Art Deco in an app", "kindEn": "UI application"},
-      {"file": "steps", "title": "五步，从一条中轴到一张装饰艺术", "kind": "设计教程", "titleEn": "Five steps from one axis to Art Deco", "kindEn": "Design tutorial"}
+      {
+        "file": "poster",
+        "title": "一张海报，认识装饰艺术",
+        "kind": "风格海报",
+        "titleEn": "Art Deco at a glance",
+        "kindEn": "Style poster"
+      },
+      {
+        "file": "cheatsheet",
+        "title": "五种颜色、三种字、五个母题、五条规则",
+        "kind": "风格速查",
+        "titleEn": "Five colors, three typefaces, five motifs, five rules",
+        "kindEn": "Quick reference"
+      },
+      {
+        "file": "app-ui",
+        "title": "如果装饰艺术来做 App",
+        "kind": "界面应用",
+        "titleEn": "Art Deco in an app",
+        "kindEn": "UI application"
+      },
+      {
+        "file": "steps",
+        "title": "五步，从一条中轴到一张装饰艺术",
+        "kind": "设计教程",
+        "titleEn": "Five steps from one axis to Art Deco",
+        "kindEn": "Design tutorial"
+      }
     ]
   },
   {
@@ -655,8 +709,8 @@
     "years": "1950s—今天",
     "category": "三维场景",
     "categoryEn": "3D scenes",
-    "description": "把世界切成一块底座，一块块搭出来，再用移轴把它变小。一支 20 秒短片：街角、房间剖面与模型铁路在同一张桌上逐块搭起，收成手机界面，再一起入夜；台灯熄灭后，零件倒着飞回开场。",
-    "descriptionEn": "Cut the world into a block on a base, build it piece by piece, then make it small with tilt-shift. In this 20-second film, a street corner, a cutaway room and a model railway assemble on one table, become a phone interface and turn to night. The lamp clicks off, then every piece rewinds to the opening.",
+    "description": "把世界切成一块底座，一块块搭出来，再用移轴把它变小。一支 20 秒短片：街角、房间剖面与模型铁路在同一张桌上逐块搭起，收成手机界面，再一起入夜；镜头缓推房间，台灯熄灭后停在小彩灯和月光里。",
+    "descriptionEn": "Cut the world into a block on a base, build it piece by piece, then make it small with tilt-shift. In this 20-second film, a street corner, a cutaway room and a model railway assemble on one table, become a phone interface and turn to night. The camera pushes into the room; the lamp clicks off and the film rests in string lights and moonlight.",
     "tags": [
       "微缩模型",
       "底座",
@@ -675,9 +729,9 @@
       "warm light",
       "three.js"
     ],
-    "release": "day-18-flicker-v2",
+    "release": "day-18-v3",
     "asset": "018-diorama.mp4",
-    "sha256": "e424c9cef2b86d90b53d1669f4f73cc0dd03308bc66075af60339f6bed1bca18",
+    "sha256": "7cf8d42d075c04f7a4f4d397bcb17126d61b240d34fe2f75ab7b29e710a6af73",
     "images": [
       {
         "file": "poster",
