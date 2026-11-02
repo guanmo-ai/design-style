@@ -2,7 +2,7 @@
 //   Shards：成百上千块小碎块（InstancedMesh，一种材质一次绘制），每块有自己的起始时间和动作
 //   Groups：成组的零件（房子、树、卡车……），整组升起 / 落下 / 弹出 / 拉出
 // 时间都是全片秒数；每个场景构建时传入自己的起点 T0。
-import { THREE, mesh, mat, lowpoly, rng, mergeGeometries } from './lib.js';
+import { THREE, mesh, mat, lowpoly, rng, mergeGeometries, rbox, blob } from './lib.js';
 
 export const clamp = (x, a = 0, b = 1) => Math.max(a, Math.min(b, x));
 export const smooth = e => e * e * (3 - 2 * e);
@@ -11,13 +11,18 @@ export const lerp = (a, b, t) => a + (b - a) * t;
 export const lerpC = (a, b, t) => new THREE.Color(a).lerp(new THREE.Color(b), t);
 
 // 砸下来：前 60% 自由落体，落地后压扁 16% 再回弹（以底面为原点，不陷进地里）
+// 第三版：落地后不是一下弹回，而是像软胶一样抖 1.5 下慢慢停住（衰减正弦，速度连续）
 export function slam(e, height = 8) {
   const land = 0.6;
   if (e <= 0) return { dy: height, sx: 1, sy: 1 };
-  if (e < land) return { dy: height * (1 - (e / land) ** 2), sx: 1, sy: 1 + 0.12 * (e / land) };   // 下落时略拉长
-  const k = (e - land) / (1 - land), sq = 0.16 * Math.sin(Math.PI * k) * (1 - k);
-  return { dy: 0, sx: 1 + sq * 0.45, sy: 1 - sq };
+  if (e < land) { const u = e / land; return { dy: height * (1 - u * u), sx: 1 - 0.05 * u * u, sy: 1 + 0.12 * u * u }; }   // 越落越快，越落越长
+  const k = (e - land) / (1 - land), sq = 0.27 * Math.sin(3 * Math.PI * k) * Math.exp(-3.5 * k) * (1 - k * k);
+  return { dy: 0, sx: 1 + sq * 0.5, sy: 1 - sq };
 }
+// 弹簧：0 → 1，过冲约 6%，再抖一下停住；起点速度不为零（东西是“冒”出来的）
+export const spring = (e, w = 5, z = 5.6) => e >= 1 ? 1 : 1 - Math.exp(-z * e) * Math.cos(w * e) * (1 - e ** 6);
+// 体积守恒：竖着拉长时横向收一点，压扁时横向鼓一点
+const keepVol = sy => Math.min(1.18, Math.max(0.9, 1 / Math.sqrt(Math.max(0.55, sy))));
 
 export class Kit {
   constructor(scene) {
@@ -47,30 +52,37 @@ export class Kit {
     }
   }
   B(w, h, d, x, y, z, color, o = {}) {
-    const m = mesh(new THREE.BoxGeometry(w, h, d).translate(x, y + h / 2, z), typeof color === 'string' ? mat(color, o) : color, o);
+    const m = mesh(rbox(w, h, d, o.r).translate(x, y + h / 2, z), typeof color === 'string' ? mat(color, o) : color, o);
     this.add(m); return m;
   }
-  glow(c, i = 1.6) { const m = mat(c, { emissive: c, ei: i * 0.35 }); m.userData.base = i; m.userData.T0 = this.T0; this.emissive.push(m); return m; }
+  glow(c, i = 1.6) { const m = mat(c, { emissive: c, ei: i * 0.35, rough: 0.35 }); m.userData.base = i; m.userData.T0 = this.T0; this.emissive.push(m); return m; }
 
   // ---- 碎块 ----
   // items: [{x,y,z,w,h,d,c,t0,dur,type}]，type: 'slam'（从上砸下）| 'slide'（从左推进）| 'flip'（翻着落下）| 'pop'
-  shards(items, { rough = 0.85 } = {}) {
-    const geo = new THREE.BoxGeometry(1, 1, 1).translate(0, 0.5, 0);
-    const m = new THREE.InstancedMesh(geo, new THREE.MeshStandardMaterial({ flatShading: true, roughness: rough }), items.length);
-    m.castShadow = m.receiveShadow = true;
-    m.frustumCulled = false;   // 包围球是在全都藏着时算的，会被错误剔除
-    items.forEach((it, i) => { m.setColorAt(i, new THREE.Color(it.c)); it.t0 += this.T0; });
-    this.root.add(m);
-    this.shardSets.push({ m, items, dummy: new THREE.Object3D() });
-    return m;
+  shards(items, { rough = 0.7 } = {}) {
+    // 第三版：按尺寸分桶，每桶一块真正的圆角方块几何体（不用拉伸单位方块，圆角才不会被压扁）
+    const buckets = new Map();
+    items.forEach(it => { it.t0 += this.T0; const k = [it.w, it.h, it.d].map(v => v.toFixed(3)).join('|'); if (!buckets.has(k)) buckets.set(k, []); buckets.get(k).push(it); });
+    const out = [];
+    for (const list of buckets.values()) {
+      const { w, h, d } = list[0];
+      const geo = rbox(w, h, d, Math.min(0.16, Math.min(w, h, d) * 0.3), 1).translate(0, h / 2, 0);
+      const m = new THREE.InstancedMesh(geo, new THREE.MeshStandardMaterial({ roughness: rough }), list.length);
+      m.castShadow = m.receiveShadow = true;
+      m.frustumCulled = false;   // 包围球是在全都藏着时算的，会被错误剔除
+      list.forEach((it, i) => m.setColorAt(i, new THREE.Color(it.c)));
+      this.root.add(m); out.push(m);
+      this.shardSets.push({ m, items: list, dummy: new THREE.Object3D() });
+    }
+    return out;
   }
 
   // ---- 扬尘：在 (x, z) 处、时间 t 落地，半径 r ----
   puff(x, y, z, t, r = 2.5, n = 9) {
-    const pm = new THREE.MeshStandardMaterial({ color: '#FFF7EC', flatShading: true, roughness: 1 });
+    const pm = new THREE.MeshStandardMaterial({ color: '#FFF7EC', roughness: 1, transparent: true, opacity: 0.85 });
     const list = [];
     for (let k = 0; k < n; k++) {
-      const m = mesh(lowpoly(new THREE.IcosahedronGeometry(1, 0), 0.25, k * 7 + Math.round(x * 13)), pm, { cast: false });
+      const m = mesh(blob(1, k * 7 + Math.round(x * 13), 0.12, 1), pm, { cast: false });
       const a = k / n * Math.PI * 2 + (k % 2) * 0.3;
       m.userData = { a, t: this.T0 + t, x, y, z, r, s: 0.35 + (k % 3) * 0.12 };
       this.root.add(m); list.push(m);
@@ -86,31 +98,32 @@ export class Kit {
       g.visible = e > 0;
       g.scale.set(1, 1, 1); g.position.y = g.visible ? base : -1e4; g.position.x = bx; g.rotation.set(0, 0, 0);
       if (!g.visible) continue;
-      if (type === 'rise') g.scale.y = Math.max(0.001, back(e));
-      else if (type === 'pop') { const k = Math.max(0.001, back(e, 2.2)); g.scale.set(k, Math.max(0.001, back(clamp((t - t0 - 0.05) / dur), 2.6)), k); }
+      if (type === 'rise') { const sy = Math.max(0.001, spring(e)); g.scale.set(keepVol(sy), sy, keepVol(sy)); }
+      else if (type === 'pop') { const k = Math.max(0.001, spring(e, 7, 7)); g.scale.set(k, Math.max(0.001, spring(clamp((t - t0 - 0.05) / dur), 7.5, 7.2)), k); }
       else if (type === 'drawx') g.scale.x = Math.max(0.001, smooth(e));
       else if (type === 'drop') { const s = slam(e, h); g.position.y = base + s.dy; g.scale.set(s.sx, s.sy, s.sx); }
       else if (type === 'spin') { const s = slam(e, h); g.position.y = base + s.dy; g.rotation.y = (1 - smooth(clamp(e / 0.6))) * Math.PI; g.scale.set(s.sx, s.sy, s.sx); }
+      if (g.userData.anim) g.userData.anim(g, t, e);   // 二级动画：树摇、人走、尾巴甩……
     }
     for (const p of this.puffs || []) {
       const { a, t: tp, x, y, z, r, s } = p.userData, tt = timeOf(p.userData), e = clamp((tt - tp) / 0.55);
       if (e <= 0 || e >= 1) { p.visible = false; continue; }
       p.visible = true;
       const d = r * (0.5 + 0.9 * (1 - (1 - e) ** 3));
-      p.position.set(x + Math.cos(a) * d, y + 0.2 + 0.6 * e, z + Math.sin(a) * d);
-      p.scale.setScalar(s * Math.sin(Math.PI * Math.min(1, e * 1.2)) * (1 - e * 0.3));
+      p.position.set(x + Math.cos(a) * d, y + 0.2 + 0.9 * (1 - (1 - e) ** 2), z + Math.sin(a) * d);
+      p.scale.setScalar(s * (1 - (1 - Math.min(1, e * 2.2)) ** 3) * (1 - e) ** 1.5);
     }
     for (const S of this.shardSets) {
       const { m, items, dummy } = S;
       items.forEach((it, i) => {
         const t = timeOf(it);
         let e = clamp((t - it.t0) / it.dur);
-        dummy.position.set(it.x, it.y, it.z); dummy.rotation.set(0, 0, 0); dummy.scale.set(it.w, it.h, it.d);
+        dummy.position.set(it.x, it.y, it.z); dummy.rotation.set(0, 0, 0); dummy.scale.set(1, 1, 1);
         if (e <= 0) { dummy.position.y = -1e4; dummy.scale.set(1e-4, 1e-4, 1e-4); }
-        else if (it.type === 'slam') { const s = slam(e, it.hgt ?? 9); dummy.position.y = it.y + s.dy; dummy.scale.set(it.w * s.sx, it.h * s.sy, it.d * s.sx); const fall = 1 - clamp(e / 0.6); dummy.rotation.set(fall * (it.tumble || 0), fall * (it.spin || 0), fall * (it.tumble || 0) * 0.6); }
-        else if (it.type === 'slide') dummy.position.x = it.x - 24 * (1 - back(e, 1.1));
-        else if (it.type === 'flip') { dummy.position.y = it.y + 2.6 * (1 - smooth(e)); dummy.rotation.x = Math.PI * (1 - back(e, 1.2)); }
-        else if (it.type === 'pop') { const k = Math.max(1e-4, back(e, 2.4)); dummy.scale.set(it.w * k, it.h * k, it.d * k); }
+        else if (it.type === 'slam') { const s = slam(e, it.hgt ?? 9); dummy.position.y = it.y + s.dy; dummy.scale.set(s.sx, s.sy, s.sx); const fall = 1 - smooth(clamp(e / 0.6)); dummy.rotation.set(fall * (it.tumble || 0), fall * (it.spin || 0), fall * (it.tumble || 0) * 0.6); }
+        else if (it.type === 'slide') dummy.position.x = it.x - 24 * (1 - spring(e, 6, 6.4));
+        else if (it.type === 'flip') { dummy.position.y = it.y + 2.6 * (1 - smooth(e)); dummy.rotation.x = Math.PI * (1 - spring(e, 6, 6.2)); }
+        else if (it.type === 'pop') { const k = Math.max(1e-4, spring(e, 7, 7)); dummy.scale.set(k, k, k); }
         dummy.updateMatrix(); m.setMatrixAt(i, dummy.matrix);
       });
       m.instanceMatrix.needsUpdate = true;

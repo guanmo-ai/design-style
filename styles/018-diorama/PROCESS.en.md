@@ -11,8 +11,8 @@
 | 1 | Pick | Four rounds of candidates (two images + one "unique motion" line each); low poly and diorama were both chosen |
 | 2 | 5-second sample | A street corner built from falling pieces; recoloured twice, ground rebuilt once |
 | 3 | Tokens | Eleven colours, long lens + tilt-shift, slam physics, 120 BPM |
-| 4 | Film | Five chapters + finale + rewind, 20 s, seamless loop |
-| 5 | Score | F major, 120 BPM, cinematic; SFX aligned to `events.json`; −14 LUFS |
+| 4 | Film | Five chapters + finale, 20 s (v2 ended in a rewind loop; v3 ends on a quiet push-in) |
+| 5 | Score | F major, 120 BPM; v3 is one unbroken cue with chord-tuned SFX aligned to `events.json`; −15 LUFS |
 | 6 | QA | Half-resolution previews, key frames, first/last frame comparison |
 
 ## Why it moves this way
@@ -23,6 +23,15 @@
 - **One table, one camera.** All three bases sit on one table; the camera slides between them and pulls back at night to show all three.
 - **The screen closes into a phone.** `setViewOffset` shifts the render right while a cream "hole" shrinks from full frame to a phone screen — the model keeps rendering inside it.
 - **A real ending.** Push into the lit room window, title rises over a string tutti, the lamp clicks off at 18.6 s; then a tape stop, every piece rewinds back into the sky, and frame 20 s equals frame 0.
+
+## Version 3: smooth, rounded, cinematic (2026-11-02)
+
+Feedback on the published film: the sound effects and music weren't smooth; push toward a cinematic, top-tier animated-film look; the dioramas lacked detail and the buildings felt stiff and should be rounder.
+
+- **Why it felt choppy:** the camera eased to zero velocity at every key frame (smoothstep per segment); tilt-shift and shadow settings switched on and off between chapters; landings snapped back with a single `easeOutBack`; the score changed instruments every two bars, stacked timpani rolls and five impact hits, and played a hundred randomly pitched build sounds, then cut hard at the lamp switch and ended in a tape stop.
+- **Fixes:** a monotone cubic camera spline with continuous velocity; every switch is a smooth blend; damped-wobble landings and underdamped springs; one unbroken score (flowing harp arpeggios, voice-led legato strings, one melody passed from felt piano to violins to celesta to the tutti, a single timpani stroke); every build sound tuned to the current chord and throttled; long reverb, slow glue compression and smooth limiting with no clipping.
+- **Animated-film look:** rounded, smooth-shaded blocks (instanced shards bucketed by size so corners aren't squashed); soft clustered foliage and cotton clouds; a low warm key light, cool fill, pink rim light and a studio environment map; the bases sit on a paper-covered table; dozens of small props with secondary motion (string lights, nodding birds, people chatting and walking, steaming cocoa, a ticking clock, a windmill, ducks, sheep).
+- **Ending:** no rewind. A slow push into the room, title and byline stay to the last frame, the floor lamp clicks off at 18.5 s and the room rests in string lights and moonlight while the final F-major chord fades.
 
 ## Pitfalls
 

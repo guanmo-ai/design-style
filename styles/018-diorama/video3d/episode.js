@@ -4,9 +4,9 @@
 //   03 模型铁路   7.8—11.2  规则：移轴 = 变小
 //   04 落到界面  11.2—14.2  规则：房间就是遥控器
 //   05 天黑了    14.2—16.4  规则：暖光 = 有人住
-//   结尾 16.4—19.0：镜头慢慢推向房间那扇亮着的窗，片名升起；18.6 台灯“咔”地关掉
-//   倒带回第 0 帧 19.0—20.0（首尾同一帧）
-import { THREE, setup, makeComposer } from './lib.js';
+//   结尾 16.4—20.0：镜头一路慢慢推向房间那扇亮着的窗，片名和署名升起；18.6 台灯“咔”地关掉，
+//   房间只剩月光和小彩灯，镜头继续缓推到最后一帧（第三版：去掉倒带，结尾是一个安静的收束）
+import { THREE, setup, makeComposer, rng } from './lib.js';
 import { Kit, clamp, smooth, back, lerp, lerpC } from './kit.js';
 import { buildStreet } from './scenes/street.js';
 import { buildRoom } from './scenes/room.js';
@@ -15,7 +15,7 @@ import { buildValley } from './scenes/valley.js';
 const Q = new URLSearchParams(location.search);
 const W = +(Q.get('w') || 1920), H = +(Q.get('h') || 1080), PR = +(Q.get('pr') || 1);
 const DUR = 20;
-const ctx = setup({ W, H, pr: PR, exposure: 0.95 });
+const ctx = setup({ W, H, pr: PR, exposure: 0.92, env: 0.3 });
 const { scene } = ctx;
 
 // ---------- 天空（画布渐变，逐帧重画） ----------
@@ -24,11 +24,21 @@ const skyG = skyC.getContext('2d'), skyT = new THREE.CanvasTexture(skyC); skyT.c
 function sky(stops) { const g = skyG.createLinearGradient(0, 0, 0, 512); stops.forEach((c, i) => g.addColorStop(i / (stops.length - 1), c)); skyG.fillStyle = g; skyG.fillRect(0, 0, 2, 512); skyT.needsUpdate = true; }
 const DAY = ['#F8F1E3', '#F6EEDD', '#F3E8D6'], DUSK = ['#FBE3C4', '#F8C9A8', '#F2B29C'], NIGHT = ['#C3A6E6', '#F0BCD2', '#FFD3B4'];
 
-// ---------- 光 ----------
-const HEMI = new THREE.HemisphereLight('#E6F0FF', '#D8B898', 1.25); scene.add(HEMI);
-const SUN = new THREE.DirectionalLight('#FFF3E0', 3.0); SUN.castShadow = true;
-SUN.shadow.mapSize.set(4096, 4096); SUN.shadow.bias = -0.0005; SUN.shadow.normalBias = 0.02; scene.add(SUN, SUN.target);
-const RIM = new THREE.DirectionalLight('#CFE2FF', 0.6); RIM.position.set(30, 20, -30); scene.add(RIM);
+// ---------- 光（第三版：电影布光——低角度暖色主光拉出长影子、冷色天光补暗部、背后一盏粉色轮廓光勾边） ----------
+const HEMI = new THREE.HemisphereLight('#DDE8FF', '#E9C9A6', 0.6); scene.add(HEMI);
+const SUN = new THREE.DirectionalLight('#FFE6C4', 3.8); SUN.castShadow = true;
+SUN.shadow.mapSize.set(4096, 4096); SUN.shadow.bias = -0.0004; SUN.shadow.normalBias = 0.03; SUN.shadow.radius = 4; scene.add(SUN, SUN.target);
+const RIM = new THREE.DirectionalLight('#FFD6EC', 1.3); scene.add(RIM, RIM.target);
+
+// ---------- 桌面：三块底座真的放在一张铺了纸的桌子上（长焦 + 移轴下，远处的桌面自然虚掉） ----------
+{
+  const c = document.createElement('canvas'); c.width = c.height = 512; const g = c.getContext('2d'), Rt = rng(77), Math_random = Rt;   // 固定种子：分段并行渲染时每个进程的纹理一致
+  g.fillStyle = '#F4E8D4'; g.fillRect(0, 0, 512, 512);
+  for (let i = 0; i < 2600; i++) { const v = Math_random(); g.fillStyle = `rgba(${v < .5 ? '170,130,90' : '255,250,240'},${0.035 + Math_random() * 0.05})`; g.fillRect(Math_random() * 512, Math_random() * 512, 1 + Math_random() * 40, 1 + Math_random() * 2); }
+  const tex = new THREE.CanvasTexture(c); tex.colorSpace = THREE.SRGBColorSpace; tex.wrapS = tex.wrapT = THREE.RepeatWrapping; tex.repeat.set(14, 14); tex.anisotropy = 8;
+  const table = new THREE.Mesh(new THREE.PlaneGeometry(700, 700).rotateX(-Math.PI / 2).translate(38, -4.42, 0), new THREE.MeshStandardMaterial({ map: tex, roughness: 0.92 }));
+  table.receiveShadow = true; scene.add(table); window.__table = table;
+}
 
 // ---------- 场景 ----------
 const K = new Kit(scene);
@@ -37,9 +47,7 @@ buildStreet(K, { x: P_STREET[0], z: P_STREET[1], T0: 0 });
 buildRoom(K, { x: P_ROOM[0], z: P_ROOM[1], T0: 3.9 });
 buildValley(K, { x: P_VALLEY[0], z: P_VALLEY[1], T0: 7.5 });
 
-// 倒带：17.0—18.0 所有零件按时间倒放飞回天上，18.0 时正好回到第 0 帧的状态（首尾同一帧）
-const REW0 = 19.0, REW1 = 20.0;
-const rewind = (t) => t <= REW0 ? t : REW0 - (REW0) * smooth(clamp((t - REW0) / (REW1 - REW0))) ;   // 把街角的“本地时间”从 17 倒回 0
+const END = 20.0;
 
 // ---------- 镜头关键帧（位置、看向、视角） ----------
 const camAt = (P, ang, rad, h, ty = 1, fov = 20) => ({ pos: [P[0] - 0.5 + Math.sin(ang) * rad, h, P[1] + 0.2 + Math.cos(ang) * rad], tgt: [P[0] - 0.5, ty, P[1] + 0.2], fov });
@@ -55,21 +63,36 @@ const KEYS = [
   [13.8, camAt(P_STREET, 0.66, 102, 52, 1.0)],
   [14.9, camAt([38, -2], 0.62, 120, 66, 0, 22)],
   [16.4, camAt([38, -2], 0.70, 112, 62, 0, 22)],
-  [18.6, camAt(P_ROOM, 0.70, 46, 22, 4.0, 22)],           // 结尾：推向房间亮着的窗
-  [19.0, camAt(P_ROOM, 0.70, 44, 21, 4.0, 22)],
-  [20.0, camAt(P_STREET, 0.86, 54, 24, -1.0, 24)],
+  [18.6, camAt(P_ROOM, 0.70, 70, 36, 2.6, 22)],           // 结尾：推向房间——整间屋子像一个亮着的娃娃屋
+  [20.0, camAt(P_ROOM, 0.74, 65, 33, 2.8, 21.5)],        // 关灯后继续缓推，最后一帧停在小彩灯里
 ];
+// 第三版：镜头走单调三次样条（Fritsch–Carlson），经过关键帧时速度连续，不再“到一个点停一下”
+function pchip(ts, ys) {
+  const n = ts.length, h = [], dl = [], m = new Array(n).fill(0);
+  for (let i = 0; i < n - 1; i++) { h[i] = ts[i + 1] - ts[i]; dl[i] = (ys[i + 1] - ys[i]) / h[i]; }
+  m[0] = dl[0] * 0.5; m[n - 1] = dl[n - 2] * 0.5;   // 起点、终点也带一点速度：第 0 帧镜头就在动
+  for (let i = 1; i < n - 1; i++) {
+    if (dl[i - 1] * dl[i] <= 0) continue;
+    const w1 = 2 * h[i] + h[i - 1], w2 = h[i] + 2 * h[i - 1];
+    m[i] = (w1 + w2) / (w1 / dl[i - 1] + w2 / dl[i]);
+  }
+  return t => {
+    let i = 0; while (i < n - 2 && t > ts[i + 1]) i++;
+    const u = clamp((t - ts[i]) / h[i]), u2 = u * u, u3 = u2 * u;
+    return (2 * u3 - 3 * u2 + 1) * ys[i] + (u3 - 2 * u2 + u) * h[i] * m[i] + (-2 * u3 + 3 * u2) * ys[i + 1] + (u3 - u2) * h[i] * m[i + 1];
+  };
+}
+const TS = KEYS.map(k => k[0]);
+const CURVES = { pos: [0, 1, 2].map(k => pchip(TS, KEYS.map(K_ => K_[1].pos[k]))), tgt: [0, 1, 2].map(k => pchip(TS, KEYS.map(K_ => K_[1].tgt[k]))), fov: pchip(TS, KEYS.map(K_ => K_[1].fov)) };
 function camera(t) {
-  let i = 0; while (i < KEYS.length - 2 && t > KEYS[i + 1][0]) i++;
-  const [ta, A] = KEYS[i], [tb, B] = KEYS[i + 1], e = smooth(clamp((t - ta) / (tb - ta)));
-  const L = (a, b) => a.map((v, k) => lerp(v, b[k], e));
-  return { pos: L(A.pos, B.pos), tgt: L(A.tgt, B.tgt), fov: lerp(A.fov, B.fov, e) };
+  return { pos: CURVES.pos.map(f => f(t)), tgt: CURVES.tgt.map(f => f(t)), fov: CURVES.fov(t) };
 }
 const cam = new THREE.PerspectiveCamera(20, W / H, 1, 800);
-const comp = makeComposer(ctx, cam, { ao: true, aoRadius: 0.5, aoDist: 0.3, bloom: 0.5, bloomRadius: 0.45, bloomThreshold: 0.86, vig: 0.2, grain: 0.012, tilt: { focus: 0.56, band: 0.26, amount: 2.0 }, edge: 0.11, paper: '#F7F0E2' });
+const comp = makeComposer(ctx, cam, { ao: true, aoRadius: 0.5, aoDist: 0.3, bloom: 0.5, bloomRadius: 0.45, bloomThreshold: 0.86, vig: 0.28, grain: 0.014, sat: 1.12, con: 1.08, tilt: { focus: 0.56, band: 0.26, amount: 2.0 }, edge: 0.11, paper: '#F7F0E2' });
 const PASS = n => comp.passes.filter(p => p.constructor.name === n);
 const [GTAO] = PASS('GTAOPass'), [BLOOM] = PASS('UnrealBloomPass'), AO_FULL = GTAO.blendIntensity;
 const TILT = comp.passes.filter(p => p.uniforms && p.uniforms.focus);
+const GRADE = comp.passes.find(p => p.uniforms && p.uniforms.vig);
 
 // ---------- 字幕层（DOM 叠在画布上，一起截图） ----------
 const $ = id => document.getElementById(id);
@@ -93,14 +116,14 @@ function overlay(t) {
     $('count').innerHTML = `${c[2]} / 05`;
   }
   // 片名：第 0 帧就在，倒带结尾回来
-  const showT = t < 3.8 || t > 19.6;
+  const showT = t < 3.8;
   $('title').innerHTML = showT ? `<div style="font:900 64px/1 NotoSC">微缩景观</div><div style="font:800 22px Inter;letter-spacing:.32em;margin-top:10px">DIORAMA · 018</div>` : '';
   // 结尾：片名在画面中间升起，台灯关掉后落下去
-  const fin = t > 16.7 && t < 19.2;
-  const down = clamp((t - 18.75) / 0.3);
-  $('finale').innerHTML = fin ? `<div class="line"><span style="${rise(t, 16.8, 0.35)};${down ? `transform:translateY(${down * 110}%)` : ''};font:900 132px/1.1 NotoSC;color:#FFFDF7;text-shadow:0 6px 30px #3B355255">微缩景观</span></div>
-    <div class="line"><span style="${rise(t, 17.0, 0.35)};${down ? `transform:translateY(${down * 110}%)` : ''};font:800 30px Inter;letter-spacing:.4em;color:#FFFDF7">DIORAMA · 把世界放上桌面</span></div>
-    <div class="line" style="margin-top:34px"><span style="${rise(t, 17.3, 0.35)};${down ? `transform:translateY(${down * 110}%)` : ''};font:700 28px NotoSC;letter-spacing:.5em;color:#FFFDF7">观默</span></div>` : '';
+  const fin = t > 16.4;
+  const down = 0;   // 第三版：片名和署名一直留到最后一帧
+  $('finale').innerHTML = fin ? `<div class="line"><span style="${rise(t, 16.5, 0.4)};${down ? `transform:translateY(${down * 110}%)` : ''};font:900 132px/1.1 NotoSC;color:#FFFDF7;text-shadow:0 6px 30px #3B355255">微缩景观</span></div>
+    <div class="line"><span style="${rise(t, 16.7, 0.4)};${down ? `transform:translateY(${down * 110}%)` : ''};font:800 30px Inter;letter-spacing:.4em;color:#FFFDF7">DIORAMA · 把世界放上桌面</span></div>
+    <div class="line" style="margin-top:34px"><span style="${rise(t, 17.0, 0.4)};${down ? `transform:translateY(${down * 110}%)` : ''};font:700 28px NotoSC;letter-spacing:.5em;color:#FFFDF7">观默</span></div>` : '';
   // 第 4 章：整屏的“洞”收成一部手机，外面是纸
   const e = smooth(clamp((t - 11.3) / 0.6)) * (1 - smooth(clamp((t - 13.95) / 0.5)));
   const SC = W / 1920, pw = lerp(W + 40, 470 * SC, e), ph = lerp(H + 40, 940 * SC, e), r = lerp(0, 62 * SC, e);
@@ -131,20 +154,27 @@ const tOn = K.emissive.map((m, i) => 14.45 + ((i * 7) % 13) / 13 * 0.9);
 window.renderFrame = (f, fps = 30) => {
   const t = f / fps;
   // 街角在倒带段用“倒回去的本地时间”，其他场景照常
-  const tl = rewind(t);
+  const tl = t;
   K.update(tl);
   (K.hooks || []).forEach(h => h(tl));
   // 天色：15.0 黄昏 → 15.6 入夜；倒带时退回白天
-  const nightT = t > REW0 ? lerp(18.9, 13.9, smooth(clamp((t - REW0) / 0.8))) : t;
+  const nightT = t;
   const dusk = smooth(clamp((nightT - 14.2) / 0.5)), night = smooth(clamp((nightT - 14.6) / 0.6));
-  const off = t > 18.6 && t < REW0 + 0.05 ? smooth(clamp((t - 18.6) / 0.08)) : 0;   // 结尾：台灯关掉
+  const off = smooth(clamp((t - 18.5) / 0.1));   // 结尾：台灯关掉
   sky([0, 1, 2].map(i => '#' + lerpC(lerpC(DAY[i], DUSK[i], dusk), NIGHT[i], night).getHexString()));
-  SUN.color.copy(lerpC(lerpC('#FFF3E0', '#FFC08A', dusk), '#C9B4FF', night)); SUN.intensity = (3.0 - 0.6 * dusk - 0.7 * night) * (1 - 0.7 * off);
-  HEMI.intensity = (1.25 - 0.1 * dusk - 0.15 * night) * (1 - 0.5 * off); HEMI.color.copy(lerpC('#E6F0FF', '#B9A8E8', night));
-  K.emissive.forEach((m, i) => { const on = smooth(clamp((nightT - tOn[i]) / 0.12)) * (1 - off); m.emissiveIntensity = m.userData.base * (0.35 + on * 2.2); });
-  const lamp = smooth(clamp((nightT - 14.8) / 0.15)) * (1 - off);
-  K.lamps.forEach(l => l.intensity = 30 * lamp); if (K.spot) K.spot.intensity = 45 * lamp;
-  BLOOM.strength = 0.08 + 0.4 * night * (1 - 0.6 * off); BLOOM.threshold = 0.95 - 0.1 * night;
+  // 夜：月光偏蓝紫、天光压暗，让暖色的窗、彩灯、路灯成为画面里最亮的东西（动画电影的夜景）
+  SUN.color.copy(lerpC(lerpC('#FFE6C4', '#FFB27A', dusk), '#8F9BFF', night)); SUN.intensity = (3.8 - 0.6 * dusk - 2.7 * night) * (1 - 0.35 * off);
+  HEMI.intensity = (0.6 - 0.05 * dusk - 0.3 * night) * (1 - 0.3 * off); HEMI.color.copy(lerpC('#DDE8FF', '#7D74D8', night)); HEMI.groundColor.copy(lerpC('#E9C9A6', '#5E4A78', night));
+  GRADE.uniforms.vig.value = 0.28 + 0.22 * night;
+  window.__table.material.color.copy(lerpC('#FFFFFF', '#FFC4DA', night));   // 桌面入夜偏粉：月光的蓝 × 粉 = 第二版的薰衣草夜色
+  { const pc = lerpC('#F7F0E2', '#F1E6EE', night); GRADE.uniforms.paper.value.set(pc.r, pc.g, pc.b); }   // 纸屑边入夜也染一点薰衣草
+  RIM.color.copy(lerpC('#FFD6EC', '#B7C4FF', night)); RIM.intensity = 1.3 + 0.6 * night;
+  scene.environmentIntensity = 0.3 * (1 - 0.5 * night) * (1 - 0.3 * off);
+  // 第三版：关灯只关房间的落地灯；小彩灯、窗户、路灯继续亮，结尾停在一间被小彩灯照着的房间
+  K.emissive.forEach((m, i) => { const on = smooth(clamp((nightT - tOn[i]) / 0.18)) * (m.userData.lamp ? 1 - off : 1); m.emissiveIntensity = m.userData.base * (0.35 + on * 3.0); });
+  const lamp = smooth(clamp((nightT - 14.8) / 0.2));
+  K.lamps.forEach(l => l.intensity = 42 * lamp * (l.userData.lamp ? 1 - off : 1)); if (K.spot) K.spot.intensity = 45 * lamp;
+  BLOOM.strength = 0.08 + 0.62 * night; BLOOM.threshold = 0.95 - 0.17 * night;
   // 镜头 + 阴影框跟着镜头看的地方走
   const C = camera(t);
   let thump = 0;
@@ -154,14 +184,18 @@ window.renderFrame = (f, fps = 30) => {
   const hx = smooth(clamp((t - 11.3) / 0.6)) * (1 - smooth(clamp((t - 13.95) / 0.5)));   // 第 4 章：画面往右挪，让模型落在手机屏幕里
   if (hx > 0) cam.setViewOffset(W, H, -330 * hx * W / 1920, 0, W, H); else cam.clearViewOffset();
   cam.updateProjectionMatrix();
-  const wide = t > 11.5 && t < 17.4 ? 1 : 0, S = wide && t > 14.2 ? 70 : 24;
-  SUN.target.position.set(C.tgt[0], 0, C.tgt[2]); SUN.position.set(C.tgt[0] - 26, 44, C.tgt[2] + 18);
+  // 第三版：所有开关都做成平滑过渡（原来是 0/1 硬切，移轴和阴影会“跳”一下）
+  const wide = smooth(clamp((t - 11.2) / 0.7)) * (1 - smooth(clamp((t - 16.4) / 1.6)));
+  const S = lerp(24, 70, smooth(clamp((t - 13.9) / 0.9)) * (1 - smooth(clamp((t - 16.4) / 1.4))));
+  SUN.target.position.set(C.tgt[0], 0, C.tgt[2]); SUN.position.set(C.tgt[0] - 36, 30, C.tgt[2] + 4);   // 低一点的太阳：影子长，像傍晚前的金色时刻
+  RIM.target.position.set(C.tgt[0], 0, C.tgt[2]); RIM.position.set(C.tgt[0] - 20, 22, C.tgt[2] - 40);
   Object.assign(SUN.shadow.camera, { left: -S, right: S, top: S, bottom: -S, near: 1, far: 160 }); SUN.shadow.camera.updateProjectionMatrix();
   // 移轴：第 3 章里先关掉，“咔”一下打开（规则演示）；远景时减弱
-  const demo = t > 7.8 && t < 11.2 ? smooth(clamp((t - 8.75) / 0.25)) : 1;
-  TILT.forEach(p => { p.uniforms.amount.value = 2.0 * demo * (1 - 0.6 * wide) + (t > 7.8 && t < 11.2 ? 1.4 * demo : 0); p.uniforms.band.value = 0.26 - (t > 7.8 && t < 11.2 ? 0.08 * demo : 0); });
+  const inCh3 = smooth(clamp((t - 7.45) / 0.35)) * (1 - smooth(clamp((t - 11.0) / 0.5))), demo = smooth(clamp((t - 8.75) / 0.25));
+  const amt = lerp(2.0 * (1 - 0.6 * wide), 3.4 * demo, inCh3), band = lerp(0.26, 0.26 - 0.08 * demo, inCh3);
+  TILT.forEach(p => { p.uniforms.amount.value = amt; p.uniforms.band.value = band; });
   // GTAO：底座拼装时关（大平板掠射角会出方形空洞）
-  GTAO.enabled = t > 0.7 && t < REW0 + 0.2; GTAO.blendIntensity = AO_FULL * smooth(clamp((t - 0.7) / 0.4));
+  GTAO.enabled = t > 0.7 && Q.get('ao') !== '0'; GTAO.blendIntensity = AO_FULL * smooth(clamp((t - 0.7) / 0.4));
   overlay(t);
   comp.render();
   return true;
