@@ -19,13 +19,13 @@ By Guanmo [@guanmo_ai](https://x.com/guanmo_ai)
 <table>
   <tr>
     <td align="center" valign="top" width="33%">
-      <a href="https://guanmo-ai.github.io/design-style/?lang=en#work-019-low-poly"><img src="styles/019-low-poly/video/cover.jpg" width="240" alt="Low Poly film cover" /></a><br />
-      <a href="https://guanmo-ai.github.io/design-style/?lang=en#work-019-low-poly"><b>Low Poly</b></a><br />
+      <a href="https://guanmo-ai.github.io/design-style/?lang=en#work-018-diorama"><img src="styles/018-diorama/video/cover.jpg" width="240" alt="Diorama film cover" /></a><br />
+      <a href="https://guanmo-ai.github.io/design-style/?lang=en#work-018-diorama"><b>Diorama</b></a><br />
       <sub>20 seconds</sub>
     </td>
     <td align="center" valign="top" width="33%">
-      <a href="https://guanmo-ai.github.io/design-style/?lang=en#work-018-diorama"><img src="styles/018-diorama/video/cover.jpg" width="240" alt="Diorama film cover" /></a><br />
-      <a href="https://guanmo-ai.github.io/design-style/?lang=en#work-018-diorama"><b>Diorama</b></a><br />
+      <a href="https://guanmo-ai.github.io/design-style/?lang=en#work-019-low-poly"><img src="styles/019-low-poly/video/cover.jpg" width="240" alt="Low Poly film cover" /></a><br />
+      <a href="https://guanmo-ai.github.io/design-style/?lang=en#work-019-low-poly"><b>Low Poly</b></a><br />
       <sub>20 seconds</sub>
     </td>
     <td align="center" valign="top" width="33%">

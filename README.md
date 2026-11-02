@@ -7,14 +7,14 @@
 <table>
   <tr>
     <td align="center" valign="top" width="33%">
-      <a href="https://guanmo-ai.github.io/design-style/?lang=zh#work-019-low-poly"><img src="styles/019-low-poly/video/cover.jpg" width="240" alt="低多边形 视频封面" /></a><br />
-      <a href="https://guanmo-ai.github.io/design-style/?lang=zh#work-019-low-poly"><b>低多边形</b></a><br />
-      <sub>Low Poly · 20 秒</sub>
-    </td>
-    <td align="center" valign="top" width="33%">
       <a href="https://guanmo-ai.github.io/design-style/?lang=zh#work-018-diorama"><img src="styles/018-diorama/video/cover.jpg" width="240" alt="微缩景观 视频封面" /></a><br />
       <a href="https://guanmo-ai.github.io/design-style/?lang=zh#work-018-diorama"><b>微缩景观</b></a><br />
       <sub>Diorama · 20 秒</sub>
+    </td>
+    <td align="center" valign="top" width="33%">
+      <a href="https://guanmo-ai.github.io/design-style/?lang=zh#work-019-low-poly"><img src="styles/019-low-poly/video/cover.jpg" width="240" alt="低多边形 视频封面" /></a><br />
+      <a href="https://guanmo-ai.github.io/design-style/?lang=zh#work-019-low-poly"><b>低多边形</b></a><br />
+      <sub>Low Poly · 20 秒</sub>
     </td>
     <td align="center" valign="top" width="33%">
       <a href="https://guanmo-ai.github.io/design-style/?lang=zh#work-014-liquid-glass"><img src="styles/014-liquid-glass/video/cover.jpg" width="240" alt="液态玻璃 视频封面" /></a><br />
