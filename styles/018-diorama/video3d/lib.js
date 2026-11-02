@@ -8,7 +8,36 @@ import { ShaderPass } from 'three/addons/postprocessing/ShaderPass.js';
 import { OutputPass } from 'three/addons/postprocessing/OutputPass.js';
 import { SMAAPass } from 'three/addons/postprocessing/SMAAPass.js';
 import { mergeGeometries } from 'three/addons/utils/BufferGeometryUtils.js';
+import { RoundedBoxGeometry } from 'three/addons/geometries/RoundedBoxGeometry.js';
+import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
 export { THREE, mergeGeometries };
+
+// 圆角方块（第三版：像 3D 动画电影里的道具，边都是软的）。半径默认取短边的 28%，最大 0.14。
+export function rbox(w, h, d, r, seg = 2) {
+  const rr = Math.min(r ?? 0.14, Math.min(w, h, d) * 0.28);
+  if (rr < 0.012) return new THREE.BoxGeometry(w, h, d);
+  return new RoundedBoxGeometry(w, h, d, seg, rr);
+}
+// 软团子：平滑的二十面体球，顶点轻轻抖一下，法线重新平滑——树冠、灌木、云、豆袋
+export function blob(r = 1, seed = 1, wob = 0.08, detail = 2) {
+  const g = new THREE.IcosahedronGeometry(r, detail);
+  const R = rng(seed), p = g.attributes.position, map = new Map();
+  for (let i = 0; i < p.count; i++) {
+    const k = `${p.getX(i).toFixed(3)},${p.getY(i).toFixed(3)},${p.getZ(i).toFixed(3)}`;
+    if (!map.has(k)) map.set(k, 1 + (R() - .5) * wob * 2);
+    const s = map.get(k); p.setXYZ(i, p.getX(i) * s, p.getY(i) * s, p.getZ(i) * s);
+  }
+  const m = mergeVerts(g); m.computeVertexNormals(); return m;
+}
+function mergeVerts(g) {   // 二十面体是不共享顶点的：合并后法线才是平滑的
+  const p = g.attributes.position, map = new Map(), pos = [], idx = [];
+  for (let i = 0; i < p.count; i++) {
+    const k = `${p.getX(i).toFixed(4)},${p.getY(i).toFixed(4)},${p.getZ(i).toFixed(4)}`;
+    if (!map.has(k)) { map.set(k, pos.length / 3); pos.push(p.getX(i), p.getY(i), p.getZ(i)); }
+    idx.push(map.get(k));
+  }
+  const o = new THREE.BufferGeometry(); o.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3)); o.setIndex(idx); return o;
+}
 
 // 可复现的随机数
 export function rng(seed = 1) {
@@ -46,7 +75,8 @@ export function lowpoly(geo, amount = 0, seed = 1) {
   return g;
 }
 
-export const mat = (color, o = {}) => new THREE.MeshStandardMaterial({ color, flatShading: true, roughness: o.rough ?? 0.85, metalness: o.metal ?? 0, emissive: o.emissive ?? 0x000000, emissiveIntensity: o.ei ?? 1, transparent: !!o.opacity, opacity: o.opacity ?? 1, vertexColors: !!o.vc });
+// 第三版：默认平滑着色、偏柔的粗糙度（像上了一层哑光漆的黏土 / 树脂模型）；flat: true 才回到硬面
+export const mat = (color, o = {}) => new THREE.MeshStandardMaterial({ color, flatShading: !!o.flat, roughness: o.rough ?? 0.62, metalness: o.metal ?? 0, emissive: o.emissive ?? 0x000000, emissiveIntensity: o.ei ?? 1, transparent: !!o.opacity, opacity: o.opacity ?? 1, vertexColors: !!o.vc });
 
 export function mesh(geo, material, { cast = true, receive = true } = {}) {
   const m = new THREE.Mesh(geo, material); m.castShadow = cast; m.receiveShadow = receive; return m;
@@ -59,16 +89,18 @@ const TiltShift = {
   fragmentShader: `uniform sampler2D tDiffuse; uniform vec2 res; uniform vec2 dir; uniform float focus, band, amount; varying vec2 vUv;
   void main(){ float d = max(0., abs(vUv.y - focus) - band); float r = clamp(d * amount, 0., 1.) * 6.;
     vec4 c = vec4(0.); float w = 0.;
-    for (int i = -6; i <= 6; i++) { float t = float(i); float k = exp(-t*t/(2.*max(r,.001)*max(r,.001)+.0001)); c += texture2D(tDiffuse, vUv + dir * t * r / res * 1.6) * k; w += k; }
+    for (int i = -12; i <= 12; i++) { float t = float(i) * .5; float k = exp(-t*t/(2.*max(r,.001)*max(r,.001)+.0001)); c += texture2D(tDiffuse, vUv + dir * t * r / res * 1.6) * k; w += k; }
     gl_FragColor = c / w; }`,
 };
 // 暗角 + 胶片颗粒 + 轻微调色
 const Grade = {
-  uniforms: { tDiffuse: { value: null }, vig: { value: 0.35 }, grain: { value: 0.035 }, lift: { value: new THREE.Vector3(0, 0, 0) }, seed: { value: 1.0 }, edge: { value: 0 }, paper: { value: new THREE.Vector3(0.97, 0.94, 0.87) }, aspect: { value: 16 / 9 } },
+  uniforms: { tDiffuse: { value: null }, vig: { value: 0.35 }, grain: { value: 0.035 }, lift: { value: new THREE.Vector3(0, 0, 0) }, seed: { value: 1.0 }, edge: { value: 0 }, paper: { value: new THREE.Vector3(0.97, 0.94, 0.87) }, aspect: { value: 16 / 9 }, sat: { value: 1.0 }, con: { value: 1.0 } },
   vertexShader: 'varying vec2 vUv; void main(){ vUv=uv; gl_Position=projectionMatrix*modelViewMatrix*vec4(position,1.); }',
-  fragmentShader: `uniform sampler2D tDiffuse; uniform float vig, grain, seed, edge, aspect; uniform vec3 lift, paper; varying vec2 vUv;
+  fragmentShader: `uniform sampler2D tDiffuse; uniform float vig, grain, seed, edge, aspect, sat, con; uniform vec3 lift, paper; varying vec2 vUv;
   float h(vec2 p){ return fract(sin(dot(p, vec2(12.9898,78.233)) + seed) * 43758.5453); }
   void main(){ vec4 c = texture2D(tDiffuse, vUv); vec2 q = vUv - .5; float v = 1. - vig * dot(q, q) * 2.2;
+    float L = dot(c.rgb, vec3(.2126, .7152, .0722)); c.rgb = mix(vec3(L), c.rgb, sat);   // 调色：饱和度 + 以中灰为轴的对比
+    c.rgb = clamp((c.rgb - .45) * con + .45, 0., 1.);
     c.rgb = c.rgb * v + lift; c.rgb += (h(vUv * 1000.) - .5) * grain;
     if (edge > 0.) {   // 画面边缘碎成纸屑点：圆角矩形距离 + 像素噪声阈值
       vec2 p = (vUv - .5) * vec2(aspect, 1.); vec2 b = vec2(aspect * .5 - edge, .5 - edge * .8);
@@ -78,15 +110,20 @@ const Grade = {
     gl_FragColor = c; }`,
 };
 
-export function setup({ W = 1920, H = 1080, pr = 2, bg = '#bcd', exposure = 1.0, tone = 'neutral' } = {}) {
+export function setup({ W = 1920, H = 1080, pr = 2, bg = '#bcd', exposure = 1.0, tone = 'neutral', env = 0 } = {}) {
   const renderer = new THREE.WebGLRenderer({ antialias: false, preserveDrawingBuffer: true });
   renderer.setPixelRatio(pr); renderer.setSize(W, H);
   renderer.shadowMap.enabled = true; renderer.shadowMap.type = THREE.PCFSoftShadowMap;
-  renderer.toneMapping = tone === 'aces' ? THREE.ACESFilmicToneMapping : THREE.NeutralToneMapping;   // Neutral 不洗色，适合玩具般的纯色 renderer.toneMappingExposure = exposure;
+  renderer.toneMapping = tone === 'aces' ? THREE.ACESFilmicToneMapping : tone === 'agx' ? THREE.AgXToneMapping : THREE.NeutralToneMapping;   // Neutral 不洗色，适合玩具般的纯色
+  renderer.toneMappingExposure = exposure;
   renderer.outputColorSpace = THREE.SRGBColorSpace;
   document.body.appendChild(renderer.domElement);
   renderer.domElement.style.cssText = `width:${W}px;height:${H}px;display:block`;
   const scene = new THREE.Scene(); scene.background = new THREE.Color(bg);
+  if (env) {   // 摄影棚环境光：软的高光和反光，3D 动画电影的“塑料 / 漆面”质感靠它
+    const pm = new THREE.PMREMGenerator(renderer);
+    scene.environment = pm.fromScene(new RoomEnvironment(), 0.04).texture; scene.environmentIntensity = env;
+  }
   return { renderer, scene, W, H, pr };
 }
 
@@ -95,7 +132,7 @@ export function finish(ctx, camera, opts = {}) {
   window.__done = true;
 }
 
-export function makeComposer(ctx, camera, { ao = true, aoRadius = 0.6, aoDist = 0.25, bloom = 0, bloomRadius = 0.5, bloomThreshold = 0.85, tilt = null, vig = 0.35, grain = 0.03, lift = [0, 0, 0], edge = 0, paper = '#F7F0E2' } = {}) {
+export function makeComposer(ctx, camera, { ao = true, aoRadius = 0.6, aoDist = 0.25, bloom = 0, bloomRadius = 0.5, bloomThreshold = 0.85, tilt = null, vig = 0.35, grain = 0.03, lift = [0, 0, 0], edge = 0, paper = '#F7F0E2', sat = 1, con = 1 } = {}) {
   const { renderer, scene, W, H, pr } = ctx;
   const comp = new EffectComposer(renderer);
   comp.setPixelRatio(pr); comp.setSize(W, H);
@@ -117,7 +154,7 @@ export function makeComposer(ctx, camera, { ao = true, aoRadius = 0.6, aoDist = 
       comp.addPass(p);
     }
   }
-  const gr = new ShaderPass(Grade); gr.uniforms.vig.value = vig; gr.uniforms.grain.value = grain; gr.uniforms.lift.value.set(...lift); gr.uniforms.edge.value = edge; gr.uniforms.aspect.value = W / H;
+  const gr = new ShaderPass(Grade); gr.uniforms.vig.value = vig; gr.uniforms.grain.value = grain; gr.uniforms.lift.value.set(...lift); gr.uniforms.edge.value = edge; gr.uniforms.aspect.value = W / H; gr.uniforms.sat.value = sat; gr.uniforms.con.value = con;
   { const pc = new THREE.Color(paper); gr.uniforms.paper.value.set(pc.r, pc.g, pc.b); }
   comp.addPass(gr);
   comp.addPass(new SMAAPass(W * pr, H * pr));

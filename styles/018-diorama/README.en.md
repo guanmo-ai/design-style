@@ -65,9 +65,12 @@ Chinese: **Noto Sans SC** Black · Latin: **Inter** 800. Labels are white on ink
 Released film: **1920×1080 · 30 fps · 600 frames · 20 seconds**. `tokens.json` and `process/timeline.json` describe this version; 60 fps is an optional render.
 
 - Camera: long lens, fov 20—24°, about 30° from above; each chapter is the next base on the same table and the camera slides across
-- Light: one warm sun (PCF soft shadows) + hemisphere light; GTAO switched on after the base is built; light bloom
+- Camera path: a monotone cubic spline through the key frames, so velocity is continuous and the camera never stops and starts
+- Shapes (v3): every block has rounded corners and smooth shading; tree crowns, bushes and clouds are soft clustered spheres; big-headed little people; the bases sit on a paper-covered table
+- Light (cinematic): low warm key for long shadows, cool sky fill, pink rim light from behind, studio environment map; GTAO after the base is built; stronger bloom at night so warm windows and string lights are the brightest things
+- Secondary motion: trees and clouds sway, birds nod, people breathe and walk, cocoa steams, the windmill turns, ducks bob
 - Tilt-shift: sharp band at 56% of frame height, 26% wide, max blur 2.0; snaps on at 8.75 s as a before/after demo
-- Signature physics `slam`: free fall 60%, squash 16%, rebound from the base with `easeOutBack(s = 1.2)`; a puff of dust on landing
+- Signature physics `slam`: free fall 60% (stretching as it falls), squash 16%, then a damped wobble that settles in 1.5 shakes, scaled from the base; rises and pops use an underdamped spring (≈5% overshoot, volume-preserving); a soft puff of dust on landing
 - Thousands of instanced blocks (tiles, planks, bricks, terrain columns), each with its own start, duration and type (slam / slide / flip / pop)
 - Camera "thump": the camera dips and rebounds on each base's first landing
 
@@ -85,10 +88,9 @@ Released film: **1920×1080 · 30 fps · 600 frames · 20 seconds**. `tokens.jso
 | 7.8—11.2 | 03 Model railway | Terrain stacks into a hill, lake flips in, trees pop, sleepers drop, the train runs; tilt-shift snaps on at 8.75 s | Tilt-shift = small |
 | 11.2—14.2 | 04 On screen | The frame closes into a phone; the street is the app; furniture toggle cards pop up | The room is the remote |
 | 14.2—16.4 | 05 Night | Pull back to all three bases; sky turns peach and lavender; windows and street lamps light up | Warm light = someone lives here |
-| 16.4—19.0 | Finale | Push into the room's window; title rises with the creator's byline; the lamp clicks off at 18.6 s | — |
-| 19.0—20.0 | Rewind | Tape stop; every piece flies back up; frame 20 s = frame 0 | — |
+| 16.4—20.0 | Finale | Slow push into the room; full F-major tutti at 16 s, title at 16.5 s, byline at 17 s; the lamp clicks off at 18.5 s and the room rests in string lights and moonlight while the music fades | — |
 
-Music: F major, 120 BPM, synthesised in numpy — marimba and pizzicato groove, piano theme, choir and celesta at night, string tutti for the title.
+Music (v3): one unbroken F-major cue at 120 BPM, synthesised in numpy — a flowing harp arpeggio underneath the whole film, voice-led legato strings, one melody passed from felt piano to violins to celesta and the final tutti, a borrowed Bb → Bbm6 at nightfall; every build sound is tuned to the current chord.
 
 ## 8 · Files & commands
 

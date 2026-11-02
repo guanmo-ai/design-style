@@ -16,6 +16,21 @@
 
 ## 待办
 
+### 018 · 微缩景观第三版：主人审片通过后，显卡渲 60fps 正片并发布（2026-11-02）
+
+主人反馈“音效和 BGM 不流畅、要丝滑；往电影感 / 顶尖动画电影靠；细节少、建筑僵硬、要圆润”。Claude 已在分支 `claude/diorama-audio-style-polish-cppqt4` 改完画面（圆角平滑造型、电影布光、桌面、几十件带二级动画的小道具、样条镜头、去掉倒带的结尾）和配乐（整首重写），并在云端用软件渲染出 30fps 审片版交给主人。改动说明见 `styles/018-diorama/PROCESS.md` 第 3.5 节。**Codex 只执行渲染和发布，不改设计：**
+
+1. 等主人确认第三版审片通过（这里会更新）。
+2. 在 Mac 上用显卡渲 60fps 正片（同一时间轴，每一帧是时间的纯函数）：
+   `cd styles/018-diorama/video3d && npm i && node --test geometry.test.mjs`
+   `ANGLE_BACKEND=metal PR=1 node render.cjs episode.html out 0 1199 1920 1080 60`
+   `python3 ../audio/make_music.py out/events.json out/music.wav`
+   `ffmpeg -framerate 60 -i out/f%04d.png -i out/music.wav -c:v libx264 -crf 16 -pix_fmt yuv420p -c:a aac -b:a 256k -shortest 018-diorama.mp4`
+   画面与云端 30fps 审片版对比（同一秒数抽帧）；有差异记在这里，由 Claude 修代码。
+3. 经 `release-assets/day-18-v3/` 发布新 Release `day-18-v3`（成片 + 完整项目源码 ZIP + SHA256SUMS），旧 `day-18-flicker-v2` 保留回退。
+4. 画廊：`works.json` 里 018 的 `release`、`sha256` 换成新版本，期号仍是「风格 010」；`tokens.json` 的 `motion` / `video` 改成 60fps / 1200 帧，`process/timeline.json` 的帧号按 60fps 翻倍；README / PROCESS（中英）顶部的 Release 链接换成 `day-18-v3`；封面换成新版第 0 帧（`video3d/cover.jpg` 与 `video/cover.jpg` 字节一致）。
+
+
 ### 015 · 未来主义：审片通过后发布（2026-10-28）
 
 这一期全片是 SVG、不需要显卡，正片由 Claude 在云端渲（`npm run render:015`，约十几分钟），推到 `review-renders` 分支的 `015/` 并自审。**Codex 只负责发布**：
