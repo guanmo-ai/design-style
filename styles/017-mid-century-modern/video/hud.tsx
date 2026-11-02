@@ -6,6 +6,7 @@ import React from 'react';
 import {C, FONT, PAPER} from '../tokens';
 import {ease, prog} from './motion';
 import {focusAt, sheetEdge} from './film';
+import {GEO} from './geo';
 import {AT, H, W} from './timeline';
 
 type Credit = {n: string; field: string; who: string; work: string; year: string; trick: string; at: number; to: number};
@@ -70,20 +71,23 @@ const LIGHT = {ink: C.ink, soft: C.mute, accent: C.red};
 const DARK = {ink: C.paper, soft: '#E6EEFF', accent: C.sun};
 const tone = (bg: string) => (bg === C.paper ? LIGHT : DARK);
 
-/** 换章时，新纸的边缘扫过外框：边缘右边按新纸的颜色写字，左边按旧纸 */
+/** 换章时，新纸扫过外框：纸盖住的地方按新纸的颜色写字，其余按旧纸 */
 export const Hud: React.FC<{t: number}> = ({t}) => {
   const s = sheetEdge(t);
   const right = tone(s.bg);
   const left = tone(s.under);
-  if (s.x <= 0 || right === left) return <Frame t={t} {...right} />;
+  if (s.done || right === left) return <Frame t={t} {...right} />;
   return (
     <>
       <defs>
-        <clipPath id="hud-l"><rect x={-10} y={-10} width={Math.max(0, s.x + 10)} height={H + 20} /></clipPath>
-        <clipPath id="hud-r"><rect x={s.x} y={-10} width={W + 20} height={H + 20} /></clipPath>
+        <clipPath id="hud-sheet"><path d={GEO.sheet} transform={s.tf} /></clipPath>
+        <mask id="hud-rest" maskUnits="userSpaceOnUse" x={-10} y={-10} width={W + 20} height={H + 20}>
+          <rect x={-10} y={-10} width={W + 20} height={H + 20} fill="#fff" />
+          <path d={GEO.sheet} transform={s.tf} fill="#000" />
+        </mask>
       </defs>
-      <g clipPath="url(#hud-l)"><Frame t={t} {...left} /></g>
-      <g clipPath="url(#hud-r)"><Frame t={t} {...right} /></g>
+      <g mask="url(#hud-rest)"><Frame t={t} {...left} /></g>
+      <g clipPath="url(#hud-sheet)"><Frame t={t} {...right} /></g>
     </>
   );
 };

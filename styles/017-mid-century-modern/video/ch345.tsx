@@ -158,18 +158,18 @@ const STRIPS = 16;
 const stripLand = (k: number) => AT.app + 46 + 1.5 * k;
 const stripH = (k: number) => 0.45 + 0.55 * Math.abs(Math.sin(k * 1.7) * 0.7 + Math.sin(k * 0.6) * 0.3);
 const PLAY = {x: 960, y: 820};
-const PRESS = AT.app + 84;
+const PRESS = AT.app + 75;
 export const playPose = (t: number): Pose | null => {
-  const p = ui(t, AT.app + 56, PLAY.x, PLAY.y);
+  const p = ui(t, AT.app + 50, PLAY.x, PLAY.y);
   if (!p) return null;
   let h = 12;
   if (t >= PRESS - 4) h = lerp(12, 0, ease.in2(prog(t, PRESS - 4, 4)));
   if (t >= PRESS + 4) h = 12 + 6 * Math.sin(Math.PI * prog(t, PRESS + 4, 10)) * (1 - prog(t, PRESS + 4, 10)) + 0;
-  return {...p, h: t < AT.app + 56 ? p.h : h};
+  return {...p, h: t < AT.app + 50 ? p.h : h};
 };
 export const appHand = (t: number): Pose | null => {
-  if (t < AT.app + 64) return null;
-  const e = ease.out(prog(t, AT.app + 64, 14));
+  if (t < AT.app + 54) return null;
+  const e = ease.out(prog(t, AT.app + 54, 14));
   let x = lerp(2300, PLAY.x + 6, e);
   let y = lerp(1250, PLAY.y + 4, e);
   let h = 30;
@@ -209,7 +209,7 @@ export const Ch05: React.FC<{t: number}> = ({t}) => {
       })}
       {play && <Piece d={GEO.play} fill={C.red} p={play} />}
       {play && <Body parts={[{d: GEO.tri, fill: C.paper}]} p={{...play, x: play.x + 4}} />}
-      <Year g={GEO.y2026} t={t} t0={AT.app + 60} x={120} y={1010} fill={C.paper} />
+      <Year g={GEO.y2026} t={t} t0={AT.app + 56} x={120} y={1010} fill={C.paper} />
     </>
   );
 };
@@ -244,7 +244,7 @@ export const pts345 = (t: number): (Pose | null)[] => {
   for (let i = 0; i < 4; i++) {
     out.push(yearPose(GEO.y1956, i, t, AT.record + 52, 1300, 1010));
     out.push(yearPose(GEO.y1960, i, t, AT.house + 52, 130, 1010));
-    out.push(yearPose(GEO.y2026, i, t, AT.app + 60, 120, 1010));
+    out.push(yearPose(GEO.y2026, i, t, AT.app + 56, 120, 1010));
   }
   return out;
 };
