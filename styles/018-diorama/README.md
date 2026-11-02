@@ -4,7 +4,7 @@
 
 > **一句话：** 把世界切成一块底座，一块块搭出来，再用移轴把它变小。
 
-🎬 [看视频（Release `day-18-flicker-v2`）](https://github.com/guanmo-ai/design-style/releases/tag/day-18-flicker-v2)· 🛠 [制作过程](PROCESS.md) · 🎞 [分镜](video3d/STORYBOARD.md)
+🎬 [看视频（Release `day-18-v3`）](https://github.com/guanmo-ai/design-style/releases/tag/day-18-v3)· 🛠 [制作过程](PROCESS.md) · 🎞 [分镜](video3d/STORYBOARD.md)
 
 | 海报 | 速查卡 |
 |:-:|:-:|
@@ -69,9 +69,9 @@
 
 ## 5 · 参数
 
-**已发布视频：1920×1080 · 30fps · 600 帧 · 20 秒 · 120 BPM，three.js 渲染。**
+**已发布视频：1920×1080 · 60fps · 1200 帧 · 20 秒 · 120 BPM，three.js 渲染。**
 
-`tokens.json` 与 `process/timeline.json` 记录发布版规格；60fps 可按下方命令另行渲染。
+`tokens.json` 与 `process/timeline.json` 记录 60fps 发布版规格，复现命令见下方。
 - 镜头：长焦 fov 20—24°，俯视约 30°，每章是桌上同一排底座里的下一块，镜头横移过去；镜头走单调三次样条，经过关键帧时速度连续（不再一停一顿）
 - 造型：所有方块是圆角（半径取短边的 28%，最大 0.14）、平滑着色；树冠、灌木、云是一团团软球；小人头大身小。三块底座放在一张铺了纸的桌子上
 - 光（电影布光）：低角度暖色主光拉出长影子 + 冷色天光 + 背后粉色轮廓光 + 摄影棚环境贴图；GTAO 环境光遮蔽（底座搭好后才打开）；入夜 bloom 加强，暖色的窗、小彩灯、路灯成为最亮的东西
@@ -179,13 +179,12 @@ npm run fonts
 
 **渲染命令（从项目根目录开始）：**
 ```bash
-cd styles/018-diorama/video3d && npm i                      # 装 three 0.170
-PR=1 node render.cjs episode.html out 0 599 1920 1080 30    # 30fps 正片（默认 SwiftShader）
-ANGLE_BACKEND=metal PR=1 node render.cjs episode.html out 0 599 1920 1080 30  # Mac GPU，同一画幅与时间轴
+cd styles/018-diorama/video3d && npm ci --ignore-scripts   # 锁定 three 0.170.0
 node --test geometry.test.mjs                            # 屋面深度与重复电线回归检查
-PR=1 node render.cjs episode.html out 0 1199 1920 1080 60   # 60fps（建议用有显卡的机器）
+ANGLE_BACKEND=metal PR=1 node render.cjs episode.html out 0 1199 1920 1080 60  # Mac GPU，60fps 正片
+# 无 Metal 的机器移除 ANGLE_BACKEND=metal，默认使用 SwiftShader；画幅与时间轴相同。
 python3 ../audio/make_music.py out/events.json out/music.wav
-ffmpeg -framerate 30 -i out/f%04d.png -i out/music.wav -c:v libx264 -crf 16 -pix_fmt yuv420p -c:a aac -b:a 256k -shortest 018.mp4
+ffmpeg -framerate 60 -i out/f%04d.png -i out/music.wav -c:v libx264 -crf 16 -pix_fmt yuv420p -c:a aac -b:a 256k -shortest 018-diorama.mp4
 ```
 
 **延伸阅读：** Miniatur Wunderland 官网的“建造日记” · Olivo Barbieri《site specific_》系列 · Vincent Laforet《Tilt-Shift》航拍 · Oskar Stålberg 谈《Townscaper》的程序生成（GDC 2020）

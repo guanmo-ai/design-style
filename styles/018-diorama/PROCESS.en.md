@@ -4,6 +4,8 @@
 
 > How this style was picked over several rounds of candidates, and how a 5-second street-corner sample became a 20-second film with a score. Code is in `video3d/`, `audio/` and `images/`; candidates and samples are in `drafts/`.
 
+🎬 [Video (Release `day-18-v3`)](https://github.com/guanmo-ai/design-style/releases/tag/day-18-v3) · [Guide](README.en.md)
+
 ## Overview
 
 | # | Step | Output |
