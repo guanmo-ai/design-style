@@ -7,10 +7,22 @@
 <table>
   <tr>
     <td align="center" valign="top" width="33%">
+      <a href="https://guanmo-ai.github.io/design-style/?lang=zh#work-021-generative-art"><img src="styles/021-generative-art/video/cover.jpg" width="240" alt="生成艺术 视频封面" /></a><br />
+      <a href="https://guanmo-ai.github.io/design-style/?lang=zh#work-021-generative-art"><b>生成艺术</b></a><br />
+      <sub>Generative Art · 18 秒</sub>
+    </td>
+    <td align="center" valign="top" width="33%">
+      <a href="https://guanmo-ai.github.io/design-style/?lang=zh#work-020-ascii-art"><img src="styles/020-ascii-art/video/cover.jpg" width="240" alt="字符画 视频封面" /></a><br />
+      <a href="https://guanmo-ai.github.io/design-style/?lang=zh#work-020-ascii-art"><b>字符画</b></a><br />
+      <sub>ASCII Art · 18 秒</sub>
+    </td>
+    <td align="center" valign="top" width="33%">
       <a href="https://guanmo-ai.github.io/design-style/?lang=zh#work-017-mid-century-modern"><img src="styles/017-mid-century-modern/video/cover.jpg" width="240" alt="中世纪现代 视频封面" /></a><br />
       <a href="https://guanmo-ai.github.io/design-style/?lang=zh#work-017-mid-century-modern"><b>中世纪现代</b></a><br />
       <sub>Mid-Century Modern · 15 秒</sub>
     </td>
+  </tr>
+  <tr>
     <td align="center" valign="top" width="33%">
       <a href="https://guanmo-ai.github.io/design-style/?lang=zh#work-018-diorama"><img src="styles/018-diorama/video/cover.jpg" width="240" alt="微缩景观 视频封面" /></a><br />
       <a href="https://guanmo-ai.github.io/design-style/?lang=zh#work-018-diorama"><b>微缩景观</b></a><br />
@@ -21,13 +33,13 @@
       <a href="https://guanmo-ai.github.io/design-style/?lang=zh#work-019-low-poly"><b>低多边形</b></a><br />
       <sub>Low Poly · 20 秒</sub>
     </td>
-  </tr>
-  <tr>
     <td align="center" valign="top" width="33%">
       <a href="https://guanmo-ai.github.io/design-style/?lang=zh#work-014-liquid-glass"><img src="styles/014-liquid-glass/video/cover.jpg" width="240" alt="液态玻璃 视频封面" /></a><br />
       <a href="https://guanmo-ai.github.io/design-style/?lang=zh#work-014-liquid-glass"><b>液态玻璃</b></a><br />
       <sub>Liquid Glass · 20 秒</sub>
     </td>
+  </tr>
+  <tr>
     <td align="center" valign="top" width="33%">
       <a href="https://guanmo-ai.github.io/design-style/?lang=zh#work-013-art-deco"><img src="styles/013-art-deco/video/cover.jpg" width="240" alt="装饰艺术 视频封面" /></a><br />
       <a href="https://guanmo-ai.github.io/design-style/?lang=zh#work-013-art-deco"><b>装饰艺术</b></a><br />
@@ -38,13 +50,13 @@
       <a href="https://guanmo-ai.github.io/design-style/?lang=zh#work-009-neo-brutalism"><b>新粗野主义</b></a><br />
       <sub>Neo-Brutalism · 20 秒</sub>
     </td>
-  </tr>
-  <tr>
     <td align="center" valign="top" width="33%">
       <a href="https://guanmo-ai.github.io/design-style/?lang=zh#work-008-risograph"><img src="styles/008-risograph/video/cover.jpg" width="240" alt="孔版印刷 视频封面" /></a><br />
       <a href="https://guanmo-ai.github.io/design-style/?lang=zh#work-008-risograph"><b>孔版印刷</b></a><br />
       <sub>Risograph · 15 秒</sub>
     </td>
+  </tr>
+  <tr>
     <td align="center" valign="top" width="33%">
       <a href="https://guanmo-ai.github.io/design-style/?lang=zh#work-005-pop-art"><img src="styles/005-pop-art/video/cover.jpg" width="240" alt="波普艺术 视频封面" /></a><br />
       <a href="https://guanmo-ai.github.io/design-style/?lang=zh#work-005-pop-art"><b>波普艺术</b></a><br />
@@ -55,13 +67,13 @@
       <a href="https://guanmo-ai.github.io/design-style/?lang=zh#work-004-memphis"><b>孟菲斯</b></a><br />
       <sub>Memphis · 15 秒</sub>
     </td>
-  </tr>
-  <tr>
     <td align="center" valign="top" width="33%">
       <a href="https://guanmo-ai.github.io/design-style/?lang=zh#work-003-constructivism"><img src="styles/003-constructivism/video/cover.jpg" width="240" alt="构成主义 视频封面" /></a><br />
       <a href="https://guanmo-ai.github.io/design-style/?lang=zh#work-003-constructivism"><b>构成主义</b></a><br />
       <sub>Constructivism · 15 秒</sub>
     </td>
+  </tr>
+  <tr>
     <td align="center" valign="top" width="33%">
       <a href="https://guanmo-ai.github.io/design-style/?lang=zh#work-02-masonry"><img src="layouts/02-masonry/video/cover.jpg" width="240" alt="瀑布流布局 视频封面" /></a><br />
       <a href="https://guanmo-ai.github.io/design-style/?lang=zh#work-02-masonry"><b>瀑布流布局</b></a><br />
@@ -72,13 +84,13 @@
       <a href="https://guanmo-ai.github.io/design-style/?lang=zh#work-002-swiss-style"><b>瑞士国际主义</b></a><br />
       <sub>Swiss Style · 15 秒</sub>
     </td>
-  </tr>
-  <tr>
     <td align="center" valign="top" width="33%">
       <a href="https://guanmo-ai.github.io/design-style/?lang=zh#work-01-bento-grid"><img src="layouts/01-bento-grid/video/cover.jpg" width="240" alt="便当盒布局 视频封面" /></a><br />
       <a href="https://guanmo-ai.github.io/design-style/?lang=zh#work-01-bento-grid"><b>便当盒布局</b></a><br />
       <sub>Bento Grid · 15 秒</sub>
     </td>
+  </tr>
+  <tr>
     <td align="center" valign="top" width="33%">
       <a href="https://guanmo-ai.github.io/design-style/?lang=zh#work-001-bauhaus"><img src="styles/001-bauhaus/video/cover.jpg" width="240" alt="包豪斯 视频封面" /></a><br />
       <a href="https://guanmo-ai.github.io/design-style/?lang=zh#work-001-bauhaus"><b>包豪斯</b></a><br />
@@ -139,6 +151,8 @@ by 观默 [@guanmo_ai](https://x.com/guanmo_ai)
 | **017** | [**中世纪现代 Mid-Century Modern**](styles/017-mid-century-modern) | 1945—1965 | 剪刀代替尺子：同一批彩纸翻面接力，从片头、家具、唱片与建筑落到今天的 App | [🎬 视频](https://github.com/guanmo-ai/design-style/releases/tag/day-17) · [🛠 过程](styles/017-mid-century-modern/PROCESS.md) |
 | **018** | [**微缩景观 Diorama**](styles/018-diorama) | 1950s—今天 | 把世界切成一块底座，一块块搭出来，再用移轴把它变小 | [🎬 视频](https://github.com/guanmo-ai/design-style/releases/tag/day-18-v3) · [🛠 过程](styles/018-diorama/PROCESS.md) |
 | **019** | [**低多边形 Low Poly**](styles/019-low-poly) | 1993—今天 | 一个面，一个颜色：三角面从纸上翻起，拼成山谷、灯塔与小星球 | [🎬 视频](https://github.com/guanmo-ai/design-style/releases/tag/day-19) · [🛠 过程](styles/019-low-poly/PROCESS.md) |
+| **020** | [**字符画 ASCII Art**](styles/020-ascii-art) | 1960s—今天 | 没有像素，只有字：把亮度变成字，把乱码变成界面反馈 | [🎬 视频](https://github.com/guanmo-ai/design-style/releases/tag/day-20) · [🛠 过程](styles/020-ascii-art/PROCESS.md) |
+| **021** | [**生成艺术 Generative Art**](styles/021-generative-art) | 1960s—今天 | 不画画，写规则：从流场与种子，到手机上的头像、封面和票券 | [🎬 视频](https://github.com/guanmo-ai/design-style/releases/tag/day-21) · [🛠 过程](styles/021-generative-art/PROCESS.md) |
 
 ### 布局方式 · Layout
 

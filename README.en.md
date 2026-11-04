@@ -19,10 +19,22 @@ By Guanmo [@guanmo_ai](https://x.com/guanmo_ai)
 <table>
   <tr>
     <td align="center" valign="top" width="33%">
+      <a href="https://guanmo-ai.github.io/design-style/?lang=en#work-021-generative-art"><img src="styles/021-generative-art/video/cover.jpg" width="240" alt="Generative Art film cover" /></a><br />
+      <a href="https://guanmo-ai.github.io/design-style/?lang=en#work-021-generative-art"><b>Generative Art</b></a><br />
+      <sub>18 seconds</sub>
+    </td>
+    <td align="center" valign="top" width="33%">
+      <a href="https://guanmo-ai.github.io/design-style/?lang=en#work-020-ascii-art"><img src="styles/020-ascii-art/video/cover.jpg" width="240" alt="ASCII Art film cover" /></a><br />
+      <a href="https://guanmo-ai.github.io/design-style/?lang=en#work-020-ascii-art"><b>ASCII Art</b></a><br />
+      <sub>18 seconds</sub>
+    </td>
+    <td align="center" valign="top" width="33%">
       <a href="https://guanmo-ai.github.io/design-style/?lang=en#work-017-mid-century-modern"><img src="styles/017-mid-century-modern/video/cover.jpg" width="240" alt="Mid-Century Modern film cover" /></a><br />
       <a href="https://guanmo-ai.github.io/design-style/?lang=en#work-017-mid-century-modern"><b>Mid-Century Modern</b></a><br />
       <sub>15 seconds</sub>
     </td>
+  </tr>
+  <tr>
     <td align="center" valign="top" width="33%">
       <a href="https://guanmo-ai.github.io/design-style/?lang=en#work-018-diorama"><img src="styles/018-diorama/video/cover.jpg" width="240" alt="Diorama film cover" /></a><br />
       <a href="https://guanmo-ai.github.io/design-style/?lang=en#work-018-diorama"><b>Diorama</b></a><br />
@@ -33,13 +45,13 @@ By Guanmo [@guanmo_ai](https://x.com/guanmo_ai)
       <a href="https://guanmo-ai.github.io/design-style/?lang=en#work-019-low-poly"><b>Low Poly</b></a><br />
       <sub>20 seconds</sub>
     </td>
-  </tr>
-  <tr>
     <td align="center" valign="top" width="33%">
       <a href="https://guanmo-ai.github.io/design-style/?lang=en#work-014-liquid-glass"><img src="styles/014-liquid-glass/video/cover.jpg" width="240" alt="Liquid Glass film cover" /></a><br />
       <a href="https://guanmo-ai.github.io/design-style/?lang=en#work-014-liquid-glass"><b>Liquid Glass</b></a><br />
       <sub>20 seconds</sub>
     </td>
+  </tr>
+  <tr>
     <td align="center" valign="top" width="33%">
       <a href="https://guanmo-ai.github.io/design-style/?lang=en#work-013-art-deco"><img src="styles/013-art-deco/video/cover.jpg" width="240" alt="Art Deco film cover" /></a><br />
       <a href="https://guanmo-ai.github.io/design-style/?lang=en#work-013-art-deco"><b>Art Deco</b></a><br />
@@ -50,13 +62,13 @@ By Guanmo [@guanmo_ai](https://x.com/guanmo_ai)
       <a href="https://guanmo-ai.github.io/design-style/?lang=en#work-009-neo-brutalism"><b>Neo-Brutalism</b></a><br />
       <sub>20 seconds</sub>
     </td>
-  </tr>
-  <tr>
     <td align="center" valign="top" width="33%">
       <a href="https://guanmo-ai.github.io/design-style/?lang=en#work-008-risograph"><img src="styles/008-risograph/video/cover.jpg" width="240" alt="Risograph film cover" /></a><br />
       <a href="https://guanmo-ai.github.io/design-style/?lang=en#work-008-risograph"><b>Risograph</b></a><br />
       <sub>15 seconds</sub>
     </td>
+  </tr>
+  <tr>
     <td align="center" valign="top" width="33%">
       <a href="https://guanmo-ai.github.io/design-style/?lang=en#work-005-pop-art"><img src="styles/005-pop-art/video/cover.jpg" width="240" alt="Pop Art film cover" /></a><br />
       <a href="https://guanmo-ai.github.io/design-style/?lang=en#work-005-pop-art"><b>Pop Art</b></a><br />
@@ -67,13 +79,13 @@ By Guanmo [@guanmo_ai](https://x.com/guanmo_ai)
       <a href="https://guanmo-ai.github.io/design-style/?lang=en#work-004-memphis"><b>Memphis</b></a><br />
       <sub>15 seconds</sub>
     </td>
-  </tr>
-  <tr>
     <td align="center" valign="top" width="33%">
       <a href="https://guanmo-ai.github.io/design-style/?lang=en#work-003-constructivism"><img src="styles/003-constructivism/video/cover.jpg" width="240" alt="Constructivism film cover" /></a><br />
       <a href="https://guanmo-ai.github.io/design-style/?lang=en#work-003-constructivism"><b>Constructivism</b></a><br />
       <sub>15 seconds</sub>
     </td>
+  </tr>
+  <tr>
     <td align="center" valign="top" width="33%">
       <a href="https://guanmo-ai.github.io/design-style/?lang=en#work-02-masonry"><img src="layouts/02-masonry/video/cover.jpg" width="240" alt="Masonry film cover" /></a><br />
       <a href="https://guanmo-ai.github.io/design-style/?lang=en#work-02-masonry"><b>Masonry</b></a><br />
@@ -84,13 +96,13 @@ By Guanmo [@guanmo_ai](https://x.com/guanmo_ai)
       <a href="https://guanmo-ai.github.io/design-style/?lang=en#work-002-swiss-style"><b>Swiss Style</b></a><br />
       <sub>15 seconds</sub>
     </td>
-  </tr>
-  <tr>
     <td align="center" valign="top" width="33%">
       <a href="https://guanmo-ai.github.io/design-style/?lang=en#work-01-bento-grid"><img src="layouts/01-bento-grid/video/cover.jpg" width="240" alt="Bento Grid film cover" /></a><br />
       <a href="https://guanmo-ai.github.io/design-style/?lang=en#work-01-bento-grid"><b>Bento Grid</b></a><br />
       <sub>15 seconds</sub>
     </td>
+  </tr>
+  <tr>
     <td align="center" valign="top" width="33%">
       <a href="https://guanmo-ai.github.io/design-style/?lang=en#work-001-bauhaus"><img src="styles/001-bauhaus/video/cover.jpg" width="240" alt="Bauhaus film cover" /></a><br />
       <a href="https://guanmo-ai.github.io/design-style/?lang=en#work-001-bauhaus"><b>Bauhaus</b></a><br />
@@ -134,6 +146,8 @@ The gallery interface, descriptions, search, and reading pages support **Chinese
 | 017 | [Mid-Century Modern](styles/017-mid-century-modern/README.en.md) — Hand-cut paper relays from titles, furniture, records and architecture to a modern app. [Film](https://github.com/guanmo-ai/design-style/releases/tag/day-17) | [Production overview](styles/017-mid-century-modern/PROCESS.en.md) | 1945–1965 |
 | 018 | [Diorama](styles/018-diorama/README.en.md) — Build a world on a base, piece by piece; tilt-shift makes it small. [Film](https://github.com/guanmo-ai/design-style/releases/tag/day-18-v3) | [Production overview](styles/018-diorama/PROCESS.en.md) | 1950s–today |
 | 019 | [Low Poly](styles/019-low-poly/README.en.md) — One face, one colour: triangles flip up from paper into a valley, a lighthouse and a planet. [Film](https://github.com/guanmo-ai/design-style/releases/tag/day-19) | [Production overview](styles/019-low-poly/PROCESS.en.md) | 1993–today |
+| 020 | [ASCII Art](styles/020-ascii-art/README.en.md) — Characters turn luminance and scrambled text into interface feedback. [Film](https://github.com/guanmo-ai/design-style/releases/tag/day-20) | [Production overview](styles/020-ascii-art/PROCESS.en.md) | 1960s–today |
+| 021 | [Generative Art](styles/021-generative-art/README.en.md) — Flow fields and seeds become avatars, covers and tickets. [Film](https://github.com/guanmo-ai/design-style/releases/tag/day-21) | [Production overview](styles/021-generative-art/PROCESS.en.md) | 1960s–today |
 
 ### Layouts
 
