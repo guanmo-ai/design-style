@@ -1,0 +1,55 @@
+/* 017 · 中世纪现代 Mid-Century Modern — CSS 设计令牌（与 tokens.ts / tokens.json 同源）
+   一条物理规则：每一块都是一张剪出来、能拿起来的纸——影子 = 高度。 */
+:root {
+  /* 颜色（面积比 40 / 14 / 14 / 12 / 10 / 6 / 4） */
+  --mcm-paper: #FBF3E3;  /* 暖白纸 */
+  --mcm-red: #F2542D;    /* 番茄红 */
+  --mcm-sun: #FFC62E;    /* 向日葵黄 */
+  --mcm-pink: #F57AA8;   /* Girard 粉 */
+  --mcm-turq: #1FB3A6;   /* 泳池绿松石 */
+  --mcm-blue: #2F6BD8;   /* 钴蓝 */
+  --mcm-ink: #1E1B19;    /* 墨 */
+  --mcm-mute: #8A7F72;   /* 说明文字 */
+  --mcm-shadow: #3A1C0C; /* 影子（暖棕，不用纯黑） */
+
+  /* 叠印：浅色压深色，两层油墨相乘（mix-blend-mode: multiply） */
+  --mcm-sun-x-pink: #F55F1E;
+  --mcm-sun-x-turq: #1F8B1E;
+  --mcm-pink-x-turq: #1E566D;
+
+  /* 剪：边缘慢慢抖 1—1.6px（波长 50—110px），角留尖，每块歪 ±3° */
+  --mcm-tilt: 3deg;
+
+  /* 影子 = 高度：纸离桌面 h px → 偏 (0.5h, h)，CSS 模糊写 0.8h，浓度 0.3 − 0.004h；纸放大 1 + 0.0032h */
+  --h: 4; /* 贴着桌面 4，拿起 14，在手里 30，按下 0 */
+  --mcm-shadow-x: calc(var(--h) * 0.5px);
+  --mcm-shadow-y: calc(var(--h) * 1px);
+  --mcm-shadow-blur: calc(var(--h) * 0.8px);
+  --mcm-lift-scale: calc(1 + var(--h) * 0.0032);
+
+  /* 动作：提起 → 飞 → 落下（60 帧连续），落地轻压 4% */
+  --mcm-ease-move: cubic-bezier(.65, 0, .35, 1);
+  --mcm-ease-drop: cubic-bezier(.55, 0, .9, .3);
+  --mcm-move: 670ms;
+  --mcm-press: 80ms;
+
+  /* 字 */
+  --mcm-font-display: 'Anton', 'Noto Sans SC', sans-serif; /* 手剪大字：转成轮廓再剪 */
+  --mcm-font-text: 'Jost', 'Futura', 'Noto Sans SC', sans-serif;
+}
+
+/* 一张纸 */
+.mcm-piece {
+  transform: scale(var(--mcm-lift-scale));
+  filter: drop-shadow(var(--mcm-shadow-x) var(--mcm-shadow-y) var(--mcm-shadow-blur) rgb(58 28 12 / calc(0.3 - var(--h) * 0.004)));
+  transition: transform var(--mcm-move) var(--mcm-ease-move), filter var(--mcm-move) var(--mcm-ease-move);
+}
+.mcm-piece:hover { --h: 14; }
+.mcm-piece:active { --h: 0; transition-duration: var(--mcm-press); }
+
+/* 叠印 */
+.mcm-overprint { mix-blend-mode: multiply; }
+
+@media (prefers-reduced-motion: reduce) {
+  .mcm-piece { transition: none; }
+}

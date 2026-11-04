@@ -13,6 +13,7 @@ import {NeoBrutalism, NEOBRUTAL_DURATION} from '../styles/009-neo-brutalism/vide
 import {ArtDeco, ARTDECO_DURATION} from '../styles/013-art-deco/video/ArtDeco';
 import {LiquidGlass, LIQUIDGLASS_DURATION} from '../styles/014-liquid-glass/video/LiquidGlass';
 import {Futurism, FUTURISM_DURATION} from '../styles/015-futurism/video/Futurism';
+import {MidCenturyModern, MIDCENTURYMODERN_DURATION} from '../styles/017-mid-century-modern/video/MidCenturyModern';
 
 // 每期注册为一个 Composition：风格 S{期号}-{名字}，布局 L{期号}-{名字}
 // 统一规格：1920×1080 · 60fps · 15s
@@ -153,6 +154,24 @@ export const Root: React.FC = () => (
       width={1920}
       height={1080}
       defaultProps={{music: true, blur: 1, step: 2, res: 0.5}}
+    />
+    <Composition
+      id="S017-MidCenturyModern"
+      component={MidCenturyModern}
+      durationInFrames={MIDCENTURYMODERN_DURATION}
+      fps={60}
+      width={1920}
+      height={1080}
+      defaultProps={{music: true, step: 1, blur: 6, res: 1}}
+    />
+    <Composition
+      id="S017-MidCenturyModern-Preview"
+      component={MidCenturyModern}
+      durationInFrames={MIDCENTURYMODERN_DURATION / 2}
+      fps={30}
+      width={1920}
+      height={1080}
+      defaultProps={{music: true, step: 2, blur: 1, res: 0.5}}
     />
   </>
 );
