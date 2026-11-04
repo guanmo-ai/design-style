@@ -4,7 +4,7 @@
 
 > **一句话：** 剪刀代替尺子——每一块都是一张剪出来、能拿起来的纸。
 
-🎬 看视频（Release `day-17`，成片审过后发布）· 🛠 [制作过程](PROCESS.md) · 🖼 [图片源文件](images) · 🎞 [分镜](video/STORYBOARD.md)
+🎬 [看视频](https://github.com/guanmo-ai/design-style/releases/tag/day-17) · 📦 [完整源码](https://github.com/guanmo-ai/design-style/releases/download/day-17/017-mid-century-modern-source.zip)· 🛠 [制作过程](PROCESS.md) · 🖼 [图片源文件](images) · 🎞 [分镜](video/STORYBOARD.md)
 
 | 海报 | 速查卡 |
 |:-:|:-:|
@@ -163,3 +163,18 @@ prefers-reduced-motion 时关掉过渡。设计令牌见 tokens.css。
 | `tokens.ts` · `tokens.css` · `tokens.json` | 设计令牌 |
 
 命令：`npm run images:017` · `npm run music:017` · `npm run preview:017`（草稿）· `npm run render:017`（正片）
+
+
+### 本地复现
+
+需要 Node.js 22.12+、Python 3.10+ 和 FFmpeg。从项目根目录准备依赖、Chromium 与开源字体（来源与许可证见 `scripts/fetch_fonts.sh`）：
+
+```bash
+npm ci
+python3 -m pip install numpy scipy fonttools brotli pillow
+npx remotion browser ensure
+npm run fonts
+npm run render:017
+```
+
+已发布成片直接采用审片通过的版本；以上命令供本地复现使用。四张图片可用 `npm run images:017` 重建；先运行 `python3 styles/017-mid-century-modern/video/make_geometry.py` 可重新生成视频的剪纸轮廓。
