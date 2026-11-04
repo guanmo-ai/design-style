@@ -45,8 +45,12 @@ function march(S,u,v){
   const p=add(o,mul(d,best));const Ld=S.light;
   if(kind===1){
     const n=norm(p);let diff=Math.max(0,dot(n,Ld));
-    const lat=Math.asin(n[1]);const lon=Math.atan2(n[2],n[0]);
-    const band=0.72+0.18*Math.sin(lat*11+0.8*Math.sin(lon*2+lat*5))+0.1*Math.sin(lat*31);
+    const lat=Math.asin(n[1]);const lon=Math.atan2(n[2],n[0])+(S.spin||0);
+    let band=0.72+0.18*Math.sin(lat*11+0.8*Math.sin(lon*2+lat*5))+0.1*Math.sin(lat*31);
+    if(S.storm){   // 大红斑：跟着自转走，用来看出“在转”
+      const dl=Math.atan2(Math.sin(lon-0.9),Math.cos(lon-0.9)),dt=lat+0.32;
+      const q=Math.exp(-(dl*dl/0.09+dt*dt/0.012));band=band*(1-q)+q*(0.35+0.65*Math.abs(Math.sin(Math.hypot(dl*2,dt*6)*9)));
+    }
     // 环投在星球上的影子
     if(hitRing(add(p,mul(n,1e-3)),Ld)>0){const q=add(p,mul(Ld,hitRing(add(p,mul(n,1e-3)),Ld)));diff*=1-0.45*ringAlbedo(Math.hypot(...q))}
     const h=norm(sub(Ld,d));const spec=Math.pow(Math.max(0,dot(n,h)),40)*0.55;

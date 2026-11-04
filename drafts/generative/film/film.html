@@ -1,0 +1,253 @@
+<!doctype html>
+<!-- 生成艺术 · 开头 8 秒动效小样（1920×1080 · 60fps · 120 BPM，一拍 30 帧）。window.frame(f) 画第 f 帧，每帧是时间的纯函数。
+     分镜见 STORYBOARD.md；出片：bash make.sh -->
+<meta charset="utf-8">
+<style>
+@font-face{font-family:JBM;src:url(../../../public/fonts/JetBrainsMono.ttf)}
+@font-face{font-family:Archivo;src:url(../../../public/fonts/Archivo.ttf);font-weight:100 900;font-stretch:62% 125%}
+@font-face{font-family:NotoSC;src:url(../../../public/fonts/NotoSansSC-Black.otf);font-weight:900}
+@font-face{font-family:NotoSC;src:url(../../../public/fonts/NotoSansSC-Medium.otf);font-weight:500}
+html,body{margin:0;background:#F3EEE2;overflow:hidden}
+canvas{display:block}
+</style>
+<canvas id="c" width="1920" height="1080"></canvas>
+<script src="timeline.js"></script>
+<script>
+const W = 1920, H = 1080, PAPER = '#F3EEE2', INK = '#161616', RED = '#E8392B';
+const g = document.getElementById('c').getContext('2d');
+function mulberry(a){return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+const STEP = 4, GAP = 5;
+const PAL_A = [['#E8392B',14],['#FF7A1A',10],['#FFC530',12],['#FF8FB8',8],['#2346E0',12],['#7CC6F2',8],['#1F9E6A',7],['#161616',8],['#FFFFFF',6],['#F6D9B8',4]];
+const PAL_B = [['#2346E0',14],['#161616',9],['#7CC6F2',10],['#FFFFFF',8],['#FFC530',5],['#E8392B',3]];
+const WID = [[6,20],[10,26],[16,18],[26,12],[40,8],[64,4],[96,2]];
+// 方向场：几层正弦叠成平滑的“风”
+const field = (seed, rot) => (x, y) => rot + 1.25*Math.sin(x*0.0019+0.4+seed%7) + 0.9*Math.cos(y*0.0026-x*0.0009+1.1) + 0.45*Math.sin((x*0.6+y)*0.0042) - 0.35;
+// 长出一张画：色带只顺着风走，碰到别人就停；记下前端是被谁挡住的
+function build(seed, pal, rot) {
+  const rnd = mulberry(seed), ang = field(seed, rot);
+  const pick = (list) => { let s = list.reduce((a, b) => a + b[1], 0) * rnd(); for (const [v, w] of list) if ((s -= w) < 0) return v; return list[0][0]; };
+  const CS = 4, GW = Math.ceil(W / CS) + 2, GH = Math.ceil(H / CS) + 2, occ = new Int32Array(GW * GH).fill(-1);
+  const scan = (x, y, r, fn) => { const r2 = r * r; for (let yy = Math.floor((y - r) / CS); yy <= Math.ceil((y + r) / CS); yy++) for (let xx = Math.floor((x - r) / CS); xx <= Math.ceil((x + r) / CS); xx++) {
+    if (xx < 0 || yy < 0 || xx >= GW || yy >= GH) continue; const dx = xx * CS - x, dy = yy * CS - y; if (dx * dx + dy * dy <= r2) { const v = fn(yy * GW + xx); if (v !== undefined) return v; } } return -1; };
+  const blocker = (x, y, r, id) => scan(x, y, r, k => occ[k] !== -1 && occ[k] !== id ? occ[k] : undefined);
+  const mark = (x, y, r, id) => scan(x, y, r, k => { occ[k] = id; });
+  const out = [];
+  for (let n = 0; n < 9000 && out.length < 1500; n++) {
+    const w = pick(WID), x0 = rnd() * (W + 200) - 100, y0 = rnd() * (H + 200) - 100;
+    if (blocker(x0, y0, w / 2 + GAP, -2) !== -1) continue;
+    const id = out.length, pts = [[x0, y0]]; let hit = null;
+    for (const dir of [1, -1]) { let x = x0, y = y0;
+      for (let s = 0; s < 220; s++) { const a = ang(x, y), nx = x + Math.cos(a) * STEP * dir, ny = y + Math.sin(a) * STEP * dir;
+        if (nx < -120 || nx > W + 120 || ny < -120 || ny > H + 120) break;
+        const b = blocker(nx, ny, w / 2 + GAP, id); if (b !== -1) { if (dir > 0) hit = {by: b}; break; }
+        mark(x, y, w / 2 + GAP * 0.3, id); x = nx; y = ny; dir > 0 ? pts.push([x, y]) : pts.unshift([x, y]); } }
+    if (pts.length * STEP < Math.max(60, w * 4)) continue;
+    pts.forEach(p => mark(p[0], p[1], w / 2 + GAP * 0.3, id));
+    out.push({pts, w, c: pick(pal), L: (pts.length - 1) * STEP, hit, r: rnd()});
+  }
+  return {ribbons: out, ang};
+}
+// 画一条色带的前 len 像素
+function ribbon(ctx, R, len, color, from = 0) {
+  if (len <= 0.5) return null;
+  const i0 = Math.max(0, Math.floor(from / STEP)), end = from + len;
+  const n = Math.min(R.pts.length - 1, Math.floor(end / STEP)), fr = end / STEP - n;
+  ctx.strokeStyle = color || R.c; ctx.lineWidth = R.w; ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+  ctx.beginPath(); ctx.moveTo(R.pts[i0][0], R.pts[i0][1]);
+  for (let k = i0 + 1; k <= n; k++) ctx.lineTo(R.pts[k][0], R.pts[k][1]);
+  let head = R.pts[n];
+  if (n < R.pts.length - 1 && fr > 0) { const a = R.pts[n], b = R.pts[n + 1]; head = [a[0] + (b[0] - a[0]) * fr, a[1] + (b[1] - a[1]) * fr]; ctx.lineTo(head[0], head[1]); }
+  ctx.stroke();
+  if (R.c === '#FFFFFF' || R.c === '#F6D9B8') { ctx.strokeStyle = 'rgba(22,22,22,.12)'; ctx.lineWidth = 1; ctx.stroke(); }
+  return head;
+}
+function penHead(ctx, R, len, head, look) {
+  ctx.lineWidth = 3; ctx.strokeStyle = INK;
+  ctx.beginPath(); ctx.arc(head[0], head[1], R.w / 2 + 6, 0, 7); ctx.stroke();
+  ctx.fillStyle = INK; ctx.beginPath(); ctx.arc(head[0], head[1], 4, 0, 7); ctx.fill();
+  if (look) {                                    // 接下来要走的路：虚线
+    const k0 = Math.floor(len / STEP), k1 = Math.min(R.pts.length - 1, k0 + Math.round(look / STEP));
+    if (k1 > k0) { ctx.setLineDash([2, 10]); ctx.lineWidth = 2.5; ctx.strokeStyle = 'rgba(22,22,22,.6)'; ctx.beginPath(); ctx.moveTo(head[0], head[1]);
+      for (let k = k0 + 1; k <= k1; k++) ctx.lineTo(R.pts[k][0], R.pts[k][1]); ctx.stroke(); ctx.setLineDash([]); }
+  }
+}
+// 文字：从遮罩里升起
+function rise(ctx, text, x, y, font, color, f, at, dur = 16) {
+  const p = ease.out3(clamp((f - at) / dur)); if (p <= 0) return 0;
+  ctx.save(); ctx.font = font; ctx.textBaseline = 'alphabetic';
+  const m = ctx.measureText(text), h = parseFloat(font.match(/(\d+)px/)[1]);
+  ctx.beginPath(); ctx.rect(x - 4, y - h * 1.1, m.width + 14, h * 1.38); ctx.clip();
+  ctx.fillStyle = color; ctx.fillText(text, x, y + (1 - p) * h * 1.3); ctx.restore(); return m.width;
+}
+// 规则卡：奶油底 + 墨色描边，弹出来；cardW 由内容决定
+function card(ctx, f, at, out, tag, line, code, x = 60, y = 60) {
+  if (f < at || f >= out + 12) return;
+  const pin = ease.outBack(clamp((f - at) / 14), 1.8), q = f >= out ? ease.in3((f - out) / 12) : 0;
+  ctx.save(); ctx.font = '900 64px NotoSC'; const wl = ctx.measureText(line).width; ctx.font = '700 28px JBM'; const wc = code ? ctx.measureText(code).width : 0;
+  const cw = Math.max(wl, wc) + 72, ch = code ? 238 : 172;
+  ctx.translate(x, y - q * 60); ctx.globalAlpha = 1 - q; ctx.scale(lerp(0.85, 1, pin), lerp(0.85, 1, pin));
+  ctx.fillStyle = INK; ctx.fillRect(8, 8, cw, ch);
+  ctx.fillStyle = PAPER; ctx.fillRect(0, 0, cw, ch); ctx.lineWidth = 3; ctx.strokeStyle = INK; ctx.strokeRect(0, 0, cw, ch);
+  rise(ctx, tag, 36, 54, '700 24px JBM', RED, f, at + 3, 12);
+  rise(ctx, line, 34, 136, '900 64px NotoSC', INK, f, at + 6, 16);
+  if (code) { ctx.fillStyle = '#E7E0D0'; ctx.fillRect(28, 162, cw - 56, 50); rise(ctx, code, 42, 198, '700 28px JBM', '#2346E0', f, at + 12, 14); }
+  ctx.restore();
+}
+
+let A, B, HIT, DOT, ARROWS;
+function setup() {
+  A = build(0x2A7F, PAL_A, 0); B = build(0x80A1, PAL_B, 1.1);
+  // A 段：生长前沿从左往右推（第 0 帧已经推到画面中间），每条按起点的 x 出生
+  const rnd = mulberry(5);
+  for (const R of A.ribbons) {
+    const x0 = Math.min(R.pts[0][0], R.pts[R.pts.length - 1][0]);
+    R.birth = -84 + (x0 + 120) / 2160 * 150 + rnd() * 6; R.v = R.w >= 40 ? 15 : R.w >= 16 ? 20 : 26;
+    // D 段按粗细分三批重新长，每批从中心往外
+    const wv = TL.waves.findIndex(([, , lo, hi]) => R.w >= lo && R.w <= hi), [a0, a1] = TL.waves[wv];
+    const mid = R.pts[R.pts.length >> 1], d = Math.min(1, Math.hypot(mid[0] - W / 2, mid[1] - H / 2) / 1000);
+    R.wave = wv; R.birthW = a0 + d * (a1 - a0) * (wv ? 0.4 : 0.22) + rnd() * 3; R.vW = (R.L / Math.max(8, (a1 - R.birthW) * 0.8));
+  }
+  for (const R of B.ribbons) R.birth = TL.grow2[0] + Math.hypot(R.pts[0][0] - W / 2, R.pts[0][1] - H / 2) / 1100 * 14 + R.r * 4;
+  // C 段的主角：一条被前面挡住的粗色带，挡住的地方在画面中部
+  let best = null;
+  A.ribbons.forEach((R, i) => { const e = R.pts[R.pts.length - 1];
+    if (R.hit && R.w >= 26 && R.w <= 64 && R.L > 420 && e[0] > 700 && e[0] < 1400 && e[1] > 320 && e[1] < 760) {
+      const sc = R.w + R.L * 0.02 - Math.hypot(e[0] - 1050, e[1] - 540) * 0.05; if (!best || sc > best.sc) best = {i, sc}; } });
+  HIT = A.ribbons[best.i]; HIT.id = best.i;
+  // B 段：一个点顺着风走
+  DOT = []; let x = 140, y = 840; for (let k = 0; k < 360; k++) { DOT.push([x, y]); const a = A.ang(x, y); x += Math.cos(a) * 6; y += Math.sin(a) * 6; if (x < 0 || x > W || y < 0 || y > H) break; }
+  ARROWS = []; for (let yy = 40; yy < H; yy += 62) for (let xx = 40; xx < W; xx += 62) ARROWS.push([xx, yy, A.ang(xx, yy), TL.arrows[0] + (xx + yy * 1.2) / (W + H * 1.2) * (TL.arrows[1] - TL.arrows[0] - 10)]);
+}
+
+// 每条 A 色带在第 f 帧画多长
+function lenA(R, f) {
+  if (f < TL.D) {
+    let l = clamp((f - R.birth) * R.v, 0, R.L);
+    if (R === HIT && f >= TL.retract[0]) {
+      const dl = Math.min(380, R.L * 0.6);
+      if (f < TL.retract[1]) l = R.L - dl * ease.inOut3((f - TL.retract[0]) / (TL.retract[1] - TL.retract[0]));
+      else if (f < TL.regrow[0]) l = R.L - dl;
+      else l = Math.min(R.L, R.L - dl + dl * ((f - TL.regrow[0]) / (TL.regrow[1] - TL.regrow[0])));
+    }
+    return l;
+  }
+  if (f < TL.clear[1]) return R.L * (1 - ease.in3(clamp((f - TL.clear[0]) / (TL.clear[1] - TL.clear[0]))));
+  if (f < TL.E) return clamp((f - R.birthW) * R.vW, 0, R.L);
+  if (f < TL.rewind[0]) return R.L;
+  const p = clamp((f - TL.rewind[0] - (1 - R.pts[0][0] / W) * 6) / (TL.rewind[1] - TL.rewind[0] - 6));
+  return R.L * (1 - ease.inOut3(p));
+}
+function camera(f) {
+  const e = HIT.pts[HIT.pts.length - 1];
+  let s = 1, p = 0;
+  if (f >= TL.zoom[0] && f < TL.D + 20) p = f < TL.D ? ease.inOut3(clamp((f - TL.zoom[0]) / (TL.zoom[1] - TL.zoom[0]))) : 1 - ease.inOut3(clamp((f - TL.D) / 20));
+  s = lerp(1, 2.5, p);
+  const dx = lerp(e[0], 1180, p), dy = lerp(e[1], 600, p);
+  return {s, p, ax: e[0], ay: e[1], bx: dx, by: dy};
+}
+
+window.events = () => {
+  const ev = {grow: [], wave: [], growB: [], arrows: [], hit: TL.regrow[1]};
+  for (const R of A.ribbons) { if (R.birth >= 0 && R.birth < TL.B) ev.grow.push([R.birth, R.pts[0][1], R.w]); ev.wave.push([R.birthW, R.pts[0][1], R.w, R.wave]); }
+  for (const R of B.ribbons) ev.growB.push([R.birth, R.pts[0][1], R.w]);
+  for (const a of ARROWS) ev.arrows.push(a[3]);
+  return ev;
+};
+
+window.frame = f => {
+  g.setTransform(1, 0, 0, 1, 0, 0); g.fillStyle = PAPER; g.fillRect(0, 0, W, H);
+  const C = camera(f);
+  g.setTransform(C.s, 0, 0, C.s, C.bx - C.ax * C.s, C.by - C.ay * C.s);
+  // —— B 段：方向场的小箭头（在色带下面）——
+  const dim = f < TL.B ? 0 : f < TL.C ? ease.out3(clamp((f - TL.B) / 12)) : 1 - ease.out3(clamp((f - TL.C) / 12));
+  if (f >= TL.arrows[0] && f < TL.C + 14) {
+    const fade = f < TL.C ? 1 : 1 - (f - TL.C) / 14;
+    g.lineCap = 'round';
+    for (const [x, y, a, at] of ARROWS) {
+      const p = clamp((f - at) / 12); if (p <= 0) continue;
+      const sc = ease.outBack(p, 2.2), an = a + (1 - ease.out3(p)) * 2.2, L = 20 * sc;
+      g.strokeStyle = `rgba(22,22,22,${0.75 * fade})`; g.lineWidth = 3;
+      g.beginPath(); g.moveTo(x - Math.cos(an) * L, y - Math.sin(an) * L); g.lineTo(x + Math.cos(an) * L, y + Math.sin(an) * L); g.stroke();
+      g.fillStyle = g.strokeStyle; g.beginPath(); const hx = x + Math.cos(an) * L, hy = y + Math.sin(an) * L;
+      g.moveTo(hx + Math.cos(an) * 7, hy + Math.sin(an) * 7); g.lineTo(hx + Math.cos(an + 2.4) * 9, hy + Math.sin(an + 2.4) * 9); g.lineTo(hx + Math.cos(an - 2.4) * 9, hy + Math.sin(an - 2.4) * 9); g.fill();
+    }
+  }
+  // —— 色带 A ——
+  if (f < TL.rewind[1] + 1) {
+    g.globalAlpha = 1 - 0.84 * dim;
+    const heads = [];
+    for (const R of A.ribbons) {
+      const l = lenA(R, f), from = f >= TL.clear[1] && f < TL.E ? (R.L - l) / 2 : 0, head = ribbon(g, R, l, null, from);
+      if (head && l < R.L - 0.5 && R.w >= 10 && R !== HIT && (f < TL.B || (f >= TL.waves[0][0] && f < TL.E))) heads.push([R, l, head]);
+    }
+    for (const [R, l, h] of heads) penHead(g, R, l, h, f < TL.B && R.w >= 26 ? 130 : 0);   // 中点往两头长时，只给前端画笔头
+    g.globalAlpha = 1;
+  }
+  // —— C 段：主角色带重新长，靠近别人时停下 ——
+  if (f >= TL.retract[1] && f < TL.D) {
+    const l = lenA(HIT, f), k = Math.min(HIT.pts.length - 1, Math.floor(l / STEP)), h = HIT.pts[k];
+    const a = Math.atan2(HIT.pts[Math.max(0, k)][1] - HIT.pts[Math.max(0, k - 3)][1], HIT.pts[Math.max(0, k)][0] - HIT.pts[Math.max(0, k - 3)][0]);
+    const imp = f - TL.regrow[1];
+    // 挡路的那条：描边闪一下
+    if (imp >= 0) { const Bk = A.ribbons[HIT.hit.by]; g.globalAlpha = Math.max(0, 1 - imp / 24); ribbon(g, {...Bk, w: Bk.w + 10, c: INK}, Bk.L); ribbon(g, Bk, Bk.L); g.globalAlpha = 1; }
+    // 安全距离圈 + 头
+    const sq = imp >= 0 ? Math.exp(-imp / 6) * Math.cos(imp * 0.9) : 0;   // 撞停：头被压扁，抖两下
+    g.save(); g.translate(h[0], h[1]); g.rotate(a); g.scale(1 - 0.28 * sq, 1 + 0.3 * sq);
+    g.setLineDash([3, 7]); g.lineWidth = 2.5; g.strokeStyle = imp >= 0 && imp < 20 ? RED : INK;
+    g.beginPath(); g.arc(0, 0, HIT.w / 2 + GAP + 6, 0, 7); g.stroke(); g.setLineDash([]);
+    g.fillStyle = HIT.c; g.beginPath(); g.arc(0, 0, HIT.w / 2, 0, 7); g.fill();
+    g.fillStyle = INK; g.beginPath(); g.arc(0, 0, 5, 0, 7); g.fill();
+    g.restore();
+    if (imp < 0) penHead(g, HIT, l, h, 90);
+    else {                                         // 标注：STOP + 间距
+      const p = ease.outBack(clamp(imp / 12), 2), bx = h[0] + Math.cos(a) * (HIT.w / 2 + 2), by = h[1] + Math.sin(a) * (HIT.w / 2 + 2);
+      g.save(); g.translate(h[0] - 70, h[1] - HIT.w / 2 - 70); g.scale(p, p); g.rotate(-0.08);
+      g.fillStyle = RED; g.fillRect(-58, -26, 116, 46); g.font = '900 30px Archivo'; g.fillStyle = '#fff'; g.textAlign = 'center'; g.fillText('STOP', 0, 9); g.restore();
+      g.strokeStyle = RED; g.lineWidth = 2; g.beginPath(); g.moveTo(bx, by); g.lineTo(bx + Math.cos(a) * GAP * 2, by + Math.sin(a) * GAP * 2); g.stroke();
+    }
+  }
+  // —— B 段：一个点顺着风走 ——
+  if (f >= TL.dot[0] && f < TL.C + 14) {
+    const n = Math.max(2, Math.round(ease.out2(clamp((f - TL.dot[0]) / (TL.dot[1] - TL.dot[0]))) * (DOT.length - 1)));
+    g.globalAlpha = f < TL.C ? 1 : 1 - (f - TL.C) / 14;
+    g.strokeStyle = INK; g.lineWidth = 6; g.lineCap = 'round'; g.beginPath(); g.moveTo(...DOT[0]); for (let k = 1; k < n; k++) g.lineTo(...DOT[k]); g.stroke();
+    for (let k = 0; k < n; k += 12) { g.fillStyle = INK; g.beginPath(); g.arc(DOT[k][0], DOT[k][1], 5, 0, 7); g.fill(); }
+    const hd = DOT[n - 1]; g.fillStyle = RED; g.strokeStyle = INK; g.lineWidth = 4; g.beginPath(); g.arc(hd[0], hd[1], 16, 0, 7); g.fill(); g.stroke();
+    g.globalAlpha = 1;
+  }
+  // —— 色带 B：换了种子的另一张 ——
+  if (f >= TL.grow2[0]) {
+    for (const R of B.ribbons) { const l = clamp((f - R.birth) * 46, 0, R.L), h = ribbon(g, R, l); if (h && l < R.L && R.w >= 26) penHead(g, R, l, h, 0); }
+  }
+  g.setTransform(1, 0, 0, 1, 0, 0);
+  // —— 文字 ——
+  card(g, f, TL.B + 4, TL.C - 4, 'RULE 01 · 方向场', '顺着风走', 'angle = noise(x, y) × 2π');
+  card(g, f, TL.C + 8, TL.D - 2, 'RULE 02 · 防碰撞', '碰到别人，就停下', `gap = ${GAP}px`);
+  card(g, f, TL.waves[0][0] - 6, TL.E - 4, 'RULE 03 · 填充顺序', '大的先长，小的补缝', 'sort(by: width, desc)');
+  // 种子：数字滚动
+  if (f >= TL.E && f < TL.title + 6) {
+    const p = clamp((f - TL.E - 4) / 14), from = '2A7F', to = '80A1';
+    const s = [...from].map((c, k) => p >= (k + 1) / 4 ? to[k] : (f - TL.E < 4 ? c : '0123456789ABCDEF'[Math.floor(Math.abs(Math.sin(f * 7.1 + k * 3)) * 16)])).join('');
+    const pin = ease.outBack(clamp((f - TL.E) / 10), 2), out = f > TL.title - 6 ? ease.in3(clamp((f - TL.title + 6) / 12)) : 0;
+    g.save(); g.translate(W / 2, H / 2); g.scale(pin * (1 - out), pin * (1 - out));
+    g.fillStyle = INK; g.fillRect(-330 + 10, -86 + 10, 660, 172); g.fillStyle = '#FFC530'; g.fillRect(-330, -86, 660, 172); g.lineWidth = 4; g.strokeStyle = INK; g.strokeRect(-330, -86, 660, 172);
+    g.fillStyle = INK; g.textAlign = 'center'; g.font = '700 30px JBM'; g.fillText('SEED · 换一个种子', 0, -30);
+    g.font = '800 92px JBM'; g.fillText('0x' + s, 0, 62); g.restore();
+  }
+  // 标题卡
+  if (f >= TL.title) {
+    const p = ease.outBack(clamp((f - TL.title) / 16), 1.6);
+    g.save(); g.translate(120, 640); g.rotate(lerp(-0.12, -0.03, p)); g.scale(lerp(0.4, 1, p), lerp(0.4, 1, p));
+    g.fillStyle = INK; g.fillRect(14, 14, 760, 330); g.fillStyle = PAPER; g.fillRect(0, 0, 760, 330); g.lineWidth = 4; g.strokeStyle = INK; g.strokeRect(0, 0, 760, 330);
+    rise(g, '生成艺术', 40, 170, '900 150px NotoSC', INK, f, TL.title + 4, 14);
+    g.font = '900 52px Archivo'; g.fillStyle = RED; rise(g, 'GENERATIVE ART', 44, 240, '900 52px Archivo', RED, f, TL.title + 10, 12);
+    rise(g, '不画画，写规则。', 44, 300, '500 34px NotoSC', '#3A3832', f, TL.title + 16, 14);
+    g.restore();
+    rise(g, '观默', 1790, 1040, '900 30px NotoSC', INK, f, TL.title + 24, 12);
+  }
+  g.font = '600 18px JBM'; g.fillStyle = 'rgba(22,22,22,.45)'; g.textAlign = 'right'; g.textBaseline = 'alphabetic';
+  g.fillText(`SEED 0x${f >= TL.E + 14 ? '80A1' : '2A7F'} · FRAME ${String(f).padStart(4, '0')}`, W - 40, 40); g.textAlign = 'left';
+};
+Promise.all(['900 40px NotoSC', '500 20px NotoSC', '700 20px JBM', '800 20px JBM', '600 20px JBM', '900 40px Archivo'].map(x => document.fonts.load(x)))
+  .then(() => { setup(); window.ready = true; const q = new URLSearchParams(location.search).get('f'); if (q) frame(+q); });
+</script>

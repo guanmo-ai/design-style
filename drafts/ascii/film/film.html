@@ -1,0 +1,277 @@
+<!doctype html>
+<!-- 字符画 · 开头 8 秒动效小样（1920×1080 · 60fps · 120 BPM，一拍 30 帧）。window.frame(f) 画第 f 帧，每帧是时间的纯函数。
+     分镜见 STORYBOARD.md；出片：bash make.sh -->
+<meta charset="utf-8">
+<style>
+@font-face{font-family:JBM;src:url(../../../public/fonts/JetBrainsMono.ttf)}
+@font-face{font-family:NotoSC;src:url(../../../public/fonts/NotoSansSC-Black.otf);font-weight:900}
+@font-face{font-family:NotoSC;src:url(../../../public/fonts/NotoSansSC-Medium.otf);font-weight:500}
+html,body{margin:0;background:#06060A;overflow:hidden}
+canvas{display:block}
+</style>
+<canvas id="c" width="1920" height="1080"></canvas>
+<script src="../ascii.js"></script>
+<script src="timeline.js"></script>
+<script>
+const W = 1920, H = 1080, BG = '#06060A';
+const g = document.getElementById('c').getContext('2d');
+const M = Object.assign(document.createElement('canvas'), {width: W, height: H}).getContext('2d');   // 字形遮罩
+const I = Object.assign(document.createElement('canvas'), {width: W, height: H}).getContext('2d');   // “@”里面的小宇宙
+// 预先算好色阶，省掉每格插值
+const LV = 48, pal = st => Array.from({length: LV + 1}, (_, k) => lerpHex(st, k / LV));
+const PAL = {1: pal(HOT), 2: pal(COOL), 3: pal(MOON)};
+const col = (L, k) => PAL[k][Math.max(0, Math.min(LV, Math.round(L * LV)))];
+const GLY = '!<>-_\\/[]{}=+*^?#01$%&';
+const hash = (i, j, k) => { let h = (i * 374761393 + j * 668265263 + k * 2147483647) | 0; h = Math.imul(h ^ (h >>> 13), 1274126177); return ((h ^ (h >>> 16)) >>> 0) / 4294967296; };
+
+// 世界点 → 屏幕（和 march 的射线相反）
+function project(S, p, cx, cy) {
+  const o = S.cam.pos, f = norm(sub(S.cam.look, o)), r = norm(cross([0, 1, 0], f)), up = cross(f, r);
+  const d = sub(p, o), z = dot(d, f);
+  return [cx * W + dot(d, r) / z / S.cam.fov * H, cy * H - dot(d, up) / z / S.cam.fov * H];
+}
+
+// 画一层字符网格。o: {S, fs, cx, cy, T:{s, ax, ay, bx, by}, scanX, pop, flash, target:[i,j], ringBoost, k(帧)}
+function grid(ctx, o) {
+  const fs = o.fs, cw = fs * 0.6, ch = fs, T = o.T || {s: 1, ax: 0, ay: 0, bx: 0, by: 0};
+  const sx0 = (0 - T.bx) / T.s + T.ax, sx1 = (W - T.bx) / T.s + T.ax, sy0 = (0 - T.by) / T.s + T.ay, sy1 = (H - T.by) / T.s + T.ay;
+  const i0 = Math.max(0, Math.floor(sx0 / cw) - 1), i1 = Math.min(Math.ceil(W / cw), Math.ceil(sx1 / cw) + 1);
+  const j0 = Math.max(0, Math.floor(sy0 / ch) - 1), j1 = Math.min(Math.ceil(H / ch), Math.ceil(sy1 / ch) + 1);
+  ctx.setTransform(T.s, 0, 0, T.s, T.bx - T.ax * T.s, T.by - T.ay * T.s);
+  ctx.textBaseline = 'top';
+  const pop = o.pop || 1;
+  ctx.font = `700 ${fs * pop}px JBM`;
+  const off = (pop - 1) * fs * 0.3;
+  const glowOK = T.s < 3;
+  let tgt = null;
+  for (let j = j0; j < j1; j++) for (let i = i0; i < i1; i++) {
+    const x = i * cw, y = j * ch;
+    const u = ((x + cw / 2) - W * o.cx) / H, v = -((y + ch / 2) - H * o.cy) / H;
+    let {L, kind} = march(o.S, u, v);
+    if (kind === 2 && o.ringBoost) L = Math.min(1, L + o.ringBoost);
+    let c, glyph, glow = 0;
+    if (o.target && i === o.target[0] && j === o.target[1]) { tgt = [x, y]; continue; }
+    if (o.scanX !== undefined && x > o.scanX) {               // 还没解码：乱码在跳
+      const r = hash(i, j, Math.floor(o.k / 2));
+      if (kind === 0 && r > 0.16) continue;
+      glyph = GLY[Math.floor(hash(i, j, o.k) * GLY.length)];
+      c = r < 0.06 ? '#7CFFB2' : kind ? '#4A5288' : '#262B48';
+    } else if (kind === 0) {
+      if (hash(i, j, 7) > 0.012) continue;
+      glyph = '.'; c = '#34365A';
+    } else {
+      glyph = rampChar(L); if (glyph === ' ') continue;
+      c = col(L, kind);
+      if (o.scanX !== undefined && o.scanX - x < 140) { c = '#EFFFF5'; glow = 14; }   // 刚解码的一列：亮一下
+      else if (L > 0.84 && glowOK) glow = 12;
+      if (o.flash) { c = '#FFFFFF'; glow = 0; }
+    }
+    ctx.shadowBlur = glow; ctx.shadowColor = c; ctx.fillStyle = c;
+    ctx.fillText(glyph, x - off, y - off);
+  }
+  ctx.shadowBlur = 0;
+  // 扫描线
+  if (o.scanX !== undefined && o.scanX < W + 40) {
+    const gr = ctx.createLinearGradient(o.scanX - 220, 0, o.scanX + cw, 0);
+    gr.addColorStop(0, 'rgba(124,255,178,0)'); gr.addColorStop(1, 'rgba(124,255,178,0.22)');
+    ctx.fillStyle = gr; ctx.fillRect(o.scanX - 220, 0, 220 + cw, H);
+    ctx.shadowColor = '#7CFFB2'; ctx.shadowBlur = 18;
+    for (let j = 0; j < H / ch; j++) { ctx.fillStyle = j % 6 === 2 ? '#FFFFFF' : '#B9FFD6'; ctx.fillText(hash(0, j, o.k) < 0.2 ? '▓' : '█', o.scanX, j * ch); }
+    ctx.shadowBlur = 0;
+  }
+  ctx.setTransform(1, 0, 0, 1, 0, 0);
+  return tgt;
+}
+
+// 字从遮罩里升起 / 解码出现
+function rise(ctx, text, x, y, font, color, f, at, dur = 16) {
+  const p = ease.out3(clamp((f - at) / dur));
+  if (p <= 0) return;
+  ctx.save(); ctx.font = font; ctx.textBaseline = 'alphabetic';
+  const m = ctx.measureText(text), h = parseFloat(font.match(/(\d+)px/)[1]);
+  ctx.beginPath(); ctx.rect(x - 4, y - h * 1.05, m.width + 12, h * 1.32); ctx.clip();
+  ctx.fillStyle = color; ctx.fillText(text, x, y + (1 - p) * h * 1.25);
+  ctx.restore();
+}
+function decode(ctx, text, x, y, font, color, f, at, per = 2, spin = 6, pool = GLY) {
+  ctx.save(); ctx.font = font; ctx.textBaseline = 'alphabetic'; ctx.fillStyle = color;
+  let xx = x;
+  [...text].forEach((c, k) => {
+    const lock = at + k * per + spin, start = at + k * per;
+    let s = c;
+    if (f < start) s = ''; else if (f < lock && c !== ' ') s = pool[Math.floor(hash(k, 3, f) * pool.length)];
+    if (s) { ctx.globalAlpha = f < lock ? 0.75 : 1; ctx.fillText(s, xx, y); }
+    xx += ctx.measureText(c).width;
+  });
+  ctx.restore();
+}
+function plate(ctx, tag, line, f, at, out, y = 120) {     // 规则牌：小标签 + 大字一行
+  if (f < at || f >= out + 12) return;
+  const q = f >= out ? ease.in3((f - out) / 12) : 0;
+  ctx.save(); ctx.globalAlpha = 1 - q; ctx.translate(0, -q * 40);
+  rise(ctx, tag, 72, y, '700 26px JBM', '#FFD23F', f, at, 12);
+  rise(ctx, line, 70, y + 74, '900 60px NotoSC', '#FFF6DA', f, at + 4, 16);
+  ctx.restore();
+}
+
+// “@”字形里最粗的一点（离笔画边缘最远），俯冲就对准它
+function thickest() {
+  const N = 400, c = Object.assign(document.createElement('canvas'), {width: N, height: N}).getContext('2d');
+  c.font = `700 ${N}px JBM`; c.textBaseline = 'top'; c.fillStyle = '#fff'; c.fillText('@', 0, 0);
+  const a = c.getImageData(0, 0, N, N).data, inside = (x, y) => x >= 0 && y >= 0 && x < N && y < N && a[(y * N + x) * 4 + 3] > 128;
+  let best = [0, 0, 0];
+  for (let y = 4; y < N; y += 3) for (let x = 4; x < N * 0.62; x += 3) {
+    if (!inside(x, y)) continue;
+    let r = 1;
+    for (; r < 80; r++) { let ok = true; for (let k = 0; k < 16 && ok; k++) ok = inside(Math.round(x + r * Math.cos(k * 0.3927)), Math.round(y + r * Math.sin(k * 0.3927))); if (!ok) break; }
+    if (r > best[2]) best = [x, y, r];
+  }
+  return [best[0] / N, best[1] / N];
+}
+let AT = [0.3, 0.5];
+function cam(f) {
+  const t = f / 60, Z = TL;
+  const spin = -t * 0.55;
+  let fov = 0.62, cx = 0.58, cy = 0.5;
+  fov = lerp(0.6, 0.48, ease.inOut3(clamp(f / 150)));
+  if (f >= Z.C) { const p = ease.inOut3(clamp((f - Z.C) / 90)); fov = lerp(0.48, 0.36, p); cx = lerp(0.58, 0.55, p); }
+  let th = 0.85;                                             // 光的方位：0.85 = 左前方
+  if (f >= Z.B && f < Z.C) th = f < Z.B + 10 ? -2.5 : lerp(-2.5, 0.85, ease.inOut3(clamp((f - Z.B - 10) / 78)));
+  const light = norm([-Math.sin(th), 0.55, -Math.cos(th)]);
+  const S = {cam: {pos: [0, 0.25, -5.4], fov, look: [0, 0, 0]}, light, spin, storm: 1};
+  // —— 字号（C 段按拍变细）——
+  let fs = 19, pop = 1, flash = false;
+  for (const [at, v] of Z.steps) if (f >= at) { fs = v; pop = 1 + 0.5 * Math.exp(-(f - at) / 3.5); flash = f - at < 2; }
+  return {S, cx, cy, fs, pop, flash, spin};
+}
+// 探针在阶梯上的位置（音效用）：node events.cjs 导出
+function probeK(f) {
+  const {S, cx, cy} = cam(f), pp = project(S, norm([-0.38, 0.28, -0.88]), cx, cy);
+  return Math.round(clamp(march(S, (pp[0] - W * cx) / H, -(pp[1] - H * cy) / H).L) * (RAMP.length - 1));
+}
+window.events = () => { const out = []; let last = -1; for (let f = TL.B + 14; f < TL.C; f++) { const k = probeK(f); if (k !== last) { out.push([f, k]); last = k; } } return {ramp: out}; };
+window.frame = f => {
+  const t = f / 60, Z = TL;
+  g.setTransform(1, 0, 0, 1, 0, 0); g.fillStyle = BG; g.fillRect(0, 0, W, H);
+  const {S, cx, cy, fs, pop, flash, spin} = cam(f);
+  const ringBoost = f >= Z.B && f < Z.B + 30 ? 0.6 * Math.exp(-(f - Z.B) / 7) : 0;
+  // —— 俯冲：锁定一个字，钻进它最粗的那一笔，笔画撑满屏幕时，里面是一整颗新的星球 ——
+  const fsD = Z.diveFs, cwT = fsD * 0.6;
+  const tp = project(S, norm([-0.34, 0.36, -0.87]), cx, cy);
+  const tI = Math.floor(tp[0] / cwT), tJ = Math.floor(tp[1] / fsD), gx = tI * cwT, gy = tJ * fsD;
+  const ax = gx + AT[0] * fsD, ay = gy + AT[1] * fsD;           // 锚点：“@”最粗那一笔的中心
+  let T = null, s = 1;
+  if (f >= Z.D) {
+    const p = clamp((f - Z.dive0) / (Z.dive1 - Z.dive0));
+    s = f < Z.dive0 ? 1 : Math.exp(Math.log(Z.sEnd) * Math.pow(p, 2.2));
+    T = {s, ax, ay, bx: lerp(ax, 960, ease.inOut3(p)), by: lerp(ay, 540, ease.inOut3(p))};
+  }
+  const inner = f >= Z.D ? clamp((s - 8) / 22) : 0;
+  if (f < Z.E) {
+    const scanX = f < Z.A1 ? lerp(W * 0.6, W + 60, ease.in2(f / Z.A1)) : undefined;
+    g.globalAlpha = f >= Z.D ? 1 - clamp((s - 12) / 50) : 1;     // 俯冲时，周围的字退场
+    if (g.globalAlpha > 0) grid(g, {S, fs: f >= Z.D ? fsD : fs, cx, cy, T, scanX, pop: f >= Z.D ? 1 : pop, flash, target: f >= Z.D ? [tI, tJ] : null, ringBoost, k: f});
+    g.globalAlpha = 1;
+  }
+  // 里面那颗星球（和封面同一个构图），俯冲时透过“@”的笔画看到，落定后就是整个画面
+  const innerScene = () => {
+    I.setTransform(1, 0, 0, 1, 0, 0); I.fillStyle = '#0A0A12'; I.fillRect(0, 0, W, H);
+    const fv = f < Z.E ? 0.56 : lerp(0.56, 0.5, ease.out3(clamp((f - Z.E) / 120)));
+    const S2 = {cam: {pos: [0, 0.25, -5.4], fov: fv, look: [0, 0, 0]}, light: norm([-0.62, 0.58, -0.55]), spin: spin - 1.2, storm: 1};
+    grid(I, {S: S2, fs: 19, cx: 0.64, cy: 0.5, k: f, ringBoost: f >= Z.E && f < Z.E + 30 ? 0.5 * Math.exp(-(f - Z.E) / 8) : 0});
+  };
+  if (f >= Z.E) { innerScene(); g.drawImage(I.canvas, 0, 0); }
+  else if (f >= Z.D) {
+    g.save();
+    g.setTransform(T.s, 0, 0, T.s, T.bx - T.ax * T.s, T.by - T.ay * T.s);
+    g.font = `700 ${fsD}px JBM`; g.textBaseline = 'top';
+    g.fillStyle = '#FFF8E1'; g.shadowColor = '#FFC531'; g.shadowBlur = s < 3 ? 16 : 0;
+    g.fillText('@', gx, gy);
+    g.restore();
+    if (f < Z.dive0 + 8) {                                    // 锁定框：从大框收紧到这一格
+      const lock = ease.out3(clamp((f - Z.D) / 14));
+      const r = lerp(220, fsD * 0.9, lock) * s, a = f < Z.dive0 ? 1 : 1 - (f - Z.dive0) / 8;
+      const px = T.bx + (gx + cwT / 2 - ax) * s, py = T.by + (gy + fsD * 0.55 - ay) * s;
+      g.save(); g.globalAlpha = a; g.strokeStyle = '#FFD23F'; g.lineWidth = 3;
+      const Lk = r * 0.35;
+      for (const [sx, sy] of [[-1, -1], [1, -1], [1, 1], [-1, 1]]) {
+        g.beginPath(); g.moveTo(px + sx * r, py + sy * (r - Lk)); g.lineTo(px + sx * r, py + sy * r); g.lineTo(px + sx * (r - Lk), py + sy * r); g.stroke();
+      }
+      g.font = '700 24px JBM'; g.fillStyle = '#FFD23F'; g.fillText(`'@'  L = 0.97`, px + r + 14, py - r + 20);
+      g.restore();
+    }
+    if (inner > 0) {
+      innerScene();
+      M.setTransform(1, 0, 0, 1, 0, 0); M.clearRect(0, 0, W, H); M.globalCompositeOperation = 'source-over';
+      M.setTransform(T.s, 0, 0, T.s, T.bx - T.ax * T.s, T.by - T.ay * T.s);
+      M.font = `700 ${fsD}px JBM`; M.textBaseline = 'top'; M.fillStyle = '#fff'; M.fillText('@', gx, gy);
+      M.setTransform(1, 0, 0, 1, 0, 0); M.globalCompositeOperation = 'source-in'; M.drawImage(I.canvas, 0, 0);
+      M.globalCompositeOperation = 'source-over';
+      g.globalAlpha = inner; g.drawImage(M.canvas, 0, 0); g.globalAlpha = 1;
+    }
+  }
+  // —— 叠层：规则、阶梯、读数 ——
+  // A：终端命令
+  if (f < Z.B + 20) {
+    g.globalAlpha = f < Z.B ? 1 : 1 - (f - Z.B) / 20;
+    decode(g, '> render saturn.sdf --chars " .:-=+*#%@"', 72, 1010, '500 22px JBM', '#8E91B8', f, 0, 1, 3);
+    g.globalAlpha = 1;
+  }
+  // B：规则 1 + 字符阶梯 + 探针
+  if (f >= Z.B && f < Z.C + 12) {
+    plate(g, 'RULE 01', '越亮，就换一个越“满”的字', f, Z.B + 8, Z.C);
+    const q = f >= Z.C ? 1 - (f - Z.C) / 12 : 1;
+    const pp = project(S, norm([-0.38, 0.28, -0.88]), cx, cy);
+    const u = (pp[0] - W * cx) / H, v = -(pp[1] - H * cy) / H;
+    const Lp = march(S, u, v).L, kk = Math.round(clamp(Lp) * (RAMP.length - 1));
+    const ap = ease.out3(clamp((f - Z.B - 14) / 16)) * q;
+    g.save(); g.globalAlpha = ap;
+    const rx = 72, ry = 880, cs = 56;
+    for (let k = 0; k < RAMP.length; k++) {
+      const on = k === kk, tL = k / (RAMP.length - 1);
+      g.fillStyle = on ? '#FFD23F' : 'rgba(255,255,255,0.07)';
+      g.fillRect(rx + k * cs, ry - (on ? 10 : 0), cs - 6, 76 + (on ? 10 : 0));
+      g.font = '800 46px JBM'; g.textBaseline = 'top'; g.fillStyle = on ? '#06060A' : col(tL, 1);
+      g.fillText(RAMP[k] === ' ' ? '␣' : RAMP[k], rx + k * cs + 11, ry + 12 - (on ? 5 : 0));
+    }
+    g.font = '600 20px JBM'; g.fillStyle = '#8E91B8'; g.fillText('暗 L = 0', rx, ry + 92); g.textAlign = 'right'; g.fillText('L = 1 亮', rx + RAMP.length * cs - 6, ry + 92); g.textAlign = 'left';
+    // 探针：星球上的一个点，引线连到阶梯上当前的字
+    g.strokeStyle = '#FFD23F'; g.lineWidth = 2.5; g.beginPath(); g.arc(pp[0], pp[1], 26, 0, 7); g.stroke();
+    g.beginPath(); g.moveTo(pp[0] - 40, pp[1]); g.lineTo(pp[0] + 40, pp[1]); g.moveTo(pp[0], pp[1] - 40); g.lineTo(pp[0], pp[1] + 40); g.stroke();
+    g.setLineDash([3, 8]); g.beginPath(); g.moveTo(pp[0], pp[1] + 30); g.lineTo(rx + kk * cs + cs / 2 - 3, ry - 14); g.stroke(); g.setLineDash([]);
+    g.font = '700 24px JBM'; g.fillStyle = '#FFD23F'; g.fillText(`L = ${Lp.toFixed(2)}`, pp[0] + 36, pp[1] - 52);
+    g.restore();
+  }
+  // C：规则 2 + 字号读数
+  if (f >= Z.C && f < Z.D + 14) {
+    plate(g, 'RULE 02', '字越小，画越清楚', f, Z.C + 4, Z.D + 2);
+    const q = f >= Z.D + 2 ? 1 - (f - Z.D - 2) / 12 : ease.out3(clamp((f - Z.C - 8) / 14));
+    const cols = Math.ceil(W / (fs * 0.6)), rows = Math.ceil(H / fs);
+    g.save(); g.globalAlpha = clamp(q);
+    g.fillStyle = 'rgba(6,6,10,0.82)'; g.fillRect(56, 870, 640, 150);
+    g.font = '800 88px JBM'; g.fillStyle = '#FFF6DA'; g.textBaseline = 'alphabetic';
+    const sc = pop; g.save(); g.translate(72, 975); g.scale(sc, sc); g.fillText(`${fs}px`, 0, 0); g.restore();
+    g.font = '600 24px JBM'; g.fillStyle = '#8E91B8';
+    g.fillText(`${cols} × ${rows} = ${(cols * rows).toLocaleString()} 个字`, 300, 940);
+    g.fillText('font-size = 一格的高度', 300, 980);
+    g.restore();
+  }
+  // E：标题解码
+  if (f >= Z.E + 18) {
+    decode(g, '字符画', 96, 470, '900 190px NotoSC', '#FFF6DA', f, Z.E + 18, 5, 9, '像素点线面光暗明灭字符码');
+    decode(g, 'ASCII ART', 104, 570, '800 64px JBM', '#FF6A1A', f, Z.E + 34, 2, 6);
+    rise(g, '没有像素，只有字。', 100, 666, '500 40px NotoSC', '#B8BBDC', f, Z.E + 56, 18);
+    decode(g, '1963 → NOW', 104, 740, '600 26px JBM', '#6E7199', f, Z.E + 70, 1, 4);
+    rise(g, '观默', 1780, 1030, '900 30px NotoSC', '#6E7199', f, Z.E + 80, 14);
+  }
+  // 暗角
+  const vg = g.createRadialGradient(W / 2, H / 2, H * 0.45, W / 2, H / 2, H * 1.05);
+  vg.addColorStop(0, 'rgba(0,0,0,0)'); vg.addColorStop(1, 'rgba(0,0,0,0.55)');
+  g.fillStyle = vg; g.fillRect(0, 0, W, H);
+  // 帧号
+  g.font = '500 18px JBM'; g.fillStyle = '#5A5D80'; g.textAlign = 'right'; g.textBaseline = 'alphabetic';
+  g.fillText(`FRAME ${String(f).padStart(4, '0')} · 60fps`, W - 56, 52); g.textAlign = 'left';
+};
+Promise.all(['900 40px NotoSC', '500 20px NotoSC', '700 20px JBM', '800 20px JBM', '500 20px JBM', '600 20px JBM'].map(x => document.fonts.load(x)))
+  .then(() => { AT = thickest(); window.ready = true; const q = new URLSearchParams(location.search).get('f'); if (q) frame(+q); });
+</script>
