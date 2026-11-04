@@ -4,7 +4,7 @@
 
 > **In one line:** scissors, not rulers — every piece is a sheet of cut paper you could pick up.
 
-🎬 Video (Release `day-17`, published after review) · 🛠 [Process](PROCESS.en.md) · 🖼 [Image sources](images) · 🎞 [Storyboard](video/STORYBOARD.md)
+🎬 [Watch the film](https://github.com/guanmo-ai/design-style/releases/tag/day-17) · 📦 [Full source](https://github.com/guanmo-ai/design-style/releases/download/day-17/017-mid-century-modern-source.zip) · 🛠 [Process](PROCESS.en.md) · 🖼 [Image sources](images) · 🎞 [Storyboard](video/STORYBOARD.md)
 
 | Poster | Cheat sheet |
 |:-:|:-:|
@@ -47,3 +47,18 @@ flat colors, no gradients, no outlines, no grunge texture --ar 4:5
 ```
 
 More prompts (video, code), layout parameters and the 15-second storyboard are in the [Chinese guide](README.md). Design tokens: [`tokens.css`](tokens.css) · [`tokens.json`](tokens.json).
+
+
+## Reproduce locally
+
+Requires Node.js 22.12+, Python 3.10+ and FFmpeg. From the project root:
+
+```bash
+npm ci
+python3 -m pip install numpy scipy fonttools brotli pillow
+npx remotion browser ensure
+npm run fonts
+npm run render:017
+```
+
+The release uses the approved review file unchanged. These commands are for local reproduction. Run `npm run images:017` to rebuild the four images; `python3 styles/017-mid-century-modern/video/make_geometry.py` regenerates the paper outlines. Font sources and licenses are recorded in `scripts/fetch_fonts.sh`.

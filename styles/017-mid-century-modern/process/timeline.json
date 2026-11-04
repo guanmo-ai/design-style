@@ -1,0 +1,56 @@
+{
+  "fps": 60,
+  "bpm": 144,
+  "frames": 900,
+  "title": "风格 017 · 中世纪现代：同一批纸片翻面接力，换章从彩纸入画开始；最后接回海报",
+  "segments": [
+    {
+      "label": "开场 · 海报",
+      "start": 0,
+      "dur": 107,
+      "color": "#FBF3E3"
+    },
+    {
+      "label": "01 片头 · Saul Bass",
+      "start": 107,
+      "dur": 100,
+      "color": "#2F6BD8"
+    },
+    {
+      "label": "02 家具 · Eames",
+      "start": 207,
+      "dur": 100,
+      "color": "#1FB3A6"
+    },
+    {
+      "label": "03 唱片 · Blue Note",
+      "start": 307,
+      "dur": 100,
+      "color": "#FFC62E"
+    },
+    {
+      "label": "04 建筑 · 案例研究住宅",
+      "start": 407,
+      "dur": 100,
+      "color": "#F57AA8"
+    },
+    {
+      "label": "05 今天 · 爵士电台 App",
+      "start": 507,
+      "dur": 125,
+      "color": "#2F6BD8"
+    },
+    {
+      "label": "五条规则",
+      "start": 632,
+      "dur": 194,
+      "color": "#FBF3E3"
+    },
+    {
+      "label": "片尾 · 回到海报",
+      "start": 826,
+      "dur": 74,
+      "color": "#F2542D"
+    }
+  ]
+}
