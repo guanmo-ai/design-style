@@ -1,5 +1,6 @@
-"""生成艺术小样的配乐与音效：120 BPM、C 大调五声，木琴 + 拨弦 + 律动鼓组。
-“画在弹琴”：每条色带出生 = 一个木琴音，音高由它在画面上的高度决定（越靠上越高），按 16 分音符对齐。
+"""生成艺术开头小样（第二版）的配乐与音效：120 BPM、C 大调五声，木琴 + 拨弦 + 律动鼓组。每一段换一种声音：
+流场（色带出生 = 木琴音，音高 = 画面高度）→ 倒带 → 圆一个个“啵”出来（越大越低）→ 吸到网格的细碎声 →
+瓷砖一波波翻转（棘轮声）→ 缩进手机 → 滑块拖动（滑音）、重新生成 → 界面掉落 → 树一层层分叉（拨弦一层高一个音）→ 开花（钢片琴）→ 片名。
 时间全部取自 timeline.js 和 events.json。python3 audio.py out.wav"""
 import json
 import re
@@ -8,6 +9,11 @@ from collections import defaultdict
 from pathlib import Path
 
 import numpy as np
+
+
+def grid(f0, step):
+    """起点吸到全片的节拍网格上（否则底鼓、踩镲会错开拍点）"""
+    return float(np.ceil(f0 / step - 1e-9) * step)
 
 HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE.parents[2] / 'scripts' / 'lib'))
@@ -19,15 +25,16 @@ class Kit(AudioKit, Orchestra):
     pass
 
 
-TL = json.loads(re.search(r'const TL = (\{.*?\});', (HERE / 'timeline.js').read_text(), re.S).group(1))
+TL = json.loads(re.sub(r'//[^\n]*', '', re.search(r'const TL = (\{.*?\});', (HERE / 'timeline.js').read_text(), re.S).group(1)))
 EV = json.loads((HERE / 'events.json').read_text())
 FPS, BEAT, S16 = 60, 30, 7.5
-END = TL['end']
-A = Kit(duration=END / FPS, seed=33, fps=FPS, tail=2.5)
+END = TL['title'][1]
+A = Kit(duration=END / FPS, seed=33, fps=FPS, tail=3.0)
 fr = A.fr
+rng = np.random.default_rng(9)
 
-PENTA = [m + o for o in (48, 60, 72, 84) for m in (0, 2, 4, 7, 9)]         # C 五声，四个八度
-CH = [[60, 64, 67], [57, 60, 64], [53, 57, 60], [55, 59, 62]]              # C | Am | F | G
+PENTA = [m + o for o in (48, 60, 72, 84) for m in (0, 2, 4, 7, 9)]
+CH = [[60, 64, 67], [57, 60, 64], [53, 57, 60], [55, 59, 62]]     # C | Am | F | G
 ROOT = [36, 33, 29, 31]
 
 
@@ -35,47 +42,28 @@ def bar(f):
     return int(f // 120) % 4
 
 
-def pitch(y, lo=5, hi=17):
-    """画面高度 → 五声音阶：越靠上越高"""
-    k = int(round(lo + (1 - np.clip(y / 1080, 0, 1)) * (hi - lo)))
-    return PENTA[max(0, min(len(PENTA) - 1, k))]
-
-
-def play_births(births, f0, f1, per=2, lo=5, hi=17, level=1.0, inst='marimba'):
-    """出生时间按 16 分音符对齐；每格最多 per 个音（挑最粗的色带），并只用当前和弦里的五声音"""
-    slots = defaultdict(list)
-    for b in births:
-        f = b[0]
-        if f0 <= f < f1:
-            slots[round(f / S16)].append(b)
-    for s, bs in sorted(slots.items()):
-        bs.sort(key=lambda b: -b[2])
-        used = set()
-        for b in bs[:per]:
-            m = pitch(b[1], lo, hi)
-            if m in used:
-                m += 12
-            used.add(m)
-            lv = level * (0.6 + 0.4 * min(1, b[2] / 40))
-            sig = A.marimba(m, lv) if inst == 'marimba' else A.celesta(m, 0.9, lv * 0.9)
-            A.place(sig, fr(s * S16), pan=float(np.clip((b[1] / 1080 - 0.5) * -0.8, -0.6, 0.6)), send=0.25)
+def slots(items, f0, f1, per=S16):
+    out = defaultdict(list)
+    for it in items:
+        if f0 <= it[0] < f1:
+            out[round(it[0] / per)].append(it)
+    return sorted(out.items())
 
 
 def bassline(f0, f1, level=1.0):
-    for f in np.arange(f0, f1, 15):
+    for f in np.arange(grid(f0, 15), f1, 15):
         r = ROOT[bar(f)]
         A.place(A.bass(r + (12 if int(f // 15) % 4 == 3 else 0), 0.24, level), fr(f))
 
 
 def pluck_chords(f0, f1, level=1.0):
-    """反拍上的拨弦和弦，轻快"""
-    for f in np.arange(f0 + 15, f1, 30):
+    for f in np.arange(grid(f0, 30) + 15, f1, 30):
         for k, m in enumerate(CH[bar(f)]):
             A.place(A.pluck_string(m + 12, 0.35, level * 0.5, bright=0.4), fr(f + k * 0.6), pan=-0.3 + k * 0.3, send=0.2)
 
 
 def drums(f0, f1, kick=True, clap=True, hats=True, level=1.0, shaker=False):
-    for f in np.arange(f0, f1, 7.5):
+    for f in np.arange(grid(f0, 7.5), f1, 7.5):
         on = abs(f % BEAT) < 0.01
         if kick and on:
             A.place(A.kick(level), fr(f)); A.sidechain(f)
@@ -87,74 +75,102 @@ def drums(f0, f1, kick=True, clap=True, hats=True, level=1.0, shaker=False):
             A.place(A.shaker(level), fr(f), pan=-0.3)
 
 
-# ── A 0—90：色带从左往右一起长，画自己在弹琴 ──
-play_births(EV['grow'], 0, TL['B'], per=2)
-bassline(0, TL['B'], 0.9)
-drums(0, TL['B'], level=0.9, shaker=True)
-pluck_chords(0, TL['B'], 0.8)
+def bloop(m, level=1.0):
+    """圆“啵”地长出来：音高先高一点再落到位"""
+    t = A.tt(0.3)
+    f = A.midi(m) * (1 + 0.6 * np.exp(-t / 0.02))
+    return np.sin(2 * np.pi * np.cumsum(f) / A.SR) * A.env(t, 0.002, 0.08) * level * 0.4
 
-# ── B 90—180：一切变淡，方向场的箭头一片片翻出来（沙锤一样的细碎声），一个点顺着风走（上滑的音）──
-B = TL['B']
-A.place(A.kick(1.0), fr(B)); A.place(A.crash(0.5), fr(B), send=0.4)
-A.place(A.pad([60, 64, 67, 72], 1.6, 1.4, att=0.25), fr(B), send=0.5)
-A.place(A.pad([57, 60, 64, 69], 1.2, 1.2, att=0.4), fr(B + 60), send=0.5)
-ar = sorted(EV['arrows'])
-for k in range(0, len(ar), 12):                     # 箭头翻出来：一小群一个“嗒”，音越来越高
-    f = ar[k]
-    A.sfx(A.click(0.35, lo=2500 + k * 4, hi=10000), fr(f), pan=float(np.clip(-0.7 + k / len(ar) * 1.4, -0.7, 0.7)), send=0.15)
-d0, d1 = TL['dot']
-A.sfx(A.glide(67, 84, (d1 - d0) / FPS, 0.9), fr(d0), send=0.3)
-for k, f in enumerate(np.arange(d0, d1, 7.5)):      # 点每走一段，一个木琴音往上爬
-    A.place(A.marimba(PENTA[8 + k], 0.8), fr(f), send=0.3)
-for f in np.arange(B + 30, TL['C'], 15):
-    A.place(A.hat(0.5), fr(f), pan=0.25)
 
-# ── C 180—270：推近；主角色带缩回去、再长，撞到前面那条就停（压扁、抖两下）──
-C = TL['C']
-A.sfx(A.whoosh(0.4, 400, 6000, 0.7, peak=0.6), fr(C - 6), send=0.2)
-A.place(A.kick(1.0), fr(C))
-r0, r1 = TL['retract']
-A.sfx(A.glide(79, 60, (r1 - r0) / FPS + 0.05, 0.8), fr(r0))
-g0, g1 = TL['regrow']
-A.sfx(A.glide(55, 79, (g1 - g0) / FPS, 0.7), fr(g0), send=0.2)
-for k, f in enumerate(np.arange(g0, g1, 7.5)):
-    A.place(A.marimba(PENTA[5 + k % 5 + (k // 5) * 2], 0.7), fr(f), send=0.2)
-hit = EV['hit']
-A.sfx(A.thock(50, 1.4), fr(hit), send=0.3); A.place(A.kick(1.2), fr(hit)); A.sidechain(hit, 0.3, 0.3)
-A.sfx(A.glide(74, 62, 0.25, 0.6), fr(hit + 2))      # “啵嗡”：被弹回来
-A.sfx(A.thock(62, 0.6), fr(hit + 8)); A.sfx(A.thock(67, 0.35), fr(hit + 14))
-bassline(C, TL['D'], 0.8)
-drums(C + 30, TL['D'], clap=False, level=0.8)
+# ① 流场：画在弹琴
+f0, f1 = TL['flow']
+for s, bs in slots(EV['grow'], f0, f1):
+    bs.sort(key=lambda b: -b[2]); used = set()
+    for b in bs[:1]:
+        m = PENTA[int(round(5 + (1 - np.clip(b[1] / 1080, 0, 1)) * 12))]
+        m = m + 12 if m in used else m; used.add(m)
+        A.place(A.marimba(m, 0.55 + 0.3 * min(1, b[2] / 40)), fr(s * S16), send=0.25)
+bassline(0, TL['rewind'][0], 0.9); drums(0, TL['rewind'][0], level=0.9, shaker=True); pluck_chords(0, TL['rewind'][0], 0.8)
 
-# ── D 270—390：全部收回，再按粗细分三批长回来：粗的低音，细的高音，越来越密 ──
-D = TL['D']
-c0, c1 = TL['clear']
-A.sfx(A.whoosh((c1 - c0) / FPS + 0.1, 6000, 300, 0.8, peak=0.3), fr(c0), send=0.2)
-A.sfx(A.glide(84, 48, (c1 - c0) / FPS, 0.6), fr(c0))
-for wv, (w0, w1, _, _) in enumerate(TL['waves']):
-    play_births([b for b in EV['wave'] if b[3] == wv], w0 - 4, w1 + 4, per=1 + wv, lo=[0, 5, 10][wv], hi=[7, 12, 19][wv], level=[1.3, 1.0, 0.8][wv])
-bassline(TL['waves'][0][0], TL['E'], 1.0)
-drums(TL['waves'][0][0], TL['E'] - 15, level=1.0, shaker=True)
-pluck_chords(TL['waves'][1][0], TL['E'] - 15, 0.9)
-A.sfx(A.riser2(1.0, 0.9), fr(TL['E'] - 60))
+# 倒带
+r0, r1 = TL['rewind']
+A.sfx(A.glide(84, 55, (r1 - r0) / FPS, 1.0), fr(r0)); A.sfx(A.whoosh((r1 - r0) / FPS + 0.1, 6000, 400, 0.6, peak=0.3), fr(r0))
 
-# ── E 390：换种子。数字滚动，整张画倒带收回（磁带停转），停半拍，新的一张从中心炸开 ──
-E = TL['E']
-A.place(A.kick(1.1), fr(E)); A.sfx(A.thock(72, 1.0), fr(E), send=0.3)
-for k in range(5):
-    A.sfx(A.click(0.6), fr(E + 4 + k * 3.5), send=0.1)
-w0, w1 = TL['rewind']
-A.place(A.tape_stop((w1 - w0) / FPS + 0.1, 60, 1.6), fr(w0), send=0.3)
-A.sfx(A.whoosh((w1 - w0) / FPS, 7000, 400, 0.7, peak=0.2), fr(w0))
-G = TL['grow2'][0]
-A.place(A.kick(1.4), fr(G)); A.place(A.hit(0.9, m=36), fr(G), send=0.3); A.place(A.crash(1.0), fr(G), send=0.4)
-play_births(EV['growB'], G, END, per=3, level=0.9, inst='celesta')
-bassline(G, END + 30, 1.0)
-drums(G, END + 30, level=1.0, shaker=True)
-pluck_chords(G, END + 30, 0.9)
-T = TL['title']
-A.place(A.pad([60, 64, 67, 72], 1.6, 1.2, att=0.05), fr(T), send=0.4)
-for k, m in enumerate([72, 76, 79, 84]):
+# ② 圆：一个个“啵”出来，越大越低；律动回来
+c0, c1 = TL['circles']
+A.place(A.kick(1.2), fr(c0 + 4)); A.place(A.crash(0.6), fr(c0 + 4), send=0.4)
+for s, cs in slots(EV['circ'], c0, c1):
+    cs.sort(key=lambda c: -c[1])
+    for c in cs[:2]:
+        k = int(np.clip(14 - np.log2(max(c[1], 8)) * 2.2, 2, 18))
+        A.sfx(bloop(PENTA[k], 0.5 + 0.5 * min(1, c[1] / 120)), fr(s * S16), pan=float(np.clip((c[2] / 1080 - 0.5), -0.6, 0.6)), send=0.25)
+bassline(c0 + 4, TL['dots'][0], 1.0); drums(c0 + 34, TL['dots'][0], level=0.95); pluck_chords(c0 + 4, TL['dots'][0], 0.7)
+
+# 缩成点、吸到网格
+d0, d1 = TL['dots']
+A.sfx(A.glide(60, 84, (d1 - d0) / FPS, 0.8), fr(d0))
+for k in range(16):
+    A.sfx(A.click(0.4, lo=2500, hi=9000), fr(d0 + 4 + k * 1.1), pan=float(rng.uniform(-0.7, 0.7)))
+
+# ③ 瓷砖：出现一串木块声，每一波翻转一串棘轮声，越翻越快
+t0 = TL['tiles'][0]
+A.place(A.kick(1.2), fr(t0 + 4))
+for k in range(12):
+    A.sfx(A.thock(60 + (k % 5) * 3, 0.5), fr(t0 + 4 + k * 1.5), pan=-0.5 + k * 0.08)
+for w in TL['flips']:
+    A.place(A.kick(1.1), fr(w)); A.sidechain(w)
+    for k in range(14):
+        A.sfx(A.click(0.6, lo=1200, hi=5000, d=0.006), fr(w + k * 0.9), pan=float(np.sin(k * 0.7)) * 0.6)
+    A.sfx(A.thock(72, 0.5), fr(w + 10))
+bassline(t0 + 4, TL['shrink'][0], 1.0); drums(t0 + 34, TL['shrink'][0], level=1.0, shaker=True)
+for k, m in enumerate([72, 76, 79, 84, 79, 76, 81, 84]):
+    A.place(A.marimba(m, 0.8), fr(t0 + 34 + k * 7.5), send=0.3)
+
+# 缩进手机；④ 网页 + 手机
+s0, s1 = TL['shrink']
+A.sfx(A.whoosh((s1 - s0) / FPS, 5000, 300, 0.7, peak=0.6), fr(s0)); A.sfx(A.thock(55, 1.0), fr(s1), send=0.2)
+u0, u1 = TL['ui']
+A.place(A.kick(1.0), fr(s1)); A.place(A.pad([60, 64, 67, 72], 1.5, 1.0), fr(s1), send=0.4)
+bassline(s1, TL['clear'][0], 0.9); drums(s1 + 10, TL['clear'][0], clap=True, level=0.85); pluck_chords(s1, TL['clear'][0], 0.8)
+g0, g1 = TL['drag']
+A.sfx(A.click(1.0, lo=1500, hi=6000, d=0.006), fr(g0 - 2))
+A.sfx(A.glide(55, 79, (g1 - g0) / FPS, 1.4), fr(g0), send=0.3)
+for k, f in enumerate(np.arange(g0, g1, 3.75)):
+    A.sfx(A.click(0.25, lo=3000, hi=9000), fr(f), pan=-0.4)
+e0 = TL['reroll'][0]
+A.sfx(A.click(1.2, lo=1200, hi=6000, d=0.006), fr(e0 - 2))
+for k in range(10):
+    A.sfx(A.celesta(PENTA[10 + k % 8], 0.5, 0.7), fr(e0 + 4 + k * 1.6), pan=0.6, send=0.3)
+
+# 界面掉下去
+l0, l1 = TL['clear']
+A.sfx(A.whoosh((l1 - l0) / FPS + 0.1, 3000, 200, 0.8, peak=0.7), fr(l0)); A.sfx(A.boom(0.7, 90, 40, 0.5), fr(l1 - 2))
+
+# ⑤ 树：每一层分叉，一个拨弦音往上走；开花一串钢片琴
+T0 = TL['tree'][0]
+A.place(A.kick(1.1), fr(T0 + 2)); A.place(A.pad([57, 60, 64, 69], 2.0, 1.0, att=0.5), fr(T0 + 2), send=0.5)
+for s, bs in slots(EV['branch'], T0, TL['title'][0]):
+    d = max(b[1] for b in bs)
+    A.place(A.pizz(PENTA[min(19, int(4 + d * 1.5))], 1.3), fr(s * S16), pan=float(rng.uniform(-0.4, 0.4)), send=0.3)
+for s, bl in slots([[t] for t in EV['bloom']], TL['bloom'][0], TL['title'][0] + 20, per=3.75):
+    A.sfx(A.celesta(PENTA[int(rng.integers(10, 20))], 0.6, 0.45 + 0.1 * min(4, len(bl))), fr(s * 3.75), pan=float(rng.uniform(-0.7, 0.7)), send=0.35)
+bassline(T0 + 30, TL['title'][0], 1.0); drums(T0 + 30, TL['title'][0], level=1.0, shaker=True); pluck_chords(T0 + 30, TL['title'][0], 0.8)
+A.sfx(A.riser2(0.8, 0.7), fr(TL['title'][0]) - 0.8)
+
+# 片名
+T = TL['title'][0]
+A.place(A.kick(1.4), fr(T)); A.place(A.hit(0.9, m=36), fr(T), send=0.3); A.place(A.crash(1.0), fr(T), send=0.5)
+A.place(A.pad([60, 64, 67, 72, 76], 2.6, 1.3, att=0.05), fr(T), send=0.5)
+bassline(T, END + 30, 1.0); drums(T + 30, END + 30, level=1.0, shaker=True); pluck_chords(T, END + 30, 0.9)
+for k, m in enumerate([72, 76, 79, 84, 88]):
     A.place(A.bell(m, 0.8), fr(T + 4 + k * 3), send=0.4)
+
+# 底下一直在走的律动（换场的那几拍留空）：沙锤 + 反拍拨弦 + 一条木琴旋律
+MEL = [72, 76, 79, 76, 81, 79, 76, 74, 72, 74, 76, 79, 84, 81, 79, 76]
+for a, b in [(TL['circles'][0] + 4, TL['dots'][0]), (TL['shrink'][1], TL['clear'][0]), (TL['tree'][0] + 30, TL['title'][0])]:
+    drums(a, b, kick=False, clap=False, hats=False, shaker=True, level=1.2)
+    for k, f in enumerate(np.arange(a + 15, b, 15)):
+        A.place(A.marimba(MEL[k % len(MEL)], 0.7), fr(f), pan=0.2, send=0.3)
+pluck_chords(TL['circles'][0] + 4, TL['dots'][0], 0.6)
 
 A.master(sys.argv[1] if len(sys.argv) > 1 else str(HERE / 'music.wav'), loop=False)

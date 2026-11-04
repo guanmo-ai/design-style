@@ -1,9 +1,10 @@
 <!doctype html>
-<!-- 字符画 · 开头 8 秒动效小样（1920×1080 · 60fps · 120 BPM，一拍 30 帧）。window.frame(f) 画第 f 帧，每帧是时间的纯函数。
-     分镜见 STORYBOARD.md；出片：bash make.sh -->
+<!-- 字符画 · 开头 10 秒小样（第二版）。1920×1080 · 60fps · 120 BPM。window.frame(f) 画第 f 帧，每帧是时间的纯函数（火焰模拟带缓存，乱序时从头重算）。
+     ① 甜甜圈 → 炸开成字雨拼出网页 → ② 网页（点按钮、进度条）→ 每个字飞去手机 → ③ 手机播放器 → 心脏放大 → ④ 着火、烧进 ASCII → 风吹散 → ⑤ 片尾 -->
 <meta charset="utf-8">
 <style>
 @font-face{font-family:JBM;src:url(../../../public/fonts/JetBrainsMono.ttf)}
+@font-face{font-family:Anton;src:url(../../../public/fonts/Anton-Regular.ttf)}
 @font-face{font-family:NotoSC;src:url(../../../public/fonts/NotoSansSC-Black.otf);font-weight:900}
 @font-face{font-family:NotoSC;src:url(../../../public/fonts/NotoSansSC-Medium.otf);font-weight:500}
 html,body{margin:0;background:#06060A;overflow:hidden}
@@ -13,265 +14,327 @@ canvas{display:block}
 <script src="../ascii.js"></script>
 <script src="timeline.js"></script>
 <script>
-const W = 1920, H = 1080, BG = '#06060A';
+const W = 1920, H = 1080, BG = '#06060A', FS = 18, CW = FS * 0.6, CH = FS;
+const COLS = Math.ceil(W / CW), ROWS = Math.ceil(H / CH);
 const g = document.getElementById('c').getContext('2d');
-const M = Object.assign(document.createElement('canvas'), {width: W, height: H}).getContext('2d');   // 字形遮罩
-const I = Object.assign(document.createElement('canvas'), {width: W, height: H}).getContext('2d');   // “@”里面的小宇宙
-// 预先算好色阶，省掉每格插值
 const LV = 48, pal = st => Array.from({length: LV + 1}, (_, k) => lerpHex(st, k / LV));
-const PAL = {1: pal(HOT), 2: pal(COOL), 3: pal(MOON)};
-const col = (L, k) => PAL[k][Math.max(0, Math.min(LV, Math.round(L * LV)))];
+const PL = {hot: pal(HOT), cool: pal(COOL),
+  fire: pal([[0, '#1A0505'], [0.25, '#7A1208'], [0.45, '#E8391B'], [0.65, '#FF8A1A'], [0.82, '#FFD23F'], [1, '#FFFBEA']]),
+  pink: pal([[0, '#3A0A2A'], [0.35, '#B0105A'], [0.6, '#FF2D8A'], [0.85, '#FF9CC8'], [1, '#FFF2F8']])};
+const pc = (p, L) => p[Math.max(0, Math.min(LV, Math.round(L * LV)))];
 const GLY = '!<>-_\\/[]{}=+*^?#01$%&';
 const hash = (i, j, k) => { let h = (i * 374761393 + j * 668265263 + k * 2147483647) | 0; h = Math.imul(h ^ (h >>> 13), 1274126177); return ((h ^ (h >>> 16)) >>> 0) / 4294967296; };
+const INK = '#FFF6DA', DIM = '#8E91B8', MUTE = '#3A3E5E', ORANGE = '#FF6A1A', GREEN = '#7CFFB2', YEL = '#FFD23F', PINK = '#FF2D8A';
 
-// 世界点 → 屏幕（和 march 的射线相反）
-function project(S, p, cx, cy) {
-  const o = S.cam.pos, f = norm(sub(S.cam.look, o)), r = norm(cross([0, 1, 0], f)), up = cross(f, r);
-  const d = sub(p, o), z = dot(d, f);
-  return [cx * W + dot(d, r) / z / S.cam.fov * H, cy * H - dot(d, up) / z / S.cam.fov * H];
+// —— 字符屏：一张 COLS×ROWS 的字 + 颜色表 ——
+class Screen {
+  constructor() { this.g = new Array(COLS * ROWS).fill(' '); this.c = new Array(COLS * ROWS).fill(INK); this.L = new Float32Array(COLS * ROWS); }
+  set(i, j, ch, c, L = 1) { if (i < 0 || j < 0 || i >= COLS || j >= ROWS) return; const k = j * COLS + i; this.g[k] = ch; this.c[k] = c; this.L[k] = L; }
+  text(i, j, s, c) { [...s].forEach((ch, k) => this.set(i + k, j, ch, c)); }
+  box(i0, j0, w, h, c, r = false) {
+    const [a, b, d, e] = r ? ['╭', '╮', '╰', '╯'] : ['┌', '┐', '└', '┘'];
+    for (let i = 1; i < w - 1; i++) { this.set(i0 + i, j0, '─', c); this.set(i0 + i, j0 + h - 1, '─', c); }
+    for (let j = 1; j < h - 1; j++) { this.set(i0, j0 + j, '│', c); this.set(i0 + w - 1, j0 + j, '│', c); }
+    this.set(i0, j0, a, c); this.set(i0 + w - 1, j0, b, c); this.set(i0, j0 + h - 1, d, c); this.set(i0 + w - 1, j0 + h - 1, e, c);
+  }
+  hline(i0, j, w, c, ch = '─') { for (let i = 0; i < w; i++) this.set(i0 + i, j, ch, c); }
+  cells() { const out = []; for (let j = 0; j < ROWS; j++) for (let i = 0; i < COLS; i++) { const k = j * COLS + i; if (this.g[k] !== ' ') out.push({x: i * CW, y: j * CH, g: this.g[k], c: this.c[k], L: this.L[k]}); } return out; }
+}
+function drawCells(ctx, cells, glowL = 0.86) {
+  ctx.textBaseline = 'top'; ctx.font = `700 ${FS}px JBM`;
+  for (const q of cells) { ctx.shadowBlur = q.L > glowL ? 12 : 0; ctx.shadowColor = q.c; ctx.fillStyle = q.c; ctx.globalAlpha = q.a === undefined ? 1 : q.a; ctx.fillText(q.g, q.x, q.y); }
+  ctx.shadowBlur = 0; ctx.globalAlpha = 1;
 }
 
-// 画一层字符网格。o: {S, fs, cx, cy, T:{s, ax, ay, bx, by}, scanX, pop, flash, target:[i,j], ringBoost, k(帧)}
-function grid(ctx, o) {
-  const fs = o.fs, cw = fs * 0.6, ch = fs, T = o.T || {s: 1, ax: 0, ay: 0, bx: 0, by: 0};
-  const sx0 = (0 - T.bx) / T.s + T.ax, sx1 = (W - T.bx) / T.s + T.ax, sy0 = (0 - T.by) / T.s + T.ay, sy1 = (H - T.by) / T.s + T.ay;
-  const i0 = Math.max(0, Math.floor(sx0 / cw) - 1), i1 = Math.min(Math.ceil(W / cw), Math.ceil(sx1 / cw) + 1);
-  const j0 = Math.max(0, Math.floor(sy0 / ch) - 1), j1 = Math.min(Math.ceil(H / ch), Math.ceil(sy1 / ch) + 1);
-  ctx.setTransform(T.s, 0, 0, T.s, T.bx - T.ax * T.s, T.by - T.ay * T.s);
-  ctx.textBaseline = 'top';
-  const pop = o.pop || 1;
-  ctx.font = `700 ${fs * pop}px JBM`;
-  const off = (pop - 1) * fs * 0.3;
-  const glowOK = T.s < 3;
-  let tgt = null;
+// —— ① 甜甜圈（donut.c 的算法：两个角转，亮度 = 法线·光）——
+const DONUT = '.,-~:;=!*#$@';
+function donut(S, f, cxp, cyp, scale, cs = FS, boost = 0) {
+  const t = f / 60, A = 1.0 + t * 1.9, B = 0.3 + t * 1.1, cw = cs * 0.6;
+  const cA = Math.cos(A), sA = Math.sin(A), cB = Math.cos(B), sB = Math.sin(B);
+  const zb = new Map(), out = new Map();
+  for (let th = 0; th < 6.283; th += 0.045) { const ct = Math.cos(th), st = Math.sin(th);
+    for (let ph = 0; ph < 6.283; ph += 0.014) { const cp = Math.cos(ph), sp = Math.sin(ph);
+      const h = ct + 2, D = 1 / (sp * h * sA + st * cA + 5), tt = sp * h * cA - st * sA;
+      const x = cxp + scale * D * (cp * h * cB - tt * sB), y = cyp - scale * D * (cp * h * sB + tt * cB);
+      const N = ((st * sA - sp * ct * cA) * cB - sp * ct * sA - st * cA - cp * ct * sB);
+      const i = Math.floor(x / cw), j = Math.floor(y / cs), key = j * 4000 + i;
+      if (D > (zb.get(key) || 0)) { zb.set(key, D); out.set(key, [i, j, N]); } } }
+  const cells = [];
+  for (const [, [i, j, N]] of out) { const L = clamp(N / 1.414 + boost); if (N <= 0 && boost <= 0) { cells.push({x: i * cw, y: j * cs, g: '.', c: pc(PL.hot, 0.08), L: 0.05}); continue; }
+    cells.push({x: i * cw, y: j * cs, g: DONUT[Math.min(11, Math.max(0, Math.floor(L * 11.99)))], c: pc(PL.hot, 0.15 + L * 0.85), L}); }
+  return cells;
+}
+
+// —— 方块（网页主图）：圆角立方体的距离场，光线步进 ——
+function cube(S, f, i0, j0, w, h) {
+  const t = f / 60, a = t * 1.3, b = t * 0.9;
+  const rot = p => { let [x, y, z] = p; [x, z] = [x * Math.cos(a) - z * Math.sin(a), x * Math.sin(a) + z * Math.cos(a)]; [y, z] = [y * Math.cos(b) - z * Math.sin(b), y * Math.sin(b) + z * Math.cos(b)]; return [x, y, z]; };
+  const sd = p => { const q = rot(p).map(v => Math.abs(v) - 0.72); return Math.hypot(Math.max(q[0], 0), Math.max(q[1], 0), Math.max(q[2], 0)) + Math.min(Math.max(q[0], q[1], q[2]), 0) - 0.12; };
+  const light = norm([-0.5, 0.7, -0.6]);
+  for (let j = 0; j < h; j++) for (let i = 0; i < w; i++) {
+    const u = ((i + 0.5) * CW - w * CW / 2) / (h * CH) * 1.7, v = -((j + 0.5) * CH - h * CH / 2) / (h * CH) * 1.7;
+    const ro = [0, 0, -4], rd = norm([u * 0.5, v * 0.5, 1]); let d = 0, hit = false;
+    for (let s = 0; s < 40; s++) { const p = add(ro, mul(rd, d)), k = sd(p); if (k < 0.004) { hit = true; break; } d += k; if (d > 8) break; }
+    if (!hit) continue;
+    const p = add(ro, mul(rd, d)), e = 0.003;
+    const n = norm([sd(add(p, [e, 0, 0])) - sd(add(p, [-e, 0, 0])), sd(add(p, [0, e, 0])) - sd(add(p, [0, -e, 0])), sd(add(p, [0, 0, e])) - sd(add(p, [0, 0, -e]))]);
+    const L = clamp(0.08 + 0.85 * Math.max(0, dot(n, light)) + 0.25 * Math.pow(Math.max(0, dot(n, norm(sub(light, rd)))), 30));
+    S.set(i0 + i, j0 + j, rampChar(L), pc(PL.cool, 0.2 + 0.8 * L), L);
+  }
+}
+
+// —— ② 网页 ——
+let HEAD;    // 标题大字的覆盖率（Anton 拼成块字）
+function web(f) {
+  const S = new Screen(), x0 = 6, y0 = 2, w = COLS - 12, h = 48;
+  S.box(x0, y0, w, h, MUTE); S.hline(x0 + 1, y0 + 2, w - 2, MUTE); S.set(x0, y0 + 2, '├', MUTE); S.set(x0 + w - 1, y0 + 2, '┤', MUTE);
+  S.text(x0 + 2, y0 + 1, '● ● ●', '#5A5D80'); S.text(x0 + 12, y0 + 1, '│ https://orbit.dev', DIM);
+  S.text(x0 + 4, y0 + 4, '[*] orbit_', INK); S.set(x0 + 13, y0 + 4, '_', ORANGE);
+  S.text(x0 + 96, y0 + 4, 'docs    changelog    pricing', DIM);
+  // 按钮：f ≥ click 时反色、文字变化
+  const pressed = f >= TL.click, done = f >= TL.fill[1];
+  const btn = done ? '[ installed + ]' : pressed ? '[ installing… ]' : '[  Install  ]';
+  S.text(x0 + w - 4 - btn.length, y0 + 4, btn, pressed ? (done ? GREEN : YEL) : INK);
+  // 标题块字
+  for (const [i, j, m] of HEAD) S.set(i, j, m > 0.72 ? '█' : m > 0.5 ? '▓' : m > 0.3 ? '▒' : '░', j < y0 + 15 ? INK : ORANGE, m);
+  S.text(x0 + 4, y0 + 29, 'An agent that lives in your terminal.', DIM);
+  S.text(x0 + 4, y0 + 30, 'Every pixel on this page is a character.', DIM);
+  S.box(x0 + 3, y0 + 32, 50, 3, MUTE); S.text(x0 + 5, y0 + 33, '$ curl -fsSL orbit.dev/i | sh', INK); if ((f >> 4) % 2) S.set(x0 + 36, y0 + 33, '▌', YEL);
+  // 主图：转动的方块
+  cube(S, f, x0 + 96, y0 + 5, 64, 30);
+  // 三张卡
+  const cy = y0 + 37, cw = 48;
+  for (let k = 0; k < 3; k++) S.box(x0 + 3 + k * (cw + 3), cy, cw, 9, MUTE);
+  S.text(x0 + 5, cy + 1, 'PLAN', YEL);
+  const steps = [['read  src/auth.ts', 0], ['patch login()', 1], ['run   tests', 2]];
+  steps.forEach(([s, k]) => { const ok = f > TL.fill[0] + k * 8; S.text(x0 + 5, cy + 3 + k * 2, `${ok ? '[+]' : '[ ]'} ${s}`, ok ? GREEN : DIM); });
+  S.text(x0 + 3 + cw + 5, cy + 1, 'INSTALL', YEL);
+  const p = clamp((f - TL.fill[0]) / (TL.fill[1] - TL.fill[0])), n = Math.round(p * 36);
+  S.text(x0 + 3 + cw + 5, cy + 3, '█'.repeat(n), ORANGE); S.text(x0 + 3 + cw + 5 + n, cy + 3, '░'.repeat(36 - n), MUTE);
+  S.text(x0 + 3 + cw + 5, cy + 5, `${String(Math.round(p * 100)).padStart(3)}%  ${'|/-\\'[(f >> 2) % 4]}  12,400 tok/s`, DIM);
+  S.text(x0 + 3 + 2 * (cw + 3) + 2, cy + 1, 'STARS', YEL);
+  S.text(x0 + 3 + 2 * (cw + 3) + 2, cy + 3, `* ${(48.2 + p * 0.3).toFixed(1)}k`, INK);
+  S.text(x0 + 3 + 2 * (cw + 3) + 2, cy + 5, '▁▂▃▅▆▅▇█▇▆█', GREEN);
+  return S;
+}
+
+// —— ③ 手机：心形封面、波形、歌词 ——
+function sdHeart(x, y) {   // iq 的心形距离场，y 朝上，尖在 (0,0)
+  x = Math.abs(x);
+  if (y + x > 1) return Math.hypot(x - 0.25, y - 0.75) - Math.SQRT2 / 4;
+  const a = Math.hypot(x, y - 1), m = 0.5 * Math.max(x + y, 0), b = Math.hypot(x - m, y - m);
+  return Math.min(a, b) * Math.sign(x - y);
+}
+function heart(S, f, cxp, cyp, size, rect) {     // 鼓起来的心：高度 = √(距离)，法线 → 光
+  const beat = f % 30, pulse = 1 + 0.09 * Math.exp(-beat / 5) + (beat > 8 ? 0.05 * Math.exp(-(beat - 8) / 5) : 0);
+  const sz = size * pulse, li = norm([-0.5, 0.6, 0.62]);
+  const hgt = (x, y) => Math.sqrt(Math.max(0, -sdHeart(x, y)) * 1.6);
+  const [i0, j0, i1, j1] = rect || [0, 0, COLS, ROWS];
   for (let j = j0; j < j1; j++) for (let i = i0; i < i1; i++) {
-    const x = i * cw, y = j * ch;
-    const u = ((x + cw / 2) - W * o.cx) / H, v = -((y + ch / 2) - H * o.cy) / H;
-    let {L, kind} = march(o.S, u, v);
-    if (kind === 2 && o.ringBoost) L = Math.min(1, L + o.ringBoost);
-    let c, glyph, glow = 0;
-    if (o.target && i === o.target[0] && j === o.target[1]) { tgt = [x, y]; continue; }
-    if (o.scanX !== undefined && x > o.scanX) {               // 还没解码：乱码在跳
-      const r = hash(i, j, Math.floor(o.k / 2));
-      if (kind === 0 && r > 0.16) continue;
-      glyph = GLY[Math.floor(hash(i, j, o.k) * GLY.length)];
-      c = r < 0.06 ? '#7CFFB2' : kind ? '#4A5288' : '#262B48';
-    } else if (kind === 0) {
-      if (hash(i, j, 7) > 0.012) continue;
-      glyph = '.'; c = '#34365A';
-    } else {
-      glyph = rampChar(L); if (glyph === ' ') continue;
-      c = col(L, kind);
-      if (o.scanX !== undefined && o.scanX - x < 140) { c = '#EFFFF5'; glow = 14; }   // 刚解码的一列：亮一下
-      else if (L > 0.84 && glowOK) glow = 12;
-      if (o.flash) { c = '#FFFFFF'; glow = 0; }
+    const x = ((i + 0.5) * CW - cxp) / sz, y = -((j + 0.5) * CH - cyp) / sz + 0.55;
+    if (sdHeart(x, y) > 0) continue;
+    const e = 0.01, h0 = hgt(x, y), nx = (hgt(x + e, y) - hgt(x - e, y)) / (2 * e), ny = (hgt(x, y + e) - hgt(x, y - e)) / (2 * e);
+    const n = norm([-nx, -ny, 1]), L = clamp(0.12 + 0.75 * Math.max(0, dot(n, li)) + 0.4 * Math.pow(Math.max(0, n[2] * 0.9 + dot(n, li) * 0.1), 40) + h0 * 0.1);
+    S.set(i, j, rampChar(L), pc(PL.pink, 0.15 + 0.85 * L), L);
+  }
+}
+const PH = {i: 104, j: 3, w: 50, h: 54};
+function phone(f, artOnly = false) {
+  const S = new Screen(), {i: x0, j: y0, w, h} = PH;
+  const hc = [(x0 + w / 2) * CW, (y0 + 15) * CH + 20];
+  if (!artOnly) {
+    S.box(x0, y0, w, h, INK, true); S.box(x0 + 2, y0 + 1, w - 4, h - 2, MUTE, true);
+    S.text(x0 + 5, y0 + 2, '9:41', INK); S.text(x0 + w - 15, y0 + 2, '▂▄▆█ 100%', INK);
+    S.text(x0 + 5, y0 + 4, '<  LIBRARY', DIM); S.text(x0 + w - 18, y0 + 4, 'NOW PLAYING', DIM);
+    S.box(x0 + 5, y0 + 6, w - 10, 20, MUTE);
+    S.text(x0 + 5, y0 + 27, 'HEARTBEAT.TXT', INK); S.text(x0 + 5, y0 + 28, 'Halo Kid - Rings, Vol.2', DIM);
+    const bars = '▁▂▃▄▅▆▇█';
+    for (let k = 0; k < w - 10; k++) {   // 波形：跟着鼓跳
+      const beat = Math.exp(-(f % 30) / 6), v = 0.25 + 0.45 * Math.abs(Math.sin(k * 0.7 + f * 0.11)) * (0.6 + 0.4 * Math.sin(k * 0.23)) + beat * 0.35 * Math.exp(-Math.abs(k - 20) / 10);
+      S.set(x0 + 5 + k, y0 + 31, bars[Math.min(7, Math.floor(v * 7.99))], k < (f - TL.phone[0]) * 0.5 + 12 ? PINK : MUTE);
     }
-    ctx.shadowBlur = glow; ctx.shadowColor = c; ctx.fillStyle = c;
-    ctx.fillText(glyph, x - off, y - off);
+    const pos = Math.min(w - 12, 14 + Math.floor((f - TL.phone[0]) / 8));
+    S.text(x0 + 5, y0 + 33, '━'.repeat(pos), PINK); S.set(x0 + 5 + pos, y0 + 33, '●', INK); S.text(x0 + 6 + pos, y0 + 33, '─'.repeat(w - 11 - pos), MUTE);
+    S.text(x0 + 5, y0 + 34, '1:52', DIM); S.text(x0 + w - 10, y0 + 34, '-1:31', DIM);
+    S.text(x0 + 10, y0 + 37, '|<<', INK); S.text(x0 + w / 2 - 3, y0 + 37, '[ > ]', PINK); S.text(x0 + w - 13, y0 + 37, '>>|', INK);
+    S.hline(x0 + 4, y0 + 40, w - 8, MUTE, '·');
+    const lyr = [['i keep my orbit wide', TL.phone[0] + 6], ['so you won\'t see me fall', TL.phone[0] + 30], ['lights going out one by one', TL.phone[0] + 56]];
+    lyr.forEach(([s, at], k) => { [...s].forEach((ch, q) => { const lock = at + q * 1.2 + 6; if (f < at + q * 1.2) return;
+      S.set(x0 + 5 + q, y0 + 42 + k * 2, f < lock ? GLY[Math.floor(hash(q, k, f) * GLY.length)] : ch, f < lock ? GREEN : k === 1 ? INK : DIM); }); });
+    S.text(x0 + 5, y0 + h - 4, '[home]  [playing]  [search]  [me]', DIM); S.text(x0 + 13, y0 + h - 4, '[playing]', PINK);
   }
-  ctx.shadowBlur = 0;
-  // 扫描线
-  if (o.scanX !== undefined && o.scanX < W + 40) {
-    const gr = ctx.createLinearGradient(o.scanX - 220, 0, o.scanX + cw, 0);
-    gr.addColorStop(0, 'rgba(124,255,178,0)'); gr.addColorStop(1, 'rgba(124,255,178,0.22)');
-    ctx.fillStyle = gr; ctx.fillRect(o.scanX - 220, 0, 220 + cw, H);
-    ctx.shadowColor = '#7CFFB2'; ctx.shadowBlur = 18;
-    for (let j = 0; j < H / ch; j++) { ctx.fillStyle = j % 6 === 2 ? '#FFFFFF' : '#B9FFD6'; ctx.fillText(hash(0, j, o.k) < 0.2 ? '▓' : '█', o.scanX, j * ch); }
-    ctx.shadowBlur = 0;
-  }
-  ctx.setTransform(1, 0, 0, 1, 0, 0);
-  return tgt;
+  return {S, hc};
 }
 
-// 字从遮罩里升起 / 解码出现
+// —— ④ 火（DOOM 火焰算法：每格往上传，减一点热，左右飘一格）——
+const FIRE = {f: -1, heat: null};
+let HM = null;       // 放大后心脏占的格子：前 30 帧它自己就是火源
+function fireAt(f) {
+  if (FIRE.f > f || !FIRE.heat) { FIRE.f = TL.fire[0] - 1; FIRE.heat = new Float32Array(COLS * ROWS); }
+  const hgt = FIRE.heat;
+  while (FIRE.f < f) {
+    const fr = ++FIRE.f;
+    for (let s = 0; s < 2; s++) {
+      // 火源：底边（按噪声起伏，烧出火舌）、正在烧的心脏、片名的字母
+      for (let i = 0; i < COLS; i++) { const n = 0.5 + 0.5 * Math.sin(i * 0.09 + fr * 0.13) * Math.sin(i * 0.031 - fr * 0.05);
+        hgt[(ROWS - 1) * COLS + i] = fr < TL.wind[0] ? 36 * clamp(0.35 + 0.75 * n) * clamp((fr - TL.fire[0] + 4) / 14) * (fr >= TL.title ? 0.6 : 1) : 0; }
+      if (fr < TL.fire[0] + 34) { const k = 1 - (fr - TL.fire[0]) / 34; for (const c of HM) hgt[c] = Math.max(hgt[c], 36 * k * (0.7 + 0.3 * hash(c, 1, fr))); }
+      if (fr >= TL.title && fr < TL.wind[0]) for (let c = 0; c < hgt.length; c++) if (TITLE[c] > 0.45) hgt[c] = Math.max(hgt[c], 26 + 10 * hash(c, 2, fr));
+      for (let j = 1; j < ROWS; j++) for (let i = 0; i < COLS; i++) {
+        const r = hash(i, j, fr * 2 + s), dec = r < 0.3 ? 0 : r < 0.85 ? 1 : 2, dst = Math.min(COLS - 1, Math.max(0, i - Math.floor(hash(j, i, fr * 2 + s) * 3) + 1));
+        hgt[(j - 1) * COLS + dst] = Math.max(0, hgt[j * COLS + i] - dec);
+      }
+    }
+  }
+  return hgt;
+}
+let TITLE;   // “ASCII”的覆盖率
+function fire(f) {
+  const S = new Screen(), hgt = fireAt(f);
+  for (let j = 0; j < ROWS; j++) for (let i = 0; i < COLS; i++) {
+    const k = j * COLS + i, v = clamp(hgt[k] / 36), tIn = clamp((f - TL.title) / 12);
+    if (TITLE[k] > 0.45 && tIn > 0) { const L = lerp(v, 0.78 + 0.22 * v, tIn); S.set(i, j, rampChar(L), pc(PL.fire, lerp(L, 0.8 + 0.2 * hash(i, j, f >> 2), tIn)), 0.95); continue; }
+    const L = v * (1 - 0.4 * tIn); if (L < 0.07) continue;      // 字母外：火压暗、压红，字母才读得出来
+    S.set(i, j, rampChar(L), pc(PL.fire, L * (1 - 0.3 * tIn)), L * 0.9);
+  }
+  return S;
+}
+
+// —— 文字层 ——
 function rise(ctx, text, x, y, font, color, f, at, dur = 16) {
-  const p = ease.out3(clamp((f - at) / dur));
-  if (p <= 0) return;
+  const p = ease.out3(clamp((f - at) / dur)); if (p <= 0) return;
   ctx.save(); ctx.font = font; ctx.textBaseline = 'alphabetic';
   const m = ctx.measureText(text), h = parseFloat(font.match(/(\d+)px/)[1]);
   ctx.beginPath(); ctx.rect(x - 4, y - h * 1.05, m.width + 12, h * 1.32); ctx.clip();
-  ctx.fillStyle = color; ctx.fillText(text, x, y + (1 - p) * h * 1.25);
-  ctx.restore();
+  ctx.fillStyle = color; ctx.fillText(text, x, y + (1 - p) * h * 1.25); ctx.restore();
 }
 function decode(ctx, text, x, y, font, color, f, at, per = 2, spin = 6, pool = GLY) {
-  ctx.save(); ctx.font = font; ctx.textBaseline = 'alphabetic'; ctx.fillStyle = color;
-  let xx = x;
-  [...text].forEach((c, k) => {
-    const lock = at + k * per + spin, start = at + k * per;
-    let s = c;
-    if (f < start) s = ''; else if (f < lock && c !== ' ') s = pool[Math.floor(hash(k, 3, f) * pool.length)];
-    if (s) { ctx.globalAlpha = f < lock ? 0.75 : 1; ctx.fillText(s, xx, y); }
-    xx += ctx.measureText(c).width;
-  });
+  ctx.save(); ctx.font = font; ctx.textBaseline = 'alphabetic'; let xx = x;
+  [...text].forEach((c, k) => { const st = at + k * per, lock = st + spin; let s = c;
+    if (f < st) s = ''; else if (f < lock && c !== ' ') s = pool[Math.floor(hash(k, 3, f) * pool.length)];
+    if (s) { ctx.fillStyle = f < lock ? GREEN : color; ctx.fillText(s, xx, y); } xx += ctx.measureText(c).width; });
   ctx.restore();
 }
-function plate(ctx, tag, line, f, at, out, y = 120) {     // 规则牌：小标签 + 大字一行
-  if (f < at || f >= out + 12) return;
-  const q = f >= out ? ease.in3((f - out) / 12) : 0;
-  ctx.save(); ctx.globalAlpha = 1 - q; ctx.translate(0, -q * 40);
-  rise(ctx, tag, 72, y, '700 26px JBM', '#FFD23F', f, at, 12);
-  rise(ctx, line, 70, y + 74, '900 60px NotoSC', '#FFF6DA', f, at + 4, 16);
+function plate(ctx, f, at, out, tag, line, x = 64, y = 960, sub) {   // 规则条：黑底，大字
+  if (f < at || f >= out + 10) return;
+  const q = f >= out ? ease.in3((f - out) / 10) : 0, p = ease.out3(clamp((f - at) / 12));
+  ctx.save(); ctx.globalAlpha = 1 - q; ctx.font = '900 54px NotoSC'; const wl = ctx.measureText(line).width;
+  ctx.fillStyle = 'rgba(6,6,10,0.88)'; ctx.fillRect(x - 20, y - 112, (wl + 48) * p, sub ? 168 : 136);
+  ctx.fillStyle = YEL; ctx.fillRect(x - 20, y - 112, 6, (sub ? 168 : 136) * p);
+  rise(ctx, tag, x, y - 72, '700 24px JBM', YEL, f, at + 2, 10);
+  rise(ctx, line, x, y - 6, '900 54px NotoSC', INK, f, at + 5, 14);
+  if (sub) decode(ctx, sub, x, y + 40, '700 26px JBM', ORANGE, f, at + 10, 0.6, 5);
   ctx.restore();
 }
 
-// “@”字形里最粗的一点（离笔画边缘最远），俯冲就对准它
-function thickest() {
-  const N = 400, c = Object.assign(document.createElement('canvas'), {width: N, height: N}).getContext('2d');
-  c.font = `700 ${N}px JBM`; c.textBaseline = 'top'; c.fillStyle = '#fff'; c.fillText('@', 0, 0);
-  const a = c.getImageData(0, 0, N, N).data, inside = (x, y) => x >= 0 && y >= 0 && x < N && y < N && a[(y * N + x) * 4 + 3] > 128;
-  let best = [0, 0, 0];
-  for (let y = 4; y < N; y += 3) for (let x = 4; x < N * 0.62; x += 3) {
-    if (!inside(x, y)) continue;
-    let r = 1;
-    for (; r < 80; r++) { let ok = true; for (let k = 0; k < 16 && ok; k++) ok = inside(Math.round(x + r * Math.cos(k * 0.3927)), Math.round(y + r * Math.sin(k * 0.3927))); if (!ok) break; }
-    if (r > best[2]) best = [x, y, r];
-  }
-  return [best[0] / N, best[1] / N];
+// —— 接力：字变成粒子飞 ——
+function sortCells(cs) { return cs.sort((a, b) => a.y - b.y || a.x - b.x); }
+let RAIN, MORPH;
+function setupRain() {     // 甜甜圈的字 → 网页的字
+  const src = sortCells(donut(null, TL.rain[0], W * 0.5, H * 0.5, 560)), dst = sortCells(web(TL.rain[1]).cells()), rnd = mulberry(4);
+  const cx = W * 0.5, cy = H * 0.5;
+  RAIN = dst.map((d, k) => {
+    const fromDonut = rnd() < 0.55 && src.length, s = fromDonut ? src[Math.floor(rnd() * src.length)] : {x: d.x + (rnd() - 0.5) * 300, y: -40 - rnd() * 500, g: GLY[Math.floor(rnd() * GLY.length)], c: MUTE};
+    const dir = Math.atan2(s.y - cy, s.x - cx), burst = 160 + rnd() * 340;
+    return {s, d, fromDonut, mid: fromDonut ? [s.x + Math.cos(dir) * burst, s.y + Math.sin(dir) * burst - 120] : null,
+      t0: TL.rain[0] + (fromDonut ? rnd() * 4 : 2 + rnd() * 10), t1: TL.rain[0] + 16 + (d.y / H) * 28 + rnd() * 6, gl: GLY[Math.floor(rnd() * GLY.length)]};
+  });
+  const used = new Set(RAIN.filter(r => r.fromDonut).map(r => r.s));
+  RAIN.extra = src.filter(s => !used.has(s)).map(s => { const dir = Math.atan2(s.y - cy, s.x - cx), sp = 14 + rnd() * 24; return {s, vx: Math.cos(dir) * sp, vy: Math.sin(dir) * sp - 8}; });
 }
-let AT = [0.3, 0.5];
-function cam(f) {
-  const t = f / 60, Z = TL;
-  const spin = -t * 0.55;
-  let fov = 0.62, cx = 0.58, cy = 0.5;
-  fov = lerp(0.6, 0.48, ease.inOut3(clamp(f / 150)));
-  if (f >= Z.C) { const p = ease.inOut3(clamp((f - Z.C) / 90)); fov = lerp(0.48, 0.36, p); cx = lerp(0.58, 0.55, p); }
-  let th = 0.85;                                             // 光的方位：0.85 = 左前方
-  if (f >= Z.B && f < Z.C) th = f < Z.B + 10 ? -2.5 : lerp(-2.5, 0.85, ease.inOut3(clamp((f - Z.B - 10) / 78)));
-  const light = norm([-Math.sin(th), 0.55, -Math.cos(th)]);
-  const S = {cam: {pos: [0, 0.25, -5.4], fov, look: [0, 0, 0]}, light, spin, storm: 1};
-  // —— 字号（C 段按拍变细）——
-  let fs = 19, pop = 1, flash = false;
-  for (const [at, v] of Z.steps) if (f >= at) { fs = v; pop = 1 + 0.5 * Math.exp(-(f - at) / 3.5); flash = f - at < 2; }
-  return {S, cx, cy, fs, pop, flash, spin};
+function setupMorph() {    // 网页的字 → 手机的字（按阅读顺序对应，所以上面去上面、下面去下面）
+  const ph = phone(TL.phone[0]); heart(ph.S, TL.phone[0], ph.hc[0], ph.hc[1], 185, [PH.i + 6, PH.j + 7, PH.i + PH.w - 6, PH.j + 25]);
+  const src = sortCells(web(TL.morph[0]).cells()), dst = sortCells(ph.S.cells()), rnd = mulberry(8);
+  const usedSrc = new Set();
+  MORPH = dst.map((d, k) => { const si = Math.floor(k * src.length / dst.length); usedSrc.add(si);
+    return {s: src[si], d, t0: TL.morph[0] + (d.y / H) * 10 + rnd() * 6, t1: TL.morph[0] + 18 + (d.y / H) * 12 + rnd() * 4}; });
+  MORPH.extra = src.filter((_, k) => !usedSrc.has(k)).map(s => ({s, vx: (rnd() - 0.5) * 6, vy: -4 - rnd() * 6, rot: rnd()}));
 }
-// 探针在阶梯上的位置（音效用）：node events.cjs 导出
-function probeK(f) {
-  const {S, cx, cy} = cam(f), pp = project(S, norm([-0.38, 0.28, -0.88]), cx, cy);
-  return Math.round(clamp(march(S, (pp[0] - W * cx) / H, -(pp[1] - H * cy) / H).L) * (RAMP.length - 1));
-}
-window.events = () => { const out = []; let last = -1; for (let f = TL.B + 14; f < TL.C; f++) { const k = probeK(f); if (k !== last) { out.push([f, k]); last = k; } } return {ramp: out}; };
+function bez(a, b, c, t) { const u = 1 - t; return [u * u * a[0] + 2 * u * t * b[0] + t * t * c[0], u * u * a[1] + 2 * u * t * b[1] + t * t * c[1]]; }
+
 window.frame = f => {
-  const t = f / 60, Z = TL;
   g.setTransform(1, 0, 0, 1, 0, 0); g.fillStyle = BG; g.fillRect(0, 0, W, H);
-  const {S, cx, cy, fs, pop, flash, spin} = cam(f);
-  const ringBoost = f >= Z.B && f < Z.B + 30 ? 0.6 * Math.exp(-(f - Z.B) / 7) : 0;
-  // —— 俯冲：锁定一个字，钻进它最粗的那一笔，笔画撑满屏幕时，里面是一整颗新的星球 ——
-  const fsD = Z.diveFs, cwT = fsD * 0.6;
-  const tp = project(S, norm([-0.34, 0.36, -0.87]), cx, cy);
-  const tI = Math.floor(tp[0] / cwT), tJ = Math.floor(tp[1] / fsD), gx = tI * cwT, gy = tJ * fsD;
-  const ax = gx + AT[0] * fsD, ay = gy + AT[1] * fsD;           // 锚点：“@”最粗那一笔的中心
-  let T = null, s = 1;
-  if (f >= Z.D) {
-    const p = clamp((f - Z.dive0) / (Z.dive1 - Z.dive0));
-    s = f < Z.dive0 ? 1 : Math.exp(Math.log(Z.sEnd) * Math.pow(p, 2.2));
-    T = {s, ax, ay, bx: lerp(ax, 960, ease.inOut3(p)), by: lerp(ay, 540, ease.inOut3(p))};
-  }
-  const inner = f >= Z.D ? clamp((s - 8) / 22) : 0;
-  if (f < Z.E) {
-    const scanX = f < Z.A1 ? lerp(W * 0.6, W + 60, ease.in2(f / Z.A1)) : undefined;
-    g.globalAlpha = f >= Z.D ? 1 - clamp((s - 12) / 50) : 1;     // 俯冲时，周围的字退场
-    if (g.globalAlpha > 0) grid(g, {S, fs: f >= Z.D ? fsD : fs, cx, cy, T, scanX, pop: f >= Z.D ? 1 : pop, flash, target: f >= Z.D ? [tI, tJ] : null, ringBoost, k: f});
-    g.globalAlpha = 1;
-  }
-  // 里面那颗星球（和封面同一个构图），俯冲时透过“@”的笔画看到，落定后就是整个画面
-  const innerScene = () => {
-    I.setTransform(1, 0, 0, 1, 0, 0); I.fillStyle = '#0A0A12'; I.fillRect(0, 0, W, H);
-    const fv = f < Z.E ? 0.56 : lerp(0.56, 0.5, ease.out3(clamp((f - Z.E) / 120)));
-    const S2 = {cam: {pos: [0, 0.25, -5.4], fov: fv, look: [0, 0, 0]}, light: norm([-0.62, 0.58, -0.55]), spin: spin - 1.2, storm: 1};
-    grid(I, {S: S2, fs: 19, cx: 0.64, cy: 0.5, k: f, ringBoost: f >= Z.E && f < Z.E + 30 ? 0.5 * Math.exp(-(f - Z.E) / 8) : 0});
-  };
-  if (f >= Z.E) { innerScene(); g.drawImage(I.canvas, 0, 0); }
-  else if (f >= Z.D) {
-    g.save();
-    g.setTransform(T.s, 0, 0, T.s, T.bx - T.ax * T.s, T.by - T.ay * T.s);
-    g.font = `700 ${fsD}px JBM`; g.textBaseline = 'top';
-    g.fillStyle = '#FFF8E1'; g.shadowColor = '#FFC531'; g.shadowBlur = s < 3 ? 16 : 0;
-    g.fillText('@', gx, gy);
-    g.restore();
-    if (f < Z.dive0 + 8) {                                    // 锁定框：从大框收紧到这一格
-      const lock = ease.out3(clamp((f - Z.D) / 14));
-      const r = lerp(220, fsD * 0.9, lock) * s, a = f < Z.dive0 ? 1 : 1 - (f - Z.dive0) / 8;
-      const px = T.bx + (gx + cwT / 2 - ax) * s, py = T.by + (gy + fsD * 0.55 - ay) * s;
-      g.save(); g.globalAlpha = a; g.strokeStyle = '#FFD23F'; g.lineWidth = 3;
-      const Lk = r * 0.35;
-      for (const [sx, sy] of [[-1, -1], [1, -1], [1, 1], [-1, 1]]) {
-        g.beginPath(); g.moveTo(px + sx * r, py + sy * (r - Lk)); g.lineTo(px + sx * r, py + sy * r); g.lineTo(px + sx * (r - Lk), py + sy * r); g.stroke();
-      }
-      g.font = '700 24px JBM'; g.fillStyle = '#FFD23F'; g.fillText(`'@'  L = 0.97`, px + r + 14, py - r + 20);
-      g.restore();
+  const Z = TL;
+  if (f < Z.rain[0]) {
+    // ① 甜甜圈：重拍上亮一下、鼓一下
+    const beat = f % 30, kick = Math.exp(-beat / 6);
+    drawCells(g, donut(null, f, W * 0.5, H * 0.5, 560 * (1 + 0.05 * kick), FS, 0.12 * kick));
+    plate(g, f, 8, Z.rain[0] - 6, 'RULE 01 · donut.c (2006)', '越亮的地方，用越“满”的字', 64, 960, ".,-~:;=!*#$@  暗 → 亮");
+  } else if (f < Z.web[0]) {
+    // 炸开 → 字雨 → 拼成网页
+    const cells = [];
+    for (const r of RAIN) {
+      if (f < r.t0) { if (r.fromDonut) cells.push({...r.s}); continue; }
+      const p = clamp((f - r.t0) / (r.t1 - r.t0));
+      let x, y;
+      if (r.fromDonut) [x, y] = bez([r.s.x, r.s.y], r.mid, [r.d.x, r.d.y], ease.inOut3(p));
+      else { x = lerp(r.s.x, r.d.x, ease.out2(p)); y = lerp(r.s.y, r.d.y, ease.in2(p)); }
+      if (p >= 1) { const b = clamp((f - r.t1) / 8); y = r.d.y - Math.sin(b * Math.PI) * 6 * (1 - b); }
+      cells.push({x, y, g: p < 0.85 ? (hash(r.d.x, r.d.y, f >> 1) < 0.5 ? r.s.g : r.gl) : r.d.g, c: p < 0.85 ? (p > 0.5 ? GREEN : r.s.c) : r.d.c, L: p >= 1 ? r.d.L : 0.5});
     }
-    if (inner > 0) {
-      innerScene();
-      M.setTransform(1, 0, 0, 1, 0, 0); M.clearRect(0, 0, W, H); M.globalCompositeOperation = 'source-over';
-      M.setTransform(T.s, 0, 0, T.s, T.bx - T.ax * T.s, T.by - T.ay * T.s);
-      M.font = `700 ${fsD}px JBM`; M.textBaseline = 'top'; M.fillStyle = '#fff'; M.fillText('@', gx, gy);
-      M.setTransform(1, 0, 0, 1, 0, 0); M.globalCompositeOperation = 'source-in'; M.drawImage(I.canvas, 0, 0);
-      M.globalCompositeOperation = 'source-over';
-      g.globalAlpha = inner; g.drawImage(M.canvas, 0, 0); g.globalAlpha = 1;
+    const e = f - Z.rain[0];
+    for (const q of RAIN.extra) cells.push({x: q.s.x + q.vx * e, y: q.s.y + q.vy * e + 0.6 * e * e, g: q.s.g, c: q.s.c, L: 0, a: clamp(1 - e / 30)});
+    drawCells(g, cells);
+  } else if (f < Z.morph[0]) {
+    drawCells(g, web(f).cells());
+    // 光标：滑过去、按下
+    const p = ease.inOut3(clamp((f - Z.web[0]) / (Z.click - Z.web[0] - 4))), cx = lerp(900, (COLS - 10 - 7) * CW, p), cy = lerp(700, 6.5 * CH, p), pr = f >= Z.click && f < Z.click + 6 ? 0.85 : 1;
+    g.save(); g.translate(cx, cy); g.scale(pr, pr); g.fillStyle = INK; g.strokeStyle = BG; g.lineWidth = 3;
+    g.beginPath(); g.moveTo(0, 0); g.lineTo(0, 34); g.lineTo(9, 26); g.lineTo(16, 40); g.lineTo(22, 37); g.lineTo(15, 23); g.lineTo(27, 23); g.closePath(); g.stroke(); g.fill(); g.restore();
+    if (f >= Z.click && f < Z.click + 14) { const r = (f - Z.click) * 5; g.strokeStyle = YEL; g.lineWidth = 3; g.globalAlpha = 1 - (f - Z.click) / 14; g.beginPath(); g.arc(cx, cy, 10 + r, 0, 7); g.stroke(); g.globalAlpha = 1; }
+    plate(g, f, Z.web[0] + 2, Z.morph[0] - 4, 'ON THE WEB', '网页：边框、按钮、进度条，全是字', 64, 1050);
+  } else if (f < Z.phone[0]) {
+    // 每个字飞到手机上
+    const cells = [];
+    for (const r of MORPH) { const p = ease.inOut3(clamp((f - r.t0) / (r.t1 - r.t0))), arc = Math.sin(p * Math.PI) * 60;
+      cells.push({x: lerp(r.s.x, r.d.x, p), y: lerp(r.s.y, r.d.y, p) - arc, g: p < 0.5 ? r.s.g : r.d.g, c: p > 0.3 && p < 0.8 ? GREEN : p < 0.5 ? r.s.c : r.d.c, L: p >= 1 ? r.d.L : 0}); }
+    const e = f - Z.morph[0];
+    for (const q of MORPH.extra) cells.push({x: q.s.x + q.vx * e, y: q.s.y + q.vy * e + 0.9 * e * e, g: q.s.g, c: q.s.c, L: 0, a: clamp(1 - e / 24)});
+    drawCells(g, cells);
+  } else if (f < Z.grow[0]) {
+    const {S, hc} = phone(f); heart(S, f, hc[0], hc[1], 185, [PH.i + 6, PH.j + 7, PH.i + PH.w - 6, PH.j + 25]);
+    drawCells(g, S.cells());
+    plate(g, f, Z.phone[0] + 6, Z.grow[0] - 4, 'ON THE PHONE', '手机：封面、波形、歌词，也是字', 64, 560);
+    rise(g, '心形 = 距离场 sdHeart(x, y)', 64, 640, '700 28px JBM', DIM, f, Z.phone[0] + 20, 14);
+    rise(g, '波形 = ▁▂▃▄▅▆▇█  8 级', 64, 690, '700 28px JBM', DIM, f, Z.phone[0] + 28, 14);
+  } else if (f < Z.fire[0]) {
+    // 心脏放大占满屏，手机的其他字往下掉
+    const p = ease.in3(clamp((f - Z.grow[0]) / (Z.grow[1] - Z.grow[0]))), {S, hc} = phone(Z.grow[0]), e = f - Z.grow[0];
+    const cells = S.cells().map((q, k) => ({...q, x: q.x + (hash(k, 1, 0) - 0.5) * e * 6, y: q.y + 0.9 * e * e * (0.6 + hash(k, 2, 0)), a: clamp(1 - e / 24)}));
+    drawCells(g, cells);
+    const H2 = new Screen(); heart(H2, f, lerp(hc[0], W / 2, p), lerp(hc[1], H * 0.47, p), lerp(185, 520, p)); drawCells(g, H2.cells());
+  } else if (f < Z.wind[0]) {
+    drawCells(g, fire(f).cells(), 0.93);
+    plate(g, f, Z.fire[0] + 4, Z.title - 2, 'RULE 02 · DOOM fire (1993)', '火：每一格往上传，减一点热', 64, 1040, 'heat[y-1][x±1] = heat[y][x] - rand()');
+  } else {
+    // 风：所有字往右吹走
+    const e = f - Z.wind[0];
+    if (e < 40) {
+      const cells = fire(Math.min(f, Z.wind[0] + 2)).cells().map((q, k) => { const d = Math.max(0, e - (q.x / W) * -6 - hash(k, 5, 0) * 10 + (1 - q.x / W) * 8);
+        return {...q, x: q.x + d * d * (1.4 + hash(k, 6, 0)), y: q.y - d * (hash(k, 7, 0) - 0.3) * 6 + Math.sin(d * 0.3 + k) * d, a: clamp(1 - d / 26), L: 0}; });
+      drawCells(g, cells);
     }
+    // ⑤ 片尾
+    const a = Z.end[0];
+    drawCells(g, donut(null, f, 1440, 540, 330, 12, 0).map(q => ({...q, a: clamp((f - a - 10) / 20)})));
+    decode(g, '字符画', 100, 470, '900 200px NotoSC', INK, f, a + 6, 5, 9, '像素点线面光暗明灭字符码');
+    decode(g, 'ASCII ART', 108, 572, '800 68px JBM', ORANGE, f, a + 22, 2, 6);
+    rise(g, '没有像素，只有字。', 104, 668, '500 42px NotoSC', '#B8BBDC', f, a + 40, 16);
+    decode(g, '.,-~:;=!*#$@', 108, 750, '800 44px JBM', YEL, f, a + 52, 1.5, 5);
+    rise(g, '观默', 1780, 1030, '900 32px NotoSC', '#6E7199', f, a + 64, 14);
   }
-  // —— 叠层：规则、阶梯、读数 ——
-  // A：终端命令
-  if (f < Z.B + 20) {
-    g.globalAlpha = f < Z.B ? 1 : 1 - (f - Z.B) / 20;
-    decode(g, '> render saturn.sdf --chars " .:-=+*#%@"', 72, 1010, '500 22px JBM', '#8E91B8', f, 0, 1, 3);
-    g.globalAlpha = 1;
-  }
-  // B：规则 1 + 字符阶梯 + 探针
-  if (f >= Z.B && f < Z.C + 12) {
-    plate(g, 'RULE 01', '越亮，就换一个越“满”的字', f, Z.B + 8, Z.C);
-    const q = f >= Z.C ? 1 - (f - Z.C) / 12 : 1;
-    const pp = project(S, norm([-0.38, 0.28, -0.88]), cx, cy);
-    const u = (pp[0] - W * cx) / H, v = -(pp[1] - H * cy) / H;
-    const Lp = march(S, u, v).L, kk = Math.round(clamp(Lp) * (RAMP.length - 1));
-    const ap = ease.out3(clamp((f - Z.B - 14) / 16)) * q;
-    g.save(); g.globalAlpha = ap;
-    const rx = 72, ry = 880, cs = 56;
-    for (let k = 0; k < RAMP.length; k++) {
-      const on = k === kk, tL = k / (RAMP.length - 1);
-      g.fillStyle = on ? '#FFD23F' : 'rgba(255,255,255,0.07)';
-      g.fillRect(rx + k * cs, ry - (on ? 10 : 0), cs - 6, 76 + (on ? 10 : 0));
-      g.font = '800 46px JBM'; g.textBaseline = 'top'; g.fillStyle = on ? '#06060A' : col(tL, 1);
-      g.fillText(RAMP[k] === ' ' ? '␣' : RAMP[k], rx + k * cs + 11, ry + 12 - (on ? 5 : 0));
-    }
-    g.font = '600 20px JBM'; g.fillStyle = '#8E91B8'; g.fillText('暗 L = 0', rx, ry + 92); g.textAlign = 'right'; g.fillText('L = 1 亮', rx + RAMP.length * cs - 6, ry + 92); g.textAlign = 'left';
-    // 探针：星球上的一个点，引线连到阶梯上当前的字
-    g.strokeStyle = '#FFD23F'; g.lineWidth = 2.5; g.beginPath(); g.arc(pp[0], pp[1], 26, 0, 7); g.stroke();
-    g.beginPath(); g.moveTo(pp[0] - 40, pp[1]); g.lineTo(pp[0] + 40, pp[1]); g.moveTo(pp[0], pp[1] - 40); g.lineTo(pp[0], pp[1] + 40); g.stroke();
-    g.setLineDash([3, 8]); g.beginPath(); g.moveTo(pp[0], pp[1] + 30); g.lineTo(rx + kk * cs + cs / 2 - 3, ry - 14); g.stroke(); g.setLineDash([]);
-    g.font = '700 24px JBM'; g.fillStyle = '#FFD23F'; g.fillText(`L = ${Lp.toFixed(2)}`, pp[0] + 36, pp[1] - 52);
-    g.restore();
-  }
-  // C：规则 2 + 字号读数
-  if (f >= Z.C && f < Z.D + 14) {
-    plate(g, 'RULE 02', '字越小，画越清楚', f, Z.C + 4, Z.D + 2);
-    const q = f >= Z.D + 2 ? 1 - (f - Z.D - 2) / 12 : ease.out3(clamp((f - Z.C - 8) / 14));
-    const cols = Math.ceil(W / (fs * 0.6)), rows = Math.ceil(H / fs);
-    g.save(); g.globalAlpha = clamp(q);
-    g.fillStyle = 'rgba(6,6,10,0.82)'; g.fillRect(56, 870, 640, 150);
-    g.font = '800 88px JBM'; g.fillStyle = '#FFF6DA'; g.textBaseline = 'alphabetic';
-    const sc = pop; g.save(); g.translate(72, 975); g.scale(sc, sc); g.fillText(`${fs}px`, 0, 0); g.restore();
-    g.font = '600 24px JBM'; g.fillStyle = '#8E91B8';
-    g.fillText(`${cols} × ${rows} = ${(cols * rows).toLocaleString()} 个字`, 300, 940);
-    g.fillText('font-size = 一格的高度', 300, 980);
-    g.restore();
-  }
-  // E：标题解码
-  if (f >= Z.E + 18) {
-    decode(g, '字符画', 96, 470, '900 190px NotoSC', '#FFF6DA', f, Z.E + 18, 5, 9, '像素点线面光暗明灭字符码');
-    decode(g, 'ASCII ART', 104, 570, '800 64px JBM', '#FF6A1A', f, Z.E + 34, 2, 6);
-    rise(g, '没有像素，只有字。', 100, 666, '500 40px NotoSC', '#B8BBDC', f, Z.E + 56, 18);
-    decode(g, '1963 → NOW', 104, 740, '600 26px JBM', '#6E7199', f, Z.E + 70, 1, 4);
-    rise(g, '观默', 1780, 1030, '900 30px NotoSC', '#6E7199', f, Z.E + 80, 14);
-  }
-  // 暗角
-  const vg = g.createRadialGradient(W / 2, H / 2, H * 0.45, W / 2, H / 2, H * 1.05);
-  vg.addColorStop(0, 'rgba(0,0,0,0)'); vg.addColorStop(1, 'rgba(0,0,0,0.55)');
-  g.fillStyle = vg; g.fillRect(0, 0, W, H);
-  // 帧号
-  g.font = '500 18px JBM'; g.fillStyle = '#5A5D80'; g.textAlign = 'right'; g.textBaseline = 'alphabetic';
-  g.fillText(`FRAME ${String(f).padStart(4, '0')} · 60fps`, W - 56, 52); g.textAlign = 'left';
+  // 暗角 + 帧号
+  const vg = g.createRadialGradient(W / 2, H / 2, H * 0.5, W / 2, H / 2, H * 1.05);
+  vg.addColorStop(0, 'rgba(0,0,0,0)'); vg.addColorStop(1, 'rgba(0,0,0,0.5)'); g.fillStyle = vg; g.fillRect(0, 0, W, H);
 };
-Promise.all(['900 40px NotoSC', '500 20px NotoSC', '700 20px JBM', '800 20px JBM', '500 20px JBM', '600 20px JBM'].map(x => document.fonts.load(x)))
-  .then(() => { AT = thickest(); window.ready = true; const q = new URLSearchParams(location.search).get('f'); if (q) frame(+q); });
+window.events = () => ({rainLand: RAIN.map(r => r.t1).sort((a, b) => a - b), morphLand: MORPH.map(r => r.t1).sort((a, b) => a - b)});
+Promise.all(['900 40px NotoSC', '500 20px NotoSC', '700 20px JBM', '800 20px JBM', '500 20px JBM', '40px Anton'].map(x => document.fonts.load(x))).then(() => {
+  // 网页标题块字：Anton 两行
+  const m = textMask(COLS, ROWS, CW, CH, [{t: 'SHIP FROM', font: '150px Anton', x: 10 * CW, y: 16 * CH}, {t: 'THE TERMINAL.', font: '150px Anton', x: 10 * CW, y: 26 * CH}]);
+  HEAD = []; for (let j = 0; j < ROWS; j++) for (let i = 0; i < COLS * 0.56; i++) if (m[j * COLS + i] > 0.15) HEAD.push([i, j, m[j * COLS + i]]);
+  TITLE = textMask(COLS, ROWS, CW, CH, [{t: 'ASCII', font: '600px Anton', x: W / 2 - 700, y: 830}]);
+  setupRain(); setupMorph();
+  const HS = new Screen(); heart(HS, TL.grow[1], W / 2, H * 0.47, 520); HM = []; for (let k = 0; k < HS.g.length; k++) if (HS.g[k] !== ' ') HM.push(k);
+  window.ready = true; const q = new URLSearchParams(location.search).get('f'); if (q) frame(+q);
+});
 </script>
