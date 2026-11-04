@@ -1,0 +1,14 @@
+{
+  "sourceCommit": "ced34bfcc42ae071c8ea9aee7659eab1eccbe139",
+  "sourcePath": "drafts/generative/film/generative-film.mp4",
+  "publishedAsset": "021-generative-art.mp4",
+  "sha256": "a47e8ef49e92f935f541f2679a4a66227e13614c7d34387885724d527fc990f5",
+  "durationSeconds": 18,
+  "fps": 60,
+  "frames": 1080,
+  "size": [
+    1920,
+    1080
+  ],
+  "approval": "用户于 2026-11-04 在本次交接明确确认两部成片审核通过；发布直接采用原文件。"
+}

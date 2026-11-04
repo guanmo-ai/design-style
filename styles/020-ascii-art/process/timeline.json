@@ -1,0 +1,56 @@
+{
+  "fps": 60,
+  "bpm": 120,
+  "frames": 1080,
+  "title": "风格 020 · 字符画 ASCII Art",
+  "segments": [
+    {
+      "label": "donut.c",
+      "start": 0,
+      "dur": 90,
+      "color": "#FF6A1A"
+    },
+    {
+      "label": "数字雨",
+      "start": 90,
+      "dur": 60,
+      "color": "#FF2D8A"
+    },
+    {
+      "label": "FIGlet 大字",
+      "start": 150,
+      "dur": 90,
+      "color": "#2346E0"
+    },
+    {
+      "label": "字符界面",
+      "start": 240,
+      "dur": 90,
+      "color": "#7CC6F2"
+    },
+    {
+      "label": "火焰",
+      "start": 330,
+      "dur": 180,
+      "color": "#FFC530"
+    },
+    {
+      "label": "五条规则",
+      "start": 510,
+      "dur": 180,
+      "color": "#FF8FB8"
+    },
+    {
+      "label": "用在手机上",
+      "start": 690,
+      "dur": 210,
+      "color": "#2346E0"
+    },
+    {
+      "label": "片尾 · 回到开场",
+      "start": 900,
+      "dur": 180,
+      "color": "#FF6A1A"
+    }
+  ]
+}
