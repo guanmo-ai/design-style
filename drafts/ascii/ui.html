@@ -1,0 +1,102 @@
+<!doctype html>
+<!-- 字符画 · 落到网页和手机 App（1920×1080）。网页：终端里的 AI 助手官网（深色），主图就是字符星球；
+     App：纸白底的音乐播放器，封面、进度条、按钮全是字。node ../_lib/shot.cjs ui.html png/ui.png -->
+<meta charset="utf-8">
+<style>
+@font-face{font-family:JBM;src:url(../../public/fonts/JetBrainsMono.ttf)}
+@font-face{font-family:SG;src:url(../../public/fonts/SpaceGrotesk.ttf)}
+@font-face{font-family:NotoSC;src:url(../../public/fonts/NotoSansSC-Medium.otf);font-weight:500}
+*{box-sizing:border-box}
+html,body{margin:0;width:1920px;height:1080px;overflow:hidden;font-family:JBM}
+body{background:radial-gradient(120% 120% at 85% 10%,#FFC531 0%,#FF6A1A 34%,#FF2D8A 70%,#5B2BFF 120%)}
+.win{position:absolute;left:52px;top:62px;width:1290px;height:956px;background:#07070B;border-radius:16px;overflow:hidden;box-shadow:0 40px 90px rgba(40,0,40,.45),0 0 0 1px rgba(255,255,255,.06) inset}
+.chrome{height:44px;background:#121219;display:flex;align-items:center;gap:8px;padding:0 18px;border-bottom:1px solid #1F1F2B}
+.chrome i{width:12px;height:12px;border-radius:50%;background:#2B2B3A}
+.chrome span{margin-left:22px;background:#1B1B26;color:#7E81A8;font-size:14px;padding:5px 16px;border-radius:7px;width:420px}
+.nav{display:flex;align-items:center;gap:34px;padding:26px 46px;color:#8E91B8;font-size:16px}
+.nav b{color:#FFF6DA;font-size:20px;margin-right:auto;letter-spacing:.02em}
+.nav b em{font-style:normal;color:#FF6A1A}
+.nav .btn{color:#07070B;background:#FFF6DA;padding:9px 16px;font-weight:700}
+.hero{position:relative;height:560px}
+.hero canvas{position:absolute;right:0;top:-10px}
+.ht{position:absolute;left:46px;top:46px;width:540px}
+.tag{display:inline-block;color:#7CFFB2;font-size:15px;border:1px dashed #2F5E47;padding:6px 12px;margin-bottom:26px}
+h1{font-family:JBM;font-weight:800;font-size:64px;line-height:1.02;letter-spacing:-.03em;color:#FFF6DA;margin:0 0 24px}
+h1 span{color:#FF6A1A}
+.ht p{color:#9A9DC2;font-size:17px;width:470px;line-height:1.6;margin:0 0 30px;font-family:SG}
+.cmd{display:flex;align-items:center;gap:14px;background:#11111A;border:1px solid #262636;padding:16px 18px;font-size:17px;color:#FFF6DA;width:520px}
+.cmd s{text-decoration:none;color:#5E6185}.cmd u{margin-left:auto;text-decoration:none;color:#7E81A8;font-size:14px;border:1px solid #33334A;padding:3px 9px}
+.cur{display:inline-block;width:10px;height:20px;background:#FFC531;vertical-align:-3px}
+.feats{position:absolute;left:46px;right:46px;bottom:40px;display:grid;grid-template-columns:1.1fr 1fr 1fr;gap:18px}
+.card{border:1px solid #23233A;padding:20px 22px;color:#8E91B8;font-size:14px;line-height:1.6;background:#0B0B12}
+.card b{display:block;color:#FFF6DA;font-size:17px;margin-bottom:10px}
+.bar{color:#FF6A1A;letter-spacing:-.02em;font-size:16px}.bar s{text-decoration:none;color:#2E3050}
+.ok{color:#7CFFB2}
+pre{margin:0;font-family:JBM;font-size:13.5px;line-height:1.35;color:#8E91B8}
+pre em{font-style:normal;color:#FFC531}
+/* 手机 */
+.phone{position:absolute;left:1420px;top:62px;width:440px;height:956px;border-radius:64px;background:#121218;padding:14px;box-shadow:0 40px 90px rgba(40,0,40,.5)}
+.scr{width:100%;height:100%;border-radius:52px;background:#F2EEE3;overflow:hidden;position:relative;color:#16151A}
+.sb{display:flex;justify-content:space-between;padding:20px 34px 0;font-size:15px;font-weight:700}
+.top{display:flex;justify-content:space-between;padding:22px 30px 0;font-size:13px;color:#77746B;letter-spacing:.08em}
+.art{margin:18px auto 0;width:352px;height:352px;background:#F2EEE3;border:1.5px solid #16151A;position:relative}
+.art canvas{display:block}
+.art .lbl{position:absolute;left:10px;top:8px;font-size:11px;color:#77746B}
+.meta{padding:22px 34px 0}
+.meta h2{margin:0;font-family:JBM;font-weight:800;font-size:30px;letter-spacing:-.02em}
+.meta p{margin:6px 0 0;color:#77746B;font-size:15px}
+.wave{padding:22px 34px 0;font-size:22px;letter-spacing:-.06em;white-space:nowrap;line-height:1}
+.wave b{color:#FF4F1A;font-weight:700}.wave i{font-style:normal;color:#C9C3B4}
+.time{display:flex;justify-content:space-between;padding:8px 34px 0;font-size:13px;color:#77746B}
+.ctl{display:flex;justify-content:space-between;align-items:center;padding:22px 34px 0;font-size:20px;font-weight:700}
+.ctl .play{background:#16151A;color:#F2EEE3;padding:14px 22px}
+.lyr{margin:24px 22px 0;padding:16px 16px;border-top:1.5px dashed #16151A;font-size:15px;line-height:1.7;color:#77746B}
+.lyr b{color:#16151A}.lyr em{font-style:normal;color:#FF4F1A}
+</style>
+<div class="win">
+  <div class="chrome"><i></i><i></i><i></i><span>orbit.dev</span></div>
+  <div class="nav"><b>◉ orbit<em>_</em></b><span>Docs</span><span>Changelog</span><span>Pricing</span><span class="btn">[ Install ]</span></div>
+  <div class="hero">
+    <canvas id="hero" width="780" height="600"></canvas>
+    <div class="ht">
+      <div class="tag">● v2.0 — plan mode is here</div>
+      <h1>Ship from<br>the <span>terminal</span>.</h1>
+      <p>An agent that lives where you already work. Every pixel on this page is a character — it renders in your shell exactly like it renders here.</p>
+      <div class="cmd"><s>$</s> curl -fsSL orbit.dev/i | sh <span class="cur"></span><u>copy</u></div>
+    </div>
+  </div>
+  <div class="feats">
+    <div class="card"><b>Plans before it types</b><pre>┌─ plan ─────────────────┐
+│ <em>1</em> read  src/auth.ts  <span class="ok">ok</span>│
+│ <em>2</em> patch login()      <span class="ok">ok</span>│
+│ <em>3</em> run   tests        <em>/</em> │
+└────────────────────────┘</pre></div>
+    <div class="card"><b>Fast</b><div class="bar">██████████████<s>░░░░░░</s></div>12,400 tokens / s · 70%<br><div class="bar" style="color:#7CFFB2">████████<s>░░░░░░░░░░░░</s></div>p50 latency 180 ms</div>
+    <div class="card"><b>Works offline</b>Local model fallback,<br>no telemetry, MIT.<br><span style="color:#FFC531">★ 48.2k</span>  <span class="ok">▲ 1.2k this week</span></div>
+  </div>
+</div>
+<div class="phone"><div class="scr">
+  <div class="sb"><span>9:41</span><span>▂▄▆█ 100%</span></div>
+  <div class="top"><span>‹ LIBRARY</span><span>NOW PLAYING</span><span>···</span></div>
+  <div class="art"><canvas id="art" width="349" height="349"></canvas><span class="lbl">cover.txt · 57×33</span></div>
+  <div class="meta"><h2>Saturn Return</h2><p>Halo Kid — Rings, Vol. 2</p></div>
+  <div class="wave" id="wave"></div>
+  <div class="time"><span>1:52</span><span>-1:31</span></div>
+  <div class="ctl"><span>[ |◀ ]</span><span class="play">[ ▶ ]</span><span>[ ▶| ]</span></div>
+  <div class="lyr"><b>i keep my orbit wide</b><br><em>so you won't see me s#i&amp;%@</em> <span style="color:#C9C3B4">▌</span><br>lights going out one by one</div>
+  <div style="position:absolute;left:0;right:0;bottom:0;display:flex;justify-content:space-around;padding:20px 20px 34px;border-top:1.5px solid #16151A;font-size:15px;font-weight:700"><span>[home]</span><span style="color:#FF4F1A">[playing]</span><span>[search]</span><span>[me]</span></div>
+</div></div>
+<script src="ascii.js"></script>
+<script>
+Promise.all(['700 20px JBM','800 20px JBM','20px SG'].map(f=>document.fonts.load(f))).then(()=>{
+  renderAscii(document.getElementById('hero'),{cw:7.8,ch:13,fs:13,ink:heat,cx:0.55,cy:0.48,fov:0.7,glow:8,stars:'#2B2D48'});
+  // 纸白版：暗处用更“满”的字，墨色 + 一点橙
+  const INK=[[0,'#C9C3B4'],[0.5,'#5E5A52'],[1,'#16151A']];
+  renderAscii(document.getElementById('art'),{cw:6.1,ch:10.6,fs:10.2,cx:0.5,cy:0.52,fov:0.5,light:[-0.5,0.6,-0.6],invert:1,
+    ink:(L,k)=> k===2? (L>0.45?'#FF4F1A':'#FF9A70') : lerpHex(INK,0.45+0.55*(1-L)), seed:3});
+  // 字符波形
+  const bars='▁▂▃▄▅▆▇█';const r=mulberry(9);let s='';
+  for(let i=0;i<29;i++){const h=Math.floor((0.35+0.65*Math.abs(Math.sin(i*0.55)*Math.sin(i*0.17+1)))*7.99*(0.7+0.3*r()));s+=(i<16?'<b>':'<i>')+bars[h]+(i<16?'</b>':'</i>')}
+  document.getElementById('wave').innerHTML=s;
+});
+</script>

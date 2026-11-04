@@ -1,0 +1,97 @@
+<!doctype html>
+<!-- 字符画 ASCII · 第 0 帧（1920×1080）：一颗带环的巨大星球全部由字符算出来，扫描线正从左往右“解码”。
+     node ../_lib/shot.cjs cover.html png/cover.png -->
+<meta charset="utf-8">
+<style>
+@font-face{font-family:JBM;src:url(../../public/fonts/JetBrainsMono.ttf)}
+@font-face{font-family:Anton;src:url(../../public/fonts/Anton-Regular.ttf)}
+@font-face{font-family:NotoSC;src:url(../../public/fonts/NotoSansSC-Black.otf);font-weight:900}
+@font-face{font-family:NotoSC;src:url(../../public/fonts/NotoSansSC-Medium.otf);font-weight:500}
+html,body{margin:0;background:#06060A;overflow:hidden}
+canvas{display:block}
+</style>
+<canvas id="c" width="1920" height="1080"></canvas>
+<script src="ascii.js"></script>
+<script>
+Promise.all(['900 40px NotoSC','500 20px NotoSC','20px JBM','700 20px JBM','40px Anton'].map(f=>document.fonts.load(f))).then(draw);
+function draw(){
+  const W = 1920, H = 1080, cx = document.getElementById('c').getContext('2d');
+  const rng = mulberry(11);
+  cx.fillStyle = '#06060A'; cx.fillRect(0,0,W,H);
+  cx.textBaseline = 'top';
+
+  // ① 星球：11×19 的字符格
+  const CW = 11.4, CH = 19;
+  const cols = Math.ceil(W / CW), rows = Math.ceil(H / CH);
+  const S = {cam:{pos:[0,0.25,-5.4], fov:0.47, look:[0,0,0]}, light: norm([-0.62,0.58,-0.55])};
+  const scanCol = Math.floor(cols * 0.885);
+  cx.font = `700 19px JBM`;
+  for (let j = 0; j < rows; j++) for (let i = 0; i < cols; i++) {
+    const x = i * CW, y = j * CH;
+    const u = ((x + CW/2) - W*0.645) / H, v = -((y + CH/2) - H*0.5) / H;
+    const {L, kind} = march(S, u, v);
+    let ch, col, glow = 0;
+    if (kind === 0) {
+      const r = rng();
+      ch = r < 0.010 ? '.' : r < 0.0135 ? '+' : r < 0.0145 ? '*' : ' ';
+      col = '#34365A';
+    } else {
+      ch = rampChar(L); col = heat(L, kind);
+      if (L > 0.82) glow = 12;
+    }
+    if (i > scanCol && kind !== 0) {          // 还没解码：乱码，暗
+      ch = '!<>-_\\/[]{}=+*^?#01'[Math.floor(rng()*19)];
+      col = rng() < 0.07 ? '#7CFFB2' : '#262A44'; glow = 0;
+    }
+    if (ch === ' ') continue;
+    cx.shadowBlur = glow; cx.shadowColor = col;
+    cx.fillStyle = col; cx.fillText(ch, x, y);
+  }
+  // 扫描线：一列满格字符 + 光晕
+  const sx = scanCol * CW + CW;
+  const g = cx.createLinearGradient(sx - 160, 0, sx + 8, 0);
+  g.addColorStop(0, 'rgba(124,255,178,0)'); g.addColorStop(1, 'rgba(124,255,178,0.16)');
+  cx.shadowBlur = 0; cx.fillStyle = g; cx.fillRect(sx - 160, 0, 168, H);
+  cx.font = `700 19px JBM`; cx.shadowColor = '#7CFFB2'; cx.shadowBlur = 16;
+  for (let j = 0; j < rows; j++) { cx.fillStyle = j % 7 === 3 ? '#FFFFFF' : '#B9FFD6'; cx.fillText(j % 5 === 2 ? '▓' : '█', sx - CW, j * CH); }
+
+  // ② 标题“ASCII”：用更细的 6×11 字符格拼出来
+  const tw = 6.6, th = 11;
+  const tc = Math.ceil(W / tw), tr = Math.ceil(H / th);
+  const mask = textMask(tc, tr, tw, th, [{t:'ASCII', font:'300px Anton', x:56, y:340}]);
+  cx.font = `700 11px JBM`;
+  for (let j = 0; j < tr; j++) for (let i = 0; i < tc; i++) {
+    const m = mask[j*tc+i]; if (m < 0.2) continue;
+    const L = 0.35 + 0.65 * m * (1 - j / tr * 0.6);
+    cx.shadowBlur = m > 0.8 ? 8 : 0; cx.shadowColor = '#FFE7A0';
+    cx.fillStyle = m > 0.8 ? '#FFF6DA' : '#FFB347';
+    cx.fillText(m > 0.8 ? '@#%&8'[Math.floor(rng()*5)] : rampChar(L*0.7), i * tw, j * th);
+  }
+  cx.shadowBlur = 0;
+
+  // ③ 中文标题 + 一句话（真字，保证手机上看得清）
+  cx.font = '900 72px NotoSC'; cx.fillStyle = '#FFF6DA';
+  cx.fillText('字符画', 60, 380);
+  cx.font = '500 27px NotoSC'; cx.fillStyle = '#B8BBDC';
+  cx.fillText('没有像素，只有字：', 62, 480);
+  cx.fillText('越亮，就换一个越“满”的字。', 62, 522);
+  // 字符阶梯：从空格到 @
+  const ramp = ' .,:;-~=+*o#%&8@';
+  cx.font = '700 34px JBM';
+  for (let k = 0; k < ramp.length; k++) {
+    const t = k / (ramp.length - 1);
+    cx.fillStyle = 'rgba(255,255,255,0.06)'; cx.fillRect(62 + k*30, 600, 26, 44);
+    cx.fillStyle = heat(t, 1); cx.fillText(ramp[k], 66 + k*30, 604);
+  }
+  cx.font = '500 17px JBM'; cx.fillStyle = '#6E7199';
+  cx.fillText('暗 ──────────────────────── 亮', 62, 656);
+
+  // ④ 角标与读数
+  cx.font = '500 20px JBM'; cx.fillStyle = '#8E91B8';
+  cx.fillText('> render saturn.sdf --cell 11×19 --ramp " .,:;-~=+*o#%&8@"', 60, 1000);
+  cx.fillStyle = '#FFD23F'; cx.fillRect(60 + 12.0*63, 1000, 12, 22);
+  cx.textAlign = 'right'; cx.fillStyle = '#8E91B8';
+  cx.fillText(`${cols}×${rows} = ${(cols*rows).toLocaleString()} CHARS`, 1860, 1000);
+  cx.fillText('1963 → NOW · FRAME 0001', 1860, 44);
+}
+</script>

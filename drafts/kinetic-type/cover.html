@@ -1,0 +1,96 @@
+<!doctype html>
+<!-- 动态字体 Kinetic Type · 第 0 帧（1920×1080）：一颗看不见的“透镜”正从字墙上滚过，
+     经过的字母被可变字体的宽度 / 粗细轴撑开。node ../_lib/shot.cjs cover.html png/cover.png -->
+<meta charset="utf-8">
+<style>
+@font-face{font-family:Archivo;src:url(../../public/fonts/Archivo.ttf);font-weight:100 900;font-stretch:62% 125%}
+@font-face{font-family:JBM;src:url(../../public/fonts/JetBrainsMono.ttf)}
+@font-face{font-family:NotoSC;src:url(../../public/fonts/NotoSansSC-Black.otf);font-weight:900}
+@font-face{font-family:NotoSC;src:url(../../public/fonts/NotoSansSC-Medium.otf);font-weight:500}
+html,body{margin:0;width:1920px;height:1080px;overflow:hidden;background:#F1ECE0}
+#wall{position:absolute;inset:0}
+.row{position:absolute;left:0;white-space:nowrap;font-family:Archivo;line-height:1;transform-origin:0 0}
+.row span{display:inline-block}
+.lab{position:absolute;z-index:5;font-family:JBM;font-size:19px;letter-spacing:.02em}
+</style>
+<div id="wall"></div>
+<script>
+const W = 1920, H = 1080;
+// 7 行字墙：每行一个词，重复铺满；同一个“透镜”(lx, ly) 在经过的地方把 wdth / wght 推到最大
+const ROWS = [
+  {t:'KINETIC ', bg:'#F1ECE0', fg:'#141414', h:150},
+  {t:'TYPE ', bg:'#FF4A1C', fg:'#F1ECE0', h:170},
+  {t:'MOVES ', bg:'#F1ECE0', fg:'#141414', h:132},
+  {t:'字会动 ', bg:'#2340FF', fg:'#F1ECE0', h:150, cn:1},
+  {t:'STRETCH ', bg:'#F1ECE0', fg:'#141414', h:150},
+  {t:'SQUASH ', bg:'#141414', fg:'#FFD12E', h:150},
+  {t:'BOUNCE ', bg:'#F1ECE0', fg:'#141414', h:178, bounce:1},
+];
+const lens = {x: 1010, y: 520, r: 520};
+const wall = document.getElementById('wall');
+let y = 0;
+document.fonts.load('900 100px Archivo').then(()=>document.fonts.load('900 100px NotoSC')).then(()=>{
+  ROWS.forEach((R, ri) => {
+    const band = document.createElement('div');
+    band.style.cssText = `position:absolute;left:0;top:${y}px;width:${W}px;height:${R.h}px;background:${R.bg};overflow:${R.bounce ? 'visible' : 'hidden'};z-index:${R.bounce ? 2 : 1}`;
+    wall.appendChild(band);
+    const row = document.createElement('div'); row.className = 'row';
+    row.style.color = R.fg; row.style.top = '0px';
+    band.appendChild(row);
+    const fs = R.h * (R.cn ? 0.86 : 1.18);
+    const cy = y + R.h / 2;
+    // 先按一个大概宽度排一遍，再按每个字母中心到透镜的距离设 wdth / wght
+    let s = R.t.repeat(8);
+    row.innerHTML = [...s].map(c => `<span>${c === ' ' ? '&nbsp;' : c}</span>`).join('');
+    row.style.fontSize = fs + 'px';
+    const spans = [...row.children];
+    const phase = ri * 0.9;
+    for (let pass = 0; pass < 3; pass++) {
+      let x = 0;
+      spans.forEach((sp, k) => {
+        const w = sp.getBoundingClientRect().width || fs * 0.5;
+        const mx = x + w / 2 - 40 * ri;
+        const d = Math.hypot((mx - lens.x) / 1.15, (cy - lens.y));
+        let f = Math.max(0, 1 - d / lens.r); f = f * f * (3 - 2 * f);         // 平滑
+        const wave = 0.5 + 0.5 * Math.sin(k * 0.55 + phase);                 // 远处的字也在呼吸
+        const wd = 62 + (125 - 62) * Math.min(1, f * 1.05 + wave * 0.18);
+        const wg = 160 + (900 - 160) * Math.min(1, f * 1.1 + 0.35 + wave * 0.12);
+        const sy = 1 + 0.16 * f - 0.05 * wave;
+        let ty = 0;
+        if (R.bounce) { const b = Math.max(0, 1 - Math.abs(mx - lens.x - 120) / 520); ty = -Math.abs(Math.sin(k * 0.9)) * 70 * b; }
+        if (R.cn) {   // 中文没有宽度轴：用横向缩放 + 两档字重模拟
+          const sx = 0.74 + 0.62 * f + 0.08 * wave;
+          if (pass === 0) sp.innerHTML = `<i style="display:inline-block;font-style:normal">${sp.textContent}</i>`;
+          sp.style.width = (sp.textContent.trim() ? fs * sx : fs * 0.28) + 'px'; sp.style.fontWeight = f > 0.28 ? 900 : 500;
+          sp.firstChild.style.transform = `scale(${sx.toFixed(3)}, ${sy.toFixed(3)})`; sp.firstChild.style.transformOrigin = '0 100%';
+        } else {
+          sp.style.fontStretch = wd + '%'; sp.style.fontWeight = Math.round(wg);
+          sp.style.fontVariationSettings = `"wdth" ${wd.toFixed(1)}, "wght" ${wg.toFixed(0)}`;
+          sp.style.transform = `translateY(${ty.toFixed(1)}px) scaleY(${sy.toFixed(3)})`;
+        }
+        sp.style.transformOrigin = '50% 100%';
+        x += w;
+      });
+    }
+    row.style.top = (R.h - fs * (R.cn ? 1.05 : 0.86)) / 2 + (R.cn ? -fs * 0.06 : 0) + 'px';
+    row.style.left = (-40 * ri) + 'px';
+    // 透镜经过的那一行：残影（往左拖 3 层，越来越淡），表示它刚被推过去
+    if (ri === 1 || ri === 5) {
+      for (let g = 1; g <= 2; g++) {
+        const ghost = row.cloneNode(true);
+        ghost.style.left = (-40 * ri - g * 38) + 'px';
+        ghost.style.opacity = (0.6 / g).toFixed(2); ghost.style.color = 'transparent';
+        ghost.style.webkitTextStroke = `2.5px ${R.fg}`;
+        band.insertBefore(ghost, row);
+      }
+    }
+    y += R.h;
+  });
+  // 标签：左上、右下（放在小底板上，避免被字墙吃掉）
+  const tag = (x, y, html, bg, fg) => wall.insertAdjacentHTML('beforeend', `<div class="lab" style="left:${x}px;top:${y}px;background:${bg};color:${fg};padding:8px 14px">${html}</div>`);
+  tag(36, 30, '动态字体 · KINETIC TYPE · 1959 → NOW', '#141414', '#F1ECE0');
+  tag(1428, 30, 'wdth 62 → 125 · wght 160 → 900', '#141414', '#FFD12E');
+  tag(1488, 1024, 'FRAME 0042 / 0900 · 60fps', '#141414', '#F1ECE0');
+  tag(36, 1024, 'font-variation-settings: "wdth" 125, "wght" 900;', '#F1ECE0', '#141414');
+});
+</script>

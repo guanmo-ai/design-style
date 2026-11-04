@@ -1,0 +1,134 @@
+<!doctype html>
+<!-- 生成艺术 · 落到网页和手机 App（1920×1080）。网页：流场生成器（左画布、右参数面板，改一个数整张重长）；
+     App：银行卡钱包，每张卡的图案由种子现算，独一无二。node ../_lib/shot.cjs ui.html png/ui.png -->
+<meta charset="utf-8">
+<style>
+@font-face{font-family:JBM;src:url(../../public/fonts/JetBrainsMono.ttf)}
+@font-face{font-family:Archivo;src:url(../../public/fonts/Archivo.ttf);font-weight:100 900;font-stretch:62% 125%}
+@font-face{font-family:SG;src:url(../../public/fonts/SpaceGrotesk.ttf);font-weight:300 700}
+*{box-sizing:border-box}
+html,body{margin:0;width:1920px;height:1080px;overflow:hidden;font-family:SG;color:#161616}
+body{background:#161616}
+#bg{position:absolute;inset:0;opacity:.22}
+.win{position:absolute;left:52px;top:62px;width:1290px;height:956px;background:#F3EEE2;border-radius:16px;overflow:hidden;box-shadow:0 40px 90px rgba(0,0,0,.5)}
+.chrome{height:44px;background:#E4DDCC;display:flex;align-items:center;gap:8px;padding:0 18px}
+.chrome i{width:12px;height:12px;border-radius:50%;background:#CBC2AE}
+.chrome span{margin-left:22px;background:#F3EEE2;color:#7A7364;font:14px JBM;padding:5px 16px;border-radius:7px;width:420px}
+.nav{display:flex;align-items:center;gap:28px;padding:18px 32px;font-size:16px;font-weight:600}
+.nav b{font-family:Archivo;font-weight:900;font-stretch:115%;font-size:22px;margin-right:auto}
+.nav b em{font-style:normal;color:#E8392B}
+.nav .btn{background:#161616;color:#F3EEE2;padding:10px 16px;border-radius:999px}
+.stage{position:absolute;left:32px;top:116px;width:840px;height:808px;border-radius:14px;overflow:hidden;box-shadow:0 0 0 2px #161616}
+.stage canvas{display:block}
+.chip{position:absolute;font:600 14px JBM;background:#161616;color:#F3EEE2;padding:8px 12px;border-radius:999px}
+.panel{position:absolute;left:896px;top:116px;width:362px;height:808px;display:flex;flex-direction:column;gap:18px}
+.sec{border-top:2px solid #161616;padding-top:12px}
+.sec h4{margin:0 0 10px;font:600 13px JBM;letter-spacing:.08em;display:flex;justify-content:space-between}
+.sl{display:grid;grid-template-columns:96px 1fr 62px;align-items:center;gap:10px;font-size:15px;margin:9px 0}
+.sl .tr{height:6px;background:#DDD5C3;border-radius:3px;position:relative}
+.sl .tr b{position:absolute;left:0;top:0;bottom:0;background:#161616;border-radius:3px}
+.sl .tr i{position:absolute;top:-7px;width:20px;height:20px;border-radius:50%;background:#F3EEE2;border:3px solid #161616;margin-left:-10px}
+.sl code{font:600 13px JBM;text-align:right}
+.sw{display:flex;gap:6px}.sw span{flex:1;height:34px;border-radius:6px}
+.pals{display:flex;gap:8px;margin-top:10px}.pals div{flex:1;height:20px;border-radius:5px;display:flex;overflow:hidden;box-shadow:0 0 0 1.5px #C9C1AE}
+.pals div.on{box-shadow:0 0 0 2.5px #161616}.pals div span{flex:1}
+.seed{display:flex;gap:8px}.seed div{flex:1;font:600 20px JBM;border:2px solid #161616;border-radius:10px;padding:12px 14px}
+.seed b{width:54px;border-radius:10px;background:#FFC530;border:2px solid #161616;display:grid;place-items:center;font-size:24px}
+.go{margin-top:auto;background:#E8392B;color:#fff;border-radius:14px;padding:20px;font-family:Archivo;font-weight:900;font-stretch:115%;font-size:24px;text-align:center;box-shadow:0 0 0 2px #161616}
+/* 手机 */
+.phone{position:absolute;left:1420px;top:62px;width:440px;height:956px;border-radius:64px;background:#0B0B0B;padding:14px;box-shadow:0 40px 90px rgba(0,0,0,.6),0 0 0 1px #333 inset}
+.scr{width:100%;height:100%;border-radius:52px;background:#F3EEE2;overflow:hidden;position:relative}
+.sb{display:flex;justify-content:space-between;padding:20px 34px 0;font:700 15px JBM}
+.hd{padding:24px 28px 0;display:flex;justify-content:space-between;align-items:flex-end}
+.hd h3{margin:0;font-family:Archivo;font-weight:900;font-stretch:115%;font-size:36px}
+.hd span{font:600 13px JBM;color:#7A7364}
+.stack{position:relative;height:330px;margin:20px 22px 0}
+.card{position:absolute;left:0;right:0;height:232px;border-radius:20px;overflow:hidden;box-shadow:0 0 0 2px #161616,0 14px 30px rgba(0,0,0,.18)}
+.card canvas{display:block}
+.card .num{position:absolute;left:20px;bottom:16px;font:700 18px JBM;color:#161616;background:#F3EEE2;padding:6px 10px;border-radius:8px}
+.card .bn{position:absolute;right:18px;top:16px;font-family:Archivo;font-weight:900;font-stretch:120%;font-size:20px;background:#161616;color:#F3EEE2;padding:5px 10px;border-radius:8px}
+.card .chipx{position:absolute;left:20px;top:18px;width:46px;height:34px;border-radius:7px;background:#FFC530;box-shadow:0 0 0 2px #161616}
+.meta{margin:4px 28px 0;display:flex;justify-content:space-between;align-items:center}
+.meta b{font:700 14px JBM}.meta span{font:600 13px JBM;background:#161616;color:#F3EEE2;padding:8px 12px;border-radius:999px}
+.tx{margin:22px 28px 0;border-top:2px solid #161616}
+.t{display:flex;align-items:center;gap:14px;padding:14px 0;border-bottom:1px solid #D9D1BF;font-size:17px}
+.t i{width:40px;height:40px;border-radius:12px;flex:none;box-shadow:0 0 0 1.5px #161616}
+.t b{font-weight:600}.t small{display:block;color:#7A7364;font-size:13px}
+.t em{margin-left:auto;font:600 16px JBM;font-style:normal}
+</style>
+<canvas id="bg" width="1920" height="1080"></canvas>
+<div class="win">
+  <div class="chrome"><i></i><i></i><i></i><span>flowfield.studio</span></div>
+  <div class="nav"><b>flowfield<em>.</em>studio</b><span>Gallery</span><span>Docs</span><span>API</span><span class="btn">Export SVG ↓</span></div>
+  <div class="stage"><canvas id="art" width="840" height="808"></canvas>
+    <div class="chip" style="left:16px;bottom:16px">● drawing 812 / 1,400</div>
+    <div class="chip" style="right:16px;bottom:16px;background:#F3EEE2;color:#161616;box-shadow:0 0 0 2px #161616">4800 × 4620 · print ready</div>
+  </div>
+  <div class="panel">
+    <div class="sec"><h4><span>FIELD</span><span>noise(x, y)</span></h4>
+      <div class="sl">Scale<div class="tr"><b style="width:38%"></b><i style="left:38%"></i></div><code>0.0019</code></div>
+      <div class="sl">Turbulence<div class="tr"><b style="width:62%"></b><i style="left:62%"></i></div><code>0.45</code></div>
+      <div class="sl">Rotation<div class="tr"><b style="width:20%"></b><i style="left:20%"></i></div><code>-20°</code></div>
+    </div>
+    <div class="sec"><h4><span>RIBBONS</span><span>no overlap</span></h4>
+      <div class="sl">Width<div class="tr"><b style="width:55%"></b><i style="left:55%"></i></div><code>6—64</code></div>
+      <div class="sl">Gap<div class="tr"><b style="width:30%"></b><i style="left:30%"></i></div><code>5 px</code></div>
+      <div class="sl">Step<div class="tr"><b style="width:24%"></b><i style="left:24%"></i></div><code>4 px</code></div>
+    </div>
+    <div class="sec"><h4><span>PALETTE</span><span>9 inks · weighted</span></h4>
+      <div class="sw" id="sw"></div>
+      <div class="pals" id="pals"></div>
+    </div>
+    <div class="sec"><h4><span>SEED</span><span>same seed = same art</span></h4>
+      <div class="seed"><div>0x2A7F</div><b>⚄</b></div>
+    </div>
+    <div class="sec"><h4><span>HISTORY</span><span>click to restore</span></h4>
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px">
+        <canvas id="h1" width="84" height="84" style="border-radius:8px;box-shadow:0 0 0 1.5px #161616;width:100%"></canvas>
+        <canvas id="h2" width="84" height="84" style="border-radius:8px;box-shadow:0 0 0 1.5px #161616;width:100%"></canvas>
+        <canvas id="h3" width="84" height="84" style="border-radius:8px;box-shadow:0 0 0 1.5px #161616;width:100%"></canvas>
+        <canvas id="h4" width="84" height="84" style="border-radius:8px;box-shadow:0 0 0 2.5px #E8392B;width:100%"></canvas>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:8px;font:600 11px JBM;color:#7A7364;margin-top:6px"><span>0x11C3</span><span>0x80A1</span><span>0x5E02</span><span style="color:#E8392B">0x2A7F</span></div>
+    </div>
+    <div class="go">Grow again ⟳</div>
+  </div>
+</div>
+<div class="phone"><div class="scr">
+  <div class="sb"><span>9:41</span><span>●●● 100%</span></div>
+  <div class="hd"><h3>Cards</h3><span>3 CARDS</span></div>
+  <div class="stack">
+    <div class="card" style="top:0;transform:scale(.88);transform-origin:50% 0;opacity:.9"><canvas id="c3" width="372" height="232"></canvas></div>
+    <div class="card" style="top:30px;transform:scale(.94);transform-origin:50% 0"><canvas id="c2" width="372" height="232"></canvas></div>
+    <div class="card" style="top:76px"><canvas id="c1" width="372" height="232"></canvas><span class="chipx"></span><span class="bn">ONE/ONE</span><span class="num">•••• 2047</span></div>
+  </div>
+  <div class="meta"><b>SEED #A7F2 · 1 of 1</b><span>⟳ Re-grow</span></div>
+  <div class="tx">
+    <div class="t"><i style="background:#FFC530"></i><div><b>Blue Bottle</b><small>Today · 9:12</small></div><em>−$6.40</em></div>
+    <div class="t"><i style="background:#2346E0"></i><div><b>Metro card</b><small>Yesterday</small></div><em>−$20.00</em></div>
+    <div class="t"><i style="background:#FF8FB8"></i><div><b>Payroll</b><small>Mon</small></div><em style="color:#1F9E6A">+$3,240</em></div>
+    <div class="t"><i style="background:#1F9E6A"></i><div><b>Plant shop</b><small>Sun</small></div><em>−$32.90</em></div>
+  </div>
+  <div style="position:absolute;left:22px;right:22px;bottom:30px;height:70px;border-radius:999px;background:#161616;display:flex;justify-content:space-around;align-items:center;font:600 14px JBM;color:#8C8677"><span>Home</span><span style="color:#F3EEE2;background:#E8392B;padding:10px 16px;border-radius:999px">Cards</span><span>Pay</span><span>Me</span></div>
+</div></div>
+<script src="gen.js"></script>
+<script>
+Promise.all(['20px JBM','900 20px Archivo','600 20px SG'].map(f=>document.fonts.load(f))).then(()=>{
+  const C=id=>document.getElementById(id).getContext('2d');
+  drawFlow(C('bg'),1920,1080,{seed:5,bg:'#161616',scale:1.4,gap:8});
+  // 主画布：右下角还没长满，露出方向场
+  drawFlow(C('art'),840,808,{seed:0x2A7F,bg:'#F3EEE2',freq:1.6,tries:2600,scale:0.8,gap:4});
+  const PALS=[
+    [['#E8392B',14],['#FF7A1A',10],['#FFC530',12],['#FF8FB8',8],['#2346E0',12],['#7CC6F2',8],['#1F9E6A',7],['#161616',8],['#FFFFFF',6]],
+    [['#161616',10],['#FFFFFF',8],['#E8392B',6],['#F3EEE2',4]],
+    [['#2346E0',10],['#7CC6F2',10],['#FFFFFF',6],['#161616',4],['#FFC530',3]],
+    [['#1F9E6A',10],['#FFC530',10],['#FF7A1A',8],['#F6D9B8',8],['#161616',3]],
+  ];
+  document.getElementById('sw').innerHTML=PALS[0].map(([c])=>`<span style="background:${c};box-shadow:0 0 0 1.5px #161616"></span>`).join('');
+  document.getElementById('pals').innerHTML=PALS.map((p,i)=>`<div class="${i===0?'on':''}">${p.map(([c])=>`<span style="background:${c}"></span>`).join('')}</div>`).join('');
+  [[0x11C3,1],[0x80A1,2],[0x5E02,3],[0x2A7F,0]].forEach(([sd,p],i)=>drawFlow(C('h'+(i+1)),84,84,{seed:sd,bg:p===1?'#161616':'#F3EEE2',pal:PALS[p],freq:5,scale:0.22,gap:1.5,step:2,tries:1500}));
+  drawFlow(C('c1'),372,232,{seed:0xA7F2,bg:'#F3EEE2',pal:PALS[0],freq:2.2,scale:0.55,gap:3,tries:3000});
+  drawFlow(C('c2'),372,232,{seed:31,bg:'#2346E0',pal:PALS[2],freq:2.6,scale:0.5,gap:3,tries:2500,rot:1.4});
+  drawFlow(C('c3'),372,232,{seed:77,bg:'#161616',pal:PALS[1],freq:2,scale:0.5,gap:3,tries:2500,rot:-0.8});
+});
+</script>

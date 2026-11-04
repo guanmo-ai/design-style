@@ -1,0 +1,97 @@
+<!doctype html>
+<!-- 生成艺术 Generative Art · 第 0 帧（1920×1080）：一张流场，几百条色带顺着看不见的“风”长出来、互不相撞；
+     右边还没长满，露出底下的方向场和正在画的笔头。node ../_lib/shot.cjs cover.html png/cover.png -->
+<meta charset="utf-8">
+<style>
+@font-face{font-family:JBM;src:url(../../public/fonts/JetBrainsMono.ttf)}
+@font-face{font-family:Archivo;src:url(../../public/fonts/Archivo.ttf);font-weight:100 900;font-stretch:62% 125%}
+@font-face{font-family:NotoSC;src:url(../../public/fonts/NotoSansSC-Black.otf);font-weight:900}
+@font-face{font-family:NotoSC;src:url(../../public/fonts/NotoSansSC-Medium.otf);font-weight:500}
+html,body{margin:0;width:1920px;height:1080px;overflow:hidden;background:#F3EEE2}
+canvas{position:absolute;inset:0}
+.card{position:absolute;left:56px;bottom:56px;background:#F3EEE2;padding:28px 34px 26px;box-shadow:0 0 0 3px #161616;width:560px}
+.card small{font:600 16px JBM;color:#161616;letter-spacing:.04em}
+.card h1{margin:10px 0 6px;font:900 92px/1 NotoSC;color:#161616;letter-spacing:.02em}
+.card h2{margin:0 0 16px;font-family:Archivo;font-weight:900;font-stretch:125%;font-size:30px;color:#E8392B;letter-spacing:.02em}
+.card p{margin:0 0 16px;font:500 21px/1.55 NotoSC;color:#3A3832}
+.card code{display:block;font:600 17px/1.6 JBM;color:#161616;background:#E7E0D0;padding:12px 14px}
+.card code em{font-style:normal;color:#2346E0}
+.tag{position:absolute;font:600 17px JBM;background:#161616;color:#F3EEE2;padding:8px 14px}
+</style>
+<canvas id="c" width="1920" height="1080"></canvas>
+<div class="tag" style="right:56px;top:44px">SEED 0x2A7F · 1,000+ RIBBONS · FRAME 0001</div>
+<div class="card">
+  <small>1965 → NOW · 每次运行都是新的一张</small>
+  <h1>生成艺术</h1>
+  <h2>GENERATIVE ART</h2>
+  <p>不画画，写规则：每一条色带只听“风”的方向，<br>碰到别人就停下。</p>
+  <code><em>angle</em> = noise(x, y) × 2π<br><em>step</em>  = (cos angle, sin angle) × 4px</code>
+</div>
+<script>
+const W=1920,H=1080,g=document.getElementById('c').getContext('2d');
+function mulberry(a){return function(){a|=0;a=a+0x6D2B79F5|0;let t=Math.imul(a^a>>>15,1|a);t=t+Math.imul(t^t>>>7,61|t)^t;return((t^t>>>14)>>>0)/4294967296}}
+const rnd=mulberry(0x2A7F);
+// 方向场：几层正弦叠起来的平滑“风”
+function ang(x,y){
+  return 1.25*Math.sin(x*0.0019+0.4)+0.9*Math.cos(y*0.0026-x*0.0009+1.1)+0.45*Math.sin((x*0.6+y)*0.0042)-0.35;
+}
+const PAL=[['#E8392B',14],['#FF7A1A',10],['#FFC530',12],['#FF8FB8',8],['#2346E0',12],['#7CC6F2',8],['#1F9E6A',7],['#161616',8],['#FFFFFF',6],['#F6D9B8',4]];
+const pick=()=>{let s=PAL.reduce((a,b)=>a+b[1],0)*rnd();for(const [c,w] of PAL){if((s-=w)<0)return c}return PAL[0][0]};
+const WID=[[6,20],[10,26],[16,18],[26,12],[40,8],[64,4],[96,2]];
+const pickW=()=>{let s=WID.reduce((a,b)=>a+b[1],0)*rnd();for(const [w,k] of WID){if((s-=k)<0)return w}return 10};
+// 占用网格：4px 一格，记录被哪条色带占了
+const CS=4,GW=Math.ceil(W/CS)+2,GH=Math.ceil(H/CS)+2,occ=new Int32Array(GW*GH).fill(-1);
+function free(x,y,r,id){
+  const r2=r*r;
+  for(let yy=Math.floor((y-r)/CS);yy<=Math.ceil((y+r)/CS);yy++)for(let xx=Math.floor((x-r)/CS);xx<=Math.ceil((x+r)/CS);xx++){
+    if(xx<0||yy<0||xx>=GW||yy>=GH)continue;const dx=xx*CS-x,dy=yy*CS-y;if(dx*dx+dy*dy>r2)continue;
+    const o=occ[yy*GW+xx];if(o!==-1&&o!==id)return false}
+  return true}
+function mark(x,y,r,id){const r2=r*r;
+  for(let yy=Math.floor((y-r)/CS);yy<=Math.ceil((y+r)/CS);yy++)for(let xx=Math.floor((x-r)/CS);xx<=Math.ceil((x+r)/CS);xx++){
+    if(xx<0||yy<0||xx>=GW||yy>=GH)continue;const dx=xx*CS-x,dy=yy*CS-y;if(dx*dx+dy*dy<=r2)occ[yy*GW+xx]=id}}
+// “生长前沿”：从左往右推，前沿右边的色带只长了一部分
+const front=x=>1500+90*Math.sin(x*0.01);
+const ribbons=[];const STEP=4,GAP=5;
+for(let n=0;n<9000&&ribbons.length<1400;n++){
+  const w=pickW();const x0=rnd()*(W+200)-100,y0=rnd()*(H+200)-100;
+  if(!free(x0,y0,w/2+GAP,-2))continue;
+  const id=ribbons.length;const pts=[[x0,y0]];
+  // 两头都长
+  for(const dir of [1,-1]){let x=x0,y=y0;
+    for(let s=0;s<220;s++){const a=ang(x,y);const nx=x+Math.cos(a)*STEP*dir,ny=y+Math.sin(a)*STEP*dir;
+      if(nx<-120||nx>W+120||ny<-120||ny>H+120)break;
+      if(!free(nx,ny,w/2+GAP,id))break;
+      mark(x,y,w/2+GAP*0.3,id);x=nx;y=ny;dir>0?pts.push([x,y]):pts.unshift([x,y])}}
+  if(pts.length*STEP<Math.max(60,w*4))continue;
+  pts.forEach(p=>mark(p[0],p[1],w/2+GAP*0.3,id));
+  ribbons.push({pts,w,c:pick()});
+}
+// 背景：前沿右边画方向场的小箭头（铅笔灰）
+g.fillStyle='#F3EEE2';g.fillRect(0,0,W,H);
+g.strokeStyle='rgba(22,22,22,.28)';g.lineWidth=1.6;g.lineCap='round';
+for(let y=24;y<H;y+=34)for(let x=24;x<W;x+=34){
+  if(x<front(y)-60)continue;const a=ang(x,y);const L=11;
+  g.beginPath();g.moveTo(x-Math.cos(a)*L,y-Math.sin(a)*L);g.lineTo(x+Math.cos(a)*L,y+Math.sin(a)*L);g.stroke();
+  g.beginPath();g.arc(x+Math.cos(a)*L,y+Math.sin(a)*L,2,0,7);g.fillStyle='rgba(22,22,22,.32)';g.fill();
+}
+// 色带：按前沿裁短；被裁的那几条画出笔头 + 虚线（接下来要走的路）
+const heads=[];
+for(const R of ribbons){
+  let pts=R.pts;let cut=pts.findIndex(p=>p[0]>front(p[1])+ (R.w>30?-40:0));
+  let growing=false;
+  if(cut===0)continue;
+  if(cut>0){growing=true;pts=pts.slice(0,cut)}
+  if(pts.length<2)continue;
+  g.strokeStyle=R.c;g.lineWidth=R.w;g.lineCap='round';g.lineJoin='round';
+  g.beginPath();g.moveTo(...pts[0]);for(const p of pts)g.lineTo(...p);g.stroke();
+  if(R.c==='#FFFFFF'||R.c==='#F6D9B8'){g.strokeStyle='rgba(22,22,22,.12)';g.lineWidth=1;g.stroke()}
+  if(growing&&R.w>=10&&rnd()<0.5)heads.push({p:pts[pts.length-1],rest:R.pts.slice(cut,cut+40),w:R.w,c:R.c});
+}
+for(const h of heads.slice(0,26)){
+  g.setLineDash([2,9]);g.strokeStyle='rgba(22,22,22,.55)';g.lineWidth=2;g.lineCap='round';
+  g.beginPath();g.moveTo(...h.p);for(const p of h.rest)g.lineTo(...p);g.stroke();g.setLineDash([]);
+  g.beginPath();g.arc(h.p[0],h.p[1],h.w/2+5,0,7);g.strokeStyle='#161616';g.lineWidth=3;g.stroke();
+  g.beginPath();g.arc(h.p[0],h.p[1],4,0,7);g.fillStyle='#161616';g.fill();
+}
+</script>

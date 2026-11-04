@@ -3,3 +3,8 @@
 */ui.html
 candidates.html
 samples/*/out/
+candidates-5.html
+# 第五轮候选的 cover.html / ui.html 是手写源码，不是生成物
+!ascii/*.html
+!kinetic-type/*.html
+!generative/*.html

@@ -1,0 +1,110 @@
+<!doctype html>
+<!-- 动态字体 · 落到网页和手机 App（1920×1080）。网页：音乐节官网，标题跟着鼠标鼓起来、阵容表悬停那一行被撑满；
+     App：间歇训练计时器，数字每秒“砸”下来一次、上一秒被压扁挤出去。node ../_lib/shot.cjs ui.html png/ui.png -->
+<meta charset="utf-8">
+<style>
+@font-face{font-family:Archivo;src:url(../../public/fonts/Archivo.ttf);font-weight:100 900;font-stretch:62% 125%}
+@font-face{font-family:JBM;src:url(../../public/fonts/JetBrainsMono.ttf)}
+@font-face{font-family:NotoSC;src:url(../../public/fonts/NotoSansSC-Black.otf);font-weight:900}
+*{box-sizing:border-box}
+html,body{margin:0;width:1920px;height:1080px;overflow:hidden;font-family:Archivo}
+body{background:#2340FF}
+.bgtype{position:absolute;left:-30px;top:-40px;font-family:Archivo;font-weight:900;font-stretch:125%;font-size:330px;line-height:.86;color:#2B4BFF;white-space:nowrap;letter-spacing:-.02em}
+.win{position:absolute;left:52px;top:62px;width:1290px;height:956px;background:#F1ECE0;border-radius:16px;overflow:hidden;box-shadow:0 40px 90px rgba(0,10,80,.45)}
+.chrome{height:44px;background:#E2DCCD;display:flex;align-items:center;gap:8px;padding:0 18px}
+.chrome i{width:12px;height:12px;border-radius:50%;background:#C9C1AE}
+.chrome span{margin-left:22px;background:#F1ECE0;color:#7A7364;font:14px JBM;padding:5px 16px;border-radius:7px;width:420px}
+.nav{display:flex;align-items:center;gap:30px;padding:22px 40px;font-size:17px;font-weight:600;color:#141414}
+.nav b{font-weight:900;font-stretch:125%;font-size:22px;margin-right:auto;letter-spacing:-.01em}
+.nav b em{font-style:normal;color:#FF4A1C}
+.nav .btn{background:#141414;color:#F1ECE0;padding:11px 18px;font-weight:700}
+.hero{position:relative;height:300px;border-bottom:3px solid #141414}
+#big{position:absolute;left:34px;bottom:-14px;white-space:nowrap;line-height:.8;color:#141414}
+#big span{display:inline-block;transform-origin:50% 100%}
+.cursor{position:absolute}
+.meta{display:flex;justify-content:space-between;padding:14px 40px;font:600 16px JBM;color:#141414;border-bottom:3px solid #141414}
+.meta span:nth-child(2){color:#FF4A1C}
+.lineup{padding:0}
+.lr{display:flex;align-items:center;border-bottom:2px solid #141414;height:74px;padding:0 40px;gap:24px;color:#141414;overflow:hidden;white-space:nowrap}
+.lr .d{font:600 15px JBM;width:70px;flex:none}
+.lr .n{font-size:58px;line-height:1;letter-spacing:-.01em}
+.lr .t{margin-left:auto;font:600 15px JBM}
+.lr.on{background:#FF4A1C;color:#F1ECE0;height:118px}
+.lr.on .n{font-size:100px}
+.tick{position:absolute;left:-20px;right:-20px;bottom:0;height:70px;background:#141414;color:#FFD12E;display:flex;align-items:center;font-weight:900;font-size:36px;white-space:nowrap;gap:28px;padding-left:20px}
+.tick i{font-style:normal;color:#F1ECE0;font-weight:300;font-stretch:62%}
+.ann{position:absolute;font:600 14px JBM;color:#141414;background:#FFD12E;padding:5px 9px}
+/* 手机 */
+.phone{position:absolute;left:1420px;top:62px;width:440px;height:956px;border-radius:64px;background:#0B0B0B;padding:14px;box-shadow:0 40px 90px rgba(0,10,80,.5)}
+.scr{width:100%;height:100%;border-radius:52px;background:#141414;overflow:hidden;position:relative;color:#F1ECE0}
+.sb{display:flex;justify-content:space-between;padding:20px 34px 0;font:700 15px JBM}
+.top{display:flex;justify-content:space-between;padding:26px 30px 0;font:600 14px JBM;color:#8C8677}
+.ex{padding:30px 30px 0;font-size:66px;font-weight:900;font-stretch:62%;line-height:.9;letter-spacing:-.01em;text-transform:uppercase}
+.ex small{display:block;font:600 14px JBM;color:#FFD12E;letter-spacing:.06em;margin-bottom:10px}
+.clock{position:relative;height:330px;margin-top:10px}
+.clock .now{position:absolute;left:18px;bottom:0;font-size:222px;line-height:.78;font-weight:900;font-stretch:118%;color:#FFD12E;letter-spacing:-.04em;transform-origin:0 100%;transform:scaleY(1.04)}
+.clock .old{position:absolute;left:24px;bottom:196px;font-size:222px;line-height:.78;font-weight:900;font-stretch:62%;color:transparent;-webkit-text-stroke:2px #FFD12E;opacity:.55;letter-spacing:-.04em;transform-origin:0 100%;transform:scaleY(.28)}
+.clock .old2{bottom:252px;opacity:.25;transform:scaleY(.12)}
+.bar{margin:26px 30px 0;height:16px;background:#2A2A2A;position:relative}
+.bar b{position:absolute;left:0;top:0;bottom:0;width:58%;background:#FF4A1C}
+.bar i{position:absolute;top:-6px;bottom:-6px;width:4px;background:#F1ECE0;left:58%}
+.next{margin:26px 30px 0;border-top:2px solid #F1ECE0}
+.nx{display:flex;justify-content:space-between;align-items:baseline;padding:14px 0;border-bottom:1px solid #3A3A3A}
+.nx b{font-size:30px;font-weight:800;font-stretch:80%;text-transform:uppercase}
+.nx span{font:600 15px JBM;color:#8C8677}
+.pause{position:absolute;left:30px;right:30px;bottom:40px;height:84px;background:#FFD12E;color:#141414;display:flex;align-items:center;justify-content:center;font-size:38px;font-weight:900;font-stretch:125%;letter-spacing:.02em}
+</style>
+<div class="bgtype">TYPE THAT<br>MOVES WITH<br>THE MUSIC</div>
+<div class="win">
+  <div class="chrome"><i></i><i></i><i></i><span>pulsefest.pt</span></div>
+  <div class="nav"><b>PULSE<em>/</em>27</b><span>Lineup</span><span>Tickets</span><span>Map</span><span>FAQ</span><span class="btn">Get tickets →</span></div>
+  <div class="hero"><div id="big"></div>
+    <svg class="cursor" style="left:470px;top:84px" width="60" height="60" viewBox="0 0 60 60"><path d="M6 4 L6 46 L17 36 L25 54 L33 50 L25 33 L40 33 Z" fill="#141414" stroke="#F1ECE0" stroke-width="3" stroke-linejoin="round"/></svg>
+    <div class="ann" style="left:520px;top:58px">hover · r = 440px · wdth ↑ wght ↑</div>
+  </div>
+  <div class="meta"><span>JUL 18—20, 2027</span><span>● LISBON · LX FACTORY</span><span>62 ARTISTS / 4 STAGES</span></div>
+  <div class="lineup" id="lineup"></div>
+  <div class="tick"><span>DAY 1</span><i>SOLD OUT</i><span>DAY 2</span><i>LAST 200</i><span>DAY 3</span><i>ON SALE</i><span>3-DAY PASS</span><i>€189</i><span>DAY 1</span></div>
+</div>
+<div class="phone"><div class="scr">
+  <div class="sb"><span>9:41</span><span>●●● 100%</span></div>
+  <div class="top"><span>✕</span><span>ROUND 3 / 8</span><span>♪ 128 BPM</span></div>
+  <div class="ex"><small>NOW · 40 s WORK</small>BURPEES</div>
+  <div class="clock"><div class="old old2">43</div><div class="old">43</div><div class="now">42</div></div>
+  <div class="bar"><b></b><i></i></div>
+  <div class="next">
+    <div class="nx"><b>Rest</b><span>0:20</span></div>
+    <div class="nx"><b>Mountain climbers</b><span>0:40</span></div>
+    <div class="nx"><b>Jump squats</b><span>0:40</span></div>
+  </div>
+  <div class="pause">PAUSE</div>
+</div></div>
+<script>
+document.fonts.load('900 100px Archivo').then(()=>{
+  // 大标题：鼠标在 (500, 150) 附近，经过的字母撑宽、加粗、抬高
+  const big = document.getElementById('big');
+  const word = 'PULSE—27';
+  big.innerHTML = [...word].map(c=>`<span>${c}</span>`).join('');
+  const sp=[...big.children]; const mx=560, R=440;
+  for(let pass=0;pass<3;pass++){
+    let x=34;
+    sp.forEach((s,k)=>{
+      const w=s.getBoundingClientRect().width; const cx=x+w/2-52;
+      let f=Math.max(0,1-Math.abs(cx-mx)/R); f=f*f*(3-2*f);
+      const wd=62+63*f, wg=300+600*Math.min(1,f+0.25);
+      s.style.fontSize='262px';
+      s.style.fontVariationSettings=`"wdth" ${wd.toFixed(1)}, "wght" ${wg.toFixed(0)}`;
+      s.style.transform=`scaleY(${(0.92+0.16*f).toFixed(3)})`;
+      s.style.color = f>0.75 ? '#FF4A1C' : '#141414';
+      x+=w;
+    });
+  }
+  // 阵容：悬停的一行被撑满，其他行按离它的距离逐渐变窄
+  const L=[['FRI','NOVA KITE','22:40'],['FRI','THE LOW SUNS','21:10'],['SAT','MARÍA VÉLEZ','23:30'],['SAT','GLASS ANIMALS CLUB','21:45'],['SUN','OKO OKO','22:15'],['SUN','PAPER TIGERS','20:30']];
+  const on=2;
+  document.getElementById('lineup').innerHTML=L.map((r,i)=>{
+    const d=Math.abs(i-on); const wd=d===0?125:Math.max(62,110-d*22); const wg=d===0?900:Math.max(300,800-d*170);
+    return `<div class="lr${d===0?' on':''}"><span class="d">${r[0]}</span><span class="n" style="font-variation-settings:'wdth' ${wd},'wght' ${wg}">${r[1]}</span><span class="t">${d===0?'▶ PREVIEW · ':''}${r[2]}</span></div>`;
+  }).join('');
+});
+</script>
