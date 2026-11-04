@@ -1,0 +1,414 @@
+<!doctype html>
+<!-- 生成艺术 · 全片 18 秒（开头 10 秒 + 五条规则 + 用在手机上 + 片尾）。1920×1080 · 60fps · 120 BPM。window.frame(f) 画第 f 帧，每帧是时间的纯函数。
+     ① 流场色带 → 倒带 → ② 圆堆积 → 缩成点吸到网格 → ③ 特鲁谢瓷砖一波波转 → 缩进手机的卡 → ④ 手机钱包 + 网页生成器 → ⑤ 分叉的树开花 → 片名 -->
+<meta charset="utf-8">
+<style>
+@font-face{font-family:JBM;src:url(../../../public/fonts/JetBrainsMono.ttf)}
+@font-face{font-family:Archivo;src:url(../../../public/fonts/Archivo.ttf);font-weight:100 900;font-stretch:62% 125%}
+@font-face{font-family:SG;src:url(../../../public/fonts/SpaceGrotesk.ttf);font-weight:300 700}
+@font-face{font-family:NotoSC;src:url(../../../public/fonts/NotoSansSC-Black.otf);font-weight:900}
+@font-face{font-family:NotoSC;src:url(../../../public/fonts/NotoSansSC-Medium.otf);font-weight:500}
+html,body{margin:0;background:#F3EEE2;overflow:hidden}
+canvas{display:block}
+</style>
+<canvas id="c" width="1920" height="1080"></canvas>
+<script src="lib.js"></script>
+<script src="timeline.js"></script>
+<script>
+const g = document.getElementById('c').getContext('2d');
+const COL = ['#E8392B', '#FF7A1A', '#FFC530', '#FF8FB8', '#2346E0', '#7CC6F2', '#1F9E6A', '#161616'];
+const hash = (i, j, k) => { let h = (i * 374761393 + j * 668265263 + k * 2147483647) | 0; h = Math.imul(h ^ (h >>> 13), 1274126177); return ((h ^ (h >>> 16)) >>> 0) / 4294967296; };
+const rr = (ctx, x, y, w, h, r) => { ctx.beginPath(); ctx.roundRect(x, y, w, h, r); };
+let PICK = [], IMG, MINIC, A, CIRC, TS = 120, TC = 16, TR = 9, TREE, BLOOM, CARD = {};
+
+// —— ② 圆堆积：随机落点，长到碰到别人（或画框）就停；先大后小 ——
+function packCircles(seed, Wd, Hd, n = 420, rmax = 230) {
+  const rnd = mulberry(seed), out = [];
+  for (let k = 0; k < 30000 && out.length < n; k++) {
+    const x = rnd() * Wd, y = rnd() * Hd; let m = Math.min(x, y, Wd - x, Hd - y, rmax * Math.pow(1 - k / 30000, 2.2) + 10);
+    for (const c of out) { m = Math.min(m, Math.hypot(c.x - x, c.y - y) - c.r - 6); if (m < 7) break; }
+    if (m < 7) continue;
+    out.push({x, y, r: m, c: COL[Math.floor(rnd() * COL.length)], c2: COL[Math.floor(rnd() * COL.length)], type: Math.floor(rnd() * 5), rot: rnd() * 6.28});
+  }
+  return out;
+}
+function drawCircle(ctx, c, r) {
+  if (r <= 0.5) return;
+  ctx.fillStyle = c.c;
+  if (c.type === 0) { ctx.beginPath(); ctx.arc(c.x, c.y, r, 0, 7); ctx.fill(); }
+  else if (c.type === 1) { ctx.lineWidth = Math.max(2, r * 0.28); ctx.strokeStyle = c.c; ctx.beginPath(); ctx.arc(c.x, c.y, Math.max(0.5, r - ctx.lineWidth / 2), 0, 7); ctx.stroke(); }
+  else if (c.type === 2) { for (let k = 0; k < 3; k++) { ctx.fillStyle = k % 2 ? PAPER : c.c; ctx.beginPath(); ctx.arc(c.x, c.y, r * (1 - k * 0.3), 0, 7); ctx.fill(); } }
+  else if (c.type === 3) { ctx.beginPath(); ctx.arc(c.x, c.y, r, c.rot, c.rot + Math.PI); ctx.fill(); ctx.fillStyle = c.c2; ctx.beginPath(); ctx.arc(c.x, c.y, r, c.rot + Math.PI, c.rot + Math.PI * 2); ctx.fill(); }
+  else { ctx.beginPath(); ctx.arc(c.x, c.y, r, 0, 7); ctx.fill(); ctx.fillStyle = PAPER; ctx.beginPath(); ctx.arc(c.x + r * 0.25, c.y - r * 0.25, r * 0.28, 0, 7); ctx.fill(); }
+}
+
+// —— ③ 特鲁谢瓷砖：每格两段四分之一圆，转 90° 就换一种连法 ——
+function tileAngle(i, j, f, seed = 0) {
+  const d = Math.hypot(i - TC / 2 + 0.5, j - TR / 2 + 0.5) / 9; let a = (hash(i, j, 9 + seed) < 0.5 ? 0 : 90);
+  TL.flips.forEach((w, k) => { if (hash(i, j, k + 1 + seed * 7) < 0.55) a += 90 * ease.outBack(clamp((f - w - d * 12) / 10), 1.5); });
+  return a;
+}
+function drawTiles(ctx, f, appear, seed = 0) {
+  ctx.lineCap = 'butt';
+  for (let j = 0; j < TR; j++) for (let i = 0; i < TC; i++) {
+    const d = Math.hypot(i - TC / 2 + 0.5, j - TR / 2 + 0.5) / 9, p = ease.out3(clamp((f - appear - d * 12) / 12)); if (p <= 0) continue;
+    const cx = (i + 0.5) * TS, cy = (j + 0.5) * TS, a = tileAngle(i, j, f, seed) * Math.PI / 180;
+    ctx.save(); ctx.translate(cx, cy); ctx.rotate(a);
+    ctx.lineWidth = 34;
+    for (const [ox, oy, a0, k] of [[-1, -1, 0, 0], [1, 1, Math.PI, 1]]) {
+      ctx.strokeStyle = COL[Math.floor(hash(i, j, k + 20 + seed) * 7)];
+      ctx.beginPath(); ctx.arc(ox * TS / 2, oy * TS / 2, TS / 2, a0, a0 + Math.PI / 2 * p); ctx.stroke();
+    }
+    ctx.restore();
+  }
+}
+
+// —— ⑤ 树：长一段，分两叉，每一叉短一点、细一点，偏一个随机角度 ——
+function buildTree(seed) {
+  const rnd = mulberry(seed), br = [], tips = [];
+  (function grow(x, y, a, len, w, d, t0) {
+    const x1 = x + Math.cos(a) * len, y1 = y + Math.sin(a) * len, dur = 6 + len / 32, t1 = t0 + dur;
+    br.push({x, y, x1, y1, w, d, t0, t1});
+    if (d >= 9 || len < 12) { tips.push({x: x1, y: y1, t: t1 + rnd() * 6, r: 9 + rnd() * 16, c: COL[Math.floor(rnd() * 7)], d}); return; }
+    const sp = 0.32 + rnd() * 0.32;
+    grow(x1, y1, a - sp + (rnd() - 0.5) * 0.2, len * (0.68 + rnd() * 0.12), w * 0.7, d + 1, t1 - 3);
+    grow(x1, y1, a + sp + (rnd() - 0.5) * 0.2, len * (0.68 + rnd() * 0.12), w * 0.7, d + 1, t1 - 3 + rnd() * 3);
+  })(1200, 1080, -Math.PI / 2, 240, 46, 0, TL.tree[0] + 4);
+  return {br, tips};
+}
+
+// —— 网页里的生成器：流线（便宜，不做防碰撞），旋转参数跟着滑块走 ——
+function streams(ctx, x0, y0, w, h, rot, seed) {
+  const ang = field(seed, rot);
+  ctx.save(); ctx.beginPath(); ctx.rect(x0, y0, w, h); ctx.clip(); ctx.fillStyle = PAPER; ctx.fillRect(x0, y0, w, h);
+  ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+  for (let j = 0; j < 16; j++) for (let i = 0; i < 18; i++) {
+    let x = x0 + (i + hash(i, j, 3)) * w / 18, y = y0 + (j + hash(i, j, 4)) * h / 16;
+    ctx.strokeStyle = COL[Math.floor(hash(i, j, 5) * 8)]; ctx.lineWidth = [4, 7, 12, 18][Math.floor(hash(i, j, 6) * 4)];
+    ctx.beginPath(); ctx.moveTo(x, y);
+    for (let s = 0; s < 22; s++) { const a = ang((x - x0) * 1.6, (y - y0) * 1.6); x += Math.cos(a) * 7; y += Math.sin(a) * 7; ctx.lineTo(x, y); }
+    ctx.stroke();
+  }
+  ctx.restore();
+}
+function cursor(ctx, x, y, s = 1) {
+  ctx.save(); ctx.translate(x, y); ctx.scale(s, s); ctx.fillStyle = INK; ctx.strokeStyle = '#fff'; ctx.lineWidth = 3;
+  ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(0, 38); ctx.lineTo(10, 29); ctx.lineTo(18, 45); ctx.lineTo(25, 42); ctx.lineTo(17, 26); ctx.lineTo(30, 26); ctx.closePath(); ctx.stroke(); ctx.fill(); ctx.restore();
+}
+
+const PHONE = {x: 1370, y: 50, w: 480, h: 980}, C1 = {x: PHONE.x + 28, y: PHONE.y + 250, w: 424, h: 264};
+const BROW = {x: 60, y: 50, w: 1250, h: 980}, ART = {x: 92, y: 150, w: 800, h: 780};
+function setup() {
+  A = build(0x2A7F, PAL_A, 0);
+  const rnd = mulberry(5);
+  for (const R of A.ribbons) { const x0 = Math.min(R.pts[0][0], R.pts[R.pts.length - 1][0]); R.birth = -84 + (x0 + 120) / 2160 * 150 + rnd() * 6; R.v = R.w >= 40 ? 15 : R.w >= 16 ? 20 : 26; }
+  // 每条色带缩成的圆点飞去最近的网格中心
+  for (const R of A.ribbons) { const m = R.pts[R.pts.length >> 1]; R.mid = m; R.gi = Math.max(0, Math.min(TC - 1, Math.floor(m[0] / TS))); R.gj = Math.max(0, Math.min(TR - 1, Math.floor(m[1] / TS))); }
+  TREE = buildTree(31);
+  // 五朵最大的花（左右分开挑）飞去当五张规则卡
+  PICK = [0, 1, 2, 3, 4].map(k => TREE.tips.filter(t => t.x >= 820 + k * 150 && t.x < 820 + (k + 1) * 150).sort((a, b) => b.r - a.r)[0] || TREE.tips[k]);
+  // 卡片和手机里用到的小图：同一套规则，三个种子
+  const mini = (Bd, bg, wd = 300, ht = 220) => { const c = Object.assign(document.createElement('canvas'), {width: wd, height: ht}).getContext('2d'); c.fillStyle = bg; c.fillRect(0, 0, wd, ht); c.scale(wd / W * 1.5, ht / H * 1.5); for (const R of Bd.ribbons) ribbon(c, R, R.L); return c.canvas; };
+  const B1 = build(0x80A1, PAL_B, 1.1), B2 = build(0x11C3, PAL_A, -0.7);
+  IMG = {a: mini(A, PAPER), b: mini(B1, PAPER), c: mini(B2, INK), cover: mini(B1, '#FFC530', 400, 400)};
+  MINIC = packCircles(21, 300, 200, 70, 46);
+  // 手机里另外两张卡：圆堆积、流场色带（静态小图）
+  const mk = draw => { const c = Object.assign(document.createElement('canvas'), {width: C1.w, height: C1.h}).getContext('2d'); draw(c); return c.canvas; };
+  CARD.circ = mk(c => { c.fillStyle = '#2346E0'; c.fillRect(0, 0, C1.w, C1.h); for (const q of packCircles(12, C1.w, C1.h, 120, 70)) drawCircle(c, {...q, c: q.c === '#2346E0' ? '#FFC530' : q.c}, q.r); });
+  CARD.flow = mk(c => { c.fillStyle = INK; c.fillRect(0, 0, C1.w, C1.h); c.scale(C1.w / W * 1.6, C1.h / H * 1.6); for (const R of A.ribbons) ribbon(c, R, R.L); });
+}
+function lenFlow(R, f) {      // 长出来；76 起往中点缩
+  let l = clamp((f - R.birth) * R.v, 0, R.L);
+  if (f >= TL.gather[0]) l *= 1 - ease.inOut3(clamp((f - TL.gather[0] - (R.mid[0] / W) * 6) / 12));
+  return l;
+}
+// ② 碎石：混乱程度（分三拍变大，210 归位）
+function disorder(f) {
+  let d = 0; TL.steps.forEach((s, k) => { d += 0.34 * ease.outBack(clamp((f - s) / 9), 2); });
+  if (f >= TL.snap[0]) d *= 1 - ease.outBack(clamp((f - TL.snap[0]) / (TL.snap[1] - TL.snap[0])), 1.6);
+  return d;
+}
+function drawSquares(ctx, f) {
+  for (let j = 0; j < TR; j++) for (let i = 0; i < TC; i++) {
+    const dd = Math.hypot(i - TC / 2 + 0.5, j - TR / 2 + 0.5) / 9, p = ease.outBack(clamp((f - TL.schotter[0] - dd * 10) / 12), 2.2);
+    if (p <= 0) continue;
+    const fade = 1 - clamp((f - TL.tiles[0] - dd * 12) / 12); if (fade <= 0) continue;
+    const rowf = Math.pow(j / (TR - 1), 1.3), D = disorder(f) * rowf;
+    const rot = D * (hash(i, j, 1) - 0.5) * 2 * 0.8, ox = D * (hash(i, j, 2) - 0.5) * 2 * 34, oy = D * (hash(i, j, 3) - 0.5) * 2 * 34;
+    const sz = 92 * p, c = hash(i, j, 4) < 0.32 ? COL[Math.floor(hash(i, j, 5) * 7)] : null;
+    ctx.save(); ctx.globalAlpha = fade; ctx.translate((i + 0.5) * TS + ox, (j + 0.5) * TS + oy); ctx.rotate(rot);
+    if (c) { ctx.fillStyle = c; ctx.fillRect(-sz / 2, -sz / 2, sz, sz); }
+    ctx.lineWidth = 4; ctx.strokeStyle = INK; ctx.strokeRect(-sz / 2, -sz / 2, sz, sz); ctx.restore();
+  }
+}
+
+window.frame = f => {
+  g.setTransform(1, 0, 0, 1, 0, 0); g.fillStyle = PAPER; g.fillRect(0, 0, W, H);
+  // ① 流场 → 缩成圆点 → 飞到网格上
+  if (f < TL.gather[1]) {
+    const heads = [];
+    for (const R of A.ribbons) {
+      const l = lenFlow(R, f);
+      if (f < TL.gather[0] + 4 || l > R.w * 0.6) { const from = f >= TL.gather[0] ? (R.L - l) / 2 + (R.L / 2 - (R.pts.length >> 1) * STEP) : 0, h = ribbon(g, R, l, null, Math.max(0, from)); if (h && l < R.L - 0.5 && R.w >= 10 && f < TL.gather[0]) heads.push([R, l, h]); continue; }
+      if (clamp((f - R.birth) * R.v, 0, R.L) <= 0) continue;
+      const p = ease.inOut3(clamp((f - 92 - Math.hypot(R.mid[0] - W / 2, R.mid[1] - H / 2) / 1100 * 10) / 16));
+      const x = lerp(R.mid[0], (R.gi + 0.5) * TS, p), y = lerp(R.mid[1], (R.gj + 0.5) * TS, p), r = lerp(Math.max(6, Math.min(R.w / 2, 16)), 8, p);
+      g.fillStyle = R.c; g.beginPath(); g.arc(x, y, r, 0, 7); g.fill();
+    }
+    for (const [R, l, h] of heads) penHead(g, R, l, h, R.w >= 26 ? 130 : 0);
+    card(g, f, 10, TL.gather[0] - 6, 'RULE 01 · 流场', '顺着风走', 'angle = noise(x, y) × 2π', 60, 790);
+  }
+  // ② 碎石：方块从圆点堆里长出来，越往下越乱，拍点上一下归位
+  if (f >= TL.schotter[0] && f < TL.tiles[0] + 30) {
+    drawSquares(g, f);
+    card(g, f, TL.schotter[0] + 12, TL.snap[1] - 4, 'RULE 02 · 秩序 → 混乱', '越往下，越乱', 'rotate = rand(±45°) × 行号 / 总行数', 60, 790);
+  }
+  // ③ 瓷砖
+  const shrinkTiles = () => {      // 整面瓷砖缩进手机的第一张卡（画在手机上面，落定后由卡片接手）
+    const p = ease.inOut3(clamp((f - TL.shrink[0]) / (TL.shrink[1] - TL.shrink[0])));
+    const s = lerp(1, C1.w / W, p), sy = lerp(1, C1.h / H, p);
+    g.save(); g.translate(lerp(0, C1.x, p), lerp(0, C1.y, p)); g.scale(s, sy);
+    if (p > 0) { rr(g, 0, 0, W, H, 18 / s); g.fillStyle = PAPER; g.fill(); g.save(); g.clip(); drawTiles(g, f, TL.tiles[0]); g.restore(); g.lineWidth = 3 / s; g.strokeStyle = INK; g.stroke(); }
+    else drawTiles(g, f, TL.tiles[0]);
+    g.restore();
+  };
+  if (f >= TL.tiles[0] && f < TL.shrink[0]) {
+    shrinkTiles();
+    card(g, f, TL.tiles[0] + 18, TL.shrink[0] - 4, 'RULE 03 · 特鲁谢瓷砖', '一个格子，转 90°', 'rotate(tile, 90° × n)', 60, 790);
+  }
+  // ④ 手机钱包 + 网页生成器
+  const SEED = [1200, 990];
+  if (f >= TL.ui[0] - 6 && f < TL.collapse[1]) {
+    const cp = ease.in3(clamp((f - TL.collapse[0]) / (TL.collapse[1] - TL.collapse[0] - 2))), e = 0, drop = 0;
+    g.save(); g.translate(SEED[0], SEED[1]); g.rotate(cp * 0.8); g.scale(1 - cp, 1 - cp); g.translate(-SEED[0], -SEED[1]);
+    // 网页
+    const bx = BROW.x + lerp(-1400, 0, ease.outBack(clamp((f - TL.ui[0] - 4) / 22), 1.1));
+    g.save(); g.translate(bx, drop * 1.2); g.rotate(e > 0 ? -e * 0.004 : 0);
+    g.fillStyle = INK; rr(g, 10, 14, BROW.w, BROW.h, 18); g.fill();
+    g.fillStyle = PAPER; rr(g, 0, 0, BROW.w, BROW.h, 18); g.fill(); g.lineWidth = 3; g.strokeStyle = INK; g.stroke();
+    g.fillStyle = '#E4DDCC'; rr(g, 0, 0, BROW.w, 52, [18, 18, 0, 0]); g.fill(); g.strokeStyle = INK; g.beginPath(); g.moveTo(0, 52); g.lineTo(BROW.w, 52); g.stroke();
+    for (let k = 0; k < 3; k++) { g.fillStyle = ['#E8392B', '#FFC530', '#1F9E6A'][k]; g.beginPath(); g.arc(28 + k * 22, 26, 7, 0, 7); g.fill(); }
+    g.font = '600 18px JBM'; g.fillStyle = '#7A7364'; g.fillText('flowfield.studio', 120, 33);
+    const dp = ease.inOut3(clamp((f - TL.drag[0]) / (TL.drag[1] - TL.drag[0]))), rot = lerp(-0.35, 1.25, dp);
+    streams(g, ART.x - BROW.x, ART.y - BROW.y, ART.w, ART.h, rot, 3);
+    g.strokeStyle = INK; g.lineWidth = 3; rr(g, ART.x - BROW.x, ART.y - BROW.y, ART.w, ART.h, 12); g.stroke();
+    const px = ART.x - BROW.x + ART.w + 36, py = 120;
+    g.font = '900 34px Archivo'; g.fillStyle = INK; g.fillText('Generator', px, py + 20);
+    [['Rotation', dp, `${Math.round(rot * 57.3)}°`], ['Scale', 0.38, '0.0019'], ['Width', 0.55, '6—64'], ['Gap', 0.3, '5 px']].forEach(([n, v, t], k) => {
+      const y = py + 90 + k * 78; g.font = '600 20px SG'; g.fillStyle = INK; g.fillText(n, px, y); g.font = '700 18px JBM'; g.textAlign = 'right'; g.fillText(t, px + 270, y); g.textAlign = 'left';
+      g.fillStyle = '#DDD5C3'; rr(g, px, y + 18, 270, 8, 4); g.fill(); g.fillStyle = k === 0 ? '#E8392B' : INK; rr(g, px, y + 18, 270 * v, 8, 4); g.fill();
+      g.fillStyle = PAPER; g.strokeStyle = k === 0 ? '#E8392B' : INK; g.lineWidth = 4; g.beginPath(); g.arc(px + 270 * v, y + 22, 13, 0, 7); g.fill(); g.stroke();
+    });
+    g.font = '600 16px JBM'; g.fillStyle = '#7A7364'; g.fillText('PALETTE', px, py + 430);
+    COL.forEach((c, k) => { g.fillStyle = c; rr(g, px + k * 34, py + 446, 28, 28, 6); g.fill(); });
+    g.fillStyle = '#E8392B'; rr(g, px, py + 740, 270, 70, 14); g.fill(); g.font = '900 26px Archivo'; g.fillStyle = '#fff'; g.fillText('Export SVG ↓', px + 52, py + 784);
+    const hx = px + 270 * dp, hy = py + 90 + 22, ci = clamp((f - TL.ui[0] - 20) / 16);
+    if (ci > 0 && f < TL.drag[1] + 2) cursor(g, lerp(px + 120, hx, ease.inOut3(clamp((f - TL.ui[0] - 20) / 12))) + 4, hy + 6, f >= TL.drag[0] - 2 && f < TL.drag[1] ? 0.9 : 1);
+    g.restore();
+    // 手机
+    const pin = ease.outBack(clamp((f - TL.ui[0] + 6) / 18), 1.4);
+    g.save(); g.translate(0, drop * 1.4 + (1 - pin) * 900); g.translate(PHONE.x + PHONE.w / 2, PHONE.y + PHONE.h / 2); g.rotate(e > 0 ? e * 0.006 : 0); g.translate(-PHONE.x - PHONE.w / 2, -PHONE.y - PHONE.h / 2);
+    g.fillStyle = '#0B0B0B'; rr(g, PHONE.x - 14, PHONE.y - 14, PHONE.w + 28, PHONE.h + 28, 64); g.fill();
+    g.fillStyle = PAPER; rr(g, PHONE.x, PHONE.y, PHONE.w, PHONE.h, 52); g.fill();
+    g.font = '700 18px JBM'; g.fillStyle = INK; g.fillText('9:41', PHONE.x + 40, PHONE.y + 44); g.textAlign = 'right'; g.fillText('100%', PHONE.x + PHONE.w - 40, PHONE.y + 44); g.textAlign = 'left';
+    g.font = '900 46px Archivo'; g.fillText('Cards', PHONE.x + 32, PHONE.y + 120);
+    const back = (img, dy, s) => { g.save(); g.translate(C1.x + C1.w / 2, C1.y + dy); g.scale(s, s); rr(g, -C1.w / 2, 0, C1.w, C1.h, 18); g.clip(); g.drawImage(img, -C1.w / 2, 0); g.restore();
+      g.save(); g.translate(C1.x + C1.w / 2, C1.y + dy); g.scale(s, s); g.lineWidth = 3 / s; g.strokeStyle = INK; rr(g, -C1.w / 2, 0, C1.w, C1.h, 18); g.stroke(); g.restore(); };
+    const fan = ease.outBack(clamp((f - TL.shrink[1]) / 16), 1.6);
+    back(CARD.flow, -100 * fan, 0.86); back(CARD.circ, -52 * fan, 0.93);
+    // 第一张卡：瓷砖（缩进来的那一面），点“重新生成”后换种子重新长
+    if (f >= TL.shrink[1]) {
+      const seed = f >= TL.reroll[0] ? 1 : 0, ap = f >= TL.reroll[0] ? TL.reroll[0] + 4 : TL.tiles[0];
+      g.save(); rr(g, C1.x, C1.y, C1.w, C1.h, 18); g.clip(); g.fillStyle = PAPER; g.fillRect(C1.x, C1.y, C1.w, C1.h);
+      g.translate(C1.x, C1.y); g.scale(C1.w / W, C1.h / H); drawTiles(g, f, ap, seed); g.restore();
+    }
+    g.lineWidth = 3; g.strokeStyle = INK; rr(g, C1.x, C1.y, C1.w, C1.h, 18); g.stroke();
+    g.fillStyle = INK; rr(g, C1.x + C1.w - 132, C1.y + 16, 116, 34, 8); g.fill(); g.font = '900 20px Archivo'; g.fillStyle = PAPER; g.fillText('ONE/ONE', C1.x + C1.w - 120, C1.y + 40);
+    g.fillStyle = PAPER; rr(g, C1.x + 16, C1.y + C1.h - 52, 150, 36, 8); g.fill(); g.font = '700 20px JBM'; g.fillStyle = INK; g.fillText('•••• 2047', C1.x + 28, C1.y + C1.h - 27);
+    const sd = f >= TL.reroll[0] + 6 ? 'B3E1' : 'A7F2';
+    g.font = '700 18px JBM'; g.fillStyle = INK; g.fillText(`SEED #${sd} · 1 of 1`, PHONE.x + 32, C1.y + C1.h + 50);
+    const pr = f >= TL.reroll[0] - 4 && f < TL.reroll[0] + 4 ? 0.9 : 1;
+    g.save(); g.translate(PHONE.x + PHONE.w - 100, C1.y + C1.h + 44); g.scale(pr, pr); g.fillStyle = INK; rr(g, -66, -26, 132, 44, 22); g.fill(); g.font = '700 17px JBM'; g.fillStyle = PAPER; g.textAlign = 'center'; g.fillText('⟳ Re-grow', 0, 3); g.textAlign = 'left'; g.restore();
+    if (f >= TL.reroll[0] - 14 && f < TL.reroll[0] + 14) { g.fillStyle = 'rgba(22,22,22,.25)'; g.beginPath(); g.arc(PHONE.x + PHONE.w - 100, C1.y + C1.h + 44, 30 + Math.max(0, f - TL.reroll[0]) * 3, 0, 7); g.fill(); }
+    [['Blue Bottle', '−$6.40', '#FFC530'], ['Metro card', '−$20.00', '#2346E0'], ['Payroll', '+$3,240', '#FF8FB8'], ['Plant shop', '−$32.90', '#1F9E6A']].forEach(([n, v, c], k) => {
+      const y = C1.y + C1.h + 100 + k * 74; g.fillStyle = c; rr(g, PHONE.x + 32, y, 46, 46, 12); g.fill(); g.strokeStyle = INK; g.lineWidth = 2; g.stroke();
+      g.font = '600 22px SG'; g.fillStyle = INK; g.fillText(n, PHONE.x + 96, y + 30); g.font = '600 20px JBM'; g.textAlign = 'right'; g.fillText(v, PHONE.x + PHONE.w - 32, y + 30); g.textAlign = 'left'; });
+    g.restore();
+    if (f >= TL.shrink[0] && f < TL.shrink[1]) shrinkTiles();
+    g.restore();
+    // 光标去点“Export SVG”
+    if (f >= TL.drag[1] + 2 && f < TL.collapse[0] + 2) { const q = ease.inOut3(clamp((f - TL.drag[1] - 2) / 10)); cursor(g, lerp(BROW.x + ART.w + 36 + 270, BROW.x + ART.w + 36 + 150, q), lerp(170, 120 + 784 + 40 - 30, q), f >= TL.export && f < TL.export + 5 ? 0.85 : 1); }
+    card(g, f, TL.ui[0] + 30, TL.collapse[0] - 4, 'ON WEB + PHONE', '每个人，一张独一无二', 'seed → 同一个种子 = 同一张画', 120, 760);
+  }
+  // 种子：落地弹一下，钻进土里
+  if (f >= TL.collapse[1] - 4 && f < TL.tree[0] + 14) {
+    const q = clamp((f - TL.collapse[1] + 4) / 4), b = Math.max(0, f - TL.tree[0]), y = f < TL.tree[0] ? lerp(SEED[1], 1062, ease.in2(q)) : 1062 - Math.abs(Math.sin(b * 0.35)) * 26 * Math.exp(-b / 5);
+    g.fillStyle = RED; g.strokeStyle = INK; g.lineWidth = 3; g.beginPath(); g.ellipse(SEED[0], y, 16 * (b > 0 && b < 3 ? 1.25 : 1), 16 * (b > 0 && b < 3 ? 0.75 : 1), 0, 0, 7); g.fill(); g.stroke();
+  }
+  // ⑤ 树
+  if (f >= TL.tree[0] && f < TL.today[0]) {
+    g.lineCap = 'round'; g.strokeStyle = INK;
+    const back = ease.in3(clamp((f - TL.rules[0] - 4) / 22));
+    for (const b of TREE.br) { const p = ease.out2(clamp((f - b.t0) / (b.t1 - b.t0))) * (1 - clamp(back * 1.6 - b.d * 0.06)); if (p <= 0) continue;
+      const sway = Math.sin(f * 0.05 + b.d) * b.d * 0.6;
+      g.lineWidth = b.w; g.beginPath(); g.moveTo(b.x, b.y); g.lineTo(lerp(b.x, b.x1, p) + sway, lerp(b.y, b.y1, p)); g.stroke(); }
+    for (const t of TREE.tips) {
+      const p = ease.outBack(clamp((f - Math.max(t.t, TL.bloom[0] + (t.x / W) * 20)) / 10), 2.4); if (p <= 0) continue;
+      let x = t.x + Math.sin(f * 0.05 + t.d) * t.d * 0.6, y = t.y;
+      const ck = PICK.indexOf(t);
+      if (ck >= 0) { const at = TL.cards[ck], q = ease.inOut3(clamp((f - at + 16) / 14)); if (f >= at) continue;   // 这朵飞去当第 ck 张卡
+        x = lerp(x, CARDX(ck), q); y = lerp(y, 550, q); g.fillStyle = t.c; g.beginPath(); g.arc(x, y, lerp(t.r * p, 22, q), 0, 7); g.fill(); continue; }
+      const fall = f - TL.rules[0] - hash(t.x, t.y, 1) * 30;          // 其余的花一朵朵落下
+      if (fall > 0) { y += fall * fall * 0.06; x += Math.sin(fall * 0.08 + t.x) * fall * 0.8; if (y > H + 40) continue; }
+      g.fillStyle = t.c; g.beginPath(); g.arc(x, y, t.r * p, 0, 7); g.fill();
+    }
+    if (f < TL.rules[0]) card(g, f, TL.tree[0] + 10, TL.rules[0] - 4, 'RULE 04 · 递归', '长一段，分两叉', 'branch(len × 0.72, ±(18°~36°))', 60, 790);
+  }
+  if (f >= TL.rules[0] - 6 && f < TL.today[0] + 16) rules(f);
+  if (f >= TL.today[0] && f < TL.end[0] + 24) today(f);
+  if (f >= TL.end[0]) ending(f);
+  hud(f);
+};
+function hud(f) {
+  if (f >= TL.end[0] + 12) return;
+  let ci = 0; TL.chapters.forEach((c, k) => { if (f >= c[0]) ci = k; });
+  const [at, no, name, meta] = TL.chapters[ci], next = TL.chapters[ci + 1] ? TL.chapters[ci + 1][0] : TL.end[0];
+  g.save(); g.globalAlpha = 1 - clamp((f - TL.end[0]) / 12);
+  g.fillStyle = PAPER; g.fillRect(40, 34, 520, 90); g.lineWidth = 3; g.strokeStyle = INK; g.strokeRect(40, 34, 520, 90);
+  g.font = '700 22px JBM'; g.fillStyle = RED; g.textBaseline = 'alphabetic'; g.fillText(`${no} / 07`, 58, 70);
+  rise(g, name, 172, 72, '900 30px NotoSC', INK, f, at, 10);
+  rise(g, meta, 58, 108, '500 20px NotoSC', '#5A564C', f, at + 3, 10);
+  for (let k = 0; k < 7; k++) {
+    const x = W - 60 - (7 - k) * 52, p = k < ci ? 1 : k > ci ? 0 : clamp((f - at) / (next - at));
+    g.fillStyle = '#D8D0BE'; g.fillRect(x, 52, 44, 8); g.fillStyle = k === ci ? RED : INK; g.fillRect(x, 52, 44 * p, 8);
+  }
+  g.restore();
+}
+// —— 06 五条规则：每张卡从一个点长出来（签名动作），用自己的方法演示自己 ——
+const CARDX = k => (W - (5 * 336 + 4 * 24)) / 2 + k * 360 + 168;
+const RULES = [['换个种子，换一张画', 'seed → 每次都不一样'], ['同一个种子，同一张画', 'random(seed) 可复现'], ['色板加权，比例定气质', 'pick(palette, weights)'],
+  ['留间距，才透气', 'gap = 5px'], ['先放大的，再填小的', 'sort(by: size, desc)']];
+function growClip(ctx, cx, cy, r, draw) { ctx.save(); ctx.beginPath(); ctx.arc(cx, cy, Math.max(0.1, r), 0, 7); ctx.clip(); draw(); ctx.restore(); }
+function ruleDemo(ctx, k, x, y, w, h, f, at) {
+  const e = f - at;
+  ctx.save(); ctx.beginPath(); ctx.rect(x, y, w, h); ctx.clip();
+  if (k === 0) {
+    const i = Math.max(0, Math.floor((e - 6) / 26)) % 3, s = 6 + Math.max(0, Math.floor((e - 6) / 26)) * 26, img = [IMG.a, IMG.b, IMG.c][i];
+    const prev = [IMG.c, IMG.a, IMG.b][i]; if (e >= 32) ctx.drawImage(prev, x, y, w, 220);
+    growClip(ctx, x + w / 2, y + 110, 200 * ease.outBack(clamp((e - s) / 14), 1.4), () => ctx.drawImage(img, x, y, w, 220));
+    ctx.font = '700 18px JBM'; ctx.fillStyle = INK; ctx.fillText(`seed 0x${['2A7F', '80A1', '11C3'][i]}`, x, y + 248);
+  } else if (k === 1) {
+    for (const dx of [0, w / 2 + 4]) growClip(ctx, x + dx + w / 4, y + 70, 110 * ease.outBack(clamp((e - 4) / 18), 1.3), () => ctx.drawImage(IMG.a, x + dx, y, w / 2 - 4, 140));
+    ctx.font = '800 26px JBM'; ctx.fillStyle = RED; ctx.fillText('0x2A7F = 0x2A7F', x, y + 190);
+  } else if (k === 2) {
+    const sets = [[14, 10, 12, 8, 12, 8, 7, 8], [2, 2, 2, 20, 26, 10, 2, 8], [4, 22, 18, 4, 2, 2, 20, 2]], i = Math.floor(Math.max(0, e) / 30) % 3, j = (i + 1) % 3, q = ease.inOut3(clamp((Math.max(0, e) % 30 - 18) / 12));
+    const wt = sets[i].map((v, n) => lerp(v, sets[j][n], q)), sum = wt.reduce((a, b) => a + b, 0);
+    let xx = x; wt.forEach((v, n) => { ctx.fillStyle = COL[n]; ctx.fillRect(xx, y, w * v / sum, 34); xx += w * v / sum; });
+    ctx.strokeStyle = INK; ctx.lineWidth = 2; ctx.strokeRect(x, y, w, 34);
+    for (let n = 0; n < 48; n++) { let r = hash(n, 7, 0) * sum, c = 0; while (r > wt[c] && c < 7) { r -= wt[c]; c++; }
+      const p = ease.outBack(clamp((e - n * 0.4) / 8), 2); ctx.fillStyle = COL[c]; ctx.beginPath(); ctx.arc(x + 18 + (n % 8) * 37, y + 70 + Math.floor(n / 8) * 36, 14 * p, 0, 7); ctx.fill(); }
+  } else if (k === 3) {
+    const gap = 3 + 9 * (0.5 + 0.5 * Math.sin(e * 0.12));
+    ctx.lineCap = 'round'; ctx.lineWidth = 16;
+    for (let n = 0; n < 7; n++) { const yy = y + 20 + n * (16 + gap), len = w * ease.out3(clamp((e - n * 2) / 14)); ctx.strokeStyle = COL[n]; ctx.beginPath(); ctx.moveTo(x + 10, yy); ctx.lineTo(x + 10 + len - 20, yy); ctx.stroke(); }
+    ctx.font = '800 26px JBM'; ctx.fillStyle = RED; ctx.fillText(`gap = ${gap.toFixed(0)}px`, x, y + 240);
+  } else {
+    const n = Math.floor(clamp(e / 40) * MINIC.length);
+    for (let q = 0; q < MINIC.length; q++) { const c = MINIC[q], p = ease.outBack(clamp((e - q * 40 / MINIC.length) / 8), 2); if (p <= 0) continue; drawCircle(ctx, {...c, x: x + c.x, y: y + c.y}, c.r * p); }
+  }
+  ctx.restore();
+}
+function rules(f) {
+  const W0 = 336, H0 = 520, out = f >= TL.today[0] ? ease.in3(clamp((f - TL.today[0]) / 16)) : 0;
+  RULES.forEach(([title, code], k) => {
+    const at = TL.cards[k]; if (f < at) return;
+    const p = ease.outBack(clamp((f - at) / 12), 1.8), cx = lerp(CARDX(k), PHONE.x + PHONE.w / 2, out), cy = lerp(550, PHONE.y + PHONE.h / 2, out);
+    g.save(); g.translate(cx, cy); g.scale(p * (1 - out * 0.85), p * (1 - out * 0.85)); g.globalAlpha = 1 - out; g.translate(-W0 / 2, -H0 / 2);
+    g.fillStyle = INK; g.fillRect(10, 10, W0, H0); g.fillStyle = PAPER; g.fillRect(0, 0, W0, H0); g.lineWidth = 3; g.strokeStyle = INK; g.strokeRect(0, 0, W0, H0);
+    rise(g, `RULE 0${k + 1}`, 22, 48, '700 22px JBM', RED, f, at + 4, 10);
+    rise(g, title, 20, 98, '900 30px NotoSC', INK, f, at + 6, 12);
+    ruleDemo(g, k, 18, 130, W0 - 36, 300, f, at + 6);
+    g.fillStyle = '#E7E0D0'; g.fillRect(16, H0 - 64, W0 - 32, 44); rise(g, code, 26, H0 - 34, '700 19px JBM', '#2346E0', f, at + 10, 10);
+    g.restore();
+  });
+}
+// —— 07 用在手机上：每个界面从屏幕中心的一个点长出来 ——
+const RECIPES = [['头像', '用户名 = 种子，一人一个'], ['封面', '歌名算出封面，换歌就重长'], ['加载', '骨架屏换成正在长的线'], ['票券', '每张票一条独一无二的花边'], ['完成', '生成好了：从一个点弹出来']];
+function screenOf(n, f, sx, sy, sw, sh) {
+  const L = f - TL.screens[n];
+  g.fillStyle = PAPER; g.fillRect(sx, sy, sw, sh);
+  g.font = '700 18px JBM'; g.fillStyle = INK; g.fillText('9:41', sx + 40, sy + 44); g.textAlign = 'right'; g.fillText('100%', sx + sw - 40, sy + 44); g.textAlign = 'left';
+  g.font = '900 40px Archivo'; g.fillText(['Friends', 'Now playing', 'Feed', 'Ticket', 'Friends'][n], sx + 32, sy + 112);
+  if (n === 0 || n === 4) {
+    const names = ['nova', 'kite', 'halo', 'sun', 'mio', 'rex', 'ivy', 'oko', 'zed', 'lux', 'pip', 'ada'];
+    names.forEach((nm, k) => { const cx = sx + 90 + (k % 3) * 150, cy = sy + 210 + Math.floor(k / 3) * 170, p = ease.outBack(clamp((L - (n === 4 ? -99 : k * 2.2)) / 10), 1.8);
+      if (p <= 0) return;
+      growClip(g, cx, cy, 58 * p, () => { g.save(); g.translate(cx - 60, cy - 60); g.scale(120 / W * 4, 120 / H * 2.25); g.fillStyle = PAPER; g.fillRect(0, 0, W, H); drawTiles(g, 1e4, 0, k * 3 + 1); g.restore(); });
+      g.lineWidth = 3; g.strokeStyle = INK; g.beginPath(); g.arc(cx, cy, 58 * p, 0, 7); g.stroke();
+      g.font = '600 18px JBM'; g.fillStyle = INK; g.textAlign = 'center'; g.fillText('@' + nm, cx, cy + 86); g.textAlign = 'left'; });
+    if (n === 4) { const p = ease.outBack(clamp(L / 12), 1.8);
+      g.save(); g.translate(sx + sw / 2, sy + sh - 120); g.scale(p, p); g.fillStyle = INK; rr(g, -190, -36, 380, 72, 36); g.fill(); g.fillStyle = PAPER; g.font = '900 26px NotoSC'; g.textAlign = 'center'; g.fillText('✓ 你的专属图案已生成', 0, 9); g.textAlign = 'left'; g.restore();
+      for (let q = 0; q < 14; q++) { const a = q / 14 * 6.28, d = 60 + 140 * ease.out3(clamp(L / 16)); g.fillStyle = COL[q % 7]; g.beginPath(); g.arc(sx + sw / 2 + Math.cos(a) * d * 1.3, sy + sh - 120 + Math.sin(a) * d * 0.7, 9 * (1 - clamp((L - 14) / 14)), 0, 7); g.fill(); } }
+  } else if (n === 1) {
+    const cx = sx + sw / 2, cy = sy + 340;
+    growClip(g, cx, cy, 300 * ease.outBack(clamp(L / 16), 1.3), () => g.drawImage(IMG.cover, cx - 200, cy - 200, 400, 400));
+    g.lineWidth = 3; g.strokeStyle = INK; g.strokeRect(cx - 200, cy - 200, 400, 400);
+    g.font = '900 34px Archivo'; g.fillStyle = INK; g.fillText('Seed Song', sx + 40, sy + 600); g.font = '600 20px JBM'; g.fillStyle = '#5A564C'; g.fillText('cover = flow(seed 0x80A1)', sx + 40, sy + 634);
+    for (let q = 0; q < 26; q++) { const v = 0.3 + 0.7 * Math.abs(Math.sin(q * 0.7 + f * 0.12)) * Math.exp(-(f % 30) / 20); g.fillStyle = q < 11 ? RED : '#CFC6B2'; g.fillRect(sx + 40 + q * 15.5, sy + 720 - v * 50, 10, v * 50); }
+    g.fillStyle = INK; g.beginPath(); g.arc(cx, sy + 820, 44, 0, 7); g.fill(); g.fillStyle = PAPER; g.beginPath(); g.moveTo(cx - 12, sy + 800); g.lineTo(cx + 20, sy + 820); g.lineTo(cx - 12, sy + 840); g.fill();
+  } else if (n === 2) {
+    for (let r = 0; r < 6; r++) { const y = sy + 160 + r * 130; g.lineCap = 'round';
+      g.fillStyle = COL[r]; g.beginPath(); g.arc(sx + 70, y + 30, 28, 0, 7); g.fill();
+      for (let q = 0; q < 3; q++) { const len = (q === 0 ? 220 : 320 - q * 60) * ease.out3(clamp((L - r * 4 - q * 3) / 14)); g.strokeStyle = q === 0 ? INK : COL[(r + q + 2) % 7]; g.lineWidth = q === 0 ? 14 : 10; g.beginPath(); g.moveTo(sx + 120, y + 14 + q * 24); g.lineTo(sx + 120 + Math.max(0.1, len), y + 14 + q * 24); g.stroke(); } }
+  } else if (n === 3) {
+    const tx = sx + 36, ty = sy + 170, tw = sw - 72, th = 600, p = ease.outBack(clamp(L / 14), 1.4);
+    g.save(); g.translate(tx + tw / 2, ty + th / 2); g.scale(p, p); g.translate(-tw / 2, -th / 2);
+    g.fillStyle = INK; g.fillRect(8, 8, tw, th); g.fillStyle = PAPER; g.fillRect(0, 0, tw, th); g.lineWidth = 3; g.strokeStyle = INK; g.strokeRect(0, 0, tw, th);
+    g.save(); g.beginPath(); g.rect(0, 0, tw, 180); g.clip(); g.scale(tw / W * 3.2, 180 / H * 1.8); drawTiles(g, 1e4, 0, 9); g.restore();
+    g.strokeRect(0, 0, tw, 180);
+    g.font = '900 44px Archivo'; g.fillStyle = INK; g.fillText('ADMIT ONE', 24, 250); g.font = '700 22px JBM'; g.fillText('No. 0x2A7F · 2027-07-18', 24, 290);
+    for (let q = 0; q < 40; q++) { g.fillStyle = INK; g.fillRect(24 + q * 9, 360, hash(q, 3, 0) < 0.5 ? 3 : 6, 140); }
+    g.restore();
+  }
+}
+function today(f) {
+  const n = Math.max(0, TL.screens.filter(s => f >= s).length - 1), sw = TL.screens[n], out = f >= TL.end[0] ? ease.in3(clamp((f - TL.end[0]) / 24)) : 0;
+  const pin = ease.outBack(clamp((f - TL.today[0] + 4) / 16), 1.4);
+  g.save(); g.translate(0, (1 - pin) * 1000 + out * 1100); g.translate(PHONE.x + PHONE.w / 2, PHONE.y + PHONE.h / 2); g.rotate(out * 0.3); g.translate(-PHONE.x - PHONE.w / 2, -PHONE.y - PHONE.h / 2);
+  g.fillStyle = '#0B0B0B'; rr(g, PHONE.x - 14, PHONE.y - 14, PHONE.w + 28, PHONE.h + 28, 64); g.fill();
+  g.save(); rr(g, PHONE.x, PHONE.y, PHONE.w, PHONE.h, 52); g.clip();
+  if (n > 0) screenOf(n - 1, sw - 1, PHONE.x, PHONE.y, PHONE.w, PHONE.h);
+  growClip(g, PHONE.x + PHONE.w / 2, PHONE.y + PHONE.h / 2, (n === 0 ? 1200 : 640 * ease.in2(clamp((f - sw) / 12))), () => screenOf(n, f, PHONE.x, PHONE.y, PHONE.w, PHONE.h));
+  g.restore(); g.restore();
+  RECIPES.forEach(([a, b], k) => {
+    const y = 330 + k * 112, on = k === n, at = TL.screens[k]; if (f < at - 4) return;
+    g.save(); g.globalAlpha = (on ? 1 : 0.35) * (1 - out);
+    if (on) { g.fillStyle = RED; g.fillRect(72, y - 52, 8, 92); }
+    rise(g, `0${k + 1}`, 100, y - 8, '700 26px JBM', on ? RED : '#5A564C', f, at - 4, 8);
+    rise(g, a, 170, y, '900 46px NotoSC', INK, f, at - 2, 10);
+    rise(g, b, 172, y + 36, '500 24px NotoSC', on ? '#2346E0' : '#5A564C', f, at + 2, 10);
+    g.restore();
+  });
+}
+// 片尾：回到开场——色带从左往右再长一遍；片名卡弹进来
+function ending(f) {
+  const e = f - TL.end[0];
+  for (const R of A.ribbons) { const l = clamp((e * 1.6 - R.birth - 84) * R.v * 1.3, 0, R.L), h = ribbon(g, R, l); if (h && l < R.L - 0.5 && R.w >= 16) penHead(g, R, l, h, 0); }
+  const T = TL.endTitle, p = ease.outBack(clamp((f - T) / 16), 1.6);
+  g.save(); g.translate(110, 600); g.rotate(lerp(-0.12, -0.03, p)); g.scale(lerp(0.01, 1, p), lerp(0.01, 1, p));
+  g.fillStyle = INK; g.fillRect(14, 14, 760, 330); g.fillStyle = PAPER; g.fillRect(0, 0, 760, 330); g.lineWidth = 4; g.strokeStyle = INK; g.strokeRect(0, 0, 760, 330);
+  rise(g, '生成艺术', 40, 170, '900 150px NotoSC', INK, f, T + 4, 14);
+  rise(g, 'GENERATIVE ART', 44, 240, '900 52px Archivo', RED, f, T + 10, 12);
+  rise(g, '不画画，写规则。', 44, 300, '500 34px NotoSC', '#3A3832', f, T + 16, 14);
+  g.restore();
+  if (f >= T + 24) { const q = ease.outBack(clamp((f - T - 24) / 12), 2); g.save(); g.translate(1800, 1030); g.scale(q, q); g.fillStyle = PAPER; g.fillRect(-60, -34, 120, 52); g.lineWidth = 3; g.strokeStyle = INK; g.strokeRect(-60, -34, 120, 52); g.font = '900 30px NotoSC'; g.fillStyle = INK; g.textAlign = 'center'; g.fillText('观默', 0, 3); g.restore(); }
+}
+window.events = () => ({
+  grow: A.ribbons.filter(R => R.birth >= 0 && R.birth < TL.flow[1]).map(R => [R.birth, R.pts[0][1], R.w]),
+  gather: A.ribbons.map(R => 92 + Math.hypot(R.mid[0] - W / 2, R.mid[1] - H / 2) / 1100 * 10 + 16),
+  endGrow: A.ribbons.map(R => [TL.end[0] + (R.birth + 84) / 1.6, R.pts[0][1], R.w]).filter(b => b[0] >= TL.end[0] && b[0] < TL.end[0] + 120),
+  branch: TREE.br.map(b => [b.t0, b.d]), bloom: TREE.tips.map(t => Math.max(t.t, TL.bloom[0] + (t.x / W) * 20)),
+});
+Promise.all(['900 40px NotoSC', '500 20px NotoSC', '700 20px JBM', '600 20px JBM', '900 40px Archivo', '600 20px SG'].map(x => document.fonts.load(x)))
+  .then(() => { setup(); window.ready = true; const q = new URLSearchParams(location.search).get('f'); if (q) frame(+q); });
+</script>

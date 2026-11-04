@@ -22,8 +22,8 @@
 
 | 风格 | 状态 |
 |---|---|
-| 字符画 ASCII Art · `ascii/` | **主人选定（2026-11-04）**：全片 18 秒已出，`ascii/film/ascii-film.mp4`，等审片；通过后占期号、补风格图 / 文档并发布 |
-| 生成艺术 Generative Art · `generative/` | **主人选定（2026-11-04）**：全片 18 秒已出，`generative/film/generative-film.mp4`，等审片；通过后占期号、补风格图 / 文档并发布 |
+| 字符画 ASCII Art · `ascii/` | **主人已审片通过（2026-11-04）**：正式目录 [020 · 字符画](../styles/020-ascii-art)，保留本目录作为原片来源。 |
+| 生成艺术 Generative Art · `generative/` | **主人已审片通过（2026-11-04）**：正式目录 [021 · 生成艺术](../styles/021-generative-art)，保留本目录作为原片来源。 |
 | 动态字体 Kinetic Type · `kinetic-type/` | 第五轮没选上，图留着 |
 | 中世纪现代 Mid-Century Modern · `mid-century/` | **下周做** |
 | 第四轮候选：低多边形 / 体素 / 等距微缩（从参考视频提取） | 等主人选，见下 |

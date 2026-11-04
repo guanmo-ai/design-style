@@ -1,0 +1,56 @@
+{
+  "fps": 60,
+  "bpm": 120,
+  "frames": 1080,
+  "title": "风格 021 · 生成艺术 Generative Art",
+  "segments": [
+    {
+      "label": "流场 Fidenza",
+      "start": 0,
+      "dur": 90,
+      "color": "#FF6A1A"
+    },
+    {
+      "label": "碎石 Schotter",
+      "start": 90,
+      "dur": 120,
+      "color": "#FF2D8A"
+    },
+    {
+      "label": "特鲁谢瓷砖",
+      "start": 210,
+      "dur": 90,
+      "color": "#2346E0"
+    },
+    {
+      "label": "落到今天",
+      "start": 300,
+      "dur": 120,
+      "color": "#7CC6F2"
+    },
+    {
+      "label": "L 系统",
+      "start": 420,
+      "dur": 90,
+      "color": "#FFC530"
+    },
+    {
+      "label": "五条规则",
+      "start": 510,
+      "dur": 180,
+      "color": "#FF8FB8"
+    },
+    {
+      "label": "用在手机上",
+      "start": 690,
+      "dur": 210,
+      "color": "#2346E0"
+    },
+    {
+      "label": "片尾 · 回到开场",
+      "start": 900,
+      "dur": 180,
+      "color": "#FF6A1A"
+    }
+  ]
+}

@@ -1,0 +1,14 @@
+{
+  "sourceCommit": "ced34bfcc42ae071c8ea9aee7659eab1eccbe139",
+  "sourcePath": "drafts/ascii/film/ascii-film.mp4",
+  "publishedAsset": "020-ascii-art.mp4",
+  "sha256": "7b42148d3958dd29fe2fbc21acb514e36690396a0936426c993dc5e040def195",
+  "durationSeconds": 18,
+  "fps": 60,
+  "frames": 1080,
+  "size": [
+    1920,
+    1080
+  ],
+  "approval": "2026-11-04；发布版沿用原始成片文件。"
+}
