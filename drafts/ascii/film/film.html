@@ -1,5 +1,5 @@
 <!doctype html>
-<!-- 字符画 · 开头 10 秒小样（第二版）。1920×1080 · 60fps · 120 BPM。window.frame(f) 画第 f 帧，每帧是时间的纯函数（火焰模拟带缓存，乱序时从头重算）。
+<!-- 字符画 · 全片 18 秒（开头 10 秒 + 五条规则 + 用在手机上 + 片尾）。1920×1080 · 60fps · 120 BPM。window.frame(f) 画第 f 帧，每帧是时间的纯函数（火焰模拟带缓存，乱序时从头重算）。
      ① 甜甜圈 → 炸开成字雨拼出网页 → ② 网页（点按钮、进度条）→ 每个字飞去手机 → ③ 手机播放器 → 心脏放大 → ④ 着火、烧进 ASCII → 风吹散 → ⑤ 片尾 -->
 <meta charset="utf-8">
 <style>
@@ -314,21 +314,16 @@ window.frame = f => {
     drawCells(g, fire(f).cells(), 0.93);
     plate(g, f, Z.fire[0] + 4, Z.title - 2, 'RULE 02 · PSX DOOM fire (1995)', '火：每一格往上传，减一点热', 64, 1040, 'heat[y-1][x±1] = heat[y][x] - rand()');
   } else {
-    // 风：所有字往右吹走
+    // 风：所有字往右吹走（吹的同时，规则卡已经开始砸下来）
     const e = f - Z.wind[0];
     if (e < 40) {
       const cells = fire(Math.min(f, Z.wind[0] + 2)).cells().map((q, k) => { const d = Math.max(0, e - (q.x / W) * -6 - hash(k, 5, 0) * 10 + (1 - q.x / W) * 8);
         return {...q, x: q.x + d * d * (1.4 + hash(k, 6, 0)), y: q.y - d * (hash(k, 7, 0) - 0.3) * 6 + Math.sin(d * 0.3 + k) * d, a: clamp(1 - d / 26), L: 0}; });
       drawCells(g, cells);
     }
-    // ⑤ 片尾
-    const a = Z.end[0];
-    drawCells(g, donut(null, f, 1440, 540, 330, 12, 0).map(q => ({...q, a: clamp((f - a - 10) / 20)})));
-    decode(g, '字符画', 100, 470, '900 200px NotoSC', INK, f, a + 6, 5, 9, '像素点线面光暗明灭字符码');
-    decode(g, 'ASCII ART', 108, 572, '800 68px JBM', ORANGE, f, a + 22, 2, 6);
-    rise(g, '没有像素，只有字。', 104, 668, '500 42px NotoSC', '#B8BBDC', f, a + 40, 16);
-    decode(g, '.,-~:;=!*#$@', 108, 750, '800 44px JBM', YEL, f, a + 52, 1.5, 5);
-    rise(g, '观默', 1780, 1030, '900 32px NotoSC', '#6E7199', f, a + 64, 14);
+    if (f < Z.today[0] + 14) rules(f);
+    if (f >= Z.today[0] && f < Z.end[0] + 30) today(f);
+    if (f >= Z.end[0]) ending(f);
   }
   hud(f);
   // 暗角
@@ -337,20 +332,168 @@ window.frame = f => {
 };
 // 固定外框（标杆 003 / 004 / 005 都有）：左上“0N / 05 + 作品 + 作者年份”，右上五格进度。换章时名字先乱码再落定
 function hud(f) {
-  if (f >= TL.end[0] + 6) return;
-  const a = f >= TL.wind[0] ? 1 - clamp((f - TL.wind[0]) / 20) : 1;
+  if (f >= TL.end[0] + 14) return;
+  const a = f >= TL.end[0] ? 1 - clamp((f - TL.end[0]) / 14) : 1;
   let ci = 0; TL.chapters.forEach((c, k) => { if (f >= c[0]) ci = k; });
-  const [at, no, name, meta] = TL.chapters[ci], next = TL.chapters[ci + 1] ? TL.chapters[ci + 1][0] : TL.wind[0];
+  const [at, no, name, meta] = TL.chapters[ci], next = TL.chapters[ci + 1] ? TL.chapters[ci + 1][0] : TL.end[0];
   g.save(); g.globalAlpha = a; g.shadowBlur = 0;
   g.fillStyle = 'rgba(6,6,10,0.72)'; g.fillRect(40, 34, 560, 92);
-  g.font = '700 22px JBM'; g.fillStyle = YEL; g.textBaseline = 'alphabetic'; g.fillText(`${no} / 05`, 58, 70);
+  g.font = '700 22px JBM'; g.fillStyle = YEL; g.textBaseline = 'alphabetic'; g.fillText(`${no} / 07`, 58, 70);
   decode(g, name, 172, 72, '900 30px NotoSC', INK, f, at, 1.5, 7, '#%&@$*+=<>?/');
   decode(g, meta, 58, 108, '500 20px NotoSC', DIM, f, at + 4, 0.6, 5);
-  for (let k = 0; k < 5; k++) {
-    const x = W - 60 - (5 - k) * 52, p = k < ci ? 1 : k > ci ? 0 : clamp((f - at) / (next - at));
+  for (let k = 0; k < 7; k++) {
+    const x = W - 60 - (7 - k) * 52, p = k < ci ? 1 : k > ci ? 0 : clamp((f - at) / (next - at));
     g.fillStyle = MUTE; g.fillRect(x, 52, 44, 6); g.fillStyle = k === ci ? YEL : INK; g.fillRect(x, 52, 44 * p, 6);
   }
   g.restore();
+}
+// —— 06 五条规则：卡片砸下来（签名动作：先乱码，再落定），每张卡用自己的方法演示自己 ——
+const RULES = [
+  ['越亮，换越“满”的字', 'ch = ramp[⌊L × 11⌋]'],
+  ['等宽：一格 = 0.6 × 1', 'cell = 0.6em × 1em'],
+  ['颜色也跟着亮度走', 'color = palette[L]'],
+  ['动 = 换字，不是挪', 'frame % 4 → | / - \\'],
+  ['先乱码，再落定', 'lock = start + i × 2'],
+];
+function boxDecode(ctx, x, y, w, h, f, at, col) {      // 卡片外框：一圈字符框，按顺序“打”出来
+  const cs = 16, cw = cs * 0.6, nx = Math.floor(w / cw), ny = Math.floor(h / cs), per = nx * 2 + ny * 2, p = clamp((f - at) / 10);
+  ctx.font = `700 ${cs}px JBM`; ctx.textBaseline = 'top'; ctx.fillStyle = col;
+  const pts = [];
+  for (let i = 0; i < nx; i++) pts.push([i, 0, i === 0 ? '┌' : i === nx - 1 ? '┐' : '─']);
+  for (let j = 1; j < ny; j++) pts.push([nx - 1, j, j === ny - 1 ? '┘' : '│']);
+  for (let i = nx - 2; i >= 0; i--) pts.push([i, ny - 1, i === 0 ? '└' : '─']);
+  for (let j = ny - 2; j >= 1; j--) pts.push([0, j, '│']);
+  const n = Math.floor(p * pts.length);
+  for (let k = 0; k < n; k++) { const [i, j, c] = pts[k]; ctx.fillText(k > n - 8 && p < 1 ? GLY[Math.floor(hash(k, 1, f) * GLY.length)] : c, x + i * cw, y + j * cs); }
+}
+function ruleDemo(ctx, k, x, y, w, h, f) {
+  const t = f / 60, cs = 18, cw = cs * 0.6;
+  ctx.save(); ctx.beginPath(); ctx.rect(x, y, w, h); ctx.clip(); ctx.textBaseline = 'top';
+  if (k === 0) {         // 上：平滑的灰度；下：同一组亮度换成字
+    const n = Math.floor(w / cw);
+    for (let i = 0; i < n; i++) { const L = clamp(0.5 + 0.5 * Math.sin(i * 0.22 - t * 4)); ctx.fillStyle = `rgb(${Array(3).fill(Math.round(L * 255)).join(',')})`; ctx.fillRect(x + i * cw, y + 20, cw + 0.5, 60); }
+    ctx.font = `800 ${cs * 1.6}px JBM`;
+    for (let i = 0; i < n; i += 1.6) { const L = clamp(0.5 + 0.5 * Math.sin(i * 0.22 - t * 4)); ctx.fillStyle = pc(PL.hot, 0.2 + 0.8 * L); ctx.fillText(DONUT[Math.min(11, Math.floor(L * 11.99))], x + i * cw, y + 110); }
+    ctx.font = '600 16px JBM'; ctx.fillStyle = DIM; ctx.fillText('灰度 ↓ 换成字', x, y + 170);
+  } else if (k === 1) {  // 一个字 = 一个格子，量给你看
+    ctx.font = '800 96px JBM'; const s = 'A@#', cww = 96 * 0.6;
+    [...s].forEach((c, i) => { const bx = x + 20 + i * cww, by = y + 30; ctx.fillStyle = INK; ctx.fillText(c, bx, by);
+      ctx.strokeStyle = (Math.floor(t * 2) % 3) === i ? YEL : MUTE; ctx.lineWidth = 2; ctx.strokeRect(bx, by, cww, 96); });
+    ctx.font = '700 18px JBM'; ctx.fillStyle = YEL; ctx.fillText('← 0.6em →', x + 20, y + 140); ctx.fillText('↕ 1em', x + 20 + cww * 3 + 8, y + 70);
+  } else if (k === 2) {  // 一团光在走，字和颜色一起变
+    ctx.font = `700 ${cs}px JBM`; const nx = Math.floor(w / cw), ny = Math.floor(h / cs), cx = nx * (0.5 + 0.3 * Math.sin(t * 2)), cy = ny * (0.5 + 0.25 * Math.cos(t * 2.6));
+    for (let j = 0; j < ny; j++) for (let i = 0; i < nx; i++) { const L = clamp(1 - Math.hypot((i - cx) * 0.6, j - cy) / 6); if (L < 0.05) continue;
+      ctx.fillStyle = pc(PL.hot, L); ctx.fillText(DONUT[Math.min(11, Math.floor(L * 11.99))], x + i * cw, y + j * cs); }
+  } else if (k === 3) {  // 转圈、进度条、心跳：位置不动，只换字
+    ctx.font = '800 110px JBM'; ctx.fillStyle = YEL; ctx.fillText('|/-\\'[Math.floor(f / 5) % 4], x + 20, y + 10);
+    ctx.font = '800 64px JBM'; ctx.fillStyle = PINK; ctx.fillText('.oO@Oo'[Math.floor(f / 6) % 6], x + 170, y + 40);
+    const p = (f % 60) / 60, n = 14, m = Math.round(p * n); ctx.font = `700 ${cs}px JBM`; ctx.fillStyle = ORANGE;
+    ctx.fillText('[' + '█'.repeat(m) + '░'.repeat(n - m) + ']', x + 10, y + 160);
+  } else {               // 一句话：乱码 → 落定，循环
+    const at = Math.floor((f - 600) / 50) * 50 + 600;
+    decode(ctx, 'HELLO, 你好', x + 10, y + 70, '900 44px NotoSC', INK, f, at, 3, 8, '!<>-_/[]{}=+*^?#01$%&');
+    decode(ctx, 'loading → done', x + 10, y + 140, '700 22px JBM', GREEN, f, at + 10, 1.5, 6);
+  }
+  ctx.restore();
+}
+function rules(f) {
+  const W0 = 336, G0 = 24, X0 = (W - (5 * W0 + 4 * G0)) / 2, Y0 = 290, H0 = 520;
+  const out = f >= TL.today[0] ? ease.in3(clamp((f - TL.today[0]) / 14)) : 0;
+  RULES.forEach(([title, code], k) => {
+    const at = TL.cards[k]; if (f < at - 6) return;
+    const drop = ease.outBack(clamp((f - at + 6) / 10), 2.2), x = lerp(X0 + k * (W0 + G0), 1390, out), y = Y0 - (1 - drop) * 120 + out * 80;
+    g.save(); g.globalAlpha = clamp((f - at + 6) / 4) * (1 - out);
+    g.translate(x + W0 / 2, y + H0 / 2); g.scale(lerp(1, 0.2, out), lerp(1, 0.2, out)); g.translate(-W0 / 2, -H0 / 2);
+    g.fillStyle = 'rgba(14,14,22,0.94)'; g.fillRect(0, 0, W0, H0);
+    boxDecode(g, 0, 0, W0, H0, f, at - 6, k === 4 ? YEL : MUTE);
+    decode(g, `RULE 0${k + 1}`, 24, 50, '700 22px JBM', YEL, f, at, 1, 4);
+    decode(g, title, 24, 104, '900 32px NotoSC', INK, f, at + 3, 1.5, 6, '#%&@$*+=<>?/');
+    ruleDemo(g, k, 18, 150, W0 - 36, 280, f);
+    decode(g, code, 24, H0 - 34, '700 18px JBM', ORANGE, f, at + 8, 0.8, 5);
+    g.restore();
+  });
+}
+
+// —— 07 用在手机上：同一部手机，五个界面，换的时候先乱码再落定 ——
+const P2 = {i: 108, j: 3, w: 52, h: 54};
+const RECIPES = [['加载', '甜甜圈转圈 + 字符进度条'], ['按钮', '按下：先乱码，再落定'], ['骨架屏', '░░░ → 一行行解码出内容'], ['正在输入', '. → .. → ...'], ['提示', '[+] saved：从下往上弹']];
+function screenOf(n, f) {
+  const S = new Screen(), {i: x0, j: y0, w, h} = P2, L = f - TL.screens[n];
+  S.box(x0, y0, w, h, INK, true); S.text(x0 + 4, y0 + 1, '9:41', INK); S.text(x0 + w - 14, y0 + 1, '▂▄▆█ 100%', INK);
+  S.text(x0 + 4, y0 + 3, ['orbit://boot', 'orbit://login', 'orbit://feed', 'orbit://chat', 'orbit://feed'][n], DIM);
+  S.hline(x0 + 1, y0 + 4, w - 2, MUTE);
+  if (n === 0) {
+    S.text(x0 + 17, y0 + 37, 'loading model…', DIM);
+    const p = clamp(L / 40), m = Math.round(p * 30); S.text(x0 + 10, y0 + 39, '[' + '█'.repeat(m) + '░'.repeat(30 - m) + ']', ORANGE);
+    S.text(x0 + 21, y0 + 41, `${String(Math.round(p * 100)).padStart(3)}%`, INK);
+  } else if (n === 1) {
+    S.text(x0 + 5, y0 + 10, 'SIGN IN', INK); S.text(x0 + 5, y0 + 11, '───────', MUTE);
+    const u = 'ascii_fan', nu = Math.min(u.length, Math.max(0, Math.floor(L / 2)));
+    S.text(x0 + 5, y0 + 15, 'USER', DIM); S.box(x0 + 5, y0 + 16, w - 10, 3, MUTE); S.text(x0 + 7, y0 + 17, u.slice(0, nu) + (nu < u.length ? '▌' : ''), INK);
+    S.text(x0 + 5, y0 + 21, 'PASS', DIM); S.box(x0 + 5, y0 + 22, w - 10, 3, MUTE); S.text(x0 + 7, y0 + 23, '*'.repeat(Math.max(0, Math.min(8, Math.floor((L - 18) / 1.5)))), INK);
+    const pr = L >= 30, ok = L >= 38, lab = ok ? '[  welcome!  ]' : '[  sign in   ]';
+    [...lab].forEach((c, q) => S.set(x0 + 15 + q, y0 + 28, pr && !ok ? GLY[Math.floor(hash(q, 9, f) * GLY.length)] : c, ok ? GREEN : pr ? YEL : INK));
+  } else if (n === 2 || n === 4) {
+    const rows = [['@nova', 'shipped donut.c v2 ▲ 2.1k'], ['@kite', 'fire.txt is so warm'], ['@halo', 'ascii hearts > emoji'], ['@sun', 'every pixel is a char'], ['@orbit', 'release notes · v2.0']];
+    rows.forEach(([a, b], r) => { const y = y0 + 7 + r * 7, at = n === 4 ? -99 : 4 + r * 6;
+      S.box(x0 + 3, y, w - 6, 6, MUTE);
+      if (L < at) { S.text(x0 + 5, y + 1, '░░░░░', MUTE); S.text(x0 + 5, y + 3, '░'.repeat(26), MUTE); return; }
+      [...a].forEach((c, q) => S.set(x0 + 5 + q, y + 1, L < at + 6 + q * 0.5 ? GLY[Math.floor(hash(q, r, f) * GLY.length)] : c, L < at + 6 ? GREEN : YEL));
+      [...b].forEach((c, q) => S.set(x0 + 5 + q, y + 3, L < at + 8 + q * 0.4 ? GLY[Math.floor(hash(q, r + 5, f) * GLY.length)] : c, L < at + 8 + q * 0.4 ? GREEN : INK)); });
+    if (n === 4) { const p = ease.outBack(clamp(L / 10), 1.8), ty = y0 + h - 6 - Math.round(p * 4); S.box(x0 + 8, ty, w - 16, 3, GREEN); S.text(x0 + 14, ty + 1, '[+] saved to library', GREEN); }
+  } else if (n === 3) {
+    const msgs = [['r', 'is the fire real?', 0], ['l', 'it is made of chars', 16], ['r', 'whoa', 30]];
+    msgs.forEach(([side, m, at], r) => { if (L < at) return; const y = y0 + 8 + r * 6, bw = m.length + 4, bx = side === 'r' ? x0 + w - 3 - bw : x0 + 3;
+      S.box(bx, y, bw, 3, side === 'r' ? PINK : MUTE, true);
+      if (side === 'l' && L < at + 12) S.text(bx + 2, y + 1, ['.  ', '.. ', '...'][Math.floor(L / 4) % 3], DIM); else S.text(bx + 2, y + 1, m, side === 'r' ? PINK : INK); });
+    S.box(x0 + 3, y0 + h - 5, w - 6, 3, MUTE); S.text(x0 + 5, y0 + h - 4, 'message…', DIM);
+  }
+  return S;
+}
+function today(f) {
+  const n = Math.max(0, TL.screens.filter(s => f >= s).length - 1), sw = TL.screens[n];
+  const B = screenOf(n, f), A = n > 0 ? screenOf(n - 1, sw - 1) : null, p = clamp((f - sw) / 12);
+  const out = f >= TL.end[0] ? clamp((f - TL.end[0]) / 30) : 0;
+  const cells = [];
+  for (let j = 0; j < ROWS; j++) for (let i = P2.i; i < P2.i + P2.w; i++) {
+    const k = j * COLS + i, gb = B.g[k], ga = A ? A.g[k] : ' ';
+    if (gb === ' ' && ga === ' ') continue;
+    const tc = p * 1.5 - (j - P2.j) / P2.h * 0.5;
+    let ch = gb, c = B.c[k];
+    if (n === 0 && f < sw + 12) { if (gb === ' ') continue; if (tc < 0.5) { ch = GLY[Math.floor(hash(i, j, f) * GLY.length)]; c = GREEN; } }
+    else if (ga !== gb && A) { if (tc < 0.3) { ch = ga; c = A.c[k]; } else if (tc < 0.7) { ch = GLY[Math.floor(hash(i, j, f) * GLY.length)]; c = GREEN; } }
+    if (ch === ' ') continue;
+    const e = out * 30; cells.push({x: i * CW + (hash(i, j, 3) - 0.5) * e * 6, y: j * CH + 0.9 * e * e * (0.6 + hash(i, j, 4)), g: ch, c, L: 0, a: 1 - out});
+  }
+  drawCells(g, cells);
+  if (n === 0 || n === 4 || f >= TL.end[0]) {     // 加载圈：一个小甜甜圈（第 0 屏和最后一屏都在）
+    const dx = (P2.i + P2.w / 2) * CW, dy = (P2.j + (n === 0 ? 20 : 2)) * CH + (n === 0 ? 0 : 6);
+    if (f < TL.end[0]) drawCells(g, donut(null, f, dx, dy, n === 0 ? 150 : 20, n === 0 ? 10 : 6, 0).map(q => ({...q, a: n === 4 ? 0 : clamp((f - sw) / 8)})));
+  }
+  // 左边：五个配方，当前这一条亮
+  RECIPES.forEach(([a, b], k) => {
+    const y = 330 + k * 112, on = k === n, at = TL.screens[k];
+    if (f < at - 4) return;
+    g.save(); g.globalAlpha = (on ? 1 : 0.38) * (1 - out);
+    if (on) { g.fillStyle = YEL; g.fillRect(72, y - 52, 8, 92); }
+    decode(g, `0${k + 1}`, 100, y - 8, '700 26px JBM', on ? YEL : DIM, f, at - 4, 1, 4);
+    decode(g, a, 170, y, '900 46px NotoSC', INK, f, at - 2, 3, 6, '#%&@$*+=<>?/');
+    decode(g, b, 172, y + 36, '500 24px NotoSC', on ? ORANGE : DIM, f, at + 2, 0.6, 5);
+    g.restore();
+  });
+}
+// 片尾：甜甜圈从手机的加载圈里放大，回到开场的构图；片名先乱码再落定
+function ending(f) {
+  const a = TL.end[0], p = ease.inOut3(clamp((f - a) / 34)), q = ease.inOut3(clamp((f - TL.endTitle) / 30));
+  const dx = lerp((P2.i + P2.w / 2) * CW, lerp(W * 0.5, 1400, q), p), dy = lerp((P2.j + 20) * CH, H * 0.5, p), sc = lerp(150, lerp(560, 400, q), p), cs = p < 0.5 ? 10 : FS;
+  const beat = f % 30, kick = Math.exp(-beat / 6);
+  drawCells(g, donut(null, f, dx, dy, sc * (1 + 0.04 * kick), cs, 0.1 * kick));
+  const T = TL.endTitle + 20;
+  decode(g, '字符画', 100, 470, '900 200px NotoSC', INK, f, T, 5, 9, '像素点线面光暗明灭字符码');
+  decode(g, 'ASCII ART', 108, 572, '800 68px JBM', ORANGE, f, T + 16, 2, 6);
+  rise(g, '没有像素，只有字。', 104, 668, '500 42px NotoSC', '#B8BBDC', f, T + 34, 16);
+  decode(g, '.,-~:;=!*#$@', 108, 750, '800 44px JBM', YEL, f, T + 46, 1.5, 5);
+  decode(g, '观默', 1760, 1030, '900 34px NotoSC', '#8E91B8', f, T + 58, 3, 8, '像素点线面光暗');
 }
 window.events = () => ({rainLand: RAIN.map(r => r.t1).sort((a, b) => a - b), morphLand: MORPH.map(r => r.t1).sort((a, b) => a - b)});
 Promise.all(['900 40px NotoSC', '500 20px NotoSC', '700 20px JBM', '800 20px JBM', '500 20px JBM', '40px Anton'].map(x => document.fonts.load(x))).then(() => {
