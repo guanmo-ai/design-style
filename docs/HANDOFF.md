@@ -16,6 +16,8 @@
 
 2026-11-02：按主人指令完成 018 微缩景观第三版 1080p / 60fps / 1200 帧正片，设计与配乐代码保持 `1606f5c`；与 `review-renders` 提交 `430b92a` 的第三版审片同秒对照，云端与本机 WAV、事件表 SHA-256 完全一致。已通过 `release-assets/day-18-v3/` 发布 [day-18-v3](https://github.com/guanmo-ai/design-style/releases/tag/day-18-v3)（成片 + 完整项目源码 ZIP + SHA256SUMS），旧版保留回退；画廊维持「风格 010」，同步 60fps 时间轴、新封面、中英文入口和预览。本项交接关闭，部署与核验证据见 [第三版发布记录](reviews/PUBLISH_018_V3_20261102.md)。
 
+2026-11-04：主人确认 017 中世纪现代成片通过；直接采用 `review-renders/017/` 的 1080p / 60fps / 900 帧成片，已发布 [day-17](https://github.com/guanmo-ai/design-style/releases/tag/day-17)（成片 + 完整项目源码 ZIP + SHA256SUMS），三项远端附件大小与 SHA-256 均通过。画廊登记为「风格 012」，同步中英文目录、预览及时间轴；发布记录与线上核验状态见 [017 发布记录](reviews/PUBLISH_017_20261104.md)。本项发布交接关闭。
+
 ## 待办
 
 ### 015 · 未来主义：审片通过后发布（2026-10-28）
@@ -26,16 +28,7 @@
 2. 直接采用 `review-renders` 上的成片，不重新渲染、不改音画；按 014 的做法通过 `release-assets/day-15/` 发布 Release `day-15`（成片 + 完整项目源码包 + SHA256SUMS），画廊登记并同步中英文目录与预览。
 3. 合并注意：另一个会话在做 016，`package.json`（新增 `music:015` / `render:015` / `render:015:gpu` / `preview:015` / `images:015`）和 `src/Root.tsx`（新增 `S015-Futurism` / `S015-Futurism-Preview`）可能和 016 冲突，两边的条目都保留。
 
-### 017 · 中世纪现代：审片通过后发布（2026-11-02）
-
-全片是 SVG、不需要显卡，正片已由 Claude 在云端渲好推到 `review-renders` 分支的 `017/`（15 秒 1920×1080 60fps，含主人选定的“明亮律动”配乐）。**Codex 只负责发布**：
-
-1. 等主人看过 `review-renders/017/017-mid-century-modern-master.mp4` 并确认通过（这里会更新）。
-2. 直接采用 `review-renders` 上的成片，不重新渲染、不改音画；按 014 的做法通过 `release-assets/day-17/` 发布 Release `day-17`（成片 + 完整项目源码包 + SHA256SUMS），画廊登记并同步中英文目录与预览（封面 `styles/017-mid-century-modern/video/cover.jpg`）。
-3. 合并注意：`package.json`（`music:017` / `render:017` / `render:017:gpu` / `preview:017` / `images:017`）和 `src/Root.tsx`（`S017-MidCenturyModern` / `S017-MidCenturyModern-Preview`）可能和 018 / 019 冲突，各方条目都保留；`scripts/fetch_fonts.sh` 新增 Anton。
-
 ## 设计侧留下的素材（不用动，供下次做新一期）
 
 - `drafts/op-art`、`drafts/dither`：两套已完成三张风格图的候选风格，说明见 `drafts/README.md`（未来主义已做成 015）。
 - 其他分支上在做的期号：007 极简、010 剪纸、011 粘土拟态、012 等距。新开一期前先看 `git branch -r`，避免撞期号。
-- 017 中世纪现代（`claude/modest-einstein-xiiv18`）：风格图、短片、配乐、文档都已完成，等主人审片。

@@ -827,5 +827,69 @@
       }
     ],
     "publishedAt": "2026-10-30T12:56:23Z"
+  },
+  {
+    "id": "017-mid-century-modern",
+    "type": "style",
+    "number": "012",
+    "title": "中世纪现代",
+    "titleEn": "Mid-Century Modern",
+    "years": "1945—1965",
+    "category": "平面与生活设计",
+    "categoryEn": "Graphic & everyday design",
+    "description": "剪刀代替尺子，每一块都是能拿起来的彩纸。一支 15 秒短片：球钟搭成海报，同一批纸片翻面接力，变成电影片头、彩球挂衣架、爵士唱片、玻璃住宅与今天的电台 App；五张规则卡逐条演示，最后接回海报。",
+    "descriptionEn": "Scissors replace rulers; every piece is a sheet of paper you could pick up. In this 15-second film, a ball clock becomes a poster, then the same pieces flip and relay through film titles, a colorful coat rack, a jazz record, a glass house and a radio app. Five cards demonstrate the rules before returning to the opening.",
+    "tags": [
+      "剪纸",
+      "糖果色",
+      "影子",
+      "叠印",
+      "原子时代",
+      "片头",
+      "界面"
+    ],
+    "tagsEn": [
+      "cut paper",
+      "candy colors",
+      "shadows",
+      "overprint",
+      "atomic age",
+      "film titles",
+      "interfaces"
+    ],
+    "release": "day-17",
+    "asset": "017-mid-century-modern.mp4",
+    "sha256": "eeefc36479254819103bb89195c59b4d61eb09b6e63255945aba85f21e47c08c",
+    "images": [
+      {
+        "file": "poster",
+        "title": "一张海报，认识中世纪现代",
+        "kind": "风格海报",
+        "titleEn": "Mid-Century Modern at a glance",
+        "kindEn": "Style poster"
+      },
+      {
+        "file": "cheatsheet",
+        "title": "剪刀边、影子与五条规则",
+        "kind": "风格速查",
+        "titleEn": "Scissor-cut edges, shadows and five rules",
+        "kindEn": "Quick reference"
+      },
+      {
+        "file": "app-ui",
+        "title": "如果中世纪现代来做 App",
+        "kind": "界面应用",
+        "titleEn": "Mid-Century Modern in a radio app",
+        "kindEn": "UI application"
+      },
+      {
+        "file": "steps",
+        "title": "四步，从普通海报到中世纪现代",
+        "kind": "改造教程",
+        "titleEn": "Four steps to a Mid-Century Modern poster",
+        "kindEn": "Design tutorial"
+      }
+    ],
+    "publishedAt": "2026-11-04T10:53:43Z"
   }
 ]
