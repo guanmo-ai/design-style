@@ -891,5 +891,125 @@
       }
     ],
     "publishedAt": "2026-11-04T10:53:43Z"
+  },
+  {
+    "id": "020-ascii-art",
+    "type": "style",
+    "number": "013",
+    "title": "字符画",
+    "titleEn": "ASCII Art",
+    "years": "1960s—今天",
+    "category": "数字视觉",
+    "categoryEn": "Digital visuals",
+    "description": "没有像素，只有字。18 秒从甜甜圈、数字雨、终端网页与手机播放器走到字符火焰，再用五条规则和五种手机状态演示“先乱码，再落定”。",
+    "descriptionEn": "No pixels, just characters. An 18-second film moves from a donut and digital rain to a terminal website, a phone player and character fire, then demonstrates five rules and five phone states.",
+    "tags": [
+      "字符",
+      "等宽",
+      "终端",
+      "解码",
+      "界面"
+    ],
+    "tagsEn": [
+      "characters",
+      "monospace",
+      "terminal",
+      "decode",
+      "interfaces"
+    ],
+    "publishedAt": "2026-11-04T15:08:36Z",
+    "release": "day-20",
+    "asset": "020-ascii-art.mp4",
+    "sha256": "7b42148d3958dd29fe2fbc21acb514e36690396a0936426c993dc5e040def195",
+    "images": [
+      {
+        "file": "poster",
+        "title": "一张海报，认识字符画",
+        "kind": "风格海报",
+        "titleEn": "ASCII Art at a glance",
+        "kindEn": "Style poster"
+      },
+      {
+        "file": "cheatsheet",
+        "title": "五条规则，拿去就用",
+        "kind": "风格速查",
+        "titleEn": "Five rules to reuse",
+        "kindEn": "Quick reference"
+      },
+      {
+        "file": "app-ui",
+        "title": "如果字符画来做 App",
+        "kind": "界面应用",
+        "titleEn": "ASCII Art in a phone interface",
+        "kindEn": "UI application"
+      },
+      {
+        "file": "steps",
+        "title": "四步，从规则到画面",
+        "kind": "设计教程",
+        "titleEn": "Four steps from rules to images",
+        "kindEn": "Design tutorial"
+      }
+    ]
+  },
+  {
+    "id": "021-generative-art",
+    "type": "style",
+    "number": "014",
+    "title": "生成艺术",
+    "titleEn": "Generative Art",
+    "years": "1960s—今天",
+    "category": "数字视觉",
+    "categoryEn": "Digital visuals",
+    "description": "不画画，写规则。18 秒从流场、方块、瓷砖、网页与手机走到分叉树，再用五条规则和五种手机应用演示“从一个点长出来”。",
+    "descriptionEn": "Write rules to make pictures. An 18-second film relays through flow fields, squares, tiles, web and phone interfaces and a branching tree, followed by five rules and five phone applications.",
+    "tags": [
+      "流场",
+      "种子",
+      "算法",
+      "图案",
+      "界面"
+    ],
+    "tagsEn": [
+      "flow fields",
+      "seeds",
+      "algorithms",
+      "patterns",
+      "interfaces"
+    ],
+    "publishedAt": "2026-11-04T15:08:48Z",
+    "release": "day-21",
+    "asset": "021-generative-art.mp4",
+    "sha256": "a47e8ef49e92f935f541f2679a4a66227e13614c7d34387885724d527fc990f5",
+    "images": [
+      {
+        "file": "poster",
+        "title": "一张海报，认识生成艺术",
+        "kind": "风格海报",
+        "titleEn": "Generative Art at a glance",
+        "kindEn": "Style poster"
+      },
+      {
+        "file": "cheatsheet",
+        "title": "五条规则，拿去就用",
+        "kind": "风格速查",
+        "titleEn": "Five rules to reuse",
+        "kindEn": "Quick reference"
+      },
+      {
+        "file": "app-ui",
+        "title": "如果生成艺术来做 App",
+        "kind": "界面应用",
+        "titleEn": "Generative Art in a phone interface",
+        "kindEn": "UI application"
+      },
+      {
+        "file": "steps",
+        "title": "四步，从规则到画面",
+        "kind": "设计教程",
+        "titleEn": "Four steps from rules to images",
+        "kindEn": "Design tutorial"
+      }
+    ]
   }
 ]

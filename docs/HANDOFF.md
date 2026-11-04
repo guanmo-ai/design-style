@@ -18,6 +18,8 @@
 
 2026-11-04：主人确认 017 中世纪现代成片通过；直接采用 `review-renders/017/` 的 1080p / 60fps / 900 帧成片，已发布 [day-17](https://github.com/guanmo-ai/design-style/releases/tag/day-17)（成片 + 完整项目源码 ZIP + SHA256SUMS），三项远端附件大小与 SHA-256 均通过。画廊登记为「风格 012」，同步中英文目录、预览及时间轴；发布记录与线上核验状态见 [017 发布记录](reviews/PUBLISH_017_20261104.md)。本项发布交接关闭。
 
+2026-11-04：主人确认字符画与生成艺术两部 18 秒成片已审核通过。直接采用 `claude/vigilant-galileo-j1sfyr` 的 `ced34bf` 原片，补齐正式目录 `020-ascii-art` / `021-generative-art`、四张可编辑 SVG、中英文文档、来源与字体许可、时间轴和复现入口后，已发布 [day-20](https://github.com/guanmo-ai/design-style/releases/tag/day-20) / [day-21](https://github.com/guanmo-ai/design-style/releases/tag/day-21)（每期成片 + 完整项目源码 ZIP + SHA256SUMS），六项附件远端大小与 SHA-256 均一致。画廊按首次上架顺序登记为「风格 013 / 014」。发布与线上核验证据见 [020 / 021 发布记录](reviews/PUBLISH_020_021_20261104.md)。两项发布交接关闭；015 仍保留原审片待办。
+
 ## 待办
 
 ### 015 · 未来主义：审片通过后发布（2026-10-28）
