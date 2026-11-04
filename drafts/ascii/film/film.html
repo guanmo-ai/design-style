@@ -234,10 +234,10 @@ function setupRain() {     // 甜甜圈的字 → 网页的字
   const src = sortCells(donut(null, TL.rain[0], W * 0.5, H * 0.5, 560)), dst = sortCells(web(TL.rain[1]).cells()), rnd = mulberry(4);
   const cx = W * 0.5, cy = H * 0.5;
   RAIN = dst.map((d, k) => {
-    const fromDonut = rnd() < 0.55 && src.length, s = fromDonut ? src[Math.floor(rnd() * src.length)] : {x: d.x + (rnd() - 0.5) * 300, y: -40 - rnd() * 500, g: GLY[Math.floor(rnd() * GLY.length)], c: MUTE};
-    const dir = Math.atan2(s.y - cy, s.x - cx), burst = 160 + rnd() * 340;
-    return {s, d, fromDonut, mid: fromDonut ? [s.x + Math.cos(dir) * burst, s.y + Math.sin(dir) * burst - 120] : null,
-      t0: TL.rain[0] + (fromDonut ? rnd() * 4 : 2 + rnd() * 10), t1: TL.rain[0] + 16 + (d.y / H) * 28 + rnd() * 6, gl: GLY[Math.floor(rnd() * GLY.length)]};
+    const fromDonut = rnd() < 0.55 && src.length, s = fromDonut ? src[Math.floor(rnd() * src.length)] : {x: d.x, y: -40 - rnd() * 700, g: GLY[Math.floor(rnd() * GLY.length)], c: GREEN};
+    const dir = Math.atan2(s.y - cy, s.x - cx), burst = 120 + rnd() * 260;
+    return {s, d, fromDonut, mid: fromDonut ? [d.x, Math.min(s.y + Math.sin(dir) * burst, d.y) - 200 - rnd() * 300] : null,
+      t0: TL.rain[0] + (fromDonut ? rnd() * 3 : 4 + rnd() * 10), t1: TL.rain[0] + 20 + (d.y / H) * 30 + rnd() * 8, gl: GLY[Math.floor(rnd() * GLY.length)]};
   });
   const used = new Set(RAIN.filter(r => r.fromDonut).map(r => r.s));
   RAIN.extra = src.filter(s => !used.has(s)).map(s => { const dir = Math.atan2(s.y - cy, s.x - cx), sp = 14 + rnd() * 24; return {s, vx: Math.cos(dir) * sp, vy: Math.sin(dir) * sp - 8}; });
@@ -247,7 +247,7 @@ function setupMorph() {    // 网页的字 → 手机的字（按阅读顺序对
   const src = sortCells(web(TL.morph[0]).cells()), dst = sortCells(ph.S.cells()), rnd = mulberry(8);
   const usedSrc = new Set();
   MORPH = dst.map((d, k) => { const si = Math.floor(k * src.length / dst.length); usedSrc.add(si);
-    return {s: src[si], d, t0: TL.morph[0] + (d.y / H) * 10 + rnd() * 6, t1: TL.morph[0] + 18 + (d.y / H) * 12 + rnd() * 4}; });
+    return {s: src[si], d, t0: TL.morph[0] + (d.y / H) * 8 + rnd() * 4, t1: TL.morph[0] + 16 + (d.y / H) * 8 + rnd() * 3}; });
   MORPH.extra = src.filter((_, k) => !usedSrc.has(k)).map(s => ({s, vx: (rnd() - 0.5) * 6, vy: -4 - rnd() * 6, rot: rnd()}));
 }
 function bez(a, b, c, t) { const u = 1 - t; return [u * u * a[0] + 2 * u * t * b[0] + t * t * c[0], u * u * a[1] + 2 * u * t * b[1] + t * t * c[1]]; }
@@ -263,14 +263,21 @@ window.frame = f => {
   } else if (f < Z.web[0]) {
     // 炸开 → 字雨 → 拼成网页
     const cells = [];
+    const pos = (r, ff) => { const p = clamp((ff - r.t0) / (r.t1 - r.t0));
+      if (r.fromDonut) return bez([r.s.x, r.s.y], r.mid, [r.d.x, r.d.y], ease.inOut3(p));
+      return [r.d.x, lerp(r.s.y, r.d.y, ease.in2(p))]; };
     for (const r of RAIN) {
       if (f < r.t0) { if (r.fromDonut) cells.push({...r.s}); continue; }
       const p = clamp((f - r.t0) / (r.t1 - r.t0));
-      let x, y;
-      if (r.fromDonut) [x, y] = bez([r.s.x, r.s.y], r.mid, [r.d.x, r.d.y], ease.inOut3(p));
-      else { x = lerp(r.s.x, r.d.x, ease.out2(p)); y = lerp(r.s.y, r.d.y, ease.in2(p)); }
-      if (p >= 1) { const b = clamp((f - r.t1) / 8); y = r.d.y - Math.sin(b * Math.PI) * 6 * (1 - b); }
-      cells.push({x, y, g: p < 0.85 ? (hash(r.d.x, r.d.y, f >> 1) < 0.5 ? r.s.g : r.gl) : r.d.g, c: p < 0.85 ? (p > 0.5 ? GREEN : r.s.c) : r.d.c, L: p >= 1 ? r.d.L : 0.5});
+      let [x, y] = pos(r, f);
+      if (p >= 1) { const b = clamp((f - r.t1) / 8); y = r.d.y - Math.sin(b * Math.PI) * 6 * (1 - b); cells.push({x, y, g: r.d.g, c: r.d.c, L: r.d.L}); continue; }
+      // 《黑客帝国》式：亮白的头 + 一串越来越暗的绿尾巴
+      if (!r.fromDonut) {      // 从天上来的：一整列，字一格格叠着往下掉，越往上越暗
+        for (let k = 7; k >= 1; k--) cells.push({x, y: y - k * CH, g: GLY[Math.floor(hash(k, r.d.y, (f >> 2) + k) * GLY.length)], c: GREEN, L: 0, a: 0.75 * (1 - k / 8)});
+        cells.push({x, y, g: p < 0.9 ? r.gl : r.d.g, c: '#E8FFF0', L: 0.9}); continue;
+      }
+      for (let k = 3; k >= 1; k--) { const [tx, ty] = pos(r, f - k * 2); if (Math.hypot(tx - x, ty - y) > 6) cells.push({x: tx, y: ty, g: r.s.g, c: r.s.c, L: 0, a: 0.5 - k * 0.14}); }
+      cells.push({x, y, g: p < 0.9 ? (hash(r.d.x, r.d.y, f >> 1) < 0.5 ? r.s.g : r.gl) : r.d.g, c: p > 0.55 ? '#E8FFF0' : r.s.c, L: p > 0.55 ? 0.9 : 0.3});
     }
     const e = f - Z.rain[0];
     for (const q of RAIN.extra) cells.push({x: q.s.x + q.vx * e, y: q.s.y + q.vy * e + 0.6 * e * e, g: q.s.g, c: q.s.c, L: 0, a: clamp(1 - e / 30)});
@@ -305,7 +312,7 @@ window.frame = f => {
     const H2 = new Screen(); heart(H2, f, lerp(hc[0], W / 2, p), lerp(hc[1], H * 0.47, p), lerp(185, 520, p)); drawCells(g, H2.cells());
   } else if (f < Z.wind[0]) {
     drawCells(g, fire(f).cells(), 0.93);
-    plate(g, f, Z.fire[0] + 4, Z.title - 2, 'RULE 02 · DOOM fire (1993)', '火：每一格往上传，减一点热', 64, 1040, 'heat[y-1][x±1] = heat[y][x] - rand()');
+    plate(g, f, Z.fire[0] + 4, Z.title - 2, 'RULE 02 · PSX DOOM fire (1995)', '火：每一格往上传，减一点热', 64, 1040, 'heat[y-1][x±1] = heat[y][x] - rand()');
   } else {
     // 风：所有字往右吹走
     const e = f - Z.wind[0];
@@ -323,10 +330,28 @@ window.frame = f => {
     decode(g, '.,-~:;=!*#$@', 108, 750, '800 44px JBM', YEL, f, a + 52, 1.5, 5);
     rise(g, '观默', 1780, 1030, '900 32px NotoSC', '#6E7199', f, a + 64, 14);
   }
-  // 暗角 + 帧号
+  hud(f);
+  // 暗角
   const vg = g.createRadialGradient(W / 2, H / 2, H * 0.5, W / 2, H / 2, H * 1.05);
   vg.addColorStop(0, 'rgba(0,0,0,0)'); vg.addColorStop(1, 'rgba(0,0,0,0.5)'); g.fillStyle = vg; g.fillRect(0, 0, W, H);
 };
+// 固定外框（标杆 003 / 004 / 005 都有）：左上“0N / 05 + 作品 + 作者年份”，右上五格进度。换章时名字先乱码再落定
+function hud(f) {
+  if (f >= TL.end[0] + 6) return;
+  const a = f >= TL.wind[0] ? 1 - clamp((f - TL.wind[0]) / 20) : 1;
+  let ci = 0; TL.chapters.forEach((c, k) => { if (f >= c[0]) ci = k; });
+  const [at, no, name, meta] = TL.chapters[ci], next = TL.chapters[ci + 1] ? TL.chapters[ci + 1][0] : TL.wind[0];
+  g.save(); g.globalAlpha = a; g.shadowBlur = 0;
+  g.fillStyle = 'rgba(6,6,10,0.72)'; g.fillRect(40, 34, 560, 92);
+  g.font = '700 22px JBM'; g.fillStyle = YEL; g.textBaseline = 'alphabetic'; g.fillText(`${no} / 05`, 58, 70);
+  decode(g, name, 172, 72, '900 30px NotoSC', INK, f, at, 1.5, 7, '#%&@$*+=<>?/');
+  decode(g, meta, 58, 108, '500 20px NotoSC', DIM, f, at + 4, 0.6, 5);
+  for (let k = 0; k < 5; k++) {
+    const x = W - 60 - (5 - k) * 52, p = k < ci ? 1 : k > ci ? 0 : clamp((f - at) / (next - at));
+    g.fillStyle = MUTE; g.fillRect(x, 52, 44, 6); g.fillStyle = k === ci ? YEL : INK; g.fillRect(x, 52, 44 * p, 6);
+  }
+  g.restore();
+}
 window.events = () => ({rainLand: RAIN.map(r => r.t1).sort((a, b) => a - b), morphLand: MORPH.map(r => r.t1).sort((a, b) => a - b)});
 Promise.all(['900 40px NotoSC', '500 20px NotoSC', '700 20px JBM', '800 20px JBM', '500 20px JBM', '40px Anton'].map(x => document.fonts.load(x))).then(() => {
   // 网页标题块字：Anton 两行

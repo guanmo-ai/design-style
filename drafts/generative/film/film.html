@@ -73,7 +73,7 @@ function buildTree(seed) {
     const sp = 0.32 + rnd() * 0.32;
     grow(x1, y1, a - sp + (rnd() - 0.5) * 0.2, len * (0.68 + rnd() * 0.12), w * 0.7, d + 1, t1 - 3);
     grow(x1, y1, a + sp + (rnd() - 0.5) * 0.2, len * (0.68 + rnd() * 0.12), w * 0.7, d + 1, t1 - 3 + rnd() * 3);
-  })(1200, 1090, -Math.PI / 2, 240, 46, 0, TL.tree[0] + 2);
+  })(1200, 1080, -Math.PI / 2, 240, 46, 0, TL.tree[0] + 4);
   return {br, tips};
 }
 
@@ -102,37 +102,59 @@ function setup() {
   A = build(0x2A7F, PAL_A, 0);
   const rnd = mulberry(5);
   for (const R of A.ribbons) { const x0 = Math.min(R.pts[0][0], R.pts[R.pts.length - 1][0]); R.birth = -84 + (x0 + 120) / 2160 * 150 + rnd() * 6; R.v = R.w >= 40 ? 15 : R.w >= 16 ? 20 : 26; }
-  CIRC = packCircles(77, W, H).map((c, k, arr) => ({...c, t: TL.circles[0] + 4 + 70 * Math.pow(k / arr.length, 0.75), tx: (Math.min(TC - 1, Math.floor(c.x / TS)) + 0.5) * TS, ty: (Math.min(TR - 1, Math.floor(c.y / TS)) + 0.5) * TS}));
+  // 每条色带缩成的圆点飞去最近的网格中心
+  for (const R of A.ribbons) { const m = R.pts[R.pts.length >> 1]; R.mid = m; R.gi = Math.max(0, Math.min(TC - 1, Math.floor(m[0] / TS))); R.gj = Math.max(0, Math.min(TR - 1, Math.floor(m[1] / TS))); }
   TREE = buildTree(31);
   // 手机里另外两张卡：圆堆积、流场色带（静态小图）
   const mk = draw => { const c = Object.assign(document.createElement('canvas'), {width: C1.w, height: C1.h}).getContext('2d'); draw(c); return c.canvas; };
   CARD.circ = mk(c => { c.fillStyle = '#2346E0'; c.fillRect(0, 0, C1.w, C1.h); for (const q of packCircles(12, C1.w, C1.h, 120, 70)) drawCircle(c, {...q, c: q.c === '#2346E0' ? '#FFC530' : q.c}, q.r); });
   CARD.flow = mk(c => { c.fillStyle = INK; c.fillRect(0, 0, C1.w, C1.h); c.scale(C1.w / W * 1.6, C1.h / H * 1.6); for (const R of A.ribbons) ribbon(c, R, R.L); });
 }
-function lenFlow(R, f) {
+function lenFlow(R, f) {      // 长出来；76 起往中点缩
   let l = clamp((f - R.birth) * R.v, 0, R.L);
-  if (f >= TL.rewind[0]) l *= 1 - ease.inOut3(clamp((f - TL.rewind[0] - (R.pts[0][0] / W) * 6) / (TL.rewind[1] - TL.rewind[0] - 6)));
+  if (f >= TL.gather[0]) l *= 1 - ease.inOut3(clamp((f - TL.gather[0] - (R.mid[0] / W) * 6) / 12));
   return l;
+}
+// ② 碎石：混乱程度（分三拍变大，210 归位）
+function disorder(f) {
+  let d = 0; TL.steps.forEach((s, k) => { d += 0.34 * ease.outBack(clamp((f - s) / 9), 2); });
+  if (f >= TL.snap[0]) d *= 1 - ease.outBack(clamp((f - TL.snap[0]) / (TL.snap[1] - TL.snap[0])), 1.6);
+  return d;
+}
+function drawSquares(ctx, f) {
+  for (let j = 0; j < TR; j++) for (let i = 0; i < TC; i++) {
+    const dd = Math.hypot(i - TC / 2 + 0.5, j - TR / 2 + 0.5) / 9, p = ease.outBack(clamp((f - TL.schotter[0] - dd * 10) / 12), 2.2);
+    if (p <= 0) continue;
+    const fade = 1 - clamp((f - TL.tiles[0] - dd * 12) / 12); if (fade <= 0) continue;
+    const rowf = Math.pow(j / (TR - 1), 1.3), D = disorder(f) * rowf;
+    const rot = D * (hash(i, j, 1) - 0.5) * 2 * 0.8, ox = D * (hash(i, j, 2) - 0.5) * 2 * 34, oy = D * (hash(i, j, 3) - 0.5) * 2 * 34;
+    const sz = 92 * p, c = hash(i, j, 4) < 0.32 ? COL[Math.floor(hash(i, j, 5) * 7)] : null;
+    ctx.save(); ctx.globalAlpha = fade; ctx.translate((i + 0.5) * TS + ox, (j + 0.5) * TS + oy); ctx.rotate(rot);
+    if (c) { ctx.fillStyle = c; ctx.fillRect(-sz / 2, -sz / 2, sz, sz); }
+    ctx.lineWidth = 4; ctx.strokeStyle = INK; ctx.strokeRect(-sz / 2, -sz / 2, sz, sz); ctx.restore();
+  }
 }
 
 window.frame = f => {
   g.setTransform(1, 0, 0, 1, 0, 0); g.fillStyle = PAPER; g.fillRect(0, 0, W, H);
-  // ① 流场
-  if (f < TL.rewind[1]) {
+  // ① 流场 → 缩成圆点 → 飞到网格上
+  if (f < TL.gather[1]) {
     const heads = [];
-    for (const R of A.ribbons) { const l = lenFlow(R, f), h = ribbon(g, R, l); if (h && l < R.L - 0.5 && R.w >= 10 && f < TL.rewind[0]) heads.push([R, l, h]); }
-    for (const [R, l, h] of heads) penHead(g, R, l, h, R.w >= 26 ? 130 : 0);
-    card(g, f, 10, TL.rewind[0] - 6, 'RULE 01 · 流场', '顺着风走', 'angle = noise(x, y) × 2π', 60, 790);
-  }
-  // ② 圆堆积 → 缩成点吸到网格
-  if (f >= TL.circles[0] && f < TL.tiles[0] + 14) {
-    for (const c of CIRC) {
-      let r = c.r * ease.outBack(clamp((f - c.t) / 10), 2.2), x = c.x, y = c.y;
-      if (f >= TL.dots[0]) { const p = ease.inOut3(clamp((f - TL.dots[0] - (c.x / W) * 6) / 14)); r = lerp(r, 9, p); x = lerp(c.x, c.tx, p); y = lerp(c.y, c.ty, p); }
-      if (f >= TL.tiles[0]) r *= 1 - clamp((f - TL.tiles[0]) / 14);
-      drawCircle(g, {...c, x, y}, r);
+    for (const R of A.ribbons) {
+      const l = lenFlow(R, f);
+      if (f < TL.gather[0] + 4 || l > R.w * 0.6) { const from = f >= TL.gather[0] ? (R.L - l) / 2 + (R.L / 2 - (R.pts.length >> 1) * STEP) : 0, h = ribbon(g, R, l, null, Math.max(0, from)); if (h && l < R.L - 0.5 && R.w >= 10 && f < TL.gather[0]) heads.push([R, l, h]); continue; }
+      if (clamp((f - R.birth) * R.v, 0, R.L) <= 0) continue;
+      const p = ease.inOut3(clamp((f - 92 - Math.hypot(R.mid[0] - W / 2, R.mid[1] - H / 2) / 1100 * 10) / 16));
+      const x = lerp(R.mid[0], (R.gi + 0.5) * TS, p), y = lerp(R.mid[1], (R.gj + 0.5) * TS, p), r = lerp(Math.max(6, Math.min(R.w / 2, 16)), 8, p);
+      g.fillStyle = R.c; g.beginPath(); g.arc(x, y, r, 0, 7); g.fill();
     }
-    card(g, f, TL.circles[0] + 14, TL.dots[0] - 4, 'RULE 02 · 圆堆积', '长到碰到别人，就停', 'r = min(到别人的距离) − gap', 60, 790);
+    for (const [R, l, h] of heads) penHead(g, R, l, h, R.w >= 26 ? 130 : 0);
+    card(g, f, 10, TL.gather[0] - 6, 'RULE 01 · 流场', '顺着风走', 'angle = noise(x, y) × 2π', 60, 790);
+  }
+  // ② 碎石：方块从圆点堆里长出来，越往下越乱，拍点上一下归位
+  if (f >= TL.schotter[0] && f < TL.tiles[0] + 30) {
+    drawSquares(g, f);
+    card(g, f, TL.schotter[0] + 12, TL.snap[1] - 4, 'RULE 02 · 秩序 → 混乱', '越往下，越乱', 'rotate = rand(±45°) × 行号 / 总行数', 60, 790);
   }
   // ③ 瓷砖
   const shrinkTiles = () => {      // 整面瓷砖缩进手机的第一张卡（画在手机上面，落定后由卡片接手）
@@ -148,8 +170,10 @@ window.frame = f => {
     card(g, f, TL.tiles[0] + 18, TL.shrink[0] - 4, 'RULE 03 · 特鲁谢瓷砖', '一个格子，转 90°', 'rotate(tile, 90° × n)', 60, 790);
   }
   // ④ 手机钱包 + 网页生成器
-  if (f >= TL.ui[0] - 6 && f < TL.clear[1]) {
-    const e = f - TL.clear[0], drop = e > 0 ? 0.9 * e * e : 0;
+  const SEED = [1200, 990];
+  if (f >= TL.ui[0] - 6 && f < TL.collapse[1]) {
+    const cp = ease.in3(clamp((f - TL.collapse[0]) / (TL.collapse[1] - TL.collapse[0] - 2))), e = 0, drop = 0;
+    g.save(); g.translate(SEED[0], SEED[1]); g.rotate(cp * 0.8); g.scale(1 - cp, 1 - cp); g.translate(-SEED[0], -SEED[1]);
     // 网页
     const bx = BROW.x + lerp(-1400, 0, ease.outBack(clamp((f - TL.ui[0] - 4) / 22), 1.1));
     g.save(); g.translate(bx, drop * 1.2); g.rotate(e > 0 ? -e * 0.004 : 0);
@@ -172,7 +196,7 @@ window.frame = f => {
     COL.forEach((c, k) => { g.fillStyle = c; rr(g, px + k * 34, py + 446, 28, 28, 6); g.fill(); });
     g.fillStyle = '#E8392B'; rr(g, px, py + 740, 270, 70, 14); g.fill(); g.font = '900 26px Archivo'; g.fillStyle = '#fff'; g.fillText('Export SVG ↓', px + 52, py + 784);
     const hx = px + 270 * dp, hy = py + 90 + 22, ci = clamp((f - TL.ui[0] - 20) / 16);
-    if (ci > 0 && f < TL.drag[1] + 10) cursor(g, lerp(px + 120, hx, ease.inOut3(clamp((f - TL.ui[0] - 20) / 12))) + 4, hy + 6, f >= TL.drag[0] - 2 && f < TL.drag[1] ? 0.9 : 1);
+    if (ci > 0 && f < TL.drag[1] + 2) cursor(g, lerp(px + 120, hx, ease.inOut3(clamp((f - TL.ui[0] - 20) / 12))) + 4, hy + 6, f >= TL.drag[0] - 2 && f < TL.drag[1] ? 0.9 : 1);
     g.restore();
     // 手机
     const pin = ease.outBack(clamp((f - TL.ui[0] + 6) / 18), 1.4);
@@ -204,7 +228,15 @@ window.frame = f => {
       g.font = '600 22px SG'; g.fillStyle = INK; g.fillText(n, PHONE.x + 96, y + 30); g.font = '600 20px JBM'; g.textAlign = 'right'; g.fillText(v, PHONE.x + PHONE.w - 32, y + 30); g.textAlign = 'left'; });
     g.restore();
     if (f >= TL.shrink[0] && f < TL.shrink[1]) shrinkTiles();
-    card(g, f, TL.ui[0] + 30, TL.clear[0] - 4, 'ON WEB + PHONE', '每个人，一张独一无二', 'seed → 同一个种子 = 同一张画', 120, 760);
+    g.restore();
+    // 光标去点“Export SVG”
+    if (f >= TL.drag[1] + 2 && f < TL.collapse[0] + 2) { const q = ease.inOut3(clamp((f - TL.drag[1] - 2) / 10)); cursor(g, lerp(BROW.x + ART.w + 36 + 270, BROW.x + ART.w + 36 + 150, q), lerp(170, 120 + 784 + 40 - 30, q), f >= TL.export && f < TL.export + 5 ? 0.85 : 1); }
+    card(g, f, TL.ui[0] + 30, TL.collapse[0] - 4, 'ON WEB + PHONE', '每个人，一张独一无二', 'seed → 同一个种子 = 同一张画', 120, 760);
+  }
+  // 种子：落地弹一下，钻进土里
+  if (f >= TL.collapse[1] - 4 && f < TL.tree[0] + 14) {
+    const q = clamp((f - TL.collapse[1] + 4) / 4), b = Math.max(0, f - TL.tree[0]), y = f < TL.tree[0] ? lerp(SEED[1], 1062, ease.in2(q)) : 1062 - Math.abs(Math.sin(b * 0.35)) * 26 * Math.exp(-b / 5);
+    g.fillStyle = RED; g.strokeStyle = INK; g.lineWidth = 3; g.beginPath(); g.ellipse(SEED[0], y, 16 * (b > 0 && b < 3 ? 1.25 : 1), 16 * (b > 0 && b < 3 ? 0.75 : 1), 0, 0, 7); g.fill(); g.stroke();
   }
   // ⑤ 树
   if (f >= TL.tree[0]) {
@@ -221,6 +253,7 @@ window.frame = f => {
     }
     if (f < TL.title[0]) card(g, f, TL.tree[0] + 10, TL.title[0] - 4, 'RULE 04 · 递归', '长一段，分两叉', 'branch(len × 0.72, ±(18°~36°))', 60, 790);
   }
+  hud(f);
   // 片名
   if (f >= TL.title[0]) {
     const T = TL.title[0], p = ease.outBack(clamp((f - T) / 16), 1.6);
@@ -233,9 +266,24 @@ window.frame = f => {
     rise(g, '观默', 1790, 1040, '900 30px NotoSC', INK, f, T + 24, 12);
   }
 };
+function hud(f) {
+  if (f >= TL.title[0] + 6) return;
+  let ci = 0; TL.chapters.forEach((c, k) => { if (f >= c[0]) ci = k; });
+  const [at, no, name, meta] = TL.chapters[ci], next = TL.chapters[ci + 1] ? TL.chapters[ci + 1][0] : TL.title[0];
+  g.save(); g.globalAlpha = 1 - clamp((f - TL.title[0] + 6) / 12);
+  g.fillStyle = PAPER; g.fillRect(40, 34, 520, 90); g.lineWidth = 3; g.strokeStyle = INK; g.strokeRect(40, 34, 520, 90);
+  g.font = '700 22px JBM'; g.fillStyle = RED; g.textBaseline = 'alphabetic'; g.fillText(`${no} / 05`, 58, 70);
+  rise(g, name, 172, 72, '900 30px NotoSC', INK, f, at, 10);
+  rise(g, meta, 58, 108, '500 20px NotoSC', '#5A564C', f, at + 3, 10);
+  for (let k = 0; k < 5; k++) {
+    const x = W - 60 - (5 - k) * 52, p = k < ci ? 1 : k > ci ? 0 : clamp((f - at) / (next - at));
+    g.fillStyle = '#D8D0BE'; g.fillRect(x, 52, 44, 8); g.fillStyle = k === ci ? RED : INK; g.fillRect(x, 52, 44 * p, 8);
+  }
+  g.restore();
+}
 window.events = () => ({
   grow: A.ribbons.filter(R => R.birth >= 0 && R.birth < TL.flow[1]).map(R => [R.birth, R.pts[0][1], R.w]),
-  circ: CIRC.map(c => [c.t, c.r, c.y]),
+  gather: A.ribbons.map(R => 92 + Math.hypot(R.mid[0] - W / 2, R.mid[1] - H / 2) / 1100 * 10 + 16),
   branch: TREE.br.map(b => [b.t0, b.d]), bloom: TREE.tips.map(t => Math.max(t.t, TL.bloom[0] + (t.x / W) * 20)),
 });
 Promise.all(['900 40px NotoSC', '500 20px NotoSC', '700 20px JBM', '600 20px JBM', '900 40px Archivo', '600 20px SG'].map(x => document.fonts.load(x)))
