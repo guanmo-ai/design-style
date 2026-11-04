@@ -26,7 +26,16 @@
 2. 直接采用 `review-renders` 上的成片，不重新渲染、不改音画；按 014 的做法通过 `release-assets/day-15/` 发布 Release `day-15`（成片 + 完整项目源码包 + SHA256SUMS），画廊登记并同步中英文目录与预览。
 3. 合并注意：另一个会话在做 016，`package.json`（新增 `music:015` / `render:015` / `render:015:gpu` / `preview:015` / `images:015`）和 `src/Root.tsx`（新增 `S015-Futurism` / `S015-Futurism-Preview`）可能和 016 冲突，两边的条目都保留。
 
+### 017 · 中世纪现代：审片通过后发布（2026-11-02）
+
+全片是 SVG、不需要显卡，正片已由 Claude 在云端渲好推到 `review-renders` 分支的 `017/`（15 秒 1920×1080 60fps，含主人选定的“明亮律动”配乐）。**Codex 只负责发布**：
+
+1. 等主人看过 `review-renders/017/017-mid-century-modern-master.mp4` 并确认通过（这里会更新）。
+2. 直接采用 `review-renders` 上的成片，不重新渲染、不改音画；按 014 的做法通过 `release-assets/day-17/` 发布 Release `day-17`（成片 + 完整项目源码包 + SHA256SUMS），画廊登记并同步中英文目录与预览（封面 `styles/017-mid-century-modern/video/cover.jpg`）。
+3. 合并注意：`package.json`（`music:017` / `render:017` / `render:017:gpu` / `preview:017` / `images:017`）和 `src/Root.tsx`（`S017-MidCenturyModern` / `S017-MidCenturyModern-Preview`）可能和 018 / 019 冲突，各方条目都保留；`scripts/fetch_fonts.sh` 新增 Anton。
+
 ## 设计侧留下的素材（不用动，供下次做新一期）
 
 - `drafts/op-art`、`drafts/dither`：两套已完成三张风格图的候选风格，说明见 `drafts/README.md`（未来主义已做成 015）。
 - 其他分支上在做的期号：007 极简、010 剪纸、011 粘土拟态、012 等距。新开一期前先看 `git branch -r`，避免撞期号。
+- 017 中世纪现代（`claude/modest-einstein-xiiv18`）：风格图、短片、配乐、文档都已完成，等主人审片。

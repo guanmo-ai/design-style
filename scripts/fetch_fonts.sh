@@ -33,6 +33,8 @@ curl -fsSL -o Tinos-700.woff2   "$FS/tinos-latin-700-normal.woff2"
 # 风格 013 装饰艺术：Poiret One（1920 年代海报式细线几何大写；OFL）+ Noto Serif SC（中文细宋，可变字重 200—900；OFL）
 curl -fsSL -o PoiretOne-Regular.ttf "$GF/poiretone/PoiretOne-Regular.ttf"
 curl -fsSL -o NotoSerifSC.ttf       "$GF/notoserifsc/NotoSerifSC%5Bwght%5D.ttf"
+# 风格 017 中世纪现代：Anton（窄粗无衬线，被 cut.py 转成轮廓、剪成纸片大字；OFL）
+curl -fsSL -o Anton-Regular.ttf  "$GF/anton/Anton-Regular.ttf"
 # 风格 006 千禧未来主义：Unbounded（宽体几何标题，可变字重 200—900）+ Michroma（宽体“科技”小字）+ Silkscreen（像素字读数）；均为 OFL
 curl -fsSL -o Unbounded.ttf          "$GF/unbounded/Unbounded%5Bwght%5D.ttf"
 curl -fsSL -o Michroma-Regular.ttf   "$GF/michroma/Michroma-Regular.ttf"
