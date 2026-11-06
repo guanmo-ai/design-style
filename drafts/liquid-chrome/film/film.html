@@ -303,6 +303,7 @@ function sceneAt(f) {
     if (f >= TL.out[0]) { s.blobs.slice(1).forEach(b => { const t = (f - TL.out[0] - 10) / FPS; if (t > 0) b[1] -= 0.5 * 9 * t * t; }); s.blobs = s.blobs.filter(b => b[1] + b[3] > -0.2);
       const hitF = TL.out[0] + 6 + Math.sqrt(2 * (C[1] - r2) / 9) * FPS; addRip(0, 0, Math.round(hitF), 0.025, 1.1); }
   }
+  if (f >= TL.mask[0] + 20 && f < TL.out[0] + 14) s.floor = false;   // 手机里没有地面（免得按钮上的珠子在地上照出倒影）
   s.ripples = ripples.slice(-8); s.pools = s.pools.slice(0, 8); s.crowns = s.crowns.slice(0, 4); s.drips = s.drips.slice(0, 32);
   if (s.column && s.gpos) { const g = s.gpos; s.column.a = s.column.a.map((v, i) => v - g[i]); s.column.b = s.column.b.map((v, i) => v - g[i]); }
   s.drops = [...s.drops, ...worldDrops.map(d => [d[0], d[1] - (s.gpos ? s.gpos[1] : 0), d[2], d[3], d[4]])].slice(0, 40);
