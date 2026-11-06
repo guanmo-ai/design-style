@@ -6,6 +6,6 @@ NAME=liquid-chrome
 OUT=${TMPDIR:-/tmp}/$NAME-frames
 python3 audio.py "$OUT.wav"
 node ../../_lib/film-gl.cjs film.html "$OUT" 0 1080 2
-ffmpeg -y -loglevel error -framerate 60 -i "$OUT/%04d.jpg" -i "$OUT.wav" -c:v libx264 -preset slow -crf 18 -pix_fmt yuv420p \
-  -c:a aac -b:a 192k -movflags +faststart "$NAME-film.mp4"
+ffmpeg -y -loglevel error -framerate 60 -i "$OUT/%04d.jpg" -i "$OUT.wav" -c:v libx264 -preset slow -crf 20 -pix_fmt yuv420p \
+  -c:a aac -b:a 192k -movflags +faststart -shortest "$NAME-film.mp4"
 echo "wrote $NAME-film.mp4"
