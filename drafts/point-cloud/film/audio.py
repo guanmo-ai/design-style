@@ -2,7 +2,7 @@
 开场一个点的“嘀”→ 第 12 帧炸开 → 鼓慢慢进来、军鼓越滚越密 → 第 90 帧标题锁定 = 全乐队落地。
 每章换一组和弦和一种“招牌声音”：斯坦福兔子 = 十块扫描一块块“咔”地对齐；激光雷达 = 声呐 + 转圈的嗡嗡声；楼梯 = 往下扫的噪声；
 体素 = 8-bit 方波；颜料墙 = 和弦全打开；高斯泼溅 = 只剩铺底（呼吸）；规则卡 = 一卡一记重拍；手机 = 轻；片尾吸回一个点，空一拍，再炸开。
-时间取自 timeline.js。python3 audio.py out.wav"""
+时间取自 timeline.js；文字的声音取自 events.json（node ../../_lib/events.cjs film.html events.json）。python3 audio.py out.wav"""
 import json
 import re
 import sys
@@ -18,8 +18,8 @@ TL = json.loads(re.sub(r'//[^\n]*', '', re.search(r'const TL = (\{.*?\});', (HER
 FSM, D, A, E, BM, CS7 = [61, 66, 69], [62, 66, 69], [61, 64, 69], [59, 64, 68], [62, 66, 71], [61, 65, 68, 71]
 CH = [(0, 42, FSM), (90, 38, D), (120, 42, FSM), (165, 40, E), (210, 38, D), (255, 45, A), (300, 47, BM), (345, 37, CS7),
       (390, 42, FSM), (435, 38, D), (480, 45, A), (525, 40, E),
-      (570, 42, FSM), (600, 38, D), (630, 45, A), (660, 40, E), (690, 37, CS7),
-      (720, 42, FSM), (780, 38, D), (840, 45, A), (900, 40, E), (930, 47, BM), (960, 37, CS7), (1020, 42, FSM)]
+      (570, 42, FSM), (615, 38, D), (660, 45, A), (705, 40, E), (750, 37, CS7),          # 规则卡：一张 45 帧，一张一个和弦
+      (810, 42, FSM), (870, 38, D), (930, 45, A), (990, 40, E), (1020, 47, BM), (1050, 37, CS7), (1110, 42, FSM)]
 END = TL['end']
 S = Song(END, CH, seed=61)
 fr = S.fr
@@ -125,10 +125,10 @@ S.bassline(DROP, FIN, skip=BRK)
 S.pad(1.1, fc=1700)
 S.arp(DROP, FIN, 1.15, skip=BRK, inst=pluck, pattern=(0, 2, 4, 2, 1, 3, 5, 3))
 # 落地拍上的和弦重击（每章第一拍），反拍上的短和弦
-for at in [DROP, 120, 210, 300, 390, 480, 720, 1020]:
+for at in [DROP, 120, 210, 300, 390, 480, TL['today'][0], TL['burst2']]:
     S.place(stab([n + 12 for n in S.chord(at)[2]], 0.5, 1.0), fr(at), 0.22, 0.0, send=0.35, bus=S.PUMP)
 for fm in np.arange(DROP + 15, FIN, 30):
-    if not any(a <= fm < z for a, z in BRK) and not (570 <= fm < 720):
+    if not any(a <= fm < z for a, z in BRK) and not (TL['rules'][0] <= fm < TL['rules'][1]):
         S.place(stab([n + 12 for n in S.chord(fm)[2]], 0.12, 0.8, 5000), fr(fm), 0.1, 0.2 * (-1) ** int(fm // 30), send=0.15, bus=S.PUMP)
 S.place(S.kick(1.4), fr(FIN), 1.0); S.kicks.append(FIN)
 S.place(S.sbass(42, 1.6), fr(FIN), 0.55, bus=S.PUMP); S.place(S.sbass(54, 1.6), fr(FIN), 0.3, bus=S.PUMP)
@@ -143,13 +143,13 @@ HOOK = {
     300: [(0, 78, 1), (1, 74, 1), (2, 71, 2)], 345: [(0, 77, 1), (1, 80, 1), (2, 83, 1), (3, 85, 1)],
     390: [(0, 73, 1), (1, 78, 1), (2, 76, 1), (3, 73, 1), (4, 81, 2)], 435: [(0, 78, 2), (2, 74, 2)],
     480: [(0, 76, 4)], 525: [(0, 76, 2), (2, 80, 2)],
-    720: [(0, 73, 1), (1, 78, 1), (2, 76, 1), (3, 73, 1)], 780: [(0, 74, 1), (1, 78, 1), (2, 81, 2)], 840: [(0, 76, 1), (1, 81, 1), (2, 85, 2)],
-    900: [(0, 80, 2), (2, 76, 2)],
-    1020: [(0, 73, 1), (1, 78, 1), (2, 76, 1), (3, 73, 1)], 1050: [(0, 78, 6)],
+    810: [(0, 73, 1), (1, 78, 1), (2, 76, 1), (3, 73, 1)], 870: [(0, 74, 1), (1, 78, 1), (2, 81, 2)], 930: [(0, 76, 1), (1, 81, 1), (2, 85, 2)],
+    990: [(0, 80, 2), (2, 76, 2)],
+    1110: [(0, 73, 1), (1, 78, 1), (2, 76, 1), (3, 73, 1)], 1140: [(0, 78, 6)],
 }
 for s0, notes in HOOK.items():
     S.hook(s0, notes, 1.0, inst=lead)
-for t, up in ((120, False), (210, True), (300, False), (390, True), (480, False), (720, True)):
+for t, up in ((120, False), (210, True), (300, False), (390, True), (480, False), (TL['today'][0], True)):
     S.transition(t, up, 0.8)
 
 # —— 00：一个点 → 炸开 → 拼成标题 ——
@@ -215,14 +215,17 @@ for k, fm in enumerate(np.arange(554, 570, 3.75)):
 for k, at in enumerate(TL['cards']):
     S.place(S.kick(1.3), fr(at), 1.0); S.kicks.append(at)
     S.place(stab([n + 12 for n in S.chord(at)[2]], 0.35, 1.0), fr(at), 0.25, -0.4 + 0.2 * k, send=0.4, bus=S.PUMP)
-    S.sfx(S.hit(0.8, 42), fr(at), 0.4, send=0.3)
-S.sfx(S.whoosh(0.5, 300, 7000, 0.8, 0.5), fr(570), 0.4)                                   # 近大远小：贴地飞过去
-S.sfx(scan(0.45, 7000, 900, 0.9), fr(600), 0.4, send=0.3)                                  # 扫描面
+    S.sfx(S.hit(0.8, 42), fr(at), 0.25, send=0.3)
+C5 = TL['cards']
+S.sfx(S.whoosh(0.7, 300, 7000, 0.8, 0.5), fr(C5[0]), 0.4)                                 # 近大远小：贴地飞过去
+S.sfx(S.whoosh(0.35, 5000, 400, 0.7, 0.4), fr(C5[1] - 4), 0.3)                            # 镜头滑到下一张
+S.sfx(scan(0.7, 7000, 900, 0.9), fr(C5[1] + 2), 0.4, send=0.3)                             # 扫描面
 for k in range(6):
-    S.sfx(bit(S.tone(630, k, 1), 0.05, 1.0), fr(630 + k * 3.75), 0.4, -0.5 + 0.2 * k)     # 体素
+    S.sfx(bit(S.tone(C5[2], k, 1), 0.05, 1.0), fr(C5[2] + 4 + k * 3.75), 0.4, -0.5 + 0.2 * k)   # 体素
 for k in range(5):
-    S.sfx(ping(S.tone(660, k + 2, 1), 0.9, 0.15), fr(660 + k * 3.75), 0.4, -0.5 + 0.25 * k, send=0.4)   # 色带：一串往上
-S.sfx(S.fft_filter(S.rng.standard_normal(int(0.45 * S.SR)), lo=1500, hi=7000) * 0.25, fr(692), 0.5, 0.0)   # 拨开
+    S.sfx(ping(S.tone(C5[3], k + 2, 1), 0.9, 0.15), fr(C5[3] + 3 + k * 5), 0.4, -0.5 + 0.25 * k, send=0.4)   # 色带：一串往上
+br = S.fft_filter(S.rng.standard_normal(int(0.7 * S.SR)), lo=1500, hi=7000) * 0.25
+S.sfx(br * np.sin(np.pi * np.linspace(0, 1, len(br))) ** 0.5, fr(C5[4] + 8), 0.5, 0.0)    # 拨开
 
 # —— 07 手机 ——
 S.sfx(S.whoosh(0.6, 5000, 400, 0.8, 0.7), fr(TL['mask'][0]), 0.45)
@@ -252,5 +255,8 @@ S.sfx(S.boom(1.1, 130, 34, 1.4), fr(at), 0.9)
 S.place(S.crash(1.2), fr(at), 0.8, send=0.5)
 S.sfx(glitter(1.2, 300, 79, 108, 1.0), fr(at), 0.55, 0.0, send=0.4)
 S.sfx(scan(0.45, 7000, 900, 0.9), fr(FIN), 0.35, send=0.3)
+
+# —— 文字：每个字落定一声“嗒”，标题是键帽声，规则卡大字是倒放镲 + 砸字（cue 由 film.html 空跑 HUD 导出到 events.json）——
+S.text_cues(json.loads((HERE / 'events.json').read_text())['cues'], 1.0)
 
 S.master(sys.argv[1] if len(sys.argv) > 1 else str(HERE / 'music.wav'), loop=False)

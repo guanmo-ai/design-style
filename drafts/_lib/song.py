@@ -143,6 +143,60 @@ class Song(AudioKit, Orchestra):
         self.sfx(self.whistle(74, 86, 0.24) if up else self.whistle(86, 72, 0.24), self.fr(t - 15), 0.18 * level, 0.2)
         self.place(self.crash(0.9 * level), self.fr(t), 0.8, 0.2, send=0.2)
 
+    # —— 文字的声音（主人 2026-11-06：“文字变得很快，但是少了音效跟它搭配”）——
+    def type_tick(self, m, level=1.0, bright=1.0):
+        """解码的“嗒”：一下很短的高通噪声 + 一个调好音的数字小音（取当前和弦里的音）"""
+        t = self.tt(0.05)
+        n = self.fft_filter(self.rng.standard_normal(len(t)), lo=2400 * bright, hi=11000) * np.exp(-t / 0.0022)
+        f = self.midi(m)
+        b = np.sin(2 * np.pi * f * t) * np.exp(-t / 0.012) * np.minimum(1, t / 0.0004)
+        return (n * 0.9 + b * 0.35) * level
+
+    def key_tick(self, m, level=1.0):
+        """标题一个字落定：更沉的键帽声（咔 + 一个短的木质音）"""
+        t = self.tt(0.12)
+        n = self.fft_filter(self.rng.standard_normal(len(t)), lo=900, hi=7000) * np.exp(-t / 0.004)
+        f = self.midi(m)
+        b = (np.sin(2 * np.pi * f * t) + 0.4 * np.sin(2 * np.pi * 2.76 * f * t) * np.exp(-t / 0.01)) * np.exp(-t / 0.03)
+        return (n * 0.8 + b * 0.55) * np.minimum(1, t / 0.0005) * level
+
+    def rev_cymbal(self, d=0.3, level=1.0):
+        """倒放的镲：吸进去，正好在砸字那一帧停"""
+        t = self.tt(d)
+        y = self.fft_filter(self.rng.standard_normal(len(t)), lo=2500, hi=14000) * (t / d) ** 2.6
+        y += 0.5 * self.fft_filter(self.rng.standard_normal(len(t)), lo=300, hi=2000) * (t / d) ** 4
+        return y * level * 0.5
+
+    def slam(self, m=38, level=1.0):
+        """大字砸下来（预告片的字卡）：次低音 + 一记很干的“啪” + 金属的余振"""
+        t = self.tt(1.4)
+        f = self.midi(m) * (1 + 2.2 * np.exp(-t / 0.025))
+        sub = np.sin(2 * np.pi * np.cumsum(f) / self.SR) * np.exp(-t / 0.35)
+        snap = self.fft_filter(self.rng.standard_normal(len(t)), lo=180, hi=6500) * np.exp(-t / 0.035)
+        ring = sum(a * np.sin(2 * np.pi * self.midi(m + 36) * r * t) * np.exp(-t / k) for r, a, k in ((1, 0.25, 0.4), (2.76, 0.14, 0.18), (5.4, 0.08, 0.08)))
+        y = np.tanh((sub * 1.1 + snap * 0.9) * 1.6) + ring
+        return y * np.minimum(1, t / 0.0006) * level * 0.55
+
+    def text_cues(self, cues, level=1.0, pan=0.0):
+        """读页面登记的 cue：[起始帧, 字数, 每字帧数, 种类]。每落定一个字一声（一帧最多一声）；slam = 砸字"""
+        for f0, n, rate, kind in cues:
+            if kind == 'slam':
+                self.sfx(self.rev_cymbal(0.28, 1.0), self.fr(f0) - 0.28, 0.75 * level, 0.0, send=0.3)
+                self.sfx(self.slam(self.chord(f0)[1] - 12 if self.chord(f0)[1] > 40 else self.chord(f0)[1], 1.0), self.fr(f0), 1.0 * level, 0.0, send=0.35)
+                continue
+            step = max(rate, 1.0)
+            k_n = int(np.ceil(n * rate / step))
+            for j in range(k_n):
+                at = f0 + j * step
+                m = self.tone(at, int(self.rng.integers(0, 5)), 2 if kind != 'title' else 1)
+                p = pan + 0.5 * np.sin(j * 0.9 + f0)
+                if kind == 'title':
+                    self.sfx(self.key_tick(m, 1.0), self.fr(at), 0.7 * level, p * 0.5, send=0.2)
+                elif kind == 'small':
+                    self.sfx(self.type_tick(m, float(self.rng.uniform(0.5, 1.0)), 1.3), self.fr(at), 0.26 * level, p, send=0.1)
+                else:
+                    self.sfx(self.type_tick(m, float(self.rng.uniform(0.6, 1.0))), self.fr(at), 0.4 * level, p, send=0.15)
+
     def master(self, output, loop=False):
         # 侧链：PUMP 跟着每一记底鼓往下压
         tsec = np.arange(self.N) / self.SR

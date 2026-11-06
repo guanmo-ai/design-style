@@ -68,6 +68,7 @@ html, body { width: 1920px; height: 1080px; overflow: hidden; background: #02030
 <script src="../../_lib/glkit.js"></script>
 <script src="../chrome.js"></script>
 <script src="timeline.js"></script>
+<script src="../../_lib/typefx.js"></script>
 <script>
 const Q = new URLSearchParams(location.search);
 const SCALE = +(Q.get('scale') || 1);
@@ -157,10 +158,14 @@ function sceneAt(f) {
       if (t > 0 && y > 0) s.drops.push([x + Math.cos(a) * sp * t, y + 0.03, z + Math.sin(a) * sp * t * 0.6, 0.028 + (k % 3) * 0.008]); }
   };
   const fall = (x, z, f0, hit, y0, r = 0.11) => { if (f >= f0 && f < hit) { const t = (f - f0) / (hit - f0), y = y0 * (1 - t * t), v = 2 * y0 * t / ((hit - f0) / FPS); s.drops.push([x, y + r, z, r, [0.88, 1 + Math.min(0.5, v / 50), 0.88]]); } };
-  const checkerOn = f < 130 || f >= 930;
-  s.checker = checkerOn ? 1 : 0; if (checkerOn) s.floorTint = [0.42, 0.43, 0.46];
+  // 舞台（原来是棋盘格）：黑色湿石材 + 头顶一盏聚光灯 + 光柱里的灰尘。开场和片尾淡入淡出，不硬切
+  const stage = f < 150 ? 1 - ease.inOut3(prog(f, 118, 150)) : ease.inOut3(prog(f, 926, 956));
+  s.checker = stage;
+  if (stage > 0) { s.floorTint = mixv(s.floorTint, [0.3, 0.31, 0.33], stage);
+    s.backdrop = { top: mixv(s.backdrop.top, [0.0004, 0.0006, 0.0009], stage), bot: mixv(s.backdrop.bot, [0.0016, 0.0042, 0.0058], stage),
+      glow: mixv(s.backdrop.glow, [0.003, 0.009, 0.013], stage), glowPos: [0, 0.2] }; }
 
-  // —— 00 开场：一滴落在棋盘格上，四个字一个个站起来 ——
+  // —— 00 开场：一滴落在黑色舞台上，四个字一个个站起来 ——
   fall(0.15, 1.15, -12, TL.dropHit, 2.4); splash(0.15, 1.15, TL.dropHit);
   fall(-0.35, 1.0, TL.drop2[0], TL.drop2[1], 5); splash(-0.35, 1.0, TL.drop2[1]);
   const gr = [0, 1, 2, 3].map(i => glyphY(f, i));
@@ -277,25 +282,32 @@ function chapterAt(f) { let c = TL.chapters[0]; for (const x of TL.chapters) if 
 const RULES = [['融合', 'MERGE', 'd = smin(a, b, k)'], ['倒影', 'REFLECT', 'color = env(reflect(v, n))'], ['菲涅尔', 'FRESNEL', 'F = F₀ + (1 − F₀)(1 − cos θ)⁵'], ['断开', 'PINCH-OFF', 'λ ≈ 9 · r（瑞利–普拉托）'], ['回弹', 'WOBBLE', 'A · e^(−t/τ) · cos 2πft']];
 function drawHUD(f, s) {
   const c = chapterAt(f); let h = '';
+  const D = (txt, f0, o) => TFX.decode(txt, f, f0, o);
   const fin = ease.out3(clamp((f - c[0]) / 12)), inRules = f >= 480 && f < 630;
-  if (c[1] !== '07' && !inRules) h += `<div class="chap" style="opacity:${fin};transform:translateY(${(1 - fin) * -12}px)"><span class="n">${c[1]} / 06</span><div><div class="t" style="font-size:28px;font-weight:900">${c[2]}</div><div class="s" style="font-family:GeistMono;font-size:13px">${c[3]}</div></div></div>`;
+  if (c[1] !== '07' && !inRules) h += `<div class="chap" style="opacity:${fin};transform:translateY(${(1 - fin) * -12}px)"><span class="n">${c[1]} / 06</span><div><div class="t" style="font-size:28px;font-weight:900">${D(c[2], c[0] + 2, { rate: 3, kind: 'title', glyphs: 'blocks', lead: 1 })}</div><div class="s" style="font-family:GeistMono;font-size:13px">${D(c[3], c[0] + 8, { rate: 0.6, kind: 'small' })}</div></div></div>`;
   h += `<div class="prog">${TL.chapters.slice(0, 7).map((x, i) => { const nx = TL.chapters[i + 1][0]; return `<i style="width:22px"><b style="width:${clamp((f - x[0]) / (nx - x[0])) * 100}%"></b></i>`; }).join('')}</div>`;
   const rule = (a, b) => ease.out3(clamp((f - a) / 10)) * (1 - ease.in3(clamp((f - b + 10) / 10)));
-  const tag = (p, txt, o) => `<div class="tagx" style="left:${p[0] + 14}px;top:${p[1] - 14}px;opacity:${o}"><b>●</b> ${txt}</div>`;
-  if (f >= 40 && f < 122) h += `<div class="rule" style="opacity:${rule(44, 122)}">y(t) = 1 − e<sup>−ζωt</sup>(cos ω<sub>d</sub>t + …) &nbsp;<em>ζ = 0.55 · 每个字晚 12 帧</em><small>四个字各是一个弹簧，冲过头再落回来；拉丝越拉越细，超过 L 就断。</small></div>`;
-  if (f >= 130 && f < 214) h += `<div class="rule" style="opacity:${rule(132, 214)}">F₀ = (1.00, 0.74, 0.32) &nbsp;<em>金 = 银 × 一点暖色</em><small>同一个镜面，只改反射率 F₀：银子变金子。形状是一条曲线转一圈。</small></div>`;
-  if (f >= 214 && f < 304) { h += `<div class="rule" style="opacity:${rule(216, 304)}">10 节气球 · 接头 <em>k = 0.07</em><small>k 小，接头就掐得深——这是“气球”和“水滴”的区别。每节按十六分音符“啵”出来。</small></div>`;
+  // 左下角的参数行：公式先解码（一个字一声“嗒”），说明文字晚 10 帧跟上
+  const line = (a, b, main, small) => `<div class="rule" style="opacity:${rule(a, b)}">${D(main, a, { rate: 0.7 })}<small>${D(small, a + 10, { rate: 0.5, kind: 'small', glyphs: 'blocks' })}</small></div>`;
+  const tag = (p, txt, o, t0) => `<div class="tagx" style="left:${p[0] + 14}px;top:${p[1] - 14}px;opacity:${o}"><b>●</b> ${D(txt, t0, { rate: 1.5, kind: 'small', lead: 1 })}</div>`;
+  if (f >= 40 && f < 122) h += line(44, 122, 'y(t) = 1 − e<sup>−ζωt</sup>(cos ω<sub>d</sub>t + …) &nbsp;<em>ζ = 0.55 · 每个字晚 12 帧</em>', '四个字各是一个弹簧，冲过头再落回来；拉丝越拉越细，超过 L 就断。');
+  if (f >= 130 && f < 214) h += line(132, 214, 'F₀ = (1.00, 0.74, 0.32) &nbsp;<em>金 = 银 × 一点暖色</em>', '同一个镜面，只改反射率 F₀：银子变金子。形状是一条曲线转一圈。');
+  if (f >= 214 && f < 304) { h += line(216, 304, '10 节气球 · 接头 <em>k = 0.07</em>', 'k 小，接头就掐得深——这是“气球”和“水滴”的区别。每节按十六分音符“啵”出来。');
     const DOGP_L = ['前腿', '前腿', '后腿', '后腿', '身体', '尾巴', '脖子', '嘴', '耳朵', '耳朵'];
-    TL.dogPops.forEach((t, i) => { if (f >= t && f < t + 22 && i % 2 === 0 || (f >= t && f < t + 22 && i >= 4 && i <= 7)) { const cp = s.caps[i]; if (!cp) return; const m = mixv(cp[0], cp[1], 0.5); h += tag(proj(s.cam, m), DOGP_L[i], 1 - prog(f, t + 14, t + 22)); } }); }
-  if (f >= 304 && f < 390) h += `<div class="rule" style="opacity:${rule(306, 390)}">刺长 = L₀ · (1 + 0.2 · 鼓点) &nbsp;<em>5 圈 · 61 根</em><small>磁场一推刺就长出来，一圈比一圈晚一个十六分音符；黑色的液体，只剩下倒影。</small></div>`;
-  if (f >= 392 && f < 480) h += `<div class="rule" style="opacity:${rule(394, 478)}">${f < TL.polish[0] ? '168 块钢板焊成 &nbsp;<em>焊缝 = 网格线</em><small>先看见焊缝，再一点点磨平——镜面是“磨”出来的。</small>' : 'env = 城市 &nbsp;<em>同一颗豆子，换一个世界</em><small>它自己没有颜色：整座城市和夕阳，全在它身上。</small>'}</div>`;
-  if (inRules) { const k = Math.floor((f - 480) / 30), lf = (f - 480) % 30, r = RULES[k], sc = 1 + 0.25 * (1 - ease.out3(clamp(lf / 7)));
-    h += `<div style="position:absolute;left:64px;top:150px"><div style="font-family:GeistMono;font-size:16px;color:#ff4fa3;letter-spacing:.1em">规则 ${k + 1} / 5</div><div style="font-family:NotoSC;font-weight:900;font-size:190px;line-height:1;margin-top:10px;transform:scale(${sc});transform-origin:0 50%">${r[0]}</div><div style="font-family:Unbounded;font-weight:300;font-size:22px;letter-spacing:.3em;color:#c9d1e2;margin-top:18px">${r[1]}</div><div style="font-family:GeistMono;font-size:20px;margin-top:26px;padding:10px 14px;background:rgba(2,3,6,.6);border-left:3px solid #ff4fa3;display:inline-block">${r[2]}</div></div>`; }
-  if (f >= 676 && f < 900) { const o = rule(680, 900); h += `<div class="rule" style="opacity:${o}">${f < TL.listen[0] ? '待机：半径 ± 3.5%，0.9 次 / 秒' : f < TL.answer[0] ? '聆听：刺长 = 0.05 + 0.5 · 音量 · 频带' : '回答：分出三滴 · spring(1.6 Hz, ζ 0.5)'}<small>${f < TL.listen[0] ? '没人说话时它也在“活着”。' : f < TL.answer[0] ? '音量越大刺越长，像磁流体：不用一个表情，也知道它在听。' : '想好了就分出几滴，落下来变成你下一步能点的按钮。'}</small></div>`; }
+    TL.dogPops.forEach((t, i) => { if (f >= t && f < t + 22 && i % 2 === 0 || (f >= t && f < t + 22 && i >= 4 && i <= 7)) { const cp = s.caps[i]; if (!cp) return; const m = mixv(cp[0], cp[1], 0.5); h += tag(proj(s.cam, m), DOGP_L[i], 1 - prog(f, t + 14, t + 22), t); } }); }
+  if (f >= 304 && f < 390) h += line(306, 390, '刺长 = L₀ · (1 + 0.2 · 鼓点) &nbsp;<em>5 圈 · 61 根</em>', '磁场一推刺就长出来，一圈比一圈晚一个十六分音符；黑色的液体，只剩下倒影。');
+  if (f >= 392 && f < 480) h += f < TL.polish[0] ? line(394, TL.polish[0] + 9, '168 块钢板焊成 &nbsp;<em>焊缝 = 网格线</em>', '先看见焊缝，再一点点磨平——镜面是“磨”出来的。')
+    : line(TL.polish[0], 478, 'env = 城市 &nbsp;<em>同一颗豆子，换一个世界</em>', '它自己没有颜色：整座城市和夕阳，全在它身上。');
+  if (inRules) { const k = Math.floor((f - 480) / 30), cs = 480 + k * 30, lf = f - cs, r = RULES[k], sc = 1 + 0.25 * (1 - ease.out3(clamp(lf / 7)));
+    TFX.slam(cs); const trk = 0.3 + 0.35 * (1 - ease.out3(clamp((lf - 3) / 14)));
+    h += `<div style="position:absolute;left:64px;top:150px"><div style="font-family:GeistMono;font-size:16px;color:#ff4fa3;letter-spacing:.1em">${D(`规则 ${k + 1} / 5`, cs, { rate: 1, kind: 'small' })}&nbsp;</div><div style="font-family:NotoSC;font-weight:900;font-size:190px;line-height:1;margin-top:10px;transform:scale(${sc});transform-origin:0 50%;filter:blur(${Math.max(0, 6 - lf * 1.5)}px)">${r[0]}</div><div style="font-family:Unbounded;font-weight:300;font-size:22px;letter-spacing:${trk}em;color:#c9d1e2;margin-top:18px">${D(r[1], cs + 3, { rate: 1.2 })}&nbsp;</div><div style="font-family:GeistMono;font-size:20px;margin-top:26px;padding:10px 14px;background:rgba(2,3,6,.6);border-left:3px solid #ff4fa3;display:inline-block;opacity:${clamp((lf - 6) / 3)}">${D(r[2], cs + 8, { rate: 0.6 })}&nbsp;</div></div>`; }
+  if (f >= 676 && f < 900) { const o = rule(680, 900), a0 = f < TL.listen[0] ? 680 : f < TL.answer[0] ? TL.listen[0] : TL.answer[0];
+    h += `<div class="rule" style="opacity:${o}">${D(f < TL.listen[0] ? '待机：半径 ± 3.5%，0.9 次 / 秒' : f < TL.answer[0] ? '聆听：刺长 = 0.05 + 0.5 · 音量 · 频带' : '回答：分出三滴 · spring(1.6 Hz, ζ 0.5)', a0, { rate: 0.7 })}<small>${D(f < TL.listen[0] ? '没人说话时它也在“活着”。' : f < TL.answer[0] ? '音量越大刺越长，像磁流体：不用一个表情，也知道它在听。' : '想好了就分出几滴，落下来变成你下一步能点的按钮。', a0 + 8, { rate: 0.5, kind: 'small', glyphs: 'blocks' })}</small></div>`; }
   hud.innerHTML = h;
 }
 function drawUI(f, s) {
   let h = '';
+  const D = (txt, f0, o) => TFX.decode(txt, f, f0, o);
   const inP = ease.inOut3(prog(f, TL.mask[0], TL.mask[1])) * (1 - ease.inOut3(prog(f, TL.out[0], TL.out[0] + 30)));
   if (inP > 0.001) {
     const w = lerp(2200, 440, inP), hh = lerp(1300, 920, inP), r = lerp(0, 60, inP);
@@ -309,7 +321,7 @@ function drawUI(f, s) {
       h += `<div class="ph" style="top:${top + 92}px;opacity:${o}"><div class="lab">${st}</div></div>`;
       if (f < TL.listen[0] + 6) {
         const oo = o * (1 - prog(f, TL.listen[0], TL.listen[0] + 6));
-        h += `<div class="ph" style="top:${top + 520}px;opacity:${oo}"><h3>早上好。<br>想聊点什么？</h3><p>按住下面，开口就行</p></div>`;
+        h += `<div class="ph" style="top:${top + 520}px;opacity:${oo}"><h3>${D('早上好。<br>想聊点什么？', TL.mask[1] - 6, { rate: 2.5, kind: 'title', glyphs: 'blocks', lead: 1 })}</h3><p>${D('按住下面，开口就行', TL.mask[1] + 18, { rate: 0.8, kind: 'small' })}</p></div>`;
         const press = f >= TL.tapMic && f < TL.tapMic + 10 ? 0.94 : 1;
         h += `<div class="mic" style="top:${top + hh - 130}px;transform:translateX(-50%) scale(${press});opacity:${oo}"><span class="dropi"></span>按住说话</div>`;
         if (f >= TL.tapMic && f < TL.tapMic + 24) { const t = (f - TL.tapMic) / 24; h += `<div class="touch" style="left:${960 - 20 - t * 40}px;top:${top + hh - 103 - 20 - t * 40}px;width:${40 + t * 80}px;height:${40 + t * 80}px;opacity:${1 - t}"></div>`; }
@@ -323,7 +335,7 @@ function drawUI(f, s) {
       }
       if (f >= TL.answer[0]) {
         const oo = ease.out3(prog(f, TL.answer[0] + 4, TL.answer[0] + 14));
-        h += `<div class="cap2" style="left:${960 - 170}px;top:${top + 412}px;width:340px;opacity:${oo}">下午有两个空档，<br>你挑一个：</div>`;
+        h += `<div class="cap2" style="left:${960 - 170}px;top:${top + 412}px;width:340px;opacity:${oo}">${D('下午有两个空档，<br>你挑一个：', TL.answer[0] + 4, { rate: 1.5, glyphs: 'blocks', lead: 2 })}</div>`;
         CHIPS.forEach((c, i) => { const a = ease.outBack(prog(f, TL.land[i] - 4, TL.land[i] + 8));
           const sel = i === 0 && f >= TL.tapChip; const gone = i === 0 ? prog(f, TL.back[0], TL.back[1]) : 0;
           h += `<div class="chipx" style="left:${c.px[0] - 33}px;top:${c.px[1] - 30}px;opacity:${clamp(a) * (1 - gone)};transform:scaleX(${clamp(a) * (1 - gone * 0.6)});${sel ? 'border-color:#ff4fa3;' : ''}">${c.label}${c.sub ? `<small>${c.sub}</small>` : ''}</div>`; });
@@ -336,8 +348,8 @@ function drawUI(f, s) {
   // 片尾卡
   let c = '';
   if (f >= TL.card[0]) { const a = ease.out3(prog(f, TL.card[0] + 6, TL.card[0] + 26)), b = ease.out3(prog(f, TL.card[0] + 18, TL.card[0] + 38));
-    c += `<div class="ct" style="opacity:${a};transform:translateY(${(1 - a) * 16}px)"><h2>Liquid Chrome</h2><p>它自己没有颜色，颜色全是它照到的世界。</p></div>`;
-    c += `<div class="by" style="opacity:${b}"><b>观默</b><br>每天一个设计风格 · 液态金属</div>`; }
+    c += `<div class="ct" style="opacity:${a};transform:translateY(${(1 - a) * 16}px)"><h2>${D('Liquid Chrome', TL.card[0] + 6, { rate: 2, kind: 'title', lead: 2 })}&nbsp;</h2><p>${D('它自己没有颜色，颜色全是它照到的世界。', TL.card[0] + 16, { rate: 0.8, kind: 'small', glyphs: 'blocks' })}&nbsp;</p></div>`;
+    c += `<div class="by" style="opacity:${b}"><b>${D('观默', TL.card[0] + 20, { rate: 4, kind: 'title', glyphs: 'blocks', lead: 1 })}&nbsp;</b><br>每天一个设计风格 · 液态金属</div>`; }
   card.innerHTML = c;
 }
 
@@ -355,6 +367,8 @@ function drawUI(f, s) {
   RINGS.forEach(([el, n, L], ring) => { for (let k = 0; k < n; k++) { const a = k / n * 2 * Math.PI + ring * 0.3, e = el * Math.PI / 180; SP.push([Math.cos(e) * Math.cos(a), Math.sin(e), Math.cos(e) * Math.sin(a), ring, L]); } });
   // 三个按钮：屏幕位置 → 世界位置
   CHIPS = [['挪到 14:00', '空 2 h'], ['挪到 16:30', '空 1 h'], ['取消这个会', '']].map(([label, sub], i) => { const px = [960 - 150, 540 + 76 + i * 84]; return { label, sub, px, w: unproject(PHONE, px[0], px[1], 0) }; });
+  // 每一帧的 HUD 空跑一遍：把所有文字出场登记成 cue，交给 audio.py（events.json）
+  for (let f = 0; f < TL.end; f++) { const s = sceneAt(f); drawHUD(f, s); drawUI(f, s); }
   window.ready = true;
 })().catch(e => console.log('ERR', e.message.slice(0, 2000)));
 
@@ -367,7 +381,7 @@ window.frame = async (f) => {
   drawHUD(f, s); drawUI(f, s);
   gl.finish();
 };
-window.events = () => TL;
+window.events = () => ({ cues: TFX.list() });
 </script>
 </body>
 </html>

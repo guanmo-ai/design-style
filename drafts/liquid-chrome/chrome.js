@@ -235,6 +235,26 @@ float boxL(vec3 d, vec3 c, vec2 s, float soft){
   return (1.0-smoothstep(s.x-soft, s.x+soft, abs(x))) * (1.0-smoothstep(s.y-soft, s.y+soft, abs(y)));
 }
 float hsh(float n){ return fract(sin(n*127.1)*43758.5453); }
+float hsh2(vec2 p){ return fract(sin(dot(p, vec2(127.1, 311.7)))*43758.5453); }
+float vn(vec2 p){ vec2 i = floor(p), f = p - i; f = f*f*(3.0 - 2.0*f);
+  return mix(mix(hsh2(i), hsh2(i + vec2(1,0)), f.x), mix(hsh2(i + vec2(0,1)), hsh2(i + vec2(1,1)), f.x), f.y); }
+// 舞台的体积光（主人 2026-11-06：“地板不好看……尽量往影视大片的方向搞”）：
+// 头顶一盏聚光灯，光柱是一根往下张开的锥，雾里飘着灰尘；只在 checker（= 舞台）> 0 的镜头里出现
+vec3 shaft(vec3 ro, vec3 rd, vec2 sp){
+  if (checker <= 0.0) return vec3(0.0);
+  vec2 o2 = ro.xz - vec2(0.0, 0.4), d2 = rd.xz;
+  float tt = max(0.0, -dot(o2, d2)/max(dot(d2, d2), 1e-5));
+  float h = length(o2 + d2*tt), y = ro.y + rd.y*tt;
+  float r = 0.1 + 0.085*max(0.0, 9.0 - y);
+  float m = exp(-pow(h/r, 2.0)) * smoothstep(-0.1, 1.2, y) * smoothstep(12.0, 5.0, y);
+  vec3 c = vec3(1.0, 0.86, 0.68) * 0.035 * m * (0.2/r + 0.25);
+  // 灰尘：屏幕上的格子里随机放一颗，慢慢往上飘、一闪一闪
+  vec2 g = sp*vec2(70.0, 70.0) + vec2(0.0, -T*0.35*6.0);
+  vec2 ci = floor(g), cf = fract(g) - 0.5; float hv = hsh2(ci);
+  if (hv > 0.982) { vec2 jt = vec2(hsh2(ci + 3.1), hsh2(ci + 7.7)) - 0.5; float d = length(cf - jt*0.6);
+    c += vec3(1.0, 0.9, 0.75) * 0.9 * exp(-d*d*90.0) * m * (0.5 + 0.5*sin(T*3.0 + hv*80.0)); }
+  return c * checker;
+}
 vec3 envCity(vec3 d){
   float y = d.y, az = atan(d.z, d.x);
   // 蓝调时刻：地平线一条暖橙，往上沉成深蓝
@@ -280,14 +300,14 @@ vec3 env(vec3 d){
   c = hue(c, envHue);
   return c;
 }
-vec3 backdrop(vec3 rd, vec2 sp){
+vec3 backdrop(vec3 ro, vec3 rd, vec2 sp){
   if (envMode == 1) return env(rd)*0.55;
   float g = smoothstep(-0.25, 0.6, rd.y);
   vec3 c = mix(bdBot, bdTop, g);
   vec2 q = sp - bdGlowPos; q.x *= 0.55;
   c += bdGlow * exp(-dot(q,q)*5.0);
   c += bdGlow * 0.35 * exp(-dot(q,q)*1.2);
-  return c;
+  return c + shaft(ro, rd, sp);
 }
 void main(){
   vec2 f = gl_FragCoord.xy / res;
@@ -328,8 +348,16 @@ void main(){
       }
       float cs = clamp(dot(n,-rd), 0.0, 1.0);
       vec3 F = floorTint + (1.0-floorTint)*pow(1.0-cs, 5.0);
-      if (checker > 0.0) { vec2 cq = floor(p.xz*1.25); float ck = mod(cq.x + cq.y, 2.0); float fade = exp(-length(p.xz)*0.08);
-        col += thr*(1.0 - F)*mix(vec3(0.004), vec3(0.32,0.33,0.36), ck)*checker*fade; }
+      if (checker > 0.0) {
+        // 舞台（替换原来的棋盘格）：黑色湿石材，头顶聚光灯落下一圈暖光；湿的地方像镜子，干的地方发哑
+        vec2 q = p.xz;
+        float wet = smoothstep(0.3, 0.72, vn(q*0.45)*0.6 + vn(q*1.9)*0.3 + vn(q*7.0)*0.1);
+        float r = length(q - vec2(0.0, 0.4));
+        float pool = exp(-r*r*0.45) + 0.06*exp(-r*r*0.05);
+        vec3 stone = vec3(0.006, 0.0068, 0.0085) * (0.6 + 0.8*vn(q*11.0));
+        col += thr*(1.0 - F)*(stone + vec3(1.0, 0.84, 0.64)*0.32*pool*(0.45 + 0.55*(1.0 - wet)))*checker;
+        F *= mix(1.0, mix(0.4, 1.0, wet), checker);
+      }
       vec3 po = p + vec3(0,0.12,0);
 #ifdef BG_ONLY
       float occ = 1.0;
@@ -337,13 +365,13 @@ void main(){
       float occ = (boxD(po, sceneLo, sceneHi) > 0.5) ? 1.0 : smoothstep(-0.05, 0.5, map(po));
 #endif
       float fog = smoothstep(10.0, 30.0, length(p.xz - camPos.xz));
-      col += thr * fog * backdrop(rd, sp);
+      col += thr * fog * backdrop(ro, rd, sp);
       thr *= F * (1.0 - fog) * mix(0.6, 1.0, occ);
       ro = p + vec3(0,1e-3,0); rd = reflect(rd, n);
       viaFloor = true;
       continue;
     }
-    col += thr * ((b == 0 || viaFloor) ? backdrop(rd, sp) : env(rd));
+    col += thr * ((b == 0 || viaFloor) ? backdrop(ro, rd, sp) : env(rd));
     break;
   }
   o = vec4(col, 1.0);
@@ -516,8 +544,8 @@ void main(){
 
   // 环境贴图小样（等距柱状投影）：让设计师看到“铬的颜色从哪来”
   const ENV_FS = `#version 300 es
-precision highp float; in vec2 uv; out vec4 o; uniform float envHue, envRot;
-` + FS.slice(FS.indexOf('vec3 hue(vec3 c, float a)'), FS.indexOf('vec3 backdrop(vec3 rd, vec2 sp)')) + `
+precision highp float; in vec2 uv; out vec4 o; uniform float envHue, envRot, checker, T;
+` + FS.slice(FS.indexOf('vec3 hue(vec3 c, float a)'), FS.indexOf('vec3 backdrop(vec3 ro, vec3 rd, vec2 sp)')) + `
 vec3 aces(vec3 x){ return clamp((x*(2.51*x+0.03))/(x*(2.43*x+0.59)+0.14),0.,1.); }
 void main(){
   float lon = (uv.x - 0.5)*6.2831853 + 3.14159265, lat = (uv.y - 0.5)*3.14159265;

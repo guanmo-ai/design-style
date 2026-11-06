@@ -70,6 +70,7 @@ html, body { width: 1920px; height: 1080px; overflow: hidden; background: #000; 
 <script src="../data/bunny.js"></script>
 <script src="../shapes.js"></script>
 <script src="timeline.js"></script>
+<script src="../../_lib/typefx.js"></script>
 <script>
 const Q = new URLSearchParams(location.search);
 const SCALE = +(Q.get('scale') || 1);
@@ -123,23 +124,24 @@ function camAt(f) {
   const TREE = (t) => orbit([0, 0.2, 0], lerp(11.5, 10.2, t), lerp(-0.6, 0.15, t), 1.3, 40);
   if (f < 500) return cm(WALL(1), TREE(0), ease.inOut3(prog(f, 470, 500)));
   if (f < 560) return TREE(prog(f, 500, 560));
-  // 规则卡：每张一个镜头
+  // 规则卡：每张一个镜头。第三版一拍一张、镜头硬切，主人觉得“突然变化”→ 一张 45 帧，换卡时 18 帧滑过去；
+  // 绕着地形转的三张（2—4）按轨道参数插值（绕过去，而不是从山顶穿过去）
+  const OC = [0, -0.6, 0], ORB = [null, [9.5, 0.6, 0.9, 4.0], [[7.5, 6.8], -0.8, -0.6, 2.4], [10, 0.9, 1.2, 3.4], null];
+  const op = (k, t) => { const o = ORB[k], r = Array.isArray(o[0]) ? lerp(o[0][0], o[0][1], t) : o[0]; return [r, lerp(o[1], o[2], t), o[3]]; };
   const R1 = (t) => ({ pos: [lerp(-4.5, 1.5, t), 0.25, 3.8], tgt: [lerp(-2.0, 3.5, t), -0.9, -2], up: [0, 1, 0], fov: 60 });
-  const R2 = (t) => orbit([0, -0.6, 0], 9.5, lerp(0.6, 0.9, t), 4.0, 42);
-  const R3 = (t) => orbit([0, -0.6, 0], lerp(7.5, 6.8, t), lerp(-0.8, -0.6, t), 2.4, 42);
-  const R4 = (t) => orbit([0, -0.6, 0], 10, lerp(2.2, 2.5, t), 3.4, 42);
   const R5 = (t) => ({ pos: [0.01, 9.5, 0.5 - 0.3 * t], tgt: [0, -1, 0], up: [0, 0, -1], fov: 46 });
+  const RK = (k, t) => k === 0 ? R1(t) : k === 4 ? R5(t) : orbit(OC, ...op(k, t), 42);
+  const CS = TL.cards, CL = TL.cardLen, RE = TL.rules[1], cardT = (k, f) => prog(f, CS[k], k === 4 ? RE : CS[k] + CL);
   if (f < 578) return cm(TREE(1), R1(0), ease.inOut3(prog(f, 556, 578)));
-  if (f < 600) return R1(prog(f, 570, 600));
-  if (f < 630) return R2(prog(f, 600, 630));
-  if (f < 660) return R3(prog(f, 630, 660));
-  if (f < 690) return R4(prog(f, 660, 690));
-  if (f < 720) return R5(prog(f, 690, 720));
   const PH = (a) => orbit([0, 0.0, 0], 12.5, a, 1.6, 40);
-  if (f < 744) return cm(R5(1), PH(0.5), ease.inOut3(prog(f, 712, 744)));
-  if (f < 930) return PH(lerp(0.5, 1.1, prog(f, 744, 930)));
+  if (f < RE - 8) { const k = Math.min(4, Math.floor((f - CS[0]) / CL)), cur = RK(k, cardT(k, f)), b = ease.inOut3(prog(f, CS[k], CS[k] + 18));
+    if (k === 0 || b >= 1) return cur;
+    if (k === 1 || k === 4) return cm(RK(k - 1, 1), cur, b);
+    const [r0, a0, y0] = op(k - 1, 1), [r1, a1, y1] = op(k, cardT(k, f)); return orbit(OC, lerp(r0, r1, b), lerp(a0, a1, b), lerp(y0, y1, b), 42); }
+  if (f < TL.mask[1]) return cm(R5(cardT(4, f)), PH(0.5), ease.inOut3(prog(f, RE - 8, TL.mask[1])));
+  if (f < TL.out[0]) return PH(lerp(0.5, 1.1, prog(f, TL.mask[1], TL.out[0])));
   const END = { pos: [Math.sin(0.06) * 10.4, -1.0, Math.cos(0.06) * 10.4], tgt: [0, -0.1, 0], up: [0, 1, 0], fov: 44 };
-  return cm(PH(1.1), END, ease.inOut3(prog(f, 940, 1004)));
+  return cm(PH(1.1), END, ease.inOut3(prog(f, TL.out[0] + 10, TL.implode[1])));
 }
 function unproject(cam, px, py, planePt) {
   const n = V.nrm, cr = (a, b) => [a[1] * b[2] - a[2] * b[1], a[2] * b[0] - a[0] * b[2], a[0] * b[1] - a[1] * b[0]], dot = (a, b) => a[0] * b[0] + a[1] * b[1] + a[2] * b[2];
@@ -199,12 +201,12 @@ function sceneAt(f) {
   } else if (f < TL.today[0]) {
     A = S.bonsai; B = S.terrain; mo = MO(ease.inOut3(prog(f, TL.toTerrain[0], TL.toTerrain[1])), { spread: 0.4, dur: 0.6, swirl: 1.4, lift: 1.0, curl: 0.4, trails: 5, alpha: 0.05 });
     if (f >= TL.toTerrain[1]) { A = B = S.terrain; mo = { m: 0 }; }
-    const c = Math.floor((f - 570) / 30), lf = (f - 570) % 30;
+    const c = clamp(Math.floor((f - TL.cards[0]) / TL.cardLen), 0, 4), lf = f - TL.cards[c];
     s.sizeK = 0.7;
-    if (c === 0) { s.dof = { focus: lerp(2, 7, lf / 30), aperture: 0.018 }; s.sizeK = 0.9; }
-    if (c === 1) s.sweep = { y: lerp(2.2, -2.6, ease.inOut3(lf / 30)), w: 0.05, dir: 1, ghost: 0.12, ghostA: 0.4, glow: 0.4, col: [0.35, 0.95, 1.0], ghostCol: [0.05, 0.3, 0.5] };
-    if (c === 2) s.vox = [0.32, ease.outBack(clamp(lf / 14), 2.2)];
-    if (c === 3) s.sweep = { y: lerp(-2.6, 2.6, ease.out3(clamp(lf / 18))), w: 0.04, dir: -1, ramp: true, rampLen: 3.2, rampGain: 1.4, glow: 0.3, col: [1, 1, 1] };
+    if (c === 0) { s.dof = { focus: lerp(2, 7, lf / 45), aperture: 0.018 }; s.sizeK = 0.9; }
+    if (c === 1) s.sweep = { y: lerp(2.2, -2.6, ease.inOut3(clamp((lf - 2) / 40))), w: 0.05, dir: 1, ghost: 0.12, ghostA: 0.4, glow: 0.4, col: [0.35, 0.95, 1.0], ghostCol: [0.05, 0.3, 0.5] };
+    if (c === 2) s.vox = [0.32, ease.outBack(clamp((lf - 4) / 18), 2.2)];
+    if (c === 3) s.sweep = { y: lerp(-2.6, 2.6, ease.out3(clamp((lf - 3) / 28))), w: 0.04, dir: -1, ramp: true, rampLen: 3.2, rampGain: 1.4, glow: 0.3, col: [1, 1, 1] };
     if (c === 4) { s.push = []; for (let k = 0; k < 6; k++) { const q = cur5(f - k * 3); if (!q) continue; const w = unproject(s.cam, q[0], q[1], [0, -0.6, 0]); s.push.push([...w, 1.1 * Math.max(0, 1 - k * 0.14)]); } }
   } else if (f < TL.out[1] + 10 && f < TL.implode[0]) {
     A = S.terrain; B = S.bonsai; mo = MO(ease.inOut3(prog(f, TL.today[0], TL.mask[1])), { spread: 0.4, dur: 0.6, swirl: 1.4, lift: 1.0, trails: 0, alpha: 0.05 });
@@ -226,7 +228,7 @@ function sceneAt(f) {
 }
 // 05 的鼠标：穿过树冠；规则 5 的鼠标：从左上划到右下
 function curAt(f) { if (f < TL.cursor[0] || f > TL.cursor[1]) return null; const t = ease.inOut3(prog(f, TL.cursor[0], TL.cursor[1])); return [lerp(640, 1300, t), 420 + 110 * Math.sin(t * Math.PI * 1.2) - 40 * t]; }
-function cur5(f) { if (f < 692 || f > 720) return null; const t = ease.inOut3(prog(f, 692, 720)); return [lerp(560, 1440, t), lerp(330, 760, t) + 90 * Math.sin(t * Math.PI * 2)]; }
+function cur5(f) { const a = TL.cards[4] + 8, b = TL.cards[4] + 50; if (f < a || f > b) return null; const t = ease.inOut3(prog(f, a, b)); return [lerp(560, 1440, t), lerp(330, 760, t) + 90 * Math.sin(t * Math.PI * 2)]; }
 
 // —— HUD ——
 const hud = document.getElementById('hud'), ui = document.getElementById('ui'), card = document.getElementById('card');
@@ -235,27 +237,32 @@ const RULES = [['近大远小', 'SIZE = w · f / z', 'size = w · f / z'], ['扫
 function drawHUD(f, s) {
   const c = chapterAt(f); let h = '';
   const fin = ease.out3(clamp((f - c[0]) / 12));
-  const inRules = f >= 570 && f < 720;
-  if (c[1] !== '08' && !inRules) h += `<div class="chap" style="opacity:${fin};transform:translateY(${(1 - fin) * -12}px)"><span class="n">${c[1]} / 07</span><div><div class="t">${c[2]}</div><div class="s">${c[3]}</div></div></div>`;
+  const inRules = f >= TL.rules[0] && f < TL.rules[1];
+  const D = (txt, f0, o) => TFX.decode(txt, f, f0, o);
+  if (c[1] !== '08' && !inRules) h += `<div class="chap" style="opacity:${fin};transform:translateY(${(1 - fin) * -12}px)"><span class="n">${c[1]} / 07</span><div><div class="t">${D(c[2], c[0] + 2, { rate: 3, kind: 'title', glyphs: 'dots', lead: 1 })}</div><div class="s">${D(c[3], c[0] + 8, { rate: 0.6, kind: 'small', glyphs: 'dots' })}</div></div></div>`;
   h += `<div class="prog">${TL.chapters.slice(0, 8).map((x, i) => { const nx = TL.chapters[i + 1][0]; return `<i><b style="width:${clamp((f - x[0]) / (nx - x[0])) * 100}%"></b></i>`; }).join('')}</div>`;
   const rule = (a, b) => ease.out3(clamp((f - a) / 10)) * (1 - ease.in3(clamp((f - b + 10) / 10)));
+  // 左下角的参数行：公式先解码（一个字一声“嗒”），说明文字晚 10 帧跟上
+  const line = (a, b, main, small) => `<div class="rule" style="opacity:${rule(a, b)}">${D(main, a, { rate: 0.7 })}<small>${D(small, a + 10, { rate: 0.5, kind: 'small', glyphs: 'dots' })}</small></div>`;
   const cam = PC.camera(s.cam, W, H);
   const dotOn = f < 30 || (f >= TL.implode[1] - 6 && f < TL.burst2 + 10);
   if (dotOn) { const p = cam.project(DOT); const lf = f < 30 ? f : f - TL.burst2 + 12, o = f < 30 ? 1 - prog(f, 10, 16) : (1 - prog(f, TL.burst2 - 2, TL.burst2 + 4)) * prog(f, TL.implode[1] - 6, TL.implode[1]), g = f < 30 ? 1 - prog(f, 8, 14) : (1 - prog(f, TL.burst2, TL.burst2 + 6)) * prog(f, TL.implode[1] - 6, TL.implode[1]), r = 16 + 8 * Math.sin(f * 0.6);
     h += `<div style="position:absolute;left:${p[0] - 90}px;top:${p[1] - 90}px;width:180px;height:180px;border-radius:50%;background:radial-gradient(circle, rgba(255,255,255,${g}) 0 3%, rgba(160,240,255,${0.55 * g}) 8%, rgba(111,243,255,${0.12 * g}) 30%, rgba(0,0,0,0) 62%)"></div>`;
     h += `<svg width="1920" height="1080" style="position:absolute;left:0;top:0;opacity:${o}"><circle cx="${p[0]}" cy="${p[1]}" r="${r}" fill="none" stroke="#6ff3ff" stroke-width="1.5"/></svg><div class="read" style="left:${p[0] + 40}px;top:${p[1] - 26}px;opacity:${o}">1 个点 <b>× ${N.toLocaleString('en-US')}</b></div>`; }
-  if (f >= 90 && f < 120) h += `<div class="rule" style="opacity:${rule(92, 120)}">p = (x, y, z) · rgb · w &nbsp;<em>× ${N.toLocaleString('en-US')}</em><small>没有面、没有贴图：画面里的每一样东西，都是这批点之一。</small></div>`;
+  if (f >= 90 && f < 120) h += line(92, 120, `p = (x, y, z) · rgb · w &nbsp;<em>× ${N.toLocaleString('en-US')}</em>`, `没有面、没有贴图：画面里的每一样东西，都是这批点之一。`);
   if (f >= 134 && f < 200) { const done = TL.snaps.filter(t => f >= t).length;
-    h += `<div class="rule" style="opacity:${rule(136, 200)}">ICP 配准 &nbsp;<em>${done} / 10 次扫描已对齐</em><small>一次扫描只看得见一面。把十次扫描一块块转正、挪回原位，才拼成一整只兔子——数据：Stanford 3D Scanning Repository。</small></div>`;
-    TL.snaps.forEach((t, i) => { if (f >= t && f < t + 14) { const v = SHAPES.VIEWS[i], p = cam.project([v[0] * 1.3, v[1] * 1.3 + 0.2, v[2] * 1.3]); h += `<div class="tag" style="left:${p[0] + 12}px;top:${p[1] - 12}px;opacity:${1 - prog(f, t + 8, t + 14)}"><b>✓</b> 扫描 ${i + 1} / 10</div>`; } }); }
-  if (f >= 236 && f < 296) { const a = s.sweep ? s.sweep.y : 0; h += `<div class="rule" style="opacity:${rule(238, 296)}">r<sub>k</sub> = h / tan θ<sub>k</sub> &nbsp;<em>64 束 · θ = +2° … −24.8°</em><small>每一束激光的仰角固定，转一圈就在地上画一个圈；车和人挡住它，圈就断了。</small></div>`;
+    h += line(136, 200, `ICP 配准 &nbsp;<em>${done} / 10 次扫描已对齐</em>`, `一次扫描只看得见一面。把十次扫描一块块转正、挪回原位，才拼成一整只兔子——数据：Stanford 3D Scanning Repository。`);
+    TL.snaps.forEach((t, i) => { if (f >= t && f < t + 14) { const v = SHAPES.VIEWS[i], p = cam.project([v[0] * 1.3, v[1] * 1.3 + 0.2, v[2] * 1.3]); h += `<div class="tag" style="left:${p[0] + 12}px;top:${p[1] - 12}px;opacity:${1 - prog(f, t + 8, t + 14)}"><b>✓</b> ${D(`扫描 ${i + 1} / 10`, t, { rate: 1, kind: 'small', glyphs: 'dots', lead: 1 })}</div>`; } }); }
+  if (f >= 236 && f < 296) { const a = s.sweep ? s.sweep.y : 0; h += line(238, 296, `r<sub>k</sub> = h / tan θ<sub>k</sub> &nbsp;<em>64 束 · θ = +2° … −24.8°</em>`, `每一束激光的仰角固定，转一圈就在地上画一个圈；车和人挡住它，圈就断了。`);
     h += `<div class="read" style="right:64px;top:140px">方位 <b>${((a * 57.3) % 360).toFixed(0)}°</b> · 第 ${a < 6.283 ? 1 : 2} 圈<br>距离着色 <b>0 → 62 m</b></div>`; }
-  if (f >= 312 && f < 386) { const sy = s.sweep ? s.sweep.y : 0; h += `<div class="rule" style="opacity:${rule(314, 386)}">${f < TL.voxel[0] ? `edge = e<sup>−|y − y₀| / w</sup> &nbsp;<em>y₀ = ${(sy / 0.22).toFixed(1)} m</em><small>扫过的地方是照片投上去的真颜色，下面还只有激光测出来的位置。</small>` : `体素降采样 &nbsp;<em>s = 1.0 m</em><small>每个格子只留一个点——数据少一百倍，形状还认得出来。</small>`}</div>`; }
-  if (f >= 410 && f < 480) h += `<div class="rule" style="opacity:${rule(412, 480)}">p += curl(p, t) · Δt &nbsp;<em>× 3 步</em><small>每个点顺着一个会变的“风”走：一百万个点，就是一幅会流动的颜料画。</small></div>`;
-  if (f >= 500 && f < 570) { h += `<div class="rule" style="opacity:${rule(502, 570)}">点 → 面 &nbsp;<em>size × ${s.sizeK.toFixed(2)}</em><small>每个点长成一个小圆片，彼此盖住，就连成了表面——高斯泼溅就是这么“画”出照片感的。</small></div>`;
+  if (f >= 312 && f < 386) { const sy = s.sweep ? s.sweep.y : 0; h += f < TL.voxel[0] ? line(314, TL.voxel[0] + 9, `edge = e<sup>−|y − y₀| / w</sup> &nbsp;<em>y₀ = ${(sy / 0.22).toFixed(1)} m</em>`, '扫过的地方是照片投上去的真颜色，下面还只有激光测出来的位置。')
+      : line(TL.voxel[0], 386, '体素降采样 &nbsp;<em>s = 1.0 m</em>', '每个格子只留一个点——数据少一百倍，形状还认得出来。'); }
+  if (f >= 410 && f < 480) h += line(412, 480, `p += curl(p, t) · Δt &nbsp;<em>× 3 步</em>`, `每个点顺着一个会变的“风”走：一百万个点，就是一幅会流动的颜料画。`);
+  if (f >= 500 && f < 570) { h += line(502, 570, `点 → 面 &nbsp;<em>size × ${s.sizeK.toFixed(2)}</em>`, `每个点长成一个小圆片，彼此盖住，就连成了表面——高斯泼溅就是这么“画”出照片感的。`);
     const q = curAt(f); if (q) h += `<svg style="position:absolute;left:${q[0] - 3}px;top:${q[1] - 3}px" width="30" height="30" viewBox="0 0 22 22"><path d="M2 2 L2 18 L7 13 L10 20 L13 19 L10 12 L17 12 Z" fill="#fff" stroke="#000" stroke-width="1"/></svg>`; }
-  if (inRules) { const k = Math.floor((f - 570) / 30), lf = (f - 570) % 30, r = RULES[k], sc = 1 + 0.25 * (1 - ease.out3(clamp(lf / 7)));
-    h += `<div class="big"><div class="no">规则 ${k + 1} / 5</div><div class="w" style="transform:scale(${sc});transform-origin:0 50%">${r[0]}</div><div class="en">${r[1]}</div><div class="fx">${r[2]}</div></div>`;
+  if (inRules) { const k = clamp(Math.floor((f - TL.cards[0]) / TL.cardLen), 0, 4), cs = TL.cards[k], lf = f - cs, r = RULES[k], sc = 1 + 0.25 * (1 - ease.out3(clamp(lf / 7)));
+    TFX.slam(cs); const trk = 0.35 + 0.35 * (1 - ease.out3(clamp((lf - 3) / 16)));
+    h += `<div class="big"><div class="no">${D(`规则 ${k + 1} / 5`, cs, { rate: 1, kind: 'small', glyphs: 'dots' })}&nbsp;</div><div class="w" style="transform:scale(${sc});transform-origin:0 50%;filter:blur(${Math.max(0, 6 - lf * 1.5)}px)">${r[0]}</div><div class="en" style="letter-spacing:${trk}em">${D(r[1], cs + 4, { rate: 1.2 })}&nbsp;</div><div class="fx" style="opacity:${clamp((lf - 8) / 3)}">${D(r[2], cs + 10, { rate: 0.8 })}&nbsp;</div></div>`;
     if (k === 4) { const q = cur5(f); if (q) h += `<svg style="position:absolute;left:${q[0] - 3}px;top:${q[1] - 3}px" width="30" height="30" viewBox="0 0 22 22"><path d="M2 2 L2 18 L7 13 L10 20 L13 19 L10 12 L17 12 Z" fill="#fff" stroke="#000" stroke-width="1"/></svg>`; } }
   hud.innerHTML = h;
 }
@@ -272,7 +279,8 @@ function drawUI(f, s) {
       h += `<div class="sb" style="left:${960 - w / 2 + 40}px;width:${w - 80}px;top:${top + 26}px;opacity:${o}"><span>9:41</span><span>●●● 100</span></div>`;
       h += `<div style="position:absolute;left:900px;top:${top + 18}px;width:120px;height:34px;border-radius:20px;background:#000;opacity:${o}"></div>`;
       const st = f < TL.pBuild[0] ? '<b>●</b> 正在扫描 · 慢一点' : f < TL.pDone[0] ? '<b>●</b> 聚拢中 · 高斯泼溅' : f < TL.tap1 ? '<b>●</b> 完成 · 可以拨开' : f < TL.place[0] ? '<b>●</b> 量尺寸' : '<b>●</b> 放进房间';
-      h += `<div class="ph" style="top:${top + 92}px;opacity:${o}"><div class="lab">${st}</div></div>`;
+      const st0 = f < TL.pBuild[0] ? TL.mask[1] - 4 : f < TL.pDone[0] ? TL.pBuild[0] : f < TL.tap1 ? TL.pDone[0] : f < TL.place[0] ? TL.tap1 : TL.place[0];
+      h += `<div class="ph" style="top:${top + 92}px;opacity:${o}"><div class="lab">${TFX.decode(st, f, st0, { rate: 1, kind: 'small', glyphs: 'dots' })}&nbsp;</div></div>`;
       const cam = PC.camera(s.cam, W, H);
       if (f < TL.pBuild[0]) {
         const cov = prog(f, TL.pScan[0], TL.pScan[1]), n = Math.round(cov * 612480), C = cam.project([0, BY, 0]); let t = '';
@@ -293,7 +301,7 @@ function drawUI(f, s) {
           h += `<svg width="1920" height="1080" style="position:absolute;left:0;top:0"><line x1="${a[0]}" y1="${a[1]}" x2="${ex}" y2="${ey}" stroke="#6ff3ff" stroke-width="3" stroke-dasharray="8 6"/><circle cx="${b[0]}" cy="${b[1]}" r="${7 * L}" fill="#6ff3ff"/></svg>`;
           const lo = ease.outBack(prog(f, TL.tap2 + 8, TL.tap2 + 18)); h += `<div class="tag" style="left:${(a[0] + b[0]) / 2 - 60}px;top:${(a[1] + b[1]) / 2 - 56}px;transform:scale(${lo});font-size:20px"><b>↔</b> 38.2 cm</div>`; }
         const ra = ease.outBack(prog(f, TL.pDone[0], TL.pDone[0] + 14));
-        h += `<div class="res" style="left:${960 - 190}px;width:380px;top:${top + hh - 210}px;opacity:${clamp(ra) * o};transform:translateY(${(1 - clamp(ra)) * 30}px)"><h3>窗台上的五针松</h3><p>612,480 PTS · 宽 38.2 cm · .PLY / .SPLAT</p><div class="row"><span class="on" style="${f >= TL.place[0] && f < TL.place[0] + 8 ? 'transform:scale(.94)' : ''}">放进房间</span><span>分享</span></div></div>`;
+        h += `<div class="res" style="left:${960 - 190}px;width:380px;top:${top + hh - 210}px;opacity:${clamp(ra) * o};transform:translateY(${(1 - clamp(ra)) * 30}px)"><h3>${TFX.decode('窗台上的五针松', f, TL.pDone[0] + 2, { rate: 2.5, kind: 'title', glyphs: 'dots', lead: 1 })}&nbsp;</h3><p>612,480 PTS · 宽 38.2 cm · .PLY / .SPLAT</p><div class="row"><span class="on" style="${f >= TL.place[0] && f < TL.place[0] + 8 ? 'transform:scale(.94)' : ''}">放进房间</span><span>分享</span></div></div>`;
         if (f >= TL.place[0]) { const g = ease.out3(prog(f, TL.place[0] + 4, TL.place[1])); let gl2 = '';
           for (let k = -6; k <= 6; k++) { const z0 = cam.project([k * 0.8, BY, -5]), z1 = cam.project([k * 0.8, BY, 5]); gl2 += `<line x1="${z0[0]}" y1="${z0[1]}" x2="${z1[0]}" y2="${z1[1]}"/>`; const x0 = cam.project([-5, BY, k * 0.8]), x1 = cam.project([5, BY, k * 0.8]); gl2 += `<line x1="${x0[0]}" y1="${x0[1]}" x2="${x1[0]}" y2="${x1[1]}"/>`; }
           h = h.replace('<div class="sb"', `<svg width="1920" height="1080" style="position:absolute;left:0;top:0;opacity:${g * 0.5}" stroke="#6ff3ff" stroke-width="1">${gl2}</svg><div class="sb"`); }
@@ -302,9 +310,9 @@ function drawUI(f, s) {
   }
   ui.innerHTML = h;
   let c = '';
-  if (f >= 1040) { const a = ease.out3(prog(f, 1040, 1060)), b = ease.out3(prog(f, 1050, 1070));
-    c += `<div class="ct" style="opacity:${a};transform:translateY(${(1 - a) * 16}px)"><h2>POINT CLOUD</h2><p>世界不是面，是几百万个带颜色的点。</p></div>`;
-    c += `<div class="by" style="opacity:${b}"><b>观默</b><br>每天一个设计风格 · 点云</div>`; }
+  if (f >= TL.final - 10) { const a = ease.out3(prog(f, TL.final - 10, TL.final + 10)), b = ease.out3(prog(f, TL.final, TL.final + 20)), D = (txt, f0, o) => TFX.decode(txt, f, f0, o);
+    c += `<div class="ct" style="opacity:${a};transform:translateY(${(1 - a) * 16}px)"><h2>${D('POINT CLOUD', TL.final - 8, { rate: 2, kind: 'title', lead: 2 })}&nbsp;</h2><p>${D('世界不是面，是几百万个带颜色的点。', TL.final + 2, { rate: 0.8, kind: 'small', glyphs: 'dots' })}&nbsp;</p></div>`;
+    c += `<div class="by" style="opacity:${b}"><b>${D('观默', TL.final + 6, { rate: 4, kind: 'title', glyphs: 'dots', lead: 1 })}&nbsp;</b><br>每天一个设计风格 · 点云</div>`; }
   card.innerHTML = c;
 }
 
@@ -324,6 +332,8 @@ function drawUI(f, s) {
   S.bonsai = mk('bonsai', xform(PC.bonsai({ seed: 9 }).cloud.data, BS, [0, BY, 0], 0.8));
   S.terrain = mk('terrain', SHAPES.terrain(N, R));
   console.log('shapes ready', Math.round(performance.now() - t0), 'ms');
+  // 每一帧的 HUD 空跑一遍：把所有文字出场登记成 cue，交给 audio.py（events.json）
+  for (let f = 0; f < TL.end; f++) { const s = sceneAt(f); drawHUD(f, s); drawUI(f, s); }
   window.ready = true;
 })().catch(e => console.log('ERR', e.message.slice(0, 2000)));
 
@@ -332,12 +342,12 @@ window.frame = async (f) => {
   await PC.drawMorph(gl, P, target, s.A, s.B, s);
   const hits = [[TL.burst, 0.5], [TL.lock, 0.25], ...TL.snaps.map(t => [t, 0.05]), [TL.dissolve[1], 0.15], [TL.drain[1], 0.12], [TL.voxel[1], 0.15], [TL.toBonsai[1], 0.15], ...TL.cards.map(c => [c, 0.12]), [TL.mask[1], 0.1], [TL.burst2, 0.6], [TL.final, 0.25]];
   const flash = hits.reduce((a, [h, A]) => a + (f >= h ? A * Math.exp(-(f - h) / 5) : 0), 0);
-  const big = f < 120 || f >= 1020;
+  const big = f < 120 || f >= TL.burst2;
   await post(target.tex, { exposure: 1.05 * (1 + flash), bloom: big ? 0.8 : 0.5, threshold: big ? 0.55 : 0.9, grain: 0.02, vignette: 0.4, ca: 0.004, saturation: 1.1, seed: f * 0.37 });
   drawHUD(f, s); drawUI(f, s);
   gl.finish();
 };
-window.events = () => TL;
+window.events = () => ({ cues: TFX.list() });
 </script>
 </body>
 </html>

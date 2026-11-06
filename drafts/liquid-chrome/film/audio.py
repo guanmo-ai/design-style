@@ -1,7 +1,7 @@
 """液态金属全片 · 第二版配乐（一整首歌，18 秒）。120 BPM（一拍 = 30 帧）· D 小调 · 合成器流行：八度贝斯、门控和弦、FM 玻璃钟主旋律。
 一滴落地的重击 → 四个字一个个站起来（每个字一声上扬的“咕噜”，音越来越高）→ 第 90 帧全乐队进来。
 每件作品一种招牌声音：鸟 = 金色的钟和弦；气球狗 = 十节“吱”（音高走和弦）；磁流体 = 每圈一记低音咆哮 + 颗粒噼啪；
-云门 = 焊接火花 + 抛光的风；规则卡 = 一卡一记重拍；手机 = 轻；片尾落回水银、字再站起来。时间取自 timeline.js。python3 audio.py out.wav"""
+云门 = 焊接火花 + 抛光的风；规则卡 = 一卡一记重拍；手机 = 轻；片尾落回水银、字再站起来。时间取自 timeline.js；文字的声音取自 events.json（node ../../_lib/events.cjs film.html events.json）。python3 audio.py out.wav"""
 import json
 import re
 import sys
@@ -209,7 +209,7 @@ S.sfx(S.riser(fr(480 - 452), 0.9, 400, 9000), fr(452), 0.45)
 for k, at in enumerate(TL['cards']):
     S.place(S.kick(1.3), fr(at), 1.0); S.kicks.append(at)
     S.place(stab([n + 12 for n in S.chord(at)[2]], 0.35, 1.0), fr(at), 0.22, -0.4 + 0.2 * k, send=0.4, bus=S.PUMP)
-    S.sfx(S.hit(0.8, 38), fr(at), 0.4, send=0.3)
+    S.sfx(S.hit(0.8, 38), fr(at), 0.25, send=0.3)
 S.sfx(S.glide(60, 72, 0.25, 0.6), fr(482), 0.3); S.sfx(gloop(50, 31, 0.22, 1.0), fr(497), 0.6)        # 融合
 S.sfx(S.whoosh(0.45, 300, 7000, 0.9, 0.5), fr(512), 0.45, send=0.3)                                     # 倒影
 S.sfx(S.shimmer(0.5, 0.8), fr(544), 0.4, send=0.5)                                                       # 菲涅尔
@@ -245,5 +245,8 @@ S.sfx(S.boom(0.8, 90, 32, 0.9), fr(945), 0.5)
 S.sfx(splash(0.8), fr(945), 0.6, send=0.3)
 S.sfx(S.glide(93, 81, fr(TL['drop2'][1] - TL['drop2'][0]), 0.5), fr(TL['drop2'][0]), 0.25, -0.1, send=0.4)
 stutter(TL['drop2'][1] - 8, 3.75, 2, 0.7)
+
+# —— 文字：每个字落定一声“嗒”，标题是键帽声，规则卡大字是倒放镲 + 砸字（cue 由 film.html 空跑 HUD 导出到 events.json）——
+S.text_cues(json.loads((HERE / 'events.json').read_text())['cues'], 1.0)
 
 S.master(sys.argv[1] if len(sys.argv) > 1 else str(HERE / 'music.wav'), loop=False)
