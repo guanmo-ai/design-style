@@ -1,0 +1,236 @@
+<!doctype html>
+<html lang="zh">
+<head>
+<meta charset="utf-8">
+<title>点云 · 落到界面上 · 扫描 App</title>
+<style>
+@font-face { font-family: 'Geist'; src: url(../../public/fonts/Geist.ttf); font-weight: 100 900; }
+@font-face { font-family: 'GeistMono'; src: url(../../public/fonts/GeistMono.ttf); font-weight: 100 900; }
+@font-face { font-family: 'NotoSC'; src: url(../../public/fonts/NotoSansSC-Black.otf); font-weight: 900; }
+@font-face { font-family: 'NotoSC'; src: url(../../public/fonts/NotoSansSC-Bold.otf); font-weight: 700; }
+@font-face { font-family: 'NotoSC'; src: url(../../public/fonts/NotoSansSC-Medium.otf); font-weight: 500; }
+@font-face { font-family: 'NotoSC'; src: url(../../public/fonts/NotoSansSC-Regular.otf); font-weight: 400; }
+* { margin: 0; padding: 0; box-sizing: border-box; }
+:root { --bg: #030405; --ink: #ecf4f6; --dim: #8b979f; --line: rgba(255,255,255,.12); --cy: #6ff3ff; --or: #ff9b4a; }
+html, body { width: 1920px; height: 1080px; overflow: hidden; background: var(--bg); color: var(--ink); font-family: Geist, NotoSC, sans-serif; }
+.mono { font-family: GeistMono, monospace; letter-spacing: .04em; }
+canvas.gl { position: absolute; display: block; left: 0; top: 0; }
+.top { position: absolute; left: 64px; right: 64px; top: 34px; display: flex; justify-content: space-between; font-size: 13px; color: var(--dim); text-transform: uppercase; }
+.top b { color: #fff; font-weight: 500; }
+.browser { position: absolute; left: 64px; top: 78px; width: 1010px; height: 668px; border-radius: 14px; overflow: hidden; background: #000; outline: 1px solid var(--line); box-shadow: 0 40px 120px rgba(0,0,0,.6); }
+.bar { height: 40px; display: flex; align-items: center; gap: 8px; padding: 0 16px; background: #0b0d0f; border-bottom: 1px solid var(--line); position: relative; z-index: 3; }
+.bar i { width: 11px; height: 11px; border-radius: 50%; background: #262b30; display: block; }
+.bar .url { margin-left: 18px; flex: 1; max-width: 420px; height: 24px; border-radius: 7px; background: #15191c; font-size: 12px; color: #8a959c; display: flex; align-items: center; padding: 0 12px; }
+.page { position: absolute; left: 0; top: 40px; right: 0; bottom: 0; }
+.nav { position: absolute; left: 40px; right: 40px; top: 24px; display: flex; align-items: center; font-size: 14px; color: #aeb9bf; gap: 30px; z-index: 2; }
+.logo { display: flex; align-items: center; gap: 10px; font-family: GeistMono; font-weight: 600; font-size: 17px; color: #fff; margin-right: auto; letter-spacing: .12em; }
+.logo .dots { display: grid; grid-template-columns: repeat(3, 4px); gap: 3px; }
+.logo .dots i { width: 4px; height: 4px; border-radius: 50%; background: var(--cy); display: block; }
+.logo .dots i:nth-child(2n) { opacity: .4; }
+.nav .btn { color: #031013; background: var(--cy); border-radius: 999px; padding: 8px 16px; font-weight: 600; font-size: 13px; }
+.hero-t { position: absolute; left: 44px; top: 132px; width: 470px; z-index: 2; }
+.kick { font-size: 12px; color: #c9d4d9; display: inline-flex; gap: 10px; align-items: center; border: 1px solid var(--line); border-radius: 999px; padding: 6px 12px 6px 8px; }
+.kick b { color: #031013; background: var(--cy); border-radius: 999px; padding: 1px 8px; font-weight: 600; }
+.hero-t h1 { font-family: NotoSC; font-weight: 900; font-size: 56px; line-height: 1.16; margin-top: 26px; letter-spacing: -.01em; }
+.hero-t h1 span { color: var(--cy); }
+.hero-t p { font-family: NotoSC; font-size: 16px; line-height: 1.75; color: #9fabb2; margin-top: 20px; }
+.cta { display: flex; gap: 16px; margin-top: 30px; align-items: center; }
+.cta .p { background: #ecf4f6; color: #031013; font-weight: 700; font-family: NotoSC; font-size: 15px; border-radius: 999px; padding: 12px 22px; }
+.cta .s { color: #cfd9dd; font-size: 14px; font-family: NotoSC; }
+.stats { position: absolute; left: 44px; bottom: 34px; display: flex; gap: 40px; z-index: 2; }
+.stats div { font-size: 12px; color: #8b979f; font-family: NotoSC; }
+.stats b { display: block; font-family: GeistMono; font-weight: 500; font-size: 24px; color: #fff; margin-bottom: 4px; }
+.cursor { position: absolute; z-index: 3; width: 22px; height: 22px; }
+.tag { position: absolute; font-size: 11px; color: #cfe0e5; border: 1px solid rgba(111,243,255,.35); background: rgba(0,0,0,.6); backdrop-filter: blur(6px); border-radius: 6px; padding: 6px 10px; z-index: 3; white-space: nowrap; }
+.tag b { color: var(--cy); font-weight: 500; }
+.phone { position: absolute; top: 78px; width: 244px; height: 520px; border-radius: 40px; background: #0a0b0c; outline: 1px solid rgba(255,255,255,.14); box-shadow: inset 0 0 0 7px #151719, 0 30px 80px rgba(0,0,0,.6); }
+.screen { position: absolute; left: 8px; top: 8px; right: 8px; bottom: 8px; border-radius: 33px; overflow: hidden; background: #000; }
+.sb { position: absolute; left: 22px; right: 20px; top: 12px; display: flex; justify-content: space-between; font-size: 11px; font-weight: 600; z-index: 3; }
+.island { position: absolute; left: 50%; top: 10px; width: 74px; height: 21px; border-radius: 20px; background: #000; transform: translateX(-50%); z-index: 4; }
+.ph { position: absolute; left: 0; right: 0; z-index: 3; text-align: center; }
+.ph .lab { font-size: 10.5px; color: #9aa6ad; }
+.ph .lab b { color: var(--cy); font-weight: 500; }
+.hud { position: absolute; z-index: 3; font-family: GeistMono; font-size: 10px; color: #cfe0e5; }
+.pill { position: absolute; left: 50%; transform: translateX(-50%); z-index: 3; white-space: nowrap; font-family: NotoSC; font-size: 12px; font-weight: 500; background: rgba(0,0,0,.55); backdrop-filter: blur(8px); border: 1px solid rgba(255,255,255,.16); border-radius: 999px; padding: 8px 14px; }
+.shutter { position: absolute; left: 50%; bottom: 22px; transform: translateX(-50%); width: 58px; height: 58px; border-radius: 50%; border: 3px solid #fff; z-index: 3; display: grid; place-items: center; }
+.shutter i { width: 44px; height: 44px; border-radius: 50%; background: var(--cy); display: block; box-shadow: 0 0 20px rgba(111,243,255,.6); }
+.prog { position: absolute; left: 24px; right: 24px; z-index: 3; }
+.prog .t { display: flex; justify-content: space-between; font-family: GeistMono; font-size: 10.5px; color: #cfe0e5; }
+.prog .b { height: 4px; border-radius: 2px; background: rgba(255,255,255,.14); margin-top: 8px; overflow: hidden; }
+.prog .b i { display: block; height: 100%; width: 72%; background: linear-gradient(90deg, var(--cy), #fff); }
+.res { position: absolute; left: 18px; right: 18px; bottom: 18px; z-index: 3; border-radius: 22px; background: rgba(12,14,16,.78); backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,.12); padding: 14px 16px; }
+.res h3 { font-family: NotoSC; font-weight: 700; font-size: 16px; }
+.res p { font-family: GeistMono; font-size: 10px; color: #9aa6ad; margin-top: 4px; }
+.res .row { display: flex; gap: 8px; margin-top: 12px; }
+.res .row span { flex: 1; text-align: center; font-family: NotoSC; font-size: 12px; font-weight: 700; border-radius: 999px; padding: 8px 0; border: 1px solid rgba(255,255,255,.2); }
+.res .row span.on { background: var(--cy); color: #031013; border-color: var(--cy); }
+.steps { position: absolute; top: 612px; font-size: 12px; }
+.steps .n { font-family: GeistMono; color: var(--cy); margin-right: 6px; }
+.steps b { font-family: NotoSC; font-weight: 700; font-size: 15px; color: #fff; }
+.steps p { font-family: NotoSC; color: #97a3aa; font-size: 12.5px; line-height: 1.6; margin-top: 6px; width: 236px; }
+.arrow { position: absolute; top: 328px; font-size: 10px; color: #cfe0e5; text-align: center; width: 60px; z-index: 5; }
+.arrow svg { display: block; margin: 4px auto 0; }
+.cards { position: absolute; left: 64px; right: 64px; top: 778px; display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; }
+.card { height: 250px; border: 1px solid var(--line); border-radius: 14px; padding: 18px 20px; position: relative; background: linear-gradient(180deg, rgba(255,255,255,.025), rgba(255,255,255,0)); }
+.card .k { font-family: GeistMono; font-size: 12px; color: #fff; letter-spacing: .03em; }
+.card .k i { font-style: normal; color: var(--cy); margin-right: 8px; }
+.card h4 { font-family: NotoSC; font-weight: 700; font-size: 17px; margin-top: 8px; }
+.card p { font-family: NotoSC; font-size: 12.5px; color: #97a3aa; line-height: 1.6; margin-top: 6px; }
+.card .viz { position: absolute; left: 20px; right: 20px; bottom: 16px; height: 96px; }
+.card .viz canvas, .card .viz svg { display: block; position: absolute; }
+.vl { position: absolute; font-family: GeistMono; font-size: 10px; color: #8b979f; }
+</style>
+</head>
+<body>
+<div class="top mono"><span><b>NO. 023 · 点云</b> &nbsp;·&nbsp; 落到界面上：一部手机，把一棵树存成 61 万个点</span><span>扫描 App · 网页 + App · 散开 / 扫过 / 聚拢</span></div>
+
+<div class="browser">
+  <div class="bar"><i></i><i></i><i></i><div class="url mono">dots.studio/scan</div></div>
+  <div class="page">
+    <canvas class="gl" id="hero"></canvas>
+    <div class="nav"><span class="logo"><span class="dots"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></span>DOTS</span><span>扫描</span><span>作品</span><span>导出</span><span>价格</span><span class="btn">免费下载</span></div>
+    <div class="hero-t">
+      <span class="kick"><b>NEW</b> 手机 LiDAR + 高斯泼溅</span>
+      <h1>把一棵树，<br>存成 <span>61 万个点</span>。</h1>
+      <p>绕着它走一圈就够了。不是模型、不是照片——<br>是每一个你能用鼠标拨开的点。</p>
+      <div class="cta"><span class="p">开始扫描</span><span class="s">拨开看看 →</span></div>
+    </div>
+    <div class="stats"><div><b>612,480</b>个点</div><div><b>40 s</b>绕一圈</div><div><b>18 MB</b>整棵树</div></div>
+    <div id="heroTags"></div>
+  </div>
+</div>
+
+<div id="phones"></div>
+
+<div class="cards">
+  <div class="card"><span class="k"><i>A</i>size = w · f / z</span><h4>点的大小：近大远小</h4><p>每个点有一个世界尺寸 w；屏幕上的直径按距离 z 缩放。离得太近，点就散成颗粒。</p><div class="viz" id="vizA"></div></div>
+  <div class="card"><span class="k"><i>B</i>edge = e<sup>−|y − y₀| / w</sup></span><h4>扫描面：一道亮边扫过去</h4><p>亮边宽 w = 0.13 m；亮边后面 14 w 内带一点青色余光，像颜色刚“落定”。</p><div class="viz" id="vizB"></div></div>
+  <div class="card"><span class="k"><i>C</i>p = p₀ + amt² · (swirl + lift)</span><h4>散开 / 聚拢：同一条公式倒着放</h4><p>amt 由相位 + 随机数决定，一批批走；拖尾 = 同一个点画 12 次，越早越淡。</p><div class="viz" id="vizC"></div></div>
+  <div class="card"><span class="k"><i>D</i>d &lt; R → p += n · k(1 − d/R)²</span><h4>鼠标拨开：在视线平面里推</h4><p>只推垂直于视线的分量，屏幕上就是一个干净的圆洞；被推开的点染成青色。</p><div class="viz" id="vizD"></div></div>
+</div>
+
+<script src="../_lib/glkit.js"></script>
+<script src="pc.js"></script>
+<script>
+const DPR = devicePixelRatio;
+let tree = null;
+async function renderInto(canvas, w, h, scene, post) {
+  canvas.width = Math.round(w * DPR); canvas.height = Math.round(h * DPR);
+  canvas.style.width = w + 'px'; canvas.style.height = h + 'px';
+  const gl = GLK.create(canvas);
+  const P = PC.makeProgram(gl);
+  const mesh = PC.upload(gl, tree.cloud.data);
+  const target = GLK.fbo(gl, canvas.width, canvas.height);
+  await PC.draw(gl, P, target, mesh, Object.assign({ minSize: 1.1, sizeK: 0.9, gain: 1.0 }, scene));
+  await GLK.post(gl)(target.tex, Object.assign({ exposure: 1.1, bloom: 0.45, threshold: 0.8, grain: 0.02, vignette: 0.2, ca: 0.0, saturation: 1.12 }, post));
+  return PC.camera(scene.cam, w, h);
+}
+(async () => {
+  await document.fonts.ready;
+  tree = PC.bonsai({ seed: 9 });
+  console.log('tree points', tree.cloud.count);
+  // —— 网页：大树 + 鼠标拨开的洞 + 顶上散成点 ——
+  const W = 1010, H = 628;
+  const heroScene = {
+    cam: { pos: [0.9, 0.62, 1.2], tgt: [0.0, 0.42, 0], fov: 39, shift: [-0.42, 0.05] },
+    push: { c: [0.27, 0.44, 0.0], r: 0.085, k: 0.06, col: [0.45, 1.0, 1.05] },
+    dissolve: { amt: 1, front: 0.7, span: 0.07, frac: 0.5, lift: -0.3, swirl: 0.8, axis: [0, 1, 0], trails: 10, trailStep: 0.07, col: [0.5, 1.3, 1.4], alpha: 0.16 },
+    dof: { focus: 1.45, aperture: 0.004 }, T: 0.4,
+  };
+  const C1 = await renderInto(document.getElementById('hero'), W, H, heroScene, { exposure: 1.15 });
+  {
+    const [cx, cy] = C1.project(heroScene.push.c);
+    const [tx, ty] = C1.project([-0.01, 0.72, 0.0]);
+    document.getElementById('heroTags').innerHTML =
+      `<svg class="cursor" style="left:${cx - 2}px;top:${cy - 2}px" viewBox="0 0 22 22"><path d="M2 2 L2 18 L7 13 L10 20 L13 19 L10 12 L17 12 Z" fill="#fff" stroke="#000" stroke-width="1"/></svg>` +
+      `<div class="tag mono" style="left:${cx - 120}px;top:${cy + 64}px"><b>●</b> hover：点被推开 · R = 0.085 m</div>` +
+      `<div class="tag mono" style="left:${tx + 80}px;top:${ty + 6}px"><b>●</b> 树梢：正在散成点 · 拖尾 ×10</div>`;
+  }
+  // —— 三部手机：扫 → 聚 → 成 ——
+  const PW = 244, PH = 520, SW = PW - 16, SH = PH - 16, xs = [1110, 1366, 1622];
+  const cam = { pos: [0.85, 0.6, 1.3], tgt: [0.0, 0.32, 0], fov: 44 };
+  const states = [
+    { // 扫描中：从下往上扫，上面还是稀疏的预览点
+      scene: { cam, sweep: { y: 0.44, dir: -1, w: 0.01, ghost: 0.12, ghostA: 0.1, glow: 0.18, col: [0.35, 0.95, 1.0], ghostCol: [0.08, 0.45, 0.6] }, T: 0.2 },
+      html: `<div class="ph" style="top:56px"><div class="lab mono"><b>●</b> 正在扫描 · 慢一点</div></div>
+             <svg class="hud" id="ring1" width="228" height="504" style="left:0;top:0"></svg>
+             <div class="pill" style="bottom:96px">已采 18,420 点 · 绕到右边</div>
+             <div class="shutter"><i></i></div>`
+    },
+    { // 生成中：没落位的点带着拖尾飞回来
+      scene: { cam, dissolve: { amt: 1, front: 0.4, span: 0.9, frac: 0.28, lift: -0.2, swirl: 2.0, axis: [0, 1, 0], trails: 12, trailStep: 0.06, col: [0.45, 1.15, 1.3], alpha: 0.05 }, T: 1.2 },
+      html: `<div class="ph" style="top:56px"><div class="lab mono"><b>●</b> 生成中 · 高斯泼溅</div></div>
+             <div class="prog" style="bottom:40px"><div class="t"><span>聚拢 432,170 / 612,480</span><span>72%</span></div><div class="b"><i></i></div></div>`
+    },
+    { // 完成：真颜色，放到桌上
+      scene: { cam: { pos: [-0.8, 0.58, 1.25], tgt: [0.0, 0.36, 0], fov: 44 }, sizeK: 1.15, T: 0.2 },
+      html: `<div class="ph" style="top:56px"><div class="lab mono"><b>●</b> 完成 · 可以拨开</div></div>
+             <div class="res"><h3>窗台上的五针松</h3><p>612,480 PTS · 18.2 MB · .PLY / .SPLAT</p><div class="row"><span class="on">放进房间</span><span>分享</span></div></div>`
+    },
+  ];
+  const ph = document.getElementById('phones');
+  for (let i = 0; i < 3; i++) {
+    const el = document.createElement('div'); el.className = 'phone'; el.style.left = xs[i] + 'px';
+    el.innerHTML = `<div class="screen"><canvas class="gl"></canvas><div class="island"></div><div class="sb mono"><span>9:41</span><span>●●● 100</span></div>${states[i].html}</div>`;
+    ph.appendChild(el);
+    const C = await renderInto(el.querySelector('canvas'), SW, SH, states[i].scene, {});
+    if (i === 0) { // 覆盖度圆环：转过的角度亮起来
+      const [cx, cy] = C.project([0, 0.01, 0]); let t = '';
+      for (let k = 0; k < 60; k++) { const a = k / 60 * Math.PI * 2, on = k < 38; const r0 = 92, r1 = on ? 104 : 99;
+        t += `<line x1="${cx + Math.cos(a) * r0}" y1="${cy + Math.sin(a) * r0 * 0.36}" x2="${cx + Math.cos(a) * r1}" y2="${cy + Math.sin(a) * r1 * 0.36}" stroke="${on ? '#6ff3ff' : 'rgba(255,255,255,.3)'}" stroke-width="2"/>`; }
+      el.querySelector('#ring1').innerHTML = t;
+    }
+  }
+  const steps = [
+    ['01', '扫 · 一道亮边往上爬', '扫过的地方才有颜色；上面还是稀疏的青色预览点，告诉你“还差哪里”。'],
+    ['02', '聚 · 点带着拖尾飞回来', '进度条之外再给一个看得见的进度：飞回来的点越来越少。'],
+    ['03', '成 · 一棵能拨开的树', '点变大一点（sizeK 0.9 → 1.15），颗粒就收成一个面。'],
+  ];
+  steps.forEach((s, i) => { const d = document.createElement('div'); d.className = 'steps'; d.style.left = (xs[i] + 4) + 'px'; d.innerHTML = `<span class="n">${s[0]}</span><b>${s[1]}</b><p>${s[2]}</p>`; ph.appendChild(d); });
+  [['松手', '+0 ms'], ['训练完', '+40 s']].forEach((a, i) => { const d = document.createElement('div'); d.className = 'arrow mono'; d.style.left = (xs[i] + PW - 24) + 'px';
+    d.innerHTML = `${a[0]}<br><span style="color:#6ff3ff">${a[1]}</span><svg width="40" height="12"><path d="M2 6 H34 M28 1 L35 6 L28 11" fill="none" stroke="#fff" stroke-width="1.3"/></svg>`; ph.appendChild(d); });
+  await vizC();
+  vizA(); vizB(); vizD();
+  window.__done = true;
+})().catch(e => { console.log('ERR', e.message.slice(0, 3000)); window.__done = true; });
+
+// A：同一排点，从近到远
+function vizA() {
+  const box = document.getElementById('vizA'), W = 390, H = 96; let s = '';
+  for (let i = 0; i < 9; i++) { const z = 1 + i * 0.9, x = 20 + i * 40, r = 18 / z + 0.8; s += `<circle cx="${x}" cy="48" r="${r}" fill="#6ff3ff" opacity="${0.35 + 0.65 / Math.sqrt(z)}"/>`; }
+  s += `<text x="20" y="92" fill="#8b979f" font-family="GeistMono" font-size="10">z = 1 m</text><text x="340" y="92" fill="#8b979f" font-family="GeistMono" font-size="10" text-anchor="end">z = 8 m · 最小 1.3 px</text>`;
+  box.innerHTML = `<svg width="${W}" height="${H}">${s}</svg>`;
+}
+// B：亮边曲线
+function vizB() {
+  const box = document.getElementById('vizB'), W = 390, H = 96; const X = y => 195 + y * 900, Y = v => 80 - v * 66;
+  let d = '', d2 = ''; for (let i = -100; i <= 100; i++) { const y = i / 600; const e = Math.exp(-Math.abs(y) / 0.013); d += (i > -100 ? 'L' : 'M') + X(y).toFixed(1) + ' ' + Y(e).toFixed(1); const st = y > 0 ? Math.exp(-y / (0.013 * 14)) * 0.22 : 0; d2 += (i > -100 ? 'L' : 'M') + X(y).toFixed(1) + ' ' + Y(st).toFixed(1); }
+  box.innerHTML = `<svg width="${W}" height="${H}"><rect x="0" y="14" width="195" height="66" fill="rgba(111,243,255,.06)"/><text x="6" y="28" fill="#8b979f" font-family="GeistMono" font-size="10">还没扫</text><text x="384" y="28" fill="#8b979f" font-family="GeistMono" font-size="10" text-anchor="end">已上色</text>
+    <path d="${d2}" fill="none" stroke="#6ff3ff" stroke-width="1.2" stroke-dasharray="3 3"/><path d="${d}" fill="none" stroke="#fff" stroke-width="2"/><line x1="195" x2="195" y1="10" y2="84" stroke="rgba(255,255,255,.3)"/>
+    <text x="200" y="94" fill="#8b979f" font-family="GeistMono" font-size="10">y₀</text></svg>`;
+}
+// C：四格小片——同一棵树从整到散（真的用点云渲染器画）
+async function vizC() {
+  const box = document.getElementById('vizC'); const amts = [0, 0.35, 0.7, 1.0];
+  for (let i = 0; i < 4; i++) {
+    const c = document.createElement('canvas'); box.appendChild(c); c.style.left = (i * 98) + 'px'; c.style.top = '0px';
+    await renderInto(c, 92, 80, { cam: { pos: [0.85, 0.6, 1.3], tgt: [0, 0.32, 0], fov: 46 }, minSize: 1.0, dissolve: { amt: amts[i], front: 0.4, span: 0.6, frac: 0.7, lift: -0.3, swirl: 2.4, trails: 4, trailStep: 0.1, col: [0.5, 1.2, 1.4], alpha: 0.01 } }, { bloom: 0.3, vignette: 0 });
+    c.style.borderRadius = '6px'; c.style.outline = '1px solid rgba(255,255,255,.1)';
+    const l = document.createElement('span'); l.className = 'vl'; l.style.left = (i * 98 + 2) + 'px'; l.style.top = '84px'; l.textContent = 'amt ' + amts[i].toFixed(2); box.appendChild(l);
+  }
+}
+// D：一片点阵被推出一个圆洞
+function vizD() {
+  const box = document.getElementById('vizD'), W = 390, H = 96; let s = '';
+  const cx = 195, cy = 48, R = 34;
+  for (let y = 6; y < 92; y += 7) for (let x = 6; x < 384; x += 7) {
+    let px = x, py = y, col = 'rgba(236,244,246,.55)'; const dx = x - cx, dy = y - cy, d = Math.hypot(dx, dy);
+    if (d < R) { const f = Math.pow(1 - d / R, 2); px += dx / Math.max(d, 1e-3) * 22 * f; py += dy / Math.max(d, 1e-3) * 22 * f; col = `rgba(111,243,255,${0.55 + f * 0.45})`; }
+    s += `<circle cx="${px}" cy="${py}" r="1.5" fill="${col}"/>`;
+  }
+  s += `<circle cx="${cx}" cy="${cy}" r="${R}" fill="none" stroke="rgba(255,255,255,.35)" stroke-dasharray="3 3"/><text x="${cx + R + 6}" y="${cy - R + 6}" fill="#8b979f" font-family="GeistMono" font-size="10">R</text>`;
+  box.innerHTML = `<svg width="${W}" height="${H}">${s}</svg>`;
+}
+</script>
+</body>
+</html>

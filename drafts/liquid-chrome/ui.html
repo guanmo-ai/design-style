@@ -1,0 +1,283 @@
+<!doctype html>
+<html lang="zh">
+<head>
+<meta charset="utf-8">
+<title>液态金属 · 落到界面上 · Hg 语音助手</title>
+<style>
+@font-face { font-family: 'Unbounded'; src: url(../../public/fonts/Unbounded.ttf); font-weight: 200 900; }
+@font-face { font-family: 'Geist'; src: url(../../public/fonts/Geist.ttf); font-weight: 100 900; }
+@font-face { font-family: 'GeistMono'; src: url(../../public/fonts/GeistMono.ttf); font-weight: 100 900; }
+@font-face { font-family: 'NotoSC'; src: url(../../public/fonts/NotoSansSC-Black.otf); font-weight: 900; }
+@font-face { font-family: 'NotoSC'; src: url(../../public/fonts/NotoSansSC-Bold.otf); font-weight: 700; }
+@font-face { font-family: 'NotoSC'; src: url(../../public/fonts/NotoSansSC-Medium.otf); font-weight: 500; }
+@font-face { font-family: 'NotoSC'; src: url(../../public/fonts/NotoSansSC-Regular.otf); font-weight: 400; }
+@font-face { font-family: 'ZCOOL'; src: url(../../public/fonts/ZCOOLQingKeHuangYou.ttf); }
+* { margin: 0; padding: 0; box-sizing: border-box; }
+:root { --bg: #050609; --ink: #eef1f7; --dim: #8d95a8; --line: rgba(255,255,255,.12); --pink: #ff4fa3; --cyan: #39b8ff; --warm: #ffb27a; }
+html, body { width: 1920px; height: 1080px; overflow: hidden; background: var(--bg); color: var(--ink); font-family: Geist, NotoSC, sans-serif; }
+.mono { font-family: GeistMono, monospace; letter-spacing: .04em; }
+canvas.gl { position: absolute; display: block; }
+.top { position: absolute; left: 64px; right: 64px; top: 34px; display: flex; justify-content: space-between; font-size: 13px; color: var(--dim); text-transform: uppercase; }
+.top b { color: #fff; font-weight: 500; }
+/* —— 浏览器 —— */
+.browser { position: absolute; left: 64px; top: 78px; width: 1010px; height: 668px; border-radius: 14px; overflow: hidden; background: #07080c; outline: 1px solid var(--line); box-shadow: 0 40px 120px rgba(0,0,0,.6); }
+.bar { height: 40px; display: flex; align-items: center; gap: 8px; padding: 0 16px; background: #0d0f15; border-bottom: 1px solid var(--line); }
+.bar i { width: 11px; height: 11px; border-radius: 50%; background: #2a2e38; display: block; }
+.bar .url { margin-left: 18px; flex: 1; max-width: 420px; height: 24px; border-radius: 7px; background: #161922; font-size: 12px; color: #8a92a5; display: flex; align-items: center; padding: 0 12px; }
+.page { position: absolute; left: 0; top: 40px; right: 0; bottom: 0; }
+.nav { position: absolute; left: 40px; right: 40px; top: 24px; display: flex; align-items: center; font-size: 14px; color: #aeb5c6; gap: 30px; z-index: 2; }
+.logo { display: flex; align-items: center; gap: 9px; font-family: Unbounded; font-weight: 700; font-size: 19px; color: #fff; margin-right: auto; }
+.drop { width: 16px; height: 16px; border-radius: 50%; background: radial-gradient(circle at 34% 30%, #fff 0 12%, #c9d6ea 22%, #5b6476 52%, #11131a 70%, #6d7da0 86%, #e8f0ff 100%); box-shadow: 0 0 0 1px rgba(255,255,255,.15); display: inline-block; }
+.nav .btn { color: #0a0b10; background: #eef1f7; border-radius: 999px; padding: 8px 16px; font-weight: 600; font-size: 13px; }
+.hero-t { position: absolute; left: 44px; top: 128px; width: 470px; z-index: 2; }
+.kick { font-size: 12px; color: #c9d0de; display: inline-flex; gap: 10px; align-items: center; border: 1px solid var(--line); border-radius: 999px; padding: 6px 12px 6px 8px; }
+.kick b { color: #0a0b10; background: var(--cyan); border-radius: 999px; padding: 1px 8px; font-weight: 600; }
+.hero-t h1 { font-family: NotoSC; font-weight: 900; font-size: 60px; line-height: 1.12; margin-top: 26px; letter-spacing: -.01em; }
+.hero-t h1 span { background: linear-gradient(180deg, #ffffff 0%, #c7d3e6 38%, #4b5468 52%, #dfe8f7 64%, #ffffff 100%); -webkit-background-clip: text; color: transparent; }
+.hero-t p { font-family: NotoSC; font-size: 16px; line-height: 1.75; color: #a3abbd; margin-top: 20px; }
+.cta { display: flex; gap: 14px; margin-top: 30px; align-items: center; }
+.cta .p { display: inline-flex; gap: 10px; align-items: center; background: #eef1f7; color: #0a0b10; font-weight: 700; font-family: NotoSC; font-size: 15px; border-radius: 999px; padding: 12px 22px 12px 14px; }
+.cta .p .drop { width: 22px; height: 22px; }
+.cta .s { color: #cfd5e2; font-size: 14px; font-family: NotoSC; }
+.stats { position: absolute; left: 44px; bottom: 34px; display: flex; gap: 40px; z-index: 2; }
+.stats div { font-size: 12px; color: #8d95a8; font-family: NotoSC; }
+.stats b { display: block; font-family: Unbounded; font-weight: 500; font-size: 24px; color: #fff; margin-bottom: 4px; letter-spacing: -.01em; }
+.chip-tag { position: absolute; white-space: nowrap; font-size: 11px; color: #c9d0de; border: 1px solid rgba(255,255,255,.18); background: rgba(10,12,18,.55); backdrop-filter: blur(6px); border-radius: 8px; padding: 6px 10px; z-index: 2; }
+.chip-tag b { color: var(--pink); font-weight: 500; }
+/* —— 手机 —— */
+.phone { position: absolute; top: 78px; width: 244px; height: 520px; border-radius: 40px; background: #0b0c10; outline: 1px solid rgba(255,255,255,.14); box-shadow: inset 0 0 0 7px #16181f, 0 30px 80px rgba(0,0,0,.6); }
+.screen { position: absolute; left: 8px; top: 8px; right: 8px; bottom: 8px; border-radius: 33px; overflow: hidden; background: #050609; }
+.screen canvas { position: absolute; left: 0; top: 0; }
+.sb { position: absolute; left: 22px; right: 20px; top: 12px; display: flex; justify-content: space-between; font-size: 11px; font-weight: 600; z-index: 2; }
+.island { position: absolute; left: 50%; top: 10px; width: 74px; height: 21px; border-radius: 20px; background: #000; transform: translateX(-50%); z-index: 3; }
+.ph { position: absolute; left: 0; right: 0; z-index: 2; text-align: center; }
+.ph .lab { font-size: 10.5px; color: #8d95a8; }
+.ph .lab b { color: #fff; font-weight: 500; }
+.ph h3 { font-family: NotoSC; font-weight: 700; font-size: 18px; line-height: 1.35; margin-top: 6px; }
+.ph p { font-family: NotoSC; font-size: 12px; color: #a3abbd; line-height: 1.6; margin-top: 6px; }
+.mic { position: absolute; left: 50%; bottom: 26px; transform: translateX(-50%); display: flex; align-items: center; gap: 8px; background: #eef1f7; color: #0a0b10; font-family: NotoSC; font-weight: 700; font-size: 12.5px; border-radius: 999px; padding: 9px 18px 9px 10px; z-index: 2; white-space: nowrap; }
+.mic .drop { width: 18px; height: 18px; }
+.wave { position: absolute; left: 50%; bottom: 30px; transform: translateX(-50%); display: flex; gap: 3px; align-items: center; height: 30px; z-index: 2; }
+.wave i { width: 3px; border-radius: 2px; background: #eef1f7; display: block; }
+.cap { position: absolute; left: 22px; right: 22px; z-index: 2; font-family: NotoSC; font-size: 15px; line-height: 1.5; font-weight: 500; }
+.cap .g { color: #5d6476; }
+.chips { position: absolute; left: 0; right: 0; z-index: 2; }
+.chipx { position: absolute; display: flex; align-items: center; height: 36px; border-radius: 999px; padding: 0 14px 0 38px; font-family: NotoSC; font-size: 12.5px; font-weight: 500; white-space: nowrap; border: 1px solid rgba(255,255,255,.2); background: transparent; }
+.chipx.ghost { opacity: .45; border-style: dashed; }
+.chipx small { font-family: GeistMono; font-size: 10px; color: #8d95a8; margin-left: 8px; }
+.steps { position: absolute; top: 612px; font-size: 12px; }
+.steps .n { font-family: GeistMono; color: var(--pink); margin-right: 6px; }
+.steps b { font-family: NotoSC; font-weight: 700; font-size: 15px; color: #fff; }
+.steps p { font-family: NotoSC; color: #9aa2b4; font-size: 12.5px; line-height: 1.6; margin-top: 6px; width: 236px; }
+.arrow { position: absolute; top: 328px; font-size: 10px; color: #c9d0de; text-align: center; width: 60px; z-index: 5; }
+.arrow svg { display: block; margin: 4px auto 0; }
+/* —— 底部：动效配方 —— */
+.cards { position: absolute; left: 64px; right: 64px; top: 778px; display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; }
+.card { height: 250px; border: 1px solid var(--line); border-radius: 14px; padding: 18px 20px; position: relative; background: linear-gradient(180deg, rgba(255,255,255,.025), rgba(255,255,255,0)); }
+.card .k { font-family: GeistMono; font-size: 12px; color: #fff; letter-spacing: .03em; }
+.card .k i { font-style: normal; color: var(--pink); margin-right: 8px; }
+.card h4 { font-family: NotoSC; font-weight: 700; font-size: 17px; margin-top: 8px; }
+.card p { font-family: NotoSC; font-size: 12.5px; color: #9aa2b4; line-height: 1.6; margin-top: 6px; }
+.card .viz { position: absolute; left: 20px; right: 20px; bottom: 16px; height: 96px; }
+.card .viz canvas, .card .viz svg { display: block; }
+.vl { position: absolute; font-family: GeistMono; font-size: 10px; color: #8d95a8; }
+</style>
+</head>
+<body>
+<div class="top mono"><span><b>NO. 022 · 液态金属</b> &nbsp;·&nbsp; 落到界面上：一滴会听话的金属</span><span>Hg 语音助手 · 网页 + App · 三拍一个动作</span></div>
+
+<div class="browser">
+  <div class="bar"><i></i><i></i><i></i><div class="url mono">hg.voice/2.0</div></div>
+  <div class="page" id="page">
+    <canvas class="gl" id="hero"></canvas>
+    <div class="nav"><span class="logo"><span class="drop"></span>Hg</span><span>产品</span><span>声音</span><span>开发者</span><span>价格</span><span class="btn">下载 App</span></div>
+    <div class="hero-t">
+      <span class="kick"><b>2.0</b> 没有脸的语音助手</span>
+      <h1>一滴<span>会听话</span><br>的金属。</h1>
+      <p>它不画表情。你开口，它长出刺；它想好了，<br>就分出几滴——落下来，变成你下一步能点的按钮。</p>
+      <div class="cta"><span class="p"><span class="drop"></span>按住说话</span><span class="s">看它怎么动 →</span></div>
+    </div>
+    <div class="stats"><div><b>120 ms</b>开口到长刺</div><div><b>60 fps</b>手机上实时算</div><div><b>0</b>张贴图</div></div>
+    <div id="heroTags"></div>
+  </div>
+</div>
+
+<div id="phones"></div>
+
+<div class="cards">
+  <div class="card"><span class="k"><i>A</i>smin(a, b, k)</span><h4>融合：k 决定“颈”有多粗</h4><p>两滴靠近时，用平滑最小值代替 min。k 越大，越早伸手、颈越粗。</p><div class="viz" id="vizA"></div></div>
+  <div class="card"><span class="k"><i>B</i>spring(380, 18)</span><h4>回弹：先冲过头，再晃两下</h4><p>分出去的每一滴都用弹簧落位，超调 ≈ 12%，0.45 s 停稳。</p><div class="viz" id="vizB"></div></div>
+  <div class="card"><span class="k"><i>C</i>L = 0.06 + 0.5 · rms<sup>0.7</sup></span><h4>声音 → 刺的长度</h4><p>小声也要看得见（底数 0.06），大声别戳出屏幕（指数 0.7 压一压）。</p><div class="viz" id="vizC"></div></div>
+  <div class="card"><span class="k"><i>D</i>envRot = tilt × 0.2</span><h4>倒影跟着手机转</h4><p>陀螺仪转 ±12°，环境图转 ±2.4°：金属就“活”了，屏幕却没动。</p><div class="viz" id="vizD"></div></div>
+</div>
+
+<script src="../_lib/glkit.js"></script>
+<script src="chrome.js"></script>
+<script>
+const DPR = devicePixelRatio;
+const BG = { top: [0.0012, 0.0013, 0.0019], bot: [0.0016, 0.0017, 0.0025], glow: [0.006, 0.008, 0.02], glowPos: [0, 0] };
+function fib(n) { const a = []; const g = Math.PI * (3 - Math.sqrt(5)); for (let i = 0; i < n; i++) { const y = 1 - (i + .5) / n * 2, r = Math.sqrt(1 - y * y); a.push([Math.cos(g * i) * r, y, Math.sin(g * i) * r]); } return a; }
+let seed = 11; const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+
+async function renderInto(canvas, w, h, scene, post) {
+  canvas.width = Math.round(w * DPR); canvas.height = Math.round(h * DPR);
+  canvas.style.width = w + 'px'; canvas.style.height = h + 'px';
+  const gl = GLK.create(canvas);
+  const P = GLK.program(gl, CHROME.FS);
+  const target = GLK.fbo(gl, canvas.width, canvas.height);
+  await CHROME.render(gl, P, target, Object.assign({ backdrop: BG, floor: false, tint: [0.86, 0.87, 0.9] }, scene), 4);
+  await GLK.post(gl)(target.tex, Object.assign({ exposure: 1.2, bloom: 0.45, threshold: 1.2, grain: 0.02, vignette: 0.0, ca: 0.0, saturation: 1.08 }, post));
+}
+const at = (s, p, w, h) => CHROME.project(s, p, w, h);
+
+(async () => {
+  await document.fonts.ready;
+  // —— 网页主图：大滴 + 一颗正被吸回去的小滴 + 地上的倒影 ——
+  const heroW = 1010, heroH = 628;
+  const hero = {
+    blobs: [[0, 0, 0, 1.0, 0.3], [1.02, 0.86, 0.3, 0.27, 0.3], [-1.08, -0.82, 0.5, 0.12, 0.18]],
+    drops: [[1.62, 1.42, 0.3, 0.08], [-1.5, 1.2, 0.6, 0.05], [-1.42, -1.22, 0.5, 0.04, [1, 1.3, 1]], [1.7, -0.95, -0.3, 0.06]],
+    bwob: 0.06, T: 2.0,
+    cam: { pos: [0, 0, 7.6], tgt: [0, 0, 0], fov: 32 }, shift: [-0.2, 0.0],
+    floor: false, envRot: -0.25,
+    backdrop: { top: [0.0012, 0.0013, 0.002], bot: [0.003, 0.0032, 0.006], glow: [0.016, 0.018, 0.05], glowPos: [0.28, 0.0] },
+  };
+  const hc = document.getElementById('hero'); hc.style.left = '0px'; hc.style.top = '0px';
+  await renderInto(hc, heroW, heroH, hero, { exposure: 1.25 });
+  {
+    const [x1, y1] = at(hero, [1.02 + 0.2, 0.86 + 0.1, 0.3], heroW, heroH);
+    const [x2, y2] = at(hero, [-1.08, -0.82, 0.5], heroW, heroH);
+    document.getElementById('heroTags').innerHTML =
+      `<div class="chip-tag mono" style="left:${x1 + 30}px;top:${y1 - 52}px"><b>●</b> 正在被吸回去 · smin k 0.30</div>` +
+      `<div class="chip-tag mono" style="left:${x2 + 30}px;top:${y2 + 26}px"><b>●</b> 刚甩出去的一滴 · 拉出细颈</div>`;
+  }
+
+  // —— 三部手机：待机 → 聆听 → 回答 ——
+  const PW = 244, PH = 520, SW = PW - 16, SH = PH - 16;
+  const xs = [1110, 1366, 1622];
+  const ph = document.getElementById('phones');
+  const cam = { pos: [0, 0, 7.2], tgt: [0, 0, 0], fov: 40 };
+  const states = [
+    { // 待机：一颗在呼吸的球
+      scene: { blobs: [[0, 0.78, 0, 0.78, 0.3]], bwob: 0.07, T: 0.7, cam, envRot: 0.1 },
+      html: `<div class="ph" style="top:56px"><div class="lab mono"><b>Hg</b> · 待机</div></div>
+             <div class="ph" style="top:330px"><h3>早上好。<br>想聊点什么？</h3><p>按住下面，开口就行</p></div>
+             <div class="mic"><span class="drop"></span>按住说话</div>`
+    },
+    { // 聆听：音量把刺顶出来
+      scene: (() => {
+        const dirs = fib(64), spikes = [];
+        for (const d of dirs) { if (d[2] < -0.25) continue; const band = 0.5 + 0.5 * Math.sin(d[1] * 4.0 + d[0] * 2.5); spikes.push([...d, 0.07 + 0.36 * band * (0.55 + 0.45 * rnd())]); }
+        return { blobs: [[0, 0.8, 0, 0.6, 0.3]], spikes: spikes.slice(0, 64), spikeC: [0, 0.8, 0, 0.6], spikeK: 0.1, cam, envRot: 0.25 };
+      })(),
+      html: `<div class="ph" style="top:56px"><div class="lab mono"><b style="color:#ff4fa3">●</b> 正在听 · 0:02</div></div>
+             <div class="cap" style="top:340px">帮我把明早 8 点的会<br>挪到下午<span class="g">，最好别和…</span></div>
+             <div class="wave">${Array.from({ length: 23 }, (_, i) => `<i style="height:${6 + Math.round(22 * Math.abs(Math.sin(i * 1.7) * Math.sin(i * 0.45 + 1)))}px;opacity:${i > 17 ? 0.35 : 1}"></i>`).join('')}</div>`
+    },
+    { // 回答：分出三滴，落成按钮；最后一滴还在路上
+      scene: {
+        blobs: [[0, 1.24, 0, 0.46, 0.3], [0.02, 0.7, 0.05, 0.1, 0.2]],
+        drops: [[-0.74, -0.62, 0.2, 0.15, [1, 1, 1]], [-0.74, -1.14, 0.2, 0.15, [1, 1, 1]], [-0.74, -1.42, 0.2, 0.11, [0.82, 1.4, 0.82]]],
+        bwob: 0.04, cam, envRot: 0.4,
+      },
+      html: `<div class="ph" style="top:56px"><div class="lab mono"><b>Hg</b> · 回答</div></div>
+             <div class="cap" style="top:206px;font-size:14px">下午有两个空档，<br>你挑一个：</div>
+             <svg class="trail" width="228" height="504" style="position:absolute;left:0;top:0;z-index:1" id="trail3"></svg>
+             <div class="chips" id="chips3"></div>`
+    },
+  ];
+  for (let i = 0; i < 3; i++) {
+    const el = document.createElement('div'); el.className = 'phone'; el.style.left = xs[i] + 'px';
+    el.innerHTML = `<div class="screen"><canvas class="gl"></canvas><div class="island"></div><div class="sb mono"><span>9:41</span><span>●●● 100</span></div>${states[i].html}</div>`;
+    ph.appendChild(el);
+    await renderInto(el.querySelector('canvas'), SW, SH, states[i].scene, {});
+  }
+  // 回答屏：按钮的位置 = 每一滴落下的位置；第三滴还在路上（虚线是它的轨迹）
+  {
+    const s = Object.assign({ shift: [0, 0] }, states[2].scene);
+    const P = p => at(s, p, SW, SH);
+    const ys = [-0.62, -1.14, -1.66], labels = [['挪到 14:00', '空 2 h'], ['挪到 16:30', '空 1 h'], ['取消这个会', '']];
+    let h = '';
+    ys.forEach((y, i) => { const [x, yy] = P([-0.74, y, 0.2]); h += `<div class="chipx${i === 2 ? ' ghost' : ''}" style="left:${x - 20}px;top:${yy - 18}px">${labels[i][0]}${labels[i][1] ? `<small>${labels[i][1]}</small>` : ''}</div>`; });
+    document.getElementById('chips3').innerHTML = h;
+    const [bx, by] = P([0, 0.82, 0]), [fx, fy] = P([-0.74, -1.42, 0.2]), [tx, ty] = P([-0.74, -1.66, 0.2]);
+    const [c1x, c1y] = P([-0.74, -0.62, 0.2]), [c2x, c2y] = P([-0.74, -1.14, 0.2]);
+    const curve = (x0, y0, x1, y1, op) => `<path d="M${x0} ${y0} C ${x0 + 60} ${y0 + 40}, ${x1 + 70} ${y1 - 60}, ${x1} ${y1}" fill="none" stroke="rgba(255,255,255,${op})" stroke-width="1" stroke-dasharray="2 4"/>`;
+    document.getElementById('trail3').innerHTML = curve(bx + 8, by, c1x + 10, c1y - 8, 0.22) + curve(bx + 12, by, c2x + 10, c2y - 8, 0.22) + curve(bx + 16, by, fx + 10, fy - 14, 0.6) +
+      `<path d="M${fx} ${fy + 16} L${tx} ${ty - 9}" stroke="#ff4fa3" stroke-width="1.2" stroke-dasharray="3 3"/>`;
+  }
+  // 手机下面的说明 + 手机之间的箭头
+  const steps = [
+    ['01', '待机 · 呼吸', '半径 ±3.5%，4 秒一次。没人说话时，它也在“活着”。'],
+    ['02', '聆听 · 长刺', '按下 120 ms 内长出第一根刺；音量越大刺越长，像磁流体。'],
+    ['03', '回答 · 分裂', '松手：刺收回，分出三滴，弹簧落位，变成三个按钮。'],
+  ];
+  steps.forEach((s, i) => { const d = document.createElement('div'); d.className = 'steps'; d.style.left = (xs[i] + 4) + 'px'; d.innerHTML = `<span class="n">${s[0]}</span><b>${s[1]}</b><p>${s[2]}</p>`; ph.appendChild(d); });
+  [['按下', '+0 ms'], ['松手', '+120 ms']].forEach((a, i) => {
+    const d = document.createElement('div'); d.className = 'arrow mono'; d.style.left = (xs[i] + PW - 30 + 6) + 'px';
+    d.innerHTML = `${a[0]}<br><span style="color:#ff4fa3">${a[1]}</span><svg width="40" height="12"><path d="M2 6 H34 M28 1 L35 6 L28 11" fill="none" stroke="#fff" stroke-width="1.3"/></svg>`;
+    ph.appendChild(d);
+  });
+
+  // —— 卡片里的小图 ——
+  vizA(); vizB(); vizC(); vizD(hero);
+  window.__done = true;
+})().catch(e => { console.log('ERR', e.message.slice(0, 3000)); window.__done = true; });
+
+// A：三档 k 的融合（2D 平滑并集 + 简单的“铬”渐变上色）
+function vizA() {
+  const box = document.getElementById('vizA'); const W = 390, H = 96;
+  const c = document.createElement('canvas'); c.width = W * DPR; c.height = H * DPR; c.style.width = W + 'px'; c.style.height = H + 'px'; box.appendChild(c);
+  const x = c.getContext('2d'); const img = x.createImageData(c.width, c.height);
+  const ks = [0.0, 0.24, 0.5];
+  const smin = (a, b, k) => { if (k <= 0) return Math.min(a, b); const h = Math.max(k - Math.abs(a - b), 0) / k; return Math.min(a, b) - h * h * k * 0.25; };
+  for (let py = 0; py < c.height; py++) for (let px = 0; px < c.width; px++) {
+    const u = px / DPR, v = py / DPR; const panel = Math.floor(u / (W / 3)); const lx = (u - panel * W / 3 - W / 6) / 42, ly = (v - 38) / 42;
+    const d = smin(Math.hypot(lx + 0.5, ly) - 0.46, Math.hypot(lx - 0.44, ly) - 0.38, ks[panel]);
+    const i = (py * c.width + px) * 4;
+    if (d < 0) { // 用“高度”假装法线，再查一个上亮下暗的条带
+      const t = Math.min(1, -d / 0.32); const ny = ly - 0.0; const band = 0.5 + 0.5 * Math.cos((ny * 2.2 - t * 0.9) * 3.0);
+      const g = 30 + 225 * Math.pow(band, 2.2) * (0.35 + 0.65 * t);
+      img.data[i] = g * 0.95; img.data[i + 1] = g * 0.97; img.data[i + 2] = Math.min(255, g * 1.05 + 10); img.data[i + 3] = 255;
+    } else if (d < 0.02) { img.data[i] = 255; img.data[i + 1] = 255; img.data[i + 2] = 255; img.data[i + 3] = 90; }
+  }
+  x.putImageData(img, 0, 0);
+  ks.forEach((k, i) => { const l = document.createElement('span'); l.className = 'vl'; l.style.left = (i * W / 3 + 4) + 'px'; l.style.top = '82px'; l.textContent = 'k = ' + k.toFixed(2) + ['  分开', '  细颈', '  粗颈'][i]; box.appendChild(l); });
+}
+// B：弹簧曲线
+function vizB() {
+  const box = document.getElementById('vizB'); const W = 390, H = 96;
+  const k = 380, c = 18, m = 1; let x = 0, v = 0; const pts = [];
+  for (let t = 0; t <= 0.8; t += 1 / 240) { const a = (-k * (x - 1) - c * v) / m; v += a / 240; x += v / 240; pts.push([t, x]); }
+  const X = t => 10 + t / 0.8 * (W - 20), Y = y => 84 - y * 62;
+  const d = pts.map((p, i) => (i ? 'L' : 'M') + X(p[0]).toFixed(1) + ' ' + Y(p[1]).toFixed(1)).join(' ');
+  const peak = pts.reduce((a, b) => b[1] > a[1] ? b : a);
+  box.innerHTML = `<svg width="${W}" height="${H}"><line x1="10" x2="${W - 10}" y1="${Y(1)}" y2="${Y(1)}" stroke="rgba(255,255,255,.25)" stroke-dasharray="3 4"/><line x1="10" x2="${W - 10}" y1="${Y(0)}" y2="${Y(0)}" stroke="rgba(255,255,255,.18)"/>
+    <path d="${d}" fill="none" stroke="#eef1f7" stroke-width="2"/><circle cx="${X(peak[0])}" cy="${Y(peak[1])}" r="4" fill="#ff4fa3"/>
+    <text x="${X(peak[0]) + 8}" y="${Y(peak[1]) - 4}" fill="#ff4fa3" font-family="GeistMono" font-size="10">+${((peak[1] - 1) * 100).toFixed(0)}%</text>
+    <text x="${W - 10}" y="${Y(0) + 12}" fill="#8d95a8" font-family="GeistMono" font-size="10" text-anchor="end">0.8 s</text></svg>`;
+}
+// C：音量 → 刺长
+function vizC() {
+  const box = document.getElementById('vizC'); const W = 390, H = 96;
+  const X = r => 10 + r * 190, Y = L => 84 - (L / 0.56) * 72;
+  let d = ''; for (let i = 0; i <= 60; i++) { const r = i / 60, L = 0.06 + 0.5 * Math.pow(r, 0.7); d += (i ? 'L' : 'M') + X(r).toFixed(1) + ' ' + Y(L).toFixed(1); }
+  let lin = `M${X(0)} ${Y(0)} L${X(1)} ${Y(0.56)}`;
+  // 右边：三档音量下的刺
+  const spk = (cx, L) => { let s = ''; for (let a = -Math.PI; a < Math.PI; a += Math.PI / 7) { const r0 = 14, r1 = 14 + L * 46; s += `<path d="M${cx + Math.cos(a - 0.16) * r0} ${48 + Math.sin(a - 0.16) * r0} L${cx + Math.cos(a) * r1} ${48 + Math.sin(a) * r1} L${cx + Math.cos(a + 0.16) * r0} ${48 + Math.sin(a + 0.16) * r0}Z" fill="#c9d3e4"/>`; } return s + `<circle cx="${cx}" cy="48" r="15" fill="#c9d3e4"/>`; };
+  box.innerHTML = `<svg width="${W}" height="${H}"><path d="${lin}" stroke="rgba(255,255,255,.2)" stroke-dasharray="3 4" fill="none"/><path d="${d}" stroke="#eef1f7" stroke-width="2" fill="none"/>
+    <text x="10" y="94" fill="#8d95a8" font-family="GeistMono" font-size="10">rms 0</text><text x="200" y="94" fill="#8d95a8" font-family="GeistMono" font-size="10" text-anchor="end">1</text>
+    ${spk(244, 0.06)}${spk(300, 0.32)}${spk(360, 0.56)}</svg>`;
+}
+// D：环境图条 + 两个取景框（手机左倾 / 右倾时金属照到的那一段）
+function vizD(s) {
+  const box = document.getElementById('vizD'); const W = 390, H = 96;
+  const c = document.createElement('canvas'); c.width = 390 * DPR; c.height = 64 * DPR; c.style.width = '390px'; c.style.height = '64px'; c.style.borderRadius = '6px'; box.appendChild(c);
+  CHROME.envPreview(c, { envRot: 0 });
+  const f = document.createElement('div'); f.innerHTML = `<svg width="${W}" height="${H}" style="position:absolute;left:0;top:0"><rect x="120" y="2" width="96" height="60" fill="none" stroke="#ff4fa3" stroke-width="1.5"/><rect x="172" y="2" width="96" height="60" fill="none" stroke="#39b8ff" stroke-width="1.5" stroke-dasharray="4 3"/>
+    <text x="120" y="80" fill="#ff4fa3" font-family="GeistMono" font-size="10">tilt −12°</text><text x="268" y="80" fill="#39b8ff" font-family="GeistMono" font-size="10" text-anchor="end">tilt +12°</text></svg>`;
+  box.appendChild(f.firstChild);
+}
+</script>
+</body>
+</html>

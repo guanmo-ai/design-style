@@ -1,0 +1,157 @@
+<!doctype html>
+<html lang="zh">
+<head>
+<meta charset="utf-8">
+<title>热成像 · Thermal · 第 0 帧</title>
+<style>
+@font-face { font-family: 'Archivo'; src: url(../../public/fonts/Archivo.ttf); font-weight: 100 900; font-stretch: 62% 125%; }
+@font-face { font-family: 'GeistMono'; src: url(../../public/fonts/GeistMono.ttf); font-weight: 100 900; }
+@font-face { font-family: 'NotoSC'; src: url(../../public/fonts/NotoSansSC-Black.otf); font-weight: 900; }
+@font-face { font-family: 'NotoSC'; src: url(../../public/fonts/NotoSansSC-Bold.otf); font-weight: 700; }
+@font-face { font-family: 'NotoSC'; src: url(../../public/fonts/NotoSansSC-Regular.otf); font-weight: 400; }
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html, body { width: 1920px; height: 1080px; overflow: hidden; background: #04020c; color: #fff; font-family: NotoSC, sans-serif; }
+#gl { position: absolute; inset: 0; width: 1920px; height: 1080px; }
+.mono { font-family: GeistMono, monospace; letter-spacing: .05em; }
+.ov { position: absolute; inset: 0; pointer-events: none; }
+.tl { position: absolute; left: 64px; top: 50px; font-size: 13px; color: rgba(255,255,255,.7); display: flex; gap: 26px; text-transform: uppercase; }
+.tl b { color: #fff; font-weight: 500; }
+.hudtr { position: absolute; right: 64px; top: 46px; text-align: right; font-size: 12px; line-height: 1.9; color: rgba(255,255,255,.75); }
+.hudtr b { color: #fff; font-weight: 500; }
+.scale { position: absolute; right: 64px; top: 140px; width: 14px; height: 400px; border-radius: 2px; outline: 1px solid rgba(255,255,255,.35); }
+.ticks { position: absolute; right: 88px; top: 134px; height: 412px; display: flex; flex-direction: column; justify-content: space-between; text-align: right; font-size: 11px; color: rgba(255,255,255,.8); }
+.frame i { position: absolute; width: 26px; height: 26px; border-color: rgba(255,255,255,.7); border-style: solid; }
+.title { position: absolute; left: 64px; bottom: 58px; }
+.title h2 { font-family: Archivo; font-weight: 800; font-stretch: 125%; font-size: 40px; letter-spacing: .18em; }
+.title p { font-size: 20px; line-height: 1.7; color: rgba(255,255,255,.82); margin-top: 12px; width: 640px; }
+.title p em { font-style: normal; color: #ffe27a; }
+.spot { position: absolute; font-size: 12px; color: #fff; white-space: nowrap; }
+.spot b { font-size: 22px; font-weight: 500; letter-spacing: 0; }
+.spot small { display: block; font-size: 11px; color: rgba(255,255,255,.75); margin-top: 2px; }
+svg.lines { position: absolute; inset: 0; }
+.call { position: absolute; width: 300px; font-size: 13px; line-height: 1.6; color: rgba(255,255,255,.88); padding: 10px 12px; background: rgba(4,2,12,.62); backdrop-filter: blur(8px); border-left: 2px solid #ffe27a; }
+.call .k { display: block; font-family: GeistMono; font-size: 12px; color: #fff; margin-bottom: 4px; letter-spacing: .04em; }
+.call .k i { font-style: normal; color: #ffe27a; margin-right: 8px; }
+.pals { position: absolute; left: 820px; bottom: 58px; width: 420px; }
+.pals .cap { font-size: 13px; color: rgba(255,255,255,.85); margin-bottom: 10px; }
+.pals .row { display: grid; grid-template-columns: 124px 1fr; align-items: center; gap: 12px; margin-top: 7px; font-size: 11px; color: rgba(255,255,255,.8); }
+.pals .row .b { height: 10px; border-radius: 2px; }
+.pals .row.on span { color: #ffe27a; }
+</style>
+</head>
+<body>
+<canvas id="gl"></canvas>
+<div class="ov" id="ov" style="display:none">
+  <div class="tl mono"><span><b>NO. 024</b></span><span>热成像 · Thermal</span><span>1800 赫歇尔发现红外 → 1960s 军用热像仪 → 今天的时装片与 MV</span></div>
+  <div class="hudtr mono"><b>IRONBOW</b> · ε 0.95 · 9 HZ · 320×240<br>MAX <b id="tmax"></b> · MIN <b id="tmin"></b></div>
+  <div class="scale" id="scale"></div>
+  <div class="ticks mono" id="ticks"></div>
+  <div class="frame"><i style="left:40px;top:40px;border-width:2px 0 0 2px"></i><i style="right:40px;top:40px;border-width:2px 2px 0 0"></i><i style="left:40px;bottom:40px;border-width:0 0 2px 2px"></i><i style="right:40px;bottom:40px;border-width:0 2px 2px 0"></i></div>
+  <svg class="lines" id="lines" width="1920" height="1080"></svg>
+  <div id="spots"></div>
+  <div class="title"><h2>THERMAL</h2><p>不拍颜色，拍温度。手指碰过的地方会留下一道<em>慢慢冷掉的影子</em>——这张静帧里，看得见时间。</p></div>
+  <div class="pals mono" id="pals"><div class="cap" style="font-family:NotoSC">同一张温度图，换一条色带就是另一种情绪</div></div>
+</div>
+<script src="../_lib/glkit.js"></script>
+<script src="thermal.js"></script>
+<script>
+const Q = new URLSearchParams(location.search);
+const SCALE = +(Q.get('scale') || 1) * devicePixelRatio;
+(async () => {
+  await document.fonts.load('700 100px NotoSC', '热成像');
+  await document.fonts.ready;
+  const cv = document.getElementById('gl');
+  cv.width = Math.round(1920 * SCALE); cv.height = Math.round(1080 * SCALE);
+  const gl = GLK.create(cv);
+  const P = THERM.makeProgram(gl);
+  const W = 960, H = 540;   // 一格 = 2 px
+  let seed = 5; const R = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+  // 墙：22 °C 上下一点起伏
+  const amb = new Float32Array(W * H);
+  { const nz = new Float32Array(W * H); for (let i = 0; i < W * H; i++) nz[i] = R() - 0.5; GLK.blurField(nz, W, H, 18);
+    for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) { const i = y * W + x; const stud = [150, 450, 750].reduce((a, sx) => a + 0.45 * Math.exp(-Math.pow((x - sx) / 7, 2)), 0) + 0.35 * Math.exp(-Math.pow((y - 470) / 6, 2));
+      amb[i] = 21.5 + nz[i] * 9 + 0.7 * (y / H) + stud + 0.5 * Math.exp(-Math.pow((x - 820) / 260, 2) - Math.pow((y - 80) / 200, 2)); } }
+  const F = THERM.Field(W, H, 22); F.T.set(amb);
+  // 字：手指一笔一笔写过去
+  const font = Q.get('font') || '700 {S} NotoSC';
+  const G = THERM.glyphMask('热成像', font, W, H, { x: 80, y: +(Q.get('ty') || 318), w: +(Q.get('tw') || 600) });
+  const mask = THERM.blur(G.m, W, H, 1.2);
+  const tWrite = [[0.0, 1.3], [1.5, 2.8], [3.0, 4.3]], tEnd = +(Q.get('tend') || 4.32), dt = 0.02;
+  const reveal = new Float32Array(W * H).fill(1e9);
+  let last = [0, 0], lastT = -1;
+  G.glyphs.forEach(([l, r], gi) => {
+    let top = H, bot = 0; for (let y = 0; y < H; y++) for (let x = Math.floor(l); x < r; x++) if (G.m[y * W + x] > 0.5) { top = Math.min(top, y); bot = Math.max(bot, y); }
+    for (let y = 0; y < H; y++) for (let x = Math.max(0, Math.floor(l) - 3); x < Math.min(W, Math.ceil(r) + 3); x++) {
+      const i = y * W + x; if (mask[i] < 0.05) continue;
+      const key = 0.72 * (y - top) / (bot - top + 1) + 0.28 * (x - l) / (r - l);
+      const t = tWrite[gi][0] + key * (tWrite[gi][1] - tWrite[gi][0]); reveal[i] = Math.min(reveal[i], t);
+      if (t > lastT && t <= tEnd && G.m[i] > 0.6) { lastT = t; last = [x, y]; }
+    }
+  });
+  const Tfinger = +(Q.get('tf') || 33.6), D = 0.2, K = +(Q.get('k') || 0.0058);
+  for (let t = 0; t < tEnd; t += dt) {
+    for (let i = 0; i < W * H; i++) { const r = reveal[i]; if (r > t - dt && r <= t) { const v = amb[i] + (Tfinger - amb[i]) * Math.min(1, mask[i] * 1.15); if (v > F.T[i]) F.T[i] = v; } }
+    F.step(D, K, amb);
+    await GLK.tick();
+  }
+  // 手：挡在墙前面，指尖落在最后一笔上
+  const tip = [last[0] + 6, last[1] + 4];
+  const hand = THERM.handSDF(W, H, tip, [-0.84, -0.54], +(Q.get('hs') || 1.45));
+  const hmask = new Float32Array(W * H);
+  const nzh = new Float32Array(W * H); for (let i = 0; i < W * H; i++) nzh[i] = R() - 0.5; GLK.blurField(nzh, W, H, 5);
+  for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) {
+    const i = y * W + x, dep = hand.depth[i];
+    const halo = 0.9 * Math.exp(-Math.max(0, -dep) / 30);
+    const wall = F.T[i] + halo;
+    const vein = 0.5 * Math.max(0, Math.sin((x * 0.6 + y * 0.9) * 0.09 + Math.sin(y * 0.05) * 3)) * Math.min(1, dep / 30);
+    const th = 31.2 + 4.2 * Math.min(1, Math.max(0, dep / 40)) - 2.6 * hand.tip[i] + vein + nzh[i] * 0.9;
+    const cov = Math.min(1, Math.max(0, (dep + 1.2) / 2.4));
+    F.T[i] = wall * (1 - cov) + th * cov; hmask[i] = Math.min(1, Math.max(0, (dep + 6) / 6));
+  }
+  const tmin = +(Q.get('tmin') || 20.6), tmax = +(Q.get('tmax') || 35.8);
+  await THERM.render(gl, P, F, { tmin, tmax, palette: Q.get('pal') || 'ironbow', palette2: Q.get('pal2') || 'ironbow', wipe: +(Q.get('wipe') || 2), glow: 0.32, glowSigma: 9, noise: 0.16, mask: GLK.blurField(hmask, W, H, 1.5), iso: +(Q.get('iso') || 31.2), isoW: 0.06, isoCol: [0.35, 1.0, 0.75], vignette: 0.3 });
+
+  // —— HUD ——
+  if (Q.get('ov') !== '0') {
+    document.getElementById('ov').style.display = '';
+    let mx = -1e9, mn = 1e9; for (const v of F.T) { if (v > mx) mx = v; if (v < mn) mn = v; }
+    document.getElementById('tmax').textContent = mx.toFixed(1) + '°C'; document.getElementById('tmin').textContent = mn.toFixed(1) + '°C';
+    document.getElementById('scale').style.background = THERM.lutCss('ironbow').replace('90deg', '0deg');
+    let tk = ''; for (let i = 0; i <= 6; i++) tk += `<span>${(tmax - (tmax - tmin) * i / 6).toFixed(1)}°</span>`; document.getElementById('ticks').innerHTML = tk;
+    const at = (gx, gy) => F.T[Math.round(gy) * W + Math.round(gx)];
+    // 找到每个字最热的一点（作为测温点）
+    const hottest = (gi) => { const [l, r] = G.glyphs[gi]; let b = null; for (let y = 0; y < H; y++) for (let x = Math.floor(l); x < r; x++) { const i = y * W + x; if (G.m[i] > 0.9 && hand.depth[i] < -20 && (!b || F.T[i] > b[2])) b = [x, y, F.T[i]]; } return b; };
+    const s0 = hottest(0), s2 = hottest(2);
+    const spots = [
+      { g: [tip[0] + 70, tip[1] + 44], lab: '手指 · 正在写最后一笔', dx: -190, dy: 150 },
+      { g: [s0[0], s0[1]], lab: '“热” · 4.3 秒前写的', dx: -10, dy: -150 },
+    ];
+    let svg = '', html = '';
+    for (const s of spots) {
+      const x = s.g[0] * 2, y = s.g[1] * 2, T = at(s.g[0], s.g[1]);
+      svg += `<g stroke="#fff" stroke-width="1.4"><line x1="${x - 18}" y1="${y}" x2="${x - 6}" y2="${y}"/><line x1="${x + 6}" y1="${y}" x2="${x + 18}" y2="${y}"/><line x1="${x}" y1="${y - 18}" x2="${x}" y2="${y - 6}"/><line x1="${x}" y1="${y + 6}" x2="${x}" y2="${y + 18}"/></g>`;
+      svg += `<polyline points="${x + 10},${y - 10} ${x + s.dx},${y + s.dy} ${x + s.dx + 24},${y + s.dy}" fill="none" stroke="rgba(255,255,255,.7)" stroke-width="1"/>`;
+      html += `<div class="spot mono" style="left:${x + s.dx + 30}px;top:${y + s.dy - 16}px"><b>${T.toFixed(1)}°C</b><small>${s.lab}</small></div>`;
+    }
+    const isoPt = (() => { let b = null; for (let y = 0; y < H; y += 2) for (let x = Math.floor(G.glyphs[2][0]); x < G.glyphs[2][1]; x += 2) { const i = y * W + x; if (hand.depth[i] < -40 && Math.abs(F.T[i] - 31.2) < 0.15 && (!b || y < b[1])) b = [x, y]; } return b; })();
+    const calls = [
+      { p: [G.glyphs[0][0] * 2 + 150, 300], to: [610, 168], k: '<i>01</i>T += D·∇²T − k(T − T₀)', z: '热会往四周散（字变糊），也会往空气里跑（字变暗）。同一张图里，摆着 4 秒钟。' },
+      { p: [isoPt[0] * 2, isoPt[1] * 2], to: [1290, 170], k: '<i>02</i>等温线 · 31.2 °C', z: '只描一个温度：圈出来的，正好是最后 0.8 秒写下的那几笔。' },
+    ];
+    for (const c of calls) {
+      const [x, y] = c.p, [tx, ty] = c.to;
+      svg += `<circle cx="${x}" cy="${y}" r="4" fill="#ffe27a"/><polyline points="${x},${y} ${x},${ty + 40} ${tx},${ty + 40}" fill="none" stroke="rgba(255,226,122,.7)" stroke-width="1"/>`;
+      html += `<div class="call" style="left:${tx}px;top:${ty}px"><span class="k">${c.k}</span>${c.z}</div>`;
+    }
+    document.getElementById('lines').innerHTML = svg;
+    document.getElementById('spots').innerHTML = html;
+    const pals = document.getElementById('pals');
+    [['ironbow', '铁虹 IRONBOW', 1], ['rainbow', '彩虹 RAINBOW', 0], ['arctic', '极地 ARCTIC', 0], ['whitehot', '白热 WHITE-HOT', 0]].forEach(([k, n, on]) => {
+      const d = document.createElement('div'); d.className = 'row' + (on ? ' on' : ''); d.innerHTML = `<span>${n}</span><div class="b" style="background:${THERM.lutCss(k)}"></div>`; pals.appendChild(d);
+    });
+  }
+  window.__done = true;
+})().catch(e => { console.log('ERR', e.message.slice(0, 3000)); window.__done = true; });
+</script>
+</body>
+</html>

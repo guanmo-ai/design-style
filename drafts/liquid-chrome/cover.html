@@ -1,0 +1,178 @@
+<!doctype html>
+<html lang="zh">
+<head>
+<meta charset="utf-8">
+<title>液态金属 · Liquid Chrome · 第 0 帧</title>
+<style>
+@font-face { font-family: 'Unbounded'; src: url(../../public/fonts/Unbounded.ttf); font-weight: 200 900; }
+@font-face { font-family: 'Geist'; src: url(../../public/fonts/Geist.ttf); font-weight: 100 900; }
+@font-face { font-family: 'GeistMono'; src: url(../../public/fonts/GeistMono.ttf); font-weight: 100 900; }
+@font-face { font-family: 'NotoSC'; src: url(../../public/fonts/NotoSansSC-Black.otf); font-weight: 900; }
+@font-face { font-family: 'ZCOOL'; src: url(../../public/fonts/ZCOOLQingKeHuangYou.ttf); }
+@font-face { font-family: 'NotoSC'; src: url(../../public/fonts/NotoSansSC-Medium.otf); font-weight: 500; }
+@font-face { font-family: 'NotoSC'; src: url(../../public/fonts/NotoSansSC-Regular.otf); font-weight: 400; }
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html, body { width: 1920px; height: 1080px; overflow: hidden; background: #020306; }
+#gl { position: absolute; inset: 0; width: 1920px; height: 1080px; display: block; }
+.ov { position: absolute; inset: 0; color: #e9edf5; font-family: Geist, NotoSC, sans-serif; pointer-events: none; }
+.mono { font-family: GeistMono, monospace; letter-spacing: .04em; }
+.tl { position: absolute; left: 64px; top: 52px; font-size: 13px; color: #9aa3b5; display: flex; gap: 28px; text-transform: uppercase; }
+.tl b { color: #fff; font-weight: 500; }
+.tr { position: absolute; right: 64px; top: 48px; text-align: right; font-size: 12px; color: #8b93a6; }
+.env { position: absolute; right: 64px; top: 78px; width: 260px; }
+.env canvas { width: 260px; height: 130px; display: block; border-radius: 3px; outline: 1px solid rgba(255,255,255,.18); }
+.env .cap { display: flex; justify-content: space-between; margin-top: 8px; font-size: 11px; color: #8b93a6; }
+.shade { position: absolute; left: 0; right: 0; bottom: 0; height: 300px; background: linear-gradient(to top, rgba(2,3,8,.82), rgba(2,3,8,0)); }
+.cap2 { font-family: NotoSC; font-size: 13px; line-height: 1.6; color: #a9b1c3; margin-top: 8px; }
+.cap2 b { font-weight: 500; color: #fff; }
+.title { position: absolute; left: 64px; bottom: 58px; }
+.title h1 { font-family: NotoSC; font-weight: 900; font-size: 92px; line-height: 1; letter-spacing: .02em; color: #f4f6fb; }
+.title h2 { font-family: Unbounded; font-weight: 300; font-size: 30px; letter-spacing: .34em; color: #eef1f7; text-transform: uppercase; }
+.title p { font-family: NotoSC; font-weight: 400; font-size: 20px; line-height: 1.65; color: #aab3c6; margin-top: 14px; max-width: 700px; }
+.title p em { font-style: normal; color: #fff; }
+.call { position: absolute; width: 250px; font-size: 12.5px; line-height: 1.55; color: #c4cbd9; }
+.call.r { text-align: right; }
+.call .k { color: #fff; font-family: GeistMono; font-size: 12px; letter-spacing: .03em; display: block; margin-bottom: 3px; }
+.call .k i { font-style: normal; color: #ff4fa3; margin-right: 8px; }
+.call .z { font-family: NotoSC; font-size: 14px; color: #b9c1d2; }
+svg.lines { position: absolute; inset: 0; }
+.br { position: absolute; right: 64px; bottom: 60px; text-align: right; font-size: 12px; color: #7f879a; line-height: 1.8; }
+.br b { color: #e9edf5; font-weight: 500; }
+</style>
+</head>
+<body>
+<canvas id="gl"></canvas>
+<div class="ov" id="ov" style="display:none">
+  <div class="shade"></div>
+  <div class="tl mono"><span><b>NO. 022</b></span><span>液态金属 · Liquid Chrome</span><span>1991 T-1000 → 千禧镀铬字 → 今天的 3D 字</span></div>
+  <div class="tr mono">FRAME 0418 / 1080 · 60 FPS · 第 0 帧</div>
+  <div class="env">
+    <canvas id="envc" width="560" height="280"></canvas>
+    <div class="cap mono"><span>ENV · 它照到的世界</span><span>360° × 180°</span></div>
+    <div class="cap2">铬的颜色全在这张图里：<b>2 块白柔光</b>、<b style="color:#ff5aa8">洋红</b> / <b style="color:#3ab8ff">青蓝</b>两条色片、<b style="color:#ffb27a">一条地平线</b>。</div>
+  </div>
+  <svg class="lines" id="lines" width="1920" height="1080"></svg>
+  <div id="calls"></div>
+  <div class="title">
+    <h2>Liquid Chrome</h2>
+    <p>它自己没有颜色，<em>颜色全是它照到的世界</em>。<br>动一下，倒影就整片流过去；两滴一碰，先拉出一道“颈”，再合成一滴。</p>
+  </div>
+  <div class="br mono"><b>smin · reflect · fresnel</b><br>RAYMARCHED · 3 BOUNCES · 0 TEXTURES</div>
+</div>
+<script src="../_lib/glkit.js"></script>
+<script src="chrome.js"></script>
+<script>
+const Q = new URLSearchParams(location.search);
+const SCALE = +(Q.get('scale') || 1) * devicePixelRatio;
+(async () => {
+  await document.fonts.load('900 100px Unbounded');
+  await document.fonts.load('900 100px NotoSC');
+  await document.fonts.load('100px ZCOOL', '液态金属');
+  const cv = document.getElementById('gl');
+  cv.width = Math.round(1920 * SCALE); cv.height = Math.round(1080 * SCALE);
+  const gl = GLK.create(cv);
+  const P = GLK.program(gl, CHROME.FS);
+  const word = Q.get('word') || '液态金属';
+  const text = CHROME.textField(gl, { text: word, font: Q.get('font') || '{S} ZCOOL', worldWidth: +(Q.get('ww') || 7.0), center: [0, +(Q.get('ty') || 2.25)], fit: 0.9, letterSpacing: -0.02, blur: +(Q.get('blur') || 14) });
+  window.__text = text;
+  console.log('glyphs', JSON.stringify(text.glyphs.map(g => g.map(v => +v.toFixed(2)))), 'cap', text.capTop.toFixed(2), 'base', text.base.toFixed(2));
+
+  // —— 场景：悬浮的字往下滴，滴到一整片薄水银地面上 ——
+  // 水滴自动挂在每个字底边的“局部最低点”（液体会往最低处聚）
+  let seed = +(Q.get('seed') || 7);
+  const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+  const G = text.glyphs;
+  const drips = [], drops = [], ripples = [], crowns = [];
+  const yaw = +(Q.get('yaw') || -0.16), gpos = [0, 0, 0];
+  const W = (x, z = 0) => [Math.cos(yaw) * x + Math.sin(yaw) * z, -Math.sin(yaw) * x + Math.cos(yaw) * z];
+  const marks = {};
+  const minima = [];
+  for (const [l, r] of G) {
+    const xs = []; for (let x = l + 0.04; x <= r - 0.04; x += 0.01) { const y = text.bottom(x); xs.push([x, y]); }
+    for (let i = 3; i < xs.length - 3; i++) {
+      const y = xs[i][1]; if (y == null) continue;
+      let ok = true; for (let k = -3; k <= 3; k++) { const yk = xs[i + k][1]; if (yk == null || yk < y - 1e-4) { ok = false; break; } }
+      if (ok && !minima.some(m => Math.abs(m[0] - xs[i][0]) < 0.16)) minima.push([xs[i][0], y]);
+    }
+  }
+  const lowest = Math.min(...minima.map(m => m[1]));
+  let picks = minima.filter(m => m[1] < lowest + (+(Q.get('band') || 0.5)));
+  const maxD = +(Q.get('maxd') || 16);
+  while (picks.length > maxD) picks.splice(Math.floor(rnd() * picks.length), 1);
+  console.log('drip points', picks.length);
+  picks.forEach(([x, y0], i) => {
+    const r = 0.055 + rnd() * 0.035, len = 0.12 + rnd() * rnd() * 0.75;
+    drips.push([[x, y0 + 0.04, 0, r * 0.36], [x, y0 - len, 0, r]]);
+    if (rnd() < 0.3 && len > 0.3) { // 刚断开：细丝 + 卫星珠 + 主滴
+      const yb = y0 - len - r * 0.9, fall = 0.35 + rnd() * 0.4;
+      drips.push([[x, yb + 0.02, 0, 0.012], [x, yb - fall * 0.55, 0, 0.009]]);
+      drops.push([x, yb - fall * 0.62, 0, 0.026, [1, 1.35, 1]]);
+      drops.push([x, yb - fall, 0, r * 1.05, [0.94, 1.14, 0.94]]);
+      if (!marks.pinch || x > marks.pinch[0]) marks.pinch = [x, yb - fall * 0.62, 0];
+      const [wx, wz] = W(x); ripples.push([wx, wz, 0.4 + rnd() * 0.9, 0.016]);
+    } else if (rnd() < 0.35) {
+      const [wx, wz] = W(x); ripples.push([wx, wz, 0.5 + rnd() * 1.2, 0.012]);
+    }
+  });
+  // 一颗正在落地的：皇冠溅射 + 波纹
+  if (picks.length) {
+    const [x] = picks[Math.floor(picks.length * 0.42)]; const [wx, wz] = W(x);
+    crowns.push([wx, wz, 0.15, 0.17]); ripples.push([wx, wz, 0.35, 0.014]); marks.crown = [wx, 0.2, wz];
+    drops.push([x, 0.62, 0, 0.05, [0.9, 1.3, 0.9]]);
+  }
+  // 融合：空中两滴正在碰到一起，中间一道“颈”
+  const fx = +(Q.get('fx') || 0.55), fy = text.capTop + 0.62;
+  marks.merge = [fx + 0.17, fy + 0.04, 0.3];
+  drops.push([fx, fy, 0.3, 0.2, [1, 1, 1]], [fx + 0.34, fy + 0.07, 0.3, 0.15, [1.06, 0.95, 1]]);
+  drops.push([3.85, text.capTop + 0.6, 0.5, 0.07], [-3.2, text.capTop - 0.2, 0.9, 0.04], [1.2, text.capTop + 1.1, 0.7, 0.045], [2.5, text.capTop + 0.45, -0.4, 0.06]);
+  const blobs = [];
+  const pools = [];
+  const scene = {
+    text, drips, drops, blobs, pools, ripples, crowns, T: 1.3, yaw, gpos,
+    R: +(Q.get('R') || 0.28), H: +(Q.get('H') || 0.0), wob: 0.006,
+    cam: { pos: [+(Q.get('cx') || 0.6), +(Q.get('cy') || 0.9), +(Q.get('cz') || 10.6)], tgt: [0.2, 1.6, 0], fov: +(Q.get('fov') || 30) },
+    shift: [+(Q.get('sx') || -0.05), +(Q.get('sy') || 0.03)],
+    floorY: 0,
+    envRot: +(Q.get('rot') || 0), envHue: +(Q.get('hue') || 0),
+    tint: [0.86, 0.87, 0.9],
+    floorTint: [0.62, 0.64, 0.7],
+    backdrop: ({
+      a: { top: [0.0006, 0.0007, 0.0012], bot: [0.0025, 0.003, 0.0055], glow: [0.004, 0.009, 0.03], glowPos: [0.0, 0.05] },
+      b: { top: [0.0006, 0.0006, 0.0009], bot: [0.003, 0.0022, 0.002], glow: [0.04, 0.012, 0.004], glowPos: [0.0, -0.06] },
+      c: { top: [0.0005, 0.0005, 0.0008], bot: [0.0015, 0.0015, 0.002], glow: [0.0, 0.0, 0.0], glowPos: [0.0, 0.0] },
+    })[Q.get('bd') || 'a'],
+  };
+  const SS = +(Q.get('ss') || 2);
+  const target = GLK.fbo(gl, cv.width * SS, cv.height * SS);
+  const t0 = performance.now();
+  await CHROME.render(gl, P, target, scene, +(Q.get('tiles') || 10));
+  console.log('render ms', Math.round(performance.now() - t0));
+  const post = GLK.post(gl);
+  await post(target.tex, { exposure: +(Q.get('exp') || 1.25), bloom: 0.5, threshold: 1.2, grain: 0.035, vignette: 0.45, ca: 0.006, saturation: 1.08 });
+  if (Q.get('ov') !== '0') {
+    document.getElementById('ov').style.display = '';
+    CHROME.envPreview(document.getElementById('envc'), scene);
+    const pr = (p, local) => CHROME.project(scene, local ? CHROME.toWorld(scene, p) : p, 1920, 1080);
+    const C = [
+      { p: pr(marks.merge, true), side: 'r', dx: 70, dy: -40, k: '<i>01</i>融合 · smin(a, b, k)', z: '两滴一碰不会“啪”地合上：先拉出<br>一道颈，再被表面张力吞成一滴。' },
+      { p: pr(marks.pinch, true), side: 'r', dx: 90, dy: 30, k: '<i>02</i>断开 · Rayleigh–Plateau', z: '丝越拉越细就断：一颗主滴后面<br>永远跟着一颗卫星小珠。' },
+      { p: pr(marks.crown, false), side: 'l', dx: -90, dy: 60, k: '<i>03</i>落地 · 皇冠 + 波纹', z: '波纹只改法线、不改形状——<br>地上的倒影跟着一圈圈抖。' },
+    ];
+    let svg = '', html = '';
+    for (const c of C) {
+      const [x, y] = c.p, ex = x + c.dx, ey = y + c.dy, L = c.side === 'l';
+      const ux = c.dx / Math.hypot(c.dx, c.dy), uy = c.dy / Math.hypot(c.dx, c.dy);
+      svg += `<circle cx="${x}" cy="${y}" r="10" fill="none" stroke="#fff" stroke-width="1.2" opacity=".9"/><circle cx="${x}" cy="${y}" r="2.4" fill="#ff4fa3"/>`;
+      const hx = L ? ex - 40 : ex + 40;
+      svg += `<polyline points="${x + ux * 10},${y + uy * 10} ${ex},${ey} ${hx},${ey}" fill="none" stroke="rgba(255,255,255,.6)" stroke-width="1"/>`;
+      const lx = L ? hx - 262 : hx + 12;
+      html += `<div class="call${L ? ' r' : ''}" style="left:${lx}px;top:${ey - 10}px"><span class="k mono">${c.k}</span><span class="z">${c.z}</span></div>`;
+    }
+    document.getElementById('lines').innerHTML = svg;
+    document.getElementById('calls').innerHTML = html;
+  }
+  window.__done = true;
+})().catch(e => { console.log('ERR', e.message.slice(0, 3000)); window.__done = true; });
+</script>
+</body>
+</html>

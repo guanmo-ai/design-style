@@ -1,0 +1,134 @@
+<!doctype html>
+<html lang="zh">
+<head>
+<meta charset="utf-8">
+<title>点云 · Point Cloud · 第 0 帧</title>
+<style>
+@font-face { font-family: 'Geist'; src: url(../../public/fonts/Geist.ttf); font-weight: 100 900; }
+@font-face { font-family: 'GeistMono'; src: url(../../public/fonts/GeistMono.ttf); font-weight: 100 900; }
+@font-face { font-family: 'NotoSC'; src: url(../../public/fonts/NotoSansSC-Black.otf); font-weight: 900; }
+@font-face { font-family: 'NotoSC'; src: url(../../public/fonts/NotoSansSC-Bold.otf); font-weight: 700; }
+@font-face { font-family: 'NotoSC'; src: url(../../public/fonts/NotoSansSC-Regular.otf); font-weight: 400; }
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html, body { width: 1920px; height: 1080px; overflow: hidden; background: #000; color: #e8eef2; font-family: Geist, NotoSC, sans-serif; }
+#gl { position: absolute; inset: 0; width: 1920px; height: 1080px; }
+.mono { font-family: GeistMono, monospace; letter-spacing: .05em; }
+.ov { position: absolute; inset: 0; pointer-events: none; }
+.shade { position: absolute; left: 0; top: 0; bottom: 0; width: 900px; background: linear-gradient(90deg, rgba(0,0,0,.78) 0%, rgba(0,0,0,.5) 55%, rgba(0,0,0,0) 100%); }
+.tl { position: absolute; left: 64px; top: 50px; font-size: 13px; color: #8f9aa6; display: flex; gap: 26px; text-transform: uppercase; }
+.tl b { color: #fff; font-weight: 500; }
+.tr { position: absolute; right: 64px; top: 44px; background: rgba(0,0,0,.55); padding: 6px 12px; backdrop-filter: blur(8px); font-size: 12px; color: #8f9aa6; text-align: right; line-height: 1.8; }
+.tr b { color: #6ff3ff; font-weight: 500; }
+#title { position: absolute; left: 40px; top: 210px; }
+.sub { position: absolute; left: 66px; top: 548px; }
+.sub h2 { font-family: GeistMono; font-weight: 400; font-size: 24px; letter-spacing: .42em; color: #eaf6f8; }
+.sub p { font-family: NotoSC; font-size: 20px; line-height: 1.7; color: #a6b2bc; margin-top: 18px; width: 560px; }
+.sub p em { font-style: normal; color: #fff; }
+.call { position: absolute; width: 292px; padding: 10px 12px; background: rgba(0,0,0,.62); backdrop-filter: blur(8px); border-left: 2px solid #6ff3ff; font-size: 13px; line-height: 1.6; color: #b9c4cc; font-family: NotoSC; }
+.call .k { display: block; font-family: GeistMono; font-size: 12px; color: #fff; letter-spacing: .04em; margin-bottom: 4px; }
+.call .k i { font-style: normal; color: #6ff3ff; margin-right: 8px; }
+.call.r { text-align: right; }
+svg.lines { position: absolute; inset: 0; }
+.ramp { position: absolute; left: 66px; bottom: 64px; width: 420px; }
+.ramp .bar { height: 10px; border-radius: 2px; background: linear-gradient(90deg, #30123b, #4662d8, #35abf8, #1be5b5, #95fb51, #edd03a, #fb8022, #d23105, #7a0403); }
+.ramp .lab { display: flex; justify-content: space-between; font-size: 11px; color: #8f9aa6; margin-top: 8px; }
+.ramp .cap { font-family: NotoSC; font-size: 12.5px; color: #c9d3da; margin-bottom: 10px; }
+.br { position: absolute; right: 64px; bottom: 60px; text-align: right; background: rgba(0,0,0,.6); padding: 8px 12px; backdrop-filter: blur(8px); font-size: 12px; color: #8f9aa6; line-height: 1.8; }
+.br b { color: #fff; font-weight: 500; }
+</style>
+</head>
+<body>
+<canvas id="gl"></canvas>
+<div class="ov" id="ov" style="display:none">
+  <div class="shade"></div>
+  <div class="tl mono"><span><b>NO. 023</b></span><span>点云 · Point Cloud</span><span>1960s 激光测距 → 2010 KINECT → 2020 手机 LIDAR → 2023 高斯泼溅</span></div>
+  <div class="tr mono">SCAN <b>34%</b> · 1.2 M PTS/S<br><span id="npts"></span></div>
+  <canvas id="title" width="1600" height="700" style="width:800px;height:350px"></canvas>
+  <div class="sub"><h2>POINT CLOUD</h2><p>世界不是面，是几百万个带颜色的点。<br>近的大、远的小；<em>扫描面经过哪里，颜色才落到哪里。</em></p></div>
+  <svg class="lines" id="lines" width="1920" height="1080"></svg>
+  <div id="calls"></div>
+  <div class="ramp"><div class="cap">还没上色的点：按高度着色（turbo 色带）</div><div class="bar"></div><div class="lab mono"><span>−37 m 井底</span><span>−20 m</span><span>−6.2 m 扫描面</span></div></div>
+  <div class="br mono"><b>gl.POINTS · depth test · additive glow</b><br>size = w · f / z &nbsp;·&nbsp; 0 meshes · 0 textures</div>
+</div>
+<script src="../_lib/glkit.js"></script>
+<script src="pc.js"></script>
+<script>
+const Q = new URLSearchParams(location.search);
+const SCALE = +(Q.get('scale') || 1) * devicePixelRatio;
+(async () => {
+  await document.fonts.ready;
+  const cv = document.getElementById('gl');
+  cv.width = Math.round(1920 * SCALE); cv.height = Math.round(1080 * SCALE);
+  const gl = GLK.create(cv);
+  const P = PC.makeProgram(gl);
+  const t0 = performance.now();
+  const S = PC.staircase({ turns: 10, density: +(Q.get('dens') || 2600), falloff: +(Q.get('fo') || 6.5) });
+  const sweepY = +(Q.get('sy') || -6.2);
+  if (Q.get('sheet')) PC.sheet(S.cloud, sweepY, S.Rout, 160000, PC.mulberry(5));
+  console.log('points', S.cloud.count, 'build ms', Math.round(performance.now() - t0));
+  const mesh = PC.upload(gl, S.cloud.data);
+  const scene = {
+    cam: { pos: [+(Q.get('cx') || -1.7), +(Q.get('cy') || 2.2), +(Q.get('cz') || 0.6)], tgt: [+(Q.get('tx') || 1.6), +(Q.get('tyy') || -20), +(Q.get('tz') || -0.3)], up: (Q.get('up') || '1,0,0').split(',').map(Number), fov: +(Q.get('fov') || 62), shift: [+(Q.get('shx') || -0.22), +(Q.get('shy') || 0)] },
+    sweep: { y: sweepY, ramp: Q.get('ramp') !== '0', rampLen: 26, rampGain: +(Q.get('rg') || 1.0), glow: +(Q.get('sg') || 0.14), w: 0.13, ghost: +(Q.get('gh') || 0.05), ghostA: +(Q.get('ga') || 0.18), col: [0.35, 0.95, 1.0], ghostCol: [0.05, 0.3, 0.5] },
+    near: [2.0, +(Q.get('nb') || 9)], falloff: +(Q.get('fo') || 6.5),
+    dof: { focus: +(Q.get('fd') || 9), aperture: +(Q.get('ap') || 0.008) },
+    dissolve: { amt: +(Q.get('da') || 0), front: +(Q.get('df') || 0.8), span: +(Q.get('dsp') || 0.14), alpha: +(Q.get('dal') || 0.55), col: [1.9, 0.55, 0.75], frac: +(Q.get('dfr') || 0.35), lift: +(Q.get('dl') || 1.6), swirl: +(Q.get('dsw') || 1.7), axis: [0, 1, 0], trails: 12, trailStep: 0.06 },
+    gain: +(Q.get('gain') || 0.85), minSize: 1.25, T: 0.6, sizeK: +(Q.get('sk') || 0.6),
+  };
+  const target = GLK.fbo(gl, cv.width, cv.height);
+  const cam = await PC.draw(gl, P, target, mesh, scene);
+  console.log('draw ms', Math.round(performance.now() - t0));
+  await GLK.post(gl)(target.tex, { exposure: +(Q.get('exp') || 1.0), bloom: 0.55, threshold: 0.9, grain: 0.03, vignette: 0.4, ca: 0.004, saturation: 1.1 });
+  // —— 标注 ——
+  if (Q.get('ov') !== '0') {
+    document.getElementById('ov').style.display = '';
+    document.getElementById('npts').textContent = S.cloud.count.toLocaleString('en-US') + ' POINTS · 10 TURNS · 37 M';
+    const C2 = PC.camera(scene.cam, 1920, 1080);
+    const ring = (y, r) => { let best = null; for (let a = 0; a < 6.283; a += 0.02) { const p = C2.project([Math.cos(a) * r, y, Math.sin(a) * r]); if (!best || p[0] < best[0]) best = p; } return best; };
+    const ringR = (y, r) => { let best = null; for (let a = 0; a < 6.283; a += 0.02) { const p = C2.project([Math.cos(a) * r, y, Math.sin(a) * r]); if (!best || p[0] > best[0]) best = p; } return best; };
+    const sw = ringR(sweepY + 0.2, S.Rin + 0.1), deep = ringR(-15, S.Rin), near = [420, 330];
+    const calls = [
+      { p: sw, dx: 70, dy: -90, side: 'r', k: '<i>01</i>扫描面 · y = −6.20 m', z: '扫过的地方，照片的颜色才投上去；<br>它下面还只有激光测出来的“位置”。' },
+      { p: deep, dx: 80, dy: 70, side: 'r', k: '<i>02</i>高度色带 · turbo(y)', z: '没上色的点先按高度着色：<br>红是近处，蓝紫是 37 米下的井底。' },
+    ];
+    let svg = '', html = '';
+    for (const c of calls) {
+      const [x, y] = c.p, ex = x + c.dx, ey = y + c.dy, hx = ex + 36;
+      svg += `<circle cx="${x}" cy="${y}" r="10" fill="none" stroke="#fff" stroke-width="1.2"/><circle cx="${x}" cy="${y}" r="2.4" fill="#6ff3ff"/>`;
+      svg += `<polyline points="${x + 7},${y + Math.sign(c.dy) * 7} ${ex},${ey} ${hx},${ey}" fill="none" stroke="rgba(255,255,255,.6)" stroke-width="1"/>`;
+      html += `<div class="call" style="left:${hx + 6}px;top:${ey - 20}px"><span class="k">${c.k}</span>${c.z}</div>`;
+    }
+    // 井心的十字准星
+    const ctr = C2.project([0, -30, 0]);
+    svg += `<g stroke="#6ff3ff" stroke-width="1" opacity=".8"><line x1="${ctr[0] - 26}" y1="${ctr[1]}" x2="${ctr[0] - 8}" y2="${ctr[1]}"/><line x1="${ctr[0] + 8}" y1="${ctr[1]}" x2="${ctr[0] + 26}" y2="${ctr[1]}"/><line x1="${ctr[0]}" y1="${ctr[1] - 26}" x2="${ctr[0]}" y2="${ctr[1] - 8}"/><line x1="${ctr[0]}" y1="${ctr[1] + 8}" x2="${ctr[0]}" y2="${ctr[1] + 26}"/></g>`;
+    svg += `<text x="${ctr[0] + 32}" y="${ctr[1] + 4}" fill="#6ff3ff" font-family="GeistMono" font-size="11">Z −37.00 m</text>`;
+    document.getElementById('lines').innerHTML = svg;
+    document.getElementById('calls').innerHTML = html;
+    drawTitle();
+  }
+  window.__cam = cam;
+  window.__done = true;
+})().catch(e => { console.log('ERR', e.message.slice(0, 3000)); window.__done = true; });
+// 标题也是点：字形采样成网格点，右边一部分点被“吹”向漩涡
+function drawTitle() {
+  const c = document.getElementById('title'), x = c.getContext('2d');
+  const m = document.createElement('canvas'); m.width = 1600; m.height = 700; const mx = m.getContext('2d');
+  mx.fillStyle = '#fff'; mx.font = '900 520px NotoSC'; mx.textBaseline = 'alphabetic'; mx.fillText('点云', 40, 560);
+  const d = mx.getImageData(0, 0, 1600, 700).data;
+  let s = 7; const R = () => (s = (s * 16807) % 2147483647) / 2147483647;
+  const step = 9;
+  for (let py = 0; py < 700; py += step) for (let px = 0; px < 1600; px += step) {
+    const jx = px + (R() - .5) * 4, jy = py + (R() - .5) * 4;
+    const a = d[((Math.round(jy) | 0) * 1600 + (Math.round(jx) | 0)) * 4 + 3] || 0; if (a < 128) continue;
+    // 越靠右越容易被吹走
+    const t = Math.max(0, (jx - 820) / 260); const blow = R() < t * 0.55;
+    let X = jx, Y = jy, rr = 2.6, col = '#eef7f9';
+    if (blow) { const k = 0.4 + R() * 1.6; X += k * 260 + R() * 120; Y += (R() - .5) * 60 * k - k * 24; rr = 1.6 + R() * 2.2; col = R() < 0.5 ? '#6ff3ff' : '#ffffff'; x.globalAlpha = 0.35 + R() * 0.5; }
+    else x.globalAlpha = 0.92;
+    x.fillStyle = col; x.beginPath(); x.arc(X, Y, rr, 0, 6.283); x.fill();
+  }
+  x.globalAlpha = 1;
+}
+</script>
+</body>
+</html>
