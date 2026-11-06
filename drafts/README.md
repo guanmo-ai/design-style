@@ -26,7 +26,7 @@
 | 生成艺术 Generative Art · `generative/` | **主人已审片通过（2026-11-04）**：正式目录 [021 · 生成艺术](../styles/021-generative-art)，保留本目录作为原片来源。 |
 | 动态字体 Kinetic Type · `kinetic-type/` | 第五轮没选上，图留着 |
 | 中世纪现代 Mid-Century Modern · `mid-century/` | **下周做** |
-| 液态金属 Liquid Chrome · `liquid-chrome/` | **第二版已出（2026-11-06）**：[`liquid-chrome/film/liquid-chrome-film.mp4`](liquid-chrome/film/liquid-chrome-film.mp4)（18 秒 · 1080p60 · 19 MB）。 |
+| 液态金属 Liquid Chrome · `liquid-chrome/` | **第三版已出（2026-11-06）**：[`liquid-chrome/film/liquid-chrome-film.mp4`](liquid-chrome/film/liquid-chrome-film.mp4)（18 秒 · 1080p60 · 18 MB）。 |
 | 点云 Point Cloud · `point-cloud/` | **第四版已出（2026-11-06）**：[`point-cloud/film/point-cloud-film.mp4`](point-cloud/film/point-cloud-film.mp4)（19.5 秒 · 1080p60 · 41 MB）。 |
 | 热成像 Thermal · `thermal/` | 候选图和温度场源码 |
 | 第四轮候选：低多边形 / 体素 / 等距微缩（从参考视频提取） | 等主人选，见下 |
