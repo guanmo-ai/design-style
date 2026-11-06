@@ -26,8 +26,8 @@
 | 生成艺术 Generative Art · `generative/` | **主人已审片通过（2026-11-04）**：正式目录 [021 · 生成艺术](../styles/021-generative-art)，保留本目录作为原片来源。 |
 | 动态字体 Kinetic Type · `kinetic-type/` | 第五轮没选上，图留着 |
 | 中世纪现代 Mid-Century Modern · `mid-century/` | **下周做** |
-| 液态金属 Liquid Chrome · `liquid-chrome/` | **主人选了（2026-11-06），全片在做**：`liquid-chrome/film/`（18 秒，见 STORYBOARD） |
-| 点云 Point Cloud · `point-cloud/` | **主人选了（2026-11-06），和液态金属同时做**：`point-cloud/film/` |
+| 液态金属 Liquid Chrome · `liquid-chrome/` | **全片已出（2026-11-06），等主人审片**：[`liquid-chrome/film/liquid-chrome-film.mp4`](liquid-chrome/film/liquid-chrome-film.mp4)（18 秒 · 1080p60 · 16 MB） |
+| 点云 Point Cloud · `point-cloud/` | **全片已出（2026-11-06），等主人审片**：[`point-cloud/film/point-cloud-film.mp4`](point-cloud/film/point-cloud-film.mp4)（18 秒 · 1080p60 · 38 MB） |
 | 热成像 Thermal · `thermal/` | **下一期就做**（主人 2026-11-06：“热成像记一下，下次就把它做下来”），图和温度场代码都在，直接复用 |
 | 第四轮候选：低多边形 / 体素 / 等距微缩（从参考视频提取） | 等主人选，见下 |
 | 第三轮候选：赛博朋克 / 城市流行 / 膨胀风 | 等主人选（与第四轮一起看） |
@@ -46,6 +46,8 @@
 
 - **液态金属** `liquid-chrome/film/`：同一滩水银接力到底——字从水银里站起来（带拉丝）→ 化成四颗珠两两合上（smin 的“颈”）→ 形状不动、世界在转 → 拉成柱断成五颗（瑞利–普拉托）→ 倒进手机变成会长刺的语音助手 → 落回水银、字再站起来。
 - **点云** `point-cloud/film/`：从头到尾同一批 100 万个点——一个点炸开拼成立体标题 → 扎进去散成星（近大远小）→ 倒进楼梯井，扫描面往下走、镜头螺旋下潜 → 卷成龙卷聚成盆景 → 鼠标拨开 → 倒进扫描 App → 拼回标题。
+
+成片：[液态金属](liquid-chrome/film/liquid-chrome-film.mp4) · [点云](point-cloud/film/point-cloud-film.mp4)。点云一百万个点每帧都在动，H.264 很难压：用两遍编码 17 Mbps 压到 38 MB，楼梯井那一段的细点会软一点；要更清楚的版本就重跑 `make.sh` 改成 crf 22（约 190 MB，不入库）。
 
 工具：`_lib/film-gl.cjs`（WebGL 页面逐帧截图，断了能接着渲）、`_lib/contact.py`（抽帧联系表）。GPU 做片子的经验见 [`docs/GPU_MOTION.md`](../docs/GPU_MOTION.md)。
 
