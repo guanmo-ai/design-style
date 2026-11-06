@@ -348,7 +348,7 @@ uniform float sweepOn, sweepY, sweepW, sweepDir, rampOn, rampLen, ghostA, glowA,
 uniform vec3 edgeCol, ghostCol;
 uniform float focusD, aperture, nearA, nearB;
 uniform vec4 push[6]; uniform int nPush; uniform vec3 pushCol;
-uniform vec3 mWind; uniform vec3 glitch; uniform vec2 vox; uniform vec3 flow; uniform float sweepMode; uniform vec3 sweepC; uniform float splat;
+uniform vec3 mWind; uniform vec3 glitch; uniform vec4 scanT[10]; uniform float scanF[10]; uniform float scanOn, scanCol; uniform vec3 wave; uniform vec2 vox; uniform vec3 flow; uniform float sweepMode; uniform vec3 sweepC; uniform float splat;
 out vec3 vCol; out float vA; out float vBok;
 float h1(float n){ return fract(sin(n*91.345)*47453.5453); }
 vec3 curl(vec3 p){ return vec3(sin(p.y*1.3+T)+sin(p.z*0.7), sin(p.z*1.1-T*0.7)+sin(p.x*0.9), sin(p.x*1.2+T*0.5)+sin(p.y*0.8)); }
@@ -381,11 +381,18 @@ void main(){
   }
   // 颜料流动：沿时间变化的旋度场平流几步
   if (flow.x > 0.0) { for (int k=0;k<3;k++){ vec3 q = p*flow.y; vec3 v = vec3(sin(q.y*1.7 + T*0.9) + 0.6*sin(q.z*2.3 - T*0.6), sin(q.x*1.3 - T*0.7) + 0.6*sin(q.z*1.9 + T*1.1), 0.35*sin(q.x*2.1 + q.y*1.5 + T)); p += v*flow.x*0.33; } }
+  // 扫描配准：同一次扫描的点带着自己的旋转 + 平移，“咔”地对齐（scanT = 绕 y 的角度, dx, dy, dz）
+  float sflash = 0.0; int sg = int(auxB.z + 0.5);
+  if (scanOn > 0.5 && sg >= 0 && sg < 10) { vec4 st = scanT[sg]; float ca = cos(st.x), sa = sin(st.x); p.xz = mat2(ca, sa, -sa, ca)*p.xz; p += st.yzw; sflash = scanF[sg]; }
+  // 一道波从左往右推过去（字锁定的那一下）
+  float wv = 0.0; if (wave.y != 0.0) { wv = exp(-pow((p.x - wave.x)/wave.z, 2.0)); p.z += wave.y*wv; }
   // 故障：一行一行地错开（House of Cards）
   if (glitch.y > 0.0) { float row = floor(p.y/glitch.x); float g = h1(row*13.17 + glitch.z); if (g < 0.22) p.x += glitch.y*(h1(row*7.31 + glitch.z*3.1) - 0.5)*2.0; }
   // 体素降采样：每个格子里的点都挪到格子中心
   if (vox.y > 0.0) { vec3 q = (floor(p/vox.x) + 0.5)*vox.x; p = mix(p, q, vox.y); }
   vec3 c = mix(colA, colB, e);
+  if (scanOn > 0.5 && scanCol > 0.0 && sg >= 0 && sg < 10) { float lum = dot(c, vec3(0.33)); c = mix(c, turbo(0.08 + 0.84*float(sg)/9.0)*lum*1.5, scanCol); }
+  c *= 1.0 + 2.5*sflash + 1.2*wv;
   float w = mix(auxA.x, auxB.x, e);
   float a = gain;
   if (moving) { c = c*(1.0 + 0.8*arc) + vec3(0.15,0.35,0.45)*arc; a *= movingA; }
@@ -487,6 +494,9 @@ void main(){
     gl.uniform1f(u.nearA, (s.near || [0, 0])[0]); gl.uniform1f(u.nearB, (s.near || [0, 0.001])[1]);
     gl.uniform1f(u.minSize, (s.minSize || 1.3) * (target.h / 1080)); gl.uniform1f(u.gain, s.gain || 1); gl.uniform1f(u.sizeK, s.sizeK || 1);
     gl.uniform3fv(u.mWind, mo.wind || [0, 0, 0]);
+    const sc = s.scan; gl.uniform1f(u.scanOn, sc ? 1 : 0); gl.uniform1f(u.scanCol, sc ? sc.col : 0);
+    if (sc) { const T4 = new Float32Array(40), F1 = new Float32Array(10); sc.T.forEach((t, i) => T4.set(t, i * 4)); sc.F.forEach((v, i) => F1[i] = v); gl.uniform4fv(u.scanT, T4); gl.uniform1fv(u.scanF, F1); }
+    gl.uniform3fv(u.wave, s.wave || [0, 0, 1]);
     gl.uniform3fv(u.glitch, s.glitch || [0.05, 0, 0]); gl.uniform2fv(u.vox, s.vox || [0.1, 0]); gl.uniform3fv(u.flow, s.flow || [0, 1, 0]);
     gl.uniform1f(u.sweepMode, sw ? (sw.mode || 0) : 0); gl.uniform3fv(u.sweepC, (sw && sw.c) || [0, 0, 0]);
     const ps = s.push || []; const pf = new Float32Array(24); ps.slice(0, 6).forEach((q, i) => pf.set(q, i * 4)); gl.uniform4fv(u.push, pf); gl.uniform1i(u.nPush, Math.min(6, ps.length)); gl.uniform3fv(u.pushCol, s.pushCol || [0.45, 1, 1.05]);
