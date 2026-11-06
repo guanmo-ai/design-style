@@ -1,0 +1,429 @@
+<!doctype html>
+<html lang="zh">
+<head>
+<meta charset="utf-8">
+<title>液态金属 · 全片</title>
+<style>
+@font-face { font-family: 'Unbounded'; src: url(../../../public/fonts/Unbounded.ttf); font-weight: 200 900; }
+@font-face { font-family: 'Geist'; src: url(../../../public/fonts/Geist.ttf); font-weight: 100 900; }
+@font-face { font-family: 'GeistMono'; src: url(../../../public/fonts/GeistMono.ttf); font-weight: 100 900; }
+@font-face { font-family: 'NotoSC'; src: url(../../../public/fonts/NotoSansSC-Black.otf); font-weight: 900; }
+@font-face { font-family: 'NotoSC'; src: url(../../../public/fonts/NotoSansSC-Bold.otf); font-weight: 700; }
+@font-face { font-family: 'NotoSC'; src: url(../../../public/fonts/NotoSansSC-Medium.otf); font-weight: 500; }
+@font-face { font-family: 'NotoSC'; src: url(../../../public/fonts/NotoSansSC-Regular.otf); font-weight: 400; }
+@font-face { font-family: 'ZCOOL'; src: url(../../../public/fonts/ZCOOLQingKeHuangYou.ttf); }
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html, body { width: 1920px; height: 1080px; overflow: hidden; background: #020306; color: #eef1f7; font-family: Geist, NotoSC, sans-serif; }
+#gl { position: absolute; inset: 0; width: 1920px; height: 1080px; }
+.mono { font-family: GeistMono, monospace; letter-spacing: .05em; }
+#hud, #ui, #card { position: absolute; inset: 0; pointer-events: none; }
+.chap { position: absolute; left: 64px; top: 54px; display: flex; gap: 18px; align-items: flex-start; }
+.chap .n { font-family: GeistMono; font-size: 13px; color: #020306; background: #eef1f7; padding: 3px 7px; border-radius: 3px; margin-top: 3px; }
+.chap .t { font-family: NotoSC; font-weight: 700; font-size: 22px; line-height: 1.2; }
+.chap .s { font-family: NotoSC; font-size: 14px; color: #9aa3b5; margin-top: 6px; }
+.prog { position: absolute; right: 64px; top: 62px; display: flex; gap: 6px; }
+.prog i { width: 26px; height: 3px; background: rgba(255,255,255,.18); display: block; border-radius: 2px; overflow: hidden; position: relative; }
+.prog i b { position: absolute; left: 0; top: 0; bottom: 0; background: #ff4fa3; display: block; }
+.rule { position: absolute; left: 64px; bottom: 58px; font-family: GeistMono; font-size: 15px; color: #fff; }
+.rule small { display: block; font-family: NotoSC; font-size: 14px; color: #9aa3b5; margin-top: 8px; letter-spacing: 0; }
+.rule em { font-style: normal; color: #ff4fa3; }
+.tagx { position: absolute; font-family: GeistMono; font-size: 12px; color: #fff; white-space: nowrap; padding: 5px 9px; background: rgba(2,3,6,.6); border: 1px solid rgba(255,255,255,.22); border-radius: 6px; }
+.tagx b { color: #ff4fa3; font-weight: 500; }
+#envbox { position: absolute; right: 64px; bottom: 58px; width: 360px; }
+#envbox .strip { position: relative; width: 360px; height: 90px; overflow: hidden; border-radius: 4px; outline: 1px solid rgba(255,255,255,.2); }
+#envbox canvas { position: absolute; top: 0; height: 90px; width: 720px; }
+#envbox .win { position: absolute; top: -1px; height: 92px; width: 120px; left: 120px; border: 2px solid #ff4fa3; border-radius: 3px; }
+#envbox .cap { font-family: GeistMono; font-size: 11px; color: #9aa3b5; margin-top: 8px; display: flex; justify-content: space-between; }
+/* 手机：一个镂空的洞 + 机身 */
+#mask { position: absolute; left: 50%; top: 50%; border-radius: 0; box-shadow: 0 0 0 3000px #050609; }
+#bezel { position: absolute; left: 50%; top: 50%; border-radius: 64px; box-shadow: 0 0 0 10px #15171d, 0 0 0 11px rgba(255,255,255,.18), 0 40px 120px rgba(0,0,0,.7); }
+.ph { position: absolute; left: 50%; transform: translateX(-50%); text-align: center; white-space: nowrap; }
+.ph .lab { font-family: GeistMono; font-size: 14px; color: #9aa3b5; }
+.ph .lab b { color: #fff; font-weight: 500; }
+.ph h3 { font-family: NotoSC; font-weight: 700; font-size: 34px; line-height: 1.3; }
+.ph p { font-family: NotoSC; font-size: 18px; color: #a3abbd; margin-top: 8px; }
+.mic { position: absolute; left: 50%; display: flex; align-items: center; gap: 12px; background: #eef1f7; color: #0a0b10; font-family: NotoSC; font-weight: 700; font-size: 20px; border-radius: 999px; padding: 14px 28px 14px 16px; white-space: nowrap; }
+.dropi { width: 28px; height: 28px; border-radius: 50%; background: radial-gradient(circle at 34% 30%, #fff 0 12%, #c9d6ea 22%, #5b6476 52%, #11131a 70%, #6d7da0 86%, #e8f0ff 100%); display: inline-block; }
+.cap2 { position: absolute; font-family: NotoSC; font-weight: 500; font-size: 26px; line-height: 1.45; text-align: left; }
+.cap2 .g { color: #5d6476; }
+.wave { position: absolute; left: 50%; transform: translateX(-50%); display: flex; gap: 5px; align-items: center; height: 50px; }
+.wave i { width: 5px; border-radius: 3px; background: #eef1f7; display: block; }
+.chipx { position: absolute; display: flex; align-items: center; height: 60px; border-radius: 999px; padding: 0 24px 0 66px; font-family: NotoSC; font-size: 21px; font-weight: 500; white-space: nowrap; border: 1.5px solid rgba(255,255,255,.28); transform-origin: 30px 50%; }
+.chipx small { font-family: GeistMono; font-size: 14px; color: #8d95a8; margin-left: 12px; }
+.touch { position: absolute; border-radius: 50%; border: 2px solid rgba(255,255,255,.9); }
+.toast { position: absolute; left: 50%; transform: translateX(-50%); font-family: NotoSC; font-weight: 700; font-size: 20px; background: #eef1f7; color: #0a0b10; border-radius: 999px; padding: 12px 22px; white-space: nowrap; }
+.sb { position: absolute; display: flex; justify-content: space-between; font-family: GeistMono; font-size: 16px; font-weight: 600; }
+#card .ct { position: absolute; left: 64px; bottom: 60px; }
+#card h2 { font-family: Unbounded; font-weight: 300; font-size: 30px; letter-spacing: .34em; }
+#card p { font-family: NotoSC; font-size: 20px; color: #aab3c6; margin-top: 14px; }
+#card .by { position: absolute; right: 64px; bottom: 60px; text-align: right; font-family: GeistMono; font-size: 13px; color: #9aa3b5; line-height: 1.9; }
+#card .by b { font-family: NotoSC; font-size: 22px; color: #fff; font-weight: 700; letter-spacing: .1em; }
+</style>
+</head>
+<body>
+<canvas id="gl"></canvas>
+<div id="ui"></div>
+<div id="hud"></div>
+<div id="card"></div>
+<script src="../../_lib/glkit.js"></script>
+<script src="../chrome.js"></script>
+<script src="timeline.js"></script>
+<script>
+const Q = new URLSearchParams(location.search);
+const SCALE = +(Q.get('scale') || 1);            // 预览用 0.25 / 0.5
+const W = 1920, H = 1080, FPS = 60;
+let gl, P, target, post, text, picks, envCanvas;
+const Y0 = 2.25;
+let seed = 11; const rnd = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+
+// —— 相机 ——
+const camKeys = (f) => {
+  // 00：先贴近落点，字站起来时往后拉；01：往前推；02：绕着转；03：拉远看柱子；04：对准手机；05：回到开场
+  const A = { pos: [0.15, 1.15, 6.6], tgt: [0.15, 0.95, 0], fov: 30, shift: [0, 0] };
+  const B = { pos: [0.0, 1.05, 10.6], tgt: [0.0, 1.75, 0], fov: 30, shift: [0, 0.02] };
+  const Cc = { pos: [0.0, 2.05, 8.2], tgt: [0.0, 2.35, 0], fov: 30, shift: [0, 0] };
+  const mix = (a, b, t) => ({ pos: a.pos.map((v, i) => lerp(v, b.pos[i], t)), tgt: a.tgt.map((v, i) => lerp(v, b.tgt[i], t)), fov: lerp(a.fov, b.fov, t), shift: a.shift.map((v, i) => lerp(v, b.shift[i], t)) });
+  if (f < 26) return A;
+  if (f < 150) return mix(A, B, ease.inOut3(prog(f, 26, 84)));
+  if (f < 330) return mix(B, Cc, ease.inOut3(prog(f, 150, 300)));
+  if (f < 480) { // 绕着珠子转
+    const a = lerp(-0.5, 0.45, ease.inOut3(prog(f, 330, 480))), R = lerp(8.2, 6.6, ease.inOut3(prog(f, 330, 380)));
+    const D = { pos: [Math.sin(a) * R, lerp(2.05, 2.9, ease.inOut3(prog(f, 330, 380))), Math.cos(a) * R], tgt: [0, 2.45, 0], fov: 30, shift: [0, 0] };
+    return f < 360 ? mix(Cc, D, ease.inOut3(prog(f, 330, 360))) : D;
+  }
+  const E = { pos: [Math.sin(0.45) * 6.6, 2.9, Math.cos(0.45) * 6.6], tgt: [0, 2.45, 0], fov: 30, shift: [0, 0] };
+  const F = { pos: [0.0, 2.7, 10.4], tgt: [0.0, 2.7, 0], fov: 30, shift: [0, 0] };
+  const Gp = { pos: [0.0, 2.6, 12.6], tgt: [0.0, 2.6, 0], fov: 30, shift: [0, -0.15] };
+  if (f < 600) return mix(E, F, ease.inOut3(prog(f, 480, 540)));
+  if (f < 900) return mix(F, Gp, ease.inOut3(prog(f, 600, 670)));
+  const Hh = { pos: [0.0, 1.05, 10.6], tgt: [0.0, 1.75, 0], fov: 30, shift: [0, 0.02] };
+  return mix(Gp, Hh, ease.inOut3(prog(f, 900, 950)));
+};
+// 镜头被“撞”一下：衰减抖动
+const shake = (f, hits) => { let x = 0, y = 0; for (const [h, A] of hits) { const s = (f - h) / FPS; if (s >= 0 && s < 0.5) { const e = Math.exp(-s / 0.08) * A; x += e * Math.sin(s * 90); y += e * Math.cos(s * 77); } } return [x, y]; };
+
+// —— 屏幕像素 → 世界（落在 z = z0 平面上）——
+function unproject(cam, px, py, z0 = 0) {
+  const n = v => { const l = Math.hypot(...v); return v.map(x => x / l); };
+  const cr = (a, b) => [a[1] * b[2] - a[2] * b[1], a[2] * b[0] - a[0] * b[2], a[0] * b[1] - a[1] * b[0]];
+  const fw = n(cam.tgt.map((v, i) => v - cam.pos[i])), rt = n(cr(fw, [0, 1, 0])), up = cr(rt, fw);
+  const k = 2 * Math.tan(cam.fov * Math.PI / 360), sx = (px / W - 0.5) * (W / H) + cam.shift[0], sy = (0.5 - py / H) + cam.shift[1];
+  const d = n([0, 1, 2].map(i => fw[i] + (sx * rt[i] + sy * up[i]) * k)); const t = (z0 - cam.pos[2]) / d[2];
+  return [cam.pos[0] + d[0] * t, cam.pos[1] + d[1] * t, z0];
+}
+const proj = (cam, p) => CHROME.project({ cam, shift: cam.shift }, p, W, H);
+
+// —— 字从水银里站起来：每个挂点的拉丝 / 断开 / 掉落 ——
+const RISE = [{ f0: TL.rise[0], freq: 0.9, zeta: 0.62 }, { f0: TL.rise2[0], freq: 1.25, zeta: 0.6 }];
+const riseY = (f) => {
+  if (f < RISE[0].f0) return -3.3;
+  if (f < TL.out[1] + 22) return -3.3 * (1 - spring((f - RISE[0].f0) / FPS, RISE[0].freq, RISE[0].zeta));
+  if (f < RISE[1].f0) return -3.3;
+  return -3.3 * (1 - spring((f - RISE[1].f0) / FPS, RISE[1].freq, RISE[1].zeta));
+};
+function buildPicks() {
+  const G = text.glyphs, minima = [];
+  for (const [l, r] of G) {
+    const xs = []; for (let x = l + 0.04; x <= r - 0.04; x += 0.01) xs.push([x, text.bottom(x)]);
+    for (let i = 3; i < xs.length - 3; i++) { const y = xs[i][1]; if (y == null) continue; let ok = true;
+      for (let k = -3; k <= 3; k++) { const yk = xs[i + k][1]; if (yk == null || yk < y - 1e-4) { ok = false; break; } }
+      if (ok && !minima.some(m => Math.abs(m[0] - xs[i][0]) < 0.2)) minima.push([xs[i][0], y]); }
+  }
+  const low = Math.min(...minima.map(m => m[1]));
+  let ps = minima.filter(m => m[1] < low + 0.5); while (ps.length > 12) ps.splice(Math.floor(rnd() * ps.length), 1);
+  return ps.map(([x, yb]) => {
+    const p = { x, yb, r: 0.05 + rnd() * 0.035, Lb: Math.min(yb - 0.3, 0.5 + rnd() * 1.0), l: 0.08 + rnd() * rnd() * 0.5, z: (rnd() - 0.5) * 0.12, rel: rnd() < 0.45 ? 104 + Math.floor(rnd() * 40) : null };
+    // 每一次站起来时，找出拉丝断开的那一帧
+    p.brk = RISE.map(R => { for (let f = R.f0; f < R.f0 + 120; f++) if (riseY(f) + yb >= p.Lb) return f; return null; });
+    return p;
+  });
+}
+const G_ = 30; // 掉落用的重力（世界单位 / 秒²）
+// 一根拉丝：上下两段圆锥（两头粗、中间细）
+function stringDrips(p, gy, L, k) { const t = clamp(L / p.Lb), rm = p.r * 0.8 * Math.pow(1 - t, 0.8) + 0.01, ym = p.yb - L * 0.5;
+  return [[[p.x, p.yb + 0.04, p.z, p.r * 0.95], [p.x, ym, p.z, rm]], [[p.x, ym, p.z, rm], [p.x, -gy, p.z, p.r * 1.25]]]; }
+
+// —— 一帧的场景 ——
+function sceneAt(f) {
+  const s = { bounces: 2, T: f / FPS, R: 0.28, H: 0, wob: 0.006, floorY: 0, floorTint: [0.62, 0.64, 0.7], tint: [0.86, 0.87, 0.9],
+    backdrop: { top: [0.0006, 0.0007, 0.0012], bot: [0.0025, 0.003, 0.0055], glow: [0.004, 0.009, 0.03], glowPos: [0, 0.05] },
+    drips: [], drops: [], blobs: [], ripples: [], crowns: [], pools: [], envRot: 0.25 * Math.sin(f / 240), envHue: 0 };
+  const cam = camKeys(f); const sh = shake(f, [[TL.dropHit, 0.05], [TL.snap1, 0.025], [TL.snap2, 0.035], [TL.brk, 0.03], [TL.drop2[1], 0.05]]);
+  s.cam = { pos: [cam.pos[0] + sh[0], cam.pos[1] + sh[1], cam.pos[2]], tgt: [cam.tgt[0] + sh[0] * 0.6, cam.tgt[1] + sh[1] * 0.6, cam.tgt[2]], fov: cam.fov, shift: cam.shift };
+  s.shift = s.cam.shift;
+  const ripples = [];
+  const addRip = (x, z, f0, amp, speed = 1.0) => { if (f >= f0 && f < f0 + 150) ripples.push([x, z, (f - f0) / FPS * speed, amp * Math.exp(-(f - f0) / 110)]); };
+  // —— 第一滴（以及片尾那一滴）——
+  const DROPS = [{ x: 0.15, z: 1.15, f0: -12, hit: TL.dropHit, y0: 2.4 }, { x: -0.35, z: 1.0, f0: TL.drop2[0], hit: TL.drop2[1], y0: 5 }];
+  const worldDrops = [];
+  for (const D of DROPS) {
+    if (f >= D.f0 && f < D.hit) { const t = (f - D.f0) / (D.hit - D.f0); const y = D.y0 * (1 - t * t); const v = 2 * D.y0 * t / ((D.hit - D.f0) / FPS);
+      worldDrops.push([D.x, y + 0.11, D.z, 0.11, [0.88, 1 + Math.min(0.5, v / 50), 0.88]]); }
+    if (f >= D.hit) {
+      const p = (f - D.hit) / 24;
+      if (p < 1) s.crowns.push([D.x, D.z, 0.08 + 0.26 * ease.out3(p), 0.3 * Math.pow(Math.sin(Math.PI * p), 0.8) + 0.001]);
+      addRip(D.x, D.z, D.hit, 0.022, 1.2);
+      // 溅起来的小珠：抛物线
+      for (let k = 0; k < 7; k++) { const a = k / 7 * 6.283 + 0.4, sp = 0.9 + (k % 3) * 0.35, vy = 2.4 + (k % 2) * 0.9; const t = (f - D.hit - 2) / FPS;
+        const y = vy * t - 0.5 * 15 * t * t; if (t > 0 && y > 0) worldDrops.push([D.x + Math.cos(a) * sp * t, y + 0.03, D.z + Math.sin(a) * sp * t * 0.6, 0.028 + (k % 3) * 0.008]);
+        const land = D.hit + 2 + (2 * vy / 15) * FPS; addRip(D.x + Math.cos(a) * sp * (2 * vy / 15), D.z + Math.sin(a) * sp * (2 * vy / 15) * 0.6, land, 0.006, 1.4); }
+      // 沃辛顿射流：落点中间往上窜一根细柱，顶上甩出一颗珠
+      const j = (f - D.hit - 8) / 26;
+      if (j > 0 && j < 1) { const hj = 0.85 * Math.sin(Math.PI * Math.min(1, j * 1.15)); s.column = { a: [D.x, 0.0, D.z], b: [D.x, hj, D.z], r: 0.055 * (1 - j * 0.5), amp: 0.25 + 0.6 * j, lam: 0.22 }; }
+    }
+  }
+  // —— 字 ——
+  const gy = riseY(f);
+  const textOn = (f < TL.morph[1]) || (f >= TL.rise2[0] - 2);
+  if (textOn && gy + text.capTop > -0.05) {
+    s.text = text; s.gpos = [0, gy, 0];
+    const R = f < TL.rise2[0] ? 0 : 1, f0 = RISE[R].f0;
+    for (const p of picks) {
+      const L = gy + p.yb; // 字底到水银面的距离
+      const brk = p.brk[R];
+      const retract = R === 0 ? 1 - ease.inOut3(prog(f, TL.morph[0], TL.morph[0] + 22)) : 1;
+      if (L <= 0) continue;
+      if (brk == null || f < brk) { if (f >= f0) { s.drips.push(...stringDrips(p, gy, L)); s.pools.push([p.x, p.z, 0.22, 0.03]); } continue; }
+      // 断了：上半截缩回成挂着的一滴，下半截掉回去
+      const since = (f - brk) / FPS; const Lb = p.Lb;
+      let hang = p.l + (Lb * 0.45 - p.l) * Math.exp(-since / 0.07) + wobble(since, 0.06, 4, 0.18);
+      const relF = R === 0 ? p.rel : null;
+      if (relF && f >= relF) hang = Math.max(0.06, p.l * Math.exp(-(f - relF) / 6));
+      hang *= retract;
+      if (hang > 0.02) s.drips.push([[p.x, p.yb + 0.04, p.z, p.r * 0.36], [p.x, p.yb - hang, p.z, p.r]]);
+      const fallY = Lb * 0.4 - 0.5 * G_ * since * since; if (fallY > 0) s.drops.push([p.x, fallY - gy, p.z, p.r * 1.1, [0.92, 1.2, 0.92]]);
+      addRip(p.x, p.z, brk + Math.round(Math.sqrt(2 * Lb * 0.4 / G_) * FPS), 0.012);
+      if (relF && f >= relF) { const t = (f - relF) / FPS, y0 = p.yb - p.l + gy; const y = y0 - 0.5 * G_ * t * t; if (y > 0) s.drops.push([p.x, y - gy, p.z, p.r * 1.05, [0.92, 1.18, 0.92]]);
+        addRip(p.x, p.z, relF + Math.round(Math.sqrt(2 * y0 / G_) * FPS), 0.012); }
+    }
+  }
+  // —— 01 融合：字 → 四颗珠 → 两颗 → 一颗 ——
+  const gc = text.glyphs.map(([l, r]) => (l + r) / 2), r0 = 0.46, r1 = r0 * Math.cbrt(2), r2 = r0 * Math.cbrt(4);
+  const lift = Y0 + 0.2 * ease.out3(prog(f, 172, 200));
+  if (f >= TL.morph[0] && f < 276) {
+    s.morph = prog(f, TL.morph[0], TL.morph[1]); s.morphSweep = [text.glyphs[0][0], text.glyphs[3][1], 0.8]; s.mtarK = f < 240 ? 0.3 : 0.34;
+    const pair = (xa, xb, ra, fA, fS, fE) => { // 两颗靠近：先慢后快，碰上的一刻“啪”地合上
+      const m = (xa + xb) / 2, D0 = xb - xa, touch = 2 * ra + 0.05;
+      let d = D0; if (f >= fA) d = lerp(D0, touch, ease.in3(prog(f, fA, fS))); if (f >= fS) d = lerp(touch, 0, ease.out3(prog(f, fS, fE)));
+      const merged = f >= fE, rr = merged ? ra * Math.cbrt(2) : lerp(ra, ra * Math.cbrt(2), ease.out3(prog(f, fS, fE)));
+      const stretch = 1 + 0.12 * ease.in2(prog(f, fA, fS)) * (1 - prog(f, fS, fE));
+      const wb = wobble((f - fE) / FPS, 0.22, 3.0, 0.24);
+      if (merged) return [[m, 0, 0, rr, [1 + wb, 1 - wb * 0.5, 1 - wb * 0.5]]];
+      return [[m - d / 2, 0, 0, rr, [stretch, 1 / Math.sqrt(stretch), 1 / Math.sqrt(stretch)]], [m + d / 2, 0, 0, rr, [stretch, 1 / Math.sqrt(stretch), 1 / Math.sqrt(stretch)]]];
+    };
+    let ts;
+    if (f < 240) ts = [...pair(gc[0], gc[1], r0, TL.merge1[0], 206, 214), ...pair(gc[2], gc[3], r0, TL.merge1[0] + 4, 207, 215)];
+    else { const m01 = (gc[0] + gc[1]) / 2, m23 = (gc[2] + gc[3]) / 2; ts = pair(m01, m23, r1, TL.merge2[0], 266, 274); }
+    s.mtar = ts.map(([x, , , r, sc]) => [x, lift, 0, r, sc]);
+    if (f >= TL.morph[1]) { s.text = null; s.morph = 1; }
+    else if (f < TL.morph[0] + 2) s.morph = 0;
+  }
+  // —— 02 倒影：一颗珠不动，世界在转 ——
+  const BY = (f) => lerp(Y0 + 0.2, 2.45, ease.inOut3(prog(f, 276, 340)));
+  if (f >= 276 && f < TL.stretch[0]) {
+    const wb = wobble((f - 274) / FPS, 0.2, 2.6, 0.3);
+    s.blobs.push([0, BY(f), 0, r2, 0.3, [1 + wb, 1 - wb * 0.5, 1 - wb * 0.5]]); s.bwob = 0.035;
+    // 两颗小卫星：从大珠子里甩出来、绕一圈（倒影里能看见彼此）、再被吸回去
+    for (let k = 0; k < 2; k++) {
+      const f0 = 300 + k * 10, f1 = 470 - k * 6; if (f < f0 || f >= f1) continue;
+      const out = ease.out3(prog(f, f0, f0 + 24)) * (1 - ease.in3(prog(f, f1 - 26, f1)));
+      const a = (f - f0) / FPS * 2.4 + k * Math.PI, R = r2 + 0.32 + 0.55 * out;
+      const p = [Math.cos(a) * R * out + 0, BY(f) + Math.sin(a * 0.7 + k) * 0.35 * out, Math.sin(a) * R * out];
+      s.blobs.push([...p, 0.17 - 0.03 * k, 0.28, [1, 1, 1]]);
+    }
+  }
+  if (f >= TL.env[0] && f < TL.stretch[0] + 20) {
+    s.envRot += 2 * Math.PI * ease.inOut3(prog(f, TL.env[0], 420));
+    s.envHue = lerp(0, 2.1, ease.inOut3(prog(f, 418, 428))) + lerp(0, 2.1, ease.inOut3(prog(f, 448, 458))) + lerp(0, 2.083, ease.inOut3(prog(f, 470, 486)));
+  }
+  // —— 03 拉成柱，再断成五颗 ——
+  const V = 4 / 3 * Math.PI * r2 ** 3;
+  if (f >= TL.stretch[0] && f < TL.brk + 2) {
+    const L = lerp(0.02, 3.5, ease.inOut3(prog(f, TL.stretch[0], 540)));
+    let r = r2; for (let k = 0; k < 20; k++) { const g = Math.PI * r * r * L + 4 / 3 * Math.PI * r ** 3 - V, dg = 2 * Math.PI * r * L + 4 * Math.PI * r * r; r -= g / dg; }
+    const cy = lerp(2.45, 2.75, ease.inOut3(prog(f, TL.stretch[0], 540)));
+    s.column = { a: [0.04 * Math.sin(f * 0.21), cy - L / 2, 0], b: [-0.05 * Math.sin(f * 0.17 + 1), cy + L / 2, 0], r, amp: 1.02 * ease.in3(prog(f, TL.pinch[0], TL.brk + 2)), lam: L / 5, taper: 0.55 * ease.out3(prog(f, 486, 530)) * (1 - prog(f, TL.pinch[0], TL.brk)), wob: 0.035 * ease.out3(prog(f, 484, 510)) * (1 - prog(f, TL.pinch[0], TL.pinch[0] + 20)) };
+    s.bwob = 0;
+  }
+  const beadR = Math.cbrt(3 * V / (20 * Math.PI));
+  const beadsAt = (f) => { const L = 3.5, cy = 2.75, lam = L / 5; return [0, 1, 2, 3, 4].map(k => { const t = (f - TL.brk - 2) / FPS; const spread = 1 + 0.32 * ease.out3(clamp(t / 0.35));
+    return [0.06 * Math.sin(k * 2.1) * clamp(t / 0.5), cy + (-L / 2 + lam * (k + 0.5)) * spread, 0.05 * Math.cos(k * 1.7) * clamp(t / 0.5)]; }); };
+  if (f >= TL.brk + 2 && f < TL.gather[1] + 4) {
+    const ps = beadsAt(Math.min(f, TL.gather[0]));
+    const order = [2, 1, 3, 0, 4], arrive = [0, 616, 636, 652, 668];
+    let vol = 0; const C = [0, 2.65, 0];
+    order.forEach((k, j) => {
+      const t = (f - TL.brk - 2) / FPS; const wb = wobble(t + j * 0.03, 0.2, 3.4, 0.22);
+      if (j === 0) { vol += 1; return; }
+      const fA = arrive[j] - 22, fE = arrive[j];
+      if (f >= fE) { vol += 1; return; }
+      const q = ease.inOut3(prog(f, fA, fE)); const sw = Math.sin(q * Math.PI) * 0.35 * (j % 2 ? 1 : -1);
+      const p = [lerp(ps[k][0], C[0], q) + sw, lerp(ps[k][1], C[1], q), lerp(ps[k][2], C[2], q)];
+      s.blobs.push([...p, beadR, 0.26, [1 - wb * 0.4, 1 + wb, 1 - wb * 0.4]]);
+    });
+    const cwb = wobble((f - TL.brk - 2) / FPS, 0.2, 3.4, 0.22) + [616, 636, 652, 668].reduce((a, fe) => a + wobble((f - fe) / FPS, 0.12, 3.0, 0.2), 0);
+    const cp = [lerp(ps[2][0], C[0], ease.inOut3(prog(f, 596, 616))), lerp(ps[2][1], C[1], ease.inOut3(prog(f, 596, 616))), 0];
+    s.blobs.unshift([...cp, beadR * Math.cbrt(vol), 0.26, [1 - cwb * 0.4, 1 + cwb, 1 - cwb * 0.4]]);
+  }
+  // —— 04 手机里的助手 ——
+  if (f >= TL.gather[1] + 4 && f < TL.out[1]) {
+    const C = [0, 2.65, 0];
+    let rr = r2, sc = [1, 1, 1];
+    const breath = Math.sin((f - TL.idle[0]) / FPS * 2 * Math.PI * 0.9);
+    sc = [1 + 0.03 * breath, 1 - 0.035 * breath, 1 + 0.03 * breath];
+    s.bwob = 0.05;
+    // 聆听：磁流体的刺
+    if (f >= TL.listen[0] && f < TL.answer[0] + 14) {
+      const grow = ease.out3(prog(f, TL.listen[0], TL.listen[0] + 10)) * (1 - ease.in3(prog(f, TL.answer[0], TL.answer[0] + 12)));
+      const env = voiceEnv(f);
+      s.spikes = SPIKES.map(([x, y, z, ph]) => { const band = 0.5 + 0.5 * Math.sin(x * 3.1 + y * 2.3 + z * 1.7 + f * 0.22 + ph);
+        return [x, y, z, grow * (0.05 + 0.5 * env * (0.4 + 0.6 * band))]; });
+      s.spikeC = [...C, rr * 0.9]; s.spikeK = 0.1;
+    }
+    // 回答：分出三滴，弹簧落进按钮；点第一个，它又飞回来
+    let lost = 0;
+    if (f >= TL.emit[0]) {
+      CHIPS.forEach((c, i) => {
+        const fe = TL.emit[i], fl = TL.land[i]; if (f < fe) return;
+        lost += 1;
+        const back = i === 0 ? ease.inOut3(prog(f, TL.back[0], TL.back[1])) : 0;
+        if (back >= 1) { lost -= 1; return; }
+        const q = spring((f - fe) / FPS, 1.6, 0.5); const start = [C[0] - 0.1 + i * 0.1, C[1] - rr * 0.7, 0.1];
+        let p = [lerp(start[0], c.w[0], q), lerp(start[1], c.w[1], q), lerp(start[2], c.w[2], q)];
+        if (back > 0) p = [lerp(c.w[0], C[0], back), lerp(c.w[1], C[1] - 0.3, back), lerp(c.w[2], 0, back)];
+        const v = Math.abs(spring((f - fe + 1) / FPS, 1.6, 0.5) - q) * 60; const st = 1 + Math.min(0.35, v * 0.08);
+        s.blobs.push([...p, CHIP_R, 0.22, [1 / Math.sqrt(st), st, 1 / Math.sqrt(st)]]);
+      });
+    }
+    rr = r2 * Math.cbrt(Math.max(0.4, 1 - lost * 0.08));
+    let Cy = C[1];
+    // 05：手机退开，珠子往下掉，沉进水银
+    if (f >= TL.out[0]) { const t = (f - TL.out[0] - 6) / FPS; if (t > 0) Cy = C[1] - 0.5 * 9 * t * t; }
+    s.blobs.unshift([C[0], Cy, C[2], rr, 0.3, sc]);
+    if (f >= TL.out[0]) { s.blobs.slice(1).forEach(b => { const t = (f - TL.out[0] - 10) / FPS; if (t > 0) b[1] -= 0.5 * 9 * t * t; }); s.blobs = s.blobs.filter(b => b[1] + b[3] > -0.2);
+      const hitF = TL.out[0] + 6 + Math.sqrt(2 * (C[1] - r2) / 9) * FPS; addRip(0, 0, Math.round(hitF), 0.025, 1.1); }
+  }
+  s.ripples = ripples.slice(-8); s.pools = s.pools.slice(0, 8); s.crowns = s.crowns.slice(0, 4); s.drips = s.drips.slice(0, 32);
+  if (s.column && s.gpos) { const g = s.gpos; s.column.a = s.column.a.map((v, i) => v - g[i]); s.column.b = s.column.b.map((v, i) => v - g[i]); }
+  s.drops = [...s.drops, ...worldDrops.map(d => [d[0], d[1] - (s.gpos ? s.gpos[1] : 0), d[2], d[3], d[4]])].slice(0, 40);
+  if (s.blobs.length > 10) s.blobs = s.blobs.slice(0, 10);
+  if (!s.gpos) s.gpos = [0, 0, 0];
+  return s;
+}
+// 声音的包络：一个字一个鼓包
+let SPIKES = [], CHIPS = [], CHIP_R = 0.16;
+const SYL = []; for (let k = 0; k < 13; k++) SYL.push([TL.words[0] + k * 4.2 + (k > 6 ? 3 : 0), 0.55 + 0.45 * Math.abs(Math.sin(k * 1.9))]);
+function voiceEnv(f) { let e = 0.12; for (const [t, a] of SYL) e += a * Math.exp(-Math.pow((f - t) / 2.6, 2)); return Math.min(1.2, e); }
+
+// —— HUD ——
+const hud = document.getElementById('hud'), ui = document.getElementById('ui'), card = document.getElementById('card');
+function chapterAt(f) { let c = TL.chapters[0]; for (const x of TL.chapters) if (f >= x[0]) c = x; return c; }
+function drawHUD(f, s) {
+  const c = chapterAt(f); let h = '';
+  const inCh = f - c[0], fin = ease.out3(clamp(inCh / 14));
+  if (f < TL.card[0] && c[1] !== '05') {
+    h += `<div class="chap" style="opacity:${fin};transform:translateY(${(1 - fin) * -10}px)"><span class="n">${c[1]} / 05</span><div><div class="t">${c[2]}</div><div class="s">${c[3]}</div></div></div>`;
+  }
+  h += `<div class="prog">${TL.chapters.slice(0, 5).map((x, i) => { const nx = TL.chapters[i + 1][0]; return `<i><b style="width:${clamp((f - x[0]) / (nx - x[0])) * 100}%"></b></i>`; }).join('')}</div>`;
+  // 每章底部：这一招的参数
+  const rule = (a, b) => { const o = ease.out3(clamp((f - a) / 12)) * (1 - ease.in3(clamp((f - b + 12) / 12))); return o; };
+  if (f >= 96 && f < 150) { const o = rule(100, 150); h += `<div class="rule" style="opacity:${o}">y(t) = 1 − e<sup>−ζωt</sup>(cos ω<sub>d</sub>t + …) &nbsp;<em>ζ = 0.62</em><small>站起来不是匀速：一个欠阻尼弹簧，冲过头 7% 再落回来。拉丝按长度变细，超过 L 就断。</small></div>`; }
+  if (f >= 150 && f < 330) { const k = f < 240 ? 0.30 : 0.34; const o = rule(160, 330); h += `<div class="rule" style="opacity:${o}">d = smin(a, b, <em>k = ${k.toFixed(2)}</em>)<small>两滴靠近：先慢慢被吸过去，碰上的一刻“啪”地合上，体积守恒（r × ∛2），然后晃三下。</small></div>`;
+    // 颈的位置标签
+    if (f > 196 && f < 216) { const p = proj(s.cam, [(text.glyphs[0][0] + text.glyphs[1][1]) / 2, Y0 + 0.2, 0.5]); h += `<div class="tagx" style="left:${p[0] - 70}px;top:${p[1] - 150}px;opacity:${ease.out3(prog(f, 196, 202)) * (1 - prog(f, 212, 216))}"><b>●</b> 颈 · k = 0.30</div>`; }
+    if (f > 256 && f < 276) { const p = proj(s.cam, [0, Y0 + 0.2, 0.5]); h += `<div class="tagx" style="left:${p[0] - 70}px;top:${p[1] - 190}px;opacity:${ease.out3(prog(f, 256, 262)) * (1 - prog(f, 272, 276))}"><b>●</b> 颈 · k = 0.34</div>`; }
+  }
+  if (f >= 330 && f < 480) { const o = rule(340, 480); h += `<div class="rule" style="opacity:${o}">color = env(reflect(视线, 法线)) · fresnel<small>形状一动没动，只转了环境图：倒影整片流过去；换一个“世界”，金属就换一种颜色。</small></div>`;
+    h += `<div id="envbox" style="opacity:${o}"><div class="strip"><canvas id="envc2"></canvas><div class="win"></div></div><div class="cap"><span>ENV · envRot = ${(s.envRot * 57.3).toFixed(0)}°</span><span>hue + ${(s.envHue * 57.3 % 360).toFixed(0)}°</span></div></div>`; }
+  if (f >= 480 && f < 630) { const o = rule(490, 630); h += `<div class="rule" style="opacity:${o}">r(y) = r₀ · (1 − a · ½(1 + cos 2πy/λ)) &nbsp;<em>λ = L / 5</em><small>柱子越拉越细，表面张力把它掐成一段段——永远是一串差不多大的珠，不是随机碎掉。</small></div>`; }
+  if (f >= 630 && f < 900) { const o = rule(680, 900); h += `<div class="rule" style="opacity:${o}">${f < TL.listen[0] ? '待机：半径 ± 3.5%，0.9 次 / 秒' : f < TL.answer[0] ? '聆听：刺长 = 0.05 + 0.5 · 音量 · 频带' : '回答：分出三滴 · spring(1.6 Hz, ζ 0.5)'}<small>${f < TL.listen[0] ? '没人说话时它也在“活着”。' : f < TL.answer[0] ? '音量越大刺越长，像磁流体：不用一个表情，也知道它在听。' : '想好了就分出几滴，落下来变成你下一步能点的按钮。'}</small></div>`; }
+  hud.innerHTML = h;
+  if (f >= 330 && f < 480) { const ec = document.getElementById('envc2'); const sctx = ec.getContext('2d'); ec.width = envCanvas.width * 2; ec.height = envCanvas.height;
+    sctx.filter = `hue-rotate(${s.envHue * 57.3}deg)`; sctx.drawImage(envCanvas, 0, 0); sctx.drawImage(envCanvas, envCanvas.width, 0);
+    const frac = ((s.envRot / (2 * Math.PI)) % 1 + 1) % 1; ec.style.left = (-frac * 360) + 'px'; }
+}
+// 手机：镂空 + 机身 + 界面
+function drawUI(f, s) {
+  let h = '';
+  const inP = ease.inOut3(prog(f, TL.mask[0], TL.mask[1])) * (1 - ease.inOut3(prog(f, TL.out[0], TL.out[0] + 30)));
+  if (inP > 0.001) {
+    const w = lerp(2200, 440, inP), hh = lerp(1300, 920, inP), r = lerp(0, 60, inP);
+    h += `<div id="mask" style="width:${w}px;height:${hh}px;margin:${-hh / 2}px 0 0 ${-w / 2}px;border-radius:${r}px"></div>`;
+    if (inP > 0.6) h += `<div id="bezel" style="width:${w}px;height:${hh}px;margin:${-hh / 2}px 0 0 ${-w / 2}px;opacity:${(inP - 0.6) / 0.4}"></div>`;
+    const o = clamp((inP - 0.85) / 0.15), top = 540 - hh / 2;
+    if (o > 0) {
+      h += `<div class="sb" style="left:${960 - w / 2 + 40}px;width:${w - 80}px;top:${top + 26}px;opacity:${o}"><span>9:41</span><span>●●● 100</span></div>`;
+      h += `<div style="position:absolute;left:${960 - 60}px;top:${top + 18}px;width:120px;height:34px;border-radius:20px;background:#000;opacity:${o}"></div>`;
+      const st = f < TL.listen[0] ? '<b>Hg</b> · 待机' : f < TL.answer[0] ? '<b style="color:#ff4fa3">●</b> 正在听 · 0:0' + Math.floor((f - TL.listen[0]) / 30) : '<b>Hg</b> · 回答';
+      h += `<div class="ph" style="top:${top + 92}px;opacity:${o}"><div class="lab">${st}</div></div>`;
+      if (f < TL.listen[0] + 6) {
+        const oo = o * (1 - prog(f, TL.listen[0], TL.listen[0] + 6));
+        h += `<div class="ph" style="top:${top + 520}px;opacity:${oo}"><h3>早上好。<br>想聊点什么？</h3><p>按住下面，开口就行</p></div>`;
+        const press = f >= TL.tapMic && f < TL.tapMic + 10 ? 0.94 : 1;
+        h += `<div class="mic" style="top:${top + hh - 130}px;transform:translateX(-50%) scale(${press});opacity:${oo}"><span class="dropi"></span>按住说话</div>`;
+        if (f >= TL.tapMic && f < TL.tapMic + 24) { const t = (f - TL.tapMic) / 24; h += `<div class="touch" style="left:${960 - 20 - t * 40}px;top:${top + hh - 103 - 20 - t * 40}px;width:${40 + t * 80}px;height:${40 + t * 80}px;opacity:${1 - t}"></div>`; }
+      }
+      if (f >= TL.listen[0] && f < TL.answer[0] + 10) {
+        const full = '帮我把明早 8 点的会挪到下午，最好别和午饭撞上'; const nch = Math.floor(clamp((f - TL.words[0]) / (TL.words[1] - TL.words[0])) * 18);
+        const oo = ease.out3(prog(f, TL.listen[0], TL.listen[0] + 8)) * (1 - prog(f, TL.answer[0], TL.answer[0] + 10));
+        h += `<div class="cap2" style="left:${960 - 170}px;top:${top + 520}px;width:340px;opacity:${oo}">${full.slice(0, nch)}<span class="g">${full.slice(nch, nch + 4)}</span></div>`;
+        const env = voiceEnv(f);
+        h += `<div class="wave" style="top:${top + hh - 120}px;opacity:${oo}">${Array.from({ length: 23 }, (_, i) => `<i style="height:${6 + Math.round(40 * env * Math.abs(Math.sin(i * 1.7 + f * 0.4) * Math.sin(i * 0.45 + 1)))}px"></i>`).join('')}</div>`;
+      }
+      if (f >= TL.answer[0]) {
+        const oo = ease.out3(prog(f, TL.answer[0] + 4, TL.answer[0] + 14));
+        h += `<div class="cap2" style="left:${960 - 170}px;top:${top + 412}px;width:340px;opacity:${oo}">下午有两个空档，<br>你挑一个：</div>`;
+        CHIPS.forEach((c, i) => { const a = ease.outBack(prog(f, TL.land[i] - 4, TL.land[i] + 8));
+          const sel = i === 0 && f >= TL.tapChip; const gone = i === 0 ? prog(f, TL.back[0], TL.back[1]) : 0;
+          h += `<div class="chipx" style="left:${c.px[0] - 33}px;top:${c.px[1] - 30}px;opacity:${clamp(a) * (1 - gone)};transform:scaleX(${clamp(a) * (1 - gone * 0.6)});${sel ? 'border-color:#ff4fa3;' : ''}">${c.label}${c.sub ? `<small>${c.sub}</small>` : ''}</div>`; });
+        if (f >= TL.tapChip && f < TL.tapChip + 24) { const t = (f - TL.tapChip) / 24, c = CHIPS[0]; h += `<div class="touch" style="left:${c.px[0] + 90 - 20 - t * 40}px;top:${c.px[1] - 20 - t * 40}px;width:${40 + t * 80}px;height:${40 + t * 80}px;opacity:${1 - t}"></div>`; }
+        if (f >= TL.toast) { const a = ease.outBack(prog(f, TL.toast, TL.toast + 10)); h += `<div class="toast" style="top:${top + hh - 120}px;transform:translateX(-50%) scale(${a});opacity:${clamp(a)}">✓ 已挪到 14:00</div>`; }
+      }
+    }
+  }
+  ui.innerHTML = h;
+  // 片尾卡
+  let c = '';
+  if (f >= TL.card[0]) { const a = ease.out3(prog(f, TL.card[0] + 6, TL.card[0] + 26)), b = ease.out3(prog(f, TL.card[0] + 18, TL.card[0] + 38));
+    c += `<div class="ct" style="opacity:${a};transform:translateY(${(1 - a) * 16}px)"><h2>Liquid Chrome</h2><p>它自己没有颜色，颜色全是它照到的世界。</p></div>`;
+    c += `<div class="by" style="opacity:${b}"><b>观默</b><br>每天一个设计风格 · 液态金属</div>`; }
+  card.innerHTML = c;
+}
+
+// —— 入口 ——
+(async () => {
+  await document.fonts.load('100px ZCOOL', '液态金属'); await document.fonts.ready;
+  const cv = document.getElementById('gl'); cv.width = Math.round(W * SCALE); cv.height = Math.round(H * SCALE);
+  gl = GLK.create(cv); P = CHROME.programs(gl); target = GLK.fbo(gl, cv.width, cv.height); post = GLK.post(gl);
+  text = CHROME.textField(gl, { text: '液态金属', font: '{S} ZCOOL', worldWidth: 7.0, center: [0, Y0], fit: 0.9, letterSpacing: -0.02, blur: 14 });
+  picks = buildPicks();
+  // 刺的方向：朝镜头的半球
+  const g = Math.PI * (3 - Math.sqrt(5)); for (let i = 0; i < 90; i++) { const y = 1 - (i + .5) / 90 * 2, r = Math.sqrt(1 - y * y), d = [Math.cos(g * i) * r, y, Math.sin(g * i) * r]; if (d[2] > -0.3 && SPIKES.length < 60) SPIKES.push([...d, i * 0.7]); }
+  // 三个按钮：屏幕位置 → 世界位置（珠子要落进按钮最左边）
+  const camP = camKeys(700);
+  CHIPS = [['挪到 14:00', '空 2 h'], ['挪到 16:30', '空 1 h'], ['取消这个会', '']].map(([label, sub], i) => { const px = [960 - 150, 540 + 76 + i * 84]; return { label, sub, px, w: unproject(camP, px[0], px[1], 0) }; });
+  envCanvas = document.createElement('canvas'); envCanvas.width = 360; envCanvas.height = 90; CHROME.envPreview(envCanvas, { envRot: 0 });
+  window.ready = true;
+})().catch(e => console.log('ERR', e.message.slice(0, 2000)));
+
+window.frame = async (f) => {
+  const t0 = performance.now();
+  const s = sceneAt(f);
+  if (Q.get('empty')) { s.text = null; s.drips = []; s.drops = []; s.blobs = []; s.mtar = []; s.ripples = []; s.crowns = []; s.pools = []; s.spikes = []; s.column = null; }
+  if (Q.get('nofloor')) s.floor = false;
+  if (Q.get('bgonly')) s._bgOnly = true;
+  const t1 = performance.now();
+  await CHROME.render(gl, P, target, s, 3);
+  const px = new Uint8Array(4);
+  if (Q.get('prof')) { gl.bindFramebuffer(gl.FRAMEBUFFER, null); gl.readPixels(0, 0, 1, 1, gl.RGBA, gl.UNSIGNED_BYTE, px); }
+  const t2 = performance.now();
+  const flash = [[TL.dropHit, 0.35], [TL.snap1, 0.15], [TL.snap2, 0.22], [TL.brk, 0.08], [TL.drop2[1], 0.35], [TL.final, 0.12]].reduce((a, [h, A]) => a + (f >= h ? A * Math.exp(-(f - h) / 5) : 0), 0);
+  await post(target.tex, { exposure: 1.25 * (1 + flash), bloom: 0.5, threshold: 1.2, grain: 0.03, vignette: 0.45, ca: 0.006, saturation: 1.08, seed: f * 0.37 });
+  if (Q.get('prof')) { gl.readPixels(0, 0, 1, 1, gl.RGBA, gl.UNSIGNED_BYTE, px); console.log('render', (t2 - t1).toFixed(0), 'post', (performance.now() - t2).toFixed(0), 'rect', JSON.stringify(s._rect), JSON.stringify(s._bb), 'drops', s.drops.length, 'blobs', s.blobs.length, 'pools', s.pools.length, 'crowns', s.crowns.length, 'drips', s.drips.length, 'mtar', (s.mtar||[]).length, 'col', !!s.column); }
+  drawHUD(f, s); drawUI(f, s);
+  gl.finish();
+};
+window.events = () => TL;
+</script>
+</body>
+</html>

@@ -331,5 +331,157 @@ void main(){
     return cam;
   }
 
-  G.PC = { staircase, bonsai, sheet, Cloud, mulberry, camera, makeProgram, upload, draw };
+
+  // ================= 片子用：同一批点在两个形状之间变形 =================
+  // 每个形状 = N 个点（按高度从上到下排好），第 i 个点从 A[i] 飞到 B[i]；
+  // 出发时间 = 排名 × 0.65 + 随机 × 0.35，所以是“一波一波”地走，路上绕着轴转、带拖尾
+  const MVS = `#version 300 es
+precision highp float;
+layout(location=0) in vec3 posA; layout(location=1) in vec3 colA; layout(location=2) in vec4 auxA;
+layout(location=3) in vec3 posB; layout(location=4) in vec3 colB; layout(location=5) in vec4 auxB;
+uniform mat4 view, proj; uniform float fpx, N, T;
+uniform float m, mSpread, mDur, mSwirl, mLift, mCurl; uniform vec3 mAxis;
+uniform float mode, trailM, sizeK, minSize, gain, movingA;
+uniform float sweepOn, sweepY, sweepW, sweepDir, rampOn, rampLen, ghostA, glowA, falloff, rampGain, ghostFrac;
+uniform vec3 edgeCol, ghostCol;
+uniform float focusD, aperture, nearA, nearB;
+uniform vec4 push[6]; uniform int nPush; uniform vec3 pushCol;
+out vec3 vCol; out float vA; out float vBok;
+float h1(float n){ return fract(sin(n*91.345)*47453.5453); }
+vec3 curl(vec3 p){ return vec3(sin(p.y*1.3+T)+sin(p.z*0.7), sin(p.z*1.1-T*0.7)+sin(p.x*0.9), sin(p.x*1.2+T*0.5)+sin(p.y*0.8)); }
+vec3 turbo(float x){
+  const vec4 kR = vec4(0.13572138, 4.61539260, -42.66032258, 132.13108234), kG = vec4(0.09140261, 2.19418839, 4.84296658, -14.18503333), kB = vec4(0.10667330, 12.64194608, -60.58204836, 110.36276771);
+  const vec2 kR2 = vec2(-152.94239396, 59.28637943), kG2 = vec2(4.27729857, 2.82956604), kB2 = vec2(-89.90310912, 27.34824973);
+  x = clamp(x, 0.0, 1.0); vec4 v4 = vec4(1.0, x, x*x, x*x*x); vec2 v2 = v4.zw*v4.z;
+  return vec3(dot(v4,kR)+dot(v2,kR2), dot(v4,kG)+dot(v2,kG2), dot(v4,kB)+dot(v2,kB2));
+}
+void off(){ gl_Position = vec4(2.,2.,2.,1.); gl_PointSize = 0.; }
+float localT(float mm){
+  float rk = float(gl_VertexID)/N, rn = auxA.y;
+  float delay = mSpread*(0.65*rk + 0.35*rn);
+  return clamp((mm - delay)/mDur, 0.0, 1.0);
+}
+void main(){
+  float t = localT(mode > 1.5 ? trailM : m);
+  bool moving = t > 0.0005 && t < 0.9995 && m > 0.0;
+  if (mode > 1.5 && !moving) { off(); return; }
+  float e = t*t*(3.0-2.0*t);
+  vec3 p = mix(posA, posB, e);
+  float arc = sin(3.14159265*e);
+  if (arc > 0.0) {
+    float rn = auxA.y;
+    vec3 r = p - mAxis; float ang = mSwirl*arc*(0.55 + 0.9*h1(rn*17.0));
+    float ca = cos(ang), sa = sin(ang); r.xz = mat2(ca, sa, -sa, ca)*r.xz; p = mAxis + r;
+    p.y += mLift*arc*(h1(rn*29.0) - 0.25);
+    p += curl(p*0.3 + rn*6.0)*mCurl*arc;
+  }
+  vec3 c = mix(colA, colB, e);
+  float w = mix(auxA.x, auxB.x, e);
+  float a = gain;
+  if (moving) { c = c*(1.0 + 0.8*arc) + vec3(0.15,0.35,0.45)*arc; a *= movingA; }
+  // 鼠标拨开：在垂直视线的平面里推开
+  vec3 vd = -vec3(view[0][2], view[1][2], view[2][2]);
+  for (int i=0;i<6;i++){ if (i>=nPush) break; vec4 q = push[i];
+    vec3 d = p - q.xyz; d -= dot(d, vd)*vd; float L = length(d); float R = q.w;
+    if (L < R) { float f = pow(1.0 - L/R, 2.0); p += d/max(L,1e-4)*R*0.75*f; c = mix(c, pushCol, f*0.9); } }
+  // 扫描面
+  bool ghost = false; float band = 0.0;
+  if (sweepOn > 0.5 && !moving) {
+    float s = (p.y - sweepY)*sweepDir;
+    if (s < 0.0) {
+      if (rampOn > 0.5) {
+        float L = 0.03 + 0.97*exp(p.y/falloff); float lum = dot(colB, vec3(0.3,0.5,0.2));
+        float st = clamp(lum/(L*0.75), 0.15, 1.2); st *= st;
+        float tt = clamp(-s/rampLen, 0.0, 1.0);
+        c = turbo(0.92 - 0.84*pow(tt, 0.8))*st*rampGain*(1.0 - 0.88*pow(tt, 0.6));
+      } else if (ghostA >= 0.0) {
+        if (auxA.y > ghostFrac) { off(); return; }
+        c = ghostCol; a *= ghostA; ghost = true;
+      }
+    }
+    float eb = exp(-abs(s)/sweepW);
+    c = mix(c, edgeCol*3.0, eb*0.92) + (s > 0.0 ? edgeCol*exp(-s/(sweepW*14.0))*0.2 : vec3(0.0));
+    band = eb;
+  }
+  bool additive = moving || ghost;
+  bool glowCopy = (mode > 0.5 && mode < 1.5 && !additive && band > 0.08);
+  if (mode < 0.5 && additive) { off(); return; }
+  if (mode > 0.5 && mode < 1.5 && !additive && !glowCopy) { off(); return; }
+  if (glowCopy) { c = edgeCol; a = band*glowA; }
+  if (mode > 1.5) a *= 0.32;
+  vec4 vp = view*vec4(p, 1.0); float depth = -vp.z;
+  if (depth < 0.05) { off(); return; }
+  gl_Position = proj*vp;
+  float nf = smoothstep(nearA, nearB, depth); c *= mix(0.06, 1.0, nf);
+  float s0 = w*fpx/depth*(mode < 0.5 ? sizeK : 1.0)*(glowCopy ? 2.2 : 1.0);
+  float coc = aperture*fpx*abs(depth - focusD)/depth/max(focusD, 0.1);
+  float size = max(minSize, sqrt(s0*s0 + coc*coc));
+  if (mode < 0.5) { gl_PointSize = clamp(max(minSize, s0), 0.0, 64.0); a = gain; vBok = -1.0; }
+  else { gl_PointSize = min(size, 500.0); a *= (s0*s0)/(size*size)*(size > 500.0 ? size*size/250000.0 : 1.0); if (moving) a *= min(1.0, 9.0/(size*size)); vBok = smoothstep(4.0, 18.0, size); }
+  vCol = c; vA = a;
+}`;
+  function makeMorphProgram(gl) { return G.GLK.program(gl, FS, MVS); }
+  // 一个形状 → 一块 GPU 缓冲
+  function uploadShape(gl, data) { const b = gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER, b); gl.bufferData(gl.ARRAY_BUFFER, data, gl.STATIC_DRAW); return b; }
+  const vaoCache = new Map();
+  function pairVAO(gl, A, B) {
+    const key = A.id + '>' + B.id; if (vaoCache.has(key)) return vaoCache.get(key);
+    const vao = gl.createVertexArray(); gl.bindVertexArray(vao);
+    for (const [buf, base] of [[A.buf, 0], [B.buf, 3]]) {
+      gl.bindBuffer(gl.ARRAY_BUFFER, buf);
+      gl.enableVertexAttribArray(base); gl.vertexAttribPointer(base, 3, gl.FLOAT, false, 40, 0);
+      gl.enableVertexAttribArray(base + 1); gl.vertexAttribPointer(base + 1, 3, gl.FLOAT, false, 40, 12);
+      gl.enableVertexAttribArray(base + 2); gl.vertexAttribPointer(base + 2, 4, gl.FLOAT, false, 40, 24);
+    }
+    gl.bindVertexArray(null); vaoCache.set(key, vao); return vao;
+  }
+  // 把任意点数的云重采样成恰好 N 个，并按高度从上到下排好
+  function toN(data, N, R, jitter = 0.5) {
+    const n = data.length / 10, out = new Float32Array(N * 10);
+    for (let i = 0; i < N; i++) {
+      const j = n >= N ? Math.floor(i * n / N) : (i < n ? i : Math.floor(R() * n));
+      out.set(data.subarray(j * 10, j * 10 + 10), i * 10);
+      if (i >= n) { const w = data[j * 10 + 6] * jitter; out[i * 10] += (R() - .5) * w; out[i * 10 + 1] += (R() - .5) * w; out[i * 10 + 2] += (R() - .5) * w; }
+      out[i * 10 + 7] = R();
+    }
+    // 按 y 从高到低排序（同一个排名的点在不同形状之间配对）
+    const idx = new Uint32Array(N); for (let i = 0; i < N; i++) idx[i] = i;
+    const key = new Float32Array(N); for (let i = 0; i < N; i++) key[i] = -out[i * 10 + 1] + (out[i * 10 + 7] - 0.5) * 0.0;
+    idx.sort((a, b) => key[a] - key[b]);
+    const sorted = new Float32Array(N * 10); for (let i = 0; i < N; i++) sorted.set(out.subarray(idx[i] * 10, idx[i] * 10 + 10), i * 10);
+    return sorted;
+  }
+  async function drawMorph(gl, P, target, A, B, s) {
+    if (!target.depth) { const rb = gl.createRenderbuffer(); gl.bindRenderbuffer(gl.RENDERBUFFER, rb); gl.renderbufferStorage(gl.RENDERBUFFER, gl.DEPTH_COMPONENT24, target.w, target.h);
+      gl.bindFramebuffer(gl.FRAMEBUFFER, target.fb); gl.framebufferRenderbuffer(gl.FRAMEBUFFER, gl.DEPTH_ATTACHMENT, gl.RENDERBUFFER, rb); target.depth = rb; }
+    gl.bindFramebuffer(gl.FRAMEBUFFER, target.fb); gl.viewport(0, 0, target.w, target.h);
+    gl.clearColor(...(s.clear || [0, 0, 0]), 1); gl.clearDepth(1); gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+    gl.useProgram(P); const u = P.u; const cam = camera(s.cam, target.w, target.h);
+    gl.uniformMatrix4fv(u.view, false, cam.view); gl.uniformMatrix4fv(u.proj, false, cam.proj); gl.uniform1f(u.fpx, cam.fpx);
+    gl.uniform1f(u.N, s.N); gl.uniform1f(u.T, s.T || 0);
+    const mo = s.morph || { m: 0 };
+    gl.uniform1f(u.m, mo.m || 0); gl.uniform1f(u.mSpread, mo.spread ?? 0.5); gl.uniform1f(u.mDur, mo.dur ?? 0.5); gl.uniform1f(u.mSwirl, mo.swirl || 0); gl.uniform1f(u.mLift, mo.lift || 0); gl.uniform1f(u.mCurl, mo.curl || 0);
+    gl.uniform3fv(u.mAxis, mo.axis || [0, 0, 0]); gl.uniform1f(u.movingA, mo.alpha ?? 0.5);
+    const sw = s.sweep;
+    gl.uniform1f(u.sweepOn, sw ? 1 : 0); gl.uniform1f(u.sweepY, sw ? sw.y : 0); gl.uniform1f(u.sweepW, sw ? sw.w : 0.1); gl.uniform1f(u.sweepDir, sw ? (sw.dir || 1) : 1);
+    gl.uniform1f(u.rampOn, sw && sw.ramp ? 1 : 0); gl.uniform1f(u.rampLen, sw ? (sw.rampLen || 20) : 20); gl.uniform1f(u.rampGain, sw ? (sw.rampGain || 1) : 1); gl.uniform1f(u.falloff, s.falloff || 9);
+    gl.uniform1f(u.ghostA, sw ? (sw.ghostA ?? 0.2) : 0); gl.uniform1f(u.ghostFrac, sw ? (sw.ghost ?? 1) : 1); gl.uniform1f(u.glowA, sw ? (sw.glow ?? 0.15) : 0);
+    gl.uniform3fv(u.edgeCol, (sw && sw.col) || [0.35, 0.95, 1.0]); gl.uniform3fv(u.ghostCol, (sw && sw.ghostCol) || [0.05, 0.3, 0.5]);
+    gl.uniform1f(u.focusD, s.dof ? s.dof.focus : 10); gl.uniform1f(u.aperture, s.dof ? s.dof.aperture : 0);
+    gl.uniform1f(u.nearA, (s.near || [0, 0])[0]); gl.uniform1f(u.nearB, (s.near || [0, 0.001])[1]);
+    gl.uniform1f(u.minSize, (s.minSize || 1.3) * (target.h / 1080)); gl.uniform1f(u.gain, s.gain || 1); gl.uniform1f(u.sizeK, s.sizeK || 1);
+    const ps = s.push || []; const pf = new Float32Array(24); ps.slice(0, 6).forEach((q, i) => pf.set(q, i * 4)); gl.uniform4fv(u.push, pf); gl.uniform1i(u.nPush, Math.min(6, ps.length)); gl.uniform3fv(u.pushCol, s.pushCol || [0.45, 1, 1.05]);
+    gl.bindVertexArray(pairVAO(gl, A, B));
+    const CH = 250000;
+    const pass = async (mode, tm) => { gl.uniform1f(u.mode, mode); gl.uniform1f(u.trailM, tm); for (let i = 0; i < s.N; i += CH) { gl.drawArrays(gl.POINTS, i, Math.min(CH, s.N - i)); } gl.finish(); await G.GLK.tick(); };
+    gl.enable(gl.DEPTH_TEST); gl.depthFunc(gl.LESS); gl.depthMask(true); gl.disable(gl.BLEND);
+    await pass(0, 0);
+    gl.depthMask(false); gl.enable(gl.BLEND); gl.blendFunc(gl.ONE, gl.ONE);
+    await pass(1, 0);
+    if (mo.m > 0 && mo.m < 1.2 && mo.trails) for (let k = 1; k <= mo.trails; k++) await pass(2, mo.m - k * (mo.trailStep || 0.01));
+    gl.disable(gl.BLEND); gl.disable(gl.DEPTH_TEST); gl.depthMask(true); gl.bindVertexArray(null);
+    return cam;
+  }
+
+  G.PC = { staircase, bonsai, sheet, Cloud, mulberry, camera, makeProgram, upload, draw, makeMorphProgram, uploadShape, pairVAO, toN, drawMorph };
 })(window);
