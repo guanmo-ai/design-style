@@ -177,6 +177,39 @@ class Song(AudioKit, Orchestra):
         y = np.tanh((sub * 1.1 + snap * 0.9) * 1.6) + ring
         return y * np.minimum(1, t / 0.0006) * level * 0.55
 
+    # —— 快节奏规则卡的声音（主人 2026-11-06：“快节奏还不如这个视频”“音效一般”）——
+    # 对标片一卡一声：拍点前一小口“吸气”（音乐空 2 帧）→ 一记很低很干净的重击；不再一个字一声“嗒”、不叠倒放镲。
+    def card_hit(self, m=36, level=1.0, bright=1.0):
+        """预告片式的重击：次低音从高处砸下来 + 一记“啪”的瞬态 + 一层低中频的身体 + 一点调好音的金属余振"""
+        t = self.tt(1.2)
+        f = self.midi(m) * (1 + 2.6 * np.exp(-t / 0.018))
+        sub = np.sin(2 * np.pi * np.cumsum(f) / self.SR) * np.exp(-t / 0.2)   # 尾巴短：0.5 秒一张也一记是一记
+        body = self.fft_filter(self.rng.standard_normal(len(t)), lo=90, hi=420) * np.exp(-t / 0.06)
+        snap = self.fft_filter(self.rng.standard_normal(len(t)), lo=1800, hi=9000) * np.exp(-t / 0.007) * bright
+        ring = sum(a * np.sin(2 * np.pi * self.midi(m + 36) * r * t) * np.exp(-t / k) for r, a, k in ((1, 0.16, 0.22), (2.76, 0.08, 0.1)))
+        y = np.tanh((sub * 1.25 + body * 0.7 + snap * 0.55) * 1.8) + ring * bright
+        return y * np.minimum(1, t / 0.0004) * level * 0.6
+
+    def suck(self, d=0.2, level=1.0):
+        """拍点前的“吸气”：一口往上走的气声，越来越响，在拍点那一刻断掉"""
+        t = self.tt(d)
+        y = self.sweep(self.rng.standard_normal(len(t)), 900, 9000) * (t / d) ** 2.2
+        return y * level * 0.5
+
+    def gap(self, f, frames=3, depth=0.08):
+        """拍点前把音乐挖空几帧（在 master 里乘到 MUS / PUMP / LEAD 上），让重击更“砸”"""
+        self.gaps = getattr(self, 'gaps', []) + [(f, frames, depth)]
+
+    def cards(self, frames, level=1.0):
+        """一张卡一套：吸气 → 挖空 → 重击（音高取那一拍的和弦根音）；重击也算一记底鼓（铺底跟着泵）"""
+        for k, at in enumerate(frames):
+            root = self.chord(at)[1]
+            root = root - 12 if root > 45 else root
+            self.sfx(self.suck(0.2, 1.0), self.fr(at) - 0.2, 0.3 * level, 0.0, send=0.1)
+            self.gap(at)
+            self.sfx(self.card_hit(root, 1.0), self.fr(at), 2.0 * level, 0.0, send=0.25)
+            self.kicks.append(at)
+
     def text_cues(self, cues, level=1.0, pan=0.0):
         """读页面登记的 cue：[起始帧, 字数, 每字帧数, 种类]。每落定一个字一声（一帧最多一声）；slam = 砸字"""
         for f0, n, rate, kind in cues:
@@ -205,6 +238,15 @@ class Song(AudioKit, Orchestra):
         since = np.where(idx >= 0, tsec - ks[np.clip(idx, 0, None)], 9.0)
         duck = 1 - 0.35 * (1 - np.clip(since / 0.22, 0, 1)) ** 2
         self.MUS += self.PUMP * duck[None, :]
+        # 规则卡拍点前挖空（gap）：PUMP、LEAD、MUS 一起
+        if getattr(self, 'gaps', None):
+            g = np.ones(self.N)
+            for f, n, dep in self.gaps:
+                i1 = int(self.fr(f) * self.SR); i0 = max(0, i1 - int(self.fr(n) * self.SR)); r = int(0.006 * self.SR)
+                g[i0:i1] = np.minimum(g[i0:i1], dep)
+                g[i1:i1 + r] = np.minimum(g[i1:i1 + r], np.linspace(dep, 1, r))
+            self.MUS *= g[None, :]
+            self.LEAD *= g[None, :]
         # 主旋律：乒乓延迟（附点八分）
         D = int(self.fr(self.BEAT * 0.75) * self.SR)
         lead = self.LEAD.copy()

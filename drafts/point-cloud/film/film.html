@@ -71,6 +71,7 @@ html, body { width: 1920px; height: 1080px; overflow: hidden; background: #000; 
 <script src="../shapes.js"></script>
 <script src="timeline.js"></script>
 <script src="../../_lib/typefx.js"></script>
+<script src="../../_lib/cardfx.js"></script>
 <script>
 const Q = new URLSearchParams(location.search);
 const SCALE = +(Q.get('scale') || 1);
@@ -124,7 +125,7 @@ function camAt(f) {
   const TREE = (t) => orbit([0, 0.2, 0], lerp(11.5, 10.2, t), lerp(-0.6, 0.15, t), 1.3, 40);
   if (f < 500) return cm(WALL(1), TREE(0), ease.inOut3(prog(f, 470, 500)));
   if (f < 560) return TREE(prog(f, 500, 560));
-  // 规则卡：每张一个镜头。第三版一拍一张、镜头硬切，主人觉得“突然变化”→ 一张 45 帧，换卡时 18 帧滑过去；
+  // 规则卡：每张一个镜头。第三版一拍一张、镜头硬切，主人觉得“突然变化”→ 一张 45 帧，换卡时滑过去；第五版一张 60 帧、22 帧滑过去；
   // 绕着地形转的三张（2—4）按轨道参数插值（绕过去，而不是从山顶穿过去）
   const OC = [0, -0.6, 0], ORB = [null, [9.5, 0.6, 0.9, 4.0], [[7.5, 6.8], -0.8, -0.6, 2.4], [10, 0.9, 1.2, 3.4], null];
   const op = (k, t) => { const o = ORB[k], r = Array.isArray(o[0]) ? lerp(o[0][0], o[0][1], t) : o[0]; return [r, lerp(o[1], o[2], t), o[3]]; };
@@ -134,7 +135,7 @@ function camAt(f) {
   const CS = TL.cards, CL = TL.cardLen, RE = TL.rules[1], cardT = (k, f) => prog(f, CS[k], k === 4 ? RE : CS[k] + CL);
   if (f < 578) return cm(TREE(1), R1(0), ease.inOut3(prog(f, 556, 578)));
   const PH = (a) => orbit([0, 0.0, 0], 12.5, a, 1.6, 40);
-  if (f < RE - 8) { const k = Math.min(4, Math.floor((f - CS[0]) / CL)), cur = RK(k, cardT(k, f)), b = ease.inOut3(prog(f, CS[k], CS[k] + 18));
+  if (f < RE - 8) { const k = Math.min(4, Math.floor((f - CS[0]) / CL)), cur = RK(k, cardT(k, f)), b = ease.inOut3(prog(f, CS[k], CS[k] + 22));
     if (k === 0 || b >= 1) return cur;
     if (k === 1 || k === 4) return cm(RK(k - 1, 1), cur, b);
     const [r0, a0, y0] = op(k - 1, 1), [r1, a1, y1] = op(k, cardT(k, f)); return orbit(OC, lerp(r0, r1, b), lerp(a0, a1, b), lerp(y0, y1, b), 42); }
@@ -203,10 +204,10 @@ function sceneAt(f) {
     if (f >= TL.toTerrain[1]) { A = B = S.terrain; mo = { m: 0 }; }
     const c = clamp(Math.floor((f - TL.cards[0]) / TL.cardLen), 0, 4), lf = f - TL.cards[c];
     s.sizeK = 0.7;
-    if (c === 0) { s.dof = { focus: lerp(2, 7, lf / 45), aperture: 0.018 }; s.sizeK = 0.9; }
-    if (c === 1) s.sweep = { y: lerp(2.2, -2.6, ease.inOut3(clamp((lf - 2) / 40))), w: 0.05, dir: 1, ghost: 0.12, ghostA: 0.4, glow: 0.4, col: [0.35, 0.95, 1.0], ghostCol: [0.05, 0.3, 0.5] };
-    if (c === 2) s.vox = [0.32, ease.outBack(clamp((lf - 4) / 18), 2.2)];
-    if (c === 3) s.sweep = { y: lerp(-2.6, 2.6, ease.out3(clamp((lf - 3) / 28))), w: 0.04, dir: -1, ramp: true, rampLen: 3.2, rampGain: 1.4, glow: 0.3, col: [1, 1, 1] };
+    if (c === 0) { s.dof = { focus: lerp(2, 7, lf / 60), aperture: 0.018 }; s.sizeK = 0.9; }
+    if (c === 1) s.sweep = { y: lerp(2.2, -2.6, ease.inOut3(clamp((lf - 2) / 52))), w: 0.05, dir: 1, ghost: 0.12, ghostA: 0.4, glow: 0.4, col: [0.35, 0.95, 1.0], ghostCol: [0.05, 0.3, 0.5] };
+    if (c === 2) s.vox = [0.32, ease.outBack(clamp((lf - 5) / 22), 2.2)];
+    if (c === 3) s.sweep = { y: lerp(-2.6, 2.6, ease.out3(clamp((lf - 3) / 38))), w: 0.04, dir: -1, ramp: true, rampLen: 3.2, rampGain: 1.4, glow: 0.3, col: [1, 1, 1] };
     if (c === 4) { s.push = []; for (let k = 0; k < 6; k++) { const q = cur5(f - k * 3); if (!q) continue; const w = unproject(s.cam, q[0], q[1], [0, -0.6, 0]); s.push.push([...w, 1.1 * Math.max(0, 1 - k * 0.14)]); } }
   } else if (f < TL.out[1] + 10 && f < TL.implode[0]) {
     A = S.terrain; B = S.bonsai; mo = MO(ease.inOut3(prog(f, TL.today[0], TL.mask[1])), { spread: 0.4, dur: 0.6, swirl: 1.4, lift: 1.0, trails: 0, alpha: 0.05 });
@@ -228,12 +229,13 @@ function sceneAt(f) {
 }
 // 05 的鼠标：穿过树冠；规则 5 的鼠标：从左上划到右下
 function curAt(f) { if (f < TL.cursor[0] || f > TL.cursor[1]) return null; const t = ease.inOut3(prog(f, TL.cursor[0], TL.cursor[1])); return [lerp(640, 1300, t), 420 + 110 * Math.sin(t * Math.PI * 1.2) - 40 * t]; }
-function cur5(f) { const a = TL.cards[4] + 8, b = TL.cards[4] + 50; if (f < a || f > b) return null; const t = ease.inOut3(prog(f, a, b)); return [lerp(560, 1440, t), lerp(330, 760, t) + 90 * Math.sin(t * Math.PI * 2)]; }
+function cur5(f) { const a = TL.cards[4] + 10, b = TL.cards[4] + 62; if (f < a || f > b) return null; const t = ease.inOut3(prog(f, a, b)); return [lerp(560, 1440, t), lerp(330, 760, t) + 90 * Math.sin(t * Math.PI * 2)]; }
 
 // —— HUD ——
 const hud = document.getElementById('hud'), ui = document.getElementById('ui'), card = document.getElementById('card');
 function chapterAt(f) { let c = TL.chapters[0]; for (const x of TL.chapters) if (f >= x[0]) c = x; return c; }
-const RULES = [['近大远小', 'SIZE = w · f / z', 'size = w · f / z'], ['扫描面', 'SWEEP', 'edge = e^(−|y − y₀| / w)'], ['体素', 'VOXEL', 'p → (⌊p / s⌋ + ½) · s'], ['高度色带', 'TURBO', 'color = turbo(y)'], ['拨开', 'PUSH', 'p += n · R(1 − d/R)²']];
+const CARD_C = ['#6ff3ff', '#7dffb0', '#ffd36f', '#ff8a5c', '#c48bff'];
+const RULES = [['近大远小', 'PERSPECTIVE', 'size = w · f / z'], ['扫描面', 'SWEEP', 'edge = e^(−|y − y₀| / w)'], ['体素', 'VOXEL', 'p → (⌊p / s⌋ + ½) · s'], ['高度色带', 'TURBO', 'color = turbo(y)'], ['拨开', 'PUSH', 'p += n · R(1 − d/R)²']];
 function drawHUD(f, s) {
   const c = chapterAt(f); let h = '';
   const fin = ease.out3(clamp((f - c[0]) / 12));
@@ -260,9 +262,9 @@ function drawHUD(f, s) {
   if (f >= 410 && f < 480) h += line(412, 480, `p += curl(p, t) · Δt &nbsp;<em>× 3 步</em>`, `每个点顺着一个会变的“风”走：一百万个点，就是一幅会流动的颜料画。`);
   if (f >= 500 && f < 570) { h += line(502, 570, `点 → 面 &nbsp;<em>size × ${s.sizeK.toFixed(2)}</em>`, `每个点长成一个小圆片，彼此盖住，就连成了表面——高斯泼溅就是这么“画”出照片感的。`);
     const q = curAt(f); if (q) h += `<svg style="position:absolute;left:${q[0] - 3}px;top:${q[1] - 3}px" width="30" height="30" viewBox="0 0 22 22"><path d="M2 2 L2 18 L7 13 L10 20 L13 19 L10 12 L17 12 Z" fill="#fff" stroke="#000" stroke-width="1"/></svg>`; }
-  if (inRules) { const k = clamp(Math.floor((f - TL.cards[0]) / TL.cardLen), 0, 4), cs = TL.cards[k], lf = f - cs, r = RULES[k], sc = 1 + 0.25 * (1 - ease.out3(clamp(lf / 7)));
-    TFX.slam(cs); const trk = 0.35 + 0.35 * (1 - ease.out3(clamp((lf - 3) / 16)));
-    h += `<div class="big"><div class="no">${D(`规则 ${k + 1} / 5`, cs, { rate: 1, kind: 'small', glyphs: 'dots' })}&nbsp;</div><div class="w" style="transform:scale(${sc});transform-origin:0 50%;filter:blur(${Math.max(0, 6 - lf * 1.5)}px)">${r[0]}</div><div class="en" style="letter-spacing:${trk}em">${D(r[1], cs + 4, { rate: 1.2 })}&nbsp;</div><div class="fx" style="opacity:${clamp((lf - 8) / 3)}">${D(r[2], cs + 10, { rate: 0.8 })}&nbsp;</div></div>`;
+  // 规则卡：字 5 帧内整块到位后不动；一道光扫过来换卡；左边压暗，点云再密也读得清；每张一个颜色（cardfx.js）
+  if (inRules) { const k = clamp(Math.floor((f - TL.cards[0]) / TL.cardLen), 0, 4), lf = f - TL.cards[k], r = RULES[k];
+    h += CARD.html(lf, { k, n: 5, title: r[0], en: r[1], fx: r[2], accent: CARD_C[k], scrim: 0.78 });
     if (k === 4) { const q = cur5(f); if (q) h += `<svg style="position:absolute;left:${q[0] - 3}px;top:${q[1] - 3}px" width="30" height="30" viewBox="0 0 22 22"><path d="M2 2 L2 18 L7 13 L10 20 L13 19 L10 12 L17 12 Z" fill="#fff" stroke="#000" stroke-width="1"/></svg>`; } }
   hud.innerHTML = h;
 }

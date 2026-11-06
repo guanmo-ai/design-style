@@ -69,6 +69,7 @@ html, body { width: 1920px; height: 1080px; overflow: hidden; background: #02030
 <script src="../chrome.js"></script>
 <script src="timeline.js"></script>
 <script src="../../_lib/typefx.js"></script>
+<script src="../../_lib/cardfx.js"></script>
 <script>
 const Q = new URLSearchParams(location.search);
 const SCALE = +(Q.get('scale') || 1);
@@ -279,6 +280,7 @@ function voiceEnv(f) { let e = 0.12; for (const [t, a] of SYL) e += a * Math.exp
 // —— HUD ——
 const hud = document.getElementById('hud'), ui = document.getElementById('ui'), card = document.getElementById('card');
 function chapterAt(f) { let c = TL.chapters[0]; for (const x of TL.chapters) if (f >= x[0]) c = x; return c; }
+const CARD_C = ['#ff4fa3', '#4fd8ff', '#ffb547', '#a98bff', '#8dff7a'];
 const RULES = [['融合', 'MERGE', 'd = smin(a, b, k)'], ['倒影', 'REFLECT', 'color = env(reflect(v, n))'], ['菲涅尔', 'FRESNEL', 'F = F₀ + (1 − F₀)(1 − cos θ)⁵'], ['断开', 'PINCH-OFF', 'λ ≈ 9 · r（瑞利–普拉托）'], ['回弹', 'WOBBLE', 'A · e^(−t/τ) · cos 2πft']];
 function drawHUD(f, s) {
   const c = chapterAt(f); let h = '';
@@ -298,9 +300,9 @@ function drawHUD(f, s) {
   if (f >= 304 && f < 390) h += line(306, 390, '刺长 = L₀ · (1 + 0.2 · 鼓点) &nbsp;<em>5 圈 · 61 根</em>', '磁场一推刺就长出来，一圈比一圈晚一个十六分音符；黑色的液体，只剩下倒影。');
   if (f >= 392 && f < 480) h += f < TL.polish[0] ? line(394, TL.polish[0] + 9, '168 块钢板焊成 &nbsp;<em>焊缝 = 网格线</em>', '先看见焊缝，再一点点磨平——镜面是“磨”出来的。')
     : line(TL.polish[0], 478, 'env = 城市 &nbsp;<em>同一颗豆子，换一个世界</em>', '它自己没有颜色：整座城市和夕阳，全在它身上。');
-  if (inRules) { const k = Math.floor((f - 480) / 30), cs = 480 + k * 30, lf = f - cs, r = RULES[k], sc = 1 + 0.25 * (1 - ease.out3(clamp(lf / 7)));
-    TFX.slam(cs); const trk = 0.3 + 0.35 * (1 - ease.out3(clamp((lf - 3) / 14)));
-    h += `<div style="position:absolute;left:64px;top:150px"><div style="font-family:GeistMono;font-size:16px;color:#ff4fa3;letter-spacing:.1em">${D(`规则 ${k + 1} / 5`, cs, { rate: 1, kind: 'small' })}&nbsp;</div><div style="font-family:NotoSC;font-weight:900;font-size:190px;line-height:1;margin-top:10px;transform:scale(${sc});transform-origin:0 50%;filter:blur(${Math.max(0, 6 - lf * 1.5)}px)">${r[0]}</div><div style="font-family:Unbounded;font-weight:300;font-size:22px;letter-spacing:${trk}em;color:#c9d1e2;margin-top:18px">${D(r[1], cs + 3, { rate: 1.2 })}&nbsp;</div><div style="font-family:GeistMono;font-size:20px;margin-top:26px;padding:10px 14px;background:rgba(2,3,6,.6);border-left:3px solid #ff4fa3;display:inline-block;opacity:${clamp((lf - 6) / 3)}">${D(r[2], cs + 8, { rate: 0.6 })}&nbsp;</div></div>`; }
+  // 规则卡：一张 30 帧（和对标片一样 0.5 秒），字 5 帧内整块到位后不动；一道光扫过来换卡；每张一个颜色（cardfx.js）
+  if (inRules) { const k = Math.floor((f - 480) / 30), lf = f - 480 - k * 30, r = RULES[k];
+    h += CARD.html(lf, { k, n: 5, title: r[0], en: r[1], fx: r[2], accent: CARD_C[k], scrim: 0.45, glow: [1180, 540, 820, 0.34] }); }
   if (f >= 676 && f < 900) { const o = rule(680, 900), a0 = f < TL.listen[0] ? 680 : f < TL.answer[0] ? TL.listen[0] : TL.answer[0];
     h += `<div class="rule" style="opacity:${o}">${D(f < TL.listen[0] ? '待机：半径 ± 3.5%，0.9 次 / 秒' : f < TL.answer[0] ? '聆听：刺长 = 0.05 + 0.5 · 音量 · 频带' : '回答：分出三滴 · spring(1.6 Hz, ζ 0.5)', a0, { rate: 0.7 })}<small>${D(f < TL.listen[0] ? '没人说话时它也在“活着”。' : f < TL.answer[0] ? '音量越大刺越长，像磁流体：不用一个表情，也知道它在听。' : '想好了就分出几滴，落下来变成你下一步能点的按钮。', a0 + 8, { rate: 0.5, kind: 'small', glyphs: 'blocks' })}</small></div>`; }
   hud.innerHTML = h;

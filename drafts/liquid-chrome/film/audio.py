@@ -205,18 +205,17 @@ S.sfx(S.shimmer(1.0, 0.8), fr(TL['polish'][1] - 10), 0.35, send=0.5)
 S.sfx(S.swell([65, 69, 72, 76], 1.2, 0.9), fr(TL['under'][0]), 0.4, send=0.6)
 S.sfx(S.riser(fr(480 - 452), 0.9, 400, 9000), fr(452), 0.45)
 
-# —— 05 五条规则：一卡一记重拍 + 自己的声音 ——
-for k, at in enumerate(TL['cards']):
-    S.place(S.kick(1.3), fr(at), 1.0); S.kicks.append(at)
-    S.place(stab([n + 12 for n in S.chord(at)[2]], 0.35, 1.0), fr(at), 0.22, -0.4 + 0.2 * k, send=0.4, bus=S.PUMP)
-    S.sfx(S.hit(0.8, 38), fr(at), 0.25, send=0.3)
-S.sfx(S.glide(60, 72, 0.25, 0.6), fr(482), 0.3); S.sfx(gloop(50, 31, 0.22, 1.0), fr(497), 0.6)        # 融合
-S.sfx(S.whoosh(0.45, 300, 7000, 0.9, 0.5), fr(512), 0.45, send=0.3)                                     # 倒影
-S.sfx(S.shimmer(0.5, 0.8), fr(544), 0.4, send=0.5)                                                       # 菲涅尔
+# —— 05 五条规则（第四版）：对标片一卡一声——吸气 → 音乐挖空 2 帧 → 一记很低很干净的重击（song.py 的 cards）；
+# 每张自己的小声音压到重击下面（× 0.6），不再一卡叠底鼓 + 和弦 + 冲击 + 倒放镲 + 砸字
+S.cards(TL['cards'], 1.0)
+G = 0.6
+S.sfx(S.glide(60, 72, 0.25, 0.6), fr(484), 0.3 * G); S.sfx(gloop(50, 31, 0.22, 1.0), fr(497), 0.6 * G)    # 融合
+S.sfx(S.whoosh(0.45, 300, 7000, 0.9, 0.5), fr(514), 0.45 * G, send=0.3)                                 # 倒影
+S.sfx(S.shimmer(0.5, 0.8), fr(544), 0.4 * G, send=0.5)                                                   # 菲涅尔
 for k, m in enumerate([86, 81, 77, 74, 69]):
-    S.sfx(plink(m, 1.0, 0.25), fr(592 + k * 1.5), 0.4, -0.6 + 0.3 * k, send=0.4)                         # 断开
+    S.sfx(plink(m, 1.0, 0.25), fr(588 + k * 1.5), 0.4 * G, -0.6 + 0.3 * k, send=0.4)                     # 断开
 t = S.tt(0.5); boing = np.sin(2 * np.pi * np.cumsum(S.midi(55) * (1 + 0.25 * np.exp(-t / 0.1) * np.cos(2 * np.pi * 5.2 * t))) / S.SR) * np.exp(-t / 0.2)
-S.sfx(boing * 0.4, fr(606), 0.6)                                                                        # 回弹
+S.sfx(boing * 0.4, fr(606), 0.6 * G)                                                                    # 回弹
 S.sfx(S.whoosh(0.7, 5000, 400, 0.8, 0.7), fr(TL['mask'][0]), 0.45)
 
 # —— 06 界面 ——
