@@ -135,7 +135,7 @@ function sceneAt(f) {
   let A = S.title, B = S.title;
   if (f < 150) {
     A = S.tunnel; B = S.title;
-    s.morph = { m: ease.out3(prog(f, TL.assemble[0], TL.assemble[1])), spread: 0.5, dur: 0.5, swirl: 2.6, lift: 2.6, curl: 2.2, axis: [0, TY, 1.2], trails: 8, trailStep: 0.01, alpha: 0.2 };
+    s.morph = { m: ease.out3(prog(f, TL.assemble[0], TL.assemble[1])), spread: 0.5, dur: 0.5, swirl: 2.6, lift: 2.6, curl: 2.2, axis: [0, TY, 1.2], trails: 8, trailStep: 0.01, alpha: 0.11 };
     if (f >= TL.assemble[1]) { A = B = S.title; s.morph = { m: 0 }; }
     s.dof = { focus: 13.5, aperture: 0.006 };
     s.near = [0.2, 2.5];
@@ -145,7 +145,7 @@ function sceneAt(f) {
     s.sizeK = lerp(0.75, 0.26, ease.inOut3(prog(f, 166, 206))); s.gain = lerp(1.0, 1.6, prog(f, 166, 206)); s.near = [0.02, 0.06];
   } else if (f < 306) {
     A = S.title; B = S.stairs;
-    s.morph = { m: ease.inOut3(prog(f, TL.pour[0], TL.pour[1])), spread: 0.5, dur: 0.5, swirl: 1.6, lift: -2.0, curl: 0.7, axis: [0, 0, 0], trails: 8, trailStep: 0.01, alpha: 0.14 };
+    s.morph = { m: ease.inOut3(prog(f, TL.pour[0], TL.pour[1])), spread: 0.5, dur: 0.5, swirl: 1.6, lift: -2.0, curl: 0.7, axis: [0, 0, 0], trails: 6, trailStep: 0.012, alpha: 0.05 };
     s.dof = { focus: 8, aperture: 0.004 }; s.near = [0.6, 4];
     s.sweep = { y: 0.6, w: 0.16, dir: 1, ramp: true, rampLen: 26, glow: 0.14, col: [0.35, 0.95, 1.0] };
   } else if (f < 640) {
@@ -155,7 +155,7 @@ function sceneAt(f) {
     s.dof = { focus: Math.max(4, camAt(f).pos[1] - sy), aperture: 0.006 };
     if (f >= TL.twist[0]) {
       B = S.bonsai;
-      s.morph = { m: ease.inOut3(prog(f, TL.twist[0], TL.twist[1] - 6)), spread: 0.55, dur: 0.45, swirl: 4.2, lift: 3.0, curl: 1.0, axis: [0, -30, 0], trails: 10, trailStep: 0.008, alpha: 0.06 };
+      s.morph = { m: ease.inOut3(prog(f, TL.twist[0], TL.twist[1] - 6)), spread: 0.55, dur: 0.45, swirl: 4.2, lift: 3.0, curl: 1.0, axis: [0, -30, 0], trails: 8, trailStep: 0.01, alpha: 0.03 };
       s.dof = { focus: 12, aperture: 0.004 }; s.near = [0.5, 3];
       if (f >= TL.twist[1] - 6) { A = B = S.bonsai; s.morph = { m: 0 }; }
     }
@@ -169,11 +169,11 @@ function sceneAt(f) {
     }
     // 05：手机里——从下往上扫，扫完重新聚一次
     if (f >= TL.pScan[0] && f < TL.pBuild[0] + 2) s.sweep = { y: lerp(BY - 0.2, BY + 6.2, ease.inOut3(prog(f, TL.pScan[0], TL.pScan[1]))), w: 0.08, dir: -1, ghost: 0.35, ghostA: 0.25, glow: 0.3, col: [0.35, 0.95, 1.0] };
-    if (f >= TL.pBuild[0] && f < TL.pDone[0]) s.morph = { m: ease.inOut3(prog(f, TL.pBuild[0], TL.pDone[0])), spread: 0.5, dur: 0.5, swirl: 3.0, lift: 1.5, curl: 1.2, axis: [0, -34, 0], trails: 8, trailStep: 0.012, alpha: 0.1 };
+    if (f >= TL.pBuild[0] && f < TL.pDone[0]) s.morph = { m: ease.inOut3(prog(f, TL.pBuild[0], TL.pDone[0])), spread: 0.5, dur: 0.5, swirl: 3.0, lift: 1.5, curl: 1.2, axis: [0, -34, 0], trails: 6, trailStep: 0.012, alpha: 0.06 };
     if (f >= TL.pDone[0]) s.sizeK = lerp(0.85, 1.12, prog(f, TL.pDone[0], TL.pDone[0] + 12));
     if (f >= TL.regroup[0]) {
       A = S.bonsai; B = S.title2; s.sizeK = 0.8;
-      s.morph = { m: ease.inOut3(prog(f, TL.regroup[0], TL.regroup[1])), spread: 0.5, dur: 0.5, swirl: 2.2, lift: 2.5, curl: 1.0, axis: [0, -34, 0], trails: 8, trailStep: 0.012, alpha: 0.1 };
+      s.morph = { m: ease.inOut3(prog(f, TL.regroup[0], TL.regroup[1])), spread: 0.5, dur: 0.5, swirl: 2.2, lift: 2.5, curl: 1.0, axis: [0, -34, 0], trails: 6, trailStep: 0.012, alpha: 0.035 };
       s.dof = { focus: 15, aperture: 0.004 };
       if (f >= TL.regroup[1]) { A = B = S.title2; s.morph = { m: 0 }; s.sweep = { y: lerp(TY2 + 2.2, TY2 - 2.2, ease.inOut3(prog(f, 1046, 1076))), w: 0.06, dir: 1, ghostA: -1, glow: 0.35 }; }
     }
