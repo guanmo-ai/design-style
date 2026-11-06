@@ -22,6 +22,30 @@
 
 ## 待办
 
+### 液态金属第四版 + 点云第五版：用 Mac 显卡渲两部成片（2026-11-06）
+
+主人看了液态金属第三版、点云第四版，对照观默《Awesome AI Motion》宣传片，要求规则卡那段快节奏“看得清、音效更好”，点云规则卡再慢一点点。设计、配乐、时间轴都已改完并自审（规则卡静帧、文字 cue、音轨电平都核过），在分支 `claude/trusting-gauss-o4u33i` 的提交 `ba91d08`。云端没有显卡，液态金属整片要 2 小时以上，所以交给 Codex 渲。**只渲染，不改设计**；画面或声音不对，把现象和截图记在这里，由 Claude 修代码。
+
+1. `git fetch origin claude/trusting-gauss-o4u33i && git checkout claude/trusting-gauss-o4u33i`。字体缺了先跑 `bash scripts/fetch_fonts.sh`（要 Geist / GeistMono / NotoSansSC 四个字重 / Unbounded / ZCOOLQingKeHuangYou）。
+2. 两部片各在自己目录里跑一次（会先导出文字 cue、生成配乐，再逐帧渲染、合成；已渲的帧会跳过，断了可以接着跑）：
+   - `cd drafts/liquid-chrome/film && bash make.sh` → 覆盖 `liquid-chrome-film.mp4`
+   - `cd drafts/point-cloud/film && bash make.sh` → 覆盖 `point-cloud-film.mp4`
+   - 帧默认放在 `$TMPDIR/<名字>-frames/`。如果那里还留着旧版的帧，**先删掉**，否则会被当成已渲而跳过（两版画面不一样，点云后半段整体晚了 60 帧）。
+3. 推之前自查（数字对不上就别推，记在这里）：
+
+   | | 液态金属 | 点云 |
+   |---|---|---|
+   | 帧数 / 时长 | 1080 帧 / 18.0 秒 | 1230 帧 / 20.5 秒（旧版 1170 帧） |
+   | 音轨 | 约 18 秒，-14 LUFS | 约 20.5 秒，-14 LUFS |
+   | 文件大小（参考） | 约 18 MB | 约 40 MB |
+   | 抽帧：字完整 | 第 490、520、550、580、610 帧：五张卡的标题、英文、公式完整清楚，标签颜色各不相同 | 第 580、640、700、760、820 帧：同左，左边压暗，字在点云上读得清 |
+   | 抽帧：竖光 | 第 482、542 帧：一道发光的竖线正扫过，左边的字已经出来、右边还没有 | 第 572、632 帧：同左 |
+
+   时长：`ffprobe -v error -show_entries format=duration -of csv=p=0 <mp4>`；抽帧：`ffmpeg -ss <秒> -i <mp4> -frames:v 1 x.jpg`（帧 ÷ 60 = 秒）。
+4. 显卡和云端软件渲染的画面可能有细微差异（颜色、光晕），只要规则卡的字、竖光、颜色和第 3 步说的一致就可以。规则卡上的颜色光晕用了 CSS `mix-blend-mode: screen` 叠在 WebGL 画布上，如果在显卡上没显示出来，记一笔。
+5. 把两个 mp4 提交到同一个分支 `claude/trusting-gauss-o4u33i` 并推上去（之前几版成片也是直接放在 `drafts/*/film/` 里），提交信息写上帧数、时长、大小。推完在这里把本项删掉。
+6. 主人看成片：通过就结束；有意见再找 Claude 改。
+
 ### 015 · 未来主义：审片通过后发布（2026-10-28）
 
 这一期全片是 SVG、不需要显卡，正片由 Claude 在云端渲（`npm run render:015`，约十几分钟），推到 `review-renders` 分支的 `015/` 并自审。**Codex 只负责发布**：
