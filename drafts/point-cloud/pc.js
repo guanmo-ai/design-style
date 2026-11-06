@@ -93,7 +93,9 @@ void main(){
   const FS = `#version 300 es
 precision highp float; in vec3 vCol; in float vA; in float vBok; out vec4 o;
 void main(){
-  vec2 q = gl_PointCoord*2.0-1.0; float r2 = dot(q,q); if (r2 > 1.0) discard;
+  vec2 q = gl_PointCoord*2.0-1.0;
+  if (vBok < -1.5) { float e = max(abs(q.x), abs(q.y)); o = vec4(vCol*vA*(e > 0.82 ? 0.45 : 1.0 - 0.15*e), 1.0); return; } // 体素：方块 + 深色边
+  float r2 = dot(q,q); if (r2 > 1.0) discard;
   if (vBok < -0.5) { o = vec4(vCol*vA*(1.0 - 0.25*r2), 1.0); return; } // 不透明的点：带一点球形暗边
   float g = exp(-r2*3.2)*1.55;                      // 小点：高斯
   float b = (smoothstep(1.0, 0.86, r2) * (0.75 + 0.35*smoothstep(0.5,0.95,r2)))*0.62; // 大点：光斑（散景）
@@ -346,6 +348,7 @@ uniform float sweepOn, sweepY, sweepW, sweepDir, rampOn, rampLen, ghostA, glowA,
 uniform vec3 edgeCol, ghostCol;
 uniform float focusD, aperture, nearA, nearB;
 uniform vec4 push[6]; uniform int nPush; uniform vec3 pushCol;
+uniform vec3 mWind; uniform vec3 glitch; uniform vec2 vox; uniform vec3 flow; uniform float sweepMode; uniform vec3 sweepC; uniform float splat;
 out vec3 vCol; out float vA; out float vBok;
 float h1(float n){ return fract(sin(n*91.345)*47453.5453); }
 vec3 curl(vec3 p){ return vec3(sin(p.y*1.3+T)+sin(p.z*0.7), sin(p.z*1.1-T*0.7)+sin(p.x*0.9), sin(p.x*1.2+T*0.5)+sin(p.y*0.8)); }
@@ -374,7 +377,14 @@ void main(){
     float ca = cos(ang), sa = sin(ang); r.xz = mat2(ca, sa, -sa, ca)*r.xz; p = mAxis + r;
     p.y += mLift*arc*(h1(rn*29.0) - 0.25);
     p += curl(p*0.3 + rn*6.0)*mCurl*arc;
+    p += mWind*arc*(0.4 + 1.2*h1(rn*41.0))*(0.6 + 0.8*e);
   }
+  // 颜料流动：沿时间变化的旋度场平流几步
+  if (flow.x > 0.0) { for (int k=0;k<3;k++){ vec3 q = p*flow.y; vec3 v = vec3(sin(q.y*1.7 + T*0.9) + 0.6*sin(q.z*2.3 - T*0.6), sin(q.x*1.3 - T*0.7) + 0.6*sin(q.z*1.9 + T*1.1), 0.35*sin(q.x*2.1 + q.y*1.5 + T)); p += v*flow.x*0.33; } }
+  // 故障：一行一行地错开（House of Cards）
+  if (glitch.y > 0.0) { float row = floor(p.y/glitch.x); float g = h1(row*13.17 + glitch.z); if (g < 0.22) p.x += glitch.y*(h1(row*7.31 + glitch.z*3.1) - 0.5)*2.0; }
+  // 体素降采样：每个格子里的点都挪到格子中心
+  if (vox.y > 0.0) { vec3 q = (floor(p/vox.x) + 0.5)*vox.x; p = mix(p, q, vox.y); }
   vec3 c = mix(colA, colB, e);
   float w = mix(auxA.x, auxB.x, e);
   float a = gain;
@@ -387,7 +397,12 @@ void main(){
   // 扫描面
   bool ghost = false; float band = 0.0;
   if (sweepOn > 0.5 && !moving) {
-    float s = (p.y - sweepY)*sweepDir;
+    float sv = p.y;
+    if (sweepMode > 0.5 && sweepMode < 1.5) sv = length((p - sweepC).xz);
+    if (sweepMode > 1.5) { vec2 q = (p - sweepC).xz; sv = atan(q.y, q.x); if (sv < 0.0) sv += 6.2831853; }
+    float s = (sv - sweepY)*sweepDir;
+    // 方位角：扫描束转过去的地方才有点；s = 落后光束多少弧度（光束正上方 = 0）
+    if (sweepMode > 1.5) { float dd = mod(sweepY - sv, 6.2831853); s = (sweepY >= 6.2831853 || sv <= sweepY) ? dd + 0.002 : -1.0; }
     if (s < 0.0) {
       if (rampOn > 0.5) {
         float L = 0.03 + 0.97*exp(p.y/falloff); float lum = dot(colB, vec3(0.3,0.5,0.2));
@@ -416,7 +431,8 @@ void main(){
   float s0 = w*fpx/depth*(mode < 0.5 ? sizeK : 1.0)*(glowCopy ? 2.2 : 1.0);
   float coc = aperture*fpx*abs(depth - focusD)/depth/max(focusD, 0.1);
   float size = max(minSize, sqrt(s0*s0 + coc*coc));
-  if (mode < 0.5) { gl_PointSize = clamp(max(minSize, s0), 0.0, 64.0); a = gain; vBok = -1.0; }
+  if (mode < 0.5) { gl_PointSize = clamp(max(minSize, s0), 0.0, 64.0); a = gain; vBok = -1.0;
+    if (vox.y > 0.6) { gl_PointSize = clamp(vox.x*fpx/depth*0.92*vox.y, 1.0, 96.0); vBok = -2.0; } }
   else { gl_PointSize = min(size, 500.0); a *= (s0*s0)/(size*size)*(size > 500.0 ? size*size/250000.0 : 1.0); if (moving) a *= min(1.0, 9.0/(size*size)); vBok = smoothstep(4.0, 18.0, size); }
   vCol = c; vA = a;
 }`;
@@ -470,6 +486,9 @@ void main(){
     gl.uniform1f(u.focusD, s.dof ? s.dof.focus : 10); gl.uniform1f(u.aperture, s.dof ? s.dof.aperture : 0);
     gl.uniform1f(u.nearA, (s.near || [0, 0])[0]); gl.uniform1f(u.nearB, (s.near || [0, 0.001])[1]);
     gl.uniform1f(u.minSize, (s.minSize || 1.3) * (target.h / 1080)); gl.uniform1f(u.gain, s.gain || 1); gl.uniform1f(u.sizeK, s.sizeK || 1);
+    gl.uniform3fv(u.mWind, mo.wind || [0, 0, 0]);
+    gl.uniform3fv(u.glitch, s.glitch || [0.05, 0, 0]); gl.uniform2fv(u.vox, s.vox || [0.1, 0]); gl.uniform3fv(u.flow, s.flow || [0, 1, 0]);
+    gl.uniform1f(u.sweepMode, sw ? (sw.mode || 0) : 0); gl.uniform3fv(u.sweepC, (sw && sw.c) || [0, 0, 0]);
     const ps = s.push || []; const pf = new Float32Array(24); ps.slice(0, 6).forEach((q, i) => pf.set(q, i * 4)); gl.uniform4fv(u.push, pf); gl.uniform1i(u.nPush, Math.min(6, ps.length)); gl.uniform3fv(u.pushCol, s.pushCol || [0.45, 1, 1.05]);
     gl.bindVertexArray(pairVAO(gl, A, B));
     const CH = 250000;

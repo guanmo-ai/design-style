@@ -2,7 +2,7 @@
 <html lang="zh">
 <head>
 <meta charset="utf-8">
-<title>点云 · 全片</title>
+<title>点云 · 全片 · 第二版</title>
 <style>
 @font-face { font-family: 'Geist'; src: url(../../../public/fonts/Geist.ttf); font-weight: 100 900; }
 @font-face { font-family: 'GeistMono'; src: url(../../../public/fonts/GeistMono.ttf); font-weight: 100 900; }
@@ -14,20 +14,25 @@
 html, body { width: 1920px; height: 1080px; overflow: hidden; background: #000; color: #ecf4f6; font-family: Geist, NotoSC, sans-serif; }
 #gl { position: absolute; inset: 0; width: 1920px; height: 1080px; }
 #hud, #ui, #card { position: absolute; inset: 0; pointer-events: none; }
-.chap { position: absolute; left: 64px; top: 54px; display: flex; gap: 18px; align-items: flex-start; }
-.chap .n { font-family: GeistMono; font-size: 13px; color: #000; background: #6ff3ff; padding: 3px 7px; border-radius: 3px; margin-top: 3px; }
-.chap .t { font-family: NotoSC; font-weight: 700; font-size: 22px; line-height: 1.2; }
-.chap .s { font-family: NotoSC; font-size: 14px; color: #93a0a8; margin-top: 6px; }
+.chap { position: absolute; left: 64px; top: 52px; display: flex; gap: 16px; align-items: flex-start; }
+.chap .n { font-family: GeistMono; font-size: 13px; color: #000; background: #6ff3ff; padding: 3px 7px; border-radius: 3px; margin-top: 4px; }
+.chap .t { font-family: NotoSC; font-weight: 900; font-size: 30px; line-height: 1.15; }
+.chap .s { font-family: GeistMono; font-size: 13px; color: #93a0a8; margin-top: 8px; letter-spacing: .03em; }
 .prog { position: absolute; right: 64px; top: 62px; display: flex; gap: 6px; }
-.prog i { width: 26px; height: 3px; background: rgba(255,255,255,.18); display: block; border-radius: 2px; overflow: hidden; position: relative; }
+.prog i { width: 22px; height: 3px; background: rgba(255,255,255,.18); display: block; border-radius: 2px; overflow: hidden; position: relative; }
 .prog i b { position: absolute; left: 0; top: 0; bottom: 0; background: #6ff3ff; display: block; }
-.rule { position: absolute; left: 64px; bottom: 58px; font-family: GeistMono; font-size: 15px; color: #fff; padding: 10px 14px; background: rgba(0,0,0,.55); border-left: 2px solid #6ff3ff; }
-.rule small { display: block; font-family: NotoSC; font-size: 14px; color: #a7b3ba; margin-top: 8px; letter-spacing: 0; }
+.rule { position: absolute; left: 64px; bottom: 56px; font-family: GeistMono; font-size: 15px; color: #fff; padding: 10px 14px; background: rgba(0,0,0,.55); border-left: 2px solid #6ff3ff; }
+.rule small { display: block; font-family: NotoSC; font-size: 14px; color: #a7b3ba; margin-top: 6px; letter-spacing: 0; }
 .rule em { font-style: normal; color: #6ff3ff; }
+.tag { position: absolute; font-family: GeistMono; font-size: 13px; color: #fff; white-space: nowrap; padding: 5px 9px; background: rgba(0,0,0,.6); border: 1px solid rgba(111,243,255,.5); border-radius: 5px; }
+.tag b { color: #6ff3ff; font-weight: 500; }
 .read { position: absolute; font-family: GeistMono; font-size: 14px; line-height: 1.7; color: #fff; padding: 12px 16px; background: rgba(0,0,0,.62); border: 1px solid rgba(111,243,255,.5); border-radius: 6px; white-space: nowrap; }
 .read b { color: #6ff3ff; font-weight: 500; }
-.ztick { position: absolute; right: 64px; top: 140px; font-family: GeistMono; font-size: 13px; color: #cfe0e5; text-align: right; line-height: 1.8; }
-.ztick b { font-size: 28px; color: #6ff3ff; font-weight: 500; display: block; }
+.big { position: absolute; left: 64px; top: 150px; }
+.big .no { font-family: GeistMono; font-size: 16px; color: #6ff3ff; letter-spacing: .1em; }
+.big .w { font-family: NotoSC; font-weight: 900; font-size: 190px; line-height: 1; margin-top: 10px; letter-spacing: -.02em; }
+.big .en { font-family: GeistMono; font-size: 22px; letter-spacing: .35em; color: #cfe0e5; margin-top: 18px; }
+.big .fx { font-family: GeistMono; font-size: 20px; color: #fff; margin-top: 26px; padding: 10px 14px; background: rgba(0,0,0,.6); border-left: 3px solid #6ff3ff; display: inline-block; }
 #mask { position: absolute; left: 50%; top: 50%; box-shadow: 0 0 0 3000px #030405; }
 #bezel { position: absolute; left: 50%; top: 50%; border-radius: 64px; box-shadow: 0 0 0 10px #141618, 0 0 0 11px rgba(255,255,255,.18), 0 40px 120px rgba(0,0,0,.7); }
 .ph { position: absolute; left: 50%; transform: translateX(-50%); text-align: center; white-space: nowrap; }
@@ -40,13 +45,14 @@ html, body { width: 1920px; height: 1080px; overflow: hidden; background: #000; 
 .pbar .t { display: flex; justify-content: space-between; font-family: GeistMono; font-size: 14px; color: #cfe0e5; }
 .pbar .b { height: 6px; border-radius: 3px; background: rgba(255,255,255,.14); margin-top: 10px; overflow: hidden; }
 .pbar .b i { display: block; height: 100%; background: linear-gradient(90deg, #6ff3ff, #fff); }
-.res { position: absolute; border-radius: 28px; background: rgba(12,14,16,.8); border: 1px solid rgba(255,255,255,.14); padding: 20px 24px; }
+.res { position: absolute; border-radius: 28px; background: rgba(12,14,16,.82); border: 1px solid rgba(255,255,255,.14); padding: 20px 24px; }
 .res h3 { font-family: NotoSC; font-weight: 700; font-size: 24px; }
 .res p { font-family: GeistMono; font-size: 13px; color: #9aa6ad; margin-top: 6px; }
 .res .row { display: flex; gap: 10px; margin-top: 16px; }
 .res .row span { flex: 1; text-align: center; font-family: NotoSC; font-size: 17px; font-weight: 700; border-radius: 999px; padding: 11px 0; border: 1px solid rgba(255,255,255,.22); }
 .res .row span.on { background: #6ff3ff; color: #031013; border-color: #6ff3ff; }
 .sb { position: absolute; display: flex; justify-content: space-between; font-family: GeistMono; font-size: 16px; font-weight: 600; }
+.touch { position: absolute; border-radius: 50%; border: 2px solid rgba(255,255,255,.9); }
 #card .ct { position: absolute; left: 64px; bottom: 60px; }
 #card h2 { font-family: GeistMono; font-weight: 400; font-size: 28px; letter-spacing: .42em; }
 #card p { font-family: NotoSC; font-size: 20px; color: #a7b3ba; margin-top: 14px; }
@@ -61,65 +67,77 @@ html, body { width: 1920px; height: 1080px; overflow: hidden; background: #000; 
 <div id="card"></div>
 <script src="../../_lib/glkit.js"></script>
 <script src="../pc.js"></script>
+<script src="../shapes.js"></script>
 <script src="timeline.js"></script>
 <script>
 const Q = new URLSearchParams(location.search);
 const SCALE = +(Q.get('scale') || 1);
-const W = 1920, H = 1080, FPS = 60, N = +(Q.get('n') || 1000000);
-let gl, P, target, post, S = {}, probe = null, cursorPath = [];
-const TY = 6.0, BY = -37, BS = 8, TY2 = -33.6;   // 标题高度；井底；盆景放大倍数；片尾标题高度
+const W = 1920, H = 1080, FPS = 60, N = +(Q.get('n') || 800000);
+let gl, P, target, post, S = {};
+const BS = 6, BY = -2.2;                     // 盆景放大倍数和高度
+const DOT = [0, 0.1, 1.2];
 
 // —— 形状 ——
-// 开场：一百万个点挤在同一个点上（半径 2 cm 的一小团）
-function dot(R) {
-  const C = PC.Cloud(N + 10);
-  for (let i = 0; i < N; i++) { const u = R() * 2 - 1, a = R() * 6.283, r = 0.02 * Math.cbrt(R()), s = Math.sqrt(1 - u * u);
-    C.push(Math.cos(a) * s * r, TY + 0.1 + u * r, 1.2 + Math.sin(a) * s * r, 0.9, 0.97, 1.0, 0.004, R(), 0, 0); }
-  return C.data;
-}
-function title(R, cy) {
+function dot(R) { const C = PC.Cloud(N + 10); for (let i = 0; i < N; i++) { const u = R() * 2 - 1, a = R() * 6.283, r = 0.02 * Math.cbrt(R()), s = Math.sqrt(1 - u * u);
+  C.push(DOT[0] + Math.cos(a) * s * r, DOT[1] + u * r, DOT[2] + Math.sin(a) * s * r, 0.9, 0.97, 1.0, 0.004, R(), 0, 0); } return C.data; }
+function title(R) {
   const Wm = 2400, Hm = 900, cv = document.createElement('canvas'); cv.width = Wm; cv.height = Hm; const x = cv.getContext('2d');
   x.fillStyle = '#fff'; x.font = '900 760px NotoSC'; x.textAlign = 'center'; x.textBaseline = 'middle'; x.fillText('点云', Wm / 2, Hm / 2 + 30);
   const m = x.getImageData(0, 0, Wm, Hm).data, inside = (px, py) => px >= 0 && py >= 0 && px < Wm && py < Hm && m[((py | 0) * Wm + (px | 0)) * 4 + 3] > 128;
   const sc = 9.4 / Wm, C = PC.Cloud(N + 10), Z = 0.26;
-  const grad = (u, v) => { // 斜向渐变：洋红 → 橙 → 暖黄
-    const t = Math.min(1, Math.max(0, u * 0.75 + (1 - v) * 0.35)); const a = [1.0, 0.12, 0.45], b = [1.0, 0.45, 0.1], c = [1.0, 0.82, 0.25];
+  const grad = (u, v) => { const t = Math.min(1, Math.max(0, u * 0.75 + (1 - v) * 0.35)); const a = [1.0, 0.12, 0.45], b = [1.0, 0.45, 0.1], c = [1.0, 0.82, 0.25];
     return t < 0.5 ? a.map((v, i) => v + (b[i] - v) * t * 2) : b.map((v, i) => v + (c[i] - v) * (t - 0.5) * 2); };
   let n = 0;
-  while (n < N) {
-    const px = R() * Wm, py = R() * Hm; if (!inside(px, py)) continue;
-    const kind = R(); let z, shade;
-    const edge = !inside(px + 6, py) || !inside(px - 6, py) || !inside(px, py + 6) || !inside(px, py - 6);
+  while (n < N) { const px = R() * Wm, py = R() * Hm; if (!inside(px, py)) continue;
+    const kind = R(); let z, shade; const edge = !inside(px + 6, py) || !inside(px - 6, py) || !inside(px, py + 6) || !inside(px, py - 6);
     if (edge && kind < 0.55) { z = (R() * 2 - 1) * Z; shade = 0.5; } else if (kind < 0.72) { z = -Z; shade = 0.28; } else { z = Z; shade = 1.0; }
     const g = grad(px / Wm, py / Hm), j = 0.88 + R() * 0.24;
-    C.push((px - Wm / 2) * sc, cy - (py - Hm / 2) * sc, z, g[0] * shade * j, g[1] * shade * j, g[2] * shade * j, 0.006, R(), 0, 0); n++;
-  }
+    C.push((px - Wm / 2) * sc, -(py - Hm / 2) * sc, z, g[0] * shade * j, g[1] * shade * j, g[2] * shade * j, 0.006, R(), 0, 0); n++; }
   return C.data;
 }
-function bonsaiBig(R) {
-  const B = PC.bonsai({ seed: 9 }).cloud.data, out = new Float32Array(B.length);
-  for (let i = 0; i < B.length / 10; i++) { const o = i * 10; out.set(B.subarray(o, o + 10), o); out[o] *= BS; out[o + 1] = out[o + 1] * BS + BY; out[o + 2] *= BS; out[o + 6] *= BS * 0.8; }
-  return out;
-}
-// —— 相机 ——
-const V = { add: (a, b) => a.map((v, i) => v + b[i]), mix: (a, b, t) => a.map((v, i) => v + (b[i] - v) * t), nrm: a => { const l = Math.hypot(...a); return a.map(v => v / l); } };
-const camMix = (a, b, t) => ({ pos: V.mix(a.pos, b.pos, t), tgt: V.mix(a.tgt, b.tgt, t), up: V.nrm(V.mix(a.up, b.up, t)), fov: lerp(a.fov, b.fov, t) });
-const WELL = { pos: [-1.7, 2.2, 0.6], tgt: [1.6, -20, -0.3], up: [1, 0, 0], fov: 62 };
-const spiral = (f) => { const q = ease.inOut3(prog(f, 300, 520)), th = q * Math.PI * 1.25, y = lerp(2.2, -14, q), r = 1.7;
-  return { pos: [-Math.cos(th) * r, y, -Math.sin(th) * r * 0.35 + 0.6 * (1 - q)], tgt: [Math.cos(th) * 1.6, y - 22, Math.sin(th) * 0.5], up: [Math.cos(th), 0, Math.sin(th)], fov: 62 }; };
-const SIDE = (a) => ({ pos: [Math.sin(a) * 10.5, -31.2, Math.cos(a) * 10.5], tgt: [0, -34.3, 0], up: [0, 1, 0], fov: 40 });
+function xform(data, s, off, wk = 1) { const d = new Float32Array(data); for (let i = 0; i < d.length / 10; i++) { const o = i * 10; d[o] = d[o] * s + off[0]; d[o + 1] = d[o + 1] * s + off[1]; d[o + 2] = d[o + 2] * s + off[2]; d[o + 6] *= s * wk; } return d; }
+
+// —— 相机：关键帧 + 每段自己的运动 ——
+const V = { mix: (a, b, t) => a.map((v, i) => v + (b[i] - v) * t), nrm: a => { const l = Math.hypot(...a); return a.map(v => v / l); } };
+const cm = (a, b, t) => ({ pos: V.mix(a.pos, b.pos, t), tgt: V.mix(a.tgt, b.tgt, t), up: V.nrm(V.mix(a.up || [0, 1, 0], b.up || [0, 1, 0], t)), fov: lerp(a.fov, b.fov, t) });
+const orbit = (c, r, a, y, fov = 40) => ({ pos: [c[0] + Math.sin(a) * r, y, c[2] + Math.cos(a) * r], tgt: c, up: [0, 1, 0], fov });
+const SWELL = (q) => { const th = q * Math.PI * 1.15, y = lerp(0.55, -3.6, q), r = 0.37;   // 楼梯井里螺旋往下
+  return { pos: [-Math.cos(th) * r, y, -Math.sin(th) * r * 0.4 + 0.13 * (1 - q)], tgt: [Math.cos(th) * 0.35, y - 5, Math.sin(th) * 0.12], up: [Math.cos(th), 0, Math.sin(th)], fov: 64 }; };
 function camAt(f) {
-  if (f < 150) { const a = lerp(-0.32, 0.0, ease.inOut3(prog(f, 0, 150))), R = lerp(15.5, 12.2, ease.out3(prog(f, 0, 150))); return { pos: [Math.sin(a) * R, TY + 0.4 - 0.34 * prog(f, 0, 150), Math.cos(a) * R], tgt: [0, TY, 0], up: [0, 1, 0], fov: 42 }; }
-  if (f < 236) { const z = logLerp(12.2, 0.88, ease.inOut3(prog(f, 150, 206))); const dx = 0.16 * ease.inOut3(prog(f, 190, 236)); return { pos: [0.02 + dx, TY + 0.06, z], tgt: [0.02 + dx * 0.2, TY + 0.06, z - 5], up: [0, 1, 0], fov: 42 }; }
-  if (f < 306) { const a = { pos: [0.18, TY + 0.06, 0.88], tgt: [0.052, TY + 0.06, -4.12], up: [0, 1, 0], fov: 42 }; return camMix(a, WELL, ease.inOut3(prog(f, 236, 306))); }
-  if (f < 520) return f < 320 ? camMix(WELL, spiral(f), prog(f, 306, 320)) : spiral(f);
-  if (f < 640) return camMix(spiral(520), SIDE(0.5), ease.inOut3(prog(f, 520, 640)));
-  if (f < 800) return SIDE(lerp(0.5, 0.95, ease.inOut3(prog(f, 640, 800))));
-  const PH = { pos: [Math.sin(0.95) * 15, -32.6, Math.cos(0.95) * 15], tgt: [0, -33.9, 0], up: [0, 1, 0], fov: 40 };
-  if (f < 960) { const a = SIDE(0.95); const b = { ...PH, pos: [Math.sin(0.95 + 0.4 * prog(f, 925, 960)) * 15, -32.6, Math.cos(0.95 + 0.4 * prog(f, 925, 960)) * 15] }; return camMix(a, b, ease.inOut3(prog(f, 800, 840))); }
-  const PH2 = { pos: [Math.sin(1.35) * 15, -32.6, Math.cos(1.35) * 15], tgt: [0, -33.9, 0], up: [0, 1, 0], fov: 40 };
-  const FR = { pos: [0, TY2 + 0.2, 15.5], tgt: [0, TY2, 0], up: [0, 1, 0], fov: 42 };
-  return camMix(PH2, FR, ease.inOut3(prog(f, 966, 1040)));
+  if (f < 100) { const a = lerp(-0.32, 0.05, ease.inOut3(prog(f, 0, 100))), R = lerp(15.5, 12.4, ease.out3(prog(f, 0, 100))); return orbit([0, 0, 0], R, a, 0.4 - 0.3 * prog(f, 0, 100), 42); }
+  const HEAD = (t) => orbit([0, -0.1, 0], lerp(7.2, 6.2, t), lerp(0.05, 0.5, t), 0.25, 40);
+  if (f < 140) return cm(orbit([0, 0, 0], 12.4, 0.05, 0.1, 42), HEAD(0), ease.inOut3(prog(f, 100, 140)));
+  if (f < 200) return HEAD(prog(f, 140, 200));
+  const ST = (t) => ({ pos: [lerp(-2.2, 1.6, t), lerp(3.6, 5.2, t), lerp(4.6, 3.0, t)], tgt: [lerp(-0.7, 0.5, t), -1.0, 0.2], up: [0, 1, 0], fov: 50 });
+  if (f < 236) return cm(HEAD(1), ST(0), ease.inOut3(prog(f, 200, 236)));
+  if (f < 296) return ST(ease.inOut3(prog(f, 236, 296)));
+  if (f < 312) return cm(ST(1), SWELL(0), ease.inOut3(prog(f, 296, 312)));
+  const OUT = { pos: [2.6, 3.4, 4.6], tgt: [0, -3.2, 0], up: [0, 1, 0], fov: 48 };
+  if (f < 360) return SWELL(ease.inOut3(prog(f, 312, 360)));
+  if (f < 384) return cm(SWELL(1), OUT, ease.inOut3(prog(f, 358, 380)));
+  const WALL = (t) => ({ pos: [lerp(-2.4, 2.2, t), lerp(0.5, -0.3, t), lerp(7.6, 6.4, t)], tgt: [lerp(-0.4, 0.4, t), 0, 0], up: [0, 1, 0], fov: 46 });
+  if (f < 410) return cm(OUT, WALL(0), ease.inOut3(prog(f, 386, 410)));
+  if (f < 470) return WALL(prog(f, 410, 470));
+  const TREE = (t) => orbit([0, 0.2, 0], lerp(11.5, 10.2, t), lerp(-0.6, 0.15, t), 1.3, 40);
+  if (f < 500) return cm(WALL(1), TREE(0), ease.inOut3(prog(f, 470, 500)));
+  if (f < 560) return TREE(prog(f, 500, 560));
+  // 规则卡：每张一个镜头
+  const R1 = (t) => ({ pos: [lerp(-4.5, 1.5, t), 0.25, 3.8], tgt: [lerp(-2.0, 3.5, t), -0.9, -2], up: [0, 1, 0], fov: 60 });
+  const R2 = (t) => orbit([0, -0.6, 0], 9.5, lerp(0.6, 0.9, t), 4.0, 42);
+  const R3 = (t) => orbit([0, -0.6, 0], lerp(7.5, 6.8, t), lerp(-0.8, -0.6, t), 2.4, 42);
+  const R4 = (t) => orbit([0, -0.6, 0], 10, lerp(2.2, 2.5, t), 3.4, 42);
+  const R5 = (t) => ({ pos: [0.01, 9.5, 0.5 - 0.3 * t], tgt: [0, -1, 0], up: [0, 0, -1], fov: 46 });
+  if (f < 578) return cm(TREE(1), R1(0), ease.inOut3(prog(f, 556, 578)));
+  if (f < 600) return R1(prog(f, 570, 600));
+  if (f < 630) return R2(prog(f, 600, 630));
+  if (f < 660) return R3(prog(f, 630, 660));
+  if (f < 690) return R4(prog(f, 660, 690));
+  if (f < 720) return R5(prog(f, 690, 720));
+  const PH = (a) => orbit([0, 0.0, 0], 12.5, a, 1.6, 40);
+  if (f < 744) return cm(R5(1), PH(0.5), ease.inOut3(prog(f, 712, 744)));
+  if (f < 930) return PH(lerp(0.5, 1.1, prog(f, 744, 930)));
+  const END = orbit([0, 0, 0], 12.4, 0.0, 0.2, 42);
+  return cm(PH(1.1), END, ease.inOut3(prog(f, 940, 1004)));
 }
 function unproject(cam, px, py, planePt) {
   const n = V.nrm, cr = (a, b) => [a[1] * b[2] - a[2] * b[1], a[2] * b[0] - a[0] * b[2], a[0] * b[1] - a[1] * b[0]], dot = (a, b) => a[0] * b[0] + a[1] * b[1] + a[2] * b[2];
@@ -130,96 +148,113 @@ function unproject(cam, px, py, planePt) {
 }
 
 // —— 一帧 ——
+const MO = (m, o) => Object.assign({ m, spread: 0.5, dur: 0.5, swirl: 0, lift: 0, curl: 0, axis: [0, 0, 0], trails: 6, trailStep: 0.012, alpha: 0.08 }, o);
 function sceneAt(f) {
-  const s = { N, T: f / FPS, cam: camAt(f), minSize: 1.25, sizeK: 0.75, gain: 1.0, falloff: 6.5, near: [0.05, 0.3], dof: { focus: 14, aperture: 0.004 } };
-  let A = S.title, B = S.title;
-  if (f < 150) {
-    A = S.tunnel; B = S.title;
-    s.morph = { m: ease.out3(prog(f, TL.assemble[0], TL.assemble[1])), spread: 0.5, dur: 0.5, swirl: 2.6, lift: 2.6, curl: 2.2, axis: [0, TY, 1.2], trails: 8, trailStep: 0.01, alpha: 0.11 };
-    if (f >= TL.assemble[1]) { A = B = S.title; s.morph = { m: 0 }; }
-    s.dof = { focus: 13.5, aperture: 0.006 };
-    s.near = [0.2, 2.5];
-    if (f >= TL.scanTitle[0] - 4) s.sweep = { y: lerp(TY + 2.2, TY - 2.2, ease.inOut3(prog(f, TL.scanTitle[0], TL.scanTitle[1]))), w: 0.06, dir: 1, ghostA: -1, glow: 0.35 };
-  } else if (f < 236) {
-    s.dof = { focus: 1, aperture: 0 };
-    s.sizeK = lerp(0.75, 0.26, ease.inOut3(prog(f, 166, 206))); s.gain = lerp(1.0, 1.6, prog(f, 166, 206)); s.near = [0.02, 0.06];
-  } else if (f < 306) {
-    A = S.title; B = S.stairs;
-    s.morph = { m: ease.inOut3(prog(f, TL.pour[0], TL.pour[1])), spread: 0.5, dur: 0.5, swirl: 1.6, lift: -2.0, curl: 0.7, axis: [0, 0, 0], trails: 6, trailStep: 0.012, alpha: 0.05 };
-    s.dof = { focus: 8, aperture: 0.004 }; s.near = [0.6, 4];
-    s.sweep = { y: 0.6, w: 0.16, dir: 1, ramp: true, rampLen: 26, glow: 0.14, col: [0.35, 0.95, 1.0] };
-  } else if (f < 640) {
-    A = S.stairs; B = S.stairs; s.sizeK = 0.62; s.near = [1.5, 8];
-    const sy = lerp(0.6, -30, ease.inOut3(prog(f, TL.sweep[0], TL.sweep[1])));
-    s.sweep = { y: sy, w: 0.14, dir: 1, ramp: true, rampLen: 26, glow: 0.14, col: [0.35, 0.95, 1.0] };
-    s.dof = { focus: Math.max(4, camAt(f).pos[1] - sy), aperture: 0.006 };
-    if (f >= TL.twist[0]) {
-      B = S.bonsai;
-      s.morph = { m: ease.inOut3(prog(f, TL.twist[0], TL.twist[1] - 6)), spread: 0.55, dur: 0.45, swirl: 4.2, lift: 3.0, curl: 1.0, axis: [0, -30, 0], trails: 8, trailStep: 0.01, alpha: 0.03 };
-      s.dof = { focus: 12, aperture: 0.004 }; s.near = [0.5, 3];
-      if (f >= TL.twist[1] - 6) { A = B = S.bonsai; s.morph = { m: 0 }; }
-    }
+  const s = { N, T: f / FPS, cam: camAt(f), minSize: 1.25, sizeK: 0.75, gain: 1.0, falloff: 1.43, near: [0.05, 0.3], dof: { focus: 12, aperture: 0.003 } };
+  let A, B, mo = { m: 0 };
+  const seg = (a, b) => f >= a && f < b;
+  if (f < 100) {
+    A = S.dot; B = S.title; mo = MO(ease.out3(prog(f, TL.assemble[0], TL.assemble[1])), { swirl: 2.6, lift: 2.6, curl: 2.2, axis: [0, 0, 1.2], trails: 8, trailStep: 0.01, alpha: 0.11 });
+    if (f >= TL.assemble[1]) { A = B = S.title; mo = { m: 0 }; }
+    if (f >= TL.lock) s.sweep = { y: lerp(2.3, -2.3, ease.inOut3(prog(f, TL.lock, TL.lock + 22))), w: 0.06, ghostA: -1, glow: 0.35 };
+  } else if (f < TL.dissolve[0]) {
+    A = S.title; B = S.head; mo = MO(ease.inOut3(prog(f, TL.toHead[0], TL.toHead[1])), { spread: 0.7, dur: 0.3, swirl: 0.6, lift: -0.6, curl: 0.3, trails: 5, alpha: 0.06 });
+    if (f >= TL.toHead[1]) { A = B = S.head; mo = { m: 0 }; }
+    // 每个十六分音符错一次行，6 帧内回位
+    for (const [k, g] of TL.glitch.entries()) if (f >= g && f < g + 6) s.glitch = [0.04 + 0.02 * (k % 3), 0.55 * (1 - (f - g) / 6), g * 1.37];
+    s.dof = { focus: 6.5, aperture: 0.004 };
+  } else if (f < TL.drain[0]) {
+    A = S.head; B = S.street; mo = MO(ease.inOut3(prog(f, TL.dissolve[0], TL.dissolve[1])), { spread: 0.75, dur: 0.25, curl: 0.6, wind: [3.2, 0.8, -0.6], lift: 0.2, trails: 8, trailStep: 0.008, alpha: 0.12 });
+    if (f >= TL.dissolve[1]) { A = B = S.street; mo = { m: 0 }; }
+    if (f >= TL.beam[0]) s.sweep = { mode: 2, c: [0, 0, 0], y: lerp(0, 4 * Math.PI, prog(f, TL.beam[0], TL.beam[1])), w: 0.05, glow: 0.5, ghost: 0, ghostA: 0, col: [0.6, 1.0, 1.0] };
+    if (f < TL.dissolve[1] && f >= TL.beam[0]) s.sweep = null;
+    s.sizeK = 0.9; s.dof = { focus: 6, aperture: 0.003 };
+  } else if (f < TL.toWall[0]) {
+    A = S.street; B = S.stairs; mo = MO(ease.inOut3(prog(f, TL.drain[0], TL.drain[1])), { spread: 0.55, dur: 0.45, swirl: 2.2, lift: -1.2, curl: 0.4, axis: [0, 0, 0], trails: 6, alpha: 0.06 });
+    if (f >= TL.drain[1]) { A = B = S.stairs; mo = { m: 0 }; }
+    s.sizeK = 0.62; s.near = [0.2, 1.2];
+    const sy = lerp(0.2, -8.2, ease.inOut3(prog(f, TL.sweep[0], 360)));
+    if (f >= TL.drain[0] + 10) s.sweep = { y: sy, w: 0.03, dir: 1, ramp: true, rampLen: 5.7, glow: 0.14, col: [0.35, 0.95, 1.0] };
+    if (f >= TL.voxel[0]) s.vox = [0.16, ease.inOut3(prog(f, TL.voxel[0], TL.voxel[1]))];
+  } else if (f < TL.toBonsai[0]) {
+    A = S.stairs; B = S.wall; mo = MO(ease.inOut3(prog(f, TL.toWall[0], TL.toWall[1])), { spread: 0.45, dur: 0.55, swirl: 1.0, lift: 1.5, curl: 0.5, trails: 0, alpha: 0.05 });
+    if (f >= TL.toWall[1]) { A = B = S.wall; mo = { m: 0 }; }
+    s.vox = [0.16, 1 - ease.inOut3(prog(f, 404, 424))];
+    if (f >= TL.flow[0]) s.flow = [0.9 * ease.inOut3(prog(f, TL.flow[0], TL.flow[0] + 30)), 0.55, 0];
+    s.sizeK = 0.9; s.dof = { focus: 7, aperture: 0.004 };
+  } else if (f < TL.toTerrain[0]) {
+    A = S.wall; B = S.bonsai; mo = MO(ease.inOut3(prog(f, TL.toBonsai[0], TL.toBonsai[1])), { spread: 0.5, dur: 0.5, swirl: 2.0, lift: 1.0, curl: 0.8, axis: [0, 0, 0], trails: 4, alpha: 0.025 });
+    if (f < TL.toBonsai[1]) s.flow = [0.9 * (1 - ease.inOut3(prog(f, TL.toBonsai[0], TL.toBonsai[1]))), 0.55, 0];
+    if (f >= TL.toBonsai[1]) { A = B = S.bonsai; mo = { m: 0 }; }
+    // 点 → 面：点越长越大，连成一片
+    s.sizeK = lerp(0.55, 1.7, ease.inOut3(prog(f, TL.splat[0], TL.splat[1])));
+    s.dof = { focus: lerp(10.5, 7.5, ease.inOut3(prog(f, TL.focus[0], TL.focus[0] + 8))) + 3.2 * ease.inOut3(prog(f, TL.focus[0] + 12, TL.focus[1])), aperture: 0.004 + 0.012 * Math.sin(Math.PI * prog(f, TL.focus[0], TL.focus[1])) };
+    if (f >= TL.cursor[0] - 2) { s.push = []; for (let k = 0; k < 6; k++) { const q = curAt(f - k * 4); if (!q) continue; const w = unproject(s.cam, q[0], q[1], [0, 0.5, 0]); s.push.push([...w, 0.75 * Math.max(0, 1 - k * 0.15)]); } }
+  } else if (f < TL.today[0]) {
+    A = S.bonsai; B = S.terrain; mo = MO(ease.inOut3(prog(f, TL.toTerrain[0], TL.toTerrain[1])), { spread: 0.4, dur: 0.6, swirl: 1.4, lift: 1.0, curl: 0.4, trails: 5, alpha: 0.05 });
+    if (f >= TL.toTerrain[1]) { A = B = S.terrain; mo = { m: 0 }; }
+    const c = Math.floor((f - 570) / 30), lf = (f - 570) % 30;
+    s.sizeK = 0.7;
+    if (c === 0) { s.dof = { focus: lerp(2, 7, lf / 30), aperture: 0.018 }; s.sizeK = 0.9; }
+    if (c === 1) s.sweep = { y: lerp(2.2, -2.6, ease.inOut3(lf / 30)), w: 0.05, dir: 1, ghost: 0.12, ghostA: 0.4, glow: 0.4, col: [0.35, 0.95, 1.0], ghostCol: [0.05, 0.3, 0.5] };
+    if (c === 2) s.vox = [0.32, ease.outBack(clamp(lf / 14), 2.2)];
+    if (c === 3) s.sweep = { y: lerp(-2.6, 2.6, ease.out3(clamp(lf / 18))), w: 0.04, dir: -1, ramp: true, rampLen: 3.2, rampGain: 1.4, glow: 0.3, col: [1, 1, 1] };
+    if (c === 4) { s.push = []; for (let k = 0; k < 6; k++) { const q = cur5(f - k * 3); if (!q) continue; const w = unproject(s.cam, q[0], q[1], [0, -0.6, 0]); s.push.push([...w, 1.1 * Math.max(0, 1 - k * 0.14)]); } }
+  } else if (f < TL.out[1] + 10 && f < TL.implode[0]) {
+    A = S.terrain; B = S.bonsai; mo = MO(ease.inOut3(prog(f, TL.today[0], TL.mask[1])), { spread: 0.4, dur: 0.6, swirl: 1.4, lift: 1.0, trails: 0, alpha: 0.05 });
+    if (f >= TL.mask[1]) { A = B = S.bonsai; mo = { m: 0 }; }
+    s.sizeK = 0.85;
+    if (f >= TL.pScan[0] && f < TL.pBuild[0] + 2) s.sweep = { y: lerp(-2.3, 2.6, ease.inOut3(prog(f, TL.pScan[0], TL.pScan[1]))), w: 0.06, dir: -1, ghost: 0.35, ghostA: 0.25, glow: 0.3, col: [0.35, 0.95, 1.0] };
+    if (f >= TL.pBuild[0] && f < TL.pDone[0]) mo = MO(ease.inOut3(prog(f, TL.pBuild[0], TL.pDone[0])), { swirl: 3.0, lift: 1.5, curl: 1.0, trails: 4, alpha: 0.03 });
+    if (f >= TL.pDone[0]) s.sizeK = lerp(0.85, 1.15, prog(f, TL.pDone[0], TL.pDone[0] + 12));
+    s.dof = { focus: 12.5, aperture: 0.003 };
   } else {
-    A = B = S.bonsai; s.sizeK = 0.85; s.dof = { focus: 11, aperture: 0.004 }; s.near = [0.5, 3];
-    // 04：鼠标划过树冠
-    if (f >= TL.cursor[0] - 2 && f < TL.cursor[1] + 40) {
-      const c = s.cam; s.push = [];
-      for (let k = 0; k < 6; k++) { const fa = f - k * 5; const q = curAt(fa); if (!q) continue; const age = (f - fa) / 30;
-        const w = unproject(c, q[0], q[1], [0, -34, 0]); s.push.push([...w, 0.75 * Math.max(0, 1 - age * 0.9)]); }
-    }
-    // 05：手机里——从下往上扫，扫完重新聚一次
-    if (f >= TL.pScan[0] && f < TL.pBuild[0] + 2) s.sweep = { y: lerp(BY - 0.2, BY + 6.2, ease.inOut3(prog(f, TL.pScan[0], TL.pScan[1]))), w: 0.08, dir: -1, ghost: 0.35, ghostA: 0.25, glow: 0.3, col: [0.35, 0.95, 1.0] };
-    if (f >= TL.pBuild[0] && f < TL.pDone[0]) s.morph = { m: ease.inOut3(prog(f, TL.pBuild[0], TL.pDone[0])), spread: 0.5, dur: 0.5, swirl: 3.0, lift: 1.5, curl: 1.2, axis: [0, -34, 0], trails: 6, trailStep: 0.012, alpha: 0.06 };
-    if (f >= TL.pDone[0]) s.sizeK = lerp(0.85, 1.12, prog(f, TL.pDone[0], TL.pDone[0] + 12));
-    if (f >= TL.regroup[0]) {
-      A = S.bonsai; B = S.title2; s.sizeK = 0.8;
-      s.morph = { m: ease.inOut3(prog(f, TL.regroup[0], TL.regroup[1])), spread: 0.5, dur: 0.5, swirl: 2.2, lift: 2.5, curl: 1.0, axis: [0, -34, 0], trails: 6, trailStep: 0.012, alpha: 0.035 };
-      s.dof = { focus: 15, aperture: 0.004 };
-      if (f >= TL.regroup[1]) { A = B = S.title2; s.morph = { m: 0 }; s.sweep = { y: lerp(TY2 + 2.2, TY2 - 2.2, ease.inOut3(prog(f, 1046, 1076))), w: 0.06, dir: 1, ghostA: -1, glow: 0.35 }; }
-    }
+    // 收回成一个点，再炸开回到标题
+    if (f < TL.burst2) { A = S.bonsai; B = S.dot; mo = MO(ease.in3(prog(f, TL.implode[0], TL.implode[1])), { spread: 0.3, dur: 0.7, swirl: 4.0, lift: 0.5, curl: 0.3, axis: [0, 0, 1.2], trails: 6, trailStep: 0.01, alpha: 0.025 });
+      if (f >= TL.implode[1]) { A = B = S.dot; mo = { m: 0 }; } }
+    else { A = S.dot; B = S.title; mo = MO(ease.out3(prog(f, TL.relock[0], TL.relock[1])), { spread: 0.35, dur: 0.65, swirl: 2.6, lift: 2.0, curl: 1.8, axis: [0, 0, 1.2], trails: 8, trailStep: 0.01, alpha: 0.09 });
+      if (f >= TL.relock[1]) { A = B = S.title; mo = { m: 0 }; s.sweep = { y: lerp(2.3, -2.3, ease.inOut3(prog(f, TL.final, TL.final + 26))), w: 0.06, ghostA: -1, glow: 0.35 }; } }
   }
-  s.A = A; s.B = B;
+  s.A = A; s.B = B; s.morph = mo;
   return s;
 }
-// 鼠标轨迹（屏幕坐标）：从左往右穿过树冠，带一点弧
-function curAt(f) { if (f < TL.cursor[0] || f > TL.cursor[1]) return null; const t = ease.inOut3(prog(f, TL.cursor[0], TL.cursor[1]));
-  return [lerp(560, 1360, t), 430 + 140 * Math.sin(t * Math.PI * 1.2) - 60 * t]; }
+// 05 的鼠标：穿过树冠；规则 5 的鼠标：从左上划到右下
+function curAt(f) { if (f < TL.cursor[0] || f > TL.cursor[1]) return null; const t = ease.inOut3(prog(f, TL.cursor[0], TL.cursor[1])); return [lerp(640, 1300, t), 420 + 110 * Math.sin(t * Math.PI * 1.2) - 40 * t]; }
+function cur5(f) { if (f < 692 || f > 720) return null; const t = ease.inOut3(prog(f, 692, 720)); return [lerp(560, 1440, t), lerp(330, 760, t) + 90 * Math.sin(t * Math.PI * 2)]; }
 
-// —— HUD / 界面 ——
+// —— HUD ——
 const hud = document.getElementById('hud'), ui = document.getElementById('ui'), card = document.getElementById('card');
 function chapterAt(f) { let c = TL.chapters[0]; for (const x of TL.chapters) if (f >= x[0]) c = x; return c; }
-function drawHUD(f, s, cam) {
+const RULES = [['近大远小', 'SIZE = w · f / z', 'size = w · f / z'], ['扫描面', 'SWEEP', 'edge = e^(−|y − y₀| / w)'], ['体素', 'VOXEL', 'p → (⌊p / s⌋ + ½) · s'], ['高度色带', 'TURBO', 'color = turbo(y)'], ['拨开', 'PUSH', 'p += n · R(1 − d/R)²']];
+function drawHUD(f, s) {
   const c = chapterAt(f); let h = '';
-  const fin = ease.out3(clamp((f - c[0]) / 14));
-  if (c[1] !== '06') h += `<div class="chap" style="opacity:${fin};transform:translateY(${(1 - fin) * -10}px)"><span class="n">${c[1]} / 05</span><div><div class="t">${c[2]}</div><div class="s">${c[3]}</div></div></div>`;
-  h += `<div class="prog">${TL.chapters.slice(0, 6).map((x, i) => { const nx = TL.chapters[i + 1][0]; return `<i><b style="width:${clamp((f - x[0]) / (nx - x[0])) * 100}%"></b></i>`; }).join('')}</div>`;
-  const rule = (a, b) => ease.out3(clamp((f - a) / 12)) * (1 - ease.in3(clamp((f - b + 12) / 12)));
-  if (f < 40) { const p = PC.camera(cam, W, H).project([0, TY + 0.1, 1.2]); const o = 1 - prog(f, 14, 26), r = 16 + 10 * Math.sin(f * 0.5), g = 1 - prog(f, 10, 18);
-    h += `<div style="position:absolute;left:${p[0] - 90}px;top:${p[1] - 90}px;width:180px;height:180px;border-radius:50%;background:radial-gradient(circle, rgba(255,255,255,${g}) 0 3%, rgba(160,240,255,${0.55 * g}) 8%, rgba(111,243,255,${0.12 * g}) 30%, rgba(0,0,0,0) 62%)"></div><div style="position:absolute;left:${p[0] - 140}px;top:${p[1] - 1}px;width:280px;height:2px;background:linear-gradient(90deg, transparent, rgba(200,250,255,${0.8 * g}), transparent)"></div><div style="position:absolute;left:${p[0] - 1}px;top:${p[1] - 100}px;width:2px;height:200px;background:linear-gradient(180deg, transparent, rgba(200,250,255,${0.6 * g}), transparent)"></div>`;
-    h += `<svg width="1920" height="1080" style="position:absolute;left:0;top:0;opacity:${o}"><circle cx="${p[0]}" cy="${p[1]}" r="${r}" fill="none" stroke="#6ff3ff" stroke-width="1.5"/><line x1="${p[0] - 60}" y1="${p[1]}" x2="${p[0] - r - 6}" y2="${p[1]}" stroke="#6ff3ff"/><line x1="${p[0] + r + 6}" y1="${p[1]}" x2="${p[0] + 60}" y2="${p[1]}" stroke="#6ff3ff"/></svg><div class="read" style="left:${p[0] + 76}px;top:${p[1] - 26}px;opacity:${o}">1 个点 <b>× ${N.toLocaleString('en-US')}</b></div>`; }
-  if (f >= 96 && f < 150) h += `<div class="rule" style="opacity:${rule(100, 150)}">p = (x, y, z) · rgb · w &nbsp;<em>× ${N.toLocaleString('en-US')}</em><small>没有面、没有贴图：画面里的每一样东西，都是这一百万个点之一。</small></div>`;
-  if (f >= 150 && f < 236) {
-    h += `<div class="rule" style="opacity:${rule(160, 236)}">size = w · f / z &nbsp;<em>z = ${(cam.pos[2] - 0.26).toFixed(2)} m</em><small>离得越近，点在屏幕上越大；再近一点，它们就散成一个个圆斑。</small></div>`;
-    if (f >= TL.probe[0] && probe) {
-      const o = ease.out3(prog(f, TL.probe[0], TL.probe[0] + 10)) * (1 - prog(f, 228, 236));
-      const pp = PC.camera(cam, W, H).project(probe.p); const px = probe.w * PC.camera(cam, W, H).fpx / pp[2];
-      h += `<svg width="1920" height="1080" style="position:absolute;left:0;top:0;opacity:${o}"><circle cx="${pp[0]}" cy="${pp[1]}" r="${Math.max(10, px * 0.6)}" fill="none" stroke="#6ff3ff" stroke-width="1.5"/><polyline points="${pp[0] + Math.max(10, px * 0.6)},${pp[1]} ${pp[0] + 120},${pp[1] - 90} ${pp[0] + 170},${pp[1] - 90}" fill="none" stroke="#6ff3ff" stroke-width="1.2"/></svg>`;
-      h += `<div class="read" style="left:${pp[0] + 180}px;top:${pp[1] - 136}px;opacity:${o}">点 #${probe.i.toLocaleString('en-US')}<br><b>x</b> ${probe.p[0].toFixed(3)} &nbsp;<b>y</b> ${probe.p[1].toFixed(3)} &nbsp;<b>z</b> ${probe.p[2].toFixed(3)}<br><b>rgb</b> ${probe.c.map(v => Math.round(Math.min(1, v) * 255)).join(' ')}<span style="display:inline-block;width:12px;height:12px;margin-left:8px;background:rgb(${probe.c.map(v => Math.round(Math.min(1, v) * 255)).join(',')})"></span><br><b>w</b> ${(probe.w * 1000).toFixed(1)} mm → <b>${px.toFixed(0)} px</b></div>`;
-    }
-  }
-  if (f >= 236 && f < 306) h += `<div class="rule" style="opacity:${rule(246, 306)}">第 i 个点：A[i] → B[i] &nbsp;<em>出发 = 0.65·排名 + 0.35·随机</em><small>两个形状都按高度排好队，字的上面倒进井的上面；一波一波地走，不是一起走。</small></div>`;
-  if (f >= 306 && f < 510) { const sy = s.sweep ? s.sweep.y : 0;
-    h += `<div class="rule" style="opacity:${rule(316, 510)}">edge = e<sup>−|y − y₀| / w</sup> &nbsp;<em>w = 0.14 m</em><small>扫描面往下走：上面是照片投上去的真颜色，下面还只有激光测出来的“位置”，按高度染成色带。</small></div>`;
-    h += `<div class="ztick" style="opacity:${rule(316, 510)}"><b>y₀ = ${sy.toFixed(2)} m</b>扫描面</div>`; }
-  if (f >= 510 && f < 640) h += `<div class="rule" style="opacity:${rule(520, 640)}">p = mix(A, B, t) + 转 · sin(πt) &nbsp;<em>swirl 4.2 rad</em><small>同一批点，从楼梯走到一棵树：路上绕着轴转一圈，所以像一阵龙卷风，而不是直线搬家。</small></div>`;
-  if (f >= 640 && f < 800) h += `<div class="rule" style="opacity:${rule(650, 800)}">d &lt; R → p += n · R(1 − d/R)² &nbsp;<em>R 随时间缩回</em><small>只推垂直于视线的分量，所以屏幕上是一个干净的洞；鼠标走过去，洞像船尾的浪一样合上。</small></div>`;
+  const fin = ease.out3(clamp((f - c[0]) / 12));
+  const inRules = f >= 570 && f < 720;
+  if (c[1] !== '08' && !inRules) h += `<div class="chap" style="opacity:${fin};transform:translateY(${(1 - fin) * -12}px)"><span class="n">${c[1]} / 07</span><div><div class="t">${c[2]}</div><div class="s">${c[3]}</div></div></div>`;
+  h += `<div class="prog">${TL.chapters.slice(0, 8).map((x, i) => { const nx = TL.chapters[i + 1][0]; return `<i><b style="width:${clamp((f - x[0]) / (nx - x[0])) * 100}%"></b></i>`; }).join('')}</div>`;
+  const rule = (a, b) => ease.out3(clamp((f - a) / 10)) * (1 - ease.in3(clamp((f - b + 10) / 10)));
+  const cam = PC.camera(s.cam, W, H);
+  if (f < 30) { const p = cam.project(DOT); const o = 1 - prog(f, 10, 16), g = 1 - prog(f, 8, 14), r = 16 + 8 * Math.sin(f * 0.6);
+    h += `<div style="position:absolute;left:${p[0] - 90}px;top:${p[1] - 90}px;width:180px;height:180px;border-radius:50%;background:radial-gradient(circle, rgba(255,255,255,${g}) 0 3%, rgba(160,240,255,${0.55 * g}) 8%, rgba(111,243,255,${0.12 * g}) 30%, rgba(0,0,0,0) 62%)"></div>`;
+    h += `<svg width="1920" height="1080" style="position:absolute;left:0;top:0;opacity:${o}"><circle cx="${p[0]}" cy="${p[1]}" r="${r}" fill="none" stroke="#6ff3ff" stroke-width="1.5"/></svg><div class="read" style="left:${p[0] + 40}px;top:${p[1] - 26}px;opacity:${o}">1 个点 <b>× ${N.toLocaleString('en-US')}</b></div>`; }
+  if (f >= 90 && f < 120) h += `<div class="rule" style="opacity:${rule(92, 120)}">p = (x, y, z) · rgb · w &nbsp;<em>× ${N.toLocaleString('en-US')}</em><small>没有面、没有贴图：画面里的每一样东西，都是这批点之一。</small></div>`;
+  if (f >= 140 && f < 200) { h += `<div class="rule" style="opacity:${rule(142, 200)}">一行 = 一次扫描 &nbsp;<em>300 行 × 2,667 点</em><small>House of Cards 用激光一行行扫出人脸；数据一抖，整行就错开。</small></div>`;
+    for (const g of TL.glitch) if (f >= g && f < g + 6) { const yRow = 300 + ((g * 37) % 420); h += `<div class="tag" style="left:1240px;top:${yRow}px"><b>●</b> 第 ${Math.round(g * 1.7) % 300} 行 · 偏移 ${(0.55 * (1 - (f - g) / 6)).toFixed(2)}</div>`; } }
+  if (f >= 236 && f < 296) { const a = s.sweep ? s.sweep.y : 0; h += `<div class="rule" style="opacity:${rule(238, 296)}">r<sub>k</sub> = h / tan θ<sub>k</sub> &nbsp;<em>64 束 · θ = +2° … −24.8°</em><small>每一束激光的仰角固定，转一圈就在地上画一个圈；车和人挡住它，圈就断了。</small></div>`;
+    h += `<div class="read" style="right:64px;top:140px">方位 <b>${((a * 57.3) % 360).toFixed(0)}°</b> · 第 ${a < 6.283 ? 1 : 2} 圈<br>距离着色 <b>0 → 62 m</b></div>`; }
+  if (f >= 312 && f < 386) { const sy = s.sweep ? s.sweep.y : 0; h += `<div class="rule" style="opacity:${rule(314, 386)}">${f < TL.voxel[0] ? `edge = e<sup>−|y − y₀| / w</sup> &nbsp;<em>y₀ = ${(sy / 0.22).toFixed(1)} m</em><small>扫过的地方是照片投上去的真颜色，下面还只有激光测出来的位置。</small>` : `体素降采样 &nbsp;<em>s = 1.0 m</em><small>每个格子只留一个点——数据少一百倍，形状还认得出来。</small>`}</div>`; }
+  if (f >= 410 && f < 480) h += `<div class="rule" style="opacity:${rule(412, 480)}">p += curl(p, t) · Δt &nbsp;<em>× 3 步</em><small>每个点顺着一个会变的“风”走：一百万个点，就是一幅会流动的颜料画。</small></div>`;
+  if (f >= 500 && f < 570) { h += `<div class="rule" style="opacity:${rule(502, 570)}">点 → 面 &nbsp;<em>size × ${s.sizeK.toFixed(2)}</em><small>每个点长成一个小圆片，彼此盖住，就连成了表面——高斯泼溅就是这么“画”出照片感的。</small></div>`;
+    const q = curAt(f); if (q) h += `<svg style="position:absolute;left:${q[0] - 3}px;top:${q[1] - 3}px" width="30" height="30" viewBox="0 0 22 22"><path d="M2 2 L2 18 L7 13 L10 20 L13 19 L10 12 L17 12 Z" fill="#fff" stroke="#000" stroke-width="1"/></svg>`; }
+  if (inRules) { const k = Math.floor((f - 570) / 30), lf = (f - 570) % 30, r = RULES[k], sc = 1 + 0.25 * (1 - ease.out3(clamp(lf / 7)));
+    h += `<div class="big"><div class="no">规则 ${k + 1} / 5</div><div class="w" style="transform:scale(${sc});transform-origin:0 50%">${r[0]}</div><div class="en">${r[1]}</div><div class="fx">${r[2]}</div></div>`;
+    if (k === 4) { const q = cur5(f); if (q) h += `<svg style="position:absolute;left:${q[0] - 3}px;top:${q[1] - 3}px" width="30" height="30" viewBox="0 0 22 22"><path d="M2 2 L2 18 L7 13 L10 20 L13 19 L10 12 L17 12 Z" fill="#fff" stroke="#000" stroke-width="1"/></svg>`; } }
   hud.innerHTML = h;
-  // 鼠标
-  const q = curAt(f); if (q) hud.innerHTML += `<svg style="position:absolute;left:${q[0] - 3}px;top:${q[1] - 3}px" width="30" height="30" viewBox="0 0 22 22"><path d="M2 2 L2 18 L7 13 L10 20 L13 19 L10 12 L17 12 Z" fill="#fff" stroke="#000" stroke-width="1"/></svg>`;
 }
-function drawUI(f, s, cam) {
+const POT = [[-1.45, BY + 0.62, 0.15], [1.45, BY + 0.62, -0.1]];
+function drawUI(f, s) {
   let h = '';
-  const inP = ease.inOut3(prog(f, TL.mask[0], TL.mask[1])) * (1 - ease.inOut3(prog(f, TL.outro[0], TL.outro[0] + 30)));
+  const inP = ease.inOut3(prog(f, TL.mask[0], TL.mask[1])) * (1 - ease.inOut3(prog(f, TL.out[0], TL.out[1])));
   if (inP > 0.001) {
     const w = lerp(2200, 440, inP), hh = lerp(1300, 920, inP), r = lerp(0, 60, inP), top = 540 - hh / 2;
     h += `<div id="mask" style="width:${w}px;height:${hh}px;margin:${-hh / 2}px 0 0 ${-w / 2}px;border-radius:${r}px"></div>`;
@@ -228,22 +263,32 @@ function drawUI(f, s, cam) {
     if (o > 0) {
       h += `<div class="sb" style="left:${960 - w / 2 + 40}px;width:${w - 80}px;top:${top + 26}px;opacity:${o}"><span>9:41</span><span>●●● 100</span></div>`;
       h += `<div style="position:absolute;left:900px;top:${top + 18}px;width:120px;height:34px;border-radius:20px;background:#000;opacity:${o}"></div>`;
-      const st = f < TL.pBuild[0] ? '<b>●</b> 正在扫描 · 慢一点' : f < TL.pDone[0] ? '<b>●</b> 生成中 · 高斯泼溅' : '<b>●</b> 完成 · 可以拨开';
+      const st = f < TL.pBuild[0] ? '<b>●</b> 正在扫描 · 慢一点' : f < TL.pDone[0] ? '<b>●</b> 聚拢中 · 高斯泼溅' : f < TL.tap1 ? '<b>●</b> 完成 · 可以拨开' : f < TL.place[0] ? '<b>●</b> 量尺寸' : '<b>●</b> 放进房间';
       h += `<div class="ph" style="top:${top + 92}px;opacity:${o}"><div class="lab">${st}</div></div>`;
+      const cam = PC.camera(s.cam, W, H);
       if (f < TL.pBuild[0]) {
-        const cov = prog(f, TL.pScan[0], TL.pScan[1]); const n = Math.round(cov * 612480);
-        const C = PC.camera(cam, W, H).project([0, BY, 0]); let t = '';
-        for (let k = 0; k < 60; k++) { const a = k / 60 * Math.PI * 2, on = k < cov * 60; const r0 = 150, r1 = on ? 172 : 164;
+        const cov = prog(f, TL.pScan[0], TL.pScan[1]), n = Math.round(cov * 612480), C = cam.project([0, BY, 0]); let t = '';
+        for (let k = 0; k < 60; k++) { const a = k / 60 * Math.PI * 2, on = k < cov * 60, r0 = 150, r1 = on ? 172 : 164;
           t += `<line x1="${C[0] + Math.cos(a) * r0}" y1="${C[1] + Math.sin(a) * r0 * 0.34}" x2="${C[0] + Math.cos(a) * r1}" y2="${C[1] + Math.sin(a) * r1 * 0.34}" stroke="${on ? '#6ff3ff' : 'rgba(255,255,255,.3)'}" stroke-width="3"/>`; }
         h += `<svg width="1920" height="1080" style="position:absolute;left:0;top:0;opacity:${o}">${t}</svg>`;
-        h += `<div class="pill" style="top:${top + hh - 230}px;opacity:${o}">已采 ${n.toLocaleString('en-US')} 点 · 绕到右边</div>`;
-        h += `<div class="shutter" style="top:${top + hh - 140}px;opacity:${o}"><i></i></div>`;
+        h += `<div class="pill" style="top:${top + hh - 230}px;opacity:${o}">已采 ${n.toLocaleString('en-US')} 点 · 绕到右边</div><div class="shutter" style="top:${top + hh - 140}px;opacity:${o}"><i></i></div>`;
       } else if (f < TL.pDone[0]) {
         const p = prog(f, TL.pBuild[0], TL.pDone[0]);
         h += `<div class="pbar" style="left:${960 - 170}px;width:340px;top:${top + hh - 110}px;opacity:${o}"><div class="t"><span>聚拢 ${Math.round(p * 612480).toLocaleString('en-US')} / 612,480</span><span>${Math.round(p * 100)}%</span></div><div class="b"><i style="width:${p * 100}%"></i></div></div>`;
       } else {
-        const a = ease.outBack(prog(f, TL.pDone[0], TL.pDone[0] + 14));
-        h += `<div class="res" style="left:${960 - 190}px;width:380px;top:${top + hh - 210}px;opacity:${clamp(a) * o};transform:translateY(${(1 - clamp(a)) * 30}px)"><h3>窗台上的五针松</h3><p>612,480 PTS · 18.2 MB · .PLY / .SPLAT</p><div class="row"><span class="on">放进房间</span><span>分享</span></div></div>`;
+        // 量尺寸：点两下，拉一根线
+        const a = cam.project(POT[0]), b = cam.project(POT[1]);
+        if (f >= TL.tap1) { const t = (f - TL.tap1) / 20; if (t < 1) h += `<div class="touch" style="left:${a[0] - 20 - t * 30}px;top:${a[1] - 20 - t * 30}px;width:${40 + t * 60}px;height:${40 + t * 60}px;opacity:${1 - t}"></div>`;
+          h += `<svg width="1920" height="1080" style="position:absolute;left:0;top:0"><circle cx="${a[0]}" cy="${a[1]}" r="7" fill="#6ff3ff"/></svg>`; }
+        if (f >= TL.tap2) { const t = (f - TL.tap2) / 20, L = ease.out3(prog(f, TL.tap2, TL.tap2 + 12)); const ex = lerp(a[0], b[0], L), ey = lerp(a[1], b[1], L);
+          if (t < 1) h += `<div class="touch" style="left:${b[0] - 20 - t * 30}px;top:${b[1] - 20 - t * 30}px;width:${40 + t * 60}px;height:${40 + t * 60}px;opacity:${1 - t}"></div>`;
+          h += `<svg width="1920" height="1080" style="position:absolute;left:0;top:0"><line x1="${a[0]}" y1="${a[1]}" x2="${ex}" y2="${ey}" stroke="#6ff3ff" stroke-width="3" stroke-dasharray="8 6"/><circle cx="${b[0]}" cy="${b[1]}" r="${7 * L}" fill="#6ff3ff"/></svg>`;
+          const lo = ease.outBack(prog(f, TL.tap2 + 8, TL.tap2 + 18)); h += `<div class="tag" style="left:${(a[0] + b[0]) / 2 - 60}px;top:${(a[1] + b[1]) / 2 - 56}px;transform:scale(${lo});font-size:20px"><b>↔</b> 38.2 cm</div>`; }
+        const ra = ease.outBack(prog(f, TL.pDone[0], TL.pDone[0] + 14));
+        h += `<div class="res" style="left:${960 - 190}px;width:380px;top:${top + hh - 210}px;opacity:${clamp(ra) * o};transform:translateY(${(1 - clamp(ra)) * 30}px)"><h3>窗台上的五针松</h3><p>612,480 PTS · 宽 38.2 cm · .PLY / .SPLAT</p><div class="row"><span class="on" style="${f >= TL.place[0] && f < TL.place[0] + 8 ? 'transform:scale(.94)' : ''}">放进房间</span><span>分享</span></div></div>`;
+        if (f >= TL.place[0]) { const g = ease.out3(prog(f, TL.place[0] + 4, TL.place[1])); let gl2 = '';
+          for (let k = -6; k <= 6; k++) { const z0 = cam.project([k * 0.8, BY, -5]), z1 = cam.project([k * 0.8, BY, 5]); gl2 += `<line x1="${z0[0]}" y1="${z0[1]}" x2="${z1[0]}" y2="${z1[1]}"/>`; const x0 = cam.project([-5, BY, k * 0.8]), x1 = cam.project([5, BY, k * 0.8]); gl2 += `<line x1="${x0[0]}" y1="${x0[1]}" x2="${x1[0]}" y2="${x1[1]}"/>`; }
+          h = h.replace('<div class="sb"', `<svg width="1920" height="1080" style="position:absolute;left:0;top:0;opacity:${g * 0.5}" stroke="#6ff3ff" stroke-width="1">${gl2}</svg><div class="sb"`); }
       }
     }
   }
@@ -260,27 +305,28 @@ function drawUI(f, s, cam) {
   await document.fonts.load('900 100px NotoSC', '点云'); await document.fonts.ready;
   const cv = document.getElementById('gl'); cv.width = Math.round(W * SCALE); cv.height = Math.round(H * SCALE);
   gl = GLK.create(cv); P = PC.makeMorphProgram(gl); target = GLK.fbo(gl, cv.width, cv.height); post = GLK.post(gl);
-  const R = PC.mulberry(13);
-  const mk = (id, data) => { const d = PC.toN(data, N, R); const s = { id, buf: PC.uploadShape(gl, d), data: d }; return s; };
-  S.tunnel = mk('dot', dot(R));
-  S.title = mk('title', title(R, TY));
-  S.stairs = mk('stairs', PC.staircase({ turns: 10, density: 640, falloff: 6.5 }).cloud.data);
-  S.bonsai = mk('bonsai', bonsaiBig(R));
-  S.title2 = mk('title2', title(R, TY2));
-  // 01 里读数的那个点：正面上、离画面中心最近的一个
-  { const d = S.title.data; let best = -1, bd = 1e9; for (let i = 0; i < N; i += 7) { const o = i * 10; if (Math.abs(d[o + 2] - 0.26) > 1e-3) continue; const dd = Math.hypot(d[o] - 0.2, d[o + 1] - TY - 0.12); if (dd < bd) { bd = dd; best = i; } }
-    const o = best * 10; probe = { i: best, p: [d[o], d[o + 1], d[o + 2]], c: [d[o + 3], d[o + 4], d[o + 5]], w: d[o + 6] }; }
-  for (const k in S) S[k].data = null;
+  const R = PC.mulberry(13), t0 = performance.now();
+  const mk = (id, data) => { const d = PC.toN(data, N, R); return { id, buf: PC.uploadShape(gl, d) }; };
+  S.dot = mk('dot', dot(R));
+  S.title = mk('title', title(R));
+  S.head = mk('head', SHAPES.head(N, R));
+  S.street = mk('street', SHAPES.street(N, R));
+  S.stairs = mk('stairs', xform(PC.staircase({ turns: 10, density: 520, falloff: 6.5 }).cloud.data, 0.22, [0, 0, 0]));
+  S.wall = mk('wall', SHAPES.wall(N, R));
+  S.bonsai = mk('bonsai', xform(PC.bonsai({ seed: 9 }).cloud.data, BS, [0, BY, 0], 0.8));
+  S.terrain = mk('terrain', SHAPES.terrain(N, R));
+  console.log('shapes ready', Math.round(performance.now() - t0), 'ms');
   window.ready = true;
 })().catch(e => console.log('ERR', e.message.slice(0, 2000)));
 
 window.frame = async (f) => {
   const s = sceneAt(f);
-  const cam = await PC.drawMorph(gl, P, target, s.A, s.B, s);
-  const flash = [[TL.assemble[0], 0.5], [TL.lock, 0.3], [TL.pour[1], 0.12], [TL.twist[1] - 6, 0.2], [TL.regroup[1], 0.25]].reduce((a, [h, A]) => a + (f >= h ? A * Math.exp(-(f - h) / 5) : 0), 0);
-  const bl = f < 150 || f >= 1040 ? 0.8 : 0.5;
-  await post(target.tex, { exposure: 1.05 * (1 + flash), bloom: bl, threshold: f < 150 || f >= 1040 ? 0.55 : 0.9, grain: 0.03, vignette: 0.4, ca: 0.004, saturation: 1.1, seed: f * 0.37 });
-  drawHUD(f, s, s.cam); drawUI(f, s, s.cam);
+  await PC.drawMorph(gl, P, target, s.A, s.B, s);
+  const hits = [[TL.burst, 0.5], [TL.lock, 0.25], [TL.toHead[1], 0.12], [TL.dissolve[1], 0.15], [TL.drain[1], 0.12], [TL.voxel[1], 0.15], [TL.toBonsai[1], 0.15], ...TL.cards.map(c => [c, 0.12]), [TL.mask[1], 0.1], [TL.burst2, 0.6], [TL.final, 0.25]];
+  const flash = hits.reduce((a, [h, A]) => a + (f >= h ? A * Math.exp(-(f - h) / 5) : 0), 0);
+  const big = f < 120 || f >= 1020;
+  await post(target.tex, { exposure: 1.05 * (1 + flash), bloom: big ? 0.8 : 0.5, threshold: big ? 0.55 : 0.9, grain: 0.02, vignette: 0.4, ca: 0.004, saturation: 1.1, seed: f * 0.37 });
+  drawHUD(f, s); drawUI(f, s);
   gl.finish();
 };
 window.events = () => TL;
