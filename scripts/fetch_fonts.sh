@@ -42,6 +42,8 @@ curl -fsSL -o Silkscreen-Regular.ttf "$GF/silkscreen/Silkscreen-Regular.ttf"
 curl -fsSL -o Silkscreen-Bold.ttf    "$GF/silkscreen/Silkscreen-Bold.ttf"
 # 风格 018 微缩景观：Inter 可变字重（100—900），供 video3d 的 Inter.ttf 路径使用；OFL
 curl -fsSL -o Inter.ttf "$GF/inter/Inter%5Bopsz,wght%5D.ttf"
+# 第六轮候选 液态金属：站酷庆科黄油体（圆头粗体中文，被做成会滴落的镀铬字；OFL）
+curl -fsSL -o ZCOOLQingKeHuangYou.ttf "$GF/zcoolqingkehuangyou/ZCOOLQingKeHuangYou-Regular.ttf"
 # 布局 01 Bento Grid：Inter Display（标题）+ Inter（正文）+ Geist Mono（数字 / 标注）
 TMP=$(mktemp -d)
 curl -fsSL -o "$TMP/inter.zip" https://github.com/rsms/inter/releases/download/v4.1/Inter-4.1.zip
@@ -49,6 +51,9 @@ curl -fsSL -o "$TMP/geist.zip" https://github.com/vercel/geist-font/releases/dow
 unzip -qjo "$TMP/inter.zip" 'extras/ttf/InterDisplay-Medium.ttf' 'extras/ttf/InterDisplay-SemiBold.ttf' 'extras/ttf/InterDisplay-Bold.ttf' \
   'extras/ttf/Inter-Regular.ttf' 'extras/ttf/Inter-Medium.ttf' 'extras/ttf/Inter-SemiBold.ttf' -d .
 unzip -qjo "$TMP/geist.zip" '*/GeistMono-Regular.ttf' '*/GeistMono-Medium.ttf' -d .
+# 第六轮候选（液态金属 / 点云 / 热成像）：Geist 与 Geist Mono 的可变字重版，存成 Geist.ttf / GeistMono.ttf
+unzip -qjo "$TMP/geist.zip" 'geist-font/Geist/variable/Geist\[wght\].ttf' 'geist-font/GeistMono/variable/GeistMono\[wght\].ttf' -d "$TMP/gv"
+mv "$TMP/gv/Geist[wght].ttf" Geist.ttf; mv "$TMP/gv/GeistMono[wght].ttf" GeistMono.ttf
 # 布局 01 里的 Windows Phone 段：Selawik（微软开源的 Segoe UI 替代字体）
 curl -fsSL -o "$TMP/selawik.zip" https://github.com/microsoft/Selawik/releases/download/1.01/Selawik_Release.zip
 unzip -qjo "$TMP/selawik.zip" '*selawk.ttf' '*selawksb.ttf' '*selawkb.ttf' '*selawkl.ttf' -d "$TMP/sel"

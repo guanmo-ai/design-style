@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="zh">
+<head>
+<meta charset="utf-8">
+<title>第六轮候选 · 三种光</title>
+<style>
+@font-face { font-family: 'NotoSC'; src: url(../public/fonts/NotoSansSC-Black.otf); font-weight: 900; }
+@font-face { font-family: 'NotoSC'; src: url(../public/fonts/NotoSansSC-Bold.otf); font-weight: 700; }
+@font-face { font-family: 'NotoSC'; src: url(../public/fonts/NotoSansSC-Regular.otf); font-weight: 400; }
+@font-face { font-family: 'GeistMono'; src: url(../public/fonts/GeistMono.ttf); font-weight: 100 900; }
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html, body { width: 1960px; background: #0b0b0d; color: #f2f2f4; font-family: NotoSC, sans-serif; }
+.wrap { padding: 40px 30px 34px; }
+.head { display: flex; align-items: baseline; gap: 24px; margin-bottom: 30px; }
+.head h1 { font-weight: 900; font-size: 30px; }
+.head span { font-family: GeistMono; font-size: 13px; color: #8d8d96; letter-spacing: .06em; }
+.grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 30px; }
+.col h2 { font-weight: 900; font-size: 30px; }
+.col h2 small { font-family: GeistMono; font-weight: 400; font-size: 20px; margin-left: 8px; color: #cfcfd6; }
+.col .line { font-size: 14px; color: #8d8d96; margin-top: 8px; }
+.col .one { font-size: 16px; margin-top: 10px; font-weight: 700; }
+.col img { width: 100%; display: block; border-radius: 6px; margin-top: 18px; outline: 1px solid rgba(255,255,255,.08); }
+.col .cap { font-size: 13.5px; line-height: 1.7; color: #b9b9c2; margin-top: 10px; }
+.col .cap b { color: #fff; }
+.c1 .one { color: #ff8fc8; } .c2 .one { color: #6ff3ff; } .c3 .one { color: #ffd36a; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="head"><h1>第六轮候选 · 三种“光”</h1><span>反射的光 / 扫描的光 / 看不见的光 · 每个风格两张：第 0 帧 + 落到界面上 · 全部实时渲染（WebGL），没有一张贴图</span></div>
+  <div class="grid">
+    <div class="col c1">
+      <h2>液态金属<small>Liquid Chrome</small></h2>
+      <div class="line">1991 T-1000 → 千禧镀铬字 → 酸性设计 → 今天的 3D 字与 AI 形象</div>
+      <div class="one">它自己没有颜色，颜色全是它照到的世界。</div>
+      <img src="liquid-chrome/png/cover.png">
+      <div class="cap"><b>第 0 帧</b> · “液态金属”四个字本身就是会滴落的镀铬液体（光线步进 + 3 次反射）：空中两滴正在融合拉出“颈”，一根丝断成主滴 + 卫星珠，落地溅出皇冠和波纹。右上角是它“照到的世界”。</div>
+      <img src="liquid-chrome/png/ui.png">
+      <div class="cap"><b>界面</b> · 没有脸的语音助手：待机时呼吸 → 开口长出磁流体的刺 → 想好了分出三滴，落成三个按钮。底部四张动效配方：smin 的 k、弹簧、音量→刺长、陀螺仪转倒影。</div>
+    </div>
+    <div class="col c2">
+      <h2>点云<small>Point Cloud</small></h2>
+      <div class="line">1960s 激光测距 → 2010 Kinect → 2020 手机 LiDAR → 2023 高斯泼溅</div>
+      <div class="one">世界不是面，是几百万个带颜色的点。</div>
+      <img src="point-cloud/png/cover.png">
+      <div class="cap"><b>第 0 帧</b> · 380 万个点的螺旋楼梯井：扫描面以上是照片投上去的真颜色，扫描线发着光，以下还只有激光测出的“位置”，按高度染成 turbo 色带，一路卷到 37 米下的井底。标题也是点。</div>
+      <img src="point-cloud/png/ui.png">
+      <div class="cap"><b>界面</b> · 扫描 App：网页上鼠标能把树“拨开”一个洞、树梢正散成点；手机里 扫（一道亮边往上爬）→ 聚（点带拖尾飞回来）→ 成。配方：近大远小、亮边曲线、散开/聚拢同一公式、拨开。</div>
+    </div>
+    <div class="col c3">
+      <h2>热成像<small>Thermal</small></h2>
+      <div class="line">1800 赫歇尔发现红外 → 1960s 军用热像仪 → 今天的时装片与 MV</div>
+      <div class="one">不拍颜色，拍温度——静帧里看得见时间。</div>
+      <img src="thermal/png/cover.png">
+      <div class="cap"><b>第 0 帧</b> · 一根手指在墙上写“热成像”：4 秒前写的“热”已经凉了、糊了，刚写的“像”还亮着；一条 31.2 °C 的等温线正好圈出最后 0.8 秒的笔画。温度是真模拟出来的（扩散 + 冷却）。</div>
+      <img src="thermal/png/ui.png">
+      <div class="cap"><b>界面</b> · 跑步 App：网页是一串越早越凉的热脚印；手机里 按住升温（等温线就是进度圈）→ 路线越往前越热 → 会互相“烫”的热力日历。配方：扩散公式、色带查表、等温线、余温做层级。</div>
+    </div>
+  </div>
+</div>
+</body>
+</html>
