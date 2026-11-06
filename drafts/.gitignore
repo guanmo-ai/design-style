@@ -8,3 +8,7 @@ candidates-5.html
 !ascii/*.html
 !kinetic-type/*.html
 !generative/*.html
+# 第六轮候选同理：手写源码
+!liquid-chrome/*.html
+!point-cloud/*.html
+!thermal/*.html

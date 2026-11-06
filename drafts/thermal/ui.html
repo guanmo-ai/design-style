@@ -1,0 +1,255 @@
+<!doctype html>
+<html lang="zh">
+<head>
+<meta charset="utf-8">
+<title>热成像 · 落到界面上 · 跑步 App</title>
+<style>
+@font-face { font-family: 'Archivo'; src: url(../../public/fonts/Archivo.ttf); font-weight: 100 900; font-stretch: 62% 125%; }
+@font-face { font-family: 'GeistMono'; src: url(../../public/fonts/GeistMono.ttf); font-weight: 100 900; }
+@font-face { font-family: 'Geist'; src: url(../../public/fonts/Geist.ttf); font-weight: 100 900; }
+@font-face { font-family: 'NotoSC'; src: url(../../public/fonts/NotoSansSC-Black.otf); font-weight: 900; }
+@font-face { font-family: 'NotoSC'; src: url(../../public/fonts/NotoSansSC-Bold.otf); font-weight: 700; }
+@font-face { font-family: 'NotoSC'; src: url(../../public/fonts/NotoSansSC-Medium.otf); font-weight: 500; }
+@font-face { font-family: 'NotoSC'; src: url(../../public/fonts/NotoSansSC-Regular.otf); font-weight: 400; }
+* { margin: 0; padding: 0; box-sizing: border-box; }
+:root { --bg: #07040f; --ink: #fff4ea; --dim: #9a90ad; --line: rgba(255,255,255,.12); --hot: #ffe27a; --iso: #5dffbe; }
+html, body { width: 1920px; height: 1080px; overflow: hidden; background: var(--bg); color: var(--ink); font-family: Geist, NotoSC, sans-serif; }
+.mono { font-family: GeistMono, monospace; letter-spacing: .04em; }
+canvas.gl { position: absolute; display: block; left: 0; top: 0; }
+.top { position: absolute; left: 64px; right: 64px; top: 34px; display: flex; justify-content: space-between; font-size: 13px; color: var(--dim); text-transform: uppercase; }
+.top b { color: #fff; font-weight: 500; }
+.browser { position: absolute; left: 64px; top: 78px; width: 1010px; height: 668px; border-radius: 14px; overflow: hidden; background: #05030c; outline: 1px solid var(--line); box-shadow: 0 40px 120px rgba(0,0,0,.6); }
+.bar { height: 40px; display: flex; align-items: center; gap: 8px; padding: 0 16px; background: #0d0a16; border-bottom: 1px solid var(--line); position: relative; z-index: 3; }
+.bar i { width: 11px; height: 11px; border-radius: 50%; background: #2a2536; display: block; }
+.bar .url { margin-left: 18px; flex: 1; max-width: 420px; height: 24px; border-radius: 7px; background: #17121f; font-size: 12px; color: #8f86a2; display: flex; align-items: center; padding: 0 12px; }
+.page { position: absolute; left: 0; top: 40px; right: 0; bottom: 0; }
+.nav { position: absolute; left: 40px; right: 40px; top: 24px; display: flex; align-items: center; font-size: 14px; color: #d8cfe6; gap: 30px; z-index: 2; }
+.logo { font-family: Archivo; font-weight: 900; font-stretch: 125%; font-size: 20px; color: #fff; margin-right: auto; letter-spacing: .04em; }
+.logo i { font-style: normal; background: linear-gradient(90deg, #f2712a, #ffe27a); -webkit-background-clip: text; color: transparent; }
+.nav .btn { color: #1a0a00; background: var(--hot); border-radius: 999px; padding: 8px 16px; font-weight: 700; font-size: 13px; }
+.hero-t { position: absolute; left: 44px; top: 112px; width: 520px; z-index: 2; }
+.kick { font-size: 12px; color: #e8def4; display: inline-flex; gap: 10px; align-items: center; border: 1px solid rgba(255,255,255,.18); border-radius: 999px; padding: 6px 12px 6px 8px; background: rgba(7,4,15,.5); }
+.kick b { color: #1a0a00; background: var(--hot); border-radius: 999px; padding: 1px 8px; font-weight: 700; }
+.hero-t h1 { font-family: Archivo; font-weight: 900; font-stretch: 120%; font-size: 96px; line-height: .92; margin-top: 22px; letter-spacing: -.01em; background: linear-gradient(180deg, #ffffff 0%, #fde27a 30%, #f2712a 58%, #d43f4f 78%, #9c1f86 100%); -webkit-background-clip: text; color: transparent; }
+.hero-t h2 { font-family: NotoSC; font-weight: 900; font-size: 32px; margin-top: 16px; }
+.hero-t p { font-family: NotoSC; font-size: 15.5px; line-height: 1.75; color: #cfc4de; margin-top: 12px; }
+.cta { display: flex; gap: 16px; margin-top: 24px; align-items: center; }
+.cta .p { background: var(--hot); color: #1a0a00; font-weight: 700; font-family: NotoSC; font-size: 15px; border-radius: 999px; padding: 12px 22px; }
+.cta .s { color: #e8def4; font-size: 14px; font-family: NotoSC; }
+.stats { position: absolute; left: 44px; bottom: 30px; display: flex; gap: 36px; z-index: 2; }
+.stats div { font-size: 12px; color: #b7acc9; font-family: NotoSC; }
+.stats b { display: block; font-family: Archivo; font-stretch: 110%; font-weight: 800; font-size: 26px; color: #fff; margin-bottom: 2px; }
+.tag { position: absolute; font-size: 11px; color: #fff; z-index: 3; white-space: nowrap; }
+.tag b { font-size: 16px; font-weight: 500; display: block; }
+.xh { position: absolute; width: 26px; height: 26px; z-index: 3; }
+.phone { position: absolute; top: 78px; width: 244px; height: 520px; border-radius: 40px; background: #0b0911; outline: 1px solid rgba(255,255,255,.14); box-shadow: inset 0 0 0 7px #17141f, 0 30px 80px rgba(0,0,0,.6); }
+.screen { position: absolute; left: 8px; top: 8px; right: 8px; bottom: 8px; border-radius: 33px; overflow: hidden; background: #000; }
+.sb { position: absolute; left: 22px; right: 20px; top: 12px; display: flex; justify-content: space-between; font-size: 11px; font-weight: 600; z-index: 3; }
+.island { position: absolute; left: 50%; top: 10px; width: 74px; height: 21px; border-radius: 20px; background: #000; transform: translateX(-50%); z-index: 4; }
+.ph { position: absolute; left: 0; right: 0; z-index: 3; text-align: center; }
+.ph .lab { font-size: 10.5px; color: #cfc4de; }
+.ph .lab b { color: var(--hot); font-weight: 500; }
+.ph h3 { font-family: NotoSC; font-weight: 900; font-size: 19px; line-height: 1.3; }
+.ph p { font-family: NotoSC; font-size: 12px; color: #d8cfe6; margin-top: 6px; }
+.big { font-family: Archivo; font-weight: 900; font-stretch: 115%; color: #fff; }
+.metrics { position: absolute; left: 18px; right: 18px; bottom: 18px; z-index: 3; display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.metrics div { background: rgba(7,4,15,.6); backdrop-filter: blur(10px); border: 1px solid rgba(255,255,255,.12); border-radius: 16px; padding: 10px 12px; font-size: 10.5px; color: #cfc4de; font-family: NotoSC; }
+.metrics b { display: block; font-family: Archivo; font-stretch: 115%; font-weight: 800; font-size: 22px; color: #fff; margin-bottom: 2px; }
+.cal { position: absolute; z-index: 3; display: grid; grid-template-columns: repeat(7, 28px); grid-auto-rows: 28px; font-family: GeistMono; font-size: 9.5px; color: rgba(255,255,255,.85); }
+.cal span { display: flex; align-items: flex-start; justify-content: flex-start; padding: 3px 0 0 4px; }
+.calh { position: absolute; z-index: 3; display: grid; grid-template-columns: repeat(7, 28px); font-family: NotoSC; font-size: 9.5px; color: #b7acc9; text-align: center; }
+.steps { position: absolute; top: 612px; font-size: 12px; }
+.steps .n { font-family: GeistMono; color: var(--hot); margin-right: 6px; }
+.steps b { font-family: NotoSC; font-weight: 700; font-size: 15px; color: #fff; }
+.steps p { font-family: NotoSC; color: #a89fbb; font-size: 12.5px; line-height: 1.6; margin-top: 6px; width: 236px; }
+.arrow { position: absolute; top: 328px; font-size: 10px; color: #e8def4; text-align: center; width: 60px; z-index: 5; }
+.arrow svg { display: block; margin: 4px auto 0; }
+.cards { position: absolute; left: 64px; right: 64px; top: 778px; display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; }
+.card { height: 250px; border: 1px solid var(--line); border-radius: 14px; padding: 18px 20px; position: relative; background: linear-gradient(180deg, rgba(255,255,255,.025), rgba(255,255,255,0)); }
+.card .k { font-family: GeistMono; font-size: 12px; color: #fff; letter-spacing: .03em; }
+.card .k i { font-style: normal; color: var(--hot); margin-right: 8px; }
+.card h4 { font-family: NotoSC; font-weight: 700; font-size: 17px; margin-top: 8px; }
+.card p { font-family: NotoSC; font-size: 12.5px; color: #a89fbb; line-height: 1.6; margin-top: 6px; }
+.card .viz { position: absolute; left: 20px; right: 20px; bottom: 16px; height: 96px; }
+.card .viz canvas, .card .viz svg, .card .viz div.row { display: block; position: absolute; }
+.vl { position: absolute; font-family: GeistMono; font-size: 10px; color: #9a90ad; white-space: nowrap; }
+.lrow { position: absolute; left: 0; right: 0; height: 28px; border-radius: 8px; display: flex; align-items: center; gap: 10px; padding: 0 10px; font-family: NotoSC; font-size: 12px; color: #fff; }
+.lrow small { margin-left: auto; font-family: GeistMono; font-size: 10px; color: rgba(255,255,255,.85); }
+</style>
+</head>
+<body>
+<div class="top mono"><span><b>NO. 024 · 热成像</b> &nbsp;·&nbsp; 落到界面上：温度就是层级，余温就是时间</span><span>跑步 App · 网页 + App · 按住升温 / 余温冷却</span></div>
+
+<div class="browser">
+  <div class="bar"><i></i><i></i><i></i><div class="url mono">runhot.club</div></div>
+  <div class="page">
+    <canvas class="gl" id="hero"></canvas>
+    <div class="nav"><span class="logo">RUN<i>HOT</i></span><span>鞋</span><span>俱乐部</span><span>路线</span><span class="btn">加入夜跑</span></div>
+    <div class="hero-t">
+      <span class="kick"><b>27 °C</b> 今晚的地面温度</span>
+      <h1>RUN<br>HOT.</h1>
+      <h2>每一步都留下余温。</h2>
+      <p>最近的一步最亮，三秒前的已经凉了——<br>你跑过的路，自己会把时间画出来。</p>
+      <div class="cta"><span class="p">开始今晚的路线</span><span class="s">看热力回放 →</span></div>
+    </div>
+    <div class="stats"><div><b>5'12"</b>配速</div><div><b>186</b>步频</div><div><b>8</b>个脚印 · 3.2 s</div></div>
+    <div id="heroTags"></div>
+  </div>
+</div>
+
+<div id="phones"></div>
+
+<div class="cards">
+  <div class="card"><span class="k"><i>A</i>T += D·∇²T − k(T − T₀)</span><h4>余温：变宽，同时变低</h4><p>D 管“糊得多快”，k 管“凉得多快”。同一笔热，0 / 1 / 2 / 4 秒后的样子：</p><div class="viz" id="vizA"></div></div>
+  <div class="card"><span class="k"><i>B</i>x = (T − Tmin)/(Tmax − Tmin) → LUT</span><h4>色带：同一张温度，四种情绪</h4><p>温度先归一化到 0–1，再去一条 256 色的色带里查颜色。</p><div class="viz" id="vizB"></div></div>
+  <div class="card"><span class="k"><i>C</i>|T − T_iso| &lt; w → 描线</span><h4>等温线就是进度条</h4><p>按住时热从指尖往外扩，那条等温线越走越远——圆圈本身就是进度。</p><div class="viz" id="vizC"></div></div>
+  <div class="card"><span class="k"><i>D</i>heat = e<sup>−Δt / τ</sup></span><h4>余温做层级：最近碰过的更热</h4><p>列表不靠粗细排主次，靠“多久没碰”。τ = 2 天。</p><div class="viz" id="vizD"></div></div>
+</div>
+
+<script src="../_lib/glkit.js"></script>
+<script src="thermal.js"></script>
+<script>
+const DPR = devicePixelRatio;
+let seed = 21; const R = () => (seed = (seed * 16807) % 2147483647) / 2147483647;
+async function renderField(canvas, w, h, F, o) {
+  canvas.width = Math.round(w * DPR); canvas.height = Math.round(h * DPR); canvas.style.width = w + 'px'; canvas.style.height = h + 'px';
+  const gl = GLK.create(canvas); const P = THERM.makeProgram(gl);
+  await THERM.render(gl, P, F, Object.assign({ tmin: 18, tmax: 34, glow: 0.3, glowSigma: 6, noise: 0.14, vignette: 0.2 }, o));
+}
+function noiseField(W, H, sigma, amp) { const n = new Float32Array(W * H); for (let i = 0; i < W * H; i++) n[i] = (R() - 0.5); GLK.blurField(n, W, H, sigma); for (let i = 0; i < W * H; i++) n[i] *= amp; return n; }
+// 一个脚印的遮罩（网格坐标）：脚跟 + 前掌 + 外侧足弓 + 五个脚趾
+function footprint(W, H, cx, cy, ang, side, s) {
+  const m = new Float32Array(W * H); const ca = Math.cos(ang), sa = Math.sin(ang);
+  const parts = [[0, 22, 9.5, 11], [side * 2.5, -9, 12.5, 15], [side * 7, 8, 4.5, 13]];
+  const toes = [[-side * 6.5, -30, 4.6], [-side * 0.5, -32.5, 3.4], [side * 4.5, -31, 3.0], [side * 8.5, -28, 2.7], [side * 12, -24, 2.4]];
+  const x0 = Math.max(0, Math.floor(cx - 50 * s)), x1 = Math.min(W, Math.ceil(cx + 50 * s)), y0 = Math.max(0, Math.floor(cy - 50 * s)), y1 = Math.min(H, Math.ceil(cy + 50 * s));
+  for (let y = y0; y < y1; y++) for (let x = x0; x < x1; x++) {
+    const dx = (x - cx) / s, dy = (y - cy) / s; const lx = dx * ca + dy * sa, ly = -dx * sa + dy * ca;
+    let v = 0;
+    for (const [px, py, rx, ry] of parts) { const e = Math.hypot((lx - px) / rx, (ly - py) / ry); v = Math.max(v, 1 - Math.min(1, Math.max(0, (e - 0.85) / 0.3))); }
+    for (const [px, py, r] of toes) { const e = Math.hypot(lx - px, ly - py) / r; v = Math.max(v, 1 - Math.min(1, Math.max(0, (e - 0.8) / 0.4))); }
+    m[y * W + x] = v;
+  }
+  return m;
+}
+// 地砖：缝比砖凉一点
+function tiles(W, H, base, size, off) { const a = new Float32Array(W * H); const nz = noiseField(W, H, 10, 2.2);
+  for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) { const gx = (x + off) % size, gy = (y + off * 0.6) % size; const grout = (gx < 2 || gy < 2) ? -0.55 : 0; a[y * W + x] = base + grout + nz[y * W + x] + 0.6 * (y / H); } return a; }
+
+(async () => {
+  await document.fonts.ready;
+  // —— 网页：一串脚印，越早越凉 ——
+  {
+    const W = 505, H = 314, amb = tiles(W, H, 19.6, 46, 9), F = THERM.Field(W, H, 20); F.T.set(amb);
+    const prints = [];
+    const path = t => [262 + t * 168 + Math.sin(t * 3.2) * 22, 292 - t * 214];
+    for (let i = 0; i < 8; i++) { const t = i / 7; const [cx, cy] = path(t), [nx, ny] = path(Math.min(1, t + 0.02)), [bx, by] = path(Math.max(0, t - 0.02));
+      const dx = nx - bx, dy = ny - by, L = Math.hypot(dx, dy), ux = dx / L, uy = dy / L; const side = i % 2 ? 1 : -1; const ang = Math.atan2(ux, -uy);
+      prints.push({ cx: cx + side * 11 * -uy, cy: cy + side * 11 * ux, ang, side, t: i * 0.42 }); }
+    const masks = prints.map(p => footprint(W, H, p.cx, p.cy, p.ang, p.side, 0.85));
+    const tEnd = 3.1, dt = 0.02; let k = 0;
+    for (let t = 0; t <= tEnd + 1e-6; t += dt) {
+      prints.forEach((p, i) => { if (p.t > t - dt && p.t <= t) { const m = masks[i]; for (let j = 0; j < W * H; j++) if (m[j] > 0) F.T[j] = Math.max(F.T[j], amb[j] + (30.5 - amb[j]) * m[j]); } });
+      F.step(0.18, 0.009, amb); if (++k % 10 === 0) await GLK.tick();
+    }
+    await renderField(document.getElementById('hero'), 1010, 628, F, { tmin: 18.4, tmax: 31.5, iso: 27.2, isoW: 0.07, isoCol: [0.36, 1.0, 0.75], glow: 0.35 });
+    const tag = (i, lab) => { const p = prints[i]; const x = p.cx * 2, y = p.cy * 2, T = F.T[Math.round(p.cy) * W + Math.round(p.cx)];
+      return `<svg class="xh" style="left:${x - 13}px;top:${y - 13}px" viewBox="0 0 26 26"><g stroke="#fff" stroke-width="1.4"><line x1="0" y1="13" x2="9" y2="13"/><line x1="17" y1="13" x2="26" y2="13"/><line x1="13" y1="0" x2="13" y2="9"/><line x1="13" y1="17" x2="13" y2="26"/></g></svg>` +
+             `<div class="tag mono" style="left:${x + 22}px;top:${y - 6}px"><b>${T.toFixed(1)}°C</b>${lab}</div>`; };
+    document.getElementById('heroTags').innerHTML = tag(7, '这一步 · 现在') + tag(3, '第 4 步 · 1.7 s 前') + tag(0, '第 1 步 · 2.9 s 前');
+  }
+  // —— 三部手机 ——
+  const PW = 244, PH = 520, SW = PW - 16, SH = PH - 16, xs = [1110, 1366, 1622], GW = 114, GH = 252;
+  const ph = document.getElementById('phones');
+  const mk = (i, html) => { const el = document.createElement('div'); el.className = 'phone'; el.style.left = xs[i] + 'px';
+    el.innerHTML = `<div class="screen"><canvas class="gl"></canvas><div class="island"></div><div class="sb mono"><span>9:41</span><span>●●● 100</span></div>${html}</div>`; ph.appendChild(el); return el; };
+  // 1：按住升温——等温线就是进度圈
+  {
+    const amb = new Float32Array(GW * GH); const nz = noiseField(GW, GH, 6, 1.4); for (let i = 0; i < GW * GH; i++) amb[i] = 21 + nz[i];
+    const F = THERM.Field(GW, GH, 21); F.T.set(amb); const cx = 57, cy = 150;
+    for (let s = 0; s < 320; s++) { for (let y = cy - 8; y <= cy + 8; y++) for (let x = cx - 8; x <= cx + 8; x++) { const d = Math.hypot(x - cx, y - cy); if (d < 7) F.T[y * GW + x] = 34.5; } F.step(0.24, 0.0012, amb); if (s % 40 === 0) await GLK.tick(); }
+    // 手指（从下面伸进来）
+    for (let y = 0; y < GH; y++) for (let x = 0; x < GW; x++) { const t = Math.max(0, Math.min(1, (y - cy) / 120)); const fx = cx + 4 + (y - cy) * 0.55; const d = Math.abs(x - fx) * 0.88; const r = 6.5 + t * 4;
+      const c = Math.min(1, Math.max(0, (r - d) / 1.5)); if (c > 0 && y >= cy - 3) { const th = 31.0 + 3 * Math.min(1, (y - cy) / 80); F.T[y * GW + x] = F.T[y * GW + x] * (1 - c) + th * c; } }
+    const el = mk(0, `<div class="ph" style="top:56px"><div class="lab mono"><b>●</b> 按住开始 · 0.8 / 1.2 s</div></div>
+      <div class="ph" style="top:96px"><h3>按住，<br>让它热起来</h3></div>
+      <div class="ph" style="top:156px"><p class="mono" style="font-size:10.5px">绿线走到虚线圈，就开始</p></div>`);
+    await renderField(el.querySelector('canvas'), SW, SH, F, { tmin: 19.5, tmax: 34.5, iso: 23.2, isoW: 0.08, isoCol: [0.36, 1.0, 0.75] });
+    // 外圈的目标线
+    const sv = document.createElementNS('http://www.w3.org/2000/svg', 'svg'); sv.setAttribute('width', SW); sv.setAttribute('height', SH); sv.style.cssText = 'position:absolute;left:0;top:0;z-index:2';
+    sv.innerHTML = `<circle cx="${cx * 2}" cy="${cy * 2}" r="78" fill="none" stroke="rgba(255,255,255,.4)" stroke-dasharray="2 5"/>`; el.querySelector('.screen').appendChild(sv);
+  }
+  // 2：跑步中——路线是一道越往前越热的线
+  {
+    const amb = new Float32Array(GW * GH); const nz = noiseField(GW, GH, 5, 1.0);
+    for (let y = 0; y < GH; y++) for (let x = 0; x < GW; x++) { const street = (Math.abs((x + y * 0.35) % 38 - 19) < 1.2 || Math.abs((y - x * 0.2) % 46 - 23) < 1.2) ? 0.8 : 0; amb[y * GW + x] = 20 + nz[y * GW + x] + street; }
+    const F = THERM.Field(GW, GH, 20); F.T.set(amb);
+    const pts = []; for (let i = 0; i <= 200; i++) { const t = i / 200; pts.push([22 + t * 66 + Math.sin(t * 9) * 14, 196 - t * 112 + Math.sin(t * 5) * 14]); }
+    for (let i = 0; i < pts.length; i++) { const [px, py] = pts[i];
+      for (let y = Math.max(0, Math.floor(py - 4)); y < Math.min(GH, py + 4); y++) for (let x = Math.max(0, Math.floor(px - 4)); x < Math.min(GW, px + 4); x++) { const d = Math.hypot(x - px, y - py); if (d < 2.6) F.T[y * GW + x] = Math.max(F.T[y * GW + x], 31.5); }
+      F.step(0.12, 0.012, amb); }
+    const [ex, ey] = pts[pts.length - 1]; for (let y = 0; y < GH; y++) for (let x = 0; x < GW; x++) { const d = Math.hypot(x - ex, y - ey); if (d < 5) F.T[y * GW + x] = 34.5; }
+    const el = mk(1, `<div class="ph" style="top:56px"><div class="lab mono"><b>●</b> 跑步中 · 第 4.2 km</div></div>
+      <div class="metrics"><div><b>5'12"</b>配速 / km</div><div><b>32:40</b>用时</div><div><b>186</b>步频</div><div><b>158</b>心率</div></div>`);
+    await renderField(el.querySelector('canvas'), SW, SH, F, { tmin: 18.5, tmax: 34.5, glow: 0.5 });
+    const t = document.createElement('div'); t.className = 'tag mono'; t.style.cssText = `left:${ex * 2 - 74}px;top:${ey * 2 - 8}px`; t.innerHTML = '<b style="font-size:13px">你在这</b>'; el.querySelector('.screen').appendChild(t);
+    const t2 = document.createElement('div'); t2.className = 'tag mono'; t2.style.cssText = `left:${pts[80][0] * 2 + 18}px;top:${pts[80][1] * 2 - 4}px;color:#cfc4de`; t2.textContent = '30 分钟前'; el.querySelector('.screen').appendChild(t2);
+  }
+  // 3：这一周——热力日历，热的日子会“烫”到旁边
+  {
+    const amb = new Float32Array(GW * GH).fill(19.5); const F = THERM.Field(GW, GH, 19.5); F.T.set(amb);
+    const ox = 8, oy = 112, cs = 14, vals = [0, .3, 0, .7, .2, 1, .4, .1, 0, .55, .25, .85, 0, .65, .3, .8, 0, .45, .95, .2, .6, 0, .35, .7, 0, .9, .5, 1.0];
+    vals.forEach((v, i) => { const c = i % 7, r = Math.floor(i / 7); for (let y = oy + r * cs + 2; y < oy + r * cs + cs - 2; y++) for (let x = ox + c * cs + 2; x < ox + c * cs + cs - 2; x++) F.T[y * GW + x] = 19.5 + v * 13.5; });
+    for (let s = 0; s < 30; s++) F.step(0.2, 0.0, amb);
+    const el = mk(2, `<div class="ph" style="top:56px"><div class="lab mono"><b>●</b> 这四周</div></div>
+      <div class="ph" style="top:84px"><div class="big" style="font-size:44px">42.6<span style="font-size:16px"> km</span></div><p>这周跑热了：比上周 <b style="color:#ffe27a">+18%</b></p></div>
+      <div class="calh" style="left:16px;top:200px"><span>一</span><span>二</span><span>三</span><span>四</span><span>五</span><span>六</span><span>日</span></div>
+      <div class="cal" id="cal3" style="left:16px;top:224px"></div>
+      <div class="ph" style="top:360px"><p class="mono" style="font-size:10.5px;color:#b7acc9">热的日子会烫到旁边：连着跑，就连成一片</p></div>
+      <div class="metrics"><div><b>6</b>连续天数</div><div><b>Sun</b>最热的一天</div></div>`);
+    await renderField(el.querySelector('canvas'), SW, SH, F, { tmin: 18.5, tmax: 33.5 });
+    el.querySelector('#cal3').innerHTML = vals.map((v, i) => `<span style="opacity:${0.55 + v * 0.45}">${i + 1}</span>`).join('');
+  }
+  const steps = [['01', '按住 · 升温', '热从指尖往外扩；绿色等温线走到虚线圈，就开始。按得越久，圈越大。'], ['02', '跑 · 路线自己画时间', '刚跑过的一段最亮，半小时前的已经凉了、糊了——不用图例也看得懂。'], ['03', '看 · 会扩散的日历', '每天一格热；连着跑的日子互相“烫”，连成一片，断了就是一道凉缝。']];
+  steps.forEach((s, i) => { const d = document.createElement('div'); d.className = 'steps'; d.style.left = (xs[i] + 4) + 'px'; d.innerHTML = `<span class="n">${s[0]}</span><b>${s[1]}</b><p>${s[2]}</p>`; ph.appendChild(d); });
+  [['松手', '+1.2 s'], ['跑完', '+42 min']].forEach((a, i) => { const d = document.createElement('div'); d.className = 'arrow mono'; d.style.left = (xs[i] + PW - 24) + 'px';
+    d.innerHTML = `${a[0]}<br><span style="color:#ffe27a">${a[1]}</span><svg width="40" height="12"><path d="M2 6 H34 M28 1 L35 6 L28 11" fill="none" stroke="#fff" stroke-width="1.3"/></svg>`; ph.appendChild(d); });
+  await vizB(); await vizC(); vizA(); vizD();
+  window.__done = true;
+})().catch(e => { console.log('ERR', e.message.slice(0, 3000)); window.__done = true; });
+
+// A：一笔热的剖面随时间变化（高斯：变宽、变低）
+function vizA() {
+  const box = document.getElementById('vizA'), W = 390, H = 96; const cols = ['#ffffff', '#fbab2a', '#d43f4f', '#55108a'], ts = [0, 1, 2, 4];
+  let s = ''; ts.forEach((t, j) => { const sig = Math.sqrt(4 + 2 * 18 * t), amp = Math.exp(-0.25 * t) * 2 / sig * 2; let d = ''; for (let i = 0; i <= 120; i++) { const x = (i - 60) * 1.0, v = amp * Math.exp(-x * x / (2 * sig * sig)); d += (i ? 'L' : 'M') + (195 + x * 3).toFixed(1) + ' ' + (84 - v * 70).toFixed(1); }
+    s += `<path d="${d}" fill="none" stroke="${cols[j]}" stroke-width="2"/><text x="${10 + j * 60}" y="94" fill="${cols[j]}" font-family="GeistMono" font-size="10">${t} s</text>`; });
+  box.innerHTML = `<svg width="${W}" height="${H}"><line x1="10" x2="380" y1="84" y2="84" stroke="rgba(255,255,255,.2)"/>${s}</svg>`;
+}
+// B：同一张小温度图，四条色带
+async function vizB() {
+  const box = document.getElementById('vizB'); const W = 46, H = 40; const F = THERM.Field(W, H, 20);
+  const amb = new Float32Array(W * H).fill(20); F.T.set(amb);
+  const m = footprint(W, H, 23, 20, 0.3, 1, 0.42); for (let i = 0; i < W * H; i++) F.T[i] = 20 + 11 * m[i]; for (let s = 0; s < 6; s++) F.step(0.2, 0.0, amb);
+  const names = [['ironbow', '铁虹'], ['rainbow', '彩虹'], ['arctic', '极地'], ['whitehot', '白热']];
+  for (let i = 0; i < 4; i++) { const c = document.createElement('canvas'); box.appendChild(c); c.style.left = (i * 98) + 'px'; c.style.borderRadius = '6px';
+    await renderField(c, 92, 80, F, { tmin: 19, tmax: 32, palette: names[i][0], palette2: names[i][0], noise: 0.1, glow: 0.2, glowSigma: 2, vignette: 0 });
+    const l = document.createElement('span'); l.className = 'vl'; l.style.left = (i * 98 + 2) + 'px'; l.style.top = '84px'; l.textContent = names[i][1] + ' ' + names[i][0]; box.appendChild(l); }
+}
+// C：进度 = 等温线走多远（三个时刻）
+async function vizC() {
+  const box = document.getElementById('vizC'); const W = 60, H = 52; const ts = [12, 30, 70];
+  for (let k = 0; k < 3; k++) { const amb = new Float32Array(W * H).fill(21); const F = THERM.Field(W, H, 21); F.T.set(amb);
+    for (let s = 0; s < ts[k]; s++) { for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) if (Math.hypot(x - 30, y - 26) < 5) F.T[y * W + x] = 34; F.step(0.22, 0.002, amb); }
+    const c = document.createElement('canvas'); box.appendChild(c); c.style.left = (k * 130) + 'px'; c.style.borderRadius = '6px';
+    await renderField(c, 120, 80, F, { tmin: 19.5, tmax: 34.5, iso: 27, isoW: 0.15, isoCol: [0.36, 1, 0.75], glowSigma: 3, vignette: 0 });
+    const l = document.createElement('span'); l.className = 'vl'; l.style.left = (k * 130 + 2) + 'px'; l.style.top = '84px'; l.textContent = ['0.2 s', '0.5 s', '1.2 s · 开始'][k]; box.appendChild(l); }
+}
+// D：余温列表
+function vizD() {
+  const box = document.getElementById('vizD'); const rows = [['跑团 · 夜跑约起', '2 分钟前', 0.0], ['Leo 给你点了赞', '昨天', 1], ['周末长距离计划', '3 天前', 3], ['五月配速报告', '两周前', 14]];
+  const lut = THERM.lut('ironbow'); const col = (x) => { const i = Math.max(0, Math.min(255, Math.round(x * 255))) * 4; return `rgb(${lut[i]},${lut[i + 1]},${lut[i + 2]})`; };
+  box.innerHTML = rows.map(([a, b, d], i) => { const h = Math.exp(-d / 2); return `<div class="lrow" style="color:${h > 0.6 ? '#1a0a00' : '#fff'};top:${i * 24}px;height:22px;background:linear-gradient(90deg, ${col(0.35 + h * 0.6)} 0%, ${col(0.15 + h * 0.45)} 55%, ${col(0.08)} 100%)"><span>${a}</span><small style="color:inherit;opacity:.85">${b} · ${(19 + h * 13).toFixed(1)}°</small></div>`; }).join('');
+}
+</script>
+</body>
+</html>
