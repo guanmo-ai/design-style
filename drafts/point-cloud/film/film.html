@@ -67,6 +67,7 @@ html, body { width: 1920px; height: 1080px; overflow: hidden; background: #000; 
 <div id="card"></div>
 <script src="../../_lib/glkit.js"></script>
 <script src="../pc.js"></script>
+<script src="../data/bunny.js"></script>
 <script src="../shapes.js"></script>
 <script src="timeline.js"></script>
 <script>
@@ -104,9 +105,10 @@ const orbit = (c, r, a, y, fov = 40) => ({ pos: [c[0] + Math.sin(a) * r, y, c[2]
 const SWELL = (q) => { const th = q * Math.PI * 1.15, y = lerp(0.55, -3.6, q), r = 0.37;   // 楼梯井里螺旋往下
   return { pos: [-Math.cos(th) * r, y, -Math.sin(th) * r * 0.4 + 0.13 * (1 - q)], tgt: [Math.cos(th) * 0.35, y - 5, Math.sin(th) * 0.12], up: [Math.cos(th), 0, Math.sin(th)], fov: 64 }; };
 function camAt(f) {
-  if (f < 100) { const a = lerp(-0.32, 0.05, ease.inOut3(prog(f, 0, 100))), R = lerp(15.5, 12.4, ease.out3(prog(f, 0, 100))); return orbit([0, 0, 0], R, a, 0.4 - 0.3 * prog(f, 0, 100), 42); }
-  const HEAD = (t) => orbit([0, -0.1, 0], lerp(7.2, 6.2, t), lerp(0.05, 0.5, t), 0.25, 40);
-  if (f < 140) return cm(orbit([0, 0, 0], 12.4, 0.05, 0.1, 42), HEAD(0), ease.inOut3(prog(f, 100, 140)));
+  // 开场：从低处斜着看过去（看得出字有多厚），慢慢转到正面
+  if (f < 100) { const q = ease.inOut3(prog(f, 0, 96)), a = lerp(-0.95, 0.06, q), R = lerp(9.6, 10.4, q); return { pos: [Math.sin(a) * R, lerp(-1.6, -1.0, q), Math.cos(a) * R], tgt: [0, lerp(-0.6, -0.1, q), 0], up: [0, 1, 0], fov: 44 }; }
+  const HEAD = (t) => orbit([0, 0.1, 0], lerp(11.0, 8.6, ease.inOut3(t)), lerp(0.35, 1.25, t), lerp(1.0, 0.5, t), 40);
+  if (f < 140) return cm({ pos: [Math.sin(0.06) * 10.4, -1.0, Math.cos(0.06) * 10.4], tgt: [0, -0.1, 0], up: [0, 1, 0], fov: 44 }, HEAD(0), ease.inOut3(prog(f, 100, 140)));
   if (f < 200) return HEAD(prog(f, 140, 200));
   const ST = (t) => ({ pos: [lerp(-2.2, 1.6, t), lerp(3.6, 5.2, t), lerp(4.6, 3.0, t)], tgt: [lerp(-0.7, 0.5, t), -1.0, 0.2], up: [0, 1, 0], fov: 50 });
   if (f < 236) return cm(HEAD(1), ST(0), ease.inOut3(prog(f, 200, 236)));
@@ -136,7 +138,7 @@ function camAt(f) {
   const PH = (a) => orbit([0, 0.0, 0], 12.5, a, 1.6, 40);
   if (f < 744) return cm(R5(1), PH(0.5), ease.inOut3(prog(f, 712, 744)));
   if (f < 930) return PH(lerp(0.5, 1.1, prog(f, 744, 930)));
-  const END = orbit([0, 0, 0], 12.4, 0.0, 0.2, 42);
+  const END = { pos: [Math.sin(0.06) * 10.4, -1.0, Math.cos(0.06) * 10.4], tgt: [0, -0.1, 0], up: [0, 1, 0], fov: 44 };
   return cm(PH(1.1), END, ease.inOut3(prog(f, 940, 1004)));
 }
 function unproject(cam, px, py, planePt) {
@@ -158,13 +160,17 @@ function sceneAt(f) {
     if (f >= TL.assemble[1]) { A = B = S.title; mo = { m: 0 }; }
     if (f >= TL.lock) s.sweep = { y: lerp(2.3, -2.3, ease.inOut3(prog(f, TL.lock, TL.lock + 22))), w: 0.06, ghostA: -1, glow: 0.35 };
   } else if (f < TL.dissolve[0]) {
-    A = S.title; B = S.head; mo = MO(ease.inOut3(prog(f, TL.toHead[0], TL.toHead[1])), { spread: 0.7, dur: 0.3, swirl: 0.6, lift: -0.6, curl: 0.3, trails: 5, alpha: 0.06 });
-    if (f >= TL.toHead[1]) { A = B = S.head; mo = { m: 0 }; }
-    // 每个十六分音符错一次行，6 帧内回位
-    for (const [k, g] of TL.glitch.entries()) if (f >= g && f < g + 6) s.glitch = [0.04 + 0.02 * (k % 3), 0.55 * (1 - (f - g) / 6), g * 1.37];
-    s.dof = { focus: 6.5, aperture: 0.004 };
+    A = S.title; B = S.bunny; mo = MO(ease.inOut3(prog(f, TL.toBunny[0], TL.toBunny[1])), { spread: 0.5, dur: 0.5, swirl: 1.2, lift: 0.6, curl: 0.5, trails: 5, alpha: 0.04 });
+    if (f >= TL.toBunny[1]) { A = B = S.bunny; mo = { m: 0 }; }
+    s.wave = f < TL.wave[1] ? [lerp(-7, 7, prog(f, TL.wave[0], TL.wave[1])), 0.55, 0.9] : null;
+    // 十次扫描：每块先歪着、离开原位（沿它自己的视线方向往外 1.4），按拍点“咔”地对齐
+    const T = [], F = [];
+    SHAPES.VIEWS.forEach((v, i) => { const sn = TL.snaps[i]; const k = f < sn ? 1 : 1 - spring((f - sn) / FPS, 3.2, 0.42); const a = (i % 2 ? 1 : -1) * (0.35 + 0.05 * i);
+      T.push([a * k, v[0] * 1.4 * k, v[1] * 1.4 * k + 0.2 * k, v[2] * 1.4 * k]); F.push(f >= sn ? Math.exp(-(f - sn) / 4) : 0); });
+    s.scan = { T, F, col: 1 - ease.inOut3(prog(f, 181, 188)) };
+    s.dof = { focus: 8.5, aperture: 0.004 };
   } else if (f < TL.drain[0]) {
-    A = S.head; B = S.street; mo = MO(ease.inOut3(prog(f, TL.dissolve[0], TL.dissolve[1])), { spread: 0.75, dur: 0.25, curl: 0.6, wind: [3.2, 0.8, -0.6], lift: 0.2, trails: 8, trailStep: 0.008, alpha: 0.12 });
+    A = S.bunny; B = S.street; mo = MO(ease.inOut3(prog(f, TL.dissolve[0], TL.dissolve[1])), { spread: 0.75, dur: 0.25, curl: 0.6, wind: [3.2, 0.8, -0.6], lift: 0.2, trails: 8, trailStep: 0.008, alpha: 0.12 });
     if (f >= TL.dissolve[1]) { A = B = S.street; mo = { m: 0 }; }
     if (f >= TL.beam[0]) s.sweep = { mode: 2, c: [0, 0, 0], y: lerp(0, 4 * Math.PI, prog(f, TL.beam[0], TL.beam[1])), w: 0.05, glow: 0.5, ghost: 0, ghostA: 0, col: [0.6, 1.0, 1.0] };
     if (f < TL.dissolve[1] && f >= TL.beam[0]) s.sweep = null;
@@ -213,7 +219,7 @@ function sceneAt(f) {
     if (f < TL.burst2) { A = S.bonsai; B = S.dot; mo = MO(ease.in3(prog(f, TL.implode[0], TL.implode[1])), { spread: 0.3, dur: 0.7, swirl: 4.0, lift: 0.5, curl: 0.3, axis: [0, 0, 1.2], trails: 6, trailStep: 0.01, alpha: 0.025 });
       if (f >= TL.implode[1]) { A = B = S.dot; mo = { m: 0 }; } }
     else { A = S.dot; B = S.title; mo = MO(ease.out3(prog(f, TL.relock[0], TL.relock[1])), { spread: 0.35, dur: 0.65, swirl: 2.6, lift: 2.0, curl: 1.8, axis: [0, 0, 1.2], trails: 8, trailStep: 0.01, alpha: 0.09 });
-      if (f >= TL.relock[1]) { A = B = S.title; mo = { m: 0 }; s.sweep = { y: lerp(2.3, -2.3, ease.inOut3(prog(f, TL.final, TL.final + 26))), w: 0.06, ghostA: -1, glow: 0.35 }; } }
+      if (f >= TL.relock[1]) { A = B = S.title; mo = { m: 0 }; s.sweep = { y: lerp(2.3, -2.3, ease.inOut3(prog(f, TL.final, TL.final + 26))), w: 0.06, ghostA: -1, glow: 0.35 }; s.wave = [lerp(-7, 7, prog(f, TL.final, TL.final + 28)), 0.55, 0.9]; } }
   }
   s.A = A; s.B = B; s.morph = mo;
   return s;
@@ -239,8 +245,9 @@ function drawHUD(f, s) {
     h += `<div style="position:absolute;left:${p[0] - 90}px;top:${p[1] - 90}px;width:180px;height:180px;border-radius:50%;background:radial-gradient(circle, rgba(255,255,255,${g}) 0 3%, rgba(160,240,255,${0.55 * g}) 8%, rgba(111,243,255,${0.12 * g}) 30%, rgba(0,0,0,0) 62%)"></div>`;
     h += `<svg width="1920" height="1080" style="position:absolute;left:0;top:0;opacity:${o}"><circle cx="${p[0]}" cy="${p[1]}" r="${r}" fill="none" stroke="#6ff3ff" stroke-width="1.5"/></svg><div class="read" style="left:${p[0] + 40}px;top:${p[1] - 26}px;opacity:${o}">1 个点 <b>× ${N.toLocaleString('en-US')}</b></div>`; }
   if (f >= 90 && f < 120) h += `<div class="rule" style="opacity:${rule(92, 120)}">p = (x, y, z) · rgb · w &nbsp;<em>× ${N.toLocaleString('en-US')}</em><small>没有面、没有贴图：画面里的每一样东西，都是这批点之一。</small></div>`;
-  if (f >= 140 && f < 200) { h += `<div class="rule" style="opacity:${rule(142, 200)}">一行 = 一次扫描 &nbsp;<em>300 行 × 2,667 点</em><small>House of Cards 用激光一行行扫出人脸；数据一抖，整行就错开。</small></div>`;
-    for (const g of TL.glitch) if (f >= g && f < g + 6) { const yRow = 300 + ((g * 37) % 420); h += `<div class="tag" style="left:1240px;top:${yRow}px"><b>●</b> 第 ${Math.round(g * 1.7) % 300} 行 · 偏移 ${(0.55 * (1 - (f - g) / 6)).toFixed(2)}</div>`; } }
+  if (f >= 134 && f < 200) { const done = TL.snaps.filter(t => f >= t).length;
+    h += `<div class="rule" style="opacity:${rule(136, 200)}">ICP 配准 &nbsp;<em>${done} / 10 次扫描已对齐</em><small>一次扫描只看得见一面。把十次扫描一块块转正、挪回原位，才拼成一整只兔子——数据：Stanford 3D Scanning Repository。</small></div>`;
+    TL.snaps.forEach((t, i) => { if (f >= t && f < t + 14) { const v = SHAPES.VIEWS[i], p = cam.project([v[0] * 1.3, v[1] * 1.3 + 0.2, v[2] * 1.3]); h += `<div class="tag" style="left:${p[0] + 12}px;top:${p[1] - 12}px;opacity:${1 - prog(f, t + 8, t + 14)}"><b>✓</b> 扫描 ${i + 1} / 10</div>`; } }); }
   if (f >= 236 && f < 296) { const a = s.sweep ? s.sweep.y : 0; h += `<div class="rule" style="opacity:${rule(238, 296)}">r<sub>k</sub> = h / tan θ<sub>k</sub> &nbsp;<em>64 束 · θ = +2° … −24.8°</em><small>每一束激光的仰角固定，转一圈就在地上画一个圈；车和人挡住它，圈就断了。</small></div>`;
     h += `<div class="read" style="right:64px;top:140px">方位 <b>${((a * 57.3) % 360).toFixed(0)}°</b> · 第 ${a < 6.283 ? 1 : 2} 圈<br>距离着色 <b>0 → 62 m</b></div>`; }
   if (f >= 312 && f < 386) { const sy = s.sweep ? s.sweep.y : 0; h += `<div class="rule" style="opacity:${rule(314, 386)}">${f < TL.voxel[0] ? `edge = e<sup>−|y − y₀| / w</sup> &nbsp;<em>y₀ = ${(sy / 0.22).toFixed(1)} m</em><small>扫过的地方是照片投上去的真颜色，下面还只有激光测出来的位置。</small>` : `体素降采样 &nbsp;<em>s = 1.0 m</em><small>每个格子只留一个点——数据少一百倍，形状还认得出来。</small>`}</div>`; }
@@ -309,8 +316,8 @@ function drawUI(f, s) {
   const R = PC.mulberry(13), t0 = performance.now();
   const mk = (id, data) => { const d = PC.toN(data, N, R); return { id, buf: PC.uploadShape(gl, d) }; };
   S.dot = mk('dot', dot(R));
-  S.title = mk('title', title(R));
-  S.head = mk('head', SHAPES.head(N, R));
+  S.title = mk('title', SHAPES.title3d(N, R));
+  S.bunny = mk('bunny', SHAPES.bunny(N, R));
   S.street = mk('street', SHAPES.street(N, R));
   S.stairs = mk('stairs', xform(PC.staircase({ turns: 10, density: 520, falloff: 6.5 }).cloud.data, 0.22, [0, 0, 0]));
   S.wall = mk('wall', SHAPES.wall(N, R));
@@ -323,7 +330,7 @@ function drawUI(f, s) {
 window.frame = async (f) => {
   const s = sceneAt(f);
   await PC.drawMorph(gl, P, target, s.A, s.B, s);
-  const hits = [[TL.burst, 0.5], [TL.lock, 0.25], [TL.toHead[1], 0.12], [TL.dissolve[1], 0.15], [TL.drain[1], 0.12], [TL.voxel[1], 0.15], [TL.toBonsai[1], 0.15], ...TL.cards.map(c => [c, 0.12]), [TL.mask[1], 0.1], [TL.burst2, 0.6], [TL.final, 0.25]];
+  const hits = [[TL.burst, 0.5], [TL.lock, 0.25], ...TL.snaps.map(t => [t, 0.05]), [TL.dissolve[1], 0.15], [TL.drain[1], 0.12], [TL.voxel[1], 0.15], [TL.toBonsai[1], 0.15], ...TL.cards.map(c => [c, 0.12]), [TL.mask[1], 0.1], [TL.burst2, 0.6], [TL.final, 0.25]];
   const flash = hits.reduce((a, [h, A]) => a + (f >= h ? A * Math.exp(-(f - h) / 5) : 0), 0);
   const big = f < 120 || f >= 1020;
   await post(target.tex, { exposure: 1.05 * (1 + flash), bloom: big ? 0.8 : 0.5, threshold: big ? 0.55 : 0.9, grain: 0.02, vignette: 0.4, ca: 0.004, saturation: 1.1, seed: f * 0.37 });

@@ -122,5 +122,71 @@
     return C.data;
   }
 
-  G.SHAPES = { head, street, wall, terrain, sdHead };
+
+  // —— 01 斯坦福兔子（1994）：从真实网格上按面积均匀取点，再按“哪一次扫描看它最清楚”分成 10 组 ——
+  const VIEWS = (() => { const v = []; for (let k = 0; k < 8; k++) { const a = k / 8 * 2 * Math.PI; v.push([Math.cos(a), 0.15, Math.sin(a)]); } v.push([0.2, 1, 0.1], [0.3, -0.6, 0.8]); return v.map(d => { const l = Math.hypot(...d); return d.map(x => x / l); }); })();
+  function bunny(N, R, S = 3.4) {
+    const B = window.BUNNY, raw = Uint8Array.from(atob(B.b64), c => c.charCodeAt(0)).buffer;
+    const q = new Uint16Array(raw, 0, B.nv * 3), F = new Uint16Array(raw, B.nv * 6, B.nf * 3);
+    const V = new Float32Array(B.nv * 3); for (let i = 0; i < B.nv * 3; i++) V[i] = q[i] / 65535;
+    // 居中、放大：高约 3.2
+    let lo = [1e9, 1e9, 1e9], hi = [-1e9, -1e9, -1e9]; for (let i = 0; i < B.nv; i++) for (let k = 0; k < 3; k++) { lo[k] = Math.min(lo[k], V[i * 3 + k]); hi[k] = Math.max(hi[k], V[i * 3 + k]); }
+    const c = [(lo[0] + hi[0]) / 2, (lo[1] + hi[1]) / 2, (lo[2] + hi[2]) / 2];
+    for (let i = 0; i < B.nv; i++) for (let k = 0; k < 3; k++) V[i * 3 + k] = (V[i * 3 + k] - c[k]) * S;
+    // 面积累计表
+    const nf = B.nf, cum = new Float64Array(nf), nrm = new Float32Array(nf * 3); let tot = 0;
+    for (let f = 0; f < nf; f++) { const a = F[f * 3] * 3, b = F[f * 3 + 1] * 3, d = F[f * 3 + 2] * 3;
+      const ux = V[b] - V[a], uy = V[b + 1] - V[a + 1], uz = V[b + 2] - V[a + 2], vx = V[d] - V[a], vy = V[d + 1] - V[a + 1], vz = V[d + 2] - V[a + 2];
+      const nx = uy * vz - uz * vy, ny = uz * vx - ux * vz, nz = ux * vy - uy * vx, ar = Math.hypot(nx, ny, nz); tot += ar / 2; cum[f] = tot; nrm.set([nx / (ar || 1), ny / (ar || 1), nz / (ar || 1)], f * 3); }
+    const C = Cloud(N + 10), L = [-0.5, 0.65, 0.57];
+    for (let i = 0; i < N; i++) {
+      const r = R() * tot; let lo2 = 0, hi2 = nf - 1; while (lo2 < hi2) { const m = (lo2 + hi2) >> 1; if (cum[m] < r) lo2 = m + 1; else hi2 = m; }
+      const f = lo2, a = F[f * 3] * 3, b = F[f * 3 + 1] * 3, d = F[f * 3 + 2] * 3; let u = R(), v = R(); if (u + v > 1) { u = 1 - u; v = 1 - v; }
+      const x = V[a] + (V[b] - V[a]) * u + (V[d] - V[a]) * v, y = V[a + 1] + (V[b + 1] - V[a + 1]) * u + (V[d + 1] - V[a + 1]) * v, z = V[a + 2] + (V[b + 2] - V[a + 2]) * u + (V[d + 2] - V[a + 2]) * v;
+      const n = [nrm[f * 3], nrm[f * 3 + 1], nrm[f * 3 + 2]];
+      let g = 0, best = -9; VIEWS.forEach((w, k) => { const dd = n[0] * w[0] + n[1] * w[1] + n[2] * w[2] + (R() - 0.5) * 0.15; if (dd > best) { best = dd; g = k; } });
+      const lam = Math.max(0, n[0] * L[0] + n[1] * L[1] + n[2] * L[2]), sh = 0.16 + 0.84 * lam + 0.25 * Math.pow(1 - Math.abs(n[2]), 3);
+      C.push(x, y, z, 0.92 * sh, 0.95 * sh, 1.0 * sh, 0.0055, R(), g, 0);
+    }
+    return C.data;
+  }
+
+  // —— 立体标题：字有 1.8 的厚度；正面是暖色渐变，侧面按深度着色（turbo），下面一片点阵地面，空中飘着灰尘 ——
+  function title3d(N, R, text = '点云', cy = 0) {
+    const Wm = 2400, Hm = 900, cv = document.createElement('canvas'); cv.width = Wm; cv.height = Hm; const x = cv.getContext('2d');
+    x.fillStyle = '#fff'; x.font = '900 760px NotoSC'; x.textAlign = 'center'; x.textBaseline = 'middle'; x.fillText(text, Wm / 2, Hm / 2 + 30);
+    const m = x.getImageData(0, 0, Wm, Hm).data, A = (px, py) => (px >= 0 && py >= 0 && px < Wm && py < Hm) ? m[((py | 0) * Wm + (px | 0)) * 4 + 3] / 255 : 0;
+    const sc = 9.4 / Wm, Z = 0.9, C = Cloud(N + 10), L = [-0.55, 0.55, 0.62];
+    const turbo = (t) => { t = Math.min(1, Math.max(0, t)); return [0.1357 + t * (4.6154 + t * (-42.6603 + t * (132.1311 + t * (-152.9424 + t * 59.2864)))), 0.0914 + t * (2.1942 + t * (4.843 + t * (-14.185 + t * (4.2773 + t * 2.8296)))), 0.1067 + t * (12.6419 + t * (-60.582 + t * (110.3628 + t * (-89.9031 + t * 27.3482))))]; };
+    const grad = (u, v) => { const t = Math.min(1, Math.max(0, u * 0.75 + (1 - v) * 0.35)); const a = [1.0, 0.12, 0.45], b = [1.0, 0.45, 0.1], c = [1.0, 0.85, 0.3];
+      return t < 0.5 ? a.map((q, i) => q + (b[i] - q) * t * 2) : b.map((q, i) => q + (c[i] - q) * (t - 0.5) * 2); };
+    const nF = Math.floor(N * 0.38), nS = Math.floor(N * 0.31), nB = Math.floor(N * 0.03), nG = Math.floor(N * 0.14);
+    const W = (px, py) => [(px - Wm / 2) * sc, cy - (py - Hm / 2) * sc];
+    let n = 0;
+    // 正面：一行一行的扫描线（行距 0.05），行与行之间亮度起伏，像激光一行行扫出来
+    const rowH = 0.05 / sc, refl = [];
+    while (n < nF) { const px = R() * Wm, py0 = R() * Hm, py = Math.round(py0 / rowH) * rowH + (R() - 0.5) * rowH * 0.18; if (A(px, py) < 0.5) continue;
+      const [wx, wy] = W(px, py), g = grad(px / Wm, py / Hm), row = Math.round(py0 / rowH), j = (0.82 + 0.3 * ((row * 7919) % 13) / 13) * (0.9 + R() * 0.2);
+      C.push(wx, wy, Z, g[0] * j, g[1] * j, g[2] * j, 0.0065, R(), 0, 0); if (R() < 0.3) refl.push([wx, wy, Z, g[0] * j, g[1] * j, g[2] * j]); n++; }
+    n = 0;
+    while (n < nS) { const px = R() * Wm, py = R() * Hm; const a = A(px, py); if (a < 0.5) continue;
+      const gx = A(px + 3, py) - A(px - 3, py), gy = A(px, py + 3) - A(px, py - 3); if (Math.abs(gx) + Math.abs(gy) < 0.3) continue;
+      const l = Math.hypot(gx, gy), nx = -gx / l, ny = gy / l; const z = (R() * 2 - 1) * Z, t = (Z - z) / (2 * Z), tc = turbo(0.95 - 0.8 * t), sh = 0.35 + 0.75 * Math.max(0, nx * L[0] + ny * L[1]);
+      const [wx, wy] = W(px, py); C.push(wx, wy, z, tc[0] * sh, tc[1] * sh, tc[2] * sh, 0.006, R(), 0, 0); if (R() < 0.3) refl.push([wx, wy, z, tc[0] * sh, tc[1] * sh, tc[2] * sh]); n++; }
+    n = 0;
+    while (n < nB) { const px = R() * Wm, py = R() * Hm; if (A(px, py) < 0.5) continue; const [wx, wy] = W(px, py); C.push(wx, wy, -Z, 0.06, 0.08, 0.25, 0.006, R(), 0, 0); n++; }
+    // 点阵地面：每 0.22 一个点，越远越暗
+    const gy0 = cy - 2.55; n = 0;
+    while (n < nG) { const gx = Math.round((R() - 0.5) * 30 / 0.22) * 0.22, gz = Math.round((R() * 18 - 12) / 0.22) * 0.22, d = Math.hypot(gx, gz - 1), f = Math.exp(-d / 6);
+      const j = (R() - 0.5) * 0.012; C.push(gx + j, gy0, gz + j, 0.25 * f + 0.02, 0.85 * f + 0.03, 1.0 * f + 0.05, 0.007, R(), 0, 0); n++; }
+    // 地上的倒影：字的点按地面翻下去，暗一些，越往下越淡
+    const nR = Math.floor(N * 0.1);
+    for (let i = 0; i < nR && refl.length; i++) { const q = refl[Math.floor(R() * refl.length)], d = q[1] - gy0, k = 0.5 * Math.exp(-d / 1.8);
+      C.push(q[0] + (R() - 0.5) * 0.01, 2 * gy0 - q[1], q[2], q[3] * k, q[4] * k, q[5] * k, 0.006, R(), 0, 0); }
+    // 灰尘
+    while (C.count < N) { const dx = (R() - 0.5) * 22, dy = cy - 2.5 + R() * 7, dz = (R() - 0.5) * 16 - 2, b = 0.02 + 0.16 * Math.pow(R(), 4); C.push(dx, dy, dz, b * 0.8, b * 0.95, b, 0.005, R(), 0, 0); }
+    return C.data;
+  }
+
+  G.SHAPES = { head, street, wall, terrain, sdHead, bunny, title3d, VIEWS };
 })(window);
