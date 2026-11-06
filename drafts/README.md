@@ -27,7 +27,7 @@
 | 动态字体 Kinetic Type · `kinetic-type/` | 第五轮没选上，图留着 |
 | 中世纪现代 Mid-Century Modern · `mid-century/` | **下周做** |
 | 液态金属 Liquid Chrome · `liquid-chrome/` | **第二版已出（2026-11-06），等主人审片**：[`liquid-chrome/film/liquid-chrome-film.mp4`](liquid-chrome/film/liquid-chrome-film.mp4)（18 秒 · 1080p60 · 19 MB）。第一版主人：“画面可以但枯燥”→ 照标杆骨架重做，每章一件镜面雕塑 |
-| 点云 Point Cloud · `point-cloud/` | **第三版已出（2026-11-06），等主人审片**：[`point-cloud/film/point-cloud-film.mp4`](point-cloud/film/point-cloud-film.mp4)（18 秒 · 1080p60 · 36 MB）。第一版“枯燥、BGM 一般”→ 第二版照标杆骨架重做（主人：“好一些了”）→ 第三版标题做成立体扫描线招牌、人头换成斯坦福兔子 |
+| 点云 Point Cloud · `point-cloud/` | **第四版已出（2026-11-06），等主人审片**：[`point-cloud/film/point-cloud-film.mp4`](point-cloud/film/point-cloud-film.mp4)（19.5 秒 · 1080p60 · 41 MB）。第一版“枯燥、BGM 一般”→ 第二版照标杆骨架重做（主人：“好一些了”）→ 第三版标题做成立体扫描线招牌、人头换成斯坦福兔子 → 第四版（“文字少了音效”“扫描面前后变化太突然”）：每次出字都解码 + 配“嗒”声、规则卡砸字，规则卡一张 45 帧、镜头滑过去 |
 | 热成像 Thermal · `thermal/` | **下一期就做**（主人 2026-11-06：“热成像记一下，下次就把它做下来”），图和温度场代码都在，直接复用 |
 | 第四轮候选：低多边形 / 体素 / 等距微缩（从参考视频提取） | 等主人选，见下 |
 | 第三轮候选：赛博朋克 / 城市流行 / 膨胀风 | 等主人选（与第四轮一起看） |
