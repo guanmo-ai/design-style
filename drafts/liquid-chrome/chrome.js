@@ -12,6 +12,7 @@ uniform highp sampler2D primTex; uniform int nDrips, nDrops, nBlobs, nMtar, nPoo
 vec4 PR(int r, int i){ return texelFetch(primTex, ivec2(i, r), 0); }
 uniform float morph, mtarK; uniform vec3 morphSweep;
 uniform vec4 colA, colB; uniform float colAmp, colLam, colOn, colTaper, colWob;
+uniform int obj, nCaps, envMode; uniform vec4 objP; uniform vec4 gRise; uniform vec3 gSplit; uniform float seamAmt, checker, capK;
 uniform vec4 spikeC; uniform float spikeK, bwob;
 uniform float useText, floorOn, floorY, backdropMode;
 uniform vec3 bdTop, bdBot, bdGlow; uniform vec2 bdGlowPos;
@@ -21,6 +22,7 @@ uniform vec3 bbDripLo, bbDripHi, bbDropLo, bbDropHi, bbBlobLo, bbBlobHi; uniform
 
 float boxD(vec3 p, vec3 lo, vec3 hi){ vec3 q = max(max(lo - p, p - hi), 0.0); return length(q); }
 float smin(float a, float b, float k){ float h = max(k-abs(a-b),0.0)/k; return min(a,b) - h*h*k*0.25; }
+float smax(float a, float b, float k){ return -smin(-a, -b, k); }
 vec4 bsw(float t){ float t2=t*t, t3=t2*t; return vec4((1.0-t)*(1.0-t)*(1.0-t), 3.0*t3-6.0*t2+4.0, -3.0*t3+3.0*t2+3.0*t+1.0, t3)/6.0; }
 float sampleSdf(vec2 q){
   ivec2 sz = textureSize(sdfTex, 0);
@@ -46,6 +48,8 @@ float sdText2D(vec2 p){
 }
 float sdLetters(vec3 p){
   if (useText < 0.5) return 1e5;
+  float gi = p.x < gSplit.x ? gRise.x : p.x < gSplit.y ? gRise.y : p.x < gSplit.z ? gRise.z : gRise.w;
+  p.y -= gi;
   vec2 lo = texRect.xy - 0.4, hi = texRect.xy + texRect.zw + 0.4;
   vec3 bc = vec3((lo+hi)*0.5, 0.0), bh = vec3((hi-lo)*0.5, H+R+0.4);
   vec3 qb = abs(p-bc)-bh; float db = length(max(qb,0.0)) + min(max(qb.x,max(qb.y,qb.z)),0.0);
@@ -105,6 +109,25 @@ float sdColumn(vec3 p){
   vec3 c = vec3(mix(a.x, b.x, y/max(L,1e-3)), a.y + y, mix(a.z, b.z, y/max(L,1e-3)));
   return (length(p - c) - r) * 0.7;
 }
+// 布朗库西《空间中的鸟》：旋转体，半径沿高度变化；objP.x = 长到多高（0..1），objP.y = 往下塌（0..1）
+float sdBird(vec3 p){
+  float H = 4.3*objP.x; if (H < 0.02) return 1e5;
+  float sq = 1.0 - 0.85*objP.y; p.y /= max(sq, 0.05);
+  float y = p.y; float rr = length(p.xz);
+  float base = max(max(rr - 0.36, -y - 0.55), y + 0.05);                       // 底座
+  float u = clamp((y - 0.05)/max(H - 0.05, 0.01), 0.0, 1.0);
+  float r = 0.065 + 0.36*pow(sin(3.14159*pow(u, 0.9)), 1.25)*(1.0 - 0.25*u) + 0.05*(1.0 - smoothstep(0.0, 0.08, u));
+  float body = (rr - r)*0.55;
+  body = max(body, max(-(y - 0.0), y - H));
+  body = max(body, dot(p - vec3(0.0, H - 0.12, 0.0), normalize(vec3(0.55, 1.0, 0.0))));   // 顶上斜切一刀
+  return smin(base, body, 0.06)*max(sq, 0.05);
+}
+// 卡普尔《云门》：一颗压扁的豆子，底下掏出一个拱（肚脐）
+float sdBean(vec3 p){
+  float d = sdEll(p - vec3(0.0, 1.25, 0.0), vec3(2.45, 1.15, 1.35)*objP.x);
+  if (objP.y > 0.01) d = smax(d, -sdEll(p - vec3(0.0, 0.05, 0.0), vec3(1.05, 0.8, 0.95)*objP.x*objP.y), 0.35);
+  return d;
+}
 float mapLiquid(vec3 p){
   p = grot*(p - gpos);
   float d = sdLetters(p);
@@ -116,6 +139,15 @@ float mapLiquid(vec3 p){
     d = (useText > 0.5) ? mix(d, dt, mk) : dt;
   }
   if (colOn > 0.5) d = smin(d, sdColumn(p), 0.12);
+  if (obj == 1) d = smin(d, sdBird(p), 0.25);
+  if (obj == 4) d = smin(d, sdBean(p), 0.2);
+  // 气球：两头细、中间鼓的“香肠”，彼此只用很小的 k 并起来，所以接头处是掐进去的
+  for(int i=0;i<16;i++){ if(i>=nCaps) break;
+    vec4 a = PR(12,i), b = PR(13,i);
+    vec3 ba = b.xyz - a.xyz, pa = p - a.xyz; float h = clamp(dot(pa,ba)/max(dot(ba,ba),1e-6), 0.0, 1.0);
+    float r = a.w*(0.62 + 0.42*sin(3.14159*h));
+    d = smin(d, length(pa - ba*h) - r, capK);
+  }
   if (nDrips > 0 && boxD(p, bbDripLo, bbDripHi) < d + 0.2) {
     for(int i=0;i<32;i++){ if(i>=nDrips) break;
       vec4 a = PR(0,i); vec4 b = PR(1,i);
@@ -202,8 +234,31 @@ float boxL(vec3 d, vec3 c, vec2 s, float soft){
   vec3 q = d/cd - c; float x = dot(q,r), y = dot(q,u);
   return (1.0-smoothstep(s.x-soft, s.x+soft, abs(x))) * (1.0-smoothstep(s.y-soft, s.y+soft, abs(y)));
 }
+float hsh(float n){ return fract(sin(n*127.1)*43758.5453); }
+vec3 envCity(vec3 d){
+  float y = d.y, az = atan(d.z, d.x);
+  // 蓝调时刻：地平线一条暖橙，往上沉成深蓝
+  vec3 sky = mix(vec3(1.0,0.5,0.22)*1.3, vec3(0.08,0.12,0.32), smoothstep(0.0, 0.28, y));
+  sky = mix(sky, vec3(0.008,0.012,0.04), smoothstep(0.28, 0.9, y));
+  sky += vec3(1.0,0.7,0.45)*2.2*exp(-pow(length(vec2(az - 2.2, y - 0.04)*vec2(1.0, 3.0)), 2.0)*40.0);
+  vec3 c = sky;
+  // 远处一排矮楼（剪影），近处一排高楼（有窗）
+  float s1 = floor(az*26.0), h1 = 0.035 + 0.06*hsh(s1*3.7);
+  if (y < h1) c = vec3(0.03,0.035,0.07);
+  float s2 = floor(az*11.0 + 0.5), h2 = 0.05 + 0.2*pow(hsh(s2), 1.6), edge = fract(az*11.0 + 0.5);
+  if (y < h2 && edge > 0.06 && edge < 0.94) {
+    c = vec3(0.008,0.01,0.022);
+    vec2 w = vec2(fract(az*190.0), fract(y*70.0)); float id = hsh(floor(az*190.0)*7.0 + floor(y*70.0)*31.0);
+    if (w.x > 0.3 && w.x < 0.8 && w.y > 0.35 && w.y < 0.8 && id > 0.78) c = vec3(1.0,0.78,0.45)*1.3;
+  }
+  if (y < 0.0) c = mix(vec3(0.1,0.08,0.08), vec3(0.015), smoothstep(0.0, 0.25, -y));
+  c += 5.0*vec3(1.0,0.98,0.95)*boxL(d, vec3(-0.3,1.0,0.2), vec2(0.6,0.05), 0.04);
+  c += 2.0*vec3(0.9,0.95,1.0)*boxL(d, vec3(0.0,0.5,1.0), vec2(0.7,0.18), 0.12);
+  return c;
+}
 vec3 env(vec3 d){
   float ca = cos(envRot), sa = sin(envRot); d.xz = mat2(ca,-sa,sa,ca)*d.xz;
+  if (envMode == 1) return hue(envCity(d), envHue);
   float y = d.y;
   vec3 c = vec3(0.0015,0.002,0.004);
   // 天：地平线上一条浅蓝，往上很快沉成黑
@@ -226,6 +281,7 @@ vec3 env(vec3 d){
   return c;
 }
 vec3 backdrop(vec3 rd, vec2 sp){
+  if (envMode == 1) return env(rd)*0.55;
   float g = smoothstep(-0.25, 0.6, rd.y);
   vec3 c = mix(bdBot, bdTop, g);
   vec2 q = sp - bdGlowPos; q.x *= 0.55;
@@ -254,6 +310,8 @@ void main(){
       vec3 F = F0 + (1.0-F0)*pow(1.0-cs, 5.0);
       float a = (aoOn > 0 && b == 0) ? ao(p, n) : 1.0;
       thr *= F * mix(0.25, 1.0, a);
+      if (seamAmt > 0.0 && b == 0) { vec3 q = grot*(p - gpos); float u = q.x*1.7, v = q.y*2.3 + 0.35*q.z; float e1 = min(fract(u), 1.0 - fract(u)), e2 = min(fract(v), 1.0 - fract(v));
+        float sm = 1.0 - smoothstep(0.02, 0.07, min(e1, e2)); thr *= 1.0 - 0.9*seamAmt*sm; }
       ro = p + n*0.004; rd = reflect(rd, n);
       viaFloor = false;
       if (b == 3) col += thr*env(rd)*0.5;
@@ -270,6 +328,8 @@ void main(){
       }
       float cs = clamp(dot(n,-rd), 0.0, 1.0);
       vec3 F = floorTint + (1.0-floorTint)*pow(1.0-cs, 5.0);
+      if (checker > 0.0) { vec2 cq = floor(p.xz*1.25); float ck = mod(cq.x + cq.y, 2.0); float fade = exp(-length(p.xz)*0.08);
+        col += thr*(1.0 - F)*mix(vec3(0.004), vec3(0.32,0.33,0.36), ck)*checker*fade; }
       vec3 po = p + vec3(0,0.12,0);
 #ifdef BG_ONLY
       float occ = 1.0;
@@ -340,8 +400,8 @@ void main(){
 
   function setScene(gl, P, s) {
     const u = P.u;
-    if (!gl._prim) gl._prim = G.GLK.texture(gl, 64, 12, { internal: gl.RGBA32F, format: gl.RGBA, type: gl.FLOAT, data: null, filter: gl.NEAREST });
-    const PD = new Float32Array(64 * 12 * 4);
+    if (!gl._prim) gl._prim = G.GLK.texture(gl, 64, 14, { internal: gl.RGBA32F, format: gl.RGBA, type: gl.FLOAT, data: null, filter: gl.NEAREST });
+    const PD = new Float32Array(64 * 14 * 4);
     const put = (row, arr) => arr.slice(0, 64).forEach((v, i) => PD.set(v.slice(0, 4).concat([0, 0, 0, 0]).slice(0, 4), (row * 64 + i) * 4));
     const drips = s.drips || [], drops = s.drops || [], blobs = s.blobs || [], mt = s.mtar || [];
     put(0, drips.map(d => d[0])); put(1, drips.map(d => d[1]));
@@ -349,8 +409,12 @@ void main(){
     put(4, blobs.map(b => b.slice(0, 4))); put(5, blobs.map(b => [...(b[5] || [1, 1, 1]), b[4] ?? 0.3]));
     put(6, mt.map(m => m.slice(0, 4))); put(7, mt.map(m => [...(m[4] || [1, 1, 1]), 0]));
     put(8, s.pools || []); put(9, s.ripples || []); put(10, s.crowns || []); put(11, s.spikes || []);
+    const caps = s.caps || []; put(12, caps.map(c => [...c[0], c[2]])); put(13, caps.map(c => [...c[1], 0]));
     gl.activeTexture(gl.TEXTURE1); gl.bindTexture(gl.TEXTURE_2D, gl._prim);
-    gl.texSubImage2D(gl.TEXTURE_2D, 0, 0, 0, 64, 12, gl.RGBA, gl.FLOAT, PD);
+    gl.texSubImage2D(gl.TEXTURE_2D, 0, 0, 0, 64, 14, gl.RGBA, gl.FLOAT, PD);
+    gl.uniform1i(u.nCaps, Math.min(16, caps.length)); gl.uniform1f(u.capK, s.capK ?? 0.06);
+    gl.uniform1i(u.obj, s.obj || 0); gl.uniform4fv(u.objP, s.objP || [1, 0, 0, 0]); gl.uniform1i(u.envMode, s.envMode || 0);
+    gl.uniform4fv(u.gRise, s.gRise || [0, 0, 0, 0]); gl.uniform3fv(u.gSplit, s.gSplit || [-1e3, -1e3, -1e3]); gl.uniform1f(u.seamAmt, s.seam || 0); gl.uniform1f(u.checker, s.checker || 0);
     gl.uniform1i(u.primTex, 1);
     gl.uniform1i(u.nDrips, Math.min(32, drips.length)); gl.uniform1i(u.nDrops, Math.min(40, drops.length)); gl.uniform1i(u.nBlobs, Math.min(10, blobs.length)); gl.uniform1i(u.nMtar, Math.min(8, mt.length));
     gl.uniform1i(u.nPools, Math.min(8, (s.pools || []).length)); gl.uniform1i(u.nRip, Math.min(8, (s.ripples || []).length)); gl.uniform1i(u.nCrowns, Math.min(4, (s.crowns || []).length)); gl.uniform1i(u.nSpikes, Math.min(64, (s.spikes || []).length));
@@ -382,6 +446,10 @@ void main(){
       blobs.forEach(b => loc.push([b[0], b[1], b[2], b[3] * Math.max(...(b[5] || [1, 1, 1])) + (s.bwob || 0) + 0.05]));
       (s.mtar || []).forEach(m => loc.push([m[0], m[1], m[2], m[3] * Math.max(...(m[4] || [1, 1, 1])) + 0.05]));
       if (s.column) { loc.push([...s.column.a, s.column.r + 0.05], [...s.column.b, s.column.r + 0.05]); }
+      (s.caps || []).forEach(c => loc.push([...c[0], c[2] * 1.1 + 0.05], [...c[1], c[2] * 1.1 + 0.05]));
+      if (s.obj === 1) loc.push([0, -0.6, 0, 0.5], [0, 4.4 * (1 - 0.85 * (s.objP[1] || 0)), 0, 0.5]);
+      if (s.obj === 4) { const k = s.objP[0]; loc.push([-2.5 * k, 0, -1.4 * k, 0.05], [2.5 * k, 2.45 * k, 1.4 * k, 0.05]); }
+      if (s.text && s.gRise) { const r = s.text.rect, lo = Math.min(...s.gRise), hi = Math.max(...s.gRise); loc.push([r[0], r[1] + lo, 0, 0.5], [r[0] + r[2], r[1] + r[3] + hi, 0, 0.5]); }
       if ((s.spikes || []).length) { const c = s.spikeC; loc.push([c[0], c[1], c[2], c[3] + Math.max(...s.spikes.map(x => x[3])) + 0.05]); }
       (s.crowns || []).forEach(c => wor.push([c[0], (s.floorY ?? 0) + c[3] * 0.7, c[1], c[2] * 1.6 + c[3]]));
       (s.pools || []).forEach(p => wor.push([p[0], (s.floorY ?? 0), p[1], p[2] + 0.2]));
