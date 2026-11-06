@@ -234,7 +234,8 @@ function drawHUD(f, s) {
   h += `<div class="prog">${TL.chapters.slice(0, 8).map((x, i) => { const nx = TL.chapters[i + 1][0]; return `<i><b style="width:${clamp((f - x[0]) / (nx - x[0])) * 100}%"></b></i>`; }).join('')}</div>`;
   const rule = (a, b) => ease.out3(clamp((f - a) / 10)) * (1 - ease.in3(clamp((f - b + 10) / 10)));
   const cam = PC.camera(s.cam, W, H);
-  if (f < 30) { const p = cam.project(DOT); const o = 1 - prog(f, 10, 16), g = 1 - prog(f, 8, 14), r = 16 + 8 * Math.sin(f * 0.6);
+  const dotOn = f < 30 || (f >= TL.implode[1] - 6 && f < TL.burst2 + 10);
+  if (dotOn) { const p = cam.project(DOT); const lf = f < 30 ? f : f - TL.burst2 + 12, o = f < 30 ? 1 - prog(f, 10, 16) : (1 - prog(f, TL.burst2 - 2, TL.burst2 + 4)) * prog(f, TL.implode[1] - 6, TL.implode[1]), g = f < 30 ? 1 - prog(f, 8, 14) : (1 - prog(f, TL.burst2, TL.burst2 + 6)) * prog(f, TL.implode[1] - 6, TL.implode[1]), r = 16 + 8 * Math.sin(f * 0.6);
     h += `<div style="position:absolute;left:${p[0] - 90}px;top:${p[1] - 90}px;width:180px;height:180px;border-radius:50%;background:radial-gradient(circle, rgba(255,255,255,${g}) 0 3%, rgba(160,240,255,${0.55 * g}) 8%, rgba(111,243,255,${0.12 * g}) 30%, rgba(0,0,0,0) 62%)"></div>`;
     h += `<svg width="1920" height="1080" style="position:absolute;left:0;top:0;opacity:${o}"><circle cx="${p[0]}" cy="${p[1]}" r="${r}" fill="none" stroke="#6ff3ff" stroke-width="1.5"/></svg><div class="read" style="left:${p[0] + 40}px;top:${p[1] - 26}px;opacity:${o}">1 个点 <b>× ${N.toLocaleString('en-US')}</b></div>`; }
   if (f >= 90 && f < 120) h += `<div class="rule" style="opacity:${rule(92, 120)}">p = (x, y, z) · rgb · w &nbsp;<em>× ${N.toLocaleString('en-US')}</em><small>没有面、没有贴图：画面里的每一样东西，都是这批点之一。</small></div>`;
