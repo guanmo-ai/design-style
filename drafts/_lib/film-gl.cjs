@@ -16,6 +16,7 @@ const fs = require('node:fs');
   let done = 0;
   await Promise.all(Array.from({ length: P }, async (_, k) => {
     const page = await browser.newPage({ viewport: { width: 1920, height: 1080 }, deviceScaleFactor: 1 });
+    page.setDefaultTimeout(300000);
     page.on('pageerror', e => console.error('pageerror', e.message));
     page.on('console', m => { const t = m.text(); if (!/GPU stall|GL Driver/.test(t)) console.log('[page]', t); });
     await page.goto('file://' + path.resolve(inp) + (query ? '?' + query : ''));
