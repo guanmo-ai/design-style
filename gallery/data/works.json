@@ -1011,5 +1011,121 @@
         "kindEn": "Design tutorial"
       }
     ]
+  },
+  {
+    "id": "022-point-cloud",
+    "number": "015",
+    "title": "点云",
+    "description": "80万个点构成文字、兔子、街道与盆景，演示扫描、聚拢和手机界面中的状态变化。",
+    "category": "数字视觉",
+    "type": "style",
+    "titleEn": "Point Cloud",
+    "years": "2026",
+    "categoryEn": "Digital visuals",
+    "descriptionEn": "800,000 points form lettering, a bunny, streets and a bonsai in a 19.5-second study of scanning and interface states.",
+    "tags": [
+      "点云",
+      "空间",
+      "动效",
+      "界面"
+    ],
+    "tagsEn": [
+      "Point Cloud",
+      "motion",
+      "interface",
+      "visual study"
+    ],
+    "publishedAt": "2026-11-07T18:46:37Z",
+    "release": "day-22",
+    "asset": "022-point-cloud.mp4",
+    "sha256": "3ac674c0a002810a553aa7d3b4aeaa53d790d6abcccb0fd56d4dd49ab7ef78c4",
+    "images": [
+      {
+        "file": "poster",
+        "title": "风格主视觉",
+        "titleEn": "Key visual",
+        "kind": "主视觉",
+        "kindEn": "Poster"
+      },
+      {
+        "file": "cheatsheet",
+        "title": "五条视觉规则",
+        "titleEn": "Five visual rules",
+        "kind": "规则速查",
+        "kindEn": "Quick reference"
+      },
+      {
+        "file": "app-ui",
+        "title": "界面概念",
+        "titleEn": "Interface concept",
+        "kind": "界面应用",
+        "kindEn": "Interface study"
+      },
+      {
+        "file": "storyboard",
+        "title": "原片分镜",
+        "titleEn": "Approved-film frames",
+        "kind": "分镜选帧",
+        "kindEn": "Storyboard"
+      }
+    ]
+  },
+  {
+    "id": "023-liquid-chrome",
+    "number": "016",
+    "title": "液态金属",
+    "description": "18秒镜面材质短片：文字、流线雕塑、气球结构与磁流体形态接力，收束到语音助手概念动效。",
+    "category": "材质与界面",
+    "type": "style",
+    "titleEn": "Liquid Chrome",
+    "years": "2026",
+    "categoryEn": "Materials and interfaces",
+    "descriptionEn": "An 18-second mirror-material film connecting lettering, sculpture-like forms and a voice-assistant interface concept.",
+    "tags": [
+      "液态金属",
+      "空间",
+      "动效",
+      "界面"
+    ],
+    "tagsEn": [
+      "Liquid Chrome",
+      "motion",
+      "interface",
+      "visual study"
+    ],
+    "publishedAt": "2026-11-07T18:46:46Z",
+    "release": "day-23",
+    "asset": "023-liquid-chrome.mp4",
+    "sha256": "1fad71b9f8325852901b1d88b2de30a2ed12177d4ef541bd377e3031784478b7",
+    "images": [
+      {
+        "file": "poster",
+        "title": "风格主视觉",
+        "titleEn": "Key visual",
+        "kind": "主视觉",
+        "kindEn": "Poster"
+      },
+      {
+        "file": "cheatsheet",
+        "title": "五条视觉规则",
+        "titleEn": "Five visual rules",
+        "kind": "规则速查",
+        "kindEn": "Quick reference"
+      },
+      {
+        "file": "app-ui",
+        "title": "界面概念",
+        "titleEn": "Interface concept",
+        "kind": "界面应用",
+        "kindEn": "Interface study"
+      },
+      {
+        "file": "storyboard",
+        "title": "原片分镜",
+        "titleEn": "Approved-film frames",
+        "kind": "分镜选帧",
+        "kindEn": "Storyboard"
+      }
+    ]
   }
 ]
