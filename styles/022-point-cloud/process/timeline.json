@@ -1,0 +1,62 @@
+{
+  "fps": 60,
+  "bpm": 120,
+  "frames": 1170,
+  "title": "点云",
+  "segments": [
+    {
+      "label": "点云",
+      "start": 0,
+      "dur": 120,
+      "color": "#56cddd"
+    },
+    {
+      "label": "斯坦福兔子",
+      "start": 120,
+      "dur": 90,
+      "color": "#56cddd"
+    },
+    {
+      "label": "自动驾驶的眼睛",
+      "start": 210,
+      "dur": 90,
+      "color": "#56cddd"
+    },
+    {
+      "label": "扫描一座建筑",
+      "start": 300,
+      "dur": 90,
+      "color": "#56cddd"
+    },
+    {
+      "label": "数据绘画",
+      "start": 390,
+      "dur": 90,
+      "color": "#56cddd"
+    },
+    {
+      "label": "高斯泼溅",
+      "start": 480,
+      "dur": 90,
+      "color": "#56cddd"
+    },
+    {
+      "label": "五条规则",
+      "start": 570,
+      "dur": 240,
+      "color": "#56cddd"
+    },
+    {
+      "label": "用在手机上",
+      "start": 810,
+      "dur": 210,
+      "color": "#56cddd"
+    },
+    {
+      "label": "片尾 · 首尾呼应",
+      "start": 1020,
+      "dur": 150,
+      "color": "#56cddd"
+    }
+  ]
+}
