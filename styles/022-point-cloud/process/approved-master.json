@@ -1,0 +1,13 @@
+{
+  "id": "022-point-cloud",
+  "source": "drafts/point-cloud/film/point-cloud-film.mp4",
+  "sha256": "3ac674c0a002810a553aa7d3b4aeaa53d790d6abcccb0fd56d4dd49ab7ef78c4",
+  "bytes": 40610150,
+  "fps": 60,
+  "durationFrames": 1170,
+  "durationSeconds": 19.5,
+  "approval": "本人本轮明确两部已审片通过；直接沿用现有原片",
+  "release_tag": "day-22",
+  "release_asset": "022-point-cloud.mp4",
+  "master_policy": "发布附件只更名；必须保持上述字节数与SHA-256"
+}

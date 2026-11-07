@@ -1,0 +1,13 @@
+{
+  "id": "023-liquid-chrome",
+  "source": "drafts/liquid-chrome/film/liquid-chrome-film.mp4",
+  "sha256": "1fad71b9f8325852901b1d88b2de30a2ed12177d4ef541bd377e3031784478b7",
+  "bytes": 18344140,
+  "fps": 60,
+  "durationFrames": 1080,
+  "durationSeconds": 18.0,
+  "approval": "本人本轮明确两部已审片通过；直接沿用现有原片",
+  "release_tag": "day-23",
+  "release_asset": "023-liquid-chrome.mp4",
+  "master_policy": "发布附件只更名；必须保持上述字节数与SHA-256"
+}

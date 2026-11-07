@@ -1,0 +1,56 @@
+{
+  "fps": 60,
+  "bpm": 120,
+  "frames": 1080,
+  "title": "液态金属",
+  "segments": [
+    {
+      "label": "液态金属",
+      "start": 0,
+      "dur": 122,
+      "color": "#ed80b8"
+    },
+    {
+      "label": "《空间中的鸟》",
+      "start": 122,
+      "dur": 92,
+      "color": "#ed80b8"
+    },
+    {
+      "label": "《气球狗》",
+      "start": 214,
+      "dur": 90,
+      "color": "#ed80b8"
+    },
+    {
+      "label": "《突起、流动》",
+      "start": 304,
+      "dur": 86,
+      "color": "#ed80b8"
+    },
+    {
+      "label": "《云门》",
+      "start": 390,
+      "dur": 90,
+      "color": "#ed80b8"
+    },
+    {
+      "label": "五条规则",
+      "start": 480,
+      "dur": 150,
+      "color": "#ed80b8"
+    },
+    {
+      "label": "用在界面",
+      "start": 630,
+      "dur": 270,
+      "color": "#ed80b8"
+    },
+    {
+      "label": "片尾 · 首尾呼应",
+      "start": 900,
+      "dur": 180,
+      "color": "#ed80b8"
+    }
+  ]
+}
