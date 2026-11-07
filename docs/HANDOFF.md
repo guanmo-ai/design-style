@@ -20,6 +20,8 @@
 
 2026-11-04：主人确认字符画与生成艺术两部 18 秒成片已审核通过。直接采用 `claude/vigilant-galileo-j1sfyr` 的 `ced34bf` 原片，补齐正式目录 `020-ascii-art` / `021-generative-art`、四张可编辑 SVG、中英文文档、来源与字体许可、时间轴和复现入口后，已发布 [day-20](https://github.com/guanmo-ai/design-style/releases/tag/day-20) / [day-21](https://github.com/guanmo-ai/design-style/releases/tag/day-21)（每期成片 + 完整项目源码 ZIP + SHA256SUMS），六项附件远端大小与 SHA-256 均一致。画廊按首次上架顺序登记为「风格 013 / 014」。发布与线上核验证据见 [020 / 021 发布记录](reviews/PUBLISH_020_021_20261104.md)。两项发布交接关闭；015 仍保留原审片待办。
 
+2026-11-07：主人明确点云与液态金属两部原片已审片通过并确认上架。已按原片字节发布 [day-22](https://github.com/guanmo-ai/design-style/releases/tag/day-22) / [day-23](https://github.com/guanmo-ai/design-style/releases/tag/day-23)（每期成片 + 完整项目源码ZIP + SHA256SUMS），六项附件远端digest与大小核对一致；正式目录022 / 023，网站风格015 / 016。画廊部署与线上验收见 [022 / 023 发布记录](reviews/PUBLISH_022_023_20261107.md)。两部审片待办关闭；015未来主义原待办保留。
+
 ## 待办
 
 ### 015 · 未来主义：审片通过后发布（2026-10-28）
