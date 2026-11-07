@@ -1,0 +1,272 @@
+<!doctype html>
+<html lang="zh">
+<head>
+<meta charset="utf-8">
+<title>卡通渲染 · 落到界面上 · 星野角色页</title>
+<style>
+@font-face { font-family: 'Unbounded'; src: url(../../public/fonts/Unbounded.ttf); font-weight: 200 900; }
+@font-face { font-family: 'Geist'; src: url(../../public/fonts/Geist.ttf); font-weight: 100 900; }
+@font-face { font-family: 'GeistMono'; src: url(../../public/fonts/GeistMono.ttf); font-weight: 100 900; }
+@font-face { font-family: 'ZCOOL'; src: url(../../public/fonts/ZCOOLQingKeHuangYou.ttf); }
+@font-face { font-family: 'NotoSC'; src: url(../../public/fonts/NotoSansSC-Black.otf); font-weight: 900; }
+@font-face { font-family: 'NotoSC'; src: url(../../public/fonts/NotoSansSC-Bold.otf); font-weight: 700; }
+@font-face { font-family: 'NotoSC'; src: url(../../public/fonts/NotoSansSC-Medium.otf); font-weight: 500; }
+@font-face { font-family: 'NotoSC'; src: url(../../public/fonts/NotoSansSC-Regular.otf); font-weight: 400; }
+* { margin: 0; padding: 0; box-sizing: border-box; }
+:root { --bg: #0e1430; --ink: #f2f5ff; --dim: #8f9bc8; --line: rgba(255,255,255,.12); --acc: #ffd23f; --pink: #ff6f9c; --cy: #4fc3ff; }
+html, body { width: 1920px; height: 1080px; overflow: hidden; background: radial-gradient(1200px 700px at 70% 0%, #1c2a66 0%, #0e1430 60%); color: var(--ink); font-family: Geist, NotoSC, sans-serif; }
+.mono { font-family: GeistMono, monospace; letter-spacing: .04em; }
+canvas.gl { position: absolute; display: block; }
+.top { position: absolute; left: 64px; right: 64px; top: 34px; display: flex; justify-content: space-between; font-size: 13px; color: var(--dim); text-transform: uppercase; }
+.top b { color: #fff; font-weight: 600; }
+.browser { position: absolute; left: 64px; top: 78px; width: 1010px; height: 668px; border-radius: 14px; overflow: hidden; background: #0b1024; outline: 1px solid var(--line); box-shadow: 0 40px 120px rgba(0,0,0,.5); }
+.bar { height: 40px; display: flex; align-items: center; gap: 8px; padding: 0 16px; background: #121a3a; border-bottom: 1px solid var(--line); }
+.bar i { width: 11px; height: 11px; border-radius: 50%; background: #2a3466; display: block; }
+.bar .url { margin-left: 18px; flex: 1; max-width: 420px; height: 24px; border-radius: 7px; background: #1a2350; font-size: 12px; color: #8f9bc8; display: flex; align-items: center; padding: 0 12px; }
+.page { position: absolute; left: 0; top: 40px; right: 0; bottom: 0; }
+.shade { position: absolute; inset: 0; background: linear-gradient(90deg, rgba(10,22,80,.78) 0%, rgba(10,22,80,.45) 38%, rgba(10,22,80,0) 58%); z-index: 1; }
+.nav { position: absolute; left: 40px; right: 40px; top: 22px; display: flex; align-items: center; font-size: 14px; color: rgba(255,255,255,.85); gap: 28px; z-index: 2; font-family: NotoSC; }
+.logo { display: flex; align-items: center; gap: 8px; font-family: Unbounded; font-weight: 800; font-size: 18px; color: #fff; margin-right: auto; letter-spacing: .04em; }
+.logo i { color: var(--acc); font-style: normal; }
+.nav .btn { color: #0d1d4a; background: var(--acc); border-radius: 8px; padding: 8px 16px; font-weight: 700; font-size: 13px; transform: skewX(-8deg); }
+.hero-t { position: absolute; left: 44px; top: 104px; width: 470px; z-index: 2; }
+.kick { font-size: 12px; color: #fff; display: inline-flex; gap: 10px; align-items: center; font-family: NotoSC; }
+.kick b { color: #0d1d4a; background: var(--acc); padding: 2px 10px; font-weight: 700; transform: skewX(-10deg); display: inline-block; }
+.hero-t h1 { font-family: ZCOOL; font-weight: 400; font-size: 118px; line-height: 1; margin-top: 18px; letter-spacing: .02em; text-shadow: 0 6px 30px rgba(10,30,120,.4); }
+.hero-t .en { font-family: Unbounded; font-weight: 800; font-size: 22px; letter-spacing: .3em; color: var(--cy); margin-top: 6px; display: flex; gap: 14px; align-items: center; }
+.hero-t .en span { color: var(--acc); letter-spacing: .1em; font-size: 18px; }
+.hero-t p { font-family: NotoSC; font-size: 15.5px; line-height: 1.75; color: rgba(255,255,255,.88); margin-top: 18px; }
+.cta { display: flex; gap: 14px; margin-top: 24px; align-items: center; }
+.cta .p { display: inline-flex; align-items: center; background: var(--acc); color: #0d1d4a; font-weight: 900; font-family: NotoSC; font-size: 16px; padding: 12px 28px; transform: skewX(-10deg); box-shadow: 6px 6px 0 #ff6f9c; }
+.cta .s { display: inline-flex; gap: 8px; align-items: center; color: #fff; font-size: 14px; font-family: NotoSC; border: 1.5px solid rgba(255,255,255,.7); padding: 10px 18px; transform: skewX(-10deg); }
+.stats { position: absolute; left: 44px; bottom: 30px; display: flex; gap: 34px; z-index: 2; }
+.stats div { font-size: 12px; color: rgba(255,255,255,.75); font-family: NotoSC; }
+.stats b { display: block; font-family: Unbounded; font-weight: 700; font-size: 22px; color: #fff; margin-bottom: 4px; }
+.skills { position: absolute; right: 34px; bottom: 30px; display: flex; gap: 10px; z-index: 2; }
+.skills div { width: 64px; height: 64px; border-radius: 14px; background: rgba(255,255,255,.88); color: #0d1d4a; font-family: NotoSC; font-weight: 700; font-size: 11px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; box-shadow: 0 6px 18px rgba(10,30,120,.3); }
+.skills div i { font-style: normal; font-size: 22px; }
+.chip-tag { position: absolute; white-space: nowrap; font-size: 11px; color: #0d1d4a; background: rgba(255,255,255,.9); border-radius: 8px; padding: 6px 10px; z-index: 3; box-shadow: 0 4px 14px rgba(10,30,120,.25); }
+.chip-tag b { color: #e0508a; font-weight: 600; }
+svg.ov { position: absolute; left: 0; top: 0; pointer-events: none; z-index: 2; }
+.phone { position: absolute; top: 78px; width: 244px; height: 520px; border-radius: 40px; background: #0b0c10; outline: 1px solid rgba(255,255,255,.16); box-shadow: inset 0 0 0 7px #1a2040, 0 30px 80px rgba(0,0,0,.5); }
+.screen { position: absolute; left: 8px; top: 8px; right: 8px; bottom: 8px; border-radius: 33px; overflow: hidden; background: #2c6cff; }
+.screen canvas { position: absolute; left: 0; top: 0; }
+.sb { position: absolute; left: 22px; right: 20px; top: 12px; display: flex; justify-content: space-between; font-size: 11px; font-weight: 600; z-index: 4; color: #fff; }
+.island { position: absolute; left: 50%; top: 10px; width: 74px; height: 21px; border-radius: 20px; background: #000; transform: translateX(-50%); z-index: 5; }
+.ph { position: absolute; left: 0; right: 0; z-index: 3; text-align: center; color: #fff; text-shadow: 0 2px 12px rgba(10,30,120,.5); }
+.ph .lab { font-size: 10.5px; color: rgba(255,255,255,.85); }
+.ph h3 { font-family: ZCOOL; font-weight: 400; font-size: 26px; line-height: 1.2; margin-top: 4px; }
+.panel { position: absolute; left: 12px; right: 12px; bottom: 14px; z-index: 3; background: rgba(255,255,255,.92); border-radius: 18px; padding: 12px 14px; color: #0d1d4a; font-family: NotoSC; font-size: 11px; box-shadow: 0 10px 30px rgba(10,30,120,.3); }
+.panel .row { display: flex; align-items: center; gap: 8px; margin-top: 8px; }
+.panel .row span { width: 44px; color: #5a6aa0; }
+.panel .sw { width: 28px; height: 28px; border-radius: 9px; display: flex; overflow: hidden; box-shadow: inset 0 0 0 1px rgba(13,29,74,.12); }
+.panel .sw i { flex: 1; display: block; }
+.panel .sw.on { outline: 2.5px solid #3b6cff; outline-offset: 2px; }
+.bubble { position: absolute; z-index: 3; background: #fff; color: #0d1d4a; font-family: NotoSC; font-weight: 700; font-size: 12px; padding: 7px 12px; border-radius: 14px; box-shadow: 0 6px 18px rgba(10,30,120,.3); }
+.card3 { position: absolute; inset: 40px 18px 78px; z-index: 2; border-radius: 16px; box-shadow: inset 0 0 0 3px #ffd23f, inset 0 0 0 7px rgba(255,255,255,.85), 0 12px 40px rgba(10,30,120,.4); }
+.card3 .r { position: absolute; left: 12px; top: 12px; font-family: Unbounded; font-weight: 900; font-size: 22px; color: #ffd23f; text-shadow: 0 2px 0 #c26a10, 0 4px 14px rgba(0,0,0,.3); font-style: italic; }
+.card3 .n { position: absolute; left: 0; right: 0; bottom: 12px; text-align: center; font-family: ZCOOL; font-size: 22px; color: #fff; text-shadow: 0 2px 10px rgba(10,30,120,.6); }
+.card3 .n small { display: block; font-family: GeistMono; font-size: 10px; color: #ffd23f; letter-spacing: .2em; }
+.pbtn { position: absolute; left: 22px; right: 22px; bottom: 18px; height: 42px; display: flex; align-items: center; justify-content: center; font-family: NotoSC; font-weight: 900; font-size: 14px; z-index: 3; background: #ffd23f; color: #0d1d4a; transform: skewX(-10deg); box-shadow: 5px 5px 0 #ff6f9c; }
+.steps { position: absolute; top: 612px; font-size: 12px; }
+.steps .n { font-family: GeistMono; color: var(--acc); margin-right: 6px; }
+.steps b { font-family: NotoSC; font-weight: 700; font-size: 15px; color: #fff; }
+.steps p { font-family: NotoSC; color: #a9b3dc; font-size: 12.5px; line-height: 1.6; margin-top: 6px; width: 236px; }
+.arrow { position: absolute; top: 330px; font-size: 10px; color: #c9d2f5; text-align: center; width: 60px; z-index: 5; }
+.arrow svg { display: block; margin: 4px auto 0; }
+.cards { position: absolute; left: 64px; right: 64px; top: 778px; display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; }
+.card { height: 250px; border: 1px solid var(--line); border-radius: 14px; padding: 18px 20px; position: relative; background: linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.01)); }
+.card .k { font-family: GeistMono; font-size: 12px; color: #fff; letter-spacing: .02em; }
+.card .k i { font-style: normal; color: #0d1d4a; background: var(--acc); border-radius: 5px; padding: 0 6px; margin-right: 8px; }
+.card h4 { font-family: NotoSC; font-weight: 700; font-size: 17px; margin-top: 8px; }
+.card p { font-family: NotoSC; font-size: 12.5px; color: #a9b3dc; line-height: 1.6; margin-top: 6px; }
+.card .viz { position: absolute; left: 20px; right: 20px; bottom: 16px; height: 100px; }
+.vl { position: absolute; font-family: GeistMono; font-size: 10px; color: #8f9bc8; white-space: nowrap; }
+</style>
+</head>
+<body>
+<div class="top mono"><span><b>NO. 026 · 卡通渲染</b> &nbsp;·&nbsp; 落到界面上：3D 的身体，2D 的脸</span><span>角色页 · 网页 + App · 换色 → 换表情 → 出卡</span></div>
+
+<div class="browser">
+  <div class="bar"><i></i><i></i><i></i><div class="url mono">hoshi.game/characters/hoshi</div></div>
+  <div class="page">
+    <canvas class="gl" id="hero"></canvas>
+    <div class="shade"></div>
+    <div class="nav"><span class="logo">HOSHI<i>★</i></span><span>角色</span><span>世界</span><span>新闻</span><span class="btn">预约下载</span></div>
+    <div class="hero-t">
+      <span class="kick"><b>新角色 · 限时 UP</b> 星之子 · 风属性</span>
+      <h1>星野</h1>
+      <div class="en">HOSHI <span>★★★★★</span></div>
+      <p>会比剪刀手的星之子。<br>3D 的身体，2D 的脸——<br>转到哪个角度，都像一张原画。</p>
+      <div class="cta"><span class="p">立即预约</span><span class="s">▶ 看角色 PV</span></div>
+    </div>
+    <div class="stats"><div><b>2 阶</b>光影</div><div><b>1.5 px</b>描边</div><div><b>60 fps</b>手机实时</div></div>
+    <div class="skills"><div><i>✦</i>星落</div><div><i>❋</i>疾风</div><div><i>♡</i>应援</div></div>
+    <svg class="ov" id="heroSvg" width="1010" height="628"></svg>
+    <div id="heroTags"></div>
+  </div>
+</div>
+
+<div id="phones"></div>
+
+<div class="cards">
+  <div class="card"><span class="k"><i>A</i>lit = smoothstep(t − w, t + w, N·L)</span><h4>两阶：w 决定“画得多硬”</h4><p>w = 0 是剪纸；w ≈ 0.02 是动画；w 再大就回到 3D 了。</p><div class="viz" id="vizA"></div></div>
+  <div class="card"><span class="k"><i>B</i>shadow = hsv(h − 15°, s + 20%, v − 25%)</span><h4>阴影色：换颜色，不变黑</h4><p>乘 0.5 的阴影发脏；往冷色转一点、再饱和一点，就是动画的影子。</p><div class="viz" id="vizB"></div></div>
+  <div class="card"><span class="k"><i>C</i>outline = 背面外扩 w · z</span><h4>描边：把模型“吹大一圈”再翻过来</h4><p>游戏里最常用：背面沿法线外扩、只画背面。宽度乘深度 z，远近一样粗。</p><div class="viz" id="vizC"></div></div>
+  <div class="card"><span class="k"><i>D</i>faceLit = map(u, v) &lt; angle(L)</span><h4>脸：查一张阈值图</h4><p>灰度图里每个像素存“光转到几度时我变暗”。交界永远是一条干净的线。</p><div class="viz" id="vizD"></div></div>
+</div>
+
+<script src="../_lib/glkit.js"></script>
+<script src="toon.js"></script>
+<script>
+const DPR = devicePixelRatio;
+async function renderInto(canvas, w, h, S, comp) {
+  canvas.width = Math.round(w * DPR); canvas.height = Math.round(h * DPR);
+  canvas.style.width = w + 'px'; canvas.style.height = h + 'px';
+  const gl = GLK.create(canvas);
+  await TOON.render(gl, Object.assign({ tiles: 4 }, S), Object.assign({ px: DPR, stageAll: 5 }, comp || {}));
+}
+const pjC = (S, q, w, h) => TOON.project(S, TOON.charToWorld(S, q), w, h);
+
+(async () => {
+  await document.fonts.load('100px ZCOOL', '星野换色'); await document.fonts.ready;
+  // —— 网页：角色站在右边，天空 + 转身的特效弧 ——
+  const HW = 1010, HH = 628;
+  const hero = { cam: [1.6, 3.2, 8.9], tgt: [-1.75, 2.62, 0], fov: 30, root: [0, 2.95, 0, 0.32], headTilt: 0.12, swing: 0.7, peace: 1, expr: 0, ped: true };
+  const cH = pjC(hero, [0, -1.0, 0], HW, HH);
+  await renderInto(document.getElementById('hero'), HW, HH, hero, { swoosh: [cH[0], cH[1] - 10, 330, 92] });
+  {
+    let svg = '', html = '';
+    const a = pjC(hero, [0.62, 0.66, 0.6], HW, HH), b = pjC(hero, [-1.4, -1.0, -0.6], HW, HH);
+    svg += `<circle cx="${a[0]}" cy="${a[1]}" r="4" fill="#3b6cff" stroke="#fff" stroke-width="2"/><line x1="${a[0]}" y1="${a[1]}" x2="${a[0] + 70}" y2="${a[1] - 50}" stroke="rgba(255,255,255,.8)"/>`;
+    html += `<div class="chip-tag mono" style="left:${a[0] + 70}px;top:${a[1] - 66}px"><b>天使环</b> 拖动转身，它一直在</div>`;
+    svg += `<circle cx="${b[0]}" cy="${b[1]}" r="4" fill="#3b6cff" stroke="#fff" stroke-width="2"/>`;
+    html += `<div class="chip-tag mono" style="left:${b[0] - 30}px;top:${b[1] + 14}px"><b>马尾</b> 比身体晚 6 帧</div>`;
+    document.getElementById('heroSvg').innerHTML = svg; document.getElementById('heroTags').innerHTML = html;
+  }
+
+  // —— 三部手机 ——
+  const PW = 228, PH = 504, X0 = 1110, GAP = 30;
+  const phones = document.getElementById('phones');
+  const scenes = [
+    { S: { cam: [0.9, 3.6, 10.8], tgt: [0.05, 3.35, 0], fov: 30, root: [0, 2.95, 0, 0.1], headTilt: 0.06, swing: 0.15, peace: 0, expr: 0, ped: false, pal: { hair: '#ffb6d3', hairS: '#e2609e' } }, comp: {} },
+    { S: { cam: [0.6, 3.5, 9.0], tgt: [0.0, 3.2, 0], fov: 30, root: [0, 2.95, 0, 0.05], headTilt: -0.12, swing: 0.25, peace: 0, expr: 1, ped: false }, comp: { sky0: '#ff8fbf', sky1: '#ffc3dc', sky2: '#fff0f6' } },
+    { S: { cam: [1.2, 2.6, 10.6], tgt: [0.1, 2.05, 0], fov: 32, root: [0, 2.95, 0, 0.2], headTilt: 0.1, swing: 0.6, peace: 1, expr: 0, ped: true }, comp: { sky0: '#4a2bd6', sky1: '#7a5cff', sky2: '#ffd9a8' } },
+  ];
+  const ui = [
+    (pj) => `<div class="ph" style="top:46px"><div class="lab mono">01 · 换发色</div><h3>粉色的星野</h3></div>
+      <div class="panel"><b>只改两个颜色</b><div class="row"><span>发色</span>${[['#c9b8ff', '#7d68e0'], ['#ffb6d3', '#e2609e', 1], ['#9fe6c8', '#3fa58a'], ['#ffd27a', '#e0862a']].map(([a, b, on]) => `<div class="sw${on ? ' on' : ''}"><i style="background:${a}"></i><i style="background:${b}"></i></div>`).join('')}</div><div class="row"><span>阴影</span><span class="mono" style="width:auto;color:#0d1d4a;font-size:10px">H−15° S+20% V−25%</span></div></div>`,
+    (pj) => { const h = pj([0.0, 1.2, 0.3]); return `<div class="ph" style="top:46px"><div class="lab mono">02 · 摸摸头</div><h3>&gt; ω &lt;</h3></div><div class="bubble" style="left:${h[0] + 20}px;top:${h[1] - 30}px">嘿嘿～</div>`; },
+    (pj) => `<div class="card3"><span class="r">SSR</span><div class="n"><small>★★★★★ · NEW</small>星野 HOSHI</div></div><div class="pbtn">收下 · 分享卡面</div>`,
+  ];
+  for (let i = 0; i < 3; i++) {
+    const d = document.createElement('div'); d.className = 'phone'; d.style.left = (X0 + i * (244 + GAP)) + 'px';
+    d.innerHTML = `<div class="screen"><canvas></canvas><div class="island"></div><div class="sb mono"><span>9:41</span><span>●●● 100</span></div><svg class="ov" width="${PW}" height="${PH}"></svg></div>`;
+    phones.appendChild(d);
+    const { S, comp } = scenes[i];
+    const cc = pjC(S, [0, -1.1, 0], PW, PH);
+    await renderInto(d.querySelector('canvas'), PW, PH, S, Object.assign({ swoosh: i === 2 ? [cc[0], cc[1], 120, 34] : null }, comp));
+    const pj = q => pjC(S, q, PW, PH);
+    d.querySelector('.screen').insertAdjacentHTML('beforeend', ui[i](pj));
+    let s = '';
+    if (i === 1) {
+      const heart = (x, y, r, c) => `<path transform="translate(${x},${y}) scale(${r})" d="M0 3 C-6 -3 -12 2 0 11 C12 2 6 -3 0 3Z" fill="${c}"/>`;
+      const h = pj([0, 1.25, 0]);
+      s += heart(h[0] - 70, h[1] + 10, 1.4, '#ff6f9c') + heart(h[0] + 62, h[1] - 6, 1.1, '#ff9fbf') + heart(h[0] - 40, h[1] - 40, .9, '#fff');
+      // 手（点击位置）
+      s += `<circle cx="${h[0] + 4}" cy="${h[1] + 6}" r="16" fill="none" stroke="#fff" stroke-width="2" opacity=".9"/><circle cx="${h[0] + 4}" cy="${h[1] + 6}" r="26" fill="none" stroke="#fff" stroke-width="1.2" opacity=".5"/>`;
+    }
+    if (i === 2) {
+      const star = (x, y, r, c) => `<path d="M${x} ${y - r} Q${x} ${y} ${x + r} ${y} Q${x} ${y} ${x} ${y + r} Q${x} ${y} ${x - r} ${y} Q${x} ${y} ${x} ${y - r}Z" fill="${c}"/>`;
+      s += star(48, 120, 10, '#fff') + star(190, 150, 13, '#ffd23f') + star(176, 330, 8, '#fff') + star(40, 300, 7, '#ffd23f');
+    }
+    d.querySelector('svg').innerHTML = s;
+    if (i < 2) {
+      const a = document.createElement('div'); a.className = 'arrow mono';
+      a.style.left = (X0 + i * (244 + GAP) + 244 - 15) + 'px';
+      a.innerHTML = ['点头', '分享'][i] + `<svg width="40" height="12"><path d="M2 6h34M30 1l6 5-6 5" stroke="#c9d2f5" fill="none" stroke-width="1.4"/></svg>`;
+      phones.appendChild(a);
+    }
+    const st = document.createElement('div'); st.className = 'steps'; st.style.left = (X0 + i * (244 + GAP) + 4) + 'px';
+    st.innerHTML = [
+      `<span class="n">01</span><b>换色 · 只改两个值</b><p>发色只存 base 和 shadow 两个颜色；阴影按公式自动算，换 4 种发色不用重画一张图。</p>`,
+      `<span class="n">02</span><b>表情 · 换的是贴图</b><p>点一下头：眼睛从“圆”换成“&gt; &lt;”，模型一个顶点都没动。切换只要 1 帧，最像动画。</p>`,
+      `<span class="n">03</span><b>出卡 · 线宽按屏幕算</b><p>同一个角色放进卡面，描边还是 1.5 px：缩略图和全屏大图，线都一样清楚。</p>`,
+    ][i];
+    phones.appendChild(st);
+  }
+
+  // —— 配方卡 ——
+  const W4 = 386;
+  const hex = h => { const n = parseInt(h.slice(1), 16); return [(n >> 16 & 255) / 255, (n >> 8 & 255) / 255, (n & 255) / 255]; };
+  function sphere(ctx, cx, cy, R, fn) {
+    const r = Math.round(R * DPR), img = ctx.createImageData(2 * r, 2 * r);
+    for (let j = 0; j < 2 * r; j++) for (let i = 0; i < 2 * r; i++) {
+      const u = (i - r) / r, v = -(j - r) / r, rr = u * u + v * v; if (rr > 1) continue;
+      const c = fn(u, v, Math.sqrt(1 - rr)); const o = (j * 2 * r + i) * 4;
+      img.data[o] = c[0] * 255; img.data[o + 1] = c[1] * 255; img.data[o + 2] = c[2] * 255; img.data[o + 3] = 255 * Math.min(1, (1 - Math.sqrt(rr)) * r);
+    }
+    const t = document.createElement('canvas'); t.width = t.height = 2 * r; t.getContext('2d').putImageData(img, 0, 0);
+    ctx.drawImage(t, cx - R, cy - R, 2 * R, 2 * R);
+  }
+  const Ld = [-0.6, 0.55, 0.58]; { const l = Math.hypot(...Ld); Ld.forEach((v, i) => Ld[i] = v / l); }
+  const mixc = (a, b, t) => a.map((v, i) => v + (b[i] - v) * t);
+  const ss = (a, b, x) => { const t = Math.min(1, Math.max(0, (x - a) / (b - a))); return t * t * (3 - 2 * t); };
+  { // A：三颗球，w 不同
+    const cv = document.createElement('canvas'); cv.width = W4 * DPR; cv.height = 100 * DPR; cv.style.width = W4 + 'px'; cv.style.height = '100px';
+    const x = cv.getContext('2d'); x.scale(DPR, DPR);
+    const base = hex('#c9b8ff'), sh = hex('#7d68e0');
+    [[0.001, 'w = 0'], [0.03, 'w = 0.02 · 动画'], [0.45, 'w = 0.4 · 3D']].forEach(([w, lab], k) => {
+      sphere(x, 54 + k * 124, 42, 40, (u, v, z) => { const lam = (u * Ld[0] + v * Ld[1] + z * Ld[2]) * .5 + .5; return mixc(sh, base, ss(.5 - w, .5 + w, lam)); });
+      x.strokeStyle = '#2a1f55'; x.lineWidth = w < 0.1 ? 2 : 0; if (x.lineWidth) { x.beginPath(); x.arc(54 + k * 124, 42, 40, 0, 7); x.stroke(); }
+    });
+    const v = document.getElementById('vizA'); v.appendChild(cv);
+    ['w = 0 · 剪纸', 'w = 0.02 · 动画', 'w = 0.4 · 回到 3D'].forEach((t, k) => v.insertAdjacentHTML('beforeend', `<span class="vl" style="left:${k * 124}px;bottom:-12px;width:108px;text-align:center">${t}</span>`));
+  }
+  { // B：同一颜色的两种阴影
+    const pairs = [['#ffe9dc', '#f4aaa4', '#80746e'], ['#c9b8ff', '#7d68e0', '#655c80'], ['#fbfbff', '#aebaf0', '#7d7d80'], ['#ffd23f', '#f08a2c', '#80691f']];
+    let h = '';
+    pairs.forEach(([a, b, g], k) => {
+      h += `<div style="position:absolute;left:${k * 88}px;top:0;width:76px">
+        <div style="height:34px;border-radius:8px 8px 0 0;background:${a}"></div>
+        <div style="display:flex;height:34px"><div style="flex:1;background:${b};border-radius:0 0 0 8px"></div><div style="flex:1;background:${g};border-radius:0 0 8px 0"></div></div></div>`;
+    });
+    h += `<span class="vl" style="left:0;bottom:4px">左下 = 换色（动画）　右下 = × 0.5（发脏）</span>`;
+    document.getElementById('vizB').innerHTML = h;
+  }
+  { // C：背面外扩示意
+    let s = '';
+    const cx = 70, cy = 50;
+    s += `<ellipse cx="${cx}" cy="${cy}" rx="46" ry="40" fill="#2a1f55"/><ellipse cx="${cx}" cy="${cy}" rx="40" ry="34" fill="#c9b8ff"/>`;
+    for (let k = 0; k < 8; k++) { const a = k / 8 * Math.PI * 2; const x1 = cx + Math.cos(a) * 40, y1 = cy + Math.sin(a) * 34, x2 = cx + Math.cos(a) * 52, y2 = cy + Math.sin(a) * 45; s += `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="#ffd23f" stroke-width="1.5"/>`; }
+    s += `<text x="${cx}" y="${cy + 4}" text-anchor="middle" font-family="GeistMono" font-size="10" fill="#2a1f55">正面</text>`;
+    // 远近一样粗
+    [[180, 1], [250, .66], [306, .44]].forEach(([x, sc]) => { s += `<circle cx="${x}" cy="50" r="${34 * sc + 3}" fill="#2a1f55"/><circle cx="${x}" cy="50" r="${34 * sc}" fill="#ffe9dc"/>`; });
+    s += `<text x="10" y="104" font-family="GeistMono" font-size="10" fill="#8f9bc8">沿法线外扩 → 只画背面</text><text x="200" y="104" font-family="GeistMono" font-size="10" fill="#8f9bc8">× z：远近都是 3 px</text>`;
+    document.getElementById('vizC').innerHTML = `<svg width="${W4}" height="108">${s}</svg>`;
+  }
+  { // D：阈值图 + 三个光角度
+    const cv = document.createElement('canvas'); cv.width = W4 * DPR; cv.height = 100 * DPR; cv.style.width = W4 + 'px'; cv.style.height = '100px';
+    const x = cv.getContext('2d'); x.scale(DPR, DPR);
+    const map = (u, v) => .5 + .5 * u - .12 * (1 - v * v) + .06 * Math.max(0, 1 - Math.abs(u) * 12) * (v < -.05 && v > -.4 ? 1 : 0);
+    const face = (cx, thr) => {
+      const R = 38, r = Math.round(R * DPR), img = x.createImageData(2 * r, 2 * r);
+      for (let j = 0; j < 2 * r; j++) for (let i = 0; i < 2 * r; i++) {
+        const u = (i - r) / r, v = -(j - r) / r; const e = u * u / .9 + v * v / 1.05; if (e > 1) continue;
+        const m = map(u, v); let c;
+        if (thr < 0) c = [m, m, m]; else c = m > thr ? hex('#f4aaa4') : hex('#ffe9dc');
+        const o = (j * 2 * r + i) * 4; img.data[o] = c[0] * 255; img.data[o + 1] = c[1] * 255; img.data[o + 2] = c[2] * 255; img.data[o + 3] = 255;
+      }
+      const t = document.createElement('canvas'); t.width = t.height = 2 * r; t.getContext('2d').putImageData(img, 0, 0);
+      x.drawImage(t, cx - R, 44 - R, 2 * R, 2 * R);
+      if (thr >= 0) { x.fillStyle = '#2a1f55'; [-1, 1].forEach(s => { x.beginPath(); x.ellipse(cx + s * 12, 40, 5, 7, 0, 0, 7); x.fill(); }); }
+    };
+    face(42, -1); face(140, 0.85); face(234, 0.62); face(328, 0.45);
+    const v = document.getElementById('vizD'); v.appendChild(cv);
+    ['阈值图', '光 15°', '光 45°', '光 75°'].forEach((t, k) => v.insertAdjacentHTML('beforeend', `<span class="vl" style="left:${[42, 140, 234, 328][k] - 30}px;bottom:-12px;width:60px;text-align:center">${t}</span>`));
+  }
+  window.__done = true;
+})().catch(e => { console.log('ERR', e.message.slice(0, 4000)); window.__done = true; });
+</script>
+</body>
+</html>

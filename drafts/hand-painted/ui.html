@@ -1,0 +1,268 @@
+<!doctype html>
+<html lang="zh">
+<head>
+<meta charset="utf-8">
+<title>治愈系手绘 · 落到界面上 · SORA 天气</title>
+<style>
+@font-face { font-family: 'Brush'; src: url(../../public/fonts/MaShanZheng.ttf); }
+@font-face { font-family: 'Fraunces'; src: url(../../public/fonts/Fraunces.ttf); font-weight: 100 900; }
+@font-face { font-family: 'FrauncesI'; src: url(../../public/fonts/Fraunces-Italic.ttf); font-weight: 100 900; }
+@font-face { font-family: 'Geist'; src: url(../../public/fonts/Geist.ttf); font-weight: 100 900; }
+@font-face { font-family: 'GeistMono'; src: url(../../public/fonts/GeistMono.ttf); font-weight: 100 900; }
+@font-face { font-family: 'NotoSC'; src: url(../../public/fonts/NotoSansSC-Bold.otf); font-weight: 700; }
+@font-face { font-family: 'NotoSC'; src: url(../../public/fonts/NotoSansSC-Medium.otf); font-weight: 500; }
+@font-face { font-family: 'NotoSC'; src: url(../../public/fonts/NotoSansSC-Regular.otf); font-weight: 400; }
+* { margin: 0; padding: 0; box-sizing: border-box; }
+:root { --bg: #f4efe2; --ink: #24402a; --dim: #7a8a70; --line: rgba(36,64,42,.14); --acc: #5f9e4c; }
+html, body { width: 1920px; height: 1080px; overflow: hidden; background: var(--bg); color: var(--ink); font-family: Geist, NotoSC, sans-serif; }
+.mono { font-family: GeistMono, monospace; letter-spacing: .04em; }
+canvas.gl, canvas.fg { position: absolute; left: 0; top: 0; display: block; }
+.top { position: absolute; left: 64px; right: 64px; top: 34px; display: flex; justify-content: space-between; font-size: 13px; color: var(--dim); text-transform: uppercase; }
+.top b { color: var(--ink); font-weight: 600; }
+.browser { position: absolute; left: 64px; top: 78px; width: 1010px; height: 668px; border-radius: 14px; overflow: hidden; background: #fff; box-shadow: 0 30px 90px rgba(60,80,40,.22), 0 0 0 1px rgba(36,64,42,.08); }
+.bar { height: 40px; display: flex; align-items: center; gap: 8px; padding: 0 16px; background: #fbf8ef; border-bottom: 1px solid var(--line); }
+.bar i { width: 11px; height: 11px; border-radius: 50%; background: #e6dfcc; display: block; }
+.bar .url { margin-left: 18px; flex: 1; max-width: 420px; height: 24px; border-radius: 7px; background: #f1ecdd; font-size: 12px; color: #8a937c; display: flex; align-items: center; padding: 0 12px; }
+.page { position: absolute; left: 0; top: 40px; right: 0; bottom: 0; overflow: hidden; }
+.nav { position: absolute; left: 40px; right: 40px; top: 22px; display: flex; align-items: center; font-size: 14px; color: #fff; gap: 28px; z-index: 3; font-family: NotoSC; font-weight: 500; text-shadow: 0 1px 8px rgba(20,60,120,.35); }
+.logo { display: flex; align-items: baseline; gap: 8px; font-family: FrauncesI; font-weight: 600; font-size: 24px; color: #fff; margin-right: auto; font-variation-settings: 'SOFT' 100; }
+.logo small { font-family: Brush; font-size: 22px; }
+.nav .btn { color: var(--ink); background: #fffdf4; border-radius: 999px; padding: 7px 16px; font-weight: 700; font-size: 13px; text-shadow: none; }
+.hero-t { position: absolute; left: 44px; top: 98px; width: 470px; z-index: 3; color: #fff; text-shadow: 0 2px 18px rgba(20,60,130,.35); }
+.kick { font-size: 12px; display: inline-flex; gap: 8px; align-items: center; font-family: NotoSC; background: rgba(255,253,244,.22); border: 1px solid rgba(255,255,255,.5); border-radius: 999px; padding: 5px 12px 5px 6px; backdrop-filter: blur(6px); text-shadow: none; }
+.kick b { color: var(--ink); background: #fffdf4; border-radius: 999px; padding: 1px 9px; font-weight: 700; }
+.hero-t h1 { font-family: Brush; font-weight: 400; font-size: 54px; line-height: 1.2; margin-top: 18px; white-space: nowrap; }
+.hero-t p { font-family: NotoSC; font-weight: 500; font-size: 15.5px; line-height: 1.75; margin-top: 14px; }
+.cta { display: flex; gap: 14px; margin-top: 22px; align-items: center; }
+.cta .p { background: #fffdf4; color: var(--ink); font-weight: 700; font-family: NotoSC; font-size: 15px; border-radius: 999px; padding: 12px 22px; text-shadow: none; box-shadow: 0 8px 22px rgba(20,60,130,.25); }
+.cta .s { font-size: 14px; font-family: NotoSC; font-weight: 500; }
+.wcard { position: absolute; right: 34px; top: 330px; width: 228px; z-index: 3; background: rgba(255,253,244,.86); backdrop-filter: blur(10px); border-radius: 18px; padding: 16px 18px; color: var(--ink); box-shadow: 0 12px 32px rgba(20,60,130,.18); font-family: NotoSC; }
+.wcard .t { font-family: Fraunces; font-weight: 400; font-size: 56px; line-height: 1; font-variation-settings: 'SOFT' 100, 'opsz' 100; }
+.wcard .t sup { font-size: 22px; vertical-align: top; }
+.wcard .d { font-size: 13px; color: #4a5a42; margin-top: 6px; }
+.wcard .row { display: flex; justify-content: space-between; margin-top: 12px; font-size: 11px; color: #6a7a60; border-top: 1px solid var(--line); padding-top: 10px; }
+.wcard .row b { display: block; font-family: GeistMono; font-size: 13px; color: var(--ink); font-weight: 500; }
+.chip-tag { position: absolute; white-space: nowrap; font-size: 11px; color: var(--ink); background: rgba(255,253,244,.9); border-radius: 8px; padding: 6px 10px; z-index: 4; box-shadow: 0 4px 14px rgba(30,60,30,.18); }
+.chip-tag b { color: var(--acc); font-weight: 600; }
+svg.ov { position: absolute; left: 0; top: 0; pointer-events: none; z-index: 3; }
+.phone { position: absolute; top: 78px; width: 244px; height: 520px; border-radius: 40px; background: #fff; box-shadow: inset 0 0 0 7px #e9e2cf, 0 24px 60px rgba(60,80,40,.22), 0 0 0 1px rgba(36,64,42,.08); }
+.screen { position: absolute; left: 8px; top: 8px; right: 8px; bottom: 8px; border-radius: 33px; overflow: hidden; background: #5aa7ea; }
+.sb { position: absolute; left: 22px; right: 20px; top: 12px; display: flex; justify-content: space-between; font-size: 11px; font-weight: 600; z-index: 4; color: #fff; }
+.island { position: absolute; left: 50%; top: 10px; width: 74px; height: 21px; border-radius: 20px; background: #000; transform: translateX(-50%); z-index: 5; }
+.ph { position: absolute; left: 20px; right: 20px; z-index: 3; color: #fff; text-shadow: 0 1px 2px rgba(20,40,90,.35), 0 2px 14px rgba(20,40,90,.55); font-family: NotoSC; }
+.ph .lab { font-family: GeistMono; font-size: 10.5px; opacity: .9; }
+.ph .big { font-family: Fraunces; font-weight: 300; font-size: 64px; line-height: 1; margin-top: 4px; font-variation-settings: 'SOFT' 100, 'opsz' 100; }
+.ph .big sup { font-size: 24px; vertical-align: top; }
+.ph .say { font-family: Brush; font-size: 21px; margin-top: 4px; }
+.sheet { position: absolute; left: 10px; right: 10px; bottom: 10px; z-index: 3; background: rgba(255,253,244,.9); backdrop-filter: blur(10px); border-radius: 20px; padding: 12px 14px; color: var(--ink); font-family: NotoSC; font-size: 11px; box-shadow: 0 10px 30px rgba(20,40,90,.2); }
+.sheet .h { display: flex; justify-content: space-between; font-weight: 700; font-size: 12px; }
+.sheet .h span { font-family: GeistMono; font-weight: 400; color: #6a7a60; font-size: 10px; }
+.hours { display: flex; justify-content: space-between; align-items: flex-end; margin-top: 10px; height: 64px; }
+.hours div { width: 22px; text-align: center; font-family: GeistMono; font-size: 9px; color: #6a7a60; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; gap: 3px; }
+.hours i { display: block; width: 18px; border-radius: 9px 9px 3px 3px; background: linear-gradient(180deg, #fffaf0, #b4bfdc); box-shadow: inset 0 0 0 1px rgba(36,64,42,.12); }
+.hours div.on i { background: linear-gradient(180deg, #e9eef6, #8e9cc6); }
+.gauge { display: flex; gap: 3px; margin-top: 10px; align-items: flex-end; height: 34px; }
+.gauge i { flex: 1; border-radius: 2px; background: #dfe7c4; display: block; }
+.gauge i.on { background: #86bb4c; }
+.pals { display: flex; gap: 5px; margin-top: 10px; }
+.pals div { flex: 1; font-family: GeistMono; font-size: 9px; color: #6a7a60; text-align: center; }
+.pals div span { display: flex; height: 26px; border-radius: 6px; overflow: hidden; margin-bottom: 4px; box-shadow: inset 0 0 0 1px rgba(36,64,42,.12); }
+.pals div span i { flex: 1; display: block; }
+.pals div.on span { outline: 2px solid #24402a; outline-offset: 1.5px; }
+.steps { position: absolute; top: 612px; font-size: 12px; }
+.steps .n { font-family: GeistMono; color: var(--acc); margin-right: 6px; }
+.steps b { font-family: NotoSC; font-weight: 700; font-size: 15px; color: var(--ink); }
+.steps p { font-family: NotoSC; color: #5a6a52; font-size: 12.5px; line-height: 1.6; margin-top: 6px; width: 236px; }
+.arrow { position: absolute; top: 330px; font-size: 10px; color: var(--ink); text-align: center; width: 60px; z-index: 5; }
+.arrow svg { display: block; margin: 4px auto 0; }
+.cards { position: absolute; left: 64px; right: 64px; top: 778px; display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; }
+.card { height: 250px; border-radius: 16px; padding: 18px 20px; position: relative; background: #fffdf6; box-shadow: 0 10px 30px rgba(60,80,40,.08), 0 0 0 1px rgba(36,64,42,.06); }
+.card .k { font-family: GeistMono; font-size: 12px; color: var(--ink); letter-spacing: .02em; }
+.card .k i { font-style: normal; color: #fff; background: var(--acc); border-radius: 6px; padding: 0 6px; margin-right: 8px; }
+.card h4 { font-family: NotoSC; font-weight: 700; font-size: 17px; margin-top: 8px; }
+.card p { font-family: NotoSC; font-size: 12.5px; color: #5a6a52; line-height: 1.6; margin-top: 6px; }
+.card .viz { position: absolute; left: 20px; right: 20px; bottom: 16px; height: 100px; }
+.vl { position: absolute; font-family: GeistMono; font-size: 10px; color: var(--dim); white-space: nowrap; }
+</style>
+</head>
+<body>
+<div class="top mono"><span><b>NO. 025 · 治愈系手绘</b> &nbsp;·&nbsp; 落到界面上：把天气画给你看</span><span>SORA 天气 · 网页 + App · 早 → 午 → 黄昏</span></div>
+
+<div class="browser">
+  <div class="bar"><i></i><i></i><i></i><div class="url mono">sora.weather/today</div></div>
+  <div class="page" id="page">
+    <canvas class="gl" id="hero"></canvas><canvas class="fg" id="heroFg"></canvas>
+    <div class="nav"><span class="logo">Sora <small>空</small></span><span>天气</span><span>风</span><span>日落</span><span class="btn">下载 App</span></div>
+    <div class="hero-t">
+      <span class="kick"><b>2.0</b> 天气预报，画成一张画</span>
+      <h1>把今天的天空，<br>画给你看。</h1>
+      <p>没有图标。云按预报长高，草按风速起伏，<br>天色跟着太阳换——打开 App，就是一张会动的画。</p>
+      <div class="cta"><span class="p">下载 Sora</span><span class="s">看今天的画 →</span></div>
+    </div>
+    <div class="wcard"><div class="t">26<sup>°</sup></div><div class="d">晴，下午积云长高</div><div class="row"><div><b>3 级</b>西风</div><div><b>18%</b>降雨</div><div><b>18:42</b>日落</div></div></div>
+    <svg class="ov" id="heroSvg" width="1010" height="628"></svg>
+    <div id="heroTags"></div>
+  </div>
+</div>
+
+<div id="phones"></div>
+
+<div class="cards">
+  <div class="card"><span class="k"><i>A</i>cloud = ⋃ 圆 · 色阶(N·L)</span><h4>积云：先堆圆，再分三四个色阶</h4><p>平的底 + 往上越来越小的圆 + 每个圆上沿再长小圆。光从左上来。</p><div class="viz" id="vizA"></div></div>
+  <div class="card"><span class="k"><i>B</i>bend = A · sin(x·k − ω·t)</span><h4>风：亮带扫过，草才在动</h4><p>ω 就是风速。每根草的弯度 = 它所在位置的那一道波，亮带 = 翻起来的草背。</p><div class="viz" id="vizB"></div></div>
+  <div class="card"><span class="k"><i>C</i>光斑扁度 = 1 / sin(太阳高度)</span><h4>光斑：太阳越低，椭圆越扁</h4><p>树叶缝隙是小孔，地上是太阳的像。中午接近圆，傍晚拉得很长。</p><div class="viz" id="vizC"></div></div>
+  <div class="card"><span class="k"><i>D</i>palette[时刻] · 同一张画</span><h4>换色不换画：一天四套颜料</h4><p>形状只算一次，按时间换一套 12 色的颜料表。黄昏的影子偏紫，夜里的草偏青。</p><div class="viz" id="vizD"></div></div>
+</div>
+
+<script src="../_lib/glkit.js"></script>
+<script src="paint.js"></script>
+<script>
+const DPR = devicePixelRatio;
+const PALS = {
+  morning: { sky0: '#4f86d0', sky1: '#94bfe9', sky2: '#efd7d4', haze: '#fbe6d8', cL: '#fff4ea', cM: '#f6dfdc', cS: '#c6b6d8', cD: '#9c90c0', gL: '#bad87c', gM: '#8bbb5c', gS: '#5a9050', gD: '#36664a', gW: '#ebf2bc', hFar: '#a9b8d6', hMid: '#6f9c7a', hMidS: '#4a706a', fL: '#c8dc7a', fM: '#86b05a', fS: '#46784e', fD: '#28503f' },
+  noon: {},
+  dusk: { sky0: '#3b4d9c', sky1: '#c57aa6', sky2: '#ffb27a', haze: '#ffd39c', cL: '#ffe4b2', cM: '#ffb58e', cS: '#b87aa6', cD: '#6e5a96', gL: '#dcc46c', gM: '#a8a04e', gS: '#6a7a4a', gD: '#3e4a46', gW: '#ffe2a2', hFar: '#8e78a8', hMid: '#5a5a74', hMidS: '#3e3e5c', fL: '#dcb862', fM: '#8e8a4a', fS: '#4e5a46', fD: '#2e3640', bark: '#6a4a40', barkS: '#3a2a34' },
+  night: { sky0: '#0c1840', sky1: '#1f3470', sky2: '#3e5a92', haze: '#56699c', cL: '#b8c6e8', cM: '#7e90c4', cS: '#4e5e96', cD: '#34406e', gL: '#4e7a72', gM: '#3a6262', gS: '#284a50', gD: '#1a3440', gW: '#7ea8a0', hFar: '#2e4472', hMid: '#1e3a4a', hMidS: '#142a3a', fL: '#4a7a6a', fM: '#2e5a52', fS: '#1e4040', fD: '#122a30', bark: '#3a3440', barkS: '#221e2a' },
+};
+// 按画幅生成一张画：天空 + 云 + 远山 + 中景 + 草坡（+ 树）
+function scene(w, h, o) {
+  const R = PAINT.rng(o.seed || 3);
+  const hz = o.horizon * h, crest = o.crestX * w;
+  const ridges = {
+    far: PAINT.ridgeLine(w, R, x => hz - 40 * Math.exp(-Math.pow((x - w * .75) / (w * .18), 2)) - 18 * Math.exp(-Math.pow((x - w * .2) / (w * .2), 2)), 5, 0.006, 4),
+    mid: PAINT.ridgeLine(w, R, x => hz + 46, 4, 0.025, 3),
+    main: PAINT.ridgeLine(w, R, x => x < crest ? hz + 70 + o.hillL * Math.pow((crest - x) / crest, 2) : hz + 70 + o.hillR * Math.pow((x - crest) / (w - crest), 1.6), 1.4, 0.012, 3),
+  };
+  return Object.assign({ W: w, H: h, seed: o.seed || 3, ridges, sun: [-0.6, -0.68], wind: 1.3, cloudShadow: [0.8, 0.003, 3, 1], tiles: 3, pal: PALS[o.pal || 'noon'] }, o.extra || {});
+}
+async function paintInto(gl, fgc, w, h, S, fg) {
+  for (const c of [gl, fgc]) { c.width = Math.round(w * DPR); c.height = Math.round(h * DPR); c.style.width = w + 'px'; c.style.height = h + 'px'; }
+  const g = GLK.create(gl);
+  await PAINT.render(g, S);
+  const x = fgc.getContext('2d'); x.scale(DPR, DPR);
+  const ry = px => S.ridges.main[Math.round(Math.min(w - 1, Math.max(0, px)))];
+  if (fg) fg(x, ry, PAINT.rng(9));
+}
+const trunkAt = (cx, by, s = 1) => ctx => {
+  const g = ctx.createLinearGradient(cx - 20 * s, 0, cx + 20 * s, 0); g.addColorStop(0, 'rgb(255,0,0)'); g.addColorStop(1, 'rgb(0,0,0)');
+  ctx.fillStyle = g; ctx.beginPath(); ctx.moveTo(cx - 24 * s, by); ctx.bezierCurveTo(cx - 10 * s, by - 30 * s, cx - 10 * s, by - 120 * s, cx - 12 * s, by - 200 * s);
+  ctx.lineTo(cx + 12 * s, by - 200 * s); ctx.bezierCurveTo(cx + 10 * s, by - 120 * s, cx + 10 * s, by - 30 * s, cx + 26 * s, by); ctx.closePath(); ctx.fill();
+};
+
+(async () => {
+  await document.fonts.load('100px Brush', '把今天的天空画给你看空早上好风来了日落'); await document.fonts.ready;
+  // —— 网页主图 ——
+  const HW = 1010, HH = 628;
+  const hs = scene(HW, HH, { horizon: .74, crestX: .64, hillL: 90, hillR: 40, seed: 5, extra: {
+    clouds: [{ x: 760, base: 445, w: 430, h: 330, bud: 2, lean: .1 }, { x: 960, base: 250, w: 160, h: 60, bud: 1 }, { x: 600, base: 460, w: 140, h: 40, bud: 1 }],
+  } });
+  await paintInto(document.getElementById('hero'), document.getElementById('heroFg'), HW, HH, hs, (x, ry, R) => {
+    for (let i = 0; i < 500; i++) { const px = R() * HW; PAINT.grass(x, R, { x0: px, x1: px + 1, y0: ry(px), y1: ry(px) + 6, n: 1, hmin: 3, hmax: 8, wind: .45, cols: ['#d8ea94', '#9cc95a', '#77ad4c'] }); }
+    PAINT.girl(x, 640, ry(640) + 4, 82);
+    PAINT.grass(x, R, { x0: -20, x1: HW + 20, y0: 560, y1: 640, n: 900, hmin: 18, hmax: 70, wind: .42, cols: ['#e2efa2', '#a9d160', '#86bb4c', '#5f9e4c', '#3f7a46'] });
+    const pts = []; for (let i = 0; i < 14; i++) { const t = i / 14; pts.push([660 + t * 300, 430 - Math.sin(t * 2.6) * 110 + (R() - .5) * 30, 2.5 + R() * 2, -.4]); } PAINT.petals(x, R, pts);
+  });
+  {
+    let svg = '', html = '';
+    const tag = (px, py, dx, dy, t) => { svg += `<circle cx="${px}" cy="${py}" r="4" fill="#5f9e4c" stroke="#fff" stroke-width="2"/><line x1="${px}" y1="${py}" x2="${px + dx}" y2="${py + dy}" stroke="rgba(255,255,255,.9)"/>`; html += `<div class="chip-tag mono" style="left:${px + dx + (dx < 0 ? -190 : 0)}px;top:${py + dy - 12}px">${t}</div>`; };
+    tag(700, 170, -30, -44, '<b>云高</b> = 下午降雨概率 18%');
+    tag(470, 612, 20, -46, '<b>亮带速度</b> = 风速 3 级');
+    document.getElementById('heroSvg').innerHTML = svg; document.getElementById('heroTags').innerHTML = html;
+  }
+
+  // —— 三部手机：早 / 午 / 黄昏 ——
+  const PW = 228, PH = 504, X0 = 1110, GAP = 30;
+  const phones = document.getElementById('phones');
+  const confs = [
+    { o: { horizon: .66, crestX: .5, hillL: 50, hillR: 50, seed: 11, pal: 'morning', extra: { clouds: [{ x: 140, base: 318, w: 220, h: 160, bud: 2, lean: .05 }, { x: 40, base: 250, w: 80, h: 26, bud: 1 }], wind: .4 } }, tree: false },
+    { o: { horizon: .6, crestX: .4, hillL: 40, hillR: 70, seed: 12, pal: 'noon', extra: { clouds: [{ x: 60, base: 250, w: 200, h: 90, bud: 1 }, { x: 210, base: 210, w: 120, h: 50, bud: 1 }], wind: 2.2, tree: { x: 150, y: 210, w: 150, h: 120, clumps: 8 }, treeBlur: 2 } }, tree: true },
+    { o: { horizon: .6, crestX: .4, hillL: 40, hillR: 70, seed: 12, pal: 'dusk', extra: { clouds: [{ x: 60, base: 250, w: 200, h: 90, bud: 1 }, { x: 210, base: 210, w: 120, h: 50, bud: 1 }], wind: 2.2, sun: [0.75, -0.45], tree: { x: 150, y: 210, w: 150, h: 120, clumps: 8 }, treeBlur: 2 } }, tree: true },
+  ];
+  const ui = [
+    `<div class="ph" style="top:44px"><div class="lab">07:12 · 早上好</div><div class="big">19<sup>°</sup></div><div class="say">云在长，下午带伞</div></div>
+     <div class="sheet"><div class="h">云越高，雨越大<span>每 3 小时</span></div><div class="hours">${[[9, 14], [12, 26], [15, 58, 1], [18, 40], [21, 18]].map(([t, v, on]) => `<div class="${on ? 'on' : ''}"><i style="height:${v * .8}px"></i>${t}时</div>`).join('')}</div></div>`,
+    `<div class="ph" style="top:44px"><div class="lab">12:30 · 中午</div><div class="big">26<sup>°</sup></div><div class="say">风来了，晒被子吧</div></div>
+     <div class="sheet"><div class="h">西风 3 级 · 4.6 m/s<span>亮带 = 风速</span></div><div class="gauge">${Array.from({ length: 12 }, (_, i) => `<i class="${i < 5 ? 'on' : ''}" style="height:${8 + i * 2.2}px"></i>`).join('')}</div></div>`,
+    `<div class="ph" style="top:44px"><div class="lab">18:42 · 日落</div><div class="big">22<sup>°</sup></div><div class="say">今天最后一道光</div></div>
+     <div class="sheet"><div class="h">换色不换画<span>同一张画 · 四套颜料</span></div><div class="pals">${[['早', 'morning'], ['午', 'noon'], ['黄昏', 'dusk', 1], ['夜', 'night']].map(([n, k, on]) => { const p = Object.assign({}, PAINT.PAL, PALS[k]); return `<div class="${on ? 'on' : ''}"><span>${['sky0', 'sky2', 'cS', 'gM', 'fD'].map(c => `<i style="background:${p[c]}"></i>`).join('')}</span>${n}</div>`; }).join('')}</div></div>`,
+  ];
+  for (let i = 0; i < 3; i++) {
+    const d = document.createElement('div'); d.className = 'phone'; d.style.left = (X0 + i * (244 + GAP)) + 'px';
+    d.innerHTML = `<div class="screen"><canvas class="gl"></canvas><canvas class="fg"></canvas><div class="island"></div><div class="sb mono"><span>9:41</span><span>●●● 100</span></div></div>`;
+    phones.appendChild(d);
+    const { o, tree } = confs[i];
+    const S = scene(PW, PH, o);
+    if (tree) { S.trunk = trunkAt(150, S.ridges.main[150] + 3, 0.42); S.treeShadow = [o.pal === 'dusk' ? 90 : 190, S.ridges.main[150] + 22, 70, 12]; }
+    await paintInto(d.querySelector('canvas.gl'), d.querySelector('canvas.fg'), PW, PH, S, (x, ry, R) => {
+      for (let k = 0; k < 160; k++) { const px = R() * PW; PAINT.grass(x, R, { x0: px, x1: px + 1, y0: ry(px), y1: ry(px) + 5, n: 1, hmin: 2, hmax: 6, wind: .45, cols: o.pal === 'dusk' ? ['#ffe2a2', '#b8a858', '#8a8a50'] : ['#d8ea94', '#9cc95a', '#77ad4c'] }); }
+      if (i === 1) PAINT.girl(x, 70, ry(70) + 3, 58);
+      if (i === 2) { PAINT.girl(x, 70, ry(70) + 3, 58); x.globalCompositeOperation = 'source-atop'; x.fillStyle = 'rgba(255,150,80,.18)'; x.fillRect(0, 0, PW, PH); x.globalCompositeOperation = 'source-over'; }
+    });
+    d.querySelector('.screen').insertAdjacentHTML('beforeend', ui[i]);
+    if (i < 2) {
+      const a = document.createElement('div'); a.className = 'arrow mono';
+      a.style.left = (X0 + i * (244 + GAP) + 244 - 15) + 'px';
+      a.innerHTML = ['+5 h', '+6 h'][i] + `<svg width="40" height="12"><path d="M2 6h34M30 1l6 5-6 5" stroke="#24402a" fill="none" stroke-width="1.4"/></svg>`;
+      phones.appendChild(a);
+    }
+    const st = document.createElement('div'); st.className = 'steps'; st.style.left = (X0 + i * (244 + GAP) + 4) + 'px';
+    st.innerHTML = [
+      `<span class="n">01</span><b>早 · 云高就是预报</b><p>积云的高度 = 下午的降雨概率。不用看图标，看天上那团云长得多高，就知道要不要带伞。</p>`,
+      `<span class="n">02</span><b>午 · 亮带的速度是风速</b><p>3 级风，亮带每秒走 4.6 个屏幕像素 ×10；女孩的裙摆和发梢跟着同一道波。</p>`,
+      `<span class="n">03</span><b>黄昏 · 换色不换画</b><p>还是中午那张画：光换到右边、颜料换成黄昏那套，影子就往左躺、变成紫色。</p>`,
+    ][i];
+    phones.appendChild(st);
+  }
+
+  // —— 配方卡 ——
+  const W4 = 386;
+  const P = PAINT.PAL;
+  { // A：圆 → 云
+    let s = '';
+    const circ = [[40, 66, 26], [70, 58, 30], [102, 64, 24], [62, 34, 22], [86, 30, 16], [48, 40, 14]];
+    circ.forEach(([cx, cy, r]) => s += `<circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="#5f9e4c" stroke-width="1.2" stroke-dasharray="3 3"/>`);
+    s += `<line x1="10" x2="136" y1="88" y2="88" stroke="#24402a" stroke-width="1.2"/><text x="18" y="102" font-family="GeistMono" font-size="9.5" fill="#7a8a70">平的底</text>`;
+    s += `<path d="M150 52 h26 m-6 -5 l6 5 -6 5" stroke="#24402a" fill="none" stroke-width="1.4"/>`;
+    const off = 196;
+    circ.forEach(([cx, cy, r]) => s += `<circle cx="${cx + off}" cy="${cy}" r="${r}" fill="${P.cS}"/>`);
+    circ.forEach(([cx, cy, r]) => s += `<circle cx="${cx + off - r * .18}" cy="${cy - r * .2}" r="${r * .82}" fill="${P.cM}"/>`);
+    circ.forEach(([cx, cy, r]) => s += `<circle cx="${cx + off - r * .3}" cy="${cy - r * .34}" r="${r * .55}" fill="${P.cL}"/>`);
+    s += `<rect x="${off}" y="88" width="140" height="20" fill="#fffdf6"/>`;
+    [P.cL, P.cM, P.cS, P.cD].forEach((c, k) => s += `<rect x="${off + 150}" y="${14 + k * 18}" width="22" height="14" rx="3" fill="${c}" stroke="rgba(0,0,0,.08)"/>`);
+    document.getElementById('vizA').innerHTML = `<svg width="${W4}" height="110" style="background:linear-gradient(180deg,#9ecdf0,#d8eef8);border-radius:10px">${s}</svg>`;
+  }
+  { // B：波 + 草
+    let s = '', path = '';
+    for (let i = 0; i <= 120; i++) { const xx = i / 120 * (W4 - 20) + 10; const v = Math.sin(xx * 0.045 - 1); path += (i ? 'L' : 'M') + xx.toFixed(1) + ' ' + (30 - v * 14).toFixed(1); }
+    s += `<path d="${path}" fill="none" stroke="#5f9e4c" stroke-width="2"/>`;
+    for (let i = 0; i < 46; i++) {
+      const xx = 14 + i * 8; const v = Math.sin(xx * 0.045 - 1); const b = .25 + .5 * Math.max(0, v);
+      const hgt = 40, tx = xx + b * hgt, ty = 104 - hgt * (1 - b * .25);
+      s += `<path d="M${xx - 1.6} 104 Q ${xx + b * 14} ${104 - hgt * .55} ${tx} ${ty} Q ${xx + 1.6 + b * 18} ${104 - hgt * .5} ${xx + 1.6} 104Z" fill="${v > .3 ? '#cfe38a' : '#6fa64a'}"/>`;
+    }
+    s += `<text x="${W4 - 90}" y="12" font-family="GeistMono" font-size="9.5" fill="#7a8a70">ω = 风速 →</text>`;
+    document.getElementById('vizB').innerHTML = `<svg width="${W4}" height="108">${s}</svg>`;
+  }
+  { // C：三个太阳高度的光斑
+    let s = '';
+    [[90, '正午 90°'], [45, '下午 45°'], [18, '黄昏 18°']].forEach(([a, n], k) => {
+      const e = 1 / Math.sin(a * Math.PI / 180); const cx = 62 + k * 128;
+      s += `<rect x="${cx - 58}" y="6" width="116" height="74" rx="10" fill="#3d6a4a"/>`;
+      for (let j = 0; j < 5; j++) { const r = 6 + (j % 3) * 3; const x0 = cx - 34 + (j * 19) % 64, y0 = 22 + (j * 13) % 44; s += `<ellipse cx="${x0}" cy="${y0}" rx="${Math.min(40, r * e * .9)}" ry="${r * .9}" fill="#cfe38a" opacity=".9"/>`; }
+      s += `<text x="${cx}" y="96" text-anchor="middle" font-family="GeistMono" font-size="10" fill="#7a8a70">${n} · ×${e.toFixed(1)}</text>`;
+    });
+    document.getElementById('vizC').innerHTML = `<svg width="${W4}" height="104">${s}</svg>`;
+  }
+  { // D：四套颜料
+    let h = '';
+    [['早', 'morning'], ['午', 'noon'], ['黄昏', 'dusk'], ['夜', 'night']].forEach(([n, k], j) => {
+      const p = Object.assign({}, PAINT.PAL, PALS[k]);
+      h += `<div style="position:absolute;left:0;top:${j * 25}px;display:flex;align-items:center;gap:10px"><span class="mono" style="width:30px;font-size:10px;color:#7a8a70">${n}</span><span style="display:flex;width:316px;height:18px;border-radius:5px;overflow:hidden;box-shadow:inset 0 0 0 1px rgba(36,64,42,.1)">${['sky0', 'sky1', 'sky2', 'cL', 'cS', 'cD', 'hFar', 'hMid', 'gW', 'gM', 'gD', 'fD'].map(c => `<i style="flex:1;background:${p[c]}"></i>`).join('')}</span></div>`;
+    });
+    document.getElementById('vizD').innerHTML = h;
+  }
+  window.__done = true;
+})().catch(e => { console.log('ERR', e.message.slice(0, 4000)); window.__done = true; });
+</script>
+</body>
+</html>

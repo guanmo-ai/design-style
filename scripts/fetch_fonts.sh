@@ -44,6 +44,12 @@ curl -fsSL -o Silkscreen-Bold.ttf    "$GF/silkscreen/Silkscreen-Bold.ttf"
 curl -fsSL -o Inter.ttf "$GF/inter/Inter%5Bopsz,wght%5D.ttf"
 # 第六轮候选 液态金属：站酷庆科黄油体（圆头粗体中文，被做成会滴落的镀铬字；OFL）
 curl -fsSL -o ZCOOLQingKeHuangYou.ttf "$GF/zcoolqingkehuangyou/ZCOOLQingKeHuangYou-Regular.ttf"
+# 第七轮候选 潮玩：站酷快乐体（圆润的中文标题；OFL）
+curl -fsSL -o ZCOOLKuaiLe.ttf "$GF/zcoolkuaile/ZCOOLKuaiLe-Regular.ttf"
+# 第七轮候选 治愈系手绘：马善政毛笔楷书（标题）+ Fraunces 可变字重、SOFT 轴（英文副标题）；均为 OFL
+curl -fsSL -o MaShanZheng.ttf "$GF/mashanzheng/MaShanZheng-Regular.ttf"
+curl -fsSL -o Fraunces.ttf        "$GF/fraunces/Fraunces%5BSOFT,WONK,opsz,wght%5D.ttf"
+curl -fsSL -o Fraunces-Italic.ttf "$GF/fraunces/Fraunces-Italic%5BSOFT,WONK,opsz,wght%5D.ttf"
 # 布局 01 Bento Grid：Inter Display（标题）+ Inter（正文）+ Geist Mono（数字 / 标注）
 TMP=$(mktemp -d)
 curl -fsSL -o "$TMP/inter.zip" https://github.com/rsms/inter/releases/download/v4.1/Inter-4.1.zip

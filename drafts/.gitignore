@@ -12,3 +12,7 @@ candidates-5.html
 !liquid-chrome/*.html
 !point-cloud/*.html
 !thermal/*.html
+# 第七轮候选同理：手写源码
+!hand-painted/*.html
+!toon-shading/*.html
+!designer-toy/*.html

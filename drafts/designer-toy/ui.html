@@ -1,0 +1,325 @@
+<!doctype html>
+<html lang="zh">
+<head>
+<meta charset="utf-8">
+<title>潮玩 · 落到界面上 · MOGU 抽盒机</title>
+<style>
+@font-face { font-family: 'Fredoka'; src: url(../../public/fonts/Fredoka.ttf); font-weight: 300 700; font-stretch: 75% 125%; }
+@font-face { font-family: 'Geist'; src: url(../../public/fonts/Geist.ttf); font-weight: 100 900; }
+@font-face { font-family: 'GeistMono'; src: url(../../public/fonts/GeistMono.ttf); font-weight: 100 900; }
+@font-face { font-family: 'KuaiLe'; src: url(../../public/fonts/ZCOOLKuaiLe.ttf); }
+@font-face { font-family: 'NotoSC'; src: url(../../public/fonts/NotoSansSC-Black.otf); font-weight: 900; }
+@font-face { font-family: 'NotoSC'; src: url(../../public/fonts/NotoSansSC-Bold.otf); font-weight: 700; }
+@font-face { font-family: 'NotoSC'; src: url(../../public/fonts/NotoSansSC-Medium.otf); font-weight: 500; }
+@font-face { font-family: 'NotoSC'; src: url(../../public/fonts/NotoSansSC-Regular.otf); font-weight: 400; }
+* { margin: 0; padding: 0; box-sizing: border-box; }
+:root { --bg: #ffe8ee; --ink: #2a1f3d; --dim: #8a7a99; --line: rgba(42,31,61,.12); --acc: #ff5a5f; --gold: #e0a020; --blue: #62b8ff; }
+html, body { width: 1920px; height: 1080px; overflow: hidden; background: var(--bg); color: var(--ink); font-family: Geist, NotoSC, sans-serif; }
+.mono { font-family: GeistMono, monospace; letter-spacing: .04em; }
+canvas.gl { position: absolute; display: block; }
+.top { position: absolute; left: 64px; right: 64px; top: 34px; display: flex; justify-content: space-between; font-size: 13px; color: var(--dim); text-transform: uppercase; }
+.top b { color: var(--ink); font-weight: 600; }
+.browser { position: absolute; left: 64px; top: 78px; width: 1010px; height: 668px; border-radius: 16px; overflow: hidden; background: #fff; box-shadow: 0 30px 90px rgba(140,60,100,.18), 0 0 0 1px rgba(42,31,61,.06); }
+.bar { height: 40px; display: flex; align-items: center; gap: 8px; padding: 0 16px; background: #fff7f9; border-bottom: 1px solid var(--line); }
+.bar i { width: 11px; height: 11px; border-radius: 50%; background: #f1d9e1; display: block; }
+.bar .url { margin-left: 18px; flex: 1; max-width: 420px; height: 24px; border-radius: 7px; background: #fbe9ef; font-size: 12px; color: #9a8aa8; display: flex; align-items: center; padding: 0 12px; }
+.page { position: absolute; left: 0; top: 40px; right: 0; bottom: 0; }
+.nav { position: absolute; left: 40px; right: 40px; top: 24px; display: flex; align-items: center; font-size: 14px; color: #5c4d6e; gap: 30px; z-index: 2; font-family: NotoSC; }
+.logo { display: flex; align-items: center; gap: 9px; font-family: Fredoka; font-weight: 700; font-size: 24px; color: var(--acc); margin-right: auto; letter-spacing: .02em; }
+.logo .m { width: 22px; height: 14px; border-radius: 22px 22px 4px 4px; background: radial-gradient(circle at 30% 45%, #fff 0 16%, transparent 17%), radial-gradient(circle at 70% 40%, #fff 0 12%, transparent 13%), var(--acc); display: inline-block; }
+.nav .btn { color: #fff; background: var(--ink); border-radius: 999px; padding: 8px 18px; font-weight: 700; font-size: 13px; }
+.hero-t { position: absolute; left: 46px; top: 120px; width: 460px; z-index: 2; }
+.kick { font-size: 12px; color: var(--ink); display: inline-flex; gap: 10px; align-items: center; background: #fff; border: 1px solid var(--line); border-radius: 999px; padding: 6px 12px 6px 6px; font-family: NotoSC; }
+.kick b { color: #fff; background: var(--acc); border-radius: 999px; padding: 1px 9px; font-weight: 700; font-family: Fredoka; letter-spacing: .04em; }
+.hero-t h1 { font-family: KuaiLe; font-weight: 400; font-size: 92px; line-height: 1.04; margin-top: 22px; letter-spacing: .01em; }
+.hero-t h1 span { color: var(--acc); }
+.hero-t p { font-family: NotoSC; font-size: 16px; line-height: 1.75; color: #6b5c7c; margin-top: 18px; }
+.cta { display: flex; gap: 16px; margin-top: 28px; align-items: center; }
+.cta .p { display: inline-flex; gap: 10px; align-items: center; background: var(--acc); color: #fff; font-weight: 700; font-family: NotoSC; font-size: 16px; border-radius: 999px; padding: 13px 24px; box-shadow: 0 10px 24px rgba(255,90,95,.35), inset 0 -3px 0 rgba(0,0,0,.12); }
+.cta .p small { font-family: Fredoka; font-weight: 600; font-size: 15px; background: rgba(255,255,255,.22); border-radius: 999px; padding: 1px 9px; }
+.cta .s { color: #5c4d6e; font-size: 14px; font-family: NotoSC; }
+.stats { position: absolute; left: 46px; bottom: 34px; display: flex; gap: 40px; z-index: 2; }
+.stats div { font-size: 12px; color: var(--dim); font-family: NotoSC; }
+.stats b { display: block; font-family: Fredoka; font-weight: 600; font-size: 26px; color: var(--ink); margin-bottom: 2px; }
+.chip-tag { position: absolute; white-space: nowrap; font-size: 11px; color: var(--ink); background: rgba(255,255,255,.82); backdrop-filter: blur(6px); border-radius: 8px; padding: 6px 10px; z-index: 3; box-shadow: 0 4px 14px rgba(120,60,90,.12); }
+.chip-tag b { color: var(--acc); font-weight: 600; }
+svg.ov { position: absolute; left: 0; top: 0; pointer-events: none; z-index: 2; }
+/* 手机 */
+.phone { position: absolute; top: 78px; width: 244px; height: 520px; border-radius: 40px; background: #fff; box-shadow: inset 0 0 0 7px #f6dfe7, 0 24px 60px rgba(140,60,100,.2), 0 0 0 1px rgba(42,31,61,.08); }
+.screen { position: absolute; left: 8px; top: 8px; right: 8px; bottom: 8px; border-radius: 33px; overflow: hidden; background: #fff; }
+.screen canvas { position: absolute; left: 0; top: 0; }
+.sb { position: absolute; left: 22px; right: 20px; top: 12px; display: flex; justify-content: space-between; font-size: 11px; font-weight: 600; z-index: 3; color: var(--ink); }
+.island { position: absolute; left: 50%; top: 10px; width: 74px; height: 21px; border-radius: 20px; background: #000; transform: translateX(-50%); z-index: 4; }
+.ph { position: absolute; left: 0; right: 0; z-index: 3; text-align: center; }
+.ph .lab { font-size: 10.5px; color: var(--dim); }
+.ph .lab b { color: var(--ink); font-weight: 600; }
+.ph h3 { font-family: KuaiLe; font-weight: 400; font-size: 26px; line-height: 1.2; margin-top: 6px; }
+.ph p { font-family: NotoSC; font-size: 11.5px; color: #6b5c7c; line-height: 1.6; margin-top: 4px; }
+.pbtn { position: absolute; left: 22px; right: 22px; bottom: 22px; height: 44px; border-radius: 999px; display: flex; align-items: center; justify-content: center; gap: 8px; font-family: NotoSC; font-weight: 700; font-size: 14px; z-index: 3; }
+.secret { display: inline-flex; align-items: center; gap: 6px; background: linear-gradient(90deg, #ffe08a, #fff6d6 45%, #ffcf4d 55%, #ffe9a8); color: #6b4a00; font-family: Fredoka; font-weight: 700; font-size: 12px; letter-spacing: .06em; border-radius: 999px; padding: 4px 12px; box-shadow: 0 4px 14px rgba(224,160,32,.4); }
+.steps { position: absolute; top: 612px; font-size: 12px; }
+.steps .n { font-family: GeistMono; color: var(--acc); margin-right: 6px; }
+.steps b { font-family: NotoSC; font-weight: 700; font-size: 15px; color: var(--ink); }
+.steps p { font-family: NotoSC; color: #6b5c7c; font-size: 12.5px; line-height: 1.6; margin-top: 6px; width: 236px; }
+.arrow { position: absolute; top: 330px; font-size: 10px; color: var(--ink); text-align: center; width: 60px; z-index: 5; }
+.arrow svg { display: block; margin: 4px auto 0; }
+.slot { position: absolute; z-index: 3; font-family: Fredoka; font-weight: 700; color: #ffd34d; font-size: 30px; text-align: center; width: 40px; }
+/* 配方卡 */
+.cards { position: absolute; left: 64px; right: 64px; top: 778px; display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px; }
+.card { height: 250px; border-radius: 16px; padding: 18px 20px; position: relative; background: #fff; box-shadow: 0 10px 30px rgba(140,60,100,.08), 0 0 0 1px rgba(42,31,61,.05); }
+.card .k { font-family: GeistMono; font-size: 12px; color: var(--ink); letter-spacing: .02em; }
+.card .k i { font-style: normal; color: #fff; background: var(--acc); border-radius: 6px; padding: 0 6px; margin-right: 8px; }
+.card h4 { font-family: NotoSC; font-weight: 700; font-size: 17px; margin-top: 8px; }
+.card p { font-family: NotoSC; font-size: 12.5px; color: #6b5c7c; line-height: 1.6; margin-top: 6px; }
+.card .viz { position: absolute; left: 20px; right: 20px; bottom: 16px; height: 100px; }
+.vl { position: absolute; font-family: GeistMono; font-size: 10px; color: var(--dim); white-space: nowrap; }
+</style>
+</head>
+<body>
+<div class="top mono"><span><b>NO. 027 · 潮玩</b> &nbsp;·&nbsp; 落到界面上：悬念是做出来的</span><span>MOGU 抽盒机 · 网页 + App · 摇 → 拆 → 收</span></div>
+
+<div class="browser">
+  <div class="bar"><i></i><i></i><i></i><div class="url mono">mogu.toys/picnic</div></div>
+  <div class="page" id="page">
+    <canvas class="gl" id="hero"></canvas>
+    <div class="nav"><span class="logo"><span class="m"></span>MOGU</span><span>系列</span><span>隐藏款</span><span>收藏柜</span><span>线下店</span><span class="btn">拆一盒</span></div>
+    <div class="hero-t">
+      <span class="kick"><b>NEW</b> 野餐系列 · 12 款 + 1 隐藏</span>
+      <h1>今天，<br><span>拆一个。</span></h1>
+      <p>你不知道盒子里是谁，<br>直到它自己跳出来、在空中停一拍。</p>
+      <div class="cta"><span class="p">拆一盒 <small>¥69</small></span><span class="s">先看看系列 →</span></div>
+    </div>
+    <div class="stats"><div><b>12 + 1</b>款</div><div><b>1 / 144</b>隐藏款</div><div><b>0.9 s</b>撕开到见面</div></div>
+    <svg class="ov" id="heroSvg" width="1010" height="628"></svg>
+    <div id="heroTags"></div>
+  </div>
+</div>
+
+<div id="phones"></div>
+
+<div class="cards">
+  <div class="card"><span class="k"><i>A</i>sy: 1 → 0.74 → 1.26 → 1.12 → 1</span><h4>弹出：先蹲、再窜、停一拍</h4><p>横向永远是 1/√sy，体积不变。蹲得越低，窜得越高。</p><div class="viz" id="vizA"></div></div>
+  <div class="card"><span class="k"><i>B</i>wrap 0.4 · shadow = base²</span><h4>搪胶：软的光 + 饱和的暗</h4><p>普通漫反射的暗面发灰；把光“包”过来、暗面用颜色的平方，就像软胶。</p><div class="viz" id="vizB"></div></div>
+  <div class="card"><span class="k"><i>C</i>0.6 s in → 0.18 s → hold 0.25 s</span><h4>悬念：先慢、后快、再定格</h4><p>撕开要慢（攒期待），弹出要快（给惊喜），停一拍（让人看清是谁）。</p><div class="viz" id="vizC"></div></div>
+  <div class="card"><span class="k"><i>D</i>shine = 1 − |x − t| / w</span><h4>隐藏款：一道光扫过去</h4><p>普通款没有光。隐藏款多停一拍，再让 45° 的光带从左扫到右。</p><div class="viz" id="vizD"></div></div>
+</div>
+
+<script src="../_lib/glkit.js"></script>
+<script src="toy.js"></script>
+<script>
+const DPR = devicePixelRatio;
+const cap = [1.0, 0.33, 0.3], body = [0.5, 0.84, 0.72];
+const COLS = [[[1.0, 0.33, 0.3], [0.5, 0.84, 0.72]], [[1.0, 0.62, 0.22], [0.98, 0.86, 0.5]], [[0.45, 0.8, 0.55], [0.98, 0.78, 0.82]], [[0.55, 0.7, 1.0], [1.0, 0.9, 0.62]], [[0.78, 0.6, 1.0], [0.62, 0.86, 0.95]]];
+function boxArt() {
+  const c = document.createElement('canvas'); c.width = 2048; c.height = 1024;
+  const x = c.getContext('2d');
+  x.fillStyle = '#7cc6ff'; x.fillRect(0, 0, 1024, 1024);
+  x.fillStyle = '#9ad4ff';
+  for (let i = 0; i < 9; i++) for (let j = 0; j < 9; j++) { if ((i + j) % 2) continue; x.beginPath(); x.arc(i * 128 + 64, j * 128 + 64, 26, Math.PI, 0); x.fill(); x.fillRect(i * 128 + 54, j * 128 + 64, 20, 22); }
+  x.fillStyle = '#fff6ea'; x.beginPath(); x.roundRect(120, 300, 784, 470, 60); x.fill();
+  x.fillStyle = '#ff5a5f'; x.font = '700 210px Fredoka'; x.textAlign = 'center'; x.fillText('MOGU', 512, 560);
+  x.fillStyle = '#2a1f3d'; x.font = '600 52px Fredoka'; x.fillText('PICNIC SERIES', 512, 660);
+  x.font = '900 120px NotoSC'; x.fillText('小菇', 512, 230);
+  x.fillStyle = '#ffd34d'; x.beginPath(); x.arc(860, 860, 92, 0, 7); x.fill();
+  x.fillStyle = '#2a1f3d'; x.font = '700 130px Fredoka'; x.fillText('?', 860, 905);
+  x.fillStyle = '#ffe1ea'; x.fillRect(1024, 0, 1024, 1024);
+  x.fillStyle = '#2a1f3d'; x.font = '700 64px Fredoka'; x.fillText('COLLECT THEM ALL', 1536, 130);
+  for (let i = 0; i < 12; i++) {
+    const cx = 1024 + 170 + (i % 4) * 230, cy = 290 + Math.floor(i / 4) * 230;
+    x.fillStyle = i === 11 ? '#2a1f3d' : ['#ff5a5f', '#ffb347', '#7ccf9a', '#8fb8ff', '#c79bff', '#ff8fc7'][i % 6];
+    x.beginPath(); x.ellipse(cx, cy - 20, 80, 52, 0, Math.PI, 0); x.fill();
+    x.beginPath(); x.ellipse(cx, cy + 30, 48, 58, 0, 0, 7); x.fill();
+  }
+  return c;
+}
+async function renderInto(canvas, w, h, scene) {
+  canvas.width = Math.round(w * DPR); canvas.height = Math.round(h * DPR);
+  canvas.style.width = w + 'px'; canvas.style.height = h + 'px';
+  const gl = GLK.create(canvas);
+  const P = GLK.program(gl, TOY.FS);
+  await TOY.render(gl, P, null, Object.assign({ exposure: 1.0, saturation: 1.1, key: [-0.6, 0.9, 0.62] }, scene), 4);
+}
+const star = (x, y, r, c) => `<path d="M${x} ${y - r} Q${x} ${y} ${x + r} ${y} Q${x} ${y} ${x} ${y + r} Q${x} ${y} ${x - r} ${y} Q${x} ${y} ${x} ${y - r}Z" fill="${c}"/>`;
+
+(async () => {
+  await document.fonts.load('700 100px Fredoka'); await document.fonts.load('900 100px NotoSC', '小菇');
+  await document.fonts.ready;
+  const tex = boxArt();
+
+  // —— 网页主图：转台上的小菇 + 后面一摞盒子 ——
+  const HW = 1010, HH = 628;
+  const hero = {
+    cam: [0.6, 2.6, 10.5], tgt: [-1.35, 1.75, 0], fov: 30,
+    figs: [{ pos: [0.15, 0.3, 0.6], yaw: 0.42, arm: 0.35, tilt: 0.05, cap, body, expr: 0 }],
+    ped: [0.15, 0.3, 0.6, 1.25], pedCol: '#ffffff',
+    box: { pos: [1.75, 0, -2.6], yaw: -0.45, size: [0.66, 0.68, 0.56] }, boxRep: [1, 2, 0, 1.36], boxClosed: true, boxTex: tex,
+    bgTop: '#ffd2df', bgBot: '#fff0ea', floor: '#ffe3e6',
+  };
+  await renderInto(document.getElementById('hero'), HW, HH, hero);
+  {
+    const pj = p => TOY.project(hero, p, HW, HH);
+    let svg = '', html = '';
+    const ring = []; for (let i = 0; i <= 64; i++) { const a = i / 64 * Math.PI * 2; ring.push(pj([0.15 + Math.cos(a) * 1.55, 0.02, 0.6 + Math.sin(a) * 1.55]).join(',')); }
+    svg += `<polyline points="${ring.join(' ')}" fill="none" stroke="#ff5a5f" stroke-width="1.4" stroke-dasharray="3 5" opacity=".7"/>`;
+    const [ax, ay] = pj([1.6, 0.02, 1.1]); svg += `<path d="M${ax - 14} ${ay - 2} l14 2 -8 10" fill="none" stroke="#ff5a5f" stroke-width="1.6"/>`;
+    const t1 = pj([-0.55, 2.55, 1.1]), t2 = pj([1.2, 0.6, 1.6]);
+    svg += `<line x1="${t1[0]}" y1="${t1[1]}" x2="${t1[0] - 50}" y2="${t1[1] - 60}" stroke="rgba(42,31,61,.4)"/><circle cx="${t1[0]}" cy="${t1[1]}" r="4" fill="#ff5a5f" stroke="#fff" stroke-width="2"/>`;
+    html += `<div class="chip-tag mono" style="left:${t1[0] - 200}px;top:${t1[1] - 84}px"><b>柔光箱</b> 一块大灯 + 一条轮廓灯</div>`;
+    html += `<div class="chip-tag mono" style="left:${t2[0] - 120}px;top:${t2[1] + 26}px"><b>转台</b> 8 s 一圈 · 鼠标拖动可转</div>`;
+    [[-1.2, 3.4, .5, 10, '#ffd34d'], [1.5, 3.2, .4, 13, '#fff'], [-0.9, 1.0, 1.4, 8, '#fff']].forEach(([a, b, c, r, col]) => { const [x, y] = pj([a, b, c]); svg += star(x, y, r, col); });
+    document.getElementById('heroSvg').innerHTML = svg; document.getElementById('heroTags').innerHTML = html;
+  }
+
+  // —— 三部手机 ——
+  const PW = 228, PH = 504, X0 = 1110, GAP = 30;
+  const phones = document.getElementById('phones');
+  const mk = (i) => {
+    const d = document.createElement('div'); d.className = 'phone'; d.style.left = (X0 + i * (244 + GAP)) + 'px';
+    d.innerHTML = `<div class="screen"><canvas></canvas><div class="island"></div><div class="sb mono"><span>9:41</span><span>●●● 100</span></div><svg class="ov" width="${PW}" height="${PH}"></svg></div>`;
+    phones.appendChild(d); return d;
+  };
+  const scenes = [
+    { // 01 摇：3×3 盒子，一盒在晃
+      cam: [0, 3.6, 17.5], tgt: [0, 3.25, 0], fov: 30,
+      figs: [], box: { pos: [0, 0, 0], yaw: 0, size: [0.5, 0.5, 0.45] }, boxRep: [3, 3, 1.22, 1.42], boxWig: [2, 1, 0.16, 0], boxClosed: true, boxTex: tex,
+      shelf: '#ffffff', shelfY: [0, 1.42], shelfW: 2.1, floorOn: false,
+      bgTop: '#ffdbe6', bgBot: '#fff3ee', floor: '#ffe3e6',
+    },
+    { // 02 拆：隐藏款跳出来
+      cam: [2.0, 4.0, 14.8], tgt: [0, 3.5, 0], fov: 31,
+      figs: [
+        { pos: [-0.1, 2.25, 0.3], yaw: 0.25, sy: 1.12, arm: 1, tilt: 0.08, mat: 3, cap: [1.0, 0.72, 0.3], body: [0.9, 0.92, 1.0], expr: 1 },
+        { pos: [0.05, 1.0, 0.0], sy: 0.78, mat: 3, cap: [1.0, 0.72, 0.3], body: [0.9, 0.92, 1.0], ghost: true, expr: 1 },
+      ], ghostA: 0.3,
+      box: { pos: [0.1, 0, -0.1], yaw: 0.3, size: [0.98, 1.0, 0.82] }, boxTex: tex,
+      bgTop: '#c9a8ff', bgBot: '#ffd8e8', floor: '#f2c8e6',
+    },
+    { // 03 收：收藏柜，一格是剪影
+      cam: [0, 4.2, 25], tgt: [0, 4.0, 0], fov: 26,
+      figs: [
+        { pos: [-1.38, 0, 0], yaw: 0.2, cap: COLS[0][0], body: COLS[0][1], expr: 0 },
+        { pos: [0, 0, 0], yaw: 0, cap: COLS[1][0], body: COLS[1][1], expr: 2 },
+        { pos: [1.38, 0, 0], yaw: -0.2, cap: COLS[2][0], body: COLS[2][1], expr: 0 },
+        { pos: [-1.38, 2.75, 0], yaw: 0.2, cap: COLS[3][0], body: COLS[3][1], expr: 2 },
+        { pos: [0, 2.75, 0], yaw: 0, mat: 1, cap: COLS[4][0], body: COLS[4][1], expr: 0 },
+        { pos: [1.38, 2.75, 0], yaw: -0.2, mat: 4, cap: [0.3, 0.24, 0.42], body: [0.3, 0.24, 0.42], expr: 0 },
+      ],
+      shelf: '#ffffff', shelfY: [0, 2.75], shelfW: 2.3, floorOn: false,
+      bgTop: '#fff0f4', bgBot: '#ffe2ea', floor: '#ffe3e6',
+    },
+  ];
+  const ui = [
+    `<div class="ph" style="top:52px"><div class="lab mono"><b>01</b> · 9 盒里选 1 盒</div><h3>摇一摇，<br>听听是谁</h3></div><div class="pbtn" style="background:#2a1f3d;color:#fff">就它了 · ¥69</div>`,
+    `<div class="ph" style="top:54px"><span class="secret">★ SECRET · 1/144</span><h3 style="margin-top:12px">隐藏款！</h3><p>电镀 · 小菇 · 野餐系列</p></div><div class="pbtn" style="background:#fff;color:#2a1f3d;box-shadow:0 6px 20px rgba(80,40,120,.25)">放进收藏柜</div>`,
+    `<div class="ph" style="top:52px"><div class="lab mono"><b>03</b> · 收藏柜</div><h3>5 / 13</h3><p>还差 8 个，和 1 个隐藏款</p></div><div class="pbtn" style="background:#ff5a5f;color:#fff">再拆一盒</div>`,
+  ];
+  for (let i = 0; i < 3; i++) {
+    const d = mk(i);
+    const cv = d.querySelector('canvas');
+    await renderInto(cv, PW, PH, scenes[i]);
+    d.querySelector('.screen').insertAdjacentHTML('beforeend', ui[i]);
+    const svg = d.querySelector('svg'); const pj = p => TOY.project(scenes[i], p, PW, PH);
+    let s = '';
+    if (i === 0) {
+      const [x, y] = pj([1.22 + 0.5, 1.42 + 0.8, 0.5]);
+      for (let k = 0; k < 3; k++) s += `<path d="M${x + 6 + k * 6} ${y - 14 + k * 2} q 6 10 0 20" fill="none" stroke="#ff5a5f" stroke-width="2" stroke-linecap="round" opacity="${1 - k * .25}"/>`;
+      const [lx, ly] = pj([1.22, 1.42 + 1.3, 0.5]);
+      s += `<text x="${lx}" y="${ly}" text-anchor="middle" font-family="GeistMono" font-size="9.5" fill="#ff5a5f">咔哒 ×3</text>`;
+    } else if (i === 1) {
+      [[-1.4, 4.2, .5, 12, '#ffd34d'], [1.3, 4.6, .4, 9, '#fff'], [1.5, 2.6, .9, 14, '#ffe08a'], [-1.3, 2.2, .9, 8, '#fff'], [0.9, 5.3, .2, 7, '#ffd34d']].forEach(([a, b, c, r, col]) => { const [x, y] = pj([a, b, c]); s += star(x, y, r, col); });
+    } else {
+      const [x, y] = pj([1.38, 2.75 + 1.1, 0.6]);
+      d.querySelector('.screen').insertAdjacentHTML('beforeend', `<div class="slot" style="left:${x - 20}px;top:${y - 22}px">?</div>`);
+    }
+    svg.innerHTML = s;
+    if (i < 2) {
+      const a = document.createElement('div'); a.className = 'arrow mono';
+      a.style.left = (X0 + i * (244 + GAP) + 244 - 15) + 'px';
+      a.innerHTML = ['0.6 s', '0.18 s'][i] + `<svg width="40" height="12"><path d="M2 6h34M30 1l6 5-6 5" stroke="#2a1f3d" fill="none" stroke-width="1.4"/></svg>`;
+      phones.appendChild(a);
+    }
+    const st = document.createElement('div'); st.className = 'steps'; st.style.left = (X0 + i * (244 + GAP) + 4) + 'px';
+    st.innerHTML = [
+      `<span class="n">01</span><b>摇 · 盒子自己会晃</b><p>每一盒都能摇。晃 3 下、每下 120 ms、角度 16° → 9° → 4°——像里面真有东西在撞。</p>`,
+      `<span class="n">02</span><b>拆 · 隐藏款多停一拍</b><p>普通款弹出后停 0.25 s；隐藏款停 0.5 s，背景换成夜色、撒一把金色的星。</p>`,
+      `<span class="n">03</span><b>收 · 空位比满格更重要</b><p>没拆到的只给剪影和一个“?”。缺哪个一眼就知道——这才是下一盒的理由。</p>`,
+    ][i];
+    phones.appendChild(st);
+  }
+
+  // —— 配方卡 ——
+  const W4 = 386;
+  { // A：sy 曲线 + 小剪影
+    const ks = [[0, 1], [0.22, 0.74], [0.38, 1.26], [0.55, 1.12], [0.72, 1.12], [1, 1]];
+    const X = t => 10 + t * (W4 - 30), Y = v => 86 - (v - 0.6) / 0.8 * 70;
+    let path = '', s = '';
+    for (let i = 0; i <= 100; i++) { const t = i / 100; let k = 0; while (k < ks.length - 2 && t > ks[k + 1][0]) k++; const [t0, v0] = ks[k], [t1, v1] = ks[k + 1]; const u = (t - t0) / (t1 - t0); const e = u * u * (3 - 2 * u); path += (i ? 'L' : 'M') + X(t).toFixed(1) + ' ' + Y(v0 + (v1 - v0) * e).toFixed(1); }
+    s += `<line x1="10" x2="${W4 - 20}" y1="${Y(1)}" y2="${Y(1)}" stroke="rgba(42,31,61,.15)" stroke-dasharray="3 4"/>`;
+    s += `<path d="${path}" fill="none" stroke="#ff5a5f" stroke-width="2.2"/>`;
+    ks.slice(1, 4).forEach(([t, v], i) => {
+      const x = X(t), y = Y(v); const sx = 1 / Math.sqrt(v);
+      s += `<circle cx="${x}" cy="${y}" r="3.5" fill="#ff5a5f"/>`;
+      s += `<g transform="translate(${x + 18},${y - 4}) scale(${sx},${v})"><ellipse cx="0" cy="-12" rx="11" ry="7" fill="#ff8a7a"/><ellipse cx="0" cy="-2" rx="6" ry="7" fill="#8fd9c0"/></g>`;
+      s += `<text x="${x}" y="${y + (v < 1 ? 16 : -12)}" font-family="GeistMono" font-size="10" fill="#8a7a99" text-anchor="middle">${v}</text>`;
+    });
+    document.getElementById('vizA').innerHTML = `<svg width="${W4}" height="100">${s}</svg><span class="vl" style="left:10px;bottom:-4px">蹲 0.13 s</span><span class="vl" style="left:120px;bottom:-4px">窜 0.1 s</span><span class="vl" style="left:220px;bottom:-4px">停一拍</span>`;
+  }
+  { // B：三颗球——兰伯特 / 包裹 / 搪胶
+    const cv = document.createElement('canvas'); const S = 86, n = 3; cv.width = W4 * DPR; cv.height = 100 * DPR; cv.style.width = W4 + 'px'; cv.style.height = '100px';
+    const x = cv.getContext('2d'); x.scale(DPR, DPR);
+    const base = [1.0, 0.33, 0.3].map(v => Math.pow(v, 1));
+    const L = [-0.55, 0.6, 0.58]; const ln = Math.hypot(...L); L.forEach((v, i) => L[i] = v / ln);
+    const labels = ['普通漫反射', '包裹光 wrap', '+ 饱和暗部 + 柔光箱'];
+    for (let k = 0; k < n; k++) {
+      const R = S / 2 * DPR; const img = x.createImageData(2 * R, 2 * R);
+      for (let j = 0; j < 2 * R; j++) for (let i = 0; i < 2 * R; i++) {
+        const u = (i - R) / R, v = -(j - R) / R, rr = u * u + v * v; const o = (j * 2 * R + i) * 4;
+        if (rr > 1) continue; const nz = Math.sqrt(1 - rr); const ndl = u * L[0] + v * L[1] + nz * L[2];
+        let c;
+        if (k === 0) { const d = Math.max(ndl, 0); c = base.map(b => b * (0.12 + 0.88 * d)); }
+        else if (k === 1) { const d = Math.max((ndl + 0.4) / 1.4, 0); c = base.map(b => b * (0.12 + 0.88 * d)); }
+        else { const d = Math.max((ndl + 0.4) / 1.4, 0); c = base.map(b => (b * b * 0.42) * (1 - d) + b * 0.95 * d); const hx = (L[0]) , hy = (L[1]), hz = L[2] + 1; const hl = Math.hypot(hx, hy, hz); const nh = (u * hx + v * hy + nz * hz) / hl; const sp = Math.pow(Math.max(nh, 0), 60) * 1.2 + 0.12 * Math.pow(1 - nz, 3); c = c.map(q => q + sp); }
+        const aa = Math.min(1, (1 - Math.sqrt(rr)) * R);
+        img.data[o] = 255 * Math.pow(Math.min(1, c[0]), 1 / 2.2); img.data[o + 1] = 255 * Math.pow(Math.min(1, c[1]), 1 / 2.2); img.data[o + 2] = 255 * Math.pow(Math.min(1, c[2]), 1 / 2.2); img.data[o + 3] = 255 * aa;
+      }
+      const tmp = document.createElement('canvas'); tmp.width = tmp.height = 2 * R; tmp.getContext('2d').putImageData(img, 0, 0);
+      const cx = 20 + k * 124;
+      x.fillStyle = 'rgba(42,31,61,.08)'; x.beginPath(); x.ellipse(cx + S / 2, 92, S * 0.42, 5, 0, 0, 7); x.fill();
+      x.drawImage(tmp, cx, 0, S, S);
+    }
+    const v = document.getElementById('vizB'); v.appendChild(cv);
+    labels.forEach((t, k) => v.insertAdjacentHTML('beforeend', `<span class="vl" style="left:${k * 124}px;bottom:-14px;width:126px;text-align:center">${t}</span>`));
+  }
+  { // C：时间轴
+    const segs = [['撕开', 0.6, '#ffd1d6', 'ease-in'], ['弹', 0.18, '#ff5a5f', ''], ['停一拍', 0.25, '#2a1f3d', 'hold'], ['落下', 0.3, '#8fd9c0', 'spring']];
+    const tot = segs.reduce((a, s) => a + s[1], 0); let x0 = 0, s = '';
+    const Wd = W4 - 20;
+    // 进度曲线
+    let path = 'M0 70'; let acc = 0;
+    segs.forEach(([n, d, c, e], i) => {
+      const w = d / tot * Wd;
+      s += `<rect x="${x0}" y="80" width="${w - 3}" height="12" rx="4" fill="${c}"/>`;
+      s += `<text x="${x0 + 2}" y="76" font-family="NotoSC" font-size="11" fill="#2a1f3d">${n}</text><text x="${x0 + 2}" y="104" font-family="GeistMono" font-size="9.5" fill="#8a7a99">${d}s ${e}</text>`;
+      for (let k = 1; k <= 20; k++) { const u = k / 20; let y; if (i === 0) y = 62 - 14 * u * u * u; else if (i === 1) y = 48 - 40 * (1 - Math.pow(1 - u, 3)); else if (i === 2) y = 8; else y = 8 + 4 * Math.exp(-4 * u) * Math.sin(u * 14); path += ` L${(x0 + u * w).toFixed(1)} ${y.toFixed(1)}`; }
+      x0 += w;
+    });
+    s = `<path d="${path}" fill="none" stroke="#ff5a5f" stroke-width="2"/>` + s;
+    document.getElementById('vizC').innerHTML = `<svg width="${W4}" height="110" style="overflow:visible">${s}</svg>`;
+  }
+  { // D：三帧扫光
+    const v = document.getElementById('vizD'); let h = '';
+    [0.1, 0.5, 0.9].forEach((t, k) => {
+      const p = Math.round(t * 140 - 20);
+      h += `<div style="position:absolute;left:${k * 120}px;top:0;width:104px;height:84px;border-radius:12px;overflow:hidden;background:linear-gradient(160deg,#5b4a8a,#2a1f3d);box-shadow:0 6px 16px rgba(42,31,61,.25)">
+        <div style="position:absolute;left:30px;top:16px;width:44px;height:28px;border-radius:44px 44px 8px 8px;background:linear-gradient(180deg,#ffe9a8,#e0a020)"></div>
+        <div style="position:absolute;left:39px;top:40px;width:26px;height:30px;border-radius:13px;background:linear-gradient(180deg,#f4f6ff,#9aa3c4)"></div>
+        <div style="position:absolute;inset:-20px;background:linear-gradient(115deg,transparent ${p - 14}%,rgba(255,255,255,.75) ${p}%,transparent ${p + 14}%)"></div></div>
+        <span class="vl" style="left:${k * 120}px;top:90px">t = ${t}</span>`;
+    });
+    v.innerHTML = h;
+  }
+  window.__done = true;
+})().catch(e => { console.log('ERR', e.message.slice(0, 3000)); window.__done = true; });
+</script>
+</body>
+</html>
