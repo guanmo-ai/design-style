@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="zh">
+<head>
+<meta charset="utf-8">
+<title>第七轮候选 · 年轻人喜欢的三种“像”</title>
+<style>
+@font-face { font-family: 'NotoSC'; src: url(../public/fonts/NotoSansSC-Black.otf); font-weight: 900; }
+@font-face { font-family: 'NotoSC'; src: url(../public/fonts/NotoSansSC-Bold.otf); font-weight: 700; }
+@font-face { font-family: 'NotoSC'; src: url(../public/fonts/NotoSansSC-Regular.otf); font-weight: 400; }
+@font-face { font-family: 'GeistMono'; src: url(../public/fonts/GeistMono.ttf); font-weight: 100 900; }
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html, body { width: 1960px; background: #0b0b0d; color: #f2f2f4; font-family: NotoSC, sans-serif; }
+.wrap { padding: 40px 30px 34px; }
+.head { display: flex; align-items: baseline; gap: 24px; margin-bottom: 30px; }
+.head h1 { font-weight: 900; font-size: 30px; }
+.head span { font-family: GeistMono; font-size: 13px; color: #8d8d96; letter-spacing: .06em; }
+.grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 30px; }
+.col h2 { font-weight: 900; font-size: 30px; }
+.col h2 small { font-family: GeistMono; font-weight: 400; font-size: 20px; margin-left: 8px; color: #cfcfd6; }
+.col .line { font-size: 14px; color: #8d8d96; margin-top: 8px; }
+.col .one { font-size: 16px; margin-top: 10px; font-weight: 700; }
+.col img { width: 100%; display: block; border-radius: 6px; margin-top: 18px; outline: 1px solid rgba(255,255,255,.08); }
+.col .cap { font-size: 13.5px; line-height: 1.7; color: #b9b9c2; margin-top: 10px; }
+.col .cap b { color: #fff; }
+.c1 .one { color: #b9e07a; } .c2 .one { color: #7fc8ff; } .c3 .one { color: #ff8fa0; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="head"><h1>第七轮候选 · 年轻人喜欢的三种“像”</h1><span>像吉卜力 / 像二次元游戏 / 像潮玩 · 每个风格两张：第 0 帧 + 落到界面上 · 全部代码实时渲染，原创角色，没有一张素材</span></div>
+  <div class="grid">
+    <div class="col c1">
+      <h2>治愈系手绘<small>Hand-Painted Anime</small></h2>
+      <div class="line">1985 吉卜力工作室 → 1988 男鹿和雄画《龙猫》的背景 → 今天的治愈系插画与独立游戏</div>
+      <div class="one">天空一笔一笔刷，云一团一团鼓，风吹过草坡翻出亮面。</div>
+      <img src="hand-painted/png/cover.png">
+      <div class="cap"><b>第 0 帧</b> · 夏天的山坡：积云由一堆圆堆出来、按法线分三四个色阶（亮面暖白、暗面紫蓝）；草坡上一道道风的亮带；树影里的光斑全是椭圆（太阳的小孔成像）；戴草帽的女孩按着帽子，裙摆和飘带顺着风。</div>
+      <img src="hand-painted/png/ui.png">
+      <div class="cap"><b>界面</b> · Sora 天气：把预报画成一张会动的画——云的高度 = 降雨概率，亮带速度 = 风速，同一张画早 / 午 / 黄昏 / 夜换四套颜料。配方：积云 = 圆的并集、风 = sin(x·k − ωt)、光斑扁度 = 1/sin(太阳高度)、换色不换画。</div>
+    </div>
+    <div class="col c2">
+      <h2>卡通渲染<small>Toon Shading</small></h2>
+      <div class="line">2000《Jet Set Radio》→ 2002《风之杖》→ 2014《罪恶装备 Xrd》→ 2020《原神》</div>
+      <div class="one">明明是 3D，看上去却是手画的：两阶光影 + 一圈描边 + 画上去的五官。</div>
+      <img src="toon-shading/png/cover.png">
+      <div class="cap"><b>第 0 帧</b> · 原创 Q 版角色“星野”被斜着切成五步，从脚到头：灰模 → 法线 → 两阶光影 → + 描边 → + 边缘光 / 天使环 / 脸部阴影。左边是 3D 视口，右边是动画天空——一张图讲完三渲二。</div>
+      <img src="toon-shading/png/ui.png">
+      <div class="cap"><b>界面</b> · 游戏角色页 + App：只改两个颜色就换发色；点一下头，眼睛换成“&gt; &lt;”（换的是贴图，模型不动）；做成 SSR 卡面线宽还是 1.5 px。配方：w 决定画得多硬、阴影换色不变黑、背面外扩描边、脸部阈值图。</div>
+    </div>
+    <div class="col c3">
+      <h2>潮玩<small>Designer Toy</small></h2>
+      <div class="line">1999 香港搪胶 Gardener → 2000s 美国 Art Toy → 2016 盲盒 → 2025 全球潮玩热</div>
+      <div class="one">大头、小身子、哑光软胶——最上头的是拆开那一下。</div>
+      <img src="designer-toy/png/cover.png">
+      <div class="cap"><b>第 0 帧</b> · 原创角色“小菇”从盲盒里跳出来：洋葱皮残影标出 −8 帧压扁、−4 帧拉长、现在定一拍；盒盖飞起，盒子侧面印着全系列 + 隐藏款剪影。左下：同一只小菇四种材质——搪胶 / 植绒 / 果冻 / 电镀（隐藏款）。</div>
+      <img src="designer-toy/png/ui.png">
+      <div class="cap"><b>界面</b> · MOGU 抽盒机：摇一摇（盒子自己会晃）→ 拆（隐藏款多停一拍、撒金星）→ 收藏柜（没拆到的只给剪影和“?”）。配方：squash &amp; stretch 体积不变、搪胶 = 包裹光 + 饱和暗部、悬念节奏、隐藏款扫光。</div>
+    </div>
+  </div>
+</div>
+</body>
+</html>
