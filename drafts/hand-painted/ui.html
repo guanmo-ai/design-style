@@ -54,7 +54,7 @@ svg.ov { position: absolute; left: 0; top: 0; pointer-events: none; z-index: 3; 
 .ph .lab { font-family: GeistMono; font-size: 10.5px; letter-spacing: .08em; }
 .ph .big { font-family: Fraunces; font-weight: 300; font-size: 62px; line-height: 1; margin-top: 2px; font-variation-settings: 'SOFT' 100, 'opsz' 144; }
 .ph .big sup { font-size: 22px; vertical-align: top; }
-.ph .say { font-family: Serif; font-size: 16px; margin-top: 6px; letter-spacing: .04em; width: 150px; line-height: 1.45; }
+.ph .say { font-family: Serif; font-size: 16px; margin-top: 6px; letter-spacing: .04em; width: 150px; line-height: 1.45; text-shadow: 0 1px 2px rgba(10,30,60,.6), 0 0 14px rgba(10,30,70,.55); }
 .sheet { position: absolute; left: 10px; right: 10px; bottom: 10px; z-index: 3; background: #fbf7ec; border-radius: 18px; padding: 12px 14px; color: var(--ink); font-family: NotoSC; font-size: 11px; box-shadow: 0 10px 30px rgba(20,40,60,.22); }
 .sheet .h { display: flex; justify-content: space-between; align-items: baseline; font-family: Serif; font-weight: 700; font-size: 13px; }
 .sheet .h span { font-family: GeistMono; font-weight: 400; color: #7c836f; font-size: 9.5px; }
@@ -109,73 +109,69 @@ svg.ov { position: absolute; left: 0; top: 0; pointer-events: none; z-index: 3; 
 <div id="phones"></div>
 
 <div class="cards">
-  <div class="card"><span class="k"><i>A</i>底色 → 大笔 → 中笔 → 色点</span><h4>作画四步：不描绘，只暗示</h4><p>先铺大色块，再一层层缩小笔；最后几颗亮的“色点”，叶子就出来了。</p><div class="viz" id="vizA"></div></div>
-  <div class="card"><span class="k"><i>B</i>edge = mix(1, 22, (1 − h)^1.6) px</span><h4>积乱云：底晕开，顶收边</h4><p>越往云底，边缘越软（湿画法）；迎光的顶边最后用厚白收得干干净净。</p><div class="viz" id="vizB"></div></div>
-  <div class="card"><span class="k"><i>C</i>光斑扁度 = 1 / sin(太阳高度)</span><h4>光斑：太阳越低，椭圆越扁</h4><p>叶缝是小孔，地上是太阳的像。界面里的“光”也照这个比例做，才像真的。</p><div class="viz" id="vizC"></div></div>
-  <div class="card"><span class="k"><i>D</i>palette[时刻] · 同一张画</span><h4>换色不换画：一天四套颜料</h4><p>形状只画一次，按时间换颜料表：黄昏的影子偏紫，夜里的田偏青。</p><div class="viz" id="vizD"></div></div>
+  <div class="card"><span class="k"><i>A</i>形状 → 分层 → 水粉 → 人物</span><h4>作画四步：先设计形状</h4><p>吉卜力的画是一块块设计过的形状，不是纹理。先把形状定死，再上色、再出笔触。</p><div class="viz" id="vizA"></div></div>
+  <div class="card"><span class="k"><i>B</i>clump = 深 + 中(↖ 0.26r) + 亮(↖ 0.46r)</span><h4>树：一团团叶子压上去</h4><p>每团叶子三层：最深的铺满，往光的方向叠小一圈的中间色、更小的亮色。</p><div class="viz" id="vizB"></div></div>
+  <div class="card"><span class="k"><i>C</i>Kuwahara(r = 4) + 手抖 2 px</span><h4>笔触：滤镜做出来的水粉</h4><p>8 个扇区里取最平的那几块求平均：平的地方变成一块块笔触，边缘保留。</p><div class="viz" id="vizC"></div></div>
+  <div class="card"><span class="k"><i>D</i>palette[时刻] · 同一张画</span><h4>换色不换画：一天三套颜料</h4><p>形状只画一次，按时间换颜料表：早上偏粉紫，黄昏云底发蓝、边缘发金。</p><div class="viz" id="vizD"></div></div>
 </div>
 
 <script src="../_lib/glkit.js"></script>
-<script src="paint.js"></script>
-<script src="scene.js"></script>
+<script src="gouache.js"></script>
+<script src="painterly.js"></script>
+<script src="summer.js"></script>
 <script src="girl.js"></script>
 <script>
 const DPR = devicePixelRatio;
-const PALS = {
-  morning: { sk0: '#4a7fc8', sk1: '#8db8e6', sk2: '#e6d5da', sk3: '#fbe7dc', skSun: '#fff0dc', cl0: '#fff6ee', cl1: '#f6e2de', cl2: '#c6b8d4', cl3: '#a498c0', mt0: '#8a9cc8', mt1: '#c9c6dc', fo0: '#2a4a48', fo1: '#3e6458', fo2: '#5c8466', fo3: '#88a878', pd0: '#b6c8aa', pd1: '#90b862', pd2: '#6a9a4a', pdW: '#e4edc4', lv0: '#5e8044', rd0: '#d8c9ae', vg0: '#557f44', vg1: '#86b05a' },
-  noon: {},
-  dusk: { sk0: '#3b4a96', sk1: '#a46aa6', sk2: '#f29e7a', sk3: '#ffc78e', skSun: '#ffd89a', cl0: '#ffe3b2', cl1: '#f7b494', cl2: '#a87aa8', cl3: '#6e5a94', mt0: '#6c5e92', mt1: '#b98aa2', fo0: '#232a3e', fo1: '#38384e', fo2: '#55505e', fo3: '#8a6e62', tr0: '#1a1e2e', tr1: '#2c2e3c', tr2: '#4a4a3e', tr3: '#8a7a48', tr4: '#d4a860', pd0: '#c9a17c', pd1: '#b2a052', pd2: '#7e8040', pdW: '#ffd28c', lv0: '#5a5a3a', rd0: '#dca982', rd1: '#7a5a5a', vg0: '#5a6a3a', vg1: '#9a9a4a', spotL: '#ffd68a' },
-  night: { sk0: '#0c1638', sk1: '#1d3068', sk2: '#3a548c', sk3: '#5a6c9c', cl1: '#7e90c4', cl2: '#4e5e96', mt0: '#2e4472', fo1: '#1e3a4a', pd1: '#2e5a5a', pdW: '#6e9c98', rd0: '#6a7088' },
-};
-const Lh = PAINT.L;
+const mix0 = (a, b, t) => GOUACHE.mix(a, b, t);
 
 (async () => {
-  await document.fonts.load('700 54px Serif', '把今天的天空画给你看晴午后积乱云长高早上云还在风来了黄昏最后一道光作画四步换色不换画'); await document.fonts.ready;
-  // —— 网页主图：没有大树，大片天空 + 积乱云 + 土路 + 电线杆 ——
-  const HW = 1010, HH = 628;
-  const hs = SCENE.cover(HW, HH, { yh: 418, vpx: 640, foc: 760, noTree: true, strokeScale: .62, seed: 44,
-    clouds: [{ x: HW * .8, base: 384, w: HW * .42, h: 340, bud: 2, lean: -.03, tower: .9 }] , poleZ0: 16 });
+  await document.fonts.load('700 54px Serif', '把今天的天空画给你看晴午后积乱云长高早上云还在长风来了今天最后一道光'); await document.fonts.ready;
+  const girlAt = (c, k = 1) => GIRL.girl(c, 830, 900, 210 * k);
+  // 画一张：世界坐标里取 view，画到 cw×ch 的 canvas 上（pxScale 倍像素），再过水粉滤镜
+  async function scene(cv, cw, ch, view, opt = {}, pxScale = 2) {
+    const raw = document.createElement('canvas'); raw.width = Math.round(cw * pxScale); raw.height = Math.round(ch * pxScale);
+    SUMMER.paint(raw.getContext('2d'), raw.width, raw.height, Object.assign({ dpr: 1, grain: 0, view }, opt));
+    let flat = null;
+    if (opt.keepFlat) { flat = document.createElement('canvas'); flat.width = raw.width; flat.height = raw.height; GOUACHE.flat = true; SUMMER.paint(flat.getContext('2d'), flat.width, flat.height, Object.assign({ dpr: 1, grain: 0, view }, opt)); GOUACHE.flat = false; }
+    await PAINTERLY.apply(raw, cv, { passes: [Math.max(2, Math.round(4 * raw.width / view[2]))] });
+    cv.style.width = cw + 'px'; cv.style.height = ch + 'px';
+    return { raw, flat };
+  }
+  const celLayer = (fg, cw, ch, view, draw) => { fg.width = cw * DPR; fg.height = ch * DPR; fg.style.width = cw + 'px'; fg.style.height = ch + 'px'; const c = fg.getContext('2d'); const k = cw / view[2]; c.setTransform(k * DPR, 0, 0, k * DPR, -view[0] * k * DPR, -view[1] * k * DPR); draw(c); };
+
+  // —— 网页主图 ——
+  const HW = 1010, HH = 628, hv = [183, 0, 1737, 1080];
+  const heroClouds = [{ x: 1170, base: 520, w: 860, h: 480, bud: 2, lean: -.04, tower: .9 }, { x: 1660, base: 150, w: 260, h: 60, bud: 1, tower: .2 }];
+  const H0 = await scene(document.getElementById('hero'), HW, HH, hv, { clouds: heroClouds, keepFlat: true });
+  celLayer(document.getElementById('heroFg'), HW, HH, hv, c => girlAt(c));
   {
-    const cv = document.getElementById('hero'), fg = document.getElementById('heroFg');
-    for (const c of [cv, fg]) { c.width = HW * DPR; c.height = HH * DPR; c.style.width = HW + 'px'; c.style.height = HH + 'px'; }
-    await PAINT.render(GLK.create(cv), hs);
-    const x = fg.getContext('2d'); x.scale(DPR, DPR); SCENE.poles(x, hs); SCENE.wires(x, hs);
-    const Zg = 14, [gx, gy] = PAINT.ground(hs, PAINT.roadX(hs, Zg) - .2, Zg); GIRL.girl(x, gx, gy, 1.45 * hs.foc / Zg);
-    GIRL.dragonfly(x, 560, 470, .9, -.2);
+    const toS = (x, y) => [(x - hv[0]) * HW / hv[2], (y - hv[1]) * HW / hv[2]];
     let svg = '', html = '';
-    const tag = (px, py, bx, by, k, t) => { svg += `<line x1="${px}" y1="${py}" x2="${bx + 10}" y2="${by + 12}" stroke="rgba(255,255,255,.95)"/><circle cx="${px}" cy="${py}" r="3.5" fill="#fff"/>`; html += `<div class="tag" style="left:${bx}px;top:${by}px"><b>${k}</b>${t}</div>`; };
-    tag(790, 150, 560, 70, '云高', '= 午后雷阵雨概率 40%');
-    tag(300, 520, 140, 560, '亮纹速度', '= 风速 3 级');
+    const tag = (wx, wy, bx, by, k, t) => { const [px, py] = toS(wx, wy); svg += `<line x1="${px}" y1="${py}" x2="${bx + 10}" y2="${by + 12}" stroke="rgba(255,255,255,.95)"/><circle cx="${px}" cy="${py}" r="3.5" fill="#fff"/>`; html += `<div class="tag" style="left:${bx}px;top:${by}px"><b>${k}</b>${t}</div>`; };
+    tag(1150, 120, 590, 40, '云高', '= 午后雷阵雨概率 40%');
+    tag(560, 700, 300, 470, '稻浪亮纹', '= 风速 3 级');
     document.getElementById('heroSvg').innerHTML = svg; document.getElementById('heroTags').innerHTML = html;
   }
 
   // —— 三部手机：同一张画，早 / 午 / 黄昏 ——
-  const PW = 228, PH = 504, X0 = 1110, GAP = 30;
+  const PW = 228, PH = 504, X0 = 1110, GAP = 30, pv = [560, 0, 488, 1080];
   const phones = document.getElementById('phones');
   const conf = [
-    { pal: 'morning', cl: .55, sun: [-.7, -.35], sun3: [-.7, .35, .4], lab: '07:12 · 早上', t: 21, say: '云还在长，午后带伞' },
-    { pal: 'noon', cl: 1, sun: [-.62, -.58], sun3: [-.62, .6, .5], lab: '13:30 · 中午', t: 29, say: '风来了，晒被子吧' },
-    { pal: 'dusk', cl: 1, sun: [.8, -.28], sun3: [.8, .28, .5], lab: '18:42 · 日落', t: 24, say: '今天最后一道光' },
+    { pal: 'morning', h: 220, lab: '07:12 · 早上', t: 21, say: '云还在长，午后带伞', girl: false },
+    { pal: 'noon', h: 420, lab: '13:30 · 中午', t: 29, say: '风来了，晒被子吧', girl: true },
+    { pal: 'gold', h: 470, lab: '18:42 · 日落', t: 24, say: '今天最后一道光', girl: true },
   ];
   for (let i = 0; i < 3; i++) {
     const c = conf[i];
     const d = document.createElement('div'); d.className = 'phone'; d.style.left = (X0 + i * (244 + GAP)) + 'px';
     d.innerHTML = `<div class="screen"><canvas class="gl"></canvas><canvas class="fg"></canvas><div class="island"></div><div class="sb mono"><span>9:41</span><span>●●● 100</span></div></div>`;
     phones.appendChild(d);
-    const S = SCENE.cover(PW, PH, { yh: 300, vpx: 132, foc: 300, noTree: true, strokeScale: .34, seed: 52, wind: 1.2 + i * .9, sun: c.sun,
-      clouds: [{ x: PW * .74, base: 282, w: PW * .78, h: 90 + 110 * c.cl, bud: 2, tower: .9 }, { x: PW * .08, base: 272, w: PW * .26, h: 20, bud: 1 }], poleZ0: 12 });
-    S.sun3 = c.sun3; S.shDir = c.sun[0] > 0 ? [-.85, -.4] : [.8, -.6]; S.pal = PALS[c.pal];
-    const cv = d.querySelector('canvas.gl'), fg = d.querySelector('canvas.fg');
-    for (const q of [cv, fg]) { q.width = PW * DPR; q.height = PH * DPR; q.style.width = PW + 'px'; q.style.height = PH + 'px'; }
-    await PAINT.render(GLK.create(cv), S);
-    const x = fg.getContext('2d'); x.scale(DPR, DPR);
-    SCENE.poles(x, S); SCENE.wires(x, S, c.pal === 'dusk' ? 'rgba(50,30,50,.9)' : undefined);
-    if (i > 0) { const Zg = 9, [gx, gy] = PAINT.ground(S, PAINT.roadX(S, Zg) - .25, Zg); GIRL.girl(x, gx, gy, 1.45 * S.foc / Zg); }
-    if (c.pal === 'dusk') { x.globalCompositeOperation = 'source-atop'; x.fillStyle = 'rgba(255,140,90,.2)'; x.fillRect(0, 0, PW, PH); x.globalCompositeOperation = 'source-over'; }
+    await scene(d.querySelector('canvas.gl'), PW, PH, pv, { pal: c.pal, clouds: [{ x: 880, base: 530, w: 520, h: c.h, bud: 2, tower: .9 }, { x: 640, base: 330, w: 150, h: 40, bud: 1, tower: .2 }] });
+    if (c.girl) celLayer(d.querySelector('canvas.fg'), PW, PH, pv, cc => { girlAt(cc); if (c.pal === 'gold') { cc.globalCompositeOperation = 'source-atop'; cc.fillStyle = 'rgba(255,150,80,.2)'; cc.fillRect(0, 0, 1920, 1080); } });
     let sheet = '';
     if (i === 0) sheet = `<div class="h">云越高，雨越大<span>每 3 小时</span></div><div class="bars">${[[9, 18], [12, 30], [15, 56, 1], [18, 40], [21, 16]].map(([t, v, on]) => `<div class="${on ? 'on' : ''}"><i style="height:${v * .85}px"></i>${t}时</div>`).join('')}</div>`;
     if (i === 1) sheet = `<div class="h">西风 3 级 · 4.6 m/s<span>亮纹 = 风速</span></div><svg class="waves" width="184" height="36">${Array.from({ length: 3 }, (_, k) => `<path d="M0 ${12 + k * 9} ${Array.from({ length: 24 }, (_, j) => `L${j * 8} ${12 + k * 9 + Math.sin(j * .7 - k) * 3.5}`).join(' ')}" fill="none" stroke="${['#3f7a46', '#86b05a', '#cfe6a0'][k]}" stroke-width="2.2" stroke-linecap="round"/>`).join('')}</svg>`;
-    if (i === 2) sheet = `<div class="h">换色不换画<span>同一张画 · 四套颜料</span></div><div class="pals">${[['早', 'morning'], ['午', 'noon'], ['黄昏', 'dusk', 1], ['夜', 'night']].map(([n, k, on]) => { const p = Object.assign({}, PAINT.PAL, PALS[k]); return `<div class="${on ? 'on' : ''}"><span>${['sk0', 'sk2', 'cl2', 'pd1', 'fo0'].map(q => `<i style="background:${p[q]}"></i>`).join('')}</span>${n}</div>`; }).join('')}</div>`;
+    if (i === 2) sheet = `<div class="h">换色不换画<span>同一张画 · 三套颜料</span></div><div class="pals">${[['早', 'morning'], ['午', 'noon'], ['黄昏', 'gold', 1]].map(([n, k, on]) => { const p = SUMMER.PALS[k]; return `<div class="${on ? 'on' : ''}"><span>${[p.sky[0], p.sky[2], p.cl.sh, p.pad[1], p.tree[1]].map(q => `<i style="background:${q}"></i>`).join('')}</span>${n}</div>`; }).join('')}</div>`;
     d.querySelector('.screen').insertAdjacentHTML('beforeend', `<div class="ph sh" style="top:42px"><div class="lab">${c.lab}</div><div class="big">${c.t}<sup>°</sup></div><div class="say">${c.say}</div></div><div class="sheet">${sheet}</div>`);
     if (i < 2) {
       const a = document.createElement('div'); a.className = 'arrow mono';
@@ -186,48 +182,56 @@ const Lh = PAINT.L;
     const st = document.createElement('div'); st.className = 'steps'; st.style.left = (X0 + i * (244 + GAP) + 4) + 'px';
     st.innerHTML = [
       `<span class="n">01</span><b>早 · 云高就是预报</b><p>积乱云长得多高 = 午后雷阵雨的概率。早上它才到半空——不看图标，看天就知道要不要带伞。</p>`,
-      `<span class="n">02</span><b>午 · 亮纹就是风</b><p>稻浪的亮纹每秒走多远，风就多大；女孩的裙摆和飘带跟着同一阵风。</p>`,
-      `<span class="n">03</span><b>黄昏 · 换色不换画</b><p>还是那张画：光换到右边、颜料换成黄昏那一套，影子往左躺、变紫。</p>`,
+      `<span class="n">02</span><b>午 · 亮纹就是风</b><p>稻浪的亮纹走多快，风就多大；女孩的头发和飘带跟着同一阵风。</p>`,
+      `<span class="n">03</span><b>黄昏 · 换色不换画</b><p>还是那张画：光换到右边、颜料换成黄昏那套，云底发蓝、边缘发金。</p>`,
     ][i];
     phones.appendChild(st);
   }
 
   // —— 配方卡 ——
   const W4 = 386;
-  { // A：作画四步（同一块，画到第几步）
-    const v = document.getElementById('vizA'); const crop = [540, 170, 460, 483];
-    const steps = [[0, 0, '大色块'], [1, .45, '大笔'], [3, 1, '中笔'], [4, 1, '色点']];
-    for (const [i, [lv, det, n]] of steps.entries()) {
-      const t = document.createElement('div'); t.className = 'thumb'; t.style.left = (i * 88) + 'px'; t.innerHTML = '<canvas></canvas>';
-      v.appendChild(t); v.insertAdjacentHTML('beforeend', `<span class="vl" style="left:${i * 88}px;top:90px">0${i + 1} ${n}</span>`);
-      const c2 = t.querySelector('canvas'); const sc = 80 / crop[2];
-      c2.width = 1920 * sc * DPR * 1.3; c2.height = 1080 * sc * DPR * 1.3; c2.style.width = (1920 * sc) + 'px'; c2.style.height = (1080 * sc) + 'px'; c2.style.left = (-crop[0] * sc) + 'px'; c2.style.top = (-crop[1] * sc) + 'px';
-      const S2 = SCENE.cover(1920, 1080); S2.levels = lv; S2.detail = det; S2.dpr = sc * DPR * 1.3;
-      await PAINT.render(GLK.create(c2), S2);
+  { // A：作画四步（从网页主图里截同一块）
+    const v = document.getElementById('vizA'); const crop = [560, 380, 520, 520];
+    const heroCv = document.getElementById('hero');
+    const srcs = [[H0.flat, 0, '形状'], [H0.raw, 0, '分层'], [heroCv, 0, '水粉'], [heroCv, 1, '人物']];
+    srcs.forEach(([src, g, n], i) => {
+      const t = document.createElement('div'); t.className = 'thumb'; t.style.left = (i * 88) + 'px'; t.innerHTML = '<canvas></canvas>'; v.appendChild(t);
+      v.insertAdjacentHTML('beforeend', `<span class="vl" style="left:${i * 88}px;top:90px">0${i + 1} ${n}</span>`);
+      const c = t.querySelector('canvas'); c.width = 80 * DPR * 2; c.height = 84 * DPR * 2; c.style.width = '80px'; c.style.height = '84px';
+      const x = c.getContext('2d'); const sx = src.width / hv[2];
+      const ch = crop[2] * 84 / 80;
+      x.drawImage(src, (crop[0] - hv[0]) * sx, (crop[1] - hv[1]) * sx, crop[2] * sx, ch * sx, 0, 0, c.width, c.height);
+      if (g) { const k = c.width / crop[2]; x.setTransform(k, 0, 0, k, -crop[0] * k, -crop[1] * k); girlAt(x); }
+    });
+  }
+  { // B：一团叶子，三步
+    const v = document.getElementById('vizB'); const P = SUMMER.PALS.noon;
+    for (let i = 0; i < 3; i++) {
+      const c = document.createElement('canvas'); c.width = 110 * DPR * 2; c.height = 92 * DPR * 2; c.style.cssText = `position:absolute;left:${i * 126}px;top:0;width:110px;height:92px;border-radius:2px`;
+      v.appendChild(c); const x = c.getContext('2d'); x.scale(DPR * 2, DPR * 2);
+      x.fillStyle = mix0(P.sky[2], '#ffffff', .3); x.fillRect(0, 0, 110, 92);
+      const R = GOUACHE.rng(5);
+      const clumps = [[55, 50, 34]];
+      if (i === 0) { GOUACHE.flat = true; GOUACHE.tree(x, R, { clumps, pal: P.tree, L: [-.4, -.9], center: [55, 70], R: 40, leaf: .22 }); GOUACHE.flat = false; }
+      else GOUACHE.tree(x, R, { clumps, pal: P.tree, L: [-.4, -.9], center: [55, 75], R: 40, leaf: .22 });
+      if (i === 2) { const ar = [[30, 22, -.9], [76, 26, -.5]]; x.strokeStyle = '#23352a'; x.lineWidth = 1; ar.forEach(([ax, ay]) => { x.beginPath(); x.moveTo(ax + 14, ay + 14); x.lineTo(ax, ay); x.stroke(); }); }
+      v.insertAdjacentHTML('beforeend', `<span class="vl" style="left:${i * 126}px;top:96px">${['01 最深的铺满', '02 + 中间色 + 亮色', '03 光从左上来'][i]}</span>`);
     }
   }
-  { // B：一朵云：底晕开、顶收边
-    const v = document.getElementById('vizB'); const c2 = document.createElement('canvas'); v.appendChild(c2);
-    const S3 = SCENE.cover(W4, 104, { yh: 140, vpx: 200, foc: 300, noTree: true, strokeScale: .4, seed: 61, clouds: [{ x: 190, base: 96, w: 230, h: 92, bud: 2, tower: .6 }] });
-    c2.width = W4 * DPR; c2.height = 104 * DPR; c2.style.width = W4 + 'px'; c2.style.height = '104px'; c2.style.borderRadius = '2px';
-    await PAINT.render(GLK.create(c2), S3);
-    v.insertAdjacentHTML('beforeend', `<svg style="position:absolute;left:0;top:0" width="${W4}" height="104"><line x1="262" y1="26" x2="300" y2="16" stroke="#23352a"/><text x="304" y="19" font-family="GeistMono" font-size="10" fill="#23352a">顶 · 1 px</text><line x1="262" y1="92" x2="300" y2="82" stroke="#23352a"/><text x="304" y="85" font-family="GeistMono" font-size="10" fill="#23352a">底 · 22 px</text></svg>`);
-  }
-  { // C：三个太阳高度的光斑
-    let s = '';
-    [[90, '正午 90°'], [45, '下午 45°'], [18, '黄昏 18°']].forEach(([a, n], k) => {
-      const e = 1 / Math.sin(a * Math.PI / 180); const cx = 62 + k * 128;
-      s += `<rect x="${cx - 58}" y="4" width="116" height="76" rx="2" fill="#4a6a4a"/>`;
-      for (let j = 0; j < 6; j++) { const r = 5 + (j % 3) * 2.5; const x0 = cx - 36 + (j * 23) % 70, y0 = 18 + (j * 17) % 50; s += `<ellipse cx="${x0}" cy="${y0}" rx="${Math.min(40, r * e)}" ry="${r}" fill="#e6d79a" opacity=".92"/>`; }
-      s += `<text x="${cx}" y="98" text-anchor="middle" font-family="GeistMono" font-size="10" fill="#7c836f">${n} · ×${e.toFixed(1)}</text>`;
+  { // C：滤镜前 / 滤镜后（同一块草和云）
+    const v = document.getElementById('vizC'); const crop = [1230, 520, 300, 140];
+    [[H0.raw, '滤镜前 · 矢量的'], [document.getElementById('hero'), '滤镜后 · 水粉的']].forEach(([src, n], i) => {
+      const c = document.createElement('canvas'); c.width = 170 * DPR * 2; c.height = 80 * DPR * 2; c.style.cssText = `position:absolute;left:${i * 186}px;top:0;width:170px;height:80px;border-radius:2px;box-shadow:0 0 0 1px rgba(35,53,42,.1)`;
+      v.appendChild(c); const x = c.getContext('2d'); const sx = src.width / hv[2];
+      x.drawImage(src, (crop[0] - hv[0]) * sx, crop[1] * sx, crop[2] * sx, crop[3] * sx, 0, 0, c.width, c.height);
+      v.insertAdjacentHTML('beforeend', `<span class="vl" style="left:${i * 186}px;top:88px">${n}</span>`);
     });
-    document.getElementById('vizC').innerHTML = `<svg width="${W4}" height="104">${s}</svg>`;
   }
-  { // D：四套颜料
+  { // D：三套颜料
     let h = '';
-    [['早', 'morning'], ['午', 'noon'], ['黄昏', 'dusk'], ['夜', 'night']].forEach(([n, k], j) => {
-      const p = Object.assign({}, PAINT.PAL, PALS[k]);
-      h += `<div style="position:absolute;left:0;top:${j * 25}px;display:flex;align-items:center;gap:10px"><span class="mono" style="width:30px;font-size:10px;color:#7c836f">${n}</span><span style="display:flex;width:316px;height:18px;border-radius:2px;overflow:hidden;box-shadow:inset 0 0 0 1px rgba(35,53,42,.1)">${['sk0', 'sk1', 'sk2', 'sk3', 'cl0', 'cl2', 'cl3', 'mt0', 'fo1', 'pd1', 'pdW', 'rd0'].map(c => `<i style="flex:1;background:${p[c]}"></i>`).join('')}</span></div>`;
+    [['早', 'morning'], ['午', 'noon'], ['黄昏', 'gold']].forEach(([n, k], j) => {
+      const p = SUMMER.PALS[k];
+      h += `<div style="position:absolute;left:0;top:${j * 30}px;display:flex;align-items:center;gap:10px"><span class="mono" style="width:30px;font-size:10px;color:#7c836f">${n}</span><span style="display:flex;width:316px;height:20px;border-radius:2px;overflow:hidden;box-shadow:inset 0 0 0 1px rgba(35,53,42,.1)">${[p.sky[0], p.sky[1], p.sky[2], p.sky[3], p.cl.lit, p.cl.mid, p.cl.sh, p.far[0], p.fo[1], p.pad[1], p.tree[2], p.bank[2]].map(c => `<i style="flex:1;background:${c}"></i>`).join('')}</span></div>`;
     });
     document.getElementById('vizD').innerHTML = h;
   }
