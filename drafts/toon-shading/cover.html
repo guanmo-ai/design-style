@@ -7,106 +7,95 @@
 @font-face { font-family: 'Unbounded'; src: url(../../public/fonts/Unbounded.ttf); font-weight: 200 900; }
 @font-face { font-family: 'GeistMono'; src: url(../../public/fonts/GeistMono.ttf); font-weight: 100 900; }
 @font-face { font-family: 'Geist'; src: url(../../public/fonts/Geist.ttf); font-weight: 100 900; }
-@font-face { font-family: 'ZCOOL'; src: url(../../public/fonts/ZCOOLQingKeHuangYou.ttf); }
 @font-face { font-family: 'NotoSC'; src: url(../../public/fonts/NotoSansSC-Black.otf); font-weight: 900; }
 @font-face { font-family: 'NotoSC'; src: url(../../public/fonts/NotoSansSC-Bold.otf); font-weight: 700; }
 @font-face { font-family: 'NotoSC'; src: url(../../public/fonts/NotoSansSC-Medium.otf); font-weight: 500; }
 @font-face { font-family: 'NotoSC'; src: url(../../public/fonts/NotoSansSC-Regular.otf); font-weight: 400; }
 * { margin: 0; padding: 0; box-sizing: border-box; }
-:root { --acc: #ffd23f; --pink: #ff6f9c; --cy: #4fc3ff; }
 html, body { width: 1920px; height: 1080px; overflow: hidden; background: #24262c; color: #fff; font-family: Geist, NotoSC, sans-serif; }
 canvas { position: absolute; left: 0; top: 0; }
-.mono { font-family: GeistMono, monospace; letter-spacing: .04em; }
+.mono { font-family: GeistMono, monospace; letter-spacing: .05em; }
 .ov { position: absolute; inset: 0; pointer-events: none; }
-.tl { position: absolute; left: 64px; top: 48px; font-size: 13px; color: rgba(255,255,255,.62); display: flex; gap: 26px; text-transform: uppercase; }
+.tl { position: absolute; left: 64px; top: 46px; font-size: 12.5px; color: rgba(255,255,255,.66); display: flex; gap: 24px; text-transform: uppercase; }
 .tl b { color: #fff; font-weight: 600; }
-.tr { position: absolute; right: 64px; top: 48px; font-size: 12px; color: rgba(20,40,90,.75); text-align: right; line-height: 1.8; }
-.tr b { color: #0d1d4a; font-weight: 600; }
-.title { position: absolute; left: 64px; top: 190px; width: 520px; }
-.title .zh { font-family: ZCOOL; font-size: 104px; line-height: 1; letter-spacing: .02em; }
-.title .zh span { color: var(--acc); }
-.title .en { font-family: Unbounded; font-weight: 700; font-size: 30px; letter-spacing: .08em; margin-top: 16px; color: var(--cy); }
-.title p { font-family: NotoSC; font-size: 19px; line-height: 1.8; margin-top: 26px; color: rgba(255,255,255,.82); }
-.title p em { font-style: normal; color: var(--acc); font-weight: 700; }
-.chip { position: absolute; font-size: 12px; white-space: nowrap; padding: 6px 11px; border-radius: 8px; transform: translateX(-50%); }
-.chip b { font-family: NotoSC; font-weight: 700; font-size: 14px; margin-left: 6px; }
-.chip.d { background: rgba(255,255,255,.1); color: #fff; outline: 1px solid rgba(255,255,255,.25); backdrop-filter: blur(6px); }
-.chip.l { background: rgba(255,255,255,.88); color: #0d1d4a; box-shadow: 0 6px 20px rgba(20,60,160,.2); }
-.chip.l i { color: #e0508a; }
-.chip i { font-style: normal; color: var(--acc); }
+.title { position: absolute; left: 64px; top: 112px; }
+.title .zh { font-family: NotoSC; font-weight: 900; font-size: 96px; line-height: 1; letter-spacing: .02em; }
+.title .en { font-family: Unbounded; font-weight: 700; font-size: 22px; letter-spacing: .32em; margin-top: 18px; color: rgba(255,255,255,.85); }
+.title p { font-family: NotoSC; font-size: 17px; line-height: 1.8; margin-top: 22px; color: rgba(255,255,255,.78); width: 420px; }
+.title p b { color: #fff; }
+.chip { position: absolute; font-size: 11px; white-space: nowrap; padding: 5px 10px 5px 8px; border-radius: 999px; display: flex; gap: 8px; align-items: center; }
+.chip i { font-style: normal; font-weight: 600; width: 18px; height: 18px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 10px; }
+.chip b { font-family: NotoSC; font-weight: 700; font-size: 13px; }
+.chip.d { background: rgba(255,255,255,.1); outline: 1px solid rgba(255,255,255,.22); color: #fff; backdrop-filter: blur(6px); }
+.chip.d i { background: #fff; color: #24262c; }
+.chip.l { background: rgba(255,255,255,.9); color: #1b1d4a; box-shadow: 0 6px 20px rgba(30,20,90,.25); }
+.chip.l i { background: #1b1d4a; color: #fff; }
 svg.lines { position: absolute; inset: 0; }
-.call { position: absolute; width: 300px; font-size: 13px; line-height: 1.6; color: #2a3a66; padding: 11px 14px; background: rgba(255,255,255,.86); backdrop-filter: blur(10px); border-radius: 12px; box-shadow: 0 10px 30px rgba(20,60,160,.18); }
-.call .k { display: block; font-family: GeistMono; font-size: 12px; color: #0d1d4a; margin-bottom: 4px; font-weight: 600; }
-.call .k i { font-style: normal; color: #fff; background: #3b6cff; border-radius: 6px; padding: 0 6px; margin-right: 8px; }
-.call b { color: #0d1d4a; }
-.sw { display: flex; gap: 6px; margin-top: 8px; }
-.sw span { display: flex; height: 18px; border-radius: 5px; overflow: hidden; width: 86px; font-family: GeistMono; font-size: 9px; box-shadow: inset 0 0 0 1px rgba(13,29,74,.15); }
-.sw span i { flex: 1; display: block; }
-.gizmo { position: absolute; left: 70px; bottom: 70px; }
-.vp { position: absolute; left: 64px; bottom: 40px; font-size: 11px; color: rgba(255,255,255,.45); }
-.foot { position: absolute; right: 64px; bottom: 30px; font-size: 11px; color: rgba(20,40,90,.6); }
-.frame i { position: absolute; width: 22px; height: 22px; border-style: solid; }
+.call { position: absolute; width: 268px; font-size: 12.5px; line-height: 1.6; color: rgba(255,255,255,.86); }
+.call .k { display: block; font-family: GeistMono; font-size: 11px; color: #fff; margin-bottom: 5px; letter-spacing: .02em; }
+.call .k i { font-style: normal; color: #1b1d4a; background: #fff; border-radius: 3px; padding: 0 5px; margin-right: 8px; }
+.call b { color: #fff; font-family: NotoSC; font-weight: 700; font-size: 15px; display: block; margin-bottom: 2px; }
+.call .sw { display: flex; gap: 6px; margin-top: 8px; }
+.call .sw span { display: flex; height: 16px; width: 54px; border-radius: 3px; overflow: hidden; box-shadow: 0 0 0 1px rgba(255,255,255,.4); }
+.call .sw span i { flex: 1; display: block; }
+.foot { position: absolute; left: 64px; bottom: 34px; font-size: 11px; color: rgba(40,30,70,.7); width: 480px; line-height: 1.6; }
+.gizmo { position: absolute; left: 64px; bottom: 84px; }
+.frame i { position: absolute; width: 22px; height: 22px; border-style: solid; border-color: rgba(255,255,255,.55); }
 </style>
 </head>
 <body>
 <canvas id="gl"></canvas>
 <div class="ov" id="ov" style="display:none">
   <div class="tl mono"><span><b>NO. 026</b></span><span>卡通渲染 · Toon Shading</span><span>2000《Jet Set Radio》→ 2002《风之杖》→ 2014《罪恶装备 Xrd》→ 2020《原神》</span></div>
-  <div class="tr mono"><b>星野 HOSHI · 原创角色</b><br>2 阶光影 · 描边 1.5 px · 0 张贴图</div>
-  <div class="frame"><i style="left:40px;top:40px;border-width:2px 0 0 2px;border-color:rgba(255,255,255,.5)"></i><i style="right:40px;top:40px;border-width:2px 2px 0 0;border-color:rgba(13,29,74,.45)"></i><i style="left:40px;bottom:40px;border-width:0 0 2px 2px;border-color:rgba(255,255,255,.5)"></i><i style="right:40px;bottom:40px;border-width:0 2px 2px 0;border-color:rgba(13,29,74,.45)"></i></div>
+  <div class="frame"><i style="left:40px;top:40px;border-width:2px 0 0 2px"></i><i style="right:40px;top:40px;border-width:2px 2px 0 0"></i><i style="left:40px;bottom:40px;border-width:0 0 2px 2px"></i><i style="right:40px;bottom:40px;border-width:0 2px 2px 0"></i></div>
   <div class="title">
-    <div class="zh">卡通<span>渲染</span></div>
+    <div class="zh">卡通渲染</div>
     <div class="en">TOON SHADING</div>
-    <p>明明是 3D，看上去却是手画的。<br>光影只分<em>两阶</em>，轮廓描<em>一圈线</em>，<br>五官是<em>画上去的</em>——<br>同一个模型，五步变成动画。</p>
+    <p>明明是 3D，看上去却是一张原画。<br><b>两阶光影 · 一圈描边 · 画上去的五官 · 撮影</b>——<br>同一个模型，从脚到头，四步变成动画。</p>
   </div>
+  <svg class="gizmo" width="70" height="70"><line x1="10" y1="60" x2="58" y2="60" stroke="#ff5a6a" stroke-width="2"/><line x1="10" y1="60" x2="10" y2="12" stroke="#7ddc6a" stroke-width="2"/><line x1="10" y1="60" x2="34" y2="40" stroke="#5aa0ff" stroke-width="2"/></svg>
   <svg class="lines" id="lines" width="1920" height="1080"></svg>
   <div id="chips"></div>
   <div id="calls"></div>
-  <svg class="gizmo" width="70" height="70"><line x1="10" y1="60" x2="58" y2="60" stroke="#ff5a6a" stroke-width="2"/><line x1="10" y1="60" x2="10" y2="12" stroke="#7ddc6a" stroke-width="2"/><line x1="10" y1="60" x2="34" y2="40" stroke="#5aa0ff" stroke-width="2"/><text x="60" y="64" fill="#ff5a6a" font-size="10" font-family="GeistMono">X</text><text x="6" y="9" fill="#7ddc6a" font-size="10" font-family="GeistMono">Y</text><text x="36" y="38" fill="#5aa0ff" font-size="10" font-family="GeistMono">Z</text></svg>
-  <div class="vp mono" style="left:150px;bottom:78px">PERSP · LAMBERT · 3D 视口</div>
-  <div class="foot mono">原创角色 · 画面全部由代码实时渲染（光线步进 + 屏幕空间描边）</div>
+  <div class="foot mono">原创角色“星野” · 画面全部由代码实时渲染（光线步进 + 屏幕空间描边 + 撮影后期），没有一张贴图</div>
 </div>
 <script src="../_lib/glkit.js"></script>
 <script src="toon.js"></script>
 <script>
 const Q = new URLSearchParams(location.search); const J = k => Q.get(k) ? Q.get(k).split(',').map(Number) : null;
 (async () => {
-  await document.fonts.load('100px ZCOOL', '卡通渲染'); await document.fonts.ready;
+  await document.fonts.load('900 96px NotoSC', '卡通渲染'); await document.fonts.load('900 100px Unbounded'); await document.fonts.ready;
   const DPR = devicePixelRatio, W = 1920, H = 1080;
   const cv = document.getElementById('gl'); cv.width = W * DPR; cv.height = H * DPR; cv.style.width = W + 'px'; cv.style.height = H + 'px';
-  const gl = GLK.create(cv);
-  const S = { cam: J('cam') || [2.3, 2.75, 10.4], tgt: J('tgt') || [-0.3, 2.28, 0], fov: +(Q.get('fov') || 33), root: [0, 2.95, 0, 0.12], headTilt: 0.1, swing: 0.5, peace: 1, expr: 0 };
-  const strips = J('strips') || [900, 924, 105, 5]; const sd = J('sd') || [0.74, -0.67]; const sl = Math.hypot(...sd); const sdir = [sd[0] / sl, sd[1] / sl];
-  const pj = p => TOON.project(S, p, W, H);
-  const c0 = pj(TOON.charToWorld(S, [0, -1.0, 0]));
-  await TOON.render(gl, S, { px: DPR, strips, sdir, swoosh: [c0[0] + 10, c0[1] - 10, 380, 105] });
+  const S = { cam: J('cam') || [1.9, 3.7, 11.6], tgt: J('tgt') || [-.75, 2.95, 0], fov: 30, root: [0, 4.85, 0, 0.25], headTilt: .1, swing: .7, flare: .6, peace: 1, expr: 0, lean: -.06, light: [-.6, .72, .6] };
+  // 斜条：法线方向朝右上，原点在左下
+  const sd = J('sd') || [.3, -.954], sl = Math.hypot(...sd), sdir = sd.map(v => v / sl);
+  const strips = J('strips') || [1000, 1010, 196, 4];
+  await TOON.render(GLK.create(cv), S, { px: DPR, strips, sdir, bandX: 580, halo: [1110, 330], haloR: 330, bg: { sky0: '#1d2466', sky1: '#5d4cc0', sky2: '#ff93b6', sky3: '#ffd6a6' } });
   window.__done = Q.get('ov') === '0'; if (window.__done) return;
   document.getElementById('ov').style.display = '';
-  // 每一条的标签（沿斜条中线，放在顶部）
-  const names = [['01', '3D 模型', 'd'], ['02', '法线', 'd'], ['03', '两阶光影', 'l'], ['04', '+ 描边', 'l'], ['05', '+ 边缘光 · 天使环 · 脸部阴影', 'l']];
+  const pj = q => TOON.project(S, TOON.charToWorld(S, q), W, H);
+  // 每一步的标签：贴着斜条，排在画面下沿
+  const names = [['灰模', '3D 模型 · 普通光照', 'd'], ['两阶', '光影只留亮 / 暗两色', 'l'], ['描边', '深度 + 法线 + 材质分界', 'l'], ['撮影', '边缘光 · 天使环 · 扩散光', 'l']];
   let ch = '';
   names.forEach(([n, t, k], i) => {
-    const y = 112, sc = (i + 0.5) * strips[2];
-    const x = strips[0] + (sc - (y - strips[1]) * sdir[1]) / sdir[0];
-    ch += `<div class="chip ${i < 2 ? 'd' : 'l'} mono" style="left:${x + (i === 4 ? 90 : 0)}px;top:${y - 16}px"><i>${n}</i><b>${t}</b></div>`;
+    const s = (i + .14) * strips[2], x = 604;
+    const y = strips[1] + (s - (x - strips[0]) * sdir[0]) / sdir[1];
+    ch += `<div class="chip ${k} mono" style="left:${x}px;top:${y - 30}px"><i>${i + 1}</i><b>${n}</b>${t}</div>`;
   });
   document.getElementById('chips').innerHTML = ch;
-  // 标注
-  const C = TOON.charToWorld;
   let svg = '', html = '';
-  const call = (pt, box, k, z) => {
-    const [x, y] = pt, [bx, by] = box; const ex = bx, ey = by + 22; const mx = Math.max(x + 40, bx - 120);
-    svg += `<circle cx="${x}" cy="${y}" r="5" fill="#3b6cff" stroke="#fff" stroke-width="2"/><polyline points="${x},${y} ${mx},${ey} ${ex},${ey}" fill="none" stroke="rgba(255,255,255,.85)" stroke-width="1.3"/>`;
+  const call = (q, bx, by, k, z, side = 'l') => {
+    const [x, y] = pj(q); const ax = side === 'l' ? bx - 14 : bx + 282;
+    svg += `<circle cx="${x}" cy="${y}" r="4" fill="#fff"/><circle cx="${x}" cy="${y}" r="10" fill="none" stroke="#fff" stroke-width="1" opacity=".6"/><polyline points="${x},${y} ${ax},${by + 10} ${ax + (side === 'l' ? 8 : -8)},${by + 10}" fill="none" stroke="rgba(255,255,255,.85)" stroke-width="1"/>`;
     html += `<div class="call" style="left:${bx}px;top:${by}px"><span class="k">${k}</span>${z}</div>`;
   };
-  const swatch = (a, b, n) => `<span title="${n}"><i style="background:${a}"></i><i style="background:${b}"></i></span>`;
-  const P = TOON.PAL;
-  call(pj(C(S, [0.55, 0.68, 0.62])), [1540, 200], '<i>01</i>天使环 · 只跟着视角走', '<b>头顶一圈锯齿状的亮带。</b>它不是光照算出来的，是在固定高度上“贴”的——所以永远在那儿。');
-  call(pj(C(S, [0.66, -0.4, 0.6])), [1540, 382], '<i>02</i>脸部阴影 = 阈值图，不用法线', '<b>脸上的明暗交界是“画”出来的一笔：</b>按光的角度去查一张阈值图，转到哪都干净，鼻子不会投出脏影子。');
-  call(pj(C(S, [0.55, -1.6, 0.5])), [1540, 580], '<i>03</i>lit = step(0.5, N·L × 0.5 + 0.5)', `<b>阴影不是变黑，是换一个颜色：</b>更冷、更饱和。每种材质只配两色。<div class="sw">${swatch(P.hair, P.hairS)}${swatch(P.skin, P.skinS)}${swatch(P.hood, P.hoodS)}</div>`);
-  call(pj(C(S, [0.32, -2.88, 0.32])), [1540, 790], '<i>04</i>描边：深度差 > 2% 或 N₁·N₂ < 0.45', '<b>线的颜色 = 暗面色 × 0.3，</b>不是纯黑。粗细按屏幕像素算，远近都是 1.5 px。');
-  document.getElementById('lines').innerHTML = svg;
-  document.getElementById('calls').innerHTML = html;
+  const P = TOON.PAL, sw = (a, b) => `<span><i style="background:${a}"></i><i style="background:${b}"></i></span>`;
+  call([.5, .72, .55], 1560, 120, '<i>A</i>天使环 · 跟着视角走', '<b>头顶一圈锯齿亮带</b>不是光照算出来的，是在固定高度“贴”的——转到哪都在。');
+  call([.66, -.35, .62], 1560, 300, '<i>B</i>脸 = 查阈值图，不看法线', '<b>脸上只有一刀干净的影子</b>按光的角度查表，鼻子和颧骨不会投出脏影。');
+  call([.55, -1.7, .4], 1560, 480, '<i>C</i>lit = step(0.5, N·L)', `<b>暗面换颜色，不是变黑</b>更冷、更饱和，每种材质只配两色。<div class="sw">${sw(P.hairT, P.hairTS)}${sw(P.skin, P.skinS)}${sw(P.jk, P.jkS)}${sw(P.hairB, P.hairBS)}</div>`);
+  call([.3, -3.3, .2], 1560, 690, '<i>D</i>描边 = 暗面色 × 0.3', '<b>线不是纯黑</b>从旁边的暗面取色再压暗；宽度按屏幕像素算，远近都是 1.5 px。');
+  document.getElementById('lines').innerHTML = svg; document.getElementById('calls').innerHTML = html;
   window.__done = true;
 })().catch(e => { console.log('ERR', e.message.slice(0, 4000)); window.__done = true; });
 </script>

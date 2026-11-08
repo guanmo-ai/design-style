@@ -124,7 +124,7 @@ async function renderInto(canvas, w, h, S, comp) {
   canvas.width = Math.round(w * DPR); canvas.height = Math.round(h * DPR);
   canvas.style.width = w + 'px'; canvas.style.height = h + 'px';
   const gl = GLK.create(canvas);
-  await TOON.render(gl, Object.assign({ tiles: 4 }, S), Object.assign({ px: DPR, stageAll: 5 }, comp || {}));
+  await TOON.render(gl, Object.assign({ tiles: 4 }, S), Object.assign({ px: DPR, stageAll: 4 }, comp || {}));
 }
 const pjC = (S, q, w, h) => TOON.project(S, TOON.charToWorld(S, q), w, h);
 
@@ -132,12 +132,12 @@ const pjC = (S, q, w, h) => TOON.project(S, TOON.charToWorld(S, q), w, h);
   await document.fonts.load('100px ZCOOL', '星野换色'); await document.fonts.ready;
   // —— 网页：角色站在右边，天空 + 转身的特效弧 ——
   const HW = 1010, HH = 628;
-  const hero = { cam: [1.6, 3.2, 8.9], tgt: [-1.75, 2.62, 0], fov: 30, root: [0, 2.95, 0, 0.32], headTilt: 0.12, swing: 0.7, peace: 1, expr: 0, ped: true };
+  const hero = { cam: [1.7, 4.0, 14.8], tgt: [-2.6, 3.25, 0], fov: 30, root: [0, 4.85, 0, 0.32], headTilt: 0.12, swing: 0.7, flare: .6, peace: 1, expr: 0, lean: -.06 };
   const cH = pjC(hero, [0, -1.0, 0], HW, HH);
-  await renderInto(document.getElementById('hero'), HW, HH, hero, { swoosh: [cH[0], cH[1] - 10, 330, 92] });
+  await renderInto(document.getElementById('hero'), HW, HH, hero, { halo: [cH[0], cH[1] - 110], haloR: 230, bg: { sky0: '#141b5c', sky1: '#4a3cae', sky2: '#ff8fb2', sky3: '#ffd3a2' } });
   {
     let svg = '', html = '';
-    const a = pjC(hero, [0.62, 0.66, 0.6], HW, HH), b = pjC(hero, [-1.4, -1.0, -0.6], HW, HH);
+    const a = pjC(hero, [0.5, 0.72, 0.55], HW, HH), b = pjC(hero, [-1.6, -1.6, -0.6], HW, HH);
     svg += `<circle cx="${a[0]}" cy="${a[1]}" r="4" fill="#3b6cff" stroke="#fff" stroke-width="2"/><line x1="${a[0]}" y1="${a[1]}" x2="${a[0] + 70}" y2="${a[1] - 50}" stroke="rgba(255,255,255,.8)"/>`;
     html += `<div class="chip-tag mono" style="left:${a[0] + 70}px;top:${a[1] - 66}px"><b>天使环</b> 拖动转身，它一直在</div>`;
     svg += `<circle cx="${b[0]}" cy="${b[1]}" r="4" fill="#3b6cff" stroke="#fff" stroke-width="2"/>`;
@@ -149,14 +149,14 @@ const pjC = (S, q, w, h) => TOON.project(S, TOON.charToWorld(S, q), w, h);
   const PW = 228, PH = 504, X0 = 1110, GAP = 30;
   const phones = document.getElementById('phones');
   const scenes = [
-    { S: { cam: [0.9, 3.6, 10.8], tgt: [0.05, 3.35, 0], fov: 30, root: [0, 2.95, 0, 0.1], headTilt: 0.06, swing: 0.15, peace: 0, expr: 0, ped: false, pal: { hair: '#ffb6d3', hairS: '#e2609e' } }, comp: {} },
-    { S: { cam: [0.6, 3.5, 9.0], tgt: [0.0, 3.2, 0], fov: 30, root: [0, 2.95, 0, 0.05], headTilt: -0.12, swing: 0.25, peace: 0, expr: 1, ped: false }, comp: { sky0: '#ff8fbf', sky1: '#ffc3dc', sky2: '#fff0f6' } },
-    { S: { cam: [1.2, 2.6, 10.6], tgt: [0.1, 2.05, 0], fov: 32, root: [0, 2.95, 0, 0.2], headTilt: 0.1, swing: 0.6, peace: 1, expr: 0, ped: true }, comp: { sky0: '#4a2bd6', sky1: '#7a5cff', sky2: '#ffd9a8' } },
+    { S: { cam: [0.9, 4.3, 15.4], tgt: [0.05, 3.55, 0], fov: 30, root: [0, 4.85, 0, 0.1], headTilt: 0.06, swing: 0.15, peace: 0, expr: 0, pal: { hairT: '#c8f2e2', hairTS: '#5fb59c', hairB: '#ffe08a', hairBS: '#e09a3a' } }, comp: { bg: { sky0: '#1f6f8a', sky1: '#48b5b8', sky2: '#c8f0dc', sky3: '#fff6d8' } } },
+    { S: { cam: [0.6, 5.0, 11.2], tgt: [0.0, 4.75, 0], fov: 30, root: [0, 4.85, 0, 0.05], headTilt: -0.12, swing: 0.25, peace: 0, expr: 1 }, comp: { bg: { sky0: '#ff6fa8', sky1: '#ffa6c9', sky2: '#ffdbe9', sky3: '#fff4f8' } } },
+    { S: { cam: [1.5, 4.0, 14.2], tgt: [0.1, 2.75, 0], fov: 32, root: [0, 4.85, 0, 0.25], headTilt: 0.1, swing: 0.7, flare: .6, peace: 1, expr: 0, lean: -.06 }, comp: { bg: { sky0: '#2a1c86', sky1: '#6a4cf0', sky2: '#ff9ac0', sky3: '#ffe0a8' }, halo: [114, 160], haloR: 100 } },
   ];
   const ui = [
-    (pj) => `<div class="ph" style="top:46px"><div class="lab mono">01 · 换发色</div><h3>粉色的星野</h3></div>
-      <div class="panel"><b>只改两个颜色</b><div class="row"><span>发色</span>${[['#c9b8ff', '#7d68e0'], ['#ffb6d3', '#e2609e', 1], ['#9fe6c8', '#3fa58a'], ['#ffd27a', '#e0862a']].map(([a, b, on]) => `<div class="sw${on ? ' on' : ''}"><i style="background:${a}"></i><i style="background:${b}"></i></div>`).join('')}</div><div class="row"><span>阴影</span><span class="mono" style="width:auto;color:#0d1d4a;font-size:10px">H−15° S+20% V−25%</span></div></div>`,
-    (pj) => { const h = pj([0.0, 1.2, 0.3]); return `<div class="ph" style="top:46px"><div class="lab mono">02 · 摸摸头</div><h3>&gt; ω &lt;</h3></div><div class="bubble" style="left:${h[0] + 20}px;top:${h[1] - 30}px">嘿嘿～</div>`; },
+    (pj) => `<div class="ph" style="top:46px"><div class="lab mono">01 · 换发色</div><h3>薄荷色的星野</h3></div>
+      <div class="panel"><b>只改发根 / 发梢两个颜色</b><div class="row"><span>发色</span>${[['#e2dcff', '#ffa6d4'], ['#c8f2e2', '#ffe08a', 1], ['#ffd6b8', '#ff8f8f'], ['#bfe0ff', '#9a8ae6']].map(([a, b, on]) => `<div class="sw${on ? ' on' : ''}"><i style="background:${a}"></i><i style="background:${b}"></i></div>`).join('')}</div><div class="row"><span>阴影</span><span class="mono" style="width:auto;color:#0d1d4a;font-size:10px">H−15° S+20% V−25%</span></div></div>`,
+    (pj) => { const h = pj([0.0, 1.3, 0.3]); return `<div class="ph" style="top:46px"><div class="lab mono">02 · 摸摸头</div><h3>&gt; ω &lt;</h3></div><div class="bubble" style="left:${Math.min(h[0] + 30, 150)}px;top:${h[1] + 10}px">嘿嘿～</div>`; },
     (pj) => `<div class="card3"><span class="r">SSR</span><div class="n"><small>★★★★★ · NEW</small>星野 HOSHI</div></div><div class="pbtn">收下 · 分享卡面</div>`,
   ];
   for (let i = 0; i < 3; i++) {
@@ -165,13 +165,13 @@ const pjC = (S, q, w, h) => TOON.project(S, TOON.charToWorld(S, q), w, h);
     phones.appendChild(d);
     const { S, comp } = scenes[i];
     const cc = pjC(S, [0, -1.1, 0], PW, PH);
-    await renderInto(d.querySelector('canvas'), PW, PH, S, Object.assign({ swoosh: i === 2 ? [cc[0], cc[1], 120, 34] : null }, comp));
+    await renderInto(d.querySelector('canvas'), PW, PH, S, Object.assign({ halo: [cc[0], cc[1] - 120], haloR: 90 }, comp));
     const pj = q => pjC(S, q, PW, PH);
     d.querySelector('.screen').insertAdjacentHTML('beforeend', ui[i](pj));
     let s = '';
     if (i === 1) {
       const heart = (x, y, r, c) => `<path transform="translate(${x},${y}) scale(${r})" d="M0 3 C-6 -3 -12 2 0 11 C12 2 6 -3 0 3Z" fill="${c}"/>`;
-      const h = pj([0, 1.25, 0]);
+      const h = pj([0, 1.3, 0]);
       s += heart(h[0] - 70, h[1] + 10, 1.4, '#ff6f9c') + heart(h[0] + 62, h[1] - 6, 1.1, '#ff9fbf') + heart(h[0] - 40, h[1] - 40, .9, '#fff');
       // 手（点击位置）
       s += `<circle cx="${h[0] + 4}" cy="${h[1] + 6}" r="16" fill="none" stroke="#fff" stroke-width="2" opacity=".9"/><circle cx="${h[0] + 4}" cy="${h[1] + 6}" r="26" fill="none" stroke="#fff" stroke-width="1.2" opacity=".5"/>`;
