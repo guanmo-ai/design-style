@@ -2,7 +2,7 @@
 <html lang="zh">
 <head>
 <meta charset="utf-8">
-<title>潮玩 · 落到界面上 · MOGU 抽盒机</title>
+<title>潮玩 · 落到界面上 · BOBO 抽盒机</title>
 <style>
 @font-face { font-family: 'Fredoka'; src: url(../../public/fonts/Fredoka.ttf); font-weight: 300 700; font-stretch: 75% 125%; }
 @font-face { font-family: 'Geist'; src: url(../../public/fonts/Geist.ttf); font-weight: 100 900; }
@@ -76,20 +76,20 @@ svg.ov { position: absolute; left: 0; top: 0; pointer-events: none; z-index: 2; 
 </style>
 </head>
 <body>
-<div class="top mono"><span><b>NO. 027 · 潮玩</b> &nbsp;·&nbsp; 落到界面上：悬念是做出来的</span><span>MOGU 抽盒机 · 网页 + App · 摇 → 拆 → 收</span></div>
+<div class="top mono"><span><b>NO. 027 · 潮玩</b> &nbsp;·&nbsp; 落到界面上：悬念是做出来的</span><span>BOBO 抽盒机 · 网页 + App · 摇 → 拆 → 收</span></div>
 
 <div class="browser">
-  <div class="bar"><i></i><i></i><i></i><div class="url mono">mogu.toys/picnic</div></div>
+  <div class="bar"><i></i><i></i><i></i><div class="url mono">bobo.toys/rainy-day</div></div>
   <div class="page" id="page">
     <canvas class="gl" id="hero"></canvas>
-    <div class="nav"><span class="logo"><span class="m"></span>MOGU</span><span>系列</span><span>隐藏款</span><span>收藏柜</span><span>线下店</span><span class="btn">拆一盒</span></div>
+    <div class="nav"><span class="logo"><span class="m"></span>BOBO</span><span>系列</span><span>隐藏款</span><span>收藏柜</span><span>线下店</span><span class="btn">拆一盒</span></div>
     <div class="hero-t">
-      <span class="kick"><b>NEW</b> 野餐系列 · 12 款 + 1 隐藏</span>
+      <span class="kick"><b>NEW</b> 下雨天系列 · 4 款 + 1 隐藏</span>
       <h1>今天，<br><span>拆一个。</span></h1>
       <p>你不知道盒子里是谁，<br>直到它自己跳出来、在空中停一拍。</p>
       <div class="cta"><span class="p">拆一盒 <small>¥69</small></span><span class="s">先看看系列 →</span></div>
     </div>
-    <div class="stats"><div><b>12 + 1</b>款</div><div><b>1 / 144</b>隐藏款</div><div><b>0.9 s</b>撕开到见面</div></div>
+    <div class="stats"><div><b>4 + 1</b>款</div><div><b>1 / 144</b>隐藏款</div><div><b>0.9 s</b>撕开到见面</div></div>
     <svg class="ov" id="heroSvg" width="1010" height="628"></svg>
     <div id="heroTags"></div>
   </div>
@@ -106,32 +106,13 @@ svg.ov { position: absolute; left: 0; top: 0; pointer-events: none; z-index: 2; 
 
 <script src="../_lib/glkit.js"></script>
 <script src="toy.js"></script>
+<script src="boxart.js"></script>
 <script>
 const DPR = devicePixelRatio;
-const cap = [1.0, 0.33, 0.3], body = [0.5, 0.84, 0.72];
-const COLS = [[[1.0, 0.33, 0.3], [0.5, 0.84, 0.72]], [[1.0, 0.62, 0.22], [0.98, 0.86, 0.5]], [[0.45, 0.8, 0.55], [0.98, 0.78, 0.82]], [[0.55, 0.7, 1.0], [1.0, 0.9, 0.62]], [[0.78, 0.6, 1.0], [0.62, 0.86, 0.95]]];
-function boxArt() {
-  const c = document.createElement('canvas'); c.width = 2048; c.height = 1024;
-  const x = c.getContext('2d');
-  x.fillStyle = '#7cc6ff'; x.fillRect(0, 0, 1024, 1024);
-  x.fillStyle = '#9ad4ff';
-  for (let i = 0; i < 9; i++) for (let j = 0; j < 9; j++) { if ((i + j) % 2) continue; x.beginPath(); x.arc(i * 128 + 64, j * 128 + 64, 26, Math.PI, 0); x.fill(); x.fillRect(i * 128 + 54, j * 128 + 64, 20, 22); }
-  x.fillStyle = '#fff6ea'; x.beginPath(); x.roundRect(120, 300, 784, 470, 60); x.fill();
-  x.fillStyle = '#ff5a5f'; x.font = '700 210px Fredoka'; x.textAlign = 'center'; x.fillText('MOGU', 512, 560);
-  x.fillStyle = '#2a1f3d'; x.font = '600 52px Fredoka'; x.fillText('PICNIC SERIES', 512, 660);
-  x.font = '900 120px NotoSC'; x.fillText('小菇', 512, 230);
-  x.fillStyle = '#ffd34d'; x.beginPath(); x.arc(860, 860, 92, 0, 7); x.fill();
-  x.fillStyle = '#2a1f3d'; x.font = '700 130px Fredoka'; x.fillText('?', 860, 905);
-  x.fillStyle = '#ffe1ea'; x.fillRect(1024, 0, 1024, 1024);
-  x.fillStyle = '#2a1f3d'; x.font = '700 64px Fredoka'; x.fillText('COLLECT THEM ALL', 1536, 130);
-  for (let i = 0; i < 12; i++) {
-    const cx = 1024 + 170 + (i % 4) * 230, cy = 290 + Math.floor(i / 4) * 230;
-    x.fillStyle = i === 11 ? '#2a1f3d' : ['#ff5a5f', '#ffb347', '#7ccf9a', '#8fb8ff', '#c79bff', '#ff8fc7'][i % 6];
-    x.beginPath(); x.ellipse(cx, cy - 20, 80, 52, 0, Math.PI, 0); x.fill();
-    x.beginPath(); x.ellipse(cx, cy + 30, 48, 58, 0, 0, 7); x.fill();
-  }
-  return c;
-}
+const FROG = { kind: 0, cap: [.42, .76, .4], body: [1, .8, .26], boot: [.93, .33, .28] };
+const SERIES = [FROG, { kind: 1, cap: [.6, .43, .3], body: [.55, .76, .96], boot: [1, .84, .32] }, { kind: 2, cap: [.97, .94, .92], body: [1, .58, .64], boot: [.56, .7, .96] }, { kind: 3, cap: [.27, .24, .33], body: [1, .62, .3], boot: [.96, .95, .92] }];
+const GOLD = Object.assign({}, FROG, { mat: 3, cap: [1, .7, .25], body: [1, .78, .4], boot: [1, .78, .4] });
+const F = (o, base) => Object.assign({}, base || FROG, o);
 async function renderInto(canvas, w, h, scene) {
   canvas.width = Math.round(w * DPR); canvas.height = Math.round(h * DPR);
   canvas.style.width = w + 'px'; canvas.style.height = h + 'px';
@@ -142,18 +123,18 @@ async function renderInto(canvas, w, h, scene) {
 const star = (x, y, r, c) => `<path d="M${x} ${y - r} Q${x} ${y} ${x + r} ${y} Q${x} ${y} ${x} ${y + r} Q${x} ${y} ${x - r} ${y} Q${x} ${y} ${x} ${y - r}Z" fill="${c}"/>`;
 
 (async () => {
-  await document.fonts.load('700 100px Fredoka'); await document.fonts.load('900 100px NotoSC', '小菇');
+  await document.fonts.load('700 100px Fredoka'); await document.fonts.load('900 100px NotoSC', '啵啵');
   await document.fonts.ready;
-  const tex = boxArt();
+  const tex = BOXART.boxArt();
 
-  // —— 网页主图：转台上的小菇 + 后面一摞盒子 ——
+  // —— 网页主图：转台上的啵啵 + 后面一摞盒子 ——
   const HW = 1010, HH = 628;
   const hero = {
-    cam: [0.6, 2.6, 10.5], tgt: [-1.35, 1.75, 0], fov: 30,
-    figs: [{ pos: [0.15, 0.3, 0.6], yaw: 0.42, arm: 0.35, tilt: 0.05, cap, body, expr: 0 }],
+    cam: [0.6, 2.6, 11.2], tgt: [-1.35, 1.85, 0], fov: 30,
+    figs: [F({ pos: [0.15, 0.3, 0.6], yaw: 0.42, arm: 0.1, tilt: 0.04, expr: 0 })],
     ped: [0.15, 0.3, 0.6, 1.25], pedCol: '#ffffff',
     box: { pos: [1.75, 0, -2.6], yaw: -0.45, size: [0.66, 0.68, 0.56] }, boxRep: [1, 2, 0, 1.36], boxClosed: true, boxTex: tex,
-    bgTop: '#ffd2df', bgBot: '#fff0ea', floor: '#ffe3e6',
+    bgTop: '#ffcab8', bgBot: '#ffece0', floor: '#ffdccc', dof: { focus: 11.2, amount: 22, max: 12 },
   };
   await renderInto(document.getElementById('hero'), HW, HH, hero);
   {
@@ -188,30 +169,29 @@ const star = (x, y, r, c) => `<path d="M${x} ${y - r} Q${x} ${y} ${x + r} ${y} Q
     { // 02 拆：隐藏款跳出来
       cam: [2.0, 4.0, 14.8], tgt: [0, 3.5, 0], fov: 31,
       figs: [
-        { pos: [-0.1, 2.25, 0.3], yaw: 0.25, sy: 1.12, arm: 1, tilt: 0.08, mat: 3, cap: [1.0, 0.72, 0.3], body: [0.9, 0.92, 1.0], expr: 1 },
-        { pos: [0.05, 1.0, 0.0], sy: 0.78, mat: 3, cap: [1.0, 0.72, 0.3], body: [0.9, 0.92, 1.0], ghost: true, expr: 1 },
-      ], ghostA: 0.3,
+        F({ pos: [-0.1, 2.05, 0.3], yaw: 0.25, sy: 1.1, arm: 1, tilt: 0.08, expr: 1 }, GOLD),
+      ],
       box: { pos: [0.1, 0, -0.1], yaw: 0.3, size: [0.98, 1.0, 0.82] }, boxTex: tex,
       bgTop: '#c9a8ff', bgBot: '#ffd8e8', floor: '#f2c8e6',
     },
     { // 03 收：收藏柜，一格是剪影
       cam: [0, 4.2, 25], tgt: [0, 4.0, 0], fov: 26,
       figs: [
-        { pos: [-1.38, 0, 0], yaw: 0.2, cap: COLS[0][0], body: COLS[0][1], expr: 0 },
-        { pos: [0, 0, 0], yaw: 0, cap: COLS[1][0], body: COLS[1][1], expr: 2 },
-        { pos: [1.38, 0, 0], yaw: -0.2, cap: COLS[2][0], body: COLS[2][1], expr: 0 },
-        { pos: [-1.38, 2.75, 0], yaw: 0.2, cap: COLS[3][0], body: COLS[3][1], expr: 2 },
-        { pos: [0, 2.75, 0], yaw: 0, mat: 1, cap: COLS[4][0], body: COLS[4][1], expr: 0 },
-        { pos: [1.38, 2.75, 0], yaw: -0.2, mat: 4, cap: [0.3, 0.24, 0.42], body: [0.3, 0.24, 0.42], expr: 0 },
+        F({ pos: [-1.38, 0, 0], yaw: 0.2, expr: 0 }, SERIES[0]),
+        F({ pos: [0, 0, 0], yaw: 0, expr: 2 }, SERIES[1]),
+        F({ pos: [1.38, 0, 0], yaw: -0.2, expr: 1 }, SERIES[2]),
+        F({ pos: [-1.38, 2.95, 0], yaw: 0.2, expr: 0 }, SERIES[3]),
+        F({ pos: [0, 2.95, 0], yaw: 0, mat: 1, expr: 2 }, SERIES[1]),
+        F({ pos: [1.38, 2.95, 0], yaw: -0.2, mat: 4, expr: 0, cap: [.3, .24, .42], body: [.3, .24, .42] }, SERIES[0]),
       ],
-      shelf: '#ffffff', shelfY: [0, 2.75], shelfW: 2.3, floorOn: false,
+      shelf: '#ffffff', shelfY: [0, 2.95], shelfW: 2.3, floorOn: false,
       bgTop: '#fff0f4', bgBot: '#ffe2ea', floor: '#ffe3e6',
     },
   ];
   const ui = [
     `<div class="ph" style="top:52px"><div class="lab mono"><b>01</b> · 9 盒里选 1 盒</div><h3>摇一摇，<br>听听是谁</h3></div><div class="pbtn" style="background:#2a1f3d;color:#fff">就它了 · ¥69</div>`,
-    `<div class="ph" style="top:54px"><span class="secret">★ SECRET · 1/144</span><h3 style="margin-top:12px">隐藏款！</h3><p>电镀 · 小菇 · 野餐系列</p></div><div class="pbtn" style="background:#fff;color:#2a1f3d;box-shadow:0 6px 20px rgba(80,40,120,.25)">放进收藏柜</div>`,
-    `<div class="ph" style="top:52px"><div class="lab mono"><b>03</b> · 收藏柜</div><h3>5 / 13</h3><p>还差 8 个，和 1 个隐藏款</p></div><div class="pbtn" style="background:#ff5a5f;color:#fff">再拆一盒</div>`,
+    `<div class="ph" style="top:54px"><span class="secret">★ SECRET · 1/144</span><h3 style="margin-top:12px">隐藏款！</h3><p>电镀金 · 青蛙啵啵 · 下雨天系列</p></div><div class="pbtn" style="background:#fff;color:#2a1f3d;box-shadow:0 6px 20px rgba(80,40,120,.25)">放进收藏柜</div>`,
+    `<div class="ph" style="top:52px"><div class="lab mono"><b>03</b> · 收藏柜</div><h3>5 / 6</h3><p>还差 1 个——那个剪影</p></div><div class="pbtn" style="background:#ff5a5f;color:#fff">再拆一盒</div>`,
   ];
   for (let i = 0; i < 3; i++) {
     const d = mk(i);
@@ -228,7 +208,7 @@ const star = (x, y, r, c) => `<path d="M${x} ${y - r} Q${x} ${y} ${x + r} ${y} Q
     } else if (i === 1) {
       [[-1.4, 4.2, .5, 12, '#ffd34d'], [1.3, 4.6, .4, 9, '#fff'], [1.5, 2.6, .9, 14, '#ffe08a'], [-1.3, 2.2, .9, 8, '#fff'], [0.9, 5.3, .2, 7, '#ffd34d']].forEach(([a, b, c, r, col]) => { const [x, y] = pj([a, b, c]); s += star(x, y, r, col); });
     } else {
-      const [x, y] = pj([1.38, 2.75 + 1.1, 0.6]);
+      const [x, y] = pj([1.38, 2.95 + 1.2, 0.6]);
       d.querySelector('.screen').insertAdjacentHTML('beforeend', `<div class="slot" style="left:${x - 20}px;top:${y - 22}px">?</div>`);
     }
     svg.innerHTML = s;
@@ -259,7 +239,7 @@ const star = (x, y, r, c) => `<path d="M${x} ${y - r} Q${x} ${y} ${x + r} ${y} Q
     ks.slice(1, 4).forEach(([t, v], i) => {
       const x = X(t), y = Y(v); const sx = 1 / Math.sqrt(v);
       s += `<circle cx="${x}" cy="${y}" r="3.5" fill="#ff5a5f"/>`;
-      s += `<g transform="translate(${x + 18},${y - 4}) scale(${sx},${v})"><ellipse cx="0" cy="-12" rx="11" ry="7" fill="#ff8a7a"/><ellipse cx="0" cy="-2" rx="6" ry="7" fill="#8fd9c0"/></g>`;
+      s += `<g transform="translate(${x + 18},${y - 4}) scale(${sx},${v})"><circle cx="-5" cy="-21" r="3.2" fill="#6fb86e"/><circle cx="5" cy="-21" r="3.2" fill="#6fb86e"/><circle cx="0" cy="-12" r="9" fill="#7cc27a"/><circle cx="0" cy="-11" r="5.5" fill="#ffd8c0"/><path d="M-6 -3 L6 -3 L8 6 L-8 6Z" fill="#ffd247"/></g>`;
       s += `<text x="${x}" y="${y + (v < 1 ? 16 : -12)}" font-family="GeistMono" font-size="10" fill="#8a7a99" text-anchor="middle">${v}</text>`;
     });
     document.getElementById('vizA').innerHTML = `<svg width="${W4}" height="100">${s}</svg><span class="vl" style="left:10px;bottom:-4px">蹲 0.13 s</span><span class="vl" style="left:120px;bottom:-4px">窜 0.1 s</span><span class="vl" style="left:220px;bottom:-4px">停一拍</span>`;
@@ -311,8 +291,10 @@ const star = (x, y, r, c) => `<path d="M${x} ${y - r} Q${x} ${y} ${x + r} ${y} Q
     [0.1, 0.5, 0.9].forEach((t, k) => {
       const p = Math.round(t * 140 - 20);
       h += `<div style="position:absolute;left:${k * 120}px;top:0;width:104px;height:84px;border-radius:12px;overflow:hidden;background:linear-gradient(160deg,#5b4a8a,#2a1f3d);box-shadow:0 6px 16px rgba(42,31,61,.25)">
-        <div style="position:absolute;left:30px;top:16px;width:44px;height:28px;border-radius:44px 44px 8px 8px;background:linear-gradient(180deg,#ffe9a8,#e0a020)"></div>
-        <div style="position:absolute;left:39px;top:40px;width:26px;height:30px;border-radius:13px;background:linear-gradient(180deg,#f4f6ff,#9aa3c4)"></div>
+        <div style="position:absolute;left:38px;top:12px;width:10px;height:10px;border-radius:50%;background:linear-gradient(180deg,#ffe9a8,#e0a020)"></div><div style="position:absolute;left:56px;top:12px;width:10px;height:10px;border-radius:50%;background:linear-gradient(180deg,#ffe9a8,#e0a020)"></div>
+        <div style="position:absolute;left:32px;top:16px;width:40px;height:38px;border-radius:50%;background:linear-gradient(180deg,#ffe9a8,#e0a020)"></div>
+        <div style="position:absolute;left:41px;top:25px;width:22px;height:22px;border-radius:50%;background:linear-gradient(180deg,#ffe8d0,#d8a070)"></div>
+        <div style="position:absolute;left:37px;top:52px;width:30px;height:22px;border-radius:8px 8px 4px 4px;background:linear-gradient(180deg,#ffe9a8,#e0a020)"></div>
         <div style="position:absolute;inset:-20px;background:linear-gradient(115deg,transparent ${p - 14}%,rgba(255,255,255,.75) ${p}%,transparent ${p + 14}%)"></div></div>
         <span class="vl" style="left:${k * 120}px;top:90px">t = ${t}</span>`;
     });

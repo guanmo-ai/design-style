@@ -7,166 +7,136 @@
 @font-face { font-family: 'Fredoka'; src: url(../../public/fonts/Fredoka.ttf); font-weight: 300 700; font-stretch: 75% 125%; }
 @font-face { font-family: 'GeistMono'; src: url(../../public/fonts/GeistMono.ttf); font-weight: 100 900; }
 @font-face { font-family: 'Geist'; src: url(../../public/fonts/Geist.ttf); font-weight: 100 900; }
-@font-face { font-family: 'KuaiLe'; src: url(../../public/fonts/ZCOOLKuaiLe.ttf); }
 @font-face { font-family: 'NotoSC'; src: url(../../public/fonts/NotoSansSC-Black.otf); font-weight: 900; }
 @font-face { font-family: 'NotoSC'; src: url(../../public/fonts/NotoSansSC-Bold.otf); font-weight: 700; }
 @font-face { font-family: 'NotoSC'; src: url(../../public/fonts/NotoSansSC-Medium.otf); font-weight: 500; }
 @font-face { font-family: 'NotoSC'; src: url(../../public/fonts/NotoSansSC-Regular.otf); font-weight: 400; }
 * { margin: 0; padding: 0; box-sizing: border-box; }
-:root { --ink: #2a1f3d; --dim: #7a6b8c; --acc: #ff5a5f; --line: rgba(42,31,61,.18); }
-html, body { width: 1920px; height: 1080px; overflow: hidden; background: #ffd9e2; color: var(--ink); font-family: Geist, NotoSC, sans-serif; }
+:root { --ink: #2b2340; --dim: #85778f; }
+html, body { width: 1920px; height: 1080px; overflow: hidden; background: #ffd9c4; color: var(--ink); font-family: Geist, NotoSC, sans-serif; }
 canvas { position: absolute; display: block; }
-.mono { font-family: GeistMono, monospace; letter-spacing: .04em; }
+.mono { font-family: GeistMono, monospace; letter-spacing: .05em; }
 .ov { position: absolute; inset: 0; pointer-events: none; }
-.tl { position: absolute; left: 64px; top: 48px; font-size: 13px; color: rgba(42,31,61,.7); display: flex; gap: 26px; text-transform: uppercase; }
+.tl { position: absolute; left: 64px; top: 46px; font-size: 12.5px; color: rgba(43,35,64,.62); display: flex; gap: 24px; text-transform: uppercase; }
 .tl b { color: var(--ink); font-weight: 600; }
-.tr { position: absolute; right: 64px; top: 48px; font-size: 12px; color: rgba(42,31,61,.7); text-align: right; line-height: 1.8; }
+.tr { position: absolute; right: 64px; top: 46px; font-size: 12px; color: rgba(43,35,64,.62); text-align: right; line-height: 1.8; }
 .tr b { color: var(--ink); font-weight: 600; }
-.title { position: absolute; left: 64px; top: 150px; width: 560px; }
-.title .zh { font-family: KuaiLe; font-size: 168px; line-height: 1; color: var(--ink); letter-spacing: .02em; }
-.title .en { font-family: Fredoka; font-weight: 600; font-stretch: 112%; font-size: 40px; letter-spacing: .06em; margin-top: 10px; color: var(--acc); }
-.title p { font-family: NotoSC; font-size: 20px; line-height: 1.75; margin-top: 26px; color: #4a3d5c; }
-.title p em { font-style: normal; color: var(--acc); font-weight: 700; }
+.title { position: absolute; left: 64px; top: 118px; width: 520px; }
+.title .zh { font-family: NotoSC; font-weight: 900; font-size: 128px; line-height: 1; letter-spacing: .02em; }
+.title .en { font-family: Fredoka; font-weight: 600; font-stretch: 115%; font-size: 30px; letter-spacing: .14em; margin-top: 16px; }
+.title p { font-family: NotoSC; font-size: 18px; line-height: 1.8; margin-top: 24px; color: #4d4260; }
+.title p b { color: var(--ink); }
 svg.lines { position: absolute; inset: 0; }
-.call { position: absolute; width: 292px; font-size: 13px; line-height: 1.6; color: #4a3d5c; padding: 11px 14px; background: rgba(255,255,255,.72); backdrop-filter: blur(10px); border-radius: 12px; box-shadow: 0 8px 30px rgba(120,60,90,.12); }
-.call .k { display: block; font-family: GeistMono; font-size: 12px; color: var(--ink); margin-bottom: 4px; font-weight: 600; }
-.call .k i { font-style: normal; color: #fff; background: var(--acc); border-radius: 6px; padding: 0 6px; margin-right: 8px; }
-.call b { color: var(--ink); }
+.call { position: absolute; width: 250px; font-size: 12.5px; line-height: 1.6; color: #5a4f6a; }
+.call .k { display: block; font-family: GeistMono; font-size: 11px; color: var(--ink); margin-bottom: 4px; letter-spacing: .02em; }
+.call .k i { font-style: normal; color: #fff; background: var(--ink); border-radius: 3px; padding: 0 5px; margin-right: 8px; }
+.call b { display: block; font-family: NotoSC; font-weight: 700; font-size: 15px; color: var(--ink); margin-bottom: 2px; }
 .ttag { position: absolute; font-size: 11px; color: var(--ink); white-space: nowrap; }
-.ttag b { display: inline-block; background: var(--ink); color: #fff; border-radius: 5px; padding: 1px 6px; margin-right: 6px; font-weight: 500; }
-.lineup { position: absolute; left: 64px; top: 718px; width: 620px; height: 40px; }
-.lineup .cap { position: absolute; left: 0; top: -54px; font-family: NotoSC; font-size: 15px; font-weight: 700; color: var(--ink); }
-.lineup .cap span { font-weight: 400; color: var(--dim); margin-left: 10px; font-size: 13px; }
-.lab { position: absolute; top: 240px !important; font-size: 11px; text-align: center; width: 150px; line-height: 1.5; color: var(--ink); }
-.lab b { display: block; font-family: NotoSC; font-size: 13px; font-weight: 700; }
+.ttag b { display: inline-block; background: var(--ink); color: #fff; border-radius: 3px; padding: 1px 6px; margin-right: 6px; font-weight: 500; }
+.shelfcap { position: absolute; left: 64px; top: 742px; font-family: NotoSC; font-size: 14px; font-weight: 700; }
+.shelfcap span { font-weight: 400; color: var(--dim); margin-left: 10px; font-size: 13px; }
+.lab { position: absolute; top: 1006px; font-size: 10.5px; text-align: center; width: 120px; line-height: 1.5; color: var(--ink); }
+.lab b { display: block; font-family: NotoSC; font-size: 12.5px; font-weight: 700; }
 .lab span { color: var(--dim); }
-.lab.sec b { color: #b0841f; }
-.frame i { position: absolute; width: 22px; height: 22px; border-color: rgba(42,31,61,.45); border-style: solid; }
-.foot { position: absolute; right: 64px; bottom: 30px; font-size: 11px; color: rgba(42,31,61,.55); }
+.frame i { position: absolute; width: 22px; height: 22px; border-color: rgba(43,35,64,.4); border-style: solid; }
+.foot { position: absolute; right: 64px; bottom: 34px; font-size: 11px; color: rgba(43,35,64,.55); }
 </style>
 </head>
 <body>
 <canvas id="gl"></canvas>
 <canvas id="shelf"></canvas>
 <div class="ov" id="ov" style="display:none">
-  <div class="tl mono"><span><b>NO. 027</b></span><span>潮玩 · Designer Toy</span><span>1999 香港搪胶 Gardener → 2000s 美国 Art Toy → 2016 盲盒 → 2025 全球潮玩热</span></div>
-  <div class="tr mono"><b>MOGU 小菇 · 野餐系列</b><br>SOFT VINYL · 9.5 CM · 1/144 SECRET</div>
+  <div class="tl mono"><span><b>NO. 027</b></span><span>潮玩 · Designer Toy</span><span>1999 香港搪胶 → 2000s 美国 Art Toy → 2016 盲盒 → 2025 全球潮玩热</span></div>
+  <div class="tr mono"><b>BOBO 啵啵 · 下雨天系列</b><br>SOFT VINYL · 9 CM · 4 + 1 SECRET</div>
   <div class="frame"><i style="left:40px;top:40px;border-width:2px 0 0 2px"></i><i style="right:40px;top:40px;border-width:2px 2px 0 0"></i><i style="left:40px;bottom:40px;border-width:0 0 2px 2px"></i><i style="right:40px;bottom:40px;border-width:0 2px 2px 0"></i></div>
   <div class="title">
     <div class="zh">潮玩</div>
     <div class="en">DESIGNER TOY</div>
-    <p>大头、小身子、哑光的软胶。<br>它最上头的不是长相，是<em>拆开那一下</em>：<br>先压扁、再弹出来、最后在空中定一拍。</p>
+    <p>大头、短手、困困的眼神，<b>一点点不耐烦</b>——<br>好的潮玩先有<b>态度</b>，再有长相。<br>最上头的是拆开那一下：<b>蹲、窜、停一拍</b>。</p>
   </div>
   <svg class="lines" id="lines" width="1920" height="1080"></svg>
   <div id="calls"></div>
-  <div class="lineup" id="lineup"><div class="cap">同一只小菇，四种材质<span>隐藏款通常就是换一种材质</span></div></div>
-  <div class="foot mono">原创角色 · 画面全部由代码实时渲染（光线步进），没有一张贴图</div>
+  <div class="shelfcap">下雨天系列 · 4 + 1<span>同一个身体，换一顶帽子就是一个新角色</span></div>
+  <div id="labs"></div>
+  <div class="foot mono">原创角色 · 画面全部由代码实时渲染（光线步进 + 景深），没有一张贴图</div>
 </div>
 <script src="../_lib/glkit.js"></script>
 <script src="toy.js"></script>
+<script src="boxart.js"></script>
 <script>
-const Q = new URLSearchParams(location.search);
-const DPR = devicePixelRatio * +(Q.get('scale') || 1);
-const L = TOY.L;
-
-function boxArt() {
-  const c = document.createElement('canvas'); c.width = 2048; c.height = 1024;
-  const x = c.getContext('2d');
-  // 正面（左半）
-  x.fillStyle = '#7cc6ff'; x.fillRect(0, 0, 1024, 1024);
-  x.fillStyle = '#9ad4ff';
-  for (let i = 0; i < 9; i++) for (let j = 0; j < 9; j++) { if ((i + j) % 2) continue; x.beginPath(); x.arc(i * 128 + 64, j * 128 + 64, 26, Math.PI, 0); x.fill(); x.fillRect(i * 128 + 54, j * 128 + 64, 20, 22); }
-  x.fillStyle = '#fff6ea'; x.beginPath(); x.roundRect(120, 300, 784, 470, 60); x.fill();
-  x.fillStyle = '#ff5a5f'; x.font = '700 210px Fredoka'; x.textAlign = 'center'; x.fillText('MOGU', 512, 560);
-  x.fillStyle = '#2a1f3d'; x.font = '600 52px Fredoka'; x.fillText('PICNIC SERIES', 512, 660);
-  x.font = '900 120px NotoSC'; x.fillStyle = '#2a1f3d'; x.fillText('小菇', 512, 230);
-  x.fillStyle = '#ffd34d'; x.beginPath(); x.arc(860, 860, 92, 0, 7); x.fill();
-  x.fillStyle = '#2a1f3d'; x.font = '700 130px Fredoka'; x.fillText('?', 860, 905);
-  x.font = '500 40px GeistMono'; x.textAlign = 'left'; x.fillStyle = '#1d4f7a'; x.fillText('1 OF 12 + SECRET', 70, 960);
-  // 侧面（右半）：系列一览
-  x.fillStyle = '#ffe1ea'; x.fillRect(1024, 0, 1024, 1024);
-  x.fillStyle = '#2a1f3d'; x.font = '700 64px Fredoka'; x.textAlign = 'center'; x.fillText('COLLECT THEM ALL', 1536, 130);
-  for (let i = 0; i < 12; i++) {
-    const cx = 1024 + 170 + (i % 4) * 230, cy = 290 + Math.floor(i / 4) * 230;
-    x.fillStyle = i === 11 ? '#2a1f3d' : ['#ff5a5f', '#ffb347', '#7ccf9a', '#8fb8ff', '#c79bff', '#ff8fc7'][i % 6];
-    x.beginPath(); x.ellipse(cx, cy - 20, 80, 52, 0, Math.PI, 0); x.fill();
-    x.beginPath(); x.ellipse(cx, cy + 30, 48, 58, 0, 0, 7); x.fill();
-    if (i === 11) { x.fillStyle = '#ffd34d'; x.font = '700 70px Fredoka'; x.fillText('?', cx, cy + 55); }
-  }
-  return c;
-}
-
+const Q = new URLSearchParams(location.search); const J = k => Q.get(k) ? Q.get(k).split(',').map(Number) : null;
+const DPR = devicePixelRatio;
+const FROG = { kind: 0, cap: [.42, .76, .4], body: [1, .8, .26], boot: [.93, .33, .28] };
+const SERIES = [
+  FROG,
+  { kind: 1, cap: [.6, .43, .3], body: [.55, .76, .96], boot: [1, .84, .32] },
+  { kind: 2, cap: [.97, .94, .92], body: [1, .58, .64], boot: [.56, .7, .96] },
+  { kind: 3, cap: [.27, .24, .33], body: [1, .62, .3], boot: [.96, .95, .92] },
+];
 (async () => {
-  await document.fonts.load('700 100px Fredoka'); await document.fonts.load('900 100px NotoSC', '小菇'); await document.fonts.load('100px KuaiLe', '潮玩'); await document.fonts.load('500 40px GeistMono');
-  await document.fonts.ready;
-  const cv = document.getElementById('gl');
+  await document.fonts.load('700 100px Fredoka'); await document.fonts.load('900 100px NotoSC', '潮玩'); await document.fonts.ready;
   const W = 1920, H = 1080;
-  cv.width = W * DPR; cv.height = H * DPR; cv.style.width = W + 'px'; cv.style.height = H + 'px';
-  const gl = GLK.create(cv);
-  const P = GLK.program(gl, TOY.FS);
-  const cap = [1.0, 0.33, 0.3], body = [0.5, 0.84, 0.72];
-  const J = k => Q.get(k) ? Q.get(k).split(',').map(Number) : null;
+  const cv = document.getElementById('gl'); cv.width = W * DPR; cv.height = H * DPR; cv.style.width = W + 'px'; cv.style.height = H + 'px';
+  const gl = GLK.create(cv); const P = GLK.program(gl, TOY.FS);
   const S = window.S = {
-    cam: J('cam') || [3.4, 3.9, 11.6], tgt: J('tgt') || [-1.7, 2.45, 0], fov: +(Q.get('fov') || 31),
+    cam: J('cam') || [3.2, 2.4, 10.6], tgt: J('tgt') || [-1.25, 2.15, 0], fov: 30,
     figs: [
-      { pos: [-1.05, 2.78, 0.45], yaw: 0.36, sy: 1.12, arm: 1, tilt: 0.2, cap, body, expr: 0 },
-      { pos: [0.05, 1.2, 0.0], yaw: 0.0, sy: 0.74, arm: 0, tilt: 0, cap, body, ghost: true, expr: 1 },
-      { pos: [-0.38, 2.05, 0.2], yaw: 0.16, sy: 1.26, arm: 0.55, tilt: 0.1, cap, body, ghost: true, expr: 1 },
+      Object.assign({ pos: [-.55, 2.05, .3], yaw: .42, sy: 1.1, arm: 1, tilt: .12, expr: 1 }, FROG),
     ],
-    box: { pos: [0.35, 0, -0.1], yaw: +(Q.get('by') || 0.38), size: [0.98, 1.0, 0.82] },
-    lid: { pos: [J('lp') ? J('lp')[0] : 1.6, J('lp') ? J('lp')[1] : 4.75, J('lp') ? J('lp')[2] : -3.2], rot: [0.85, 0.3, -0.5] },
-    boxTex: boxArt(), boxCol: '#62b8ff', boxIn: '#fff1e2',
-    bgTop: '#ffb8cc', bgBot: '#ffe0d2', floor: '#ffd3cf', key: [-0.6, 0.9, 0.62], ghostA: +(Q.get('ga') || 0.42),
-    exposure: +(Q.get('ex') || 1.0), saturation: 1.12,
+    box: { pos: [.1, 0, -.1], yaw: .45, size: [.95, .95, .82] },
+    boxTex: BOXART.boxArt(), boxCol: '#ffe9a6', boxIn: '#fff6e8',
+    bgTop: '#ffcab8', bgBot: '#ffe8da', floor: '#ffdccc', key: [-.62, .88, .62], ghostA: .26,
+    exposure: 1.0, saturation: 1.08, dof: { focus: 11.0, amount: 26, max: 14 },
   };
   await TOY.render(gl, P, null, S, +(Q.get('tiles') || 8));
-  window.__done = Q.get('ov') === '0'; if (window.__done) return;
-  document.getElementById('ov').style.display = '';
-  const pj = p => TOY.project(S, p, W, H);
-  let svg = '', html = '';
-  const call = (pt, box, k, z, side) => {
-    const [x, y] = pt, [bx, by] = box;
-    const ex = bx + (x < bx ? 0 : 292), ey = by + 22;
-    svg += `<circle cx="${x}" cy="${y}" r="5" fill="#ff5a5f" stroke="#fff" stroke-width="2"/><polyline points="${x},${y} ${(x + ex) / 2},${ey} ${ex},${ey}" fill="none" stroke="rgba(42,31,61,.45)" stroke-width="1.2"/>`;
-    html += `<div class="call" style="left:${bx}px;top:${by}px"><span class="k">${k}</span>${z}</div>`;
-  };
-  // 洋葱皮的帧号
-  const tags = [[[0.05, 2.15, 0.0], '−8 帧', '压扁 sy 0.74'], [[-0.38, 4.3, 0.2], '−4 帧', '拉长 sy 1.26'], [[-1.05, 5.25, 0.45], '现在', '定一拍 sy 1.12']];
-  tags.forEach(([p, a, b]) => { const [x, y] = pj(p); html += `<div class="ttag mono" style="left:${x + 70}px;top:${y - 8}px"><b>${a}</b>${b}</div>`; });
-  call(pj([-0.05, 2.05, 0.5]), [640, 560], '<i>01</i>sx = sz = 1 / √sy', '<b>压扁、拉长，体积不变。</b>竖着拉 1.26 倍，横着就缩到 0.89——软胶的“肉感”全靠这一条。', 'r');
-  call(pj([-1.3, 3.55, 0.75]), [1540, 410], '<i>02</i>wrap = 0.4 · 暗部 = base²', '<b>哑光搪胶：</b>光包过来一点，暗面不变灰、反而更饱和，像有一点透光。高光只给柔光箱的形状。', 'r');
-  call(pj([1.25, 1.35, 0.55]), [1540, 640], '<i>03</i>盒子 = 第二张海报', '<b>正面认角色，侧面列全系列，</b>隐藏款只给一个“?”剪影——悬念是印在盒子上的。', 'r');
-  // 拆开那一下的闪光
-  const star = (x, y, r, c) => `<path d="M${x} ${y - r} Q${x} ${y} ${x + r} ${y} Q${x} ${y} ${x} ${y + r} Q${x} ${y} ${x - r} ${y} Q${x} ${y} ${x} ${y - r}Z" fill="${c}"/>`;
-  [[0.9, 2.3, 0.6, 22, '#fff'], [-0.4, 2.25, 0.9, 14, '#ffd34d'], [1.35, 2.75, 0.2, 12, '#fff'], [-2.3, 4.2, 0.6, 18, '#fff'], [-2.0, 3.0, 0.9, 10, '#ffd34d'], [0.3, 5.35, 0.3, 13, '#fff']].forEach(([a, b, c, r, col]) => { const [x, y] = pj([a, b, c]); svg = star(x, y, r, col) + svg; });
-  document.getElementById('lines').innerHTML = svg;
-  document.getElementById('calls').innerHTML = html;
-
-  // —— 四种材质的展示架 ——
-  const sc = document.getElementById('shelf'); const SW = 620, SH = 250;
-  sc.width = SW * DPR; sc.height = SH * DPR; Object.assign(sc.style, { width: SW + 'px', height: SH + 'px', left: '64px', top: '700px', borderRadius: '18px', boxShadow: '0 10px 40px rgba(120,60,90,.15)' });
+  // —— 系列货架：四顶帽子 + 隐藏款（电镀）——
+  const sc = document.getElementById('shelf'); const SW = 760, SH = 230;
+  sc.width = SW * DPR; sc.height = SH * DPR; Object.assign(sc.style, { width: SW + 'px', height: SH + 'px', left: '64px', top: '772px', borderRadius: '14px' });
   const g2 = GLK.create(sc); const P2 = GLK.program(g2, TOY.FS);
   const SS = {
-    cam: [0, 1.5, 13.6], tgt: [0, 1.32, 0], fov: 15.5,
-    figs: [
-      { pos: [-3.3, 0, 0], yaw: 0.25, cap, body, expr: 0 },
-      { pos: [-1.1, 0, 0], yaw: 0.1, mat: 1, cap: [0.82, 0.48, 0.62], body: [0.62, 0.55, 0.85], expr: 2 },
-      { pos: [1.1, 0, 0], yaw: -0.1, mat: 2, cap: [1.0, 0.4, 0.62], body: [0.35, 0.78, 1.0], expr: 0 },
-      { pos: [3.3, 0, 0], yaw: -0.25, mat: 3, cap: [1.0, 0.72, 0.3], body: [0.9, 0.92, 1.0], expr: 1 },
-    ],
-    bgTop: '#fff0ea', bgBot: '#ffd9d6', floor: '#e2c6d4', shelf: '#ffffff', floorOn: false, key: [-0.5, 0.8, 0.8], exposure: 1.0, saturation: 1.1,
+    cam: [0, 1.55, 17.2], tgt: [0, 1.2, 0], fov: 15.5,
+    figs: SERIES.map((f, i) => Object.assign({ pos: [-3.6 + i * 1.8, 0, 0], yaw: .28 - i * .14, expr: [0, 2, 1, 0][i] }, f))
+      .concat([Object.assign({ pos: [3.6, 0, 0], yaw: -.3, mat: 3, expr: 0 }, FROG, { cap: [1, .7, .25], body: [1, .78, .4], boot: [1, .78, .4] })]),
+    bgTop: '#fff4ec', bgBot: '#ffe6dc', floor: '#ffe4d8', shelf: '#ffffff', floorOn: false, key: [-.5, .8, .8], exposure: 1.0, saturation: 1.08,
   };
   await TOY.render(g2, P2, null, SS, 4);
-  const labs = [['搪胶', 'SOFT VINYL', '哑光 · 包裹光'], ['植绒', 'FLOCKED', '没高光 · 边缘绒光'], ['果冻', 'CLEAR', '透出背景 · 边缘变浓'], ['电镀 · 隐藏款', 'CHROME 1/144', '整只都是倒影']];
-  const lu = document.getElementById('lineup');
-  labs.forEach(([a, b, c], i) => {
-    const [x] = TOY.project(SS, SS.figs[i].pos, SW, SH);
-    const d = document.createElement('div'); d.className = 'lab' + (i === 3 ? ' sec' : '');
-    d.style.left = (x - 75) + 'px'; d.style.top = '-6px'; d.innerHTML = `<b>${a}</b><span class="mono">${b}</span>`;
-    lu.appendChild(d);
+  window.__done = Q.get('ov') === '0'; if (window.__done) return;
+  document.getElementById('ov').style.display = '';
+  const labs = [['青蛙', 'FROG'], ['小熊', 'BEAR'], ['兔子', 'BUNNY'], ['黑猫', 'CAT'], ['电镀 · 隐藏款', '1 / 144']];
+  let lh = '';
+  labs.forEach(([a, b], i) => { const [x] = TOY.project(SS, SS.figs[i].pos, SW, SH); lh += `<div class="lab mono" style="left:${64 + x - 60}px"><b>${a}</b><span>${b}</span></div>`; });
+  document.getElementById('labs').innerHTML = lh;
+  // —— 标注 ——
+  const pj = p => TOY.project(S, p, W, H);
+  let svg = '', html = '';
+  const call = (pt, bx, by, k, b, z) => {
+    const [x, y] = pt; const ax = bx - 12;
+    svg += `<circle cx="${x}" cy="${y}" r="4" fill="#2b2340"/><circle cx="${x}" cy="${y}" r="10" fill="none" stroke="#2b2340" stroke-width="1" opacity=".5"/><polyline points="${x},${y} ${ax},${by + 9} ${ax + 8},${by + 9}" fill="none" stroke="rgba(43,35,64,.55)" stroke-width="1"/>`;
+    html += `<div class="call" style="left:${bx}px;top:${by}px"><span class="k">${k}</span><b>${b}</b>${z}</div>`;
+  };
+  call(pj([-1.0, 3.85, .55]), 1590, 150, '<i>A</i>wrap 0.4 · 暗部 = base²', '搪胶是缎面，不是亮面', '光往暗面“包”过去一点，暗面不发灰反而更饱和；反射只取大块的亮——像软胶，不像塑料。');
+  call(pj([.12, 3.75, -.05]), 1590, 360, '<i>B</i>合模线 · 0.2 mm', '侧面那条细缝要留着', '搪胶是两半模具合起来的，帽子侧面一条浅浅的缝——真东西都有，画上去才可信。');
+  call(pj([-.42, 3.05, 1.05]), 1590, 560, '<i>C</i>移印 · 不是贴图', '眼睛是“印”上去的', '平的、边缘干净、比皮肤亮一点点；表情只靠眼皮和一条嘴线——困、惊、笑，三个就够。');
+  // 拆开那一下的闪光
+  const star = (x, y, r, col) => `<path d="M${x} ${y - r} Q${x} ${y} ${x + r} ${y} Q${x} ${y} ${x} ${y + r} Q${x} ${y} ${x - r} ${y} Q${x} ${y} ${x} ${y - r}Z" fill="${col}"/>`;
+  [[-1.6, 4.3, .6, 16, '#fff'], [.8, 4.6, .2, 11, '#ffd34d'], [-1.9, 2.6, .8, 9, '#ffd34d'], [.9, 2.9, .6, 13, '#fff']].forEach(([a, b, c2, r, col]) => { const [x, y] = pj([a, b, c2]); svg += star(x, y, r, col); });
+  // 左边：拆开那一下的节奏
+  const tx0 = 64, ty0 = 494, tw = 440, th = 120;
+  const ks = [[0, 1], [.24, .76], [.4, 1.22], [.56, 1.1], [.78, 1.1], [1, 1]];
+  const X = t => tx0 + t * tw, Y = v => ty0 + th - (v - .7) / .6 * th;
+  let path = '';
+  for (let i = 0; i <= 120; i++) { const t = i / 120; let k = 0; while (k < ks.length - 2 && t > ks[k + 1][0]) k++; const [t0, v0] = ks[k], [t1, v1] = ks[k + 1]; const u = (t - t0) / (t1 - t0), e = u * u * (3 - 2 * u); path += (i ? 'L' : 'M') + X(t).toFixed(1) + ' ' + Y(v0 + (v1 - v0) * e).toFixed(1); }
+  svg += `<line x1="${tx0}" x2="${tx0 + tw}" y1="${Y(1)}" y2="${Y(1)}" stroke="rgba(43,35,64,.2)" stroke-dasharray="3 4"/><line x1="${tx0}" x2="${tx0 + tw}" y1="${ty0 + th + 14}" y2="${ty0 + th + 14}" stroke="rgba(43,35,64,.25)"/>`;
+  svg += `<path d="${path}" fill="none" stroke="#2b2340" stroke-width="2.2"/>`;
+  [['蹲', ks[1]], ['窜', ks[2]], ['停', ks[3]]].forEach(([n, [t, v]]) => {
+    const x = X(t), y = Y(v);
+    svg += `<line x1="${x}" x2="${x}" y1="${y}" y2="${ty0 + th + 14}" stroke="rgba(43,35,64,.35)" stroke-dasharray="2 3"/><circle cx="${x}" cy="${y}" r="4.5" fill="#ff6b5e" stroke="#fff" stroke-width="1.5"/>`;
+    html += `<div class="ttag mono" style="left:${x - 10}px;top:${ty0 + th + 22}px"><b>${n}</b>${v}</div>`;
   });
+  html += `<div class="ttag mono" style="left:${tx0}px;top:${ty0 - 38}px;font-size:11.5px"><b>节奏</b>撕开 0.6 s · 弹出 0.18 s · 停 0.25 s · 横向永远 1/√sy</div>`;
+  document.getElementById('lines').innerHTML = svg; document.getElementById('calls').innerHTML = html;
   window.__done = true;
-})().catch(e => { console.log('ERR', e.message.slice(0, 3000)); window.__done = true; });
+})().catch(e => { console.log('ERR', e.message.slice(0, 4000)); window.__done = true; });
 </script>
 </body>
 </html>

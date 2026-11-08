@@ -12,7 +12,8 @@
   uniform vec4 fA[${MAXF}];   // pos.xyz, yaw
   uniform vec4 fB[${MAXF}];   // 拉伸 sy, 材质(0 搪胶 1 植绒 2 果冻 3 电镀), 手臂(0 放下 1 举起), 侧倾
   uniform vec4 fC[${MAXF}];   // 帽色 rgb, 残影(1)
-  uniform vec4 fD[${MAXF}];   // 身体色 rgb, 表情(0 笑 1 惊喜 2 眯眼)
+  uniform vec4 fD[${MAXF}];   // 雨衣色 rgb, 表情(0 困 1 惊喜 2 眯眼笑)
+  uniform vec4 fE[${MAXF}];   // 帽子种类(0 青蛙 1 熊 2 兔 3 猫), 靴子色 rgb
   uniform vec4 boxP; uniform vec3 boxS; uniform float boxOn;  // 盒子：位置 + yaw；半尺寸
   uniform vec4 lidP; uniform vec3 lidR; uniform float lidOn;  // 盒盖：位置 + 是否；旋转(x,y,z)
   uniform vec3 boxCol, boxIn;
@@ -29,28 +30,72 @@
   float sdRBox(vec3 p, vec3 b, float r){ vec3 q=abs(p)-b+r; return length(max(q,0.))+min(max(q.x,max(q.y,q.z)),0.)-r; }
   float smin(float a, float b, float k){ float h=clamp(0.5+0.5*(b-a)/k,0.,1.); return mix(b,a,h)-k*h*(1.-h); }
   float smax(float a, float b, float k){ return -smin(-a,-b,k); }
+  float sdRC(vec3 p, vec3 a, vec3 b, float r1, float r2){
+    vec3 ba = b - a; float l2 = dot(ba,ba); float rr = r1 - r2; float a2 = l2 - rr*rr; float il2 = 1.0/l2;
+    vec3 pa = p - a; float y = dot(pa,ba); float z = y - l2;
+    vec3 xv = pa*l2 - ba*y; float x2 = dot(xv,xv);
+    float y2 = y*y*l2; float z2 = z*z*l2;
+    float k = sign(rr)*rr*rr*x2;
+    if (sign(z)*a2*z2 > k) return sqrt(x2 + z2)*il2 - r2;
+    if (sign(y)*a2*y2 < k) return sqrt(x2 + y2)*il2 - r1;
+    return (sqrt(x2*a2*il2)+y*rr)*il2 - r1;
+  }
 
-  // —— 一只小菇（局部坐标，脚底 y=0，面朝 +z）——
-  // 返回 vec2(距离, 部件)：1 帽 2 脸 3 身体 4 手 5 脚
-  vec2 mogu(vec3 p, float arm){
+  // —— 一只“啵啵 BOBO”（局部坐标，脚底 y=0，面朝 +z）——
+  // 穿动物帽雨衣的小孩：大头、困困的半睁眼、短手短脚、雨靴
+  // 返回 vec2(距离, 部件)：1 帽子 2 脸 3 雨衣 4 手 5 靴子 6 帽子上的眼白 / 内耳
+  vec2 bobo(vec3 p, float arm, float kind){
     vec3 q = p; q.x = abs(q.x);
-    float body = sdEll(p - vec3(0., .6, 0.), vec3(.44, .52, .4));
-    float feet = sdEll(q - vec3(.19, .1, .1), vec3(.16, .11, .2));
-    vec3 sh = vec3(.33, .84, 0.);
-    vec3 hd = mix(vec3(.56, .42, .14), vec3(.74, 1.3, .16), arm);
-    float arms = min(sdCap(q, sh, hd, .1), length(q - hd) - .125);
-    float head = sdEll(p - vec3(0., 1.34, .03), vec3(.58, .5, .54));
-    vec3 cp = p - vec3(0., 1.62, 0.); cp.xy = rot(-.12) * cp.xy;
-    float cap = sdEll(cp, vec3(.95, .58, .9));
-    cap = smax(cap, -(cp.y + .1), .05);
-    float bd = smin(body, feet, .07);
-    bd = smin(bd, head, .14);
-    float d = smin(bd, arms, .07);
-    vec2 r = vec2(d, 3.);
-    if (head < body - .02 && head < arms) r.y = 2.;
-    if (arms < body + .01 && arms < head) r.y = 4.;
-    if (feet < body + .015) r.y = 5.;
-    if (cap < d) r = vec2(cap, 1.);
+    float face = sdEll(p - vec3(0., 1.4, .07), vec3(.6, .54, .56));
+    float hoodO = sdEll(p - vec3(0., 1.48, -.03), vec3(.75, .71, .71));
+    float open = sdEll(p - vec3(0., 1.36, .52), vec3(.5, .43, .45));
+    float hood = smax(hoodO, -open, .05);
+    // 帽子往下收到脖子
+    hood = smin(hood, sdRC(p, vec3(0., 1.05, -.05), vec3(0., .85, -.02), .45, .38), .12);
+    vec2 r = vec2(face, 2.);
+    float ex = 1e2; float exPart = 1.;
+    if (kind < .5) {          // 青蛙：头顶两只大眼睛
+      float e = length(q - vec3(.3, 2.03, .14)) - .21;
+      hood = smin(hood, e, .1);
+      float w = length(q - vec3(.31, 2.05, .3)) - .1;
+      ex = w; exPart = 6.;
+    } else if (kind < 1.5) {  // 熊：两只圆耳朵
+      float e = sdEll(q - vec3(.5, 1.98, -.05), vec3(.2, .2, .11));
+      hood = smin(hood, e, .07);
+      ex = sdEll(q - vec3(.5, 1.98, .03), vec3(.11, .11, .05)); exPart = 6.;
+    } else if (kind < 2.5) {  // 兔：两只长耳朵，往两边微微张开
+      vec3 qq = vec3(q.x, q.y, q.z * 1.9);
+      float ear = sdRC(qq, vec3(.22, 1.98, -.1 * 1.9), vec3(.36, 2.78, -.12 * 1.9), .16, .13) * .55;
+      hood = smin(hood, ear, .08);
+      ex = sdEll(q - vec3(.29, 2.38, .02), vec3(.075, .3, .035)); exPart = 6.;
+    } else {                  // 猫：两只尖耳朵
+      float e = sdRC(q, vec3(.4, 1.9, -.02), vec3(.56, 2.32, -.04), .2, .025);
+      hood = smin(hood, e, .06);
+    }
+    // 雨衣：上窄下宽，下摆略外翻
+    vec3 cp = p; cp.z *= 1.12;
+    float coat = sdRC(cp, vec3(0., .98, -.02), vec3(0., .34, 0.), .32, .48);
+    coat = smax(coat, .18 - p.y, .04);
+    // 手臂 + 手
+    vec3 sh = vec3(.33, .9, .02);
+    vec3 el = mix(vec3(.48, .66, .12), vec3(.56, 1.08, .18), arm);
+    vec3 hd = mix(vec3(.52, .5, .2), vec3(.68, 1.32, .2), arm);
+    float arms = sdRC(q, sh, el, .14, .13);
+    arms = smin(arms, sdRC(q, el, hd, .13, .12), .03);
+    coat = smin(coat, arms, .05);
+    float hands = length(q - hd - mix(vec3(.01, -.08, .02), vec3(.02, .09, 0.), arm)) - .115;
+    // 腿 + 雨靴
+    float legs = sdRC(q, vec3(.15, .3, 0.), vec3(.16, .16, .02), .11, .1);
+    float boot = sdEll(q - vec3(.165, .12, .05), vec3(.15, .13, .2));
+    boot = smin(boot, sdRC(q, vec3(.16, .26, .0), vec3(.165, .12, .02), .125, .13), .03);
+    boot = smax(boot, -p.y, .01);
+    float d = min(face, hood);
+    r = face < hood ? vec2(face, 2.) : vec2(hood, 1.);
+    if (coat < r.x) r = vec2(coat, 3.);
+    if (hands < r.x) r = vec2(hands, 4.);
+    if (legs < r.x) r = vec2(legs, 3.);
+    if (boot < r.x) r = vec2(boot, 5.);
+    if (ex < r.x + .002) r = vec2(min(ex, r.x), exPart);
     return r;
   }
 
@@ -69,9 +114,9 @@
       if (i >= nF) break;
       if (abs(fC[i].w - ghost) > .5) continue;
       float sy = fB[i].x; float sc = min(sy, inversesqrt(sy));
-      float bnd = length(p - fA[i].xyz - vec3(0., 1.15, 0.)) - 1.45 * max(sy, 1.);
+      float bnd = length(p - fA[i].xyz - vec3(0., 1.3, 0.)) - 1.75 * max(sy, 1.);
       if (bnd > .2) { if (bnd < r.x) r = vec2(bnd, 0.); continue; }
-      vec2 m = mogu(toLocal(p, i), fB[i].z);
+      vec2 m = bobo(toLocal(p, i), fB[i].z, fE[i].x);
       m.x *= sc * .92;
       if (m.x < r.x) r = vec2(m.x, float(i * 10) + m.y);
     }
@@ -131,14 +176,16 @@
     return normalize(vec3(map(p+e.xyy).x-map(p-e.xyy).x, map(p+e.yxy).x-map(p-e.yxy).x, map(p+e.yyx).x-map(p-e.yyx).x));
   }
   float shadow(vec3 ro, vec3 rd, float k){
-    float res = 1., t = .02;
-    for (int i = 0; i < 64; i++){
+    // 软阴影：起点抖一下，把椭球距离场不精确带来的一圈圈条纹打散成很细的颗粒
+    float res = 1., t = .03 + .05 * fract(sin(dot(ro.xy * 91.7 + ro.z * 37.3, vec2(12.9898, 78.233))) * 43758.5453);
+    for (int i = 0; i < 90; i++){
       float h = map(ro + rd * t).x;
       res = min(res, k * h / t);
-      t += clamp(h, .02, .3);
-      if (res < .002 || t > 12.) break;
+      t += clamp(h, .02, .25);
+      if (res < .001 || t > 12.) break;
     }
-    return clamp(res, 0., 1.);
+    res = clamp(res, 0., 1.);
+    return res * res * (3. - 2. * res);
   }
   float ao(vec3 p, vec3 n){
     float s = 0., w = 1.;
@@ -165,45 +212,59 @@
 
   // 印在脸上的表情（移印 tampo）：返回 rgba
   vec4 face(vec3 q, float expr){
-    vec2 f = (q - vec3(0., 1.3, .03)).xy;
-    if (q.z < .15) return vec4(0.);
+    vec2 f = (q - vec3(0., 1.36, .07)).xy;
+    if (q.z < .2) return vec4(0.);
     vec4 c = vec4(0.);
-    vec2 e = vec2(abs(f.x) - .215, f.y + .0);
-    // 腮红
-    float bl = length((vec2(abs(f.x), f.y) - vec2(.36, -.13)) / vec2(.1, .055));
-    c = mix(c, vec4(1., .45, .5, .55), smoothstep(1., .55, bl) * .8);
+    // 腮红：两团，边缘柔一点
+    float bl = length((vec2(abs(f.x), f.y) - vec2(.34, -.1)) / vec2(.11, .07));
+    c = mix(c, vec4(1., .52, .55, .7), smoothstep(1., .3, bl) * .85);
+    vec2 e = vec2(abs(f.x) - .19, f.y + .01);
+    vec3 ink = vec3(.12, .08, .14);
     if (expr < .5) {
-      // 竖着的椭圆大眼 + 两颗高光
-      float ed = length(e / vec2(.088, .118));
-      float m = smoothstep(1.03, .97, ed);
-      vec3 ec = mix(vec3(.05, .04, .09), vec3(.18, .12, .3), smoothstep(.3, -1., f.y / .1));
-      c = mix(c, vec4(ec, 1.), m);
-      float h1 = smoothstep(.036, .027, length(e - vec2(.026, .048)));
-      float h2 = smoothstep(.017, .011, length(e - vec2(-.024, -.055)));
-      c = mix(c, vec4(1.), max(h1, h2) * m);
+      // 困困的半睁眼：上眼皮压下来一半，眼皮是一条粗线
+      float ed = length(e / vec2(.1, .085));
+      float lid = .012 - .02 * (abs(f.x) - .19) * sign(f.x) * 0. ;
+      float m = smoothstep(1.04, .96, ed) * step(e.y, lid);
+      vec3 ic = mix(vec3(.16, .11, .2), vec3(.32, .22, .36), smoothstep(-.08, .0, e.y));
+      c = mix(c, vec4(ic, 1.), m);
+      float hl = smoothstep(.024, .016, length(e - vec2(.035 * sign(f.x) * 0. + .03, -.02)));
+      c = mix(c, vec4(1.), hl * m);
+      float lidLine = smoothstep(.016, .008, abs(e.y - lid)) * smoothstep(.13, .1, abs(e.x));
+      c = mix(c, vec4(ink, 1.), lidLine);
+      // 眉毛：两小撇，往下压（有点不耐烦）
+      vec2 bq = vec2(abs(f.x) - .2, f.y - .13 + (abs(f.x) - .2) * .25);
+      float brow = smoothstep(.016, .008, abs(bq.y)) * smoothstep(.07, .05, abs(bq.x));
+      c = mix(c, vec4(ink, 1.), brow);
     } else if (expr < 1.5) {
-      // 惊喜：圆眼睛 + 小 o 嘴
-      float ed = length(e / vec2(.075, .085));
-      float m = smoothstep(1.03, .97, ed);
-      c = mix(c, vec4(.05, .04, .09, 1.), m);
-      c = mix(c, vec4(1.), smoothstep(.028, .02, length(e - vec2(.022, .03))) * m);
+      float ed = length(e / vec2(.09, .1));
+      float m = smoothstep(1.04, .96, ed);
+      c = mix(c, vec4(.14, .1, .18, 1.), m);
+      c = mix(c, vec4(1.), smoothstep(.03, .022, length(e - vec2(.03, .03))) * m);
+      c = mix(c, vec4(1.), smoothstep(.014, .009, length(e - vec2(-.03, -.04))) * m);
     } else {
-      // 眯眼 ^ ^
-      vec2 a = vec2(abs(e.x), e.y + .02);
-      float arc = abs(length(a - vec2(0., -.05)) - .08);
-      float m = smoothstep(.019, .012, arc) * step(-.03, a.y);
-      c = mix(c, vec4(.05, .04, .09, 1.), m);
+      vec2 a = vec2(e.x, e.y + .03);
+      float arc = abs(length(a - vec2(0., -.055)) - .085);
+      float m = smoothstep(.02, .012, arc) * step(-.035, a.y);
+      c = mix(c, vec4(ink, 1.), m);
     }
     // 嘴
-    vec2 mo = f - vec2(0., -.17);
-    if (expr < .5 || expr > 1.5) {
-      float md = length(mo / vec2(.075, .06));
-      float m = smoothstep(1.04, .96, md) * step(mo.y, .0);
-      vec3 mc = mix(vec3(.45, .06, .12), vec3(1., .45, .5), smoothstep(-.02, -.06, mo.y));
-      c = mix(c, vec4(mc, 1.), m);
-    } else {
+    vec2 mo = f - vec2(.02, -.17);
+    if (expr < .5) {
+      // 一条歪歪的小嘴 + 一颗小牙
+      float y = mo.y - .012 * sin(mo.x * 30.) * 0. + mo.x * .12;
+      float mline = smoothstep(.013, .007, abs(y)) * smoothstep(.07, .055, abs(mo.x));
+      c = mix(c, vec4(ink, 1.), mline);
+      vec2 tq = mo - vec2(-.02, -.012);
+      float tooth = step(abs(tq.x), .012) * step(-.022, tq.y) * step(tq.y, 0.);
+      c = mix(c, vec4(1.), tooth);
+      c = mix(c, vec4(ink, 1.), smoothstep(.006, .002, abs(abs(tq.x) - .012)) * step(-.022, tq.y) * step(tq.y, 0.) * .8);
+    } else if (expr < 1.5) {
       float m = smoothstep(1.04, .96, length(mo / vec2(.035, .045)));
-      c = mix(c, vec4(.45, .06, .12, 1.), m);
+      c = mix(c, vec4(.45, .08, .14, 1.), m);
+    } else {
+      float md = length(mo / vec2(.07, .06));
+      float m = smoothstep(1.04, .96, md) * step(mo.y, .0);
+      c = mix(c, vec4(mix(vec3(.45, .06, .12), vec3(1., .45, .5), smoothstep(-.02, -.05, mo.y)), 1.), m);
     }
     return c;
   }
@@ -235,20 +296,32 @@
   vec3 shadeFig(vec3 p, vec3 n, vec3 rd, int i, float part, bool ghost){
     vec3 q = toLocal(p, i);
     float mat = fB[i].y;
-    vec3 base = part < 1.5 ? fC[i].rgb : (part < 2.5 ? vec3(1., .82, .7) : (part < 3.5 ? fD[i].rgb : (part < 4.5 ? vec3(1., .82, .7) : fD[i].rgb * .82)));
-    if (part < 1.5) base = spotsCap(q, base);
-    if (part > 2.5 && part < 3.5) {
-      // 肚子上的小口袋
-      float pk = length((q.xy - vec2(0., .55)) / vec2(.17, .13));
-      if (q.z > 0.) base = mix(base, base * 1.12 + .05, smoothstep(1.02, .96, pk));
-      base = mix(base, base * .78, smoothstep(.04, .0, abs(pk - 1.)) * step(0., q.z));
+    vec3 skin = vec3(1., .8, .68);
+    vec3 base = part < 1.5 ? fC[i].rgb : (part < 2.5 ? skin : (part < 3.5 ? fD[i].rgb : (part < 4.5 ? skin : (part < 5.5 ? fE[i].yzw : vec3(1., .97, .92)))));
+    if (part > 5.5 && fE[i].x > .5) base = vec3(1., .66, .7);        // 熊 / 兔的内耳
+    if (part > 5.5 && fE[i].x < .5) {                                // 青蛙眼：黑眼珠
+      vec3 eq = vec3(abs(q.x), q.yz) - vec3(.31, 2.06, .38);
+      base = mix(base, vec3(.1, .08, .12), smoothstep(.055, .045, length(eq.xy)));
+      base = mix(base, vec3(1.), smoothstep(.018, .012, length(eq.xy - vec2(.02, .025))));
     }
+    if (part > 2.5 && part < 3.5) {
+      // 雨衣：门襟一条线 + 三颗按扣 + 口袋盖
+      if (q.z > .1 && q.y > .3 && q.y < .95) {
+        base = mix(base, base * .72, smoothstep(.012, .004, abs(q.x - .02)));
+        for (int b = 0; b < 3; b++) { float by = .82 - float(b) * .18; float bd = length(vec2(q.x - .08, q.y - by)); base = mix(base, vec3(1., .96, .88), smoothstep(.034, .026, bd)); base = mix(base, base * .7, smoothstep(.006, .002, abs(bd - .03))); }
+        vec2 pk = vec2(abs(q.x) - .24, q.y - .48);
+        if (abs(pk.x) < .1 && abs(pk.y) < .04) base *= .86;
+      }
+    }
+    if (part > 4.5 && part < 5.5 && q.y < .04) base = vec3(.96, .94, .9);  // 白色鞋底
+    // 合模线：搪胶是两半模具合起来的，侧面会留一条细细的缝
+    if (part < 1.5 || (part > 2.5 && part < 3.5)) base *= 1. - .22 * smoothstep(.006, .0, abs(q.z + .01)) * step(.3, abs(q.x));
     vec4 fp = vec4(0.);
     if (part > 1.5 && part < 2.5) fp = face(q, fD[i].w);
     vec3 k = normalize(keyDir);
     float ndl = dot(n, k);
     float ndv = clamp(dot(n, -rd), 0., 1.);
-    float sh = ghost ? 1. : shadow(p + n * .01, k, 9.);
+    float sh = ghost ? 1. : shadow(p + n * .015, k, 5.);
     float oc = ghost ? 1. : ao(p, n);
     vec3 col;
     vec3 hemi = mix(floorCol * .55, mix(bgBot, bgTop, .6) * 1.1, n.y * .5 + .5);
@@ -268,9 +341,12 @@
       col *= mix(.45, 1., oc);
       col += base * hemi * .16 * oc + base * vec3(.85, .9, 1.) * fill * .12;
       vec3 h = normalize(k - rd);
-      float sp = pow(max(dot(n, h), 0.), 60.) * 1.2 * sh;
+      float gloss = part > 1.5 && part < 2.5 ? .35 : (part > 3.5 && part < 4.5 ? .35 : 1.);
+      float sp = pow(max(dot(n, h), 0.), 22.) * .32 * sh * gloss;
       float fr = .04 + .96 * pow(1. - ndv, 5.);
-      col += (env(R) * .16 * (.3 + fr) + sp) * mix(.4, 1., oc) * (1. - fp.a * .3);
+      // 缎面：反射是糊的（用法线往上偏一点去取环境，只取大块的亮）
+      vec3 Rb = normalize(mix(R, n, .55));
+      col += (env(Rb) * .07 * (.3 + fr) * gloss + sp) * mix(.4, 1., oc) * (1. - fp.a * .5);
     } else if (mat < 1.5) {
       // 植绒：没有高光，边缘一圈绒光
       float dif = clamp((ndl + .6) / 1.6, 0., 1.) * mix(.45, 1., sh);
@@ -351,7 +427,7 @@
       vec3 n = nrm(p, 0.);
       if (h.y >= 100. && h.y < 200.) {
         vec3 k = normalize(keyDir);
-        float sh = shadow(p + n * .01, k, 7.);
+        float sh = shadow(p + n * .01, k, 5.);
         float oc = ao(p, n);
         vec3 fc = h.y < 105. ? floorCol : (h.y < 115. ? shelfCol : pedCol);
         if (h.y > 115. && n.y < .5) { float st = step(.5, fract(atan(p.z - ped.z, p.x - ped.x) * 6.)); fc = mix(pedCol, pedCol * .85, st); }
@@ -391,24 +467,47 @@
     float lu = dot(col, vec3(.2126,.7152,.0722)); col = mix(vec3(lu), col, satu);
     col = pow(clamp(col, 0., 1.), vec3(1. / 2.2));
     col += (fract(sin(dot(px, vec2(12.9898, 78.233)) + seed) * 43758.5453) - .5) * grainA;
-    o = vec4(col, 1.);
+    o = vec4(col, hit ? min(tHit, 60.) : 60.);
   }`;
 
   function setFigs(gl, P, figs) {
-    const A = new Float32Array(MAXF * 4), B = new Float32Array(MAXF * 4), C = new Float32Array(MAXF * 4), D = new Float32Array(MAXF * 4);
+    const A = new Float32Array(MAXF * 4), B = new Float32Array(MAXF * 4), C = new Float32Array(MAXF * 4), D = new Float32Array(MAXF * 4), E = new Float32Array(MAXF * 4);
     figs.forEach((f, i) => {
       A.set([f.pos[0], f.pos[1], f.pos[2], f.yaw || 0], i * 4);
       B.set([f.sy || 1, f.mat || 0, f.arm || 0, f.tilt || 0], i * 4);
       C.set([...(f.cap || [1, .36, .3]), f.ghost ? 1 : 0], i * 4);
       D.set([...(f.body || [.6, .86, .78]), f.expr || 0], i * 4);
+      E.set([f.kind || 0, ...(f.boot || [.95, .3, .28])], i * 4);
     });
     gl.uniform1i(P.u.nF, figs.length);
-    gl.uniform4fv(P.u.fA, A); gl.uniform4fv(P.u.fB, B); gl.uniform4fv(P.u.fC, C); gl.uniform4fv(P.u.fD, D);
+    gl.uniform4fv(P.u.fA, A); gl.uniform4fv(P.u.fB, B); gl.uniform4fv(P.u.fC, C); gl.uniform4fv(P.u.fD, D); gl.uniform4fv(P.u.fE, E);
   }
 
   const lin = c => c.map(v => Math.pow(v, 2.2));
   const hex = h => { const n = parseInt(h.slice(1), 16); return [(n >> 16 & 255) / 255, (n >> 8 & 255) / 255, (n & 255) / 255]; };
   const L = h => lin(hex(h));
+
+  // —— 景深：按每个像素离对焦面的远近，在一个圆盘里取样 ——
+  const FS_DOF = `#version 300 es
+  precision highp float; in vec2 uv; out vec4 o;
+  uniform sampler2D src; uniform vec2 px; uniform float focus, amount, maxR;
+  void main(){
+    vec4 c0 = texture(src, uv);
+    float coc0 = clamp(abs(c0.a - focus) / c0.a * amount, 0., maxR);
+    vec3 acc = c0.rgb; float wsum = 1.;
+    for (int i = 0; i < 48; i++) {
+      float fi = float(i) + .5;
+      float r = sqrt(fi / 48.) * maxR;
+      float a = fi * 2.39996;
+      vec2 off = vec2(cos(a), sin(a)) * r;
+      vec4 s = texture(src, uv + off * px);
+      float coc = clamp(abs(s.a - focus) / s.a * amount, 0., maxR);
+      // 只有自己也糊到这么大的样本才能“晕”过来；前景比背景更容易晕出去
+      float w = smoothstep(r - 1., r + .5, s.a > c0.a + .05 ? min(coc, coc0 + .5) : coc);
+      acc += s.rgb * w; wsum += w;
+    }
+    o = vec4(acc / wsum, 1.);
+  }`;
 
   // scene: { cam, tgt, fov, figs[], box?, lid?, bgTop, bgBot, floor, key, ghostA, boxTex(canvas) }
   async function render(gl, P, target, s, tiles = 6) {
@@ -432,15 +531,28 @@
     gl.uniform2fv(P.u.shelfY, s.shelfY || [0, -1]); gl.uniform1f(P.u.shelfW, s.shelfW || 9);
     gl.uniform4fv(P.u.boxRep, s.boxRep || [0, 0, 0, 0]); gl.uniform4fv(P.u.boxWig, s.boxWig || [-9, -9, 0, 0]); gl.uniform1f(P.u.boxClosed, s.boxClosed ? 1 : 0);
     gl.uniform4fv(P.u.ped, s.ped || [0, 0, 0, 0]); gl.uniform3fv(P.u.pedCol, L(s.pedCol || '#ffffff')); gl.uniform3fv(P.u.shelfCol, L(s.shelf || '#ffffff'));
+    let boxT = null;
     if (s.boxTex) {
-      const t = gl.createTexture(); gl.activeTexture(gl.TEXTURE0); gl.bindTexture(gl.TEXTURE_2D, t);
+      const t = boxT = gl.createTexture(); gl.activeTexture(gl.TEXTURE0); gl.bindTexture(gl.TEXTURE_2D, t);
       gl.pixelStorei(gl.UNPACK_FLIP_Y_WEBGL, false);
       gl.texImage2D(gl.TEXTURE_2D, 0, gl.SRGB8_ALPHA8, gl.RGBA, gl.UNSIGNED_BYTE, s.boxTex);
       gl.generateMipmap(gl.TEXTURE_2D);
       gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR_MIPMAP_LINEAR);
       gl.uniform1i(P.u.boxTex, 0);
     }
-    await GLK.drawTiled(gl, target, tiles);
+    if (s.dof) {
+      const W2 = gl.drawingBufferWidth, H2 = gl.drawingBufferHeight;
+      const fb = GLK.fbo(gl, W2, H2, gl.RGBA16F);
+      gl.useProgram(P);
+      gl.activeTexture(gl.TEXTURE0); gl.bindTexture(gl.TEXTURE_2D, boxT);
+      await GLK.drawTiled(gl, fb, tiles);
+      const D = GLK.program(gl, FS_DOF); gl.useProgram(D);
+      GLK.bindTex(gl, D, 'src', fb.tex, 0);
+      gl.uniform2f(D.u.px, 1 / W2, 1 / H2); gl.uniform1f(D.u.focus, s.dof.focus); gl.uniform1f(D.u.amount, s.dof.amount * W2 / 1920); gl.uniform1f(D.u.maxR, (s.dof.max || 14) * W2 / 1920);
+      await GLK.drawTiled(gl, target, 3);
+    } else {
+      await GLK.drawTiled(gl, target, tiles);
+    }
   }
 
   // 3D → 屏幕（CSS px），用来画标注线
