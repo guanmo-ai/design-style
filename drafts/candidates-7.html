@@ -27,25 +27,25 @@ html, body { width: 1960px; background: #0b0b0d; color: #f2f2f4; font-family: No
 </head>
 <body>
 <div class="wrap">
-  <div class="head"><h1>第七轮候选 · 年轻人喜欢的三种“像”</h1><span>第二版 · 像吉卜力 / 像二次元游戏 / 像潮玩 · 每个风格两张：第 0 帧 + 落到界面上 · 全部代码实时渲染，原创角色，没有一张素材</span></div>
+  <div class="head"><h1>第七轮候选 · 年轻人喜欢的三种“像”</h1><span>第三版 · 像吉卜力 / 像二次元游戏 / 像潮玩 · 每个风格两张：第 0 帧 + 落到界面上 · 全部代码实时渲染（卡通渲染用 CC0 模型）</span></div>
   <div class="grid">
     <div class="col c1">
       <h2>治愈系手绘<small>Hand-Painted Anime</small></h2>
       <div class="line">1985 吉卜力工作室 → 1988 男鹿和雄画《龙猫》的背景 → 今天的治愈系插画与独立游戏</div>
-      <div class="one">照男鹿和雄的画法：先铺大色块，再大笔、中笔，最后几颗色点。</div>
+      <div class="one">对着《龙猫》剧照学：先设计形状、平涂，再过一遍水粉笔触；人物赛璐璐叠在上面。</div>
       <img src="hand-painted/png/cover.png">
-      <div class="cap"><b>第 0 帧</b> · 乡下的夏天：积乱云湿画法（底晕开、顶收边），稻田被风吹出一道道亮纹，电线杆退到远处；大树的树荫和光斑按树冠真实投影。人物平涂、背景厚涂——每一笔都是一个笔刷印子，左下角是同一张画的“作画四步”。</div>
+      <div class="cap"><b>第 0 帧</b> · 乡下的夏天：积乱云（亮面占大半、几块湿边蓝灰）、稻田、农家、电线杆、一团团硬边叶簇的大树；Kuwahara 滤镜把平涂变成水粉笔触，草帽女孩单独一层、线条清楚。右下是同一块画面的作画四步：形状 → 分层 → 水粉 → 人物。</div>
       <img src="hand-painted/png/ui.png">
-      <div class="cap"><b>界面</b> · Sora 天气：没有一个天气图标——积乱云的高度 = 雷阵雨概率，稻浪亮纹的速度 = 风速，同一张画早 / 午 / 黄昏换颜料。配方：作画四步、云的边缘软硬、光斑扁度 = 1/sin(太阳高度)、换色不换画。</div>
+      <div class="cap"><b>界面</b> · Sora 天气：没有一个天气图标——积乱云的高度 = 雷阵雨概率，稻浪亮纹 = 风速，同一张画早 / 午 / 黄昏换三套颜料。配方：作画四步、叶团三层、Kuwahara 笔触、换色不换画。</div>
     </div>
     <div class="col c2">
       <h2>卡通渲染<small>Toon Shading</small></h2>
       <div class="line">2000《Jet Set Radio》→ 2002《风之杖》→ 2014《罪恶装备 Xrd》→ 2020《原神》</div>
-      <div class="one">明明是 3D，看上去却是一张原画：两阶光影 + 描边 + 画上去的五官 + 撮影。</div>
+      <div class="one">真模型 + 真管线：MToon 两阶光影、背面描边，再加一层“撮影”。</div>
       <img src="toon-shading/png/cover.png">
-      <div class="cap"><b>第 0 帧</b> · 原创角色“星野”（渐变长双马尾、星星眼、虎牙）从脚到头切成四步：灰模 → 两阶 → 描边 → 撮影（扩散光、渐变叠色、光粒）。背景是游戏立绘式的黄昏光环。</div>
+      <div class="cap"><b>第 0 帧</b> · VRoid 的 CC0 样例角色「ヴィータ」比剪刀手，从脚到头切成四步：固有色 → 两阶光影 → 描边 → 撮影（边缘光、泛光把发光线条晕开、冷暖渐变、光粒）。three.js + three-vrm 实时渲染。</div>
       <img src="toon-shading/png/ui.png">
-      <div class="cap"><b>界面</b> · 游戏角色页 + App：只改发根 / 发梢两色就换发色；点一下头，眼睛换成“&gt; &lt;”（换贴图，模型不动）；放进 SSR 卡面线宽还是 1.5 px。配方：w 决定画得多硬、阴影换色不变黑、背面外扩描边、脸部阈值图。</div>
+      <div class="cap"><b>界面</b> · 游戏角色页 + App：头发乘一个颜色就是新发色；点头触发模型自带的笑眼表情；放进 SSR 卡面，描边和泛光都在。配方：两阶的 w、阴影换色不变黑、背面外扩描边、边缘光的 p。</div>
     </div>
     <div class="col c3">
       <h2>潮玩<small>Designer Toy</small></h2>
