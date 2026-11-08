@@ -9,24 +9,23 @@
 @font-face { font-family: 'Geist'; src: url(../../public/fonts/Geist.ttf); font-weight: 100 900; }
 @font-face { font-family: 'NotoSC'; src: url(../../public/fonts/NotoSansSC-Black.otf); font-weight: 900; }
 @font-face { font-family: 'NotoSC'; src: url(../../public/fonts/NotoSansSC-Bold.otf); font-weight: 700; }
-@font-face { font-family: 'NotoSC'; src: url(../../public/fonts/NotoSansSC-Medium.otf); font-weight: 500; }
 @font-face { font-family: 'NotoSC'; src: url(../../public/fonts/NotoSansSC-Regular.otf); font-weight: 400; }
 * { margin: 0; padding: 0; box-sizing: border-box; }
-html, body { width: 1920px; height: 1080px; overflow: hidden; background: #24262c; color: #fff; font-family: Geist, NotoSC, sans-serif; }
+html, body { width: 1920px; height: 1080px; overflow: hidden; background: #1d2466; color: #fff; font-family: Geist, NotoSC, sans-serif; }
 canvas { position: absolute; left: 0; top: 0; }
 .mono { font-family: GeistMono, monospace; letter-spacing: .05em; }
 .ov { position: absolute; inset: 0; pointer-events: none; }
-.tl { position: absolute; left: 64px; top: 46px; font-size: 12.5px; color: rgba(255,255,255,.66); display: flex; gap: 24px; text-transform: uppercase; }
+.tl { position: absolute; left: 64px; top: 46px; font-size: 12.5px; color: rgba(255,255,255,.7); display: flex; gap: 24px; text-transform: uppercase; }
 .tl b { color: #fff; font-weight: 600; }
 .title { position: absolute; left: 64px; top: 112px; }
 .title .zh { font-family: NotoSC; font-weight: 900; font-size: 96px; line-height: 1; letter-spacing: .02em; }
-.title .en { font-family: Unbounded; font-weight: 700; font-size: 22px; letter-spacing: .32em; margin-top: 18px; color: rgba(255,255,255,.85); }
-.title p { font-family: NotoSC; font-size: 17px; line-height: 1.8; margin-top: 22px; color: rgba(255,255,255,.78); width: 420px; }
+.title .en { font-family: Unbounded; font-weight: 700; font-size: 22px; letter-spacing: .32em; margin-top: 18px; color: rgba(255,255,255,.88); }
+.title p { font-family: NotoSC; font-size: 17px; line-height: 1.8; margin-top: 22px; color: rgba(255,255,255,.82); width: 440px; }
 .title p b { color: #fff; }
 .chip { position: absolute; font-size: 11px; white-space: nowrap; padding: 5px 10px 5px 8px; border-radius: 999px; display: flex; gap: 8px; align-items: center; }
 .chip i { font-style: normal; font-weight: 600; width: 18px; height: 18px; border-radius: 50%; display: inline-flex; align-items: center; justify-content: center; font-size: 10px; }
 .chip b { font-family: NotoSC; font-weight: 700; font-size: 13px; }
-.chip.d { background: rgba(255,255,255,.1); outline: 1px solid rgba(255,255,255,.22); color: #fff; backdrop-filter: blur(6px); }
+.chip.d { background: rgba(255,255,255,.12); outline: 1px solid rgba(255,255,255,.25); color: #fff; backdrop-filter: blur(6px); }
 .chip.d i { background: #fff; color: #24262c; }
 .chip.l { background: rgba(255,255,255,.9); color: #1b1d4a; box-shadow: 0 6px 20px rgba(30,20,90,.25); }
 .chip.l i { background: #1b1d4a; color: #fff; }
@@ -35,13 +34,10 @@ svg.lines { position: absolute; inset: 0; }
 .call .k { display: block; font-family: GeistMono; font-size: 11px; color: #fff; margin-bottom: 5px; letter-spacing: .02em; }
 .call .k i { font-style: normal; color: #1b1d4a; background: #fff; border-radius: 3px; padding: 0 5px; margin-right: 8px; }
 .call b { color: #fff; font-family: NotoSC; font-weight: 700; font-size: 15px; display: block; margin-bottom: 2px; }
-.call .sw { display: flex; gap: 6px; margin-top: 8px; }
-.call .sw span { display: flex; height: 16px; width: 54px; border-radius: 3px; overflow: hidden; box-shadow: 0 0 0 1px rgba(255,255,255,.4); }
-.call .sw span i { flex: 1; display: block; }
-.foot { position: absolute; left: 64px; bottom: 34px; font-size: 11px; color: rgba(40,30,70,.7); width: 480px; line-height: 1.6; }
-.gizmo { position: absolute; left: 64px; bottom: 84px; }
+.foot { position: absolute; left: 64px; bottom: 34px; font-size: 11px; color: rgba(40,30,70,.75); width: 500px; line-height: 1.6; }
 .frame i { position: absolute; width: 22px; height: 22px; border-style: solid; border-color: rgba(255,255,255,.55); }
 </style>
+<script type="importmap">{ "imports": { "three": "./vendor/three.module.min.js", "@pixiv/three-vrm": "./vendor/three-vrm.module.min.js" } }</script>
 </head>
 <body>
 <canvas id="gl"></canvas>
@@ -51,53 +47,43 @@ svg.lines { position: absolute; inset: 0; }
   <div class="title">
     <div class="zh">卡通渲染</div>
     <div class="en">TOON SHADING</div>
-    <p>明明是 3D，看上去却是一张原画。<br><b>两阶光影 · 一圈描边 · 画上去的五官 · 撮影</b>——<br>同一个模型，从脚到头，四步变成动画。</p>
+    <p>明明是 3D，看上去却是一张原画。<br><b>两阶光影 · 背面描边 · 边缘光 · 撮影</b>——<br>同一个模型，从脚到头，四步变成二次元。</p>
   </div>
-  <svg class="gizmo" width="70" height="70"><line x1="10" y1="60" x2="58" y2="60" stroke="#ff5a6a" stroke-width="2"/><line x1="10" y1="60" x2="10" y2="12" stroke="#7ddc6a" stroke-width="2"/><line x1="10" y1="60" x2="34" y2="40" stroke="#5aa0ff" stroke-width="2"/></svg>
   <svg class="lines" id="lines" width="1920" height="1080"></svg>
   <div id="chips"></div>
   <div id="calls"></div>
-  <div class="foot mono">原创角色“星野” · 画面全部由代码实时渲染（光线步进 + 屏幕空间描边 + 撮影后期），没有一张贴图</div>
+  <div class="foot mono">模型：VRoid Studio 早期以 CC0 发布的样例角色「ヴィータ」(pixiv) · 渲染：three.js + three-vrm（MToon）+ 自写的撮影后期 · 实时渲染</div>
 </div>
-<script src="../_lib/glkit.js"></script>
-<script src="toon.js"></script>
-<script>
+<script type="module">
+import * as T3 from './toon3.js';
 const Q = new URLSearchParams(location.search); const J = k => Q.get(k) ? Q.get(k).split(',').map(Number) : null;
-(async () => {
+try {
   await document.fonts.load('900 96px NotoSC', '卡通渲染'); await document.fonts.load('900 100px Unbounded'); await document.fonts.ready;
-  const DPR = devicePixelRatio, W = 1920, H = 1080;
-  const cv = document.getElementById('gl'); cv.width = W * DPR; cv.height = H * DPR; cv.style.width = W + 'px'; cv.style.height = H + 'px';
-  const S = { cam: J('cam') || [1.9, 3.7, 11.6], tgt: J('tgt') || [-.75, 2.95, 0], fov: 30, root: [0, 4.85, 0, 0.25], headTilt: .1, swing: .7, flare: .6, peace: 1, expr: 0, lean: -.06, light: [-.6, .72, .6] };
-  // 斜条：法线方向朝右上，原点在左下
+  const W = 1920, H = 1080;
+  const vrm = await T3.loadVRM('./models/AvatarSample_F.vrm');
+  T3.pose(vrm, T3.POSES.peace, { happy: .35 });
   const sd = J('sd') || [.3, -.954], sl = Math.hypot(...sd), sdir = sd.map(v => v / sl);
-  const strips = J('strips') || [1000, 1010, 196, 4];
-  await TOON.render(GLK.create(cv), S, { px: DPR, strips, sdir, bandX: 580, halo: [1110, 330], haloR: 330, bg: { sky0: '#1d2466', sky1: '#5d4cc0', sky2: '#ff93b6', sky3: '#ffd6a6' } });
-  window.__done = Q.get('ov') === '0'; if (window.__done) return;
-  document.getElementById('ov').style.display = '';
-  const pj = q => TOON.project(S, TOON.charToWorld(S, q), W, H);
-  // 每一步的标签：贴着斜条，排在画面下沿
-  const names = [['灰模', '3D 模型 · 普通光照', 'd'], ['两阶', '光影只留亮 / 暗两色', 'l'], ['描边', '深度 + 法线 + 材质分界', 'l'], ['撮影', '边缘光 · 天使环 · 扩散光', 'l']];
-  let ch = '';
-  names.forEach(([n, t, k], i) => {
-    const s = (i + .14) * strips[2], x = 604;
-    const y = strips[1] + (s - (x - strips[0]) * sdir[0]) / sdir[1];
-    ch += `<div class="chip ${k} mono" style="left:${x}px;top:${y - 30}px"><i>${i + 1}</i><b>${n}</b>${t}</div>`;
-  });
-  document.getElementById('chips').innerHTML = ch;
-  let svg = '', html = '';
-  const call = (q, bx, by, k, z, side = 'l') => {
-    const [x, y] = pj(q); const ax = side === 'l' ? bx - 14 : bx + 282;
-    svg += `<circle cx="${x}" cy="${y}" r="4" fill="#fff"/><circle cx="${x}" cy="${y}" r="10" fill="none" stroke="#fff" stroke-width="1" opacity=".6"/><polyline points="${x},${y} ${ax},${by + 10} ${ax + (side === 'l' ? 8 : -8)},${by + 10}" fill="none" stroke="rgba(255,255,255,.85)" stroke-width="1"/>`;
-    html += `<div class="call" style="left:${bx}px;top:${by}px"><span class="k">${k}</span>${z}</div>`;
-  };
-  const P = TOON.PAL, sw = (a, b) => `<span><i style="background:${a}"></i><i style="background:${b}"></i></span>`;
-  call([.5, .72, .55], 1560, 120, '<i>A</i>天使环 · 跟着视角走', '<b>头顶一圈锯齿亮带</b>不是光照算出来的，是在固定高度“贴”的——转到哪都在。');
-  call([.66, -.35, .62], 1560, 300, '<i>B</i>脸 = 查阈值图，不看法线', '<b>脸上只有一刀干净的影子</b>按光的角度查表，鼻子和颧骨不会投出脏影。');
-  call([.55, -1.7, .4], 1560, 480, '<i>C</i>lit = step(0.5, N·L)', `<b>暗面换颜色，不是变黑</b>更冷、更饱和，每种材质只配两色。<div class="sw">${sw(P.hairT, P.hairTS)}${sw(P.skin, P.skinS)}${sw(P.jk, P.jkS)}${sw(P.hairB, P.hairBS)}</div>`);
-  call([.3, -3.3, .2], 1560, 690, '<i>D</i>描边 = 暗面色 × 0.3', '<b>线不是纯黑</b>从旁边的暗面取色再压暗；宽度按屏幕像素算，远近都是 1.5 px。');
-  document.getElementById('lines').innerHTML = svg; document.getElementById('calls').innerHTML = html;
-  window.__done = true;
-})().catch(e => { console.log('ERR', e.message.slice(0, 4000)); window.__done = true; });
+  const strips = J('strips') || [1000, 1010, 220, 4];
+  const o = { width: W, height: H, cam: J('cam') || [-.75, 1.0, 3.95], tgt: J('tgt') || [-.62, .86, 0], fov: 30, strips, sdir, bandX: 600, bandX2: 1530, halo: [1180, 300], haloR: 300, bg: { sky0: '#141a58', sky1: '#5145b8', sky2: '#ff8fb4', sky3: '#ffd6a6' } };
+  const { cam } = await T3.render(document.getElementById('gl'), vrm, o);
+  if (Q.get('ov') !== '0') {
+    document.getElementById('ov').style.display = '';
+    const names = [['固有色', '只有贴图 · 没有光', 'd'], ['两阶', '亮 / 暗两色 · 交界很硬', 'l'], ['描边', '背面沿法线外扩', 'l'], ['撮影', '边缘光 · 泛光 · 叠色', 'l']];
+    let ch = '';
+    names.forEach(([n, t, k], i) => { const s = (i + .14) * strips[2], x = 620; const y = strips[1] + (s - (x - strips[0]) * sdir[0]) / sdir[1]; ch += `<div class="chip ${k} mono" style="left:${x}px;top:${y - 30}px"><i>${i + 1}</i><b>${n}</b>${t}</div>`; });
+    document.getElementById('chips').innerHTML = ch;
+    const pj = b => T3.project(cam, T3.bonePos(vrm, b), W, H);
+    let svg = '', html = '';
+    const call = (pt, bx, by, k, z) => { const [x, y] = pt; const ax = bx - 14; svg += `<circle cx="${x}" cy="${y}" r="4" fill="#fff"/><circle cx="${x}" cy="${y}" r="10" fill="none" stroke="#fff" stroke-width="1" opacity=".6"/><polyline points="${x},${y} ${ax},${by + 10} ${ax + 8},${by + 10}" fill="none" stroke="rgba(255,255,255,.85)" stroke-width="1"/>`; html += `<div class="call" style="left:${bx}px;top:${by}px"><span class="k">${k}</span>${z}</div>`; };
+    const head = pj('head'), chest = pj('chest'), hip = pj('hips'), knee = pj('leftLowerLeg');
+    call([head[0] + 60, head[1] - 70], 1580, 130, '<i>A</i>shadingToony = 0.95', '<b>光影只分两阶</b>N·L 过了阈值就是亮色，没过就是阴影色，中间只留一条很窄的过渡。');
+    call([chest[0] + 20, chest[1] + 10], 1580, 320, '<i>B</i>shadeColor ≠ 黑', '<b>阴影是另一种颜色</b>每种材质两张色：亮色、阴影色。阴影更冷、更饱和，不是变暗。');
+    call([hip[0] + 70, hip[1] + 40], 1580, 520, '<i>C</i>outline = 背面外扩', '<b>描边是“吹大一圈的背面”</b>把模型沿法线撑出一点、只画背面，就是一圈线。');
+    call([knee[0] + 30, knee[1] - 30], 1580, 720, '<i>D</i>rim + bloom + 叠色', '<b>撮影：动画成片“贵”在这一步</b>边缘光、泛光把发光线条晕开，再叠一层冷暖渐变和光粒。');
+    document.getElementById('lines').innerHTML = svg; document.getElementById('calls').innerHTML = html;
+  }
+} catch (e) { console.log('ERR', e.message, e.stack); }
+window.__done = true;
 </script>
 </body>
 </html>
