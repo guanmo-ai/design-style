@@ -4,142 +4,100 @@
 <meta charset="utf-8">
 <title>治愈系手绘 · Hand-Painted Anime · 第 0 帧</title>
 <style>
-@font-face { font-family: 'Brush'; src: url(../../public/fonts/MaShanZheng.ttf); }
+@font-face { font-family: 'Serif'; src: url(../../public/fonts/NotoSerifSC-Bold.otf); font-weight: 700; }
 @font-face { font-family: 'Fraunces'; src: url(../../public/fonts/Fraunces.ttf); font-weight: 100 900; }
 @font-face { font-family: 'FrauncesI'; src: url(../../public/fonts/Fraunces-Italic.ttf); font-weight: 100 900; }
 @font-face { font-family: 'GeistMono'; src: url(../../public/fonts/GeistMono.ttf); font-weight: 100 900; }
-@font-face { font-family: 'Geist'; src: url(../../public/fonts/Geist.ttf); font-weight: 100 900; }
 @font-face { font-family: 'NotoSC'; src: url(../../public/fonts/NotoSansSC-Bold.otf); font-weight: 700; }
 @font-face { font-family: 'NotoSC'; src: url(../../public/fonts/NotoSansSC-Medium.otf); font-weight: 500; }
 @font-face { font-family: 'NotoSC'; src: url(../../public/fonts/NotoSansSC-Regular.otf); font-weight: 400; }
 * { margin: 0; padding: 0; box-sizing: border-box; }
-html, body { width: 1920px; height: 1080px; overflow: hidden; background: #5aa7ea; color: #fff; font-family: Geist, NotoSC, sans-serif; }
+html, body { width: 1920px; height: 1080px; overflow: hidden; background: #3b8ad8; color: #fff; font-family: NotoSC, sans-serif; }
 canvas { position: absolute; left: 0; top: 0; }
-.mono { font-family: GeistMono, monospace; letter-spacing: .04em; }
+.mono { font-family: GeistMono, monospace; letter-spacing: .05em; }
 .ov { position: absolute; inset: 0; pointer-events: none; }
-.tl { position: absolute; left: 64px; top: 48px; font-size: 13px; color: rgba(255,255,255,.82); display: flex; gap: 26px; text-transform: uppercase; text-shadow: 0 1px 8px rgba(20,60,120,.3); }
-.tl b { color: #fff; font-weight: 600; }
-.title { position: absolute; left: 64px; top: 120px; width: 640px; text-shadow: 0 4px 24px rgba(20,60,130,.35); }
-.title .zh { font-family: Brush; font-size: 112px; line-height: 1.05; letter-spacing: 0; white-space: nowrap; }
-.title .en { font-family: FrauncesI; font-weight: 500; font-size: 34px; letter-spacing: .02em; margin-top: 6px; font-variation-settings: 'SOFT' 100, 'WONK' 1; }
-.title p { font-family: NotoSC; font-weight: 500; font-size: 19px; line-height: 1.8; margin-top: 20px; color: rgba(255,255,255,.95); }
-.title p em { font-style: normal; color: #fff6b8; }
-.pal { position: absolute; right: 64px; top: 46px; display: flex; gap: 8px; align-items: flex-start; }
-.pal .cap { font-family: NotoSC; font-size: 12px; color: rgba(255,255,255,.9); margin-right: 6px; line-height: 1.5; text-align: right; text-shadow: 0 1px 8px rgba(20,60,120,.4); }
-.pal .s { width: 52px; font-family: GeistMono; font-size: 9px; color: rgba(255,255,255,.9); text-align: center; text-shadow: 0 1px 6px rgba(20,60,120,.4); }
-.pal .s i { display: block; height: 30px; border-radius: 6px; margin-bottom: 4px; box-shadow: 0 0 0 1.5px rgba(255,255,255,.8), 0 4px 12px rgba(20,60,120,.2); }
+.sh { text-shadow: 0 1px 2px rgba(10,30,30,.45), 0 2px 14px rgba(10,30,40,.35); }
+.tl { position: absolute; left: 64px; top: 46px; font-size: 12.5px; display: flex; gap: 24px; text-transform: uppercase; color: rgba(255,255,255,.9); }
+.tl b { font-weight: 600; color: #fff; }
+.vt { position: absolute; right: 70px; top: 96px; font-family: Serif; font-weight: 700; font-size: 88px; line-height: 1.12; color: #fff; text-align: center; width: 96px; text-shadow: 0 2px 30px rgba(20,60,140,.35); }
+.vs { position: absolute; right: 178px; top: 104px; font-family: Serif; font-weight: 700; font-size: 19px; line-height: 1.55; color: #fff; text-align: center; width: 24px; }
+.en { position: absolute; right: 70px; top: 668px; font-family: FrauncesI; font-weight: 400; font-size: 25px; color: #fff; font-variation-settings: 'SOFT' 100, 'WONK' 1; text-align: right; line-height: 1.25; }
+.en small { display: block; font-family: GeistMono; font-style: normal; font-size: 10.5px; letter-spacing: .14em; margin-top: 8px; opacity: .92; }
 svg.lines { position: absolute; inset: 0; }
-.call { position: absolute; width: 420px; font-size: 13px; line-height: 1.6; color: #3c4a3a; padding: 12px 15px; background: rgba(255,253,244,.9); backdrop-filter: blur(8px); border-radius: 12px; box-shadow: 0 10px 30px rgba(30,60,30,.22); }
-.call .k { display: block; font-family: GeistMono; font-size: 12px; color: #24402a; margin-bottom: 4px; font-weight: 600; }
-.call .k i { font-style: normal; color: #fff; background: #5f9e4c; border-radius: 6px; padding: 0 6px; margin-right: 8px; }
-.call b { color: #24402a; }
-.call .sw { display: inline-flex; gap: 4px; vertical-align: middle; margin-left: 4px; }
-.call .sw i { width: 16px; height: 12px; border-radius: 3px; display: inline-block; box-shadow: inset 0 0 0 1px rgba(0,0,0,.08); }
-.lab { position: absolute; font-family: GeistMono; font-size: 11px; color: #fff; white-space: nowrap; text-shadow: 0 1px 2px rgba(20,50,30,.6), 0 1px 8px rgba(20,60,40,.6); }
-.foot { position: absolute; left: 64px; bottom: 26px; font-size: 11px; color: #24402a; background: rgba(255,253,244,.88); border-radius: 999px; padding: 6px 14px; box-shadow: 0 4px 14px rgba(30,60,30,.2); }
-.frame i { position: absolute; width: 22px; height: 22px; border-color: rgba(255,255,255,.75); border-style: solid; }
+.note { position: absolute; font-size: 12.5px; line-height: 1.6; color: #45453c; background: #fbf7ec; padding: 9px 12px 10px; box-shadow: 0 8px 22px rgba(10,30,30,.22); border-radius: 2px; }
+.note .k { display: block; font-family: GeistMono; font-size: 10.5px; letter-spacing: .08em; color: #8a7f68; margin-bottom: 3px; }
+.note b { font-family: Serif; font-weight: 700; font-size: 15.5px; display: block; margin-bottom: 2px; color: #2b3a2c; }
+.note::before { content: ''; position: absolute; left: 50%; top: -5px; width: 34px; height: 10px; margin-left: -17px; background: rgba(230,214,170,.85); transform: rotate(-3deg); }
+.strip { position: absolute; left: 64px; bottom: 74px; display: flex; gap: 14px; align-items: flex-end; }
+.strip .cap { font-family: Serif; font-weight: 700; font-size: 16px; line-height: 1.35; color: #fff; width: 18px; text-align: center; margin-right: 6px; align-self: center; }
+.fr { position: relative; width: 212px; padding: 6px 6px 26px; background: #fbf7ec; box-shadow: 0 10px 26px rgba(10,30,20,.3); transform: rotate(var(--r)); }
+.fr .win { position: relative; width: 200px; height: 132px; overflow: hidden; background: #ccc; }
+.fr canvas { position: absolute; }
+.fr .t { position: absolute; left: 8px; bottom: 6px; font-size: 11.5px; color: #3b3a33; font-family: NotoSC; font-weight: 500; }
+.fr .t i { font-style: normal; font-family: GeistMono; color: #8a8270; margin-right: 6px; font-size: 10px; }
+.foot { position: absolute; right: 64px; bottom: 30px; font-size: 11px; color: #2c3a2a; background: rgba(251,247,236,.9); border-radius: 999px; padding: 6px 14px; box-shadow: 0 4px 14px rgba(20,40,20,.18); }
 </style>
 </head>
 <body>
 <canvas id="gl"></canvas>
 <canvas id="fg"></canvas>
 <div class="ov" id="ov" style="display:none">
-  <div class="tl mono"><span><b>NO. 025</b></span><span>治愈系手绘 · Hand-Painted Anime</span><span>1985 吉卜力工作室 → 1988 男鹿和雄画《龙猫》的背景 → 今天的治愈系插画、壁纸与独立游戏</span></div>
-  <div class="frame"><i style="left:40px;top:40px;border-width:2px 0 0 2px"></i><i style="right:40px;top:40px;border-width:2px 2px 0 0"></i><i style="left:40px;bottom:40px;border-width:0 0 2px 2px"></i><i style="right:40px;bottom:40px;border-width:0 2px 2px 0"></i></div>
-  <div class="title">
-    <div class="zh">治愈系手绘</div>
-    <div class="en">Hand-Painted Anime</div>
-    <p>天空是一笔一笔刷出来的，云一团一团鼓起来；<br>风从左边来，整片草坡<em>一层层翻出亮面</em>。<br>吉卜力式的夏天：每个东西都在慢慢动。</p>
-  </div>
-  <div class="pal" id="pal"><div class="cap">这张画只用<br>这几管颜料</div></div>
+  <div class="tl mono sh"><span><b>NO. 025</b></span><span>治愈系手绘 · Hand-Painted Anime</span><span>1985 吉卜力工作室 → 1988 男鹿和雄画《龙猫》的背景 → 今天的治愈系插画与独立游戏</span></div>
+  <div class="vt">治<br>愈<br>系<br>手<br>绘</div>
+  <div class="vs sh">吉<br>卜<br>力<br>式<br>的<br>夏<br>天</div>
+  <div class="en sh">Hand-Painted<br>Anime<small>GOUACHE · WET-IN-WET · COLOR SPOTS</small></div>
   <svg class="lines" id="lines" width="1920" height="1080"></svg>
-  <div id="calls"></div>
-  <div class="foot mono">致敬吉卜力工作室的手绘背景传统 · 非官方，与吉卜力工作室无关 · 原创画面，全部由代码实时生成，没有一张素材</div>
+  <div id="notes"></div>
+  <div class="strip" id="strip"><div class="cap sh">作<br>画<br>四<br>步</div></div>
+  <div class="foot mono">致敬吉卜力工作室的手绘背景传统 · 非官方，与吉卜力工作室无关 · 原创画面，由代码一笔一笔画出来</div>
 </div>
 <script src="../_lib/glkit.js"></script>
 <script src="paint.js"></script>
+<script src="scene.js"></script>
+<script src="girl.js"></script>
 <script>
 const Q = new URLSearchParams(location.search);
 (async () => {
-  await document.fonts.load('100px Brush', '治愈系手绘'); await document.fonts.ready;
+  await document.fonts.load('700 92px Serif', '治愈系手绘吉卜力式的夏天作画四步'); await document.fonts.ready;
   const DPR = devicePixelRatio, W = 1920, H = 1080;
   const cv = document.getElementById('gl'); cv.width = W * DPR; cv.height = H * DPR; cv.style.width = W + 'px'; cv.style.height = H + 'px';
-  const gl = GLK.create(cv);
-  const R = PAINT.rng(21);
-  const crestX = 1240;
-  const ridges = {
-    far: PAINT.ridgeLine(W, R, x => 600 - 50 * Math.exp(-Math.pow((x - 1700) / 260, 2)) - 26 * Math.exp(-Math.pow((x - 300) / 300, 2)), 8, 0.004, 4),
-    mid: PAINT.ridgeLine(W, R, x => 658 + 6 * Math.sin(x * 0.003), 5, 0.02, 3),
-    main: PAINT.ridgeLine(W, R, x => x < crestX ? 688 + 150 * Math.pow((crestX - x) / crestX, 2) : 688 + 52 * Math.pow((x - crestX) / (W - crestX), 1.6), 1.6, 0.01, 3),
-  };
-  const ry = x => ridges.main[Math.round(Math.min(W - 1, Math.max(0, x)))];
-  const tree = { x: 1500, y: 395, w: 560, h: 420, clumps: 10 };
-  const S = window.S = {
-    W, H, seed: 21,
-    clouds: [
-      { x: 960, base: 590, w: 820, h: 470, bud: 2, lean: 0.12 },
-      { x: 1830, base: 470, w: 380, h: 170, bud: 2 },
-      { x: 330, base: 610, w: 380, h: 90, bud: 1 },
-    ],
-    tree, ridges,
-    trunk: ctx => {
-      const g = ctx.createLinearGradient(1470, 0, 1530, 0); g.addColorStop(0, 'rgb(255,0,0)'); g.addColorStop(1, 'rgb(0,0,0)');
-      ctx.fillStyle = g; const by = ry(1500) + 4;
-      ctx.beginPath(); ctx.moveTo(1462, by); ctx.bezierCurveTo(1482, by - 30, 1484, by - 120, 1478, by - 200);
-      ctx.bezierCurveTo(1460, by - 250, 1430, by - 280, 1410, by - 320); ctx.lineTo(1426, by - 326);
-      ctx.bezierCurveTo(1450, by - 290, 1478, by - 262, 1494, by - 230); ctx.bezierCurveTo(1510, by - 270, 1540, by - 300, 1570, by - 330);
-      ctx.lineTo(1582, by - 322); ctx.bezierCurveTo(1556, by - 290, 1528, by - 250, 1520, by - 200);
-      ctx.bezierCurveTo(1516, by - 120, 1520, by - 30, 1548, by); ctx.closePath(); ctx.fill();
-    },
-    sun: [-0.6, -0.68], wind: 1.3,
-    treeShadow: [1610, ry(1610) + 42, 230, 34],
-    cloudShadow: [0.85, 0.0024, 3.0, 1.0],
-    tiles: 6,
-  };
-  await PAINT.render(gl, S);
-
-  // —— 前景 ——
+  const S = SCENE.cover(W, H);
+  await PAINT.render(GLK.create(cv), S);
   const fg = document.getElementById('fg'); fg.width = W * DPR; fg.height = H * DPR; fg.style.width = W + 'px'; fg.style.height = H + 'px';
   const x = fg.getContext('2d'); x.scale(DPR, DPR);
-  const band = (px, py) => { const v = Math.sin((px * 0.958 + py * 0.287) * 0.012 - 1.3 + 1.6); return Math.max(0, Math.min(1, (v - 0.35) / 0.6)); };
-  // 坡顶一排小草（让人和树“站住”）
-  for (let i = 0; i < 900; i++) { const px = R() * W, py = ry(px) + R() * 10; PAINT.grass(x, R, { x0: px, x1: px + 1, y0: py, y1: py + 1, n: 1, hmin: 4, hmax: 10, wind: 0.45, cols: ['#d8ea94', '#9cc95a', '#77ad4c'] }); }
-  // 女孩
-  const gx = 1085; PAINT.girl(x, gx, ry(gx) + 6, 150);
-  // 前景高草 + 小花
-  PAINT.grass(x, R, { x0: -40, x1: W + 40, y0: 900, y1: 1110, n: 2600, hmin: 30, hmax: 170, wind: 0.42, band, cols: ['#e2efa2', '#a9d160', '#86bb4c', '#5f9e4c', '#3f7a46', '#2f6440'] });
-  for (let i = 0; i < 26; i++) { const px = R() * W, py = 930 + R() * 140; if (px > 560 && px < 1400 && py < 1000) continue; PAINT.daisy(x, px, py - 40 - R() * 50, 5 + R() * 5, R() * .6); }
-  // 花瓣顺着风飞
-  const pts = []; for (let i = 0; i < 26; i++) { const t = i / 26; const px = 980 + t * 900 + (R() - .5) * 60, py = 610 - Math.sin(t * 2.6) * 200 - t * 60 + (R() - .5) * 50; pts.push([px, py, 3 + R() * 3, -0.35 - 0.3 * Math.cos(t * 2.6)]); }
-  PAINT.petals(x, R, pts);
-  // 远处三只鸟
-  x.strokeStyle = 'rgba(40,60,90,.75)'; x.lineWidth = 1.6; x.lineCap = 'round';
-  [[560, 470, 7], [586, 458, 5.5], [604, 476, 4.5]].forEach(([bx, by, s]) => { x.beginPath(); x.moveTo(bx - s, by - s * .35); x.quadraticCurveTo(bx - s * .4, by - s * .7, bx, by); x.quadraticCurveTo(bx + s * .4, by - s * .7, bx + s, by - s * .35); x.stroke(); });
-
+  SCENE.poles(x, S); SCENE.wires(x, S);
+  const Zg = 16, [gx, gy] = PAINT.ground(S, PAINT.roadX(S, Zg) - .2, Zg); GIRL.girl(x, gx, gy, 1.45 * S.foc / Zg);
+  GIRL.dragonfly(x, 760, 690, 1.2, -.2); GIRL.dragonfly(x, 830, 655, .9, .3);
   window.__done = Q.get('ov') === '0'; if (window.__done) return;
   document.getElementById('ov').style.display = '';
-  // 调色盘
-  const P = PAINT.PAL; const pal = document.getElementById('pal');
-  [['sky0', '天'], ['cL', '云亮'], ['cS', '云暗'], ['fM', '树'], ['gW', '风'], ['gD', '草影']].forEach(([k, n]) => pal.insertAdjacentHTML('beforeend', `<div class="s"><i style="background:${P[k]}"></i>${n}<br>${P[k].toUpperCase()}</div>`));
-  // 标注
+
+  // —— 细线标注（像写在画上的笔记）——
   let svg = '', html = '';
-  const call = (pt, bx, by, k, z) => {
-    const [px, py] = pt; const ex = Math.min(Math.max(px, bx + 30), bx + 390);
-    svg += `<circle cx="${px}" cy="${py}" r="5" fill="#5f9e4c" stroke="#fff" stroke-width="2"/><polyline points="${px},${py} ${ex},${by - 18} ${ex},${by}" fill="none" stroke="rgba(255,255,255,.95)" stroke-width="1.4"/>`;
-    html += `<div class="call" style="left:${bx}px;top:${by}px"><span class="k">${k}</span>${z}</div>`;
+  const note = (px, py, bx, by, w, k, b, t) => {
+    const ax = Math.min(Math.max(px, bx + 14), bx + w - 14), ay = py < by ? by : by + 60;
+    svg += `<line x1="${px}" y1="${py}" x2="${ax}" y2="${ay}" stroke="rgba(255,255,255,.95)" stroke-width="1.2"/><circle cx="${px}" cy="${py}" r="4" fill="#fff" stroke="rgba(30,50,40,.5)" stroke-width="1"/>`;
+    html += `<div class="note" style="left:${bx}px;top:${by}px;width:${w}px"><span class="k">${k}</span><b>${b}</b>${t}</div>`;
   };
-  const sw = cs => `<span class="sw">${cs.map(c => `<i style="background:${c}"></i>`).join('')}</span>`;
-  call([150, 618], 64, 860, '<i>01</i>空气透视：越远越蓝', '<b>远山没有细节，只剩一层偏蓝的颜色。</b>远、中、近三层，饱和度 30% → 60% → 100%。');
-  call([640, 860], 504, 860, '<i>02</i>风 = sin(x·k − ωt)', '<b>草不是一根根动，是一道道亮带扫过去：</b>被风压弯的草翻出浅色的背面，亮带的速度就是风速。');
-  call([1000, 470], 944, 860, '<i>03</i>积云 = 一堆圆 · 三四个色阶', `<b>每团云只用三四个颜色</b>${sw([P.cL, P.cM, P.cS, P.cD])}：亮面暖白、暗面偏紫蓝。底是平的，往上一包一包鼓。`);
-  call([1650, ry(1650) + 44], 1384, 860, '<i>04</i>光斑是太阳的小孔成像', '<b>树影里的光斑全是椭圆：</b>每个都是太阳的像，太阳越低越扁。所以它们不画成圆。');
-  // 云在长：顶上的小箭头
-  [[820, 200], [960, 150], [1110, 210]].forEach(([ax, ay]) => { svg += `<path d="M${ax} ${ay} v-26 m-6 8 l6 -8 6 8" fill="none" stroke="#fff" stroke-width="1.8" stroke-linecap="round"/>`; });
-  html += `<div class="lab" style="left:1130px;top:170px">云在长 · 每秒 +2%</div>`;
-  // 风向
-  svg += `<path d="M260 760 q 60 -18 120 0 t 120 0" fill="none" stroke="rgba(255,255,255,.9)" stroke-width="1.8" stroke-dasharray="2 6" stroke-linecap="round"/><path d="M494 754 l 8 6 -9 5" fill="none" stroke="#fff" stroke-width="1.8"/>`;
-  html += `<div class="lab" style="left:262px;top:770px">风 · 3.2 m/s →</div>`;
-  document.getElementById('lines').innerHTML = svg; document.getElementById('calls').innerHTML = html;
+  note(1430, 280, 1290, 92, 270, '01 · 积乱云 · 湿画法', '暗面晕开，亮面收边', '先把纸打湿，云底自己化开；迎光的一侧最后用厚白收出干净的边。');
+  note(1110, 780, 760, 690, 268, '02 · 两种画法叠在一起', '人物平涂，背景厚涂', '人物：细线 + 一层影；背景：水粉一层层叠。吉卜力的质感就来自这个对比。');
+  note(1470, 720, 1330, 600, 250, '03 · 稻浪', '风 = 一道道翻起的浅色', '稻叶被风压弯，翻出发白的背面；亮纹走多快，风就多快。');
+  note(1060, 990, 1250, 860, 300, '04 · 光斑 = 太阳的小孔成像', '叶缝里漏下来的，是太阳', '地上本来是圆，透视一压成了横的椭圆。影子的形状由树冠一团团算出来。');
+  document.getElementById('lines').innerHTML = svg; document.getElementById('notes').innerHTML = html;
+
+  // —— 作画四步：同一张画，只画到第几步 ——
+  const strip = document.getElementById('strip');
+  const steps = [[0, 0, '大色块'], [1, .45, '大笔 · 明暗'], [3, 1, '中笔 · 叶簇'], [4, 1, '色点 · 收尾']];
+  const crop = [520, 150, 520, 343];   // 截取：大树 + 云的一角（CSS px）
+  for (const [i, [lv, det, name]] of steps.entries()) {
+    const fr = document.createElement('div'); fr.className = 'fr'; fr.style.setProperty('--r', [-2.2, 1.4, -.8, 1.8][i] + 'deg');
+    fr.innerHTML = `<div class="win"><canvas></canvas></div><div class="t"><i>0${i + 1}</i>${name}</div>`;
+    strip.appendChild(fr);
+    const c2 = fr.querySelector('canvas'); const sc = 200 / crop[2], d2 = 1.25;
+    c2.width = W * sc * DPR * d2; c2.height = H * sc * DPR * d2; c2.style.width = (W * sc) + 'px'; c2.style.height = (H * sc) + 'px';
+    c2.style.left = (-crop[0] * sc) + 'px'; c2.style.top = (-crop[1] * sc) + 'px';
+    const S2 = SCENE.cover(W, H); S2.levels = lv; S2.detail = det; S2.dpr = sc * DPR * d2;
+    await PAINT.render(GLK.create(c2), S2);
+  }
   window.__done = true;
 })().catch(e => { console.log('ERR', e.message.slice(0, 4000)); window.__done = true; });
 </script>
