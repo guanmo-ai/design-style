@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="zh"><head><meta charset="utf-8"><title>水墨 v2 · 03 界面</title>
+<style>
+@import url(../../public/fonts/fontsource/noto-serif-sc/200.css);
+@import url(../../public/fonts/fontsource/noto-serif-sc/400.css);
+@import url(../../public/fonts/fontsource/noto-serif-sc/700.css);
+@import url(../../public/fonts/fontsource/noto-serif-sc/900.css);
+@import url(../../public/fonts/fontsource/geist-mono/400.css);
+@import url(../../public/fonts/fontsource/geist/400.css);
+* { margin:0; padding:0; box-sizing:border-box; }
+:root { --paper:#F3EEE2; --ink:#1A1A18; --mid:#6B6B66; --zhu:#C8372D; }
+html, body { width:1920px; height:1080px; overflow:hidden; background:#E8E2D3; color:var(--ink); font-family:'Noto Serif SC', serif; }
+.mono { font-family:'Geist Mono', monospace; letter-spacing:.03em; }
+.browser { position:absolute; left:80px; top:90px; width:1180px; height:820px; background:var(--paper); border-radius:18px; overflow:hidden; box-shadow:0 40px 100px rgba(40,30,10,.18); }
+.bar { height:44px; background:#E3DCCB; display:flex; align-items:center; gap:9px; padding:0 18px; }
+.bar i { width:11px; height:11px; border-radius:50%; background:#CFC6B2; display:block; }
+.bar .u { margin-left:16px; font-size:12px; color:var(--mid); background:#F7F3E9; border-radius:7px; padding:5px 12px; width:340px; }
+#hero { position:absolute; left:0; top:44px; width:1180px; height:580px; display:block; -webkit-mask-image:linear-gradient(to bottom, #000 70%, transparent 100%); mask-image:linear-gradient(to bottom, #000 70%, transparent 100%); }
+.nav { position:absolute; left:0; right:0; top:44px; height:76px; padding:0 48px; background:var(--paper); display:flex; align-items:center; gap:34px; font-size:16px; color:#4a4a45; }
+.nav .logo { margin-right:auto; display:flex; gap:10px; align-items:center; color:var(--ink); }
+.nav .logo b { font-weight:900; font-size:22px; letter-spacing:.06em; }
+.seal { display:inline-flex; align-items:center; justify-content:center; width:34px; height:34px; background:var(--zhu); color:var(--paper); font-weight:900; font-size:20px; border-radius:3px; }
+.nav .btn { background:var(--ink); color:var(--paper); padding:10px 22px; border-radius:999px; font-size:14px; }
+.ht { position:absolute; left:48px; top:146px; }
+.ht h1 { font-weight:900; font-size:68px; line-height:1.2; display:inline-block; background:rgba(243,238,226,.92); padding:0 14px 4px 0; }
+.ht p { font-size:17px; line-height:1.85; color:#3a3a36; margin-top:16px; width:460px; }
+.cta { display:flex; gap:14px; margin-top:22px; }
+.cta span { font-size:16px; padding:13px 24px; border-radius:999px; }
+.cta .p { background:var(--ink); color:var(--paper); }
+.cta .g { border:1px solid var(--ink); }
+.cards { position:absolute; left:48px; right:48px; bottom:52px; display:grid; grid-template-columns:repeat(3,1fr); gap:22px; }
+.card { background:rgba(243,238,226,.92); border-top:1px solid var(--ink); padding:14px 0 0; }
+.card b { display:block; font-size:21px; font-weight:700; }
+.card span { font-size:13px; color:var(--mid); }
+.phone { position:absolute; left:1310px; top:120px; width:420px; height:860px; background:#0E0E0C; border-radius:58px; padding:12px; box-shadow:0 50px 120px rgba(40,30,10,.3); }
+.scr { width:396px; height:836px; border-radius:46px; overflow:hidden; position:relative; background:var(--paper); }
+.scr canvas { position:absolute; left:0; top:0; width:396px; height:330px; display:block; }
+.sb { position:absolute; top:20px; left:0; right:0; text-align:center; font-size:13px; color:var(--ink); z-index:2; }
+.isl { position:absolute; left:50%; top:12px; transform:translateX(-50%); width:118px; height:34px; background:#000; border-radius:999px; z-index:3; }
+.pt { position:absolute; left:28px; top:360px; right:28px; }
+.pt .k { font-size:12px; color:var(--mid); }
+.pt h4 { font-weight:900; font-size:34px; margin-top:8px; line-height:1.25; }
+.pt .sub { font-size:14px; color:var(--mid); margin-top:10px; line-height:1.6; }
+.item { display:flex; justify-content:space-between; align-items:center; border-bottom:1px solid #d4cbb7; padding:16px 0; font-size:16px; }
+.item em { font-style:normal; font-size:12px; color:var(--mid); font-family:'Geist Mono', monospace; }
+.bt { position:absolute; left:28px; right:28px; bottom:34px; background:var(--ink); color:var(--paper); border-radius:999px; height:58px; display:flex; align-items:center; justify-content:center; gap:12px; font-size:17px; }
+.bt .seal { width:24px; height:24px; font-size:14px; }
+.notes { position:absolute; left:80px; right:80px; bottom:40px; display:none; }
+.tag { position:absolute; left:80px; bottom:28px; font-size:13px; color:#6B6B66; }
+</style></head>
+<body>
+<div class="browser">
+  <div class="bar"><i></i><i></i><i></i><div class="u mono">moshe.example / 茶单</div></div>
+  <canvas id="hero" width="1180" height="580"></canvas>
+  <div class="nav">
+    <div class="logo"><span class="seal">墨</span><b>墨舍</b></div>
+    <span>茶单</span><span>书斋</span><span>茶会</span><span class="btn">预约</span>
+  </div>
+  <div class="ht">
+    <div class="mono" style="font-size:12px;color:var(--mid);letter-spacing:.2em">一盏茶的时间</div>
+    <h1>一滴墨，落进清水</h1>
+    <p>没有灯牌，没有排队。一张长桌、三十种茶、一本可以翻很久的书。每一泡都从第一滴水开始。</p>
+    <div class="cta"><span class="p">预约一席</span><span class="g">看茶单 →</span></div>
+  </div>
+  <div class="cards">
+    <div class="card"><b>白毫银针</b><span>福鼎 · 一泡 3 分钟 · ¥ 68</span></div>
+    <div class="card"><b>大红袍</b><span>武夷 · 一泡 5 分钟 · ¥ 88</span></div>
+    <div class="card"><b>祁门红茶</b><span>安徽 · 一泡 4 分钟 · ¥ 58</span></div>
+  </div>
+</div>
+
+<div class="phone">
+  <div class="scr">
+    <canvas id="ph" width="396" height="330"></canvas>
+    <div class="isl"></div>
+    <div class="sb mono">9:41</div>
+    <div class="pt">
+      <div class="k mono">茶会 · 今晚 19:30</div>
+      <h4>三人一桌</h4>
+      <div class="sub">书斋第 4 室，靠窗，有一盏灯。</div>
+      <div style="margin-top:18px">
+        <div class="item"><span>白毫银针</span><em>一泡</em></div>
+        <div class="item"><span>大红袍</span><em>三泡</em></div>
+        <div class="item"><span>书斋 · 第 4 室</span><em>留白</em></div>
+      </div>
+    </div>
+    <div class="bt"><span class="seal">就</span>就座</div>
+  </div>
+</div>
+<div class="tag mono">水墨 v2 · 03 界面 · 网页 + 手机 · 墨与朱砂只出现在印章和一滴墨里</div>
+
+<script src="ink-water.js"></script>
+<script>
+window.__done = false;
+document.fonts.ready.then(() => {
+  window.InkWater.paint(document.getElementById('hero'), { t: 0.6, seed: 5.1, c: [0.66, 0.46], spread: 0.26, scale: 2.0, red: [0.82, 0.22, 0.12, 1] });
+  window.InkWater.paint(document.getElementById('ph'), { t: 2.2, seed: 9.4, c: [0.62, 0.40], spread: 0.22, scale: 2.2, red: [0.2, 0.7, 0.1, 0] });
+  window.__done = true;
+});
+</script></body></html>

@@ -1,0 +1,42 @@
+<!doctype html>
+<html lang="zh"><head><meta charset="utf-8"><title>极光 v2 · 01 玻璃球</title>
+<style>
+@import url(../../public/fonts/fontsource/noto-serif-sc/200.css);
+@import url(../../public/fonts/fontsource/noto-serif-sc/300.css);
+@import url(../../public/fonts/fontsource/unbounded/800.css);
+@import url(../../public/fonts/fontsource/unbounded/300.css);
+@import url(../../public/fonts/fontsource/geist/400.css);
+@import url(../../public/fonts/fontsource/geist/600.css);
+@import url(../../public/fonts/fontsource/geist-mono/400.css);
+* { margin:0; padding:0; box-sizing:border-box; }
+html, body { width:1920px; height:1080px; overflow:hidden; background:#0D0D1A; color:#F7F5FF; font-family:Geist, 'Noto Serif SC', sans-serif; }
+#c { position:absolute; inset:0; width:1920px; height:1080px; display:block; }
+.mono { font-family:'Geist Mono', monospace; letter-spacing:.04em; }
+.zh { position:absolute; left:70px; top:250px; font-family:'Noto Serif SC', serif; font-weight:200; font-size:330px; line-height:1; letter-spacing:.02em; text-shadow:0 0 90px rgba(255,255,255,.2); }
+.en { position:absolute; left:72px; bottom:172px; font-family:Unbounded; font-weight:800; font-size:172px; line-height:.9; letter-spacing:-.02em; }
+.sub { position:absolute; left:76px; bottom:110px; font-size:22px; color:rgba(247,245,255,.78); }
+.tag { position:absolute; left:72px; top:56px; display:flex; gap:12px; font-size:13px; }
+.tag span { padding:9px 16px; border-radius:999px; background:rgba(255,255,255,.12); border:1px solid rgba(255,255,255,.28); }
+.tag span.k { background:#F7F5FF; color:#0D0D1A; font-weight:600; border-color:#F7F5FF; }
+.hook { position:absolute; right:72px; top:56px; font-size:15px; color:rgba(247,245,255,.8); }
+.pal { position:absolute; right:72px; bottom:64px; display:flex; gap:12px; }
+.pal i { width:46px; height:46px; border-radius:50%; display:block; box-shadow:0 0 0 1px rgba(255,255,255,.2); }
+.spec { position:absolute; right:72px; bottom:124px; font-size:12px; color:rgba(247,245,255,.6); }
+</style></head>
+<body>
+<canvas id="c" width="1920" height="1080"></canvas>
+<div class="tag mono"><span class="k">极光 Aurora · v2</span><span>01 · 玻璃球 · 第 0 帧</span></div>
+<div class="hook mono">一颗会呼吸的球，把背后的极光折射进来</div>
+<div class="zh">极光</div>
+<div class="en">Aurora</div>
+<div class="sub">折射 · 色散 · 呼吸形变 · 0 张图片</div>
+<div class="spec mono">n = (p, √(1−|p|²)) → refract(−0.34·n.xy) · RGB 三通道错开 · fresnel^2.6</div>
+<div class="pal mono"><i style="background:#FF9F5A"></i><i style="background:#FF5E7E"></i><i style="background:#7B61FF"></i><i style="background:#2EE6D6"></i><i style="background:#FF7AD9"></i></div>
+<script src="aurora.js"></script>
+<script>
+window.__done = false;
+document.fonts.ready.then(() => {
+  window.Aurora.paint(document.getElementById('c'), { t: 1.0, seed: 4.2, orb: { x: 0.70, y: 0.48, r: 0.27 } });
+  window.__done = true;
+});
+</script></body></html>

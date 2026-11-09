@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="zh"><head><meta charset="utf-8"><title>赛璐璐 v2 · 02 动效分镜</title>
+<style>
+@import url(../../public/fonts/fontsource/zcool-qingke-huangyou/400.css);
+@import url(../../public/fonts/fontsource/geist-mono/400.css);
+* { margin:0; padding:0; box-sizing:border-box; }
+html, body { width:1920px; height:1080px; overflow:hidden; background:#14142B; color:#FFFDF5; font-family:'Geist Mono', monospace; }
+.hd { position:absolute; left:150px; top:48px; right:150px; display:flex; justify-content:space-between; align-items:flex-end; }
+.hd h2 { font-family:'ZCOOL QingKe HuangYou', sans-serif; font-weight:400; font-size:64px; color:#FFD23F; -webkit-text-stroke:0; }
+.hd p { font-size:14px; line-height:1.7; text-align:right; color:rgba(255,253,245,.75); }
+.grid { position:absolute; left:170px; top:136px; width:1580px; display:grid; grid-template-columns:780px 780px; gap:20px; }
+.cell { position:relative; }
+.cell canvas { width:780px; height:439px; display:block; border:4px solid #FFFDF5; box-shadow:10px 10px 0 #FFD23F; }
+.lb { position:absolute; left:16px; top:16px; font-size:14px; background:#FFD23F; color:#14142B; padding:5px 11px; border:3px solid #14142B; font-weight:600; }
+.ft { position:absolute; left:170px; right:170px; bottom:20px; font-size:13px; color:rgba(255,253,245,.7); display:flex; justify-content:space-between; }
+</style></head>
+<body>
+<div class="hd"><h2>咔！ 挤压 → 闪白 → 回弹</h2><p>同一颗球，4 个时间点：蓄力 → 砸下 → 冲击闪白 → 回弹<br>挤压 1.12 / 0.86 · 闪白 0.85 · 光晕 0.6 → 1.6 → 1.2</p></div>
+<div class="grid">
+  <div class="cell"><canvas id="f0" width="780" height="439"></canvas><span class="lb">① 静止 · 0.00s</span></div>
+  <div class="cell"><canvas id="f1" width="780" height="439"></canvas><span class="lb">② 蓄力 · 0.12s</span></div>
+  <div class="cell"><canvas id="f2" width="780" height="439"></canvas><span class="lb">③ 冲击 · 0.18s</span></div>
+  <div class="cell"><canvas id="f3" width="780" height="439"></canvas><span class="lb">④ 回弹 · 0.34s</span></div>
+</div>
+<div class="ft"><span>循环 1.2s · 挤压用 easeOutBack · 闪白只占 1 帧 · 墨线 6px 按画面高度换算</span><span>WEBGL2 · RAYMARCH 90 STEPS · 0 TEXTURES</span></div>
+<script src="cel3d.js"></script>
+<script>
+window.__done = false;
+document.fonts.ready.then(() => {
+  const frames = [
+    { t: 0.6, sq: [1, 1], flash: 0, burst: 1.0, sc: 1 },
+    { t: 0.9, sq: [1.12, 0.86], flash: 0, burst: 0.6, sc: 1 },
+    { t: 1.2, sq: [0.9, 1.12], flash: 0.85, burst: 1.6, sc: 1 },
+    { t: 1.5, sq: [1.05, 0.97], flash: 0, burst: 1.2, sc: 1 }
+  ];
+  frames.forEach((f, i) => window.Cel3D.paint(document.getElementById('f' + i), Object.assign({ ring: 0.5, cx: 0.5, cy: 0.5 }, f)));
+  window.__done = true;
+});
+</script></body></html>

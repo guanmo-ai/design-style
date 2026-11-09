@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="zh"><head><meta charset="utf-8"><title>极光 v2 · 03 界面</title>
+<style>
+@import url(../../public/fonts/fontsource/noto-serif-sc/200.css);
+@import url(../../public/fonts/fontsource/noto-serif-sc/300.css);
+@import url(../../public/fonts/fontsource/noto-serif-sc/400.css);
+@import url(../../public/fonts/fontsource/unbounded/700.css);
+@import url(../../public/fonts/fontsource/geist/400.css);
+@import url(../../public/fonts/fontsource/geist/600.css);
+@import url(../../public/fonts/fontsource/geist-mono/400.css);
+* { margin:0; padding:0; box-sizing:border-box; }
+html, body { width:1920px; height:1080px; overflow:hidden; background:#0D0D1A; color:#F7F5FF; font-family:Geist, 'Noto Serif SC', sans-serif; }
+.mono { font-family:'Geist Mono', monospace; letter-spacing:.04em; }
+.glass { background:rgba(255,255,255,.1); border:1px solid rgba(255,255,255,.24); backdrop-filter:blur(24px) saturate(150%); -webkit-backdrop-filter:blur(24px) saturate(150%); border-radius:26px; }
+.left { position:absolute; left:110px; top:150px; width:700px; }
+.left h1 { font-family:'Noto Serif SC', serif; font-weight:200; font-size:118px; line-height:1.08; letter-spacing:.01em; }
+.left h1 b { font-weight:300; background:linear-gradient(100deg,#FF9F5A,#FF5E7E 35%,#7B61FF 70%,#2EE6D6); -webkit-background-clip:text; color:transparent; }
+.left p { font-size:22px; line-height:1.7; color:rgba(247,245,255,.72); margin-top:30px; max-width:600px; }
+.chips { display:flex; gap:12px; margin-top:38px; flex-wrap:wrap; }
+.chips span { padding:12px 20px; font-size:16px; border-radius:999px; background:rgba(255,255,255,.12); border:1px solid rgba(255,255,255,.26); }
+.chips span.k { background:#F7F5FF; color:#0D0D1A; font-weight:600; }
+.stat { position:absolute; left:110px; bottom:110px; display:flex; gap:20px; }
+.stat div { padding:22px 26px; min-width:200px; }
+.stat b { font-family:Unbounded; font-weight:700; font-size:36px; display:block; }
+.stat span { font-size:13px; color:rgba(247,245,255,.65); }
+.phone { position:absolute; right:300px; top:90px; width:420px; height:900px; border-radius:68px; background:#050508; padding:14px; box-shadow:0 60px 160px rgba(123,97,255,.35), 0 0 0 1px rgba(255,255,255,.18); }
+.screen { width:392px; height:872px; border-radius:56px; overflow:hidden; position:relative; }
+.screen canvas { position:absolute; inset:0; width:392px; height:872px; display:block; }
+.island { position:absolute; left:50%; top:14px; transform:translateX(-50%); width:118px; height:34px; background:#000; border-radius:999px; z-index:3; }
+.sb { position:absolute; top:22px; left:34px; right:34px; display:flex; justify-content:space-between; font-size:15px; z-index:2; font-weight:600; }
+.ui { position:absolute; left:20px; right:20px; bottom:26px; z-index:2; }
+.ui .t { font-family:'Noto Serif SC', serif; font-weight:300; font-size:34px; line-height:1.3; }
+.ui .s { font-size:14px; color:rgba(247,245,255,.75); margin-top:10px; }
+.ui .row { margin-top:18px; padding:16px 18px; display:flex; justify-content:space-between; align-items:center; font-size:15px; border-radius:20px; }
+.ui .row em { font-style:normal; font-family:'Geist Mono', monospace; font-size:12px; color:rgba(247,245,255,.7); }
+.mic { margin-top:18px; height:64px; border-radius:999px; background:#F7F5FF; color:#0D0D1A; display:flex; align-items:center; justify-content:center; font-weight:600; font-size:17px; }
+.side { position:absolute; right:48px; top:330px; width:230px; padding:22px; }
+.side .k { font-size:12px; color:rgba(247,245,255,.6); letter-spacing:.12em; }
+.side p { font-family:'Noto Serif SC', serif; font-weight:300; font-size:22px; line-height:1.55; margin-top:10px; }
+.bottom { position:absolute; left:110px; right:110px; bottom:44px; font-size:13px; color:rgba(247,245,255,.55); display:flex; justify-content:space-between; }
+</style></head>
+<body>
+<div class="left">
+  <div class="mono" style="font-size:13px;color:rgba(247,245,255,.6);letter-spacing:.16em">03 · 界面 · 语音助手</div>
+  <h1 style="margin-top:22px">它说话时，<br><b>背景在呼吸</b></h1>
+  <p>没有头像、没有波形条。只有一颗玻璃球，它折射你此刻的背景，说话时轮廓鼓起，听你说话时安静下来。</p>
+  <div class="chips"><span class="k">按住说话</span><span>更慢一点</span><span>总结成三条</span></div>
+</div>
+
+<div class="phone">
+  <div class="screen">
+    <canvas id="ph" width="392" height="872"></canvas>
+    <div class="island"></div>
+    <div class="sb mono"><span>9:41</span><span>● ● ●</span></div>
+    <div class="ui">
+      <div class="glass" style="padding:20px 20px 18px">
+        <div class="mono" style="font-size:12px;color:rgba(247,245,255,.7)">极光 · 正在听</div>
+        <div class="t" style="margin-top:8px">今天只需要做三件事</div>
+        <div class="s">会议纪要 · 设计评审 · 回复 Lin</div>
+      </div>
+      <div class="glass row"><span>09:30 设计评审</span><em>已加入</em></div>
+      <div class="glass row"><span>回复 Lin 的邮件</span><em>草稿好了</em></div>
+      <div class="mic">按住，对它说</div>
+    </div>
+  </div>
+</div>
+
+<div class="glass side">
+  <div class="k mono">SPEC</div>
+  <p>轮廓 ±1.2%<br>折射 0.85 · 色散 ±3.5%<br>模糊 24px</p>
+</div>
+
+<div class="stat">
+  <div class="glass"><b>0</b><span>张图片</span></div>
+  <div class="glass"><b>1</b><span>个着色器</span></div>
+  <div class="glass"><b>60</b><span>fps · 实时</span></div>
+</div>
+<div class="bottom mono"><span>渐变在底，玻璃在上，球是唯一的主角</span><span>极光 v2 · 草稿</span></div>
+
+<script src="aurora.js"></script>
+<script>
+window.__done = false;
+document.fonts.ready.then(() => {
+  window.Aurora.paint(document.getElementById('ph'), { t: 3.2, seed: 8.8, orb: { x: 0.5, y: 0.6, r: 0.16 } });
+  window.__done = true;
+});
+</script></body></html>
