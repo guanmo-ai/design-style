@@ -1,0 +1,20 @@
+<!doctype html><html lang="zh"><head><meta charset="utf-8"><title>赛璐璐 · 概念 3 · 三维冲击帧</title>
+<link rel="stylesheet" href="common.css"></head><body>
+<canvas id="c" width="1920" height="1080"></canvas>
+<div class="hook" style="left:64px; top:56px; font-size:92px; color:#14142B; -webkit-text-stroke:12px #FFFDF5; text-shadow:10px 10px 0 #FFFDF5">最重的一下，<br>只有 2 张黑白</div>
+<div class="tag" style="left:64px; bottom:56px">冲击帧 · 反相 2 张 · <b>只留红色</b> · 3D 字也一样</div>
+<div class="num">03 / 06</div>
+<script src="../../_lib/glkit.js"></script>
+<script src="../v4/cel-type.js"></script>
+<script>
+window.__done = false;
+(async () => {
+  await document.fonts.load('400 400px "ZCOOL QingKe HuangYou"', '咔!');
+  await document.fonts.ready;
+  window.CelType.paint(document.getElementById('c'), {
+    mode: 0, bg: 0, rot: [.10, -.42, .08], cam: [1.9, -2.1, 4.9], tgt: [0, .12, 0], fov: 2.05, depth: .30,
+    sq: [.9, 1.14, .9], impact: 1, burst: 1.7, sla: 1, cen: [.55, .52], time: 3.3, lw: .035
+  });
+  window.__done = true;
+})();
+</script></body></html>

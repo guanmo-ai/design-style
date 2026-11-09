@@ -350,7 +350,9 @@
     [0, '00', '水墨', 'INK WASH', '一笔下去，起 · 行 · 收，粗细由笔速决定'],
     [TL.land, '01', '小蝌蚪找妈妈', '1960 · 上海美术电影制片厂', '中国第一部水墨动画：一个墨点是身体，一笔是尾巴'],
     [TL.head, '02', '虾', '齐白石 · 1940—50 年代', '淡墨一节一节压出来，焦墨点睛'],
-    [TL.flick, '03', '容膝斋图', '倪瓒 · 1372', '一河两岸，中间什么都不画']
+    [TL.flick, '03', '容膝斋图', '倪瓒 · 1372', '一河两岸，中间什么都不画'],
+    [TL.ui0, '04', '落到界面', '茶馆 App · 墨舍（虚构）', '按下是一滴墨，转场是墨晕满，确认是盖章'],
+    [TL.rules0, '05', '五条规则', 'FIVE RULES', '每张卡用自己的方法演示自己']
   ];
   let curChap = -1;
   function label(id, show, x, y, html) {
@@ -396,6 +398,286 @@
     if (t > TL.liubai - .1) { const a = toScreen(c, 1300, 1050), b = toScreen(c, 3500, 1950); box.style.opacity = cl((t - TL.liubai + .1) / .15); box.style.left = a[0] + 'px'; box.style.top = a[1] + 'px'; box.style.width = (b[0] - a[0]) * eo3((t - TL.liubai + .1) / .25) + 'px'; box.style.height = (b[1] - a[1]) + 'px'; } else box.style.opacity = 0;
     if (t > TL.liubai) { const p = toScreen(c, 2300, 1560); label('r6', cl((t - TL.liubai) / .2), p[0], p[1], '留白 <b>64%</b>'); } else label('r6', 0);
     if (t > TL.pull[1] + .1) { const p = toScreen(c, -460, 560); label('r7', cl((t - TL.pull[1] - .1) / .2), p[0], p[1], '开头写的“水”= 题款'); } else label('r7', 0);
+      if (t >= TL.ui0) {
+      for (const id of ['rd', 'r1', 'r2', 'r3', 'r4', 'r5', 'r6', 'r7']) label(id, 0);
+      $('lb').style.opacity = 0;
+      const ui = t < TL.rules0 - .15;
+      label('r8', ui && t > TL.rows + .3 ? 1 : 0, 250, 560, '列表 · 每行从遮罩里升起 <b>16 帧</b>');
+      label('r9', ui && t > TL.tap ? 1 : 0, 1240, 520, '按下 = 一滴墨 · <b>0.3 秒</b>晕开');
+      label('r10', ui && t > TL.wipeUI ? 1 : 0, 1240, 580, '转场 = 同一滴墨晕满 → 退到四角 · <b>900ms</b>');
+      label('r11', ui && t > TL.seal2 ? 1 : 0, 250, 620, '确认 = 盖章 · <b>1.5 → 1</b> · 红色只给“确认”');
+    } else for (const id of ['r8', 'r9', 'r10', 'r11']) label(id, 0);
+    const endA = 1 - cl((t - TL.end0 + .1) / .15);
+    document.querySelector('.frame').style.opacity = endA; $('pg').style.opacity = endA;
+  }
+
+  // ═══════════ 04 落到界面 · 05 五条规则 · 片尾（8 秒以后，屏幕坐标）═══════════
+  const PH = { x: 745, y: 96, w: 430, h: 888, r: 60 }, SC = { x: 757, y: 108, w: 406, h: 864, r: 48 };
+  const HR = { x: SC.x, y: SC.y, w: SC.w, h: 330 };
+  let STILL = null, BOX = null;
+  function ensureStill() {
+    if (STILL) return;
+    STILL = document.createElement('canvas'); STILL.width = W0; STILL.height = H0;
+    drawWorld(STILL.getContext('2d'), TL.ui0 - .03);
+    const c = camera(TL.ui0 - .03), a = toScreen(c, 1300, 1050), b = toScreen(c, 3500, 1950);
+    BOX = { x: a[0], y: a[1], w: b[0] - a[0], h: b[1] - a[1] };
+  }
+  // 配图取景：从“留白”框平滑移到 “水” + 枯树 + 虾 那一块
+  const HSRC = { x: 160, y: 170, w: 1300, h: 820 };
+  function heroT(src) {
+    src = src || HSRC;
+    let w = HR.h * src.w / src.h, h = HR.h;
+    if (w < HR.w) { w = HR.w; h = HR.w * src.h / src.w; }
+    return { x: HR.x + HR.w / 2 - w / 2, y: HR.y + HR.h / 2 - h / 2, w, h };
+  }
+  function drawStillMapped(ctx, R, src) {
+    src = src || HSRC;
+    const s = R.w / src.w;
+    ctx.save(); ctx.setTransform(s, 0, 0, s, R.x - src.x * s, R.y - src.y * s); ctx.drawImage(STILL, 0, 0); ctx.restore();
+  }
+  const NZ = {}; const nzf = k => NZ[k] || (NZ[k] = B.noise1(k));
+  function blobPath(ctx, cx, cy, R, seed, begin = true) {
+    const n1 = nzf(seed), n2 = nzf(seed + 1);
+    if (begin) ctx.beginPath();
+    for (let i = 0; i <= 120; i++) {
+      const a = i / 120 * 6.283, f = Math.pow(Math.max(0, n2(a * 9) - .55) / .45, 2) * .5;
+      const rr = R * (1 + .22 * (n1(a * 1.6) - .5) + .07 * (n2(a * 7) - .5) + f);
+      i ? ctx.lineTo(cx + Math.cos(a) * rr, cy + Math.sin(a) * rr) : ctx.moveTo(cx + rr, cy);
+    }
+    ctx.closePath();
+  }
+  function inkBlob(ctx, cx, cy, R, a, seed) {
+    const g = ctx.createRadialGradient(cx, cy, 0, cx, cy, R * 1.3);
+    g.addColorStop(0, `rgba(${INK},${.95 * a})`); g.addColorStop(.6, `rgba(${INK},${.78 * a})`); g.addColorStop(.8, `rgba(${INK},${.92 * a})`); g.addColorStop(1, `rgba(${INK},0)`);
+    ctx.fillStyle = g; blobPath(ctx, cx, cy, R, seed); ctx.fill();
+  }
+  function txt(ctx, s, x, y, font, col, align = 'left') { ctx.font = font; ctx.fillStyle = col; ctx.textAlign = align; ctx.textBaseline = 'alphabetic'; ctx.fillText(s, x, y); }
+  const riseK = (t, t0) => eo3((t - t0) / (16 / 60));
+  function riseText(ctx, t, t0, s, x, y, font, col, h, align) {
+    const r = riseK(t, t0); if (r <= 0) return;
+    ctx.save(); ctx.beginPath(); ctx.rect(x - 2000 * (align === 'center' ? 1 : 0), y - h, 4000, h * 1.25); ctx.clip();
+    txt(ctx, s, x, y + (1 - r) * h, font, col, align); ctx.restore();
+  }
+  function sealAt(ctx, t, t0, x, y, size, ch, rot = -.05) {
+    const u = (t - t0) / (7 / 60); if (u < 0) return;
+    const sc = 1.5 - .5 * eo3(u);
+    ctx.save(); ctx.translate(x, y); ctx.rotate(rot); ctx.scale(sc, sc);
+    ctx.fillStyle = '#C8372D'; ctx.globalAlpha = .96; ctx.beginPath(); ctx.roundRect(-size / 2, -size / 2, size, size, size * .07); ctx.fill();
+    ctx.fillStyle = '#F2EDE1'; ctx.font = `900 ${size * .74}px "Noto Serif SC"`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText(ch, 0, size * .05);
+    const r = B.rng(9); ctx.fillStyle = 'rgba(242,237,225,.5)';
+    for (let i = 0; i < 50; i++) { ctx.beginPath(); ctx.arc(-size / 2 + size * r(), -size / 2 + size * r(), .6 + size * .018 * r(), 0, 6.283); ctx.fill(); }
+    ctx.restore();
+  }
+  function bezel(ctx) {
+    ctx.fillStyle = '#121211'; ctx.beginPath(); ctx.roundRect(PH.x, PH.y, PH.w, PH.h, PH.r); ctx.roundRect(SC.x, SC.y, SC.w, SC.h, SC.r); ctx.fill('evenodd');
+    ctx.beginPath(); ctx.roundRect(SC.x + SC.w / 2 - 62, SC.y + 12, 124, 34, 17); ctx.fill();
+  }
+  const ROWS = [['白毫银针', '福鼎 · 一泡 3 分钟', '¥68'], ['大红袍', '武夷 · 一泡 5 分钟', '¥88'], ['祁门红茶', '安徽 · 一泡 4 分钟', '¥58'], ['凤凰单丛', '潮州 · 一泡 4 分钟', '¥78']];
+  const ROW_Y0 = HR.y + HR.h + 112, ROW_H = 86, TAP = [SC.x + 290, ROW_Y0 + ROW_H * 1.5];
+  function rowText(ctx, row, y, dy, col, col2) {
+    const x0 = SC.x + 28;
+    txt(ctx, row[0], x0, y + 40 + dy, '900 25px "Noto Serif SC"', col);
+    txt(ctx, row[1], x0, y + 66 + dy, '400 14px "Geist Mono"', col2);
+    txt(ctx, row[2], SC.x + SC.w - 28, y + 48 + dy, '400 18px "Geist Mono"', col, 'right');
+  }
+  function listPage(ctx, t) {
+    ctx.fillStyle = '#F2EDE1'; ctx.fillRect(SC.x, SC.y, SC.w, SC.h);
+    ctx.save(); ctx.beginPath(); ctx.rect(HR.x, HR.y, HR.w, HR.h); ctx.clip(); drawStillMapped(ctx, heroT()); ctx.restore();
+    const g = ctx.createLinearGradient(0, HR.y + HR.h - 90, 0, HR.y + HR.h); g.addColorStop(0, 'rgba(242,237,225,0)'); g.addColorStop(1, 'rgba(242,237,225,1)');
+    ctx.fillStyle = g; ctx.fillRect(HR.x, HR.y + HR.h - 90, HR.w, 90);
+    riseText(ctx, t, TL.rows, '墨舍 · 茶单 · 今日 12 款', SC.x + 28, HR.y + HR.h + 30, '400 14px "Geist Mono"', '#6B6B66', 22);
+    riseText(ctx, t, TL.rows + .06, '一盏茶的时间', SC.x + 28, HR.y + HR.h + 80, '900 36px "Noto Serif SC"', '#141413', 44);
+    ROWS.forEach((row, i) => {
+      const y = ROW_Y0 + i * ROW_H, r = riseK(t, TL.rows + .14 + i * TL.beat / 2);
+      if (r <= 0) return;
+      ctx.save(); ctx.beginPath(); ctx.rect(SC.x, y, SC.w, ROW_H); ctx.clip();
+      const dy = (1 - r) * ROW_H;
+      rowText(ctx, row, y, dy, '#141413', '#6B6B66');
+      if (i === 1 && t >= TL.tap) {
+        const R = 30 + 190 * (1 - Math.exp(-(t - TL.tap) * 8));
+        inkBlob(ctx, TAP[0], TAP[1], R, 1, 77);
+        ctx.save(); blobPath(ctx, TAP[0], TAP[1], R * .92, 77); ctx.clip(); rowText(ctx, row, y, 0, '#F2EDE1', '#CFC8B8'); ctx.restore();
+      }
+      ctx.strokeStyle = 'rgba(20,20,19,.16)'; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(SC.x + 28, y + ROW_H - .5); ctx.lineTo(SC.x + SC.w - 28, y + ROW_H - .5); ctx.stroke();
+      ctx.restore();
+    });
+  }
+  function detailPage(ctx, t) {
+    ctx.fillStyle = '#F2EDE1'; ctx.fillRect(SC.x, SC.y, SC.w, SC.h);
+    ctx.save(); ctx.globalAlpha = .16; inkBlob(ctx, SC.x + 120, SC.y + SC.h - 300, 170, 1, 91); ctx.restore();
+    const x0 = SC.x + 30, T0 = TL.detail + .08;
+    riseText(ctx, t, T0, '武夷 · 岩茶 · 三泡', x0, SC.y + 112, '400 14px "Geist Mono"', '#6B6B66', 22);
+    riseText(ctx, t, T0 + .05, '三泡', x0, SC.y + 178, '900 52px "Noto Serif SC"', '#141413', 62);
+    ['岩骨花香。', '第一泡 5 秒出汤，', '第二泡 8 秒，', '第三泡 12 秒。'].forEach((l, i) => riseText(ctx, t, T0 + .1 + i * .04, l, x0, SC.y + 250 + i * 36, '400 19px "Noto Serif SC"', '#3a3a36', 30));
+    const vr = riseK(t, T0);
+    ctx.save(); ctx.beginPath(); ctx.rect(SC.x + SC.w - 150, SC.y + 70, 140, 460); ctx.clip();
+    ['大', '红', '袍'].forEach((c, i) => txt(ctx, c, SC.x + SC.w - 82, SC.y + 190 + i * 128 + (1 - vr) * 400, '900 118px "Noto Serif SC"', '#141413', 'center'));
+    ctx.restore();
+    const by = SC.y + SC.h - 118;
+    ctx.fillStyle = '#141413'; ctx.beginPath(); ctx.roundRect(x0, by, SC.w - 60, 68, 34); ctx.fill();
+    txt(ctx, '预约一席 · ¥88', SC.x + SC.w / 2 + 20, by + 44, '900 22px "Noto Serif SC"', '#F2EDE1', 'center');
+    ctx.strokeStyle = 'rgba(242,237,225,.5)'; ctx.lineWidth = 2; ctx.strokeRect(x0 + 26, by + 18, 32, 32);
+    sealAt(ctx, t, TL.seal2, x0 + 42, by + 34, 34, '约', 0);
+    sealAt(ctx, t, TL.seal2 + .04, SC.x + 120, SC.y + 520, 130, '约', -.08);
+  }
+  function finger(ctx, t, tt, x, y) {
+    const a = cl((t - tt + .14) / .08) * (1 - cl((t - tt - .18) / .1));
+    if (a <= 0) return;
+    const press = t > tt ? .85 : 1;
+    ctx.fillStyle = `rgba(20,20,19,${.22 * a})`; ctx.beginPath(); ctx.arc(x, y, 30 * press, 0, 6.283); ctx.fill();
+    ctx.strokeStyle = `rgba(242,237,225,${.9 * a})`; ctx.lineWidth = 2; ctx.stroke();
+  }
+  function drawUI(ctx, t) {
+    ensureStill();
+    ctx.setTransform(1, 0, 0, 1, 0, 0);
+    ctx.drawImage(paper, 0, 0);
+    const m = eio((t - TL.ui0) / (TL.rows - TL.ui0));
+    if (m < 1) {
+      const src = { x: lerp(BOX.x, HSRC.x, m), y: lerp(BOX.y, HSRC.y, m), w: lerp(BOX.w, HSRC.w, m), h: lerp(BOX.h, HSRC.h, m) };
+      const T = heroT(src);
+      drawStillMapped(ctx, { x: lerp(BOX.x, T.x, m), y: lerp(BOX.y, T.y, m), w: lerp(BOX.w, T.w, m), h: lerp(BOX.h, T.h, m) }, src);
+      const S = { x: lerp(BOX.x, SC.x, m), y: lerp(BOX.y, SC.y, m), w: lerp(BOX.w, SC.w, m), h: lerp(BOX.h, SC.h, m), r: lerp(0, SC.r, m) };
+      const by = lerp(BOX.y + BOX.h, HR.y + HR.h, m);
+      ctx.fillStyle = `rgba(242,237,225,${m})`; ctx.fillRect(S.x, by, S.w, S.y + S.h - by);
+      ctx.fillStyle = `rgba(242,237,225,${cl(m * 1.6)})`; ctx.beginPath(); ctx.rect(0, 0, W0, H0); ctx.roundRect(S.x, S.y, S.w, S.h, S.r); ctx.fill('evenodd');
+      ctx.strokeStyle = '#121211'; ctx.lineWidth = 24 * m; ctx.beginPath(); ctx.roundRect(S.x - 6 * m, S.y - 6 * m, S.w + 12 * m, S.h + 12 * m, S.r + 6 * m); ctx.stroke();
+      ctx.setLineDash([12, 9]); ctx.strokeStyle = `rgba(200,55,45,${1 - m})`; ctx.lineWidth = 3; ctx.beginPath(); ctx.roundRect(S.x, S.y, S.w, S.h, S.r); ctx.stroke(); ctx.setLineDash([]);
+      return;
+    }
+    ctx.save(); ctx.beginPath(); ctx.roundRect(SC.x, SC.y, SC.w, SC.h, SC.r); ctx.clip();
+    if (t < TL.detail) {
+      listPage(ctx, t);
+      if (t >= TL.wipeUI) {   // 同一滴墨晕满整屏
+        const R = 200 + 900 * eio((t - TL.wipeUI) / (TL.detail - TL.wipeUI));
+        inkBlob(ctx, TAP[0], TAP[1], R, 1, 77);
+      }
+    } else {
+      detailPage(ctx, t);
+      const rh = 1150 * eo3((t - TL.detail) / .42);   // 墨退到四角
+      if (rh < 1100) { ctx.fillStyle = `rgb(${INK})`; ctx.beginPath(); ctx.rect(SC.x, SC.y, SC.w, SC.h); blobPath(ctx, TAP[0], TAP[1] - 60, rh, 131, false); ctx.fill('evenodd'); }
+    }
+    ctx.restore();
+    bezel(ctx);
+    finger(ctx, t, TL.tap, TAP[0], TAP[1]);
+    finger(ctx, t, TL.seal2, SC.x + 72, SC.y + SC.h - 84);
+  }
+
+  // —— 05 五条规则：每张卡自己演示自己 ——
+  const RULES = [
+    ['墨分五色', '一种墨，五个层级——浓淡代替灰阶'],
+    ['起 · 行 · 收', '粗细不是画出来的，是笔速决定的'],
+    ['留白 ≥ 60%', '空着的地方，也是画的一部分'],
+    ['朱砂只用一处', '红色 ≤ 3%：只给印章和最重要的按钮'],
+    ['飞白不是错', '墨不够了就断开——这就是手感']
+  ];
+  const DABS = [.96, .72, .48, .28, .12].map((tone, k) => B.make({ pts: [[1040 + k * 160 - 70, 560], [1040 + k * 160 + 70, 552]], w: [[0, .7], [.2, 1], [.8, .9], [1, .3]], size: 130, tone, dry: .25, seed: 800 + k }));
+  const DAB_N = [['浓', '#141413'], ['焦', '#4A4A46'], ['重', '#8A8A84'], ['淡', '#BDB9AF'], ['清', '#E2DDD0']];
+  const ST2 = B.make({ pts: [[990, 470], [1220, 420], [1450, 520], [1800, 450]], w: [[0, .5], [.08, 1], [.42, .3], [.7, .95], [1, .05]], size: 130, tone: .95, dry: .45, seed: 701 });
+  const ST5 = B.make({ pts: [[980, 560], [1280, 500], [1560, 570], [1820, 520]], w: [[0, .7], [.1, 1], [.8, .85], [1, .3]], size: 190, tone: .96, dry: 1.55, seed: 905, bristles: 80 });
+  function cardBase(ctx, i) {
+    ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.drawImage(paper, 0, 0);
+    txt(ctx, `规则 0${i + 1} / 05`, 140, 300, '400 20px "Geist Mono"', '#C8372D');
+    txt(ctx, RULES[i][0], 134, 450, '900 116px "Noto Serif SC"', '#141413');
+    txt(ctx, RULES[i][1], 140, 520, '400 32px "Noto Serif SC"', '#3a3a36');
+    ctx.fillStyle = '#C8372D'; ctx.fillRect(140, 560, 80, 5);
+  }
+  function drawCard(ctx, i, lt) {
+    cardBase(ctx, i);
+    if (i === 0) {
+      DABS.forEach((st, k) => {
+        const p = B.progress((lt - .05 - k * .08) / .2); B.draw(ctx, st, p);
+        if (p > .5) { txt(ctx, DAB_N[k][0], 1040 + k * 160, 700, '900 34px "Noto Serif SC"', '#141413', 'center'); txt(ctx, DAB_N[k][1], 1040 + k * 160, 732, '400 15px "Geist Mono"', '#6B6B66', 'center'); }
+      });
+    } else if (i === 1) {
+      const p = B.progress((lt - .05) / .6); B.draw(ctx, ST2, p);
+      const n = Math.floor(p * (ST2.N - 1));
+      ctx.strokeStyle = '#C8372D'; ctx.lineWidth = 3; ctx.beginPath();
+      for (let k = 0; k <= n; k++) { const x = 990 + 810 * k / (ST2.N - 1), y = 800 - 110 * ST2.W[k] / ST2.maxW; k ? ctx.lineTo(x, y) : ctx.moveTo(x, y); }
+      ctx.stroke();
+      ctx.strokeStyle = 'rgba(20,20,19,.25)'; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(990, 800); ctx.lineTo(1800, 800); ctx.stroke();
+      txt(ctx, '粗细', 990, 670, '400 16px "Geist Mono"', '#C8372D');
+      if (p > .4) txt(ctx, '行笔快 → 细', 1260, 830, '400 18px "Geist Mono"', '#141413');
+      if (p > .8) txt(ctx, '收笔顿 → 粗 → 出锋', 1500, 860, '400 18px "Geist Mono"', '#141413');
+    } else if (i === 2) {
+      ensureStill();
+      const F = { x: 1000, y: 260, w: 800, h: 450 };
+      ctx.save(); ctx.beginPath(); ctx.rect(F.x, F.y, F.w, F.h); ctx.clip(); ctx.drawImage(STILL, F.x, F.y, F.w, F.h); ctx.restore();
+      ctx.strokeStyle = 'rgba(20,20,19,.3)'; ctx.lineWidth = 1; ctx.strokeRect(F.x, F.y, F.w, F.h);
+      const k = F.w / W0, gx = F.x + BOX.x * k, gy = F.y + BOX.y * k, gw = BOX.w * k, gh = BOX.h * k;
+      const g = eo3((lt - .1) / .4);
+      ctx.setLineDash([10, 7]); ctx.strokeStyle = '#C8372D'; ctx.lineWidth = 3; ctx.strokeRect(gx, gy, gw * g, gh); ctx.setLineDash([]);
+      const pct = Math.round(64 * eo3((lt - .1) / .5));
+      txt(ctx, `留白 ${pct}%`, F.x, F.y + F.h + 60, '900 46px "Noto Serif SC"', '#C8372D');
+    } else if (i === 3) {
+      const P = { x: 1120, y: 240, w: 560, h: 620 };
+      ctx.fillStyle = 'rgba(0,0,0,.08)'; ctx.fillRect(P.x + 14, P.y + 18, P.w, P.h);
+      ctx.fillStyle = '#F7F2E6'; ctx.fillRect(P.x, P.y, P.w, P.h);
+      ctx.strokeStyle = 'rgba(20,20,19,.25)'; ctx.strokeRect(P.x, P.y, P.w, P.h);
+      ['容', '膝', '斋'].forEach((c, j) => txt(ctx, c, P.x + P.w - 90, P.y + 130 + j * 100, '900 86px "Noto Serif SC"', '#141413', 'center'));
+      ctx.save(); ctx.globalAlpha = .5; inkBlob(ctx, P.x + 200, P.y + 420, 120, 1, 141); ctx.restore();
+      sealAt(ctx, lt, .12, P.x + P.w - 90, P.y + 470, 76, '墨', -.05);
+      if (lt > .25) { txt(ctx, '朱砂 2.6%', P.x, P.y + P.h + 56, '900 42px "Noto Serif SC"', '#C8372D'); txt(ctx, '其余 97.4% 都是墨和纸', P.x + 240, P.y + P.h + 52, '400 18px "Geist Mono"', '#6B6B66'); }
+    } else {
+      const p = B.progress((lt - .05) / .5); B.draw(ctx, ST5, p);
+      if (p > .7) {
+        const a = cl((p - .7) / .2);
+        ctx.globalAlpha = a; ctx.strokeStyle = '#C8372D'; ctx.lineWidth = 3;
+        ctx.beginPath(); ctx.moveTo(1520, 760); ctx.lineTo(1610, 600); ctx.stroke();
+        ctx.beginPath(); ctx.arc(1612, 572, 26, 0, 6.283); ctx.stroke();
+        txt(ctx, '飞白 = 墨不够，断开了', 1380, 800, '400 20px "Geist Mono"', '#C8372D');
+        ctx.globalAlpha = 1;
+      }
+    }
+  }
+
+  // —— 片尾：回到开场的构图 ——
+  const END_T = [0, .3, .56, .74].map(d => TL.end0 + .12 + d), END_D = [.3, .26, .18, .3];
+  function drawEnd(ctx, t) {
+    ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.drawImage(paper, 0, 0);
+    const k = .66;
+    ctx.setTransform(k, 0, 0, k, 640, 560);
+    SHUI.forEach((s, i) => B.draw(ctx, s.st, B.progress((t - END_T[i]) / END_D[i])));
+    ctx.setTransform(1, 0, 0, 1, 0, 0);
+    sealAt(ctx, t, TL.end0 + 1.2, 640 - 330 * k, 560 - 300 * k, 116 * k, '墨');
+    riseText(ctx, t, TL.end0 + 1.35, '水墨', 1150, 560, '900 196px "Noto Serif SC"', '#141413', 210);
+    riseText(ctx, t, TL.end0 + 1.5, 'I N K   W A S H', 1158, 630, '400 24px "Geist Mono"', '#3a3a36', 34);
+    riseText(ctx, t, TL.end0 + 1.62, '一笔 · 一滴 · 留白', 1158, 700, '400 30px "Noto Serif SC"', '#3a3a36', 40);
+    riseText(ctx, t, TL.end0 + 1.85, '观默', 1210, 830, '900 40px "Noto Serif SC"', '#141413', 50);
+    sealAt(ctx, t, TL.end0 + 1.85, 1176, 816, 40, '观', 0);
+  }
+
+  // —— 场景切换：一笔大刷子扫过去换场 ——
+  const WIPE = B.make({ pts: [[-300, 120], [2250, 60], [-300, 540], [2250, 500], [-300, 960], [2250, 1020]], w: [[0, 1], [1, 1]], size: 640, tone: 1, dry: .18, seed: 990, bristles: 80, wet: 0, color: '0,0,0' });
+  const WB = () => [TL.rules0, TL.rules0 + TL.ruleStep, TL.rules0 + 2 * TL.ruleStep, TL.rules0 + 3 * TL.ruleStep, TL.rules0 + 4 * TL.ruleStep, TL.end0];
+  const WD = .3;
+  function drawScene(ctx, s, t) {
+    const b = WB();
+    if (s === 0) return drawUI(ctx, t);
+    if (s <= 5) return drawCard(ctx, s - 1, Math.max(0, t - b[s - 1]));
+    return drawEnd(ctx, t);
+  }
+  const mask = document.createElement('canvas'); mask.width = W0; mask.height = H0;
+  const mctx = mask.getContext('2d');
+  const nxt = document.createElement('canvas'); nxt.width = W0; nxt.height = H0;
+  const nctx = nxt.getContext('2d');
+  function scenePart2(ctx, t) {
+    const b = WB();
+    let s = 0; for (const x of b) if (t >= x) s++;
+    for (let k = 0; k < b.length; k++) {
+      const p = (t - (b[k] - WD / 2)) / WD;
+      if (p > 0 && p < 1) {
+        drawScene(ctx, k, t);
+        drawScene(nctx, k + 1, t);
+        mctx.setTransform(1, 0, 0, 1, 0, 0); mctx.globalCompositeOperation = 'source-over'; mctx.clearRect(0, 0, W0, H0);
+        B.draw(mctx, WIPE, p); B.draw(mctx, WIPE, p);
+        mctx.globalCompositeOperation = 'source-in'; mctx.globalAlpha = 1; mctx.drawImage(nxt, 0, 0);
+        mctx.globalCompositeOperation = 'source-over';
+        ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.globalAlpha = 1; ctx.drawImage(mask, 0, 0);
+        // 刷子本身的墨：盖在交界处
+        return;
+      }
+    }
+    drawScene(ctx, s, t);
   }
 
   // —— 逐帧：5 个子帧做运动模糊 ——
@@ -413,7 +695,7 @@
     ctx.setTransform(1, 0, 0, 1, 0, 0);
     for (let k = 0; k < SUB; k++) {
       const ts = t + (k / (SUB - 1) - .5) * SHUT;
-      drawWorld(octx, ts);
+      if (ts >= TL.ui0) scenePart2(octx, ts); else drawWorld(octx, ts);
       ctx.globalAlpha = 1 / (k + 1);
       ctx.drawImage(off, 0, 0);
     }

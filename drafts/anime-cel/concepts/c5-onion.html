@@ -1,0 +1,57 @@
+<!doctype html><html lang="zh"><head><meta charset="utf-8"><title>赛璐璐 · 概念 5 · 一拍二</title>
+<link rel="stylesheet" href="common.css"><style>body { background:#FFF3D6; }</style></head><body>
+<canvas id="c" width="1920" height="1080"></canvas>
+<div class="hook" style="left:64px; top:56px; font-size:100px">一秒只画 12 张</div>
+<div class="tag" style="left:64px; top:190px">一拍二 · 同一张停 2 帧 · <b>间距 = 速度</b></div>
+<div class="num">05 / 06</div>
+<script>
+(function () {
+  const W = 1920, H = 1080, c = document.getElementById('c').getContext('2d');
+  // 律表的格子
+  c.strokeStyle = 'rgba(20,20,43,.08)'; c.lineWidth = 1;
+  for (let x = 0; x < W; x += 40) { c.beginPath(); c.moveTo(x, 0); c.lineTo(x, H); c.stroke(); }
+  for (let y = 0; y < H; y += 40) { c.beginPath(); c.moveTo(0, y); c.lineTo(W, y); c.stroke(); }
+  // 12 张：两次弹跳，抛物线；落地压扁、最快时拉长
+  const GY = 800, N = 12, P = [];
+  for (let k = 0; k < N; k++) {
+    const u = k / (N - 1), x = 260 + 1420 * u;
+    const ph = (u * 2) % 1, hop = u < .5 ? 1 : .6;
+    const y = GY - 520 * hop * 4 * ph * (1 - ph);
+    const v = Math.abs(1 - 2 * ph);
+    P.push({ x, y, k, contact: ph < .02 || ph > .98, v });
+  }
+  P.forEach(p => {
+    const a = .18 + .82 * (p.k / (N - 1));
+    let sx = 1, sy = 1, rot = 0;
+    if (p.contact || p.y > GY - 8) { sx = 1.35; sy = .68; }
+    else if (p.v > .6) { sx = .82; sy = 1.25; }
+    const R = 52;
+    c.save(); c.globalAlpha = a; c.translate(p.x, p.y - R * sy); c.scale(sx, sy);
+    c.fillStyle = '#E8202E'; c.beginPath(); c.arc(0, 0, R, 0, 6.283); c.fill();
+    c.save(); c.beginPath(); c.arc(0, 0, R, 0, 6.283); c.clip(); c.fillStyle = '#8E0B2A'; c.beginPath(); c.arc(R * .35, R * .45, R * 1.05, 0, 6.283); c.fill(); c.restore();
+    c.fillStyle = '#FFFDF5'; c.beginPath(); c.ellipse(-R * .35, -R * .38, R * .26, R * .16, -.5, 0, 6.283); c.fill();
+    c.strokeStyle = '#14142B'; c.lineWidth = 7; c.beginPath(); c.arc(0, 0, R, 0, 6.283); c.stroke();
+    c.restore();
+    c.globalAlpha = 1;
+    c.fillStyle = '#14142B'; c.font = '400 20px "Geist Mono"'; c.textAlign = 'center';
+    c.fillText(String(p.k + 1).padStart(2, '0'), p.x, GY + 46);
+  });
+  // 地面
+  c.strokeStyle = '#14142B'; c.lineWidth = 6; c.beginPath(); c.moveTo(160, GY); c.lineTo(1780, GY); c.stroke();
+  // 律表：每张占 2 格（一拍二）
+  const TY = 930;
+  c.font = '400 18px "Geist Mono"'; c.textAlign = 'left'; c.fillStyle = '#14142B'; c.fillText('帧', 120, TY + 26);
+  for (let f = 0; f < 24; f++) {
+    const x = 180 + f * 66;
+    c.fillStyle = f % 2 === 0 ? '#FFD23F' : '#FFFDF5'; c.strokeStyle = '#14142B'; c.lineWidth = 3;
+    c.fillRect(x, TY, 62, 40); c.strokeRect(x, TY, 62, 40);
+    c.fillStyle = '#14142B'; c.textAlign = 'center'; c.fillText(f % 2 === 0 ? String(f / 2 + 1).padStart(2, '0') : '〃', x + 31, TY + 27);
+  }
+  c.textAlign = 'left'; c.fillStyle = '#E8202E'; c.font = '400 20px "Geist Mono"';
+  c.fillText('24 帧 / 秒 · 每张停 2 帧 = 12 张', 180, TY + 80);
+  // 标注：压扁、拉长
+  const tag = (x, y, s) => { c.font = '400 20px "Geist Mono"'; const w = c.measureText(s).width + 24; c.fillStyle = '#FFFDF5'; c.strokeStyle = '#14142B'; c.lineWidth = 3; c.fillRect(x, y, w, 36); c.strokeRect(x, y, w, 36); c.fillStyle = '#14142B'; c.fillText(s, x + 12, y + 25); };
+  tag(820, 600, '落地 · 压扁 1.35 / 0.68'); tag(560, 320, '最快 · 拉长 0.82 / 1.25'); tag(1080, 240, '顶点 · 间距最密 = 最慢');
+  window.__done = true;
+})();
+</script></body></html>

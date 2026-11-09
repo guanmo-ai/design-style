@@ -1,0 +1,81 @@
+<!doctype html><html lang="zh"><head><meta charset="utf-8"><title>赛璐璐 · 概念 1 · 板野马戏</title>
+<link rel="stylesheet" href="common.css"></head><body>
+<canvas id="c" width="1920" height="1080"></canvas>
+<div class="hook" style="left:64px; top:60px; font-size:104px">一次发射 26 枚，<br>每条烟都是手画的</div>
+<div class="tag" style="left:64px; top:330px">板野马戏 · <b>超时空要塞 1982</b> · 板野一郎</div>
+<div class="tag" style="right:64px; top:60px">烟 = 一串圆 · 向光一层白 · 背光一层紫</div>
+<div class="num">01 / 06</div>
+<script>
+(function () {
+  const W = 1920, H = 1080, c = document.getElementById('c').getContext('2d');
+  function rng(seed) { let s = (seed * 2654435761) >>> 0 || 1; return () => { s ^= s << 13; s >>>= 0; s ^= s >>> 17; s ^= s << 5; s >>>= 0; return s / 4294967296; }; }
+  const r = rng(1982);
+  // 天空
+  const g = c.createLinearGradient(0, 0, 0, H);
+  g.addColorStop(0, '#1C3FC2'); g.addColorStop(.45, '#4C8EEA'); g.addColorStop(.8, '#A7D2F5'); g.addColorStop(1, '#FFD9A6');
+  c.fillStyle = g; c.fillRect(0, 0, W, H);
+  // 太阳光晕（左下）
+  c.save(); c.globalCompositeOperation = 'lighter';
+  const sg = c.createRadialGradient(240, 1000, 0, 240, 1000, 900); sg.addColorStop(0, 'rgba(255,230,180,.9)'); sg.addColorStop(.3, 'rgba(255,200,140,.25)'); sg.addColorStop(1, 'rgba(255,200,140,0)');
+  c.fillStyle = sg; c.fillRect(0, 0, W, H); c.restore();
+  // 远处的平涂云
+  [[1500, 880, 380], [1100, 960, 300], [300, 920, 260]].forEach(([x, y, w]) => {
+    c.fillStyle = '#C9C5F0'; for (let k = 0; k < 6; k++) { c.beginPath(); c.arc(x - w / 2 + k * w / 5, y + 10 - 40 * Math.sin(k * 1.2), w * .16, 0, 6.283); c.fill(); }
+    c.fillStyle = '#FFF4E4'; for (let k = 0; k < 6; k++) { c.beginPath(); c.arc(x - w / 2 + k * w / 5 - 8, y - 40 * Math.sin(k * 1.2), w * .14, 0, 6.283); c.fill(); }
+  });
+  // 导弹：从左下发射，各自螺旋，头部散布在画面里
+  const L = [150, 1120], M = [];
+  for (let i = 0; i < 26; i++) {
+    const hx = 520 + r() * 1500, hy = 120 + r() * 760;
+    M.push({ hx, hy, amp: 60 + 160 * r(), fr: 1.5 + 2.5 * r(), ph: r() * 6.283, w: 26 + 26 * r(), seed: i });
+  }
+  M.sort((a, b) => a.w - b.w);   // 细的在后、粗的在前（近大远小）
+  function path(m, s) {
+    const dx = m.hx - L[0], dy = m.hy - L[1], len = Math.hypot(dx, dy), ux = dx / len, uy = dy / len;
+    const a = m.amp * Math.sin(s * m.fr * Math.PI + m.ph) * Math.sin(Math.PI * s);
+    return [L[0] + dx * s - uy * a, L[1] + dy * s + ux * a];
+  }
+  function smoke(m) {
+    const pts = []; const N = 90;
+    for (let k = 0; k <= N; k++) pts.push(path(m, .08 + .92 * k / N));
+    const rr = rng(m.seed + 7);
+    const puffs = pts.map((p, k) => { const age = 1 - k / N; return [p[0], p[1], m.w * (.3 + .7 * Math.pow(age, 1.1)) * (.85 + .3 * rr())]; });
+    // 背光（紫）→ 向光（白）→ 高光
+    c.fillStyle = '#9F9BD8'; for (const [x, y, rad] of puffs) { c.beginPath(); c.arc(x + rad * .18, y + rad * .22, rad, 0, 6.283); c.fill(); }
+    c.fillStyle = '#E9E6FA'; for (const [x, y, rad] of puffs) { c.beginPath(); c.arc(x, y, rad * .92, 0, 6.283); c.fill(); }
+    c.fillStyle = '#FFFFFF'; for (const [x, y, rad] of puffs) { c.beginPath(); c.arc(x - rad * .2, y - rad * .24, rad * .6, 0, 6.283); c.fill(); }
+  }
+  function missile(m) {
+    const p = path(m, 1), q = path(m, .985), a = Math.atan2(p[1] - q[1], p[0] - q[0]), s = m.w / 40;
+    c.save(); c.translate(p[0], p[1]); c.rotate(a); c.scale(s, s);
+    c.globalCompositeOperation = 'lighter';
+    const fg = c.createRadialGradient(-34, 0, 0, -34, 0, 40); fg.addColorStop(0, 'rgba(255,250,200,1)'); fg.addColorStop(.4, 'rgba(255,170,60,.9)'); fg.addColorStop(1, 'rgba(255,90,20,0)');
+    c.fillStyle = fg; c.beginPath(); c.ellipse(-40, 0, 40, 14, 0, 0, 6.283); c.fill();
+    c.globalCompositeOperation = 'source-over';
+    c.lineJoin = 'round'; c.strokeStyle = '#14142B'; c.lineWidth = 4;
+    c.fillStyle = '#F4F4FA'; c.beginPath(); c.moveTo(-26, -8); c.lineTo(18, -8); c.lineTo(34, 0); c.lineTo(18, 8); c.lineTo(-26, 8); c.closePath(); c.fill(); c.stroke();
+    c.fillStyle = '#E8202E'; c.beginPath(); c.moveTo(18, -8); c.lineTo(34, 0); c.lineTo(18, 8); c.closePath(); c.fill(); c.stroke();
+    c.fillStyle = '#9FA6D8'; c.fillRect(-26, 1, 44, 6);
+    c.fillStyle = '#14142B'; c.beginPath(); c.moveTo(-26, -8); c.lineTo(-34, -16); c.lineTo(-18, -8); c.closePath(); c.fill(); c.beginPath(); c.moveTo(-26, 8); c.lineTo(-34, 16); c.lineTo(-18, 8); c.closePath(); c.fill();
+    c.restore();
+  }
+  M.forEach(smoke);
+  M.forEach(missile);
+  // 爆炸：赛璐璐火球——外橙、中黄、内白，黑描边，锯齿
+  function boom(x, y, R, seed) {
+    const rr = rng(seed);
+    const star = (k, sc) => { c.beginPath(); for (let i = 0; i <= 24; i++) { const a = i / 24 * 6.283, rad = R * sc * (i % 2 ? .72 + .1 * rr() : 1 + .12 * rr()); i ? c.lineTo(x + Math.cos(a + k) * rad, y + Math.sin(a + k) * rad) : c.moveTo(x + Math.cos(a + k) * rad, y + Math.sin(a + k) * rad); } c.closePath(); };
+    c.lineWidth = 6; c.strokeStyle = '#14142B'; c.lineJoin = 'miter';
+    star(0, 1); c.fillStyle = '#FF6A1A'; c.fill(); c.stroke();
+    star(.13, .74); c.fillStyle = '#FFD23F'; c.fill();
+    star(.3, .46); c.fillStyle = '#FFFDF0'; c.fill();
+    c.strokeStyle = '#14142B'; c.lineWidth = 5;
+    for (let k = 0; k < 10; k++) { const a = rr() * 6.283, r0 = R * 1.15, r1 = R * (1.4 + .5 * rr()); c.beginPath(); c.moveTo(x + Math.cos(a) * r0, y + Math.sin(a) * r0); c.lineTo(x + Math.cos(a) * r1, y + Math.sin(a) * r1); c.stroke(); }
+  }
+  boom(1460, 300, 120, 3); boom(1700, 620, 80, 5); boom(980, 520, 60, 9); boom(1240, 820, 95, 11);
+  // 速度感：画面边缘的细线
+  c.strokeStyle = 'rgba(255,255,255,.55)'; c.lineWidth = 3;
+  for (let k = 0; k < 40; k++) { const y = r() * H, x = r() * W, l = 120 + 260 * r(); c.beginPath(); c.moveTo(x, y); c.lineTo(x + l * .87, y - l * .5); c.stroke(); }
+  window.__done = true;
+})();
+</script></body></html>

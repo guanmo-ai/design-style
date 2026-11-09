@@ -1,0 +1,12 @@
+@import url(../../../public/fonts/fontsource/zcool-qingke-huangyou/400.css);
+@import url(../../../public/fonts/fontsource/geist-mono/400.css);
+@import url(../../../public/fonts/fontsource/geist/700.css);
+@import url(../../../public/fonts/fontsource/noto-serif-sc/400.css);
+@import url(../../../public/fonts/fontsource/noto-serif-sc/900.css);
+* { margin:0; padding:0; box-sizing:border-box; }
+html, body { width:1920px; height:1080px; overflow:hidden; background:#000; }
+#c { position:absolute; inset:0; width:1920px; height:1080px; display:block; }
+.hook { position:absolute; font-family:'ZCOOL QingKe HuangYou', sans-serif; color:#FFFDF5; -webkit-text-stroke:14px #14142B; paint-order:stroke fill; text-shadow:10px 10px 0 #14142B; line-height:1.05; white-space:nowrap; }
+.tag { position:absolute; font-family:'Geist Mono', monospace; font-size:17px; letter-spacing:.06em; color:#14142B; background:#FFFDF5; border:3px solid #14142B; padding:5px 12px; box-shadow:6px 6px 0 #14142B; }
+.tag b { color:#E8202E; font-weight:400; }
+.num { position:absolute; right:56px; bottom:44px; font-family:'Geist Mono', monospace; font-size:15px; color:#14142B; background:#FFD23F; border:3px solid #14142B; padding:3px 10px; }
