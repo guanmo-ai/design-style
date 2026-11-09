@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="zh"><head><meta charset="utf-8"><title>赛璐璐 · 开场 8 秒</title>
+<style>
+@import url(../../../public/fonts/fontsource/zcool-qingke-huangyou/400.css);
+@import url(../../../public/fonts/fontsource/geist-mono/400.css);
+@import url(../../../public/fonts/fontsource/noto-serif-sc/400.css);
+* { margin:0; padding:0; box-sizing:border-box; }
+html, body { width:1920px; height:1080px; overflow:hidden; background:#000; color:#14142B; font-family:'Noto Serif SC', serif; }
+#c { position:absolute; inset:0; width:1920px; height:1080px; display:block; }
+#frame { position:absolute; left:64px; top:52px; }
+#frame .ln { overflow:hidden; display:block; }
+#frame .ln span { display:inline-block; }
+#cn { font-family:'Geist Mono', monospace; font-size:15px; letter-spacing:.12em; background:#14142B; color:#FFD23F; padding:3px 9px; }
+#ct { font-family:'ZCOOL QingKe HuangYou', sans-serif; font-size:58px; line-height:1.1; margin-top:6px; }
+#cy { font-family:'Geist Mono', monospace; font-size:15px; letter-spacing:.06em; margin-top:2px; }
+#cs { font-size:20px; margin-top:6px; background:#FFFDF5; border:3px solid #14142B; padding:2px 10px; }
+body.dark #ct, body.dark #cy { color:#FFFDF5; }
+body.dark #cn { background:#FFD23F; color:#14142B; }
+#pg { position:absolute; left:64px; bottom:46px; font-family:'Geist Mono', monospace; font-size:15px; letter-spacing:.12em; background:#FFFDF5; border:3px solid #14142B; padding:2px 8px; }
+#title { position:absolute; left:50%; top:46%; font-family:'ZCOOL QingKe HuangYou', sans-serif; font-size:300px; line-height:1; color:#FFFDF5; -webkit-text-stroke:22px #14142B; paint-order:stroke fill; text-shadow:16px 16px 0 #14142B; white-space:nowrap; opacity:0; }
+#title.inv { color:#14142B; -webkit-text-stroke-color:#FFFDF5; text-shadow:16px 16px 0 #FFFDF5; }
+#sub { position:absolute; left:50%; top:66%; transform:translateX(-50%); font-family:'ZCOOL QingKe HuangYou', sans-serif; font-size:40px; background:#FFFDF5; border:5px solid #14142B; padding:6px 20px; box-shadow:9px 9px 0 #14142B; white-space:nowrap; opacity:0; }
+#credit { position:absolute; right:64px; bottom:46px; font-family:'ZCOOL QingKe HuangYou', sans-serif; font-size:30px; color:#FFFDF5; -webkit-text-stroke:8px #14142B; paint-order:stroke fill; opacity:0; }
+</style></head>
+<body>
+<canvas id="c" width="1920" height="1080"></canvas>
+<div id="frame">
+  <span class="ln"><span id="cn">00</span></span>
+  <span class="ln"><span id="ct">赛璐璐</span></span>
+  <span class="ln"><span id="cy">CEL ANIMATION</span></span>
+  <span class="ln"><span id="cs"></span></span>
+</div>
+<div id="pg">00 / 05</div>
+<div id="title">赛璐璐</div>
+<div id="sub"></div>
+<div id="credit">观默</div>
+<script src="timeline.js"></script>
+<script src="scene.js"></script>
+</body></html>
