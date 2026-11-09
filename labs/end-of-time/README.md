@@ -44,7 +44,7 @@ npx serve .
 
 ```
 labs/end-of-time/
-├── index.html   作品本体（HTML + CSS + GLSL + JS，约 1700 行）
+├── index.html   作品本体（HTML + CSS + GLSL + JS，约 1800 行）
 ├── preview/     三张截图
 └── README.md
 ```
