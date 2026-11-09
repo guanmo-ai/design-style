@@ -81,8 +81,9 @@
       float spec = pow(max(dot(normalize(Rf), L), 0.), 40.);
       vec3 glass = refr + fres * vec3(1.) * .55 + spec * vec3(1.);
       // 硬高光：左上角一块椭圆（像棚拍的柔光箱）
-      float box = smoothstep(.03, .0, length((pn - vec2(-.42, .48)) / vec2(.22, .10)) - 1.);
-      glass = mix(glass, vec3(1.), box * .85);
+      float bx = length((pn - vec2(-.40, .46)) / vec2(.24, .13));
+      float box = exp(-bx * bx * 2.4);          // 柔光箱的高光：软边，不像贴纸
+      glass = mix(glass, vec3(1.), box * .55);
       col = mix(col, glass, inside);
       // 外圈发光（光晕，让球从背景里“浮”出来）
       float halo = exp(-max(dd - rr, 0.) * 14.) * (1. - inside);

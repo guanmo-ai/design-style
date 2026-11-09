@@ -1,0 +1,248 @@
+<!doctype html>
+<html lang="zh"><head><meta charset="utf-8"><title>赛璐璐 · 咔 · 8s</title>
+<style>
+@import url(../../../public/fonts/fontsource/zcool-qingke-huangyou/400.css);
+@import url(../../../public/fonts/fontsource/geist-mono/400.css);
+@import url(../../../public/fonts/fontsource/geist/700.css);
+* { margin:0; padding:0; box-sizing:border-box; }
+html, body { width:1920px; height:1080px; overflow:hidden; background:#0A0A16; }
+#gl { position:absolute; inset:0; width:1920px; height:1080px; display:block; }
+#title { position:absolute; left:50%; top:520px; transform:translate(-50%,0); font-family:'ZCOOL QingKe HuangYou', sans-serif; font-size:300px; line-height:1; color:#FFFDF5; -webkit-text-stroke:20px #14142B; paint-order:stroke fill; text-shadow:16px 16px 0 #14142B; white-space:nowrap; opacity:0; }
+#sub { position:absolute; left:50%; top:850px; transform:translate(-50%,0); font-family:'ZCOOL QingKe HuangYou', sans-serif; font-size:40px; color:#14142B; background:#FFFDF5; border:5px solid #14142B; padding:6px 22px; box-shadow:8px 8px 0 #14142B; white-space:nowrap; min-width:1px; }
+#tag { position:absolute; left:72px; top:70px; font-family:'Geist Mono', monospace; font-size:16px; color:#FFFDF5; letter-spacing:.06em; opacity:0; }
+#tag b { background:#FF3B47; color:#FFFDF5; padding:4px 10px; font-weight:400; margin-right:12px; }
+#ctr { position:absolute; left:72px; bottom:44px; font-family:'Geist Mono', monospace; font-size:14px; color:rgba(255,253,245,.55); letter-spacing:.06em; opacity:0; }
+</style></head>
+<body>
+<canvas id="gl" width="1920" height="1080"></canvas>
+<div id="tag"><b>咔</b>赛璐璐 · CEL · 8s</div>
+<div id="title">赛璐璐</div>
+<div id="sub"></div>
+<div id="ctr">3D 渲染 · 三阶硬边 · 墨线 · 冲击帧 · 0 张贴图</div>
+<script>
+const VS = `#version 300 es
+in vec2 p; void main(){ gl_Position = vec4(p, 0., 1.); }`;
+const FS = `#version 300 es
+precision highp float;
+uniform vec2 R;
+uniform float T;
+out vec4 o;
+
+const vec3 YEL=vec3(1.,.824,.247);
+const vec3 YDK=vec3(.94,.70,.06);
+const vec3 CREAM=vec3(1.,.953,.69);
+const vec3 INK=vec3(.078,.078,.169);
+const vec3 WHITE=vec3(1.,.992,.961);
+const vec3 RED=vec3(1.,.231,.278);
+const vec3 BLUE=vec3(.18,.42,1.);
+const vec3 PURP=vec3(.231,.118,.431);
+const vec3 NAVY=vec3(.094,.094,.34);
+const vec3 DARK=vec3(.05,.05,.11);
+const vec3 DOTD=vec3(.12,.12,.25);
+const float T0=2.95;
+
+float tI, env, flash, yel, antic, sqX, sqY, split_, ringS, swR, swA, sla, barA, zc;
+vec2 shk;
+
+float h1(float n){ return fract(sin(n*127.1+.3)*43758.5453); }
+float h2(vec2 p){ return fract(sin(dot(p, vec2(127.1,311.7)))*43758.5453); }
+float eo3(float x){ x=clamp(x,0.,1.); return 1.-pow(1.-x,3.); }
+
+void params(){
+  tI = max(T-T0, 0.);
+  env = T>=T0 ? exp(-tI*3.0) : 0.;
+  flash = T>=T0 ? exp(-tI*18.) : 0.;
+  yel = smoothstep(T0-.01, T0+.05, T);
+  antic = smoothstep(2.3, T0-.01, T) * step(T, T0);
+  if (T < T0) { sqY = 1. - .16*antic; sqX = 1. + .12*antic; }
+  else { float w = sin(tI*20.)*exp(-tI*4.5); sqY = 1. + .12*w; sqX = 1. - .08*w; }
+  split_ = T>3.3 ? .46*eo3((T-3.3)/1.9) : 0.;
+  ringS = 1. + .4*env;
+  swR = T>=T0 ? .02 + 1.4*(1.-exp(-tI*3.4)) : 0.;
+  swA = T>=T0 ? exp(-tI*2.4) : 0.;
+  sla = T<T0 ? .15*smoothstep(.8,2.0,T) : (.9*exp(-tI*1.5)+.4);
+  barA = smoothstep(0.,.7,T)*(1.-smoothstep(7.5,8.,T));
+  zc = mix(7.4, 4.9, eo3((T-.3)/2.2));
+  shk = env*.03*vec2(sin(T*97.), cos(T*83.));
+}
+
+float sdTorus(vec3 p, vec2 t){ vec2 q = vec2(length(p.xz)-t.x, p.y); return length(q)-t.y; }
+
+// 球被水平剖开成上下两半（split_ 为分开距离），环绕着转
+vec2 map(vec3 p){
+  vec3 q = p / vec3(sqX, sqY, sqX);
+  float s = min(sqX, sqY);
+  vec3 pn = normalize(vec3(.25, 1., .1));
+  float dpl = dot(q, pn);
+  float a = split_;
+  float dA = max(length(q + a*pn) - .92, dpl);
+  float dB = max(length(q - a*pn) - .92, -dpl);
+  float ds = min(dA, dB) * s;
+  float c = cos(.5), sn = sin(.5);
+  vec3 r = vec3(p.x, c*p.y - sn*p.z, sn*p.y + c*p.z);
+  float cy = cos(T*1.6), sy = sin(T*1.6);
+  r = vec3(cy*r.x + sy*r.z, r.y, -sy*r.x + cy*r.z);
+  float dt = sdTorus(r, vec2(1.42*ringS, .085*ringS));
+  return ds < dt ? vec2(ds, 0.) : vec2(dt, 1.);
+}
+
+vec3 normalAt(vec3 p){
+  vec2 e = vec2(.0015, 0.);
+  return normalize(vec3(map(p+e.xyy).x-map(p-e.xyy).x, map(p+e.yxy).x-map(p-e.yxy).x, map(p+e.yyx).x-map(p-e.yyx).x));
+}
+
+vec3 background(vec2 uv){
+  float r = length(uv);
+  float ab = atan(uv.y, uv.x);
+  vec3 base = mix(DARK, YEL, yel);
+  // 冲击后的白色锯齿光晕
+  float jag = .30 + .2*env + .03*sin(ab*17.+T*3.) + .02*sin(ab*43.);
+  if (T >= T0 && r < jag) base = mix(base, CREAM, .92);
+  // 放射速度线
+  float tt = (ab/6.2831853 + .5)*72.;
+  float seg = floor(tt), f = fract(tt);
+  float hv = h1(seg);
+  if (hv > 1. - sla*.9) {
+    float start = .40 + h1(seg+31.)*.22 - .18*sla;
+    float hw = .045*(1. - smoothstep(.5, 1.4, r));
+    float la = smoothstep(hw+.012, hw-.012, abs(f-.5)) * step(start, r);
+    base = mix(base, mix(NAVY, INK, yel), la);
+  }
+  // 网点（离中心越远越大）
+  vec2 g = fract(gl_FragCoord.xy/13.) - .5;
+  float dr = .09 + .22*smoothstep(.3, 1.4, r);
+  if (length(g) < dr && r > .35) base = mix(base, mix(DOTD, YDK, yel), .85);
+  // 冲击波：墨线圆环 + 白色内芯
+  if (swA > .01) {
+    float d = abs(r - swR);
+    if (d < .03*swA + .004) base = INK;
+    else if (d < .05*swA + .012) base = mix(base, WHITE, .9*swA);
+  }
+  return base;
+}
+
+vec3 sparkLayer(vec2 uv, vec3 col){
+  if (T < T0) return col;
+  for (int i = 0; i < 36; i++) {
+    float fi = float(i);
+    float ang = h1(fi*3.1)*6.2831853;
+    float sp = .5 + .9*h1(fi*7.7+1.);
+    float dist = .30 + sp*.85*(1. - exp(-tI*2.2));
+    vec2 c = vec2(cos(ang), sin(ang))*dist;
+    float s = .034*(1. - smoothstep(0., 1.4, tI));
+    if (s <= .002) continue;
+    vec2 q = abs(uv - c);
+    float s2 = s + .008;
+    bool in1 = max(q.x - s*.2, q.y - s) < 0. || max(q.x - s, q.y - s*.2) < 0.;
+    bool in2 = max(q.x - s2*.2, q.y - s2) < 0. || max(q.x - s2, q.y - s2*.2) < 0.;
+    if (in2) col = in1 ? (fi < 12. ? WHITE : CREAM) : INK;
+  }
+  return col;
+}
+
+vec3 scene(vec2 uv){
+  vec2 uvc = uv - vec2(0., .05);
+  vec3 col = background(uvc);
+  vec3 ro = vec3(shk, zc);
+  vec3 rd = normalize(vec3(uvc*2.0, -2.9));
+  float tt = (zc - 2.6)/.92;
+  float hit = 0.; vec2 m = vec2(0.); vec3 p = ro;
+  for (int i = 0; i < 96; i++) {
+    p = ro + rd*tt;
+    m = map(p);
+    if (m.x < .0008) { hit = 1.; break; }
+    tt += m.x*.85;
+    if (tt > zc + 1.5) break;
+  }
+  if (hit > .5) {
+    vec3 n = normalAt(p);
+    vec3 L = normalize(vec3(-.55 + .25*sin(T*.9), .62, .72));
+    vec3 V = -rd;
+    float ndl = dot(n, L);
+    float sh = 1.; float ts = .03;
+    for (int i = 0; i < 24; i++) {
+      float d = map(p + L*ts).x;
+      if (d < .0008) { sh = 0.; break; }
+      ts += d*.9;
+      if (ts > 3.) break;
+    }
+    float lit = ndl*sh;
+    bool ring = m.y > .5;
+    vec3 base = ring ? BLUE : RED;
+    vec3 shc = ring ? NAVY : PURP;
+    vec3 body = lit > .78 ? WHITE : (lit > .22 ? base : shc);
+    vec3 pn = normalize(vec3(.25, 1., .1));
+    if (!ring && split_ > .02 && abs(dot(n, pn)) > .9) body = lit > .2 ? CREAM : vec3(.92, .66, .12);
+    float sil = dot(n, V);
+    if (sil < .22) body = mix(CREAM, INK, yel);
+    col = body;
+  }
+  col = sparkLayer(uvc, col);
+  // 冲击时的横向光带（电影里的变形镜头光晕）
+  if (T >= T0) col = mix(col, CREAM, clamp(exp(-abs(uv.y + .02)*70.)*exp(-tI*4.2)*.85, 0., 1.));
+  if (abs(uv.y) > .5 - .11*barA) col = INK;
+  return col;
+}
+
+void main(){
+  params();
+  vec2 uv = (gl_FragCoord.xy - .5*R)/R.y;
+  vec3 col = scene(uv);
+  col = mix(col, WHITE, flash);
+  col *= 1. - .22*dot(uv, uv);
+  col += (h2(gl_FragCoord.xy + T*71.) - .5)*.03;
+  o = vec4(clamp(col, 0., 1.), 1.);
+}`;
+
+const cv = document.getElementById('gl');
+const gl = cv.getContext('webgl2', { antialias: false, preserveDrawingBuffer: true });
+function sh(type, src){ const s = gl.createShader(type); gl.shaderSource(s, src); gl.compileShader(s); if (!gl.getShaderParameter(s, gl.COMPILE_STATUS)) throw new Error(gl.getShaderInfoLog(s)); return s; }
+const prog = gl.createProgram();
+gl.attachShader(prog, sh(gl.VERTEX_SHADER, VS));
+gl.attachShader(prog, sh(gl.FRAGMENT_SHADER, FS));
+gl.bindAttribLocation(prog, 0, 'p');
+gl.linkProgram(prog);
+if (!gl.getProgramParameter(prog, gl.LINK_STATUS)) throw new Error(gl.getProgramInfoLog(prog));
+gl.useProgram(prog);
+const vb = gl.createBuffer();
+gl.bindBuffer(gl.ARRAY_BUFFER, vb);
+gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1,-1,3,-1,-1,3]), gl.STATIC_DRAW);
+gl.enableVertexAttribArray(0);
+gl.vertexAttribPointer(0, 2, gl.FLOAT, false, 0, 0);
+gl.uniform2f(gl.getUniformLocation(prog, 'R'), 1920, 1080);
+const uT = gl.getUniformLocation(prog, 'T');
+
+// —— 叠层（标题 / 字幕 / 标签），与着色器用同一个时间轴 ——
+const $ = id => document.getElementById(id);
+const clamp = (x, a = 0, b = 1) => Math.min(b, Math.max(a, x));
+const eo3 = x => 1 - Math.pow(1 - clamp(x), 3);
+const eback = x => { x = clamp(x); const c1 = 1.70158, c3 = c1 + 1; return 1 + c3 * Math.pow(x - 1, 3) + c1 * Math.pow(x - 1, 2); };
+const SUB = '三维渲染 · 手画的质感';
+function overlay(t){
+  const tt = t - 4.9;
+  const title = $('title');
+  if (tt < 0) { title.style.opacity = 0; }
+  else {
+    const s = 2.4 + (1 - 2.4) * eback(Math.min(tt / .5, 1));
+    const rot = -7 * (1 - eo3(Math.min(tt / .6, 1)));
+    title.style.opacity = clamp(tt / .08);
+    title.style.transform = `translate(-50%,0) rotate(${rot}deg) scale(${s})`;
+  }
+  const n = Math.floor(Math.max(t - 5.6, 0) * 12);
+  $('sub').textContent = SUB.slice(0, Math.min(n, SUB.length));
+  $('sub').style.opacity = t < 5.6 ? 0 : 1;
+  $('tag').style.opacity = clamp((t - 0.9) / .5) * (1 - clamp((t - 7.4) / .5));
+  $('ctr').style.opacity = clamp((t - 6.2) / .5);
+}
+
+window.frame = async f => {
+  const t = f / 30;
+  gl.uniform1f(uT, t);
+  gl.drawArrays(gl.TRIANGLES, 0, 3);
+  gl.finish();
+  overlay(t);
+};
+window.frame(0);
+window.ready = true;
+</script>
+</body></html>
