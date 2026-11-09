@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="zh"><head><meta charset="utf-8"><title>极光 v4 · 02 动效配方</title>
+<style>
+@import url(../../../public/fonts/fontsource/noto-serif-sc/200.css);
+@import url(../../../public/fonts/fontsource/noto-serif-sc/300.css);
+@import url(../../../public/fonts/fontsource/geist-mono/400.css);
+* { margin:0; padding:0; box-sizing:border-box; }
+html, body { width:1920px; height:1080px; overflow:hidden; background:#05060E; color:#F2F5FF; font-family:'Geist Mono', monospace; }
+.hd { position:absolute; left:66px; top:48px; right:66px; display:flex; justify-content:space-between; align-items:flex-end; }
+.hd h2 { font-family:'Noto Serif SC', serif; font-weight:300; font-size:60px; line-height:1; }
+.hd h2 small { font-weight:200; font-size:28px; margin-left:16px; color:rgba(242,245,255,.7); }
+.hd p { font-size:15px; color:rgba(242,245,255,.6); text-align:right; line-height:1.7; }
+.strip { position:absolute; left:66px; top:150px; display:flex; gap:12px; }
+.fr { position:relative; }
+.fr canvas { width:288px; height:162px; display:block; border-radius:6px; }
+.fr b { position:absolute; left:8px; top:8px; font-weight:400; font-size:12px; background:rgba(5,6,14,.6); padding:3px 7px; border-radius:3px; }
+.fr span { display:block; margin-top:9px; font-size:13px; color:rgba(242,245,255,.85); }
+.fr span i { font-style:normal; color:#5CFFB4; }
+svg { position:absolute; left:66px; top:372px; }
+.spec { position:absolute; left:66px; right:66px; bottom:52px; display:grid; grid-template-columns:repeat(4, 1fr); gap:16px; }
+.spec div { border:1px solid rgba(242,245,255,.2); padding:16px 18px; border-radius:8px; background:rgba(255,255,255,.02); }
+.spec h4 { font-family:'Noto Serif SC', serif; font-weight:300; font-size:26px; }
+.spec h4 em { font-style:normal; font-family:'Geist Mono', monospace; font-size:13px; color:rgba(242,245,255,.55); margin-left:8px; }
+.spec code { display:block; margin-top:8px; font-size:13.5px; line-height:1.65; }
+.spec code i { font-style:normal; color:#5CFFB4; }
+</style></head>
+<body>
+<div class="hd"><h2>极光配方<small>6 秒 · 6 个关键帧</small></h2><p>同一个着色器、同一条时间轴<br>亮度、出水、涟漪都可以直接复制</p></div>
+<div class="strip" id="strip"></div>
+<svg id="chart" width="1788" height="420"></svg>
+<div class="spec">
+  <div><h4>亮起<em>0.3–2.0s</em></h4><code>强度 0 → 1，带 ±4% 呼吸<br><i>cubic-bezier(.65,0,.35,1)</i><br>先暗 0.3s，别一上来就亮</code></div>
+  <div><h4>飘动<em>持续</em></h4><code>光帘时间 = 2 + 1.8·t<br>每层速度 0.05 + 0.02·层号<br><i>近快远慢 = 视差</i></code></div>
+  <div><h4>出水<em>2.5–4.2s</em></h4><code>y −0.12 → 0.45<br><i>easeOutBack(1.2)</i> · 超出 6%<br>涟漪 0.3 + 2.2·e^(−1.5t)</code></div>
+  <div><h4>标题<em>4.2–5.8s</em></h4><code>透明 0 → 1 · 字距 .62 → .32em<br><i>cubic-bezier(.65,0,.35,1)</i><br>细宋 200 · 不加粗</code></div>
+</div>
+<script src="aurora4.js"></script>
+<script src="aurora-motion.js"></script>
+<script>
+window.__done = false;
+document.fonts.ready.then(() => {
+  const F = [[0.4, '黑场', '星星先出'], [1.2, '亮起', '强度 0.5'], [2.2, '飘动', '光帘铺满'], [3.0, '出水', '涟漪扩散'], [3.8, '回落', '超出 6%'], [5.5, '定格', '标题收拢']];
+  const strip = document.getElementById('strip');
+  F.forEach(([t, a, b]) => {
+    const d = document.createElement('div');
+    d.className = 'fr';
+    d.innerHTML = `<canvas width="288" height="162"></canvas><b>${t.toFixed(1)}s</b><span><i>${a}</i> · ${b}</span>`;
+    strip.appendChild(d);
+    window.Aurora4.paint(d.querySelector('canvas'), window.AuroraMotion.params(t));
+  });
+  const svg = document.getElementById('chart');
+  const W = 1788, H = 420, P = 44, T = 6.2;
+  const X = t => P + (W - 2 * P) * t / T, Y = v => H - P - (H - 2 * P) * v;
+  const S = t => window.AuroraMotion.state(t);
+  const curve = fn => { let d = ''; for (let i = 0; i <= 500; i++) { const t = T * i / 500; d += (i ? 'L' : 'M') + X(t).toFixed(1) + ' ' + Y(fn(t)).toFixed(1); } return d; };
+  let g = '';
+  for (let k = 0; k <= 6; k++) g += `<line x1="${X(k)}" x2="${X(k)}" y1="${H - P}" y2="${H - P + 6}" stroke="rgba(242,245,255,.5)"/><text x="${X(k) - 10}" y="${H - P + 24}" fill="rgba(242,245,255,.6)" font-family="Geist Mono" font-size="13">${k}s</text>`;
+  g += `<line x1="${P}" x2="${W - P}" y1="${H - P}" y2="${H - P}" stroke="rgba(242,245,255,.2)"/>`;
+  g += `<path d="${curve(t => S(t).int / 1.05)}" fill="none" stroke="#5CFFB4" stroke-width="4"/>`;
+  g += `<path d="${curve(t => (Math.max(S(t).orbY, -.12) + .12) / .64)}" fill="none" stroke="#B48CFF" stroke-width="4"/>`;
+  g += `<path d="${curve(t => Math.min(S(t).rip / 2.5, 1) * .8)}" fill="none" stroke="#22D9F2" stroke-width="3" stroke-dasharray="8 6"/>`;
+  g += `<path d="${curve(t => S(t).title * .55)}" fill="none" stroke="rgba(242,245,255,.8)" stroke-width="3"/>`;
+  const L = [['#5CFFB4', '— 极光强度'], ['#B48CFF', '— 玻璃球高度'], ['#22D9F2', '-- 涟漪'], ['rgba(242,245,255,.85)', '— 标题']];
+  L.forEach(([c, s], i) => g += `<text x="${P + 20}" y="${P + 6 + i * 22}" fill="${c}" font-family="Geist Mono" font-size="14">${s}</text>`);
+  svg.innerHTML = g;
+  window.__done = true;
+});
+</script></body></html>

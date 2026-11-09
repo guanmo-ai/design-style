@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="zh"><head><meta charset="utf-8"><title>极光 v4 · 04 锁屏助手</title>
+<style>
+@import url(../../../public/fonts/fontsource/noto-serif-sc/200.css);
+@import url(../../../public/fonts/fontsource/noto-serif-sc/300.css);
+@import url(../../../public/fonts/fontsource/noto-serif-sc/400.css);
+@import url(../../../public/fonts/fontsource/geist/200.css);
+@import url(../../../public/fonts/fontsource/geist/400.css);
+@import url(../../../public/fonts/fontsource/geist-mono/400.css);
+* { margin:0; padding:0; box-sizing:border-box; }
+html, body { width:1920px; height:1080px; overflow:hidden; background:#05060E; color:#F2F5FF; font-family:Geist, 'Noto Serif SC', sans-serif; }
+.left { position:absolute; left:84px; top:110px; width:540px; }
+.left .k { font-family:'Geist Mono', monospace; font-size:14px; color:rgba(242,245,255,.55); letter-spacing:.14em; }
+.left h1 { font-family:'Noto Serif SC', serif; font-weight:300; font-size:88px; line-height:1.1; margin-top:16px; }
+.left h1 em { font-style:normal; background:linear-gradient(90deg,#34FF9E,#22D9F2 45%,#8C4DFF); -webkit-background-clip:text; color:transparent; }
+.left p { font-family:'Noto Serif SC', serif; font-size:21px; line-height:1.8; margin-top:26px; color:rgba(242,245,255,.78); }
+.chips { display:flex; flex-wrap:wrap; gap:10px; margin-top:26px; }
+.chips span { font-family:'Geist Mono', monospace; font-size:14px; border:1px solid rgba(242,245,255,.28); padding:7px 12px; border-radius:999px; }
+.phone { position:absolute; top:110px; width:360px; height:760px; border-radius:56px; background:#000; padding:11px; box-shadow:0 0 0 1px rgba(255,255,255,.16), 0 50px 120px rgba(34,217,242,.12); }
+.scr { width:338px; height:738px; border-radius:46px; overflow:hidden; position:relative; }
+.scr canvas { position:absolute; inset:0; width:338px; height:738px; display:block; }
+.isl { position:absolute; left:50%; top:12px; transform:translateX(-50%); width:110px; height:32px; background:#000; border-radius:999px; z-index:5; }
+.time { position:absolute; left:0; right:0; top:84px; text-align:center; z-index:3; }
+.time b { display:block; font-family:Geist; font-weight:200; font-size:92px; letter-spacing:-.02em; }
+.time span { font-size:15px; color:rgba(242,245,255,.8); }
+.glass { position:absolute; z-index:3; background:rgba(255,255,255,.10); border:1px solid rgba(255,255,255,.24); backdrop-filter:blur(22px) saturate(150%); -webkit-backdrop-filter:blur(22px) saturate(150%); border-radius:24px; }
+.cap { position:absolute; bottom:-74px; left:0; right:0; text-align:center; font-family:'Noto Serif SC', serif; font-weight:300; font-size:24px; }
+.cap em { display:block; font-style:normal; font-family:'Geist Mono', monospace; font-size:13px; color:rgba(242,245,255,.55); margin-top:4px; }
+.foot { position:absolute; right:84px; bottom:40px; font-family:'Geist Mono', monospace; font-size:14px; color:rgba(242,245,255,.5); }
+</style></head>
+<body>
+<div class="left">
+  <div class="k">04 · 落到产品</div>
+  <h1>锁屏上的<br><em>极光</em></h1>
+  <p>锁屏是一场实时的极光。叫它一声，玻璃球从湖里浮上来，折射着你此刻的天空；说完话，它落回水里，只留一圈涟漪。</p>
+  <div class="chips"><span>实时壁纸 · 60fps</span><span>出水 1.7s · 回弹 6%</span><span>球 = 语音助手</span></div>
+</div>
+
+<div class="phone" style="left:700px"><div class="scr">
+  <canvas id="p1" width="338" height="738"></canvas><div class="isl"></div>
+  <div class="time"><b>21:04</b><span>11 月 9 日 星期一</span></div>
+  <div class="glass" style="left:22px; right:22px; bottom:34px; padding:16px 18px; font-size:14px; line-height:1.55"><span style="font-family:'Geist Mono',monospace;font-size:11px;color:rgba(242,245,255,.6)">今晚 · 极光指数</span><br>KP 6 · 北边天空 23:40 最亮</div>
+</div><div class="cap">① 锁屏<em>实时极光壁纸</em></div></div>
+
+<div class="phone" style="left:1100px"><div class="scr">
+  <canvas id="p2" width="338" height="738"></canvas><div class="isl"></div>
+  <div class="glass" style="left:50px; right:50px; top:96px; padding:12px 16px; text-align:center; font-family:'Noto Serif SC',serif; font-size:17px">“几点去湖边最好？”</div>
+</div><div class="cap">② 叫它一声<em>球从湖里浮上来</em></div></div>
+
+<div class="phone" style="left:1500px"><div class="scr">
+  <canvas id="p3" width="338" height="738"></canvas><div class="isl"></div>
+  <div class="glass" style="left:20px; right:20px; bottom:30px; padding:20px">
+    <div style="font-family:'Geist Mono',monospace;font-size:11px;color:rgba(242,245,255,.6)">极光 · 回答</div>
+    <div style="font-family:'Noto Serif SC',serif;font-weight:300;font-size:24px;line-height:1.4;margin-top:8px">23:40 出发，<br>北岸看得最清楚。</div>
+    <div style="display:flex;gap:8px;margin-top:14px"><span class="glass" style="position:static;padding:6px 12px;font-size:12px;border-radius:999px">导航</span><span class="glass" style="position:static;padding:6px 12px;font-size:12px;border-radius:999px">23:20 提醒我</span></div>
+  </div>
+</div><div class="cap">③ 回答<em>升到上方 · 回答浮出</em></div></div>
+<svg id="rise" width="520" height="210" style="position:absolute; left:84px; top:700px"></svg>
+<div class="foot">04 / 04 · 极光 AURORA</div>
+
+<script src="aurora4.js"></script>
+<script>
+window.__done = false;
+document.fonts.ready.then(() => {
+  window.Aurora4.paint(document.getElementById('p1'), { t: 2.6, int: 1, orb: null, hor: .26, rip: .3, seed: 2.1 });
+  window.Aurora4.paint(document.getElementById('p2'), { t: 3.4, int: 1, orb: { x: .5, y: .36, r: .10 }, hor: .26, rip: 2.2, seed: 2.1 });
+  window.Aurora4.paint(document.getElementById('p3'), { t: 4.2, int: 1, orb: { x: .5, y: .62, r: .085 }, hor: .26, rip: .8, seed: 2.1 });
+  const svg = document.getElementById('rise'), W = 520, H = 210, P = 28;
+  const eb = x => { const s = 1.2, c3 = s + 1; return 1 + c3 * Math.pow(x - 1, 3) + s * Math.pow(x - 1, 2); };
+  const X = t => P + (W - 2 * P) * t, Y = v => H - P - (H - 2 * P) * v / 1.12;
+  let d = ''; for (let i = 0; i <= 200; i++) { const t = i / 200; d += (i ? 'L' : 'M') + X(t).toFixed(1) + ' ' + Y(eb(t)).toFixed(1); }
+  let m = 0, mt = 0; for (let i = 0; i <= 200; i++) { const v = eb(i / 200); if (v > m) { m = v; mt = i / 200; } }
+  svg.innerHTML = `<line x1="${P}" x2="${W - P}" y1="${Y(1)}" y2="${Y(1)}" stroke="rgba(242,245,255,.25)" stroke-dasharray="4 5"/>
+    <path d="${d}" fill="none" stroke="url(#gr)" stroke-width="4"/>
+    <defs><linearGradient id="gr" x1="0" x2="1"><stop offset="0" stop-color="#34FF9E"/><stop offset=".5" stop-color="#22D9F2"/><stop offset="1" stop-color="#8C4DFF"/></linearGradient></defs>
+    <circle cx="${X(mt)}" cy="${Y(m)}" r="6" fill="#B48CFF"/>
+    <text x="${X(mt) + 10}" y="${Y(m) - 8}" font-family="Geist Mono" font-size="12" fill="#B48CFF">超出 ${((m - 1) * 100).toFixed(0)}%</text>
+    <text x="${P}" y="${P - 8}" font-family="Geist Mono" font-size="13" fill="rgba(242,245,255,.6)">出水 · easeOutBack(1.2)</text>
+    <text x="${X(0) - 4}" y="${H - 6}" font-family="Geist Mono" font-size="12" fill="rgba(242,245,255,.5)">0</text>
+    <text x="${X(1) - 30}" y="${H - 6}" font-family="Geist Mono" font-size="12" fill="rgba(242,245,255,.5)">1.7s</text>`;
+  window.__done = true;
+});
+</script></body></html>

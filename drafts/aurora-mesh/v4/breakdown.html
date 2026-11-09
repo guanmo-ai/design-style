@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="zh"><head><meta charset="utf-8"><title>极光 v4 · 03 拆解</title>
+<style>
+@import url(../../../public/fonts/fontsource/noto-serif-sc/200.css);
+@import url(../../../public/fonts/fontsource/noto-serif-sc/300.css);
+@import url(../../../public/fonts/fontsource/noto-serif-sc/400.css);
+@import url(../../../public/fonts/fontsource/geist-mono/400.css);
+* { margin:0; padding:0; box-sizing:border-box; }
+html, body { width:1920px; height:1080px; overflow:hidden; background:#05060E; color:#F2F5FF; font-family:'Noto Serif SC', serif; }
+.hd { position:absolute; left:62px; top:56px; right:62px; display:flex; justify-content:space-between; align-items:flex-end; }
+.hd h2 { font-weight:300; font-size:62px; line-height:1.1; }
+.hd h2 em { font-style:normal; background:linear-gradient(90deg,#34FF9E,#22D9F2 40%,#8C4DFF 75%,#FF5CBF); -webkit-background-clip:text; color:transparent; }
+.hd p { font-family:'Geist Mono', monospace; font-size:15px; line-height:1.7; text-align:right; color:rgba(242,245,255,.6); }
+.row { position:absolute; left:62px; top:196px; display:flex; gap:22px; }
+.st { width:340px; }
+.st canvas { width:340px; height:520px; display:block; border-radius:10px; box-shadow:0 0 0 1px rgba(255,255,255,.12); }
+.st .n { font-family:'Geist Mono', monospace; font-size:13px; color:rgba(242,245,255,.5); margin-top:22px; letter-spacing:.1em; }
+.st h3 { font-weight:300; font-size:32px; margin-top:4px; }
+.st h3 i { font-style:normal; font-size:18px; color:rgba(242,245,255,.55); margin-left:8px; font-family:'Geist Mono', monospace; }
+.st p { font-size:16px; line-height:1.7; margin-top:6px; color:rgba(242,245,255,.78); }
+.st code { display:inline-block; margin-top:10px; font-family:'Geist Mono', monospace; font-size:13px; border:1px solid rgba(242,245,255,.3); color:#9CFFD0; padding:6px 10px; border-radius:4px; }
+.ft { position:absolute; left:62px; right:62px; bottom:40px; display:flex; justify-content:space-between; font-family:'Geist Mono', monospace; font-size:14px; color:rgba(242,245,255,.55); }
+</style></head>
+<body>
+<div class="hd"><h2>一场极光，<em>5 层光帘</em></h2><p>每一格都是同一个着色器真实画出来的<br>只改了一个开关 MODE = 1 · 2 · 3 · 4 · 0</p></div>
+<div class="row" id="row"></div>
+<div class="ft"><span>底边以下 e^(70h)（又亮又锐）· 底边以上 e^(−3h)（慢慢散开）· 颜色只看离底边多高</span><span>03 / 04 · 极光 AURORA</span></div>
+<script src="aurora4.js"></script>
+<script>
+window.__done = false;
+document.fonts.ready.then(() => {
+  const S = [
+    [1, '夜空', 'sky', '深蓝渐变，地平线一圈青光，星星随机闪。', 'mix(#091024, #02030A, y)'],
+    [2, '一条光帘', 'curtain', '一条被噪声推动的底边：下面立刻消失，上面慢慢散开。', 'h<0 ? e^(70h) : e^(−3h)'],
+    [3, '光柱 + 颜色', 'rays', '沿 x 的高频噪声拉出竖向光柱；越高越偏紫粉。', '绿 → 青 → 紫 → 粉'],
+    [4, '五层叠加', '×5', '五层不同速度、不同高度，叠加发光，有亮有暗。', '加法混合 · 1 − e^(−1.25c)'],
+    [0, '成片', '+ 湖 + 球', '山的剪影、镜像的湖面加涟漪，玻璃球按法线折射天空。', '1 个着色器 · 0 张图片']
+  ];
+  const row = document.getElementById('row');
+  S.forEach(([m, t, en, p, c]) => {
+    const d = document.createElement('div');
+    d.className = 'st';
+    d.innerHTML = `<canvas width="340" height="520"></canvas><div class="n">MODE ${m}</div><h3>${t}<i>${en}</i></h3><p>${p}</p><code>${c}</code>`;
+    row.appendChild(d);
+    window.Aurora4.paint(d.querySelector('canvas'), { mode: m, t: 2.0, int: 1, orb: m === 0 ? { x: .5, y: .46, r: .11 } : null, hor: .30, rip: .5, seed: 1.3 });
+  });
+  window.__done = true;
+});
+</script></body></html>

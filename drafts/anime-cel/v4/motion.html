@@ -1,0 +1,83 @@
+<!doctype html>
+<html lang="zh"><head><meta charset="utf-8"><title>赛璐璐 v4 · 02 动效配方</title>
+<style>
+@import url(../../../public/fonts/fontsource/zcool-qingke-huangyou/400.css);
+@import url(../../../public/fonts/fontsource/geist-mono/400.css);
+@import url(../../../public/fonts/fontsource/geist/700.css);
+@import url(../../../public/fonts/fontsource/noto-serif-sc/400.css);
+* { margin:0; padding:0; box-sizing:border-box; }
+html, body { width:1920px; height:1080px; overflow:hidden; background:#14142B; color:#FFFDF5; font-family:'Geist Mono', monospace; }
+.hd { position:absolute; left:66px; top:46px; right:66px; display:flex; justify-content:space-between; align-items:flex-end; }
+.hd h2 { font-family:'ZCOOL QingKe HuangYou', sans-serif; font-weight:400; font-size:68px; line-height:1; color:#FFD23F; }
+.hd h2 small { font-size:30px; color:#FFFDF5; margin-left:18px; }
+.hd p { font-size:15px; color:rgba(255,253,245,.7); text-align:right; line-height:1.7; }
+.strip { position:absolute; left:66px; top:150px; display:flex; gap:12px; }
+.fr { position:relative; }
+.fr canvas { width:288px; height:162px; display:block; border:3px solid #FFFDF5; }
+.fr.hit canvas { border-color:#FF3B47; box-shadow:0 0 0 3px #FF3B47; }
+.fr b { position:absolute; left:8px; top:8px; font-weight:400; font-size:12px; background:#FFD23F; color:#14142B; padding:3px 7px; }
+.fr span { display:block; margin-top:9px; font-size:13px; color:rgba(255,253,245,.85); }
+.fr span i { font-style:normal; color:#FFD23F; }
+svg { position:absolute; left:66px; top:372px; }
+.spec { position:absolute; left:66px; right:66px; bottom:52px; display:grid; grid-template-columns:repeat(4, 1fr); gap:16px; }
+.spec div { border:2px solid rgba(255,253,245,.25); padding:16px 18px; border-radius:6px; background:rgba(255,253,245,.03); }
+.spec h4 { font-family:'ZCOOL QingKe HuangYou', sans-serif; font-weight:400; font-size:28px; color:#FFD23F; }
+.spec h4 em { font-style:normal; font-family:'Geist Mono', monospace; font-size:13px; color:rgba(255,253,245,.6); margin-left:8px; }
+.spec code { display:block; margin-top:8px; font-size:13.5px; line-height:1.65; color:#FFFDF5; }
+.spec code i { font-style:normal; color:#FF7A85; }
+</style></head>
+<body>
+<div class="hd"><h2>砸字配方<small>1.2 秒 · 6 个关键帧</small></h2><p>同一个渲染器、同一条时间轴<br>曲线和参数可以直接搬进 After Effects / CSS / Lottie</p></div>
+<div class="strip" id="strip"></div>
+<svg id="chart" width="1788" height="420"></svg>
+<div class="spec">
+  <div><h4>入场<em>0.00–0.52s</em></h4><code>z  −10 → 0.4<br>转 2.4 → −0.42 rad<br><i>cubic-bezier(.55,0,1,.45)</i></code></div>
+  <div><h4>蓄力<em>0.40–0.52s</em></h4><code>scaleY 1 → 0.78<br>scaleX 1 → 1.18<br><i>cubic-bezier(.2,.8,.3,1)</i></code></div>
+  <div><h4>冲击帧<em>0.52–0.60s</em></h4><code>2 帧反相黑白，只留红<br>scaleY 1.16 · 闪白 1 帧<br><i>速度线 80 条 · 镜头抖 0.12</i></code></div>
+  <div><h4>回弹<em>0.60–1.20s</em></h4><code>1 + 0.16·cos(22t)·e<sup>−7t</sup><br>≈ 弹簧 k 480 · c 14<br><i>超出不大于 16%</i></code></div>
+</div>
+<script src="../../_lib/glkit.js"></script>
+<script src="cel-type.js"></script>
+<script src="cel-motion.js"></script>
+<script>
+window.__done = false;
+(async () => {
+  await document.fonts.load('400 400px "ZCOOL QingKe HuangYou"', '咔!');
+  await document.fonts.ready;
+  const F = [
+    [0.00, '远处', '旋转飞来'], [0.30, '飞入', '加速 · 转正'], [0.46, '蓄力', 'scaleY 0.78'],
+    [0.56, '冲击帧', '反相 2 帧'], [0.72, '回弹', 'scaleY 1.08'], [1.20, '定格', '速度线收']
+  ];
+  const strip = document.getElementById('strip');
+  F.forEach(([t, a, b], i) => {
+    const d = document.createElement('div');
+    d.className = 'fr' + (i === 3 ? ' hit' : '');
+    d.innerHTML = `<canvas width="288" height="162"></canvas><b>${t.toFixed(2)}s</b><span><i>${a}</i> · ${b}</span>`;
+    strip.appendChild(d);
+    window.CelType.paint(d.querySelector('canvas'), window.CelMotion.params(t, { lw: .04 }));
+  });
+  // 曲线：scaleY（红）、距离 z（蓝，归一化）、冲击帧区间（黄底）
+  const svg = document.getElementById('chart');
+  const W = 1788, H = 420, P = 44, T = 1.4;
+  const X = t => P + (W - 2 * P) * t / T;
+  const Y = (v, lo, hi) => H - P - (H - 2 * P) * (v - lo) / (hi - lo);
+  let sy = '', z = '';
+  for (let i = 0; i <= 400; i++) {
+    const t = T * i / 400, s = window.CelMotion.state(t);
+    sy += (i ? 'L' : 'M') + X(t).toFixed(1) + ' ' + Y(s.sq[1], .7, 1.25).toFixed(1);
+    z += (i ? 'L' : 'M') + X(t).toFixed(1) + ' ' + Y(-s.z, -1, 10.5).toFixed(1);
+  }
+  const T1 = window.CelMotion.T1, T2 = window.CelMotion.T2;
+  let g = `<rect x="${X(T1)}" y="${P - 10}" width="${X(T2) - X(T1)}" height="${H - 2 * P + 20}" fill="#FFD23F" opacity=".9"/>`;
+  g += `<text x="${X(T1) + 4}" y="${P - 16}" fill="#FFD23F" font-family="Geist Mono" font-size="13">冲击帧</text>`;
+  g += `<line x1="${P}" x2="${W - P}" y1="${Y(1, .7, 1.25)}" y2="${Y(1, .7, 1.25)}" stroke="rgba(255,253,245,.25)" stroke-dasharray="4 6"/>`;
+  for (let k = 0; k <= 7; k++) { const t = k * .2; g += `<line x1="${X(t)}" x2="${X(t)}" y1="${H - P}" y2="${H - P + 6}" stroke="rgba(255,253,245,.5)"/><text x="${X(t) - 12}" y="${H - P + 24}" fill="rgba(255,253,245,.6)" font-family="Geist Mono" font-size="13">${t.toFixed(1)}s</text>`; }
+  g += `<path d="${z}" fill="none" stroke="#2E6BFF" stroke-width="3" stroke-dasharray="1 0"/>`;
+  g += `<path d="${sy}" fill="none" stroke="#FF3B47" stroke-width="4"/>`;
+  g += `<text x="${W - P - 250}" y="${P + 6}" fill="#FF3B47" font-family="Geist Mono" font-size="14">— scaleY（压扁 / 拉长）</text>`;
+  g += `<text x="${W - P - 250}" y="${P + 28}" fill="#2E6BFF" font-family="Geist Mono" font-size="14">— 离镜头的距离</text>`;
+  g += `<text x="${P}" y="${Y(1, .7, 1.25) - 8}" fill="rgba(255,253,245,.45)" font-family="Geist Mono" font-size="12">1.0</text>`;
+  svg.innerHTML = g;
+  window.__done = true;
+})().catch(e => console.log('ERR', e.message));
+</script></body></html>

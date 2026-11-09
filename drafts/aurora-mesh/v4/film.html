@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="zh"><head><meta charset="utf-8"><title>极光 v4 · 8s</title>
+<style>
+@import url(../../../public/fonts/fontsource/noto-serif-sc/200.css);
+@import url(../../../public/fonts/fontsource/noto-serif-sc/300.css);
+@import url(../../../public/fonts/fontsource/unbounded/300.css);
+@import url(../../../public/fonts/fontsource/geist-mono/400.css);
+* { margin:0; padding:0; box-sizing:border-box; }
+html, body { width:1920px; height:1080px; overflow:hidden; background:#02030A; color:#F2F5FF; font-family:'Noto Serif SC', serif; }
+#c { position:absolute; inset:0; width:1920px; height:1080px; display:block; transform-origin:66% 52%; }
+.hook { position:absolute; left:84px; top:76px; }
+.hook h1 { font-weight:300; font-size:48px; letter-spacing:.04em; opacity:0; }
+.hook p { font-family:'Geist Mono', monospace; font-size:14px; letter-spacing:.16em; color:rgba(242,245,255,.6); margin-top:14px; opacity:0; }
+.ttl { position:absolute; left:84px; bottom:92px; }
+.ttl h2 { font-weight:200; font-size:150px; line-height:1; letter-spacing:.08em; opacity:0; }
+.ttl span { display:block; font-family:Unbounded; font-weight:300; font-size:26px; letter-spacing:.62em; margin-top:18px; color:rgba(242,245,255,.8); opacity:0; }
+.foot { position:absolute; right:84px; bottom:56px; font-family:'Geist Mono', monospace; font-size:14px; letter-spacing:.12em; color:rgba(242,245,255,.6); text-align:right; opacity:0; }
+</style></head>
+<body>
+<canvas id="c" width="1920" height="1080"></canvas>
+<div class="hook"><h1 id="h1">这场极光，是写出来的。</h1><p id="hp">1 SHADER · 0 IMAGES · REAL-TIME</p></div>
+<div class="ttl"><h2 id="zh">极光</h2><span id="en">AURORA</span></div>
+<div class="foot" id="foot">5 层光帘 · 湖面倒影 · 玻璃折射</div>
+<script src="aurora4.js"></script>
+<script src="aurora-motion.js"></script>
+<script>
+const $ = id => document.getElementById(id);
+const cl = (x, a = 0, b = 1) => Math.min(b, Math.max(a, x));
+const clamp = cl;
+const eo3 = x => 1 - Math.pow(1 - cl(x), 3);
+const eio = x => { x = cl(x); return x < .5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2; };
+window.frame = async f => {
+  const t = f / 30;
+  const s = window.AuroraMotion.state(t);
+  window.Aurora4.paint($('c'), window.AuroraMotion.params(t));
+  $('c').style.transform = `scale(${1 + .06 * eio(t / 8)})`;          // 8 秒缓推 6%
+  $('zh').style.opacity = s.title;
+  $('zh').style.transform = `translateY(${(1 - s.title) * 20}px)`;
+  const e = eio((t - 4.6) / 1.6);
+  $('en').style.opacity = e;
+  $('en').style.letterSpacing = (.62 - .3 * e) + 'em';
+  const a = eo3((t - 5.8) / .9), b = eo3((t - 6.4) / .8);
+  $('h1').style.opacity = a; $('h1').style.transform = `translateY(${(1 - a) * 14}px)`;
+  $('hp').style.opacity = b;
+  $('foot').style.opacity = clamp((t - 6.8) / .6);
+};
+document.fonts.ready.then(async () => { await window.frame(0); window.ready = true; });
+</script></body></html>

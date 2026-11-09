@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="zh"><head><meta charset="utf-8"><title>赛璐璐 v4 · 01 主图</title>
+<style>
+@import url(../../../public/fonts/fontsource/zcool-qingke-huangyou/400.css);
+@import url(../../../public/fonts/fontsource/geist-mono/400.css);
+@import url(../../../public/fonts/fontsource/geist/700.css);
+* { margin:0; padding:0; box-sizing:border-box; }
+html, body { width:1920px; height:1080px; overflow:hidden; background:#FFD23F; }
+#c { position:absolute; inset:0; width:1920px; height:1080px; display:block; }
+.tag { position:absolute; left:64px; top:52px; font-family:'Geist Mono', monospace; font-size:15px; color:#14142B; display:flex; gap:10px; align-items:center; }
+.tag b { background:#14142B; color:#FFFDF5; padding:5px 11px; font-weight:400; }
+.tag span { background:#FFFDF5; border:3px solid #14142B; padding:3px 10px; }
+.foot { position:absolute; left:64px; right:64px; bottom:44px; display:flex; justify-content:space-between; font-family:'Geist Mono', monospace; font-size:14px; color:#14142B; }
+.foot span { background:#FFFDF5; border:3px solid #14142B; padding:5px 12px; box-shadow:5px 5px 0 #14142B; }
+</style></head>
+<body>
+<canvas id="c" width="1920" height="1080"></canvas>
+<div class="tag"><b>赛璐璐 CEL</b><span>3D 字 · 手画质感</span></div>
+<div class="foot"><span>1 个着色器 · 0 张贴图 · 实时</span><span>01 / 04</span></div>
+<script src="../../_lib/glkit.js"></script>
+<script src="cel-type.js"></script>
+<script>
+window.__done = false;
+(async () => {
+  await document.fonts.load('400 400px "ZCOOL QingKe HuangYou"', '咔!');
+  await document.fonts.ready;
+  window.CelType.paint(document.getElementById('c'), {
+    mode: 0, bg: 0, rot: [.10, -.42, .08], cam: [1.9, -2.1, 4.9], tgt: [0, .12, 0], fov: 2.05, depth: .30,
+    burst: 1.2, sla: .75, cen: [.52, .52], time: 1.3, lw: .035
+  });
+  window.__done = true;
+})().catch(e => console.log('ERR', e.message));
+</script></body></html>

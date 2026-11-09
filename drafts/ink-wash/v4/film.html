@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="zh"><head><meta charset="utf-8"><title>水墨 v4 · 8s</title>
+<style>
+@import url(../../../public/fonts/fontsource/noto-serif-sc/200.css);
+@import url(../../../public/fonts/fontsource/noto-serif-sc/400.css);
+@import url(../../../public/fonts/fontsource/noto-serif-sc/900.css);
+@import url(../../../public/fonts/fontsource/geist-mono/400.css);
+* { margin:0; padding:0; box-sizing:border-box; }
+:root { --paper:#F3EEE2; --ink:#171716; --zhu:#C8372D; --mid:#6B6B66; }
+html, body { width:1920px; height:1080px; overflow:hidden; background:var(--paper); color:var(--ink); font-family:'Noto Serif SC', serif; }
+#c { position:absolute; inset:0; width:1920px; height:1080px; display:block; }
+.hook { position:absolute; left:76px; top:70px; }
+.hook h1 { font-weight:900; font-size:66px; line-height:1.2; letter-spacing:.02em; opacity:0; }
+.hook p { font-weight:200; font-size:30px; margin-top:12px; letter-spacing:.04em; color:#3a3a36; opacity:0; }
+.vt { position:absolute; right:120px; top:96px; writing-mode:vertical-rl; font-weight:900; font-size:220px; line-height:1; letter-spacing:.06em; filter:url(#bleed); clip-path:inset(0 0 100% 0); }
+.vs { position:absolute; right:370px; top:104px; writing-mode:vertical-rl; font-weight:200; font-size:46px; letter-spacing:.5em; color:var(--mid); opacity:0; }
+.seal { position:absolute; right:150px; top:620px; width:104px; height:104px; background:var(--zhu); color:var(--paper); display:flex; align-items:center; justify-content:center; font-weight:900; font-size:66px; border-radius:5px; filter:url(#bleed); opacity:0; }
+.foot { position:absolute; left:76px; right:76px; bottom:52px; display:flex; justify-content:space-between; font-family:'Geist Mono', monospace; font-size:14px; color:var(--mid); letter-spacing:.04em; opacity:0; }
+</style></head>
+<body>
+<svg width="0" height="0" style="position:absolute"><filter id="bleed" x="-5%" y="-5%" width="110%" height="110%"><feTurbulence type="fractalNoise" baseFrequency="0.045" numOctaves="3" seed="7" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale="8" xChannelSelector="R" yChannelSelector="G"/></filter></svg>
+<canvas id="c" width="1920" height="1080"></canvas>
+<div class="hook"><h1 id="h1">这不是照片。</h1><p id="hp">是 1 个着色器，0 张图片。</p></div>
+<div class="vs" id="vs">墨入水</div>
+<div class="vt" id="vt">水墨</div>
+<div class="seal" id="seal">墨</div>
+<div class="foot" id="foot"><span>域扭曲 × 2 · fbm × 5 · 景深 1 层 · 朱砂 1 层</span><span>水墨 INK</span></div>
+<script src="ink4.js"></script>
+<script src="ink-motion.js"></script>
+<script>
+const $ = id => document.getElementById(id);
+const cl = (x, a = 0, b = 1) => Math.min(b, Math.max(a, x));
+const clamp = cl;
+const eo3 = x => 1 - Math.pow(1 - cl(x), 3);
+const eio = x => { x = cl(x); return x < .5 ? 4 * x * x * x : 1 - Math.pow(-2 * x + 2, 3) / 2; };
+window.frame = async f => {
+  const t = f / 30;
+  const s = window.InkMotion.state(t);
+  // 镜头：8 秒里缓慢推近（流场放大 10%），中心轻轻漂
+  const p = window.InkMotion.params(t, { scale: 2.5 - .25 * eio(t / 8), c: [.44 + .012 * Math.sin(t * .4), .48 + .006 * Math.cos(t * .3)] });
+  window.Ink4.paint($('c'), p);
+  $('vt').style.clipPath = `inset(0 0 ${(1 - s.title) * 100}% 0)`;
+  $('vs').style.opacity = clamp((t - 3.0) / .8);
+  $('seal').style.opacity = s.sealK;
+  $('seal').style.transform = `scale(${s.sealK > 0 ? s.seal : 1})`;
+  const a = eo3((t - 5.4) / .8), b = eo3((t - 6.0) / .8);
+  $('h1').style.opacity = a; $('h1').style.transform = `translateY(${(1 - a) * 16}px)`;
+  $('hp').style.opacity = b; $('hp').style.transform = `translateY(${(1 - b) * 12}px)`;
+  $('foot').style.opacity = clamp((t - 6.6) / .6);
+};
+document.fonts.ready.then(async () => { await window.frame(0); window.ready = true; });
+</script></body></html>
