@@ -24,19 +24,4 @@
 
 ## 水墨发布（2026-11-09）
 
-用户明确水墨通过，并要求把水墨合入主干、在网页展示。沿用 `claude/loving-galileo-ivl8mr` 提交 `04f0aed` 的完整原片，补齐正式目录 `024-ink-wash`，网站顺序为「风格 017」。仅收录水墨；本轮其余两项不通过，不合入、不上架、不再发送审核视频。发布与线上核验见 [024 发布记录](reviews/PUBLISH_024_20261109.md)。
-
-## 待办
-
-### 015 · 未来主义：审片通过后发布（2026-10-28）
-
-这一期全片是 SVG、不需要显卡，正片由 Claude 在云端渲（`npm run render:015`，约十几分钟），推到 `review-renders` 分支的 `015/` 并自审。**Codex 只负责发布**：
-
-1. 等主人看过 `review-renders/015/015-futurism-master.mp4` 并确认通过（这里会更新）。
-2. 直接采用 `review-renders` 上的成片，不重新渲染、不改音画；按 014 的做法通过 `release-assets/day-15/` 发布 Release `day-15`（成片 + 完整项目源码包 + SHA256SUMS），画廊登记并同步中英文目录与预览。
-3. 合并注意：另一个会话在做 016，`package.json`（新增 `music:015` / `render:015` / `render:015:gpu` / `preview:015` / `images:015`）和 `src/Root.tsx`（新增 `S015-Futurism` / `S015-Futurism-Preview`）可能和 016 冲突，两边的条目都保留。
-
-## 设计侧留下的素材（不用动，供下次做新一期）
-
-- `drafts/op-art`、`drafts/dither`：两套已完成三张风格图的候选风格，说明见 `drafts/README.md`（未来主义已做成 015）。
-- 其他分支上在做的期号：007 极简、010 剪纸、011 粘土拟态、012 等距。新开一期前先看 `git branch -r`，避免撞期号。
+水墨已合入 `main` 的 `93303c9`，发布 `day-24` 并完成线上播放核验。沿用提交 `04f0aed` 的完整原片，正式目录为 `024-ink-wash`，网站顺序为「风格 017」。详见[发布记录](reviews/PUBLISH_024_20261109.md)。
