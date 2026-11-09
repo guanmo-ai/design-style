@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="zh"><head><meta charset="utf-8"><title>极光 v2 · 02 动效分镜</title>
+<style>
+@import url(../../public/fonts/fontsource/geist-mono/400.css);
+@import url(../../public/fonts/fontsource/unbounded/700.css);
+@import url(../../public/fonts/fontsource/noto-serif-sc/300.css);
+* { margin:0; padding:0; box-sizing:border-box; }
+html, body { width:1920px; height:1080px; overflow:hidden; background:#0D0D1A; color:#F7F5FF; font-family:'Geist Mono', monospace; }
+.grid { position:absolute; left:150px; top:124px; width:1620px; display:grid; grid-template-columns:800px 800px; gap:20px; }
+.cell { position:relative; }
+.cell canvas { width:800px; height:450px; display:block; border-radius:18px; box-shadow:0 0 0 1px rgba(255,255,255,.14); }
+.cell .lb { position:absolute; left:18px; top:16px; font-size:13px; background:rgba(13,13,26,.55); padding:6px 11px; border-radius:999px; border:1px solid rgba(255,255,255,.22); }
+.hd { position:absolute; left:48px; top:44px; right:48px; display:flex; justify-content:space-between; align-items:flex-end; }
+.hd h2 { font-family:Unbounded; font-weight:700; font-size:44px; letter-spacing:-.01em; }
+.hd p { font-size:14px; color:rgba(247,245,255,.7); text-align:right; line-height:1.7; }
+.ft { position:absolute; left:48px; right:48px; bottom:34px; font-size:13px; color:rgba(247,245,255,.6); display:flex; justify-content:space-between; }
+</style></head>
+<body>
+<div class="hd"><h2>极光 · 呼吸一圈</h2><p>同一颗球，4 个时间点：0.0s → 0.9s → 1.8s → 2.7s<br>位置沿弧线走，轮廓随相位鼓起，折射的背景同步流动</p></div>
+<div class="grid">
+  <div class="cell"><canvas id="f0" width="800" height="450"></canvas><span class="lb">0.0s · 落位</span></div>
+  <div class="cell"><canvas id="f1" width="800" height="450"></canvas><span class="lb">0.9s · 鼓起</span></div>
+  <div class="cell"><canvas id="f2" width="800" height="450"></canvas><span class="lb">1.8s · 折射流过</span></div>
+  <div class="cell"><canvas id="f3" width="800" height="450"></canvas><span class="lb">2.7s · 回到原点</span></div>
+</div>
+<div class="ft"><span>循环 2.7s · 缓动 easeInOutSine · 轮廓 ±1.2%（不超过 1.2%，否则像果冻）</span><span>WEBGL2 · 0 TEXTURES</span></div>
+<script src="aurora.js"></script>
+<script>
+window.__done = false;
+document.fonts.ready.then(() => {
+  // 轨迹：沿一条弧线，位置、相位一起推进（与 cover 同一套参数）
+  const frames = [
+    { t: 1.0, x: 0.66, y: 0.50, r: 0.22 },
+    { t: 1.9, x: 0.70, y: 0.56, r: 0.25 },
+    { t: 2.8, x: 0.73, y: 0.42, r: 0.26 },
+    { t: 3.7, x: 0.70, y: 0.48, r: 0.22 }
+  ];
+  frames.forEach((f, i) => {
+    window.Aurora.paint(document.getElementById('f' + i), { t: f.t, seed: 4.2, orb: { x: f.x, y: f.y, r: f.r } });
+  });
+  window.__done = true;
+});
+</script></body></html>

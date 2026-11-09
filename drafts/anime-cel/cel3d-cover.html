@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="zh"><head><meta charset="utf-8"><title>赛璐璐 v2 · 01 三维也像手画</title>
+<style>
+@import url(../../public/fonts/fontsource/zcool-qingke-huangyou/400.css);
+@import url(../../public/fonts/fontsource/geist/700.css);
+@import url(../../public/fonts/fontsource/geist-mono/400.css);
+* { margin:0; padding:0; box-sizing:border-box; }
+:root { --yel:#FFD23F; --ink:#14142B; --white:#FFFDF5; --red:#FF3B47; --blue:#2E6BFF; }
+html, body { width:1920px; height:1080px; overflow:hidden; background:var(--yel); color:var(--ink); font-family:'ZCOOL QingKe HuangYou', sans-serif; }
+#fx { position:absolute; inset:0; width:1920px; height:1080px; display:block; }
+.mono { font-family:'Geist Mono', monospace; }
+.hook { position:absolute; left:64px; top:64px; font-size:104px; line-height:1.12; color:var(--white); -webkit-text-stroke:16px var(--ink); paint-order:stroke fill; filter:drop-shadow(12px 12px 0 var(--ink)); }
+.title { position:absolute; left:58px; bottom:150px; font-size:250px; line-height:1; color:var(--white); -webkit-text-stroke:18px var(--ink); paint-order:stroke fill; filter:drop-shadow(14px 14px 0 var(--ink)); }
+.tag { position:absolute; left:72px; bottom:64px; display:flex; gap:16px; }
+.tag span { border:4px solid var(--ink); padding:8px 16px; font-family:Geist; font-weight:700; font-size:20px; box-shadow:7px 7px 0 var(--ink); background:var(--white); }
+.tag span.r { background:var(--red); color:var(--white); }
+.tag span.b { background:var(--blue); color:var(--white); }
+.meta { position:absolute; right:72px; top:56px; background:var(--ink); color:var(--white); padding:6px 12px; font-size:13px; }
+.pal { position:absolute; right:72px; bottom:64px; display:flex; border:4px solid var(--ink); box-shadow:8px 8px 0 var(--ink); }
+.pal div { width:112px; height:92px; padding:9px; font-size:11px; border-left:4px solid var(--ink); display:flex; flex-direction:column; justify-content:flex-end; }
+.pal div:first-child { border-left:0; }
+.pal b { font-family:'ZCOOL QingKe HuangYou', sans-serif; font-weight:400; font-size:20px; }
+</style></head>
+<body>
+<canvas id="fx" width="1920" height="1080"></canvas>
+<div class="meta mono">赛璐璐 v2 · 01 · 第 0 帧</div>
+<div class="hook">这是 3D，<br>却像手画的</div>
+<div class="title">赛璐璐</div>
+<div class="tag"><span class="r">三阶硬边</span><span class="b">墨线 = 视线垂直</span><span>无渐变</span></div>
+<div class="pal mono">
+  <div style="background:#FFFDF5"><b>高光</b>#FFFDF5</div>
+  <div style="background:#FF3B47;color:#FFFDF5"><b>红</b>#FF3B47</div>
+  <div style="background:#2E6BFF;color:#FFFDF5"><b>蓝</b>#2E6BFF</div>
+  <div style="background:#3B1E6E;color:#FFFDF5"><b>阴影</b>#3B1E6E</div>
+  <div style="background:#FFD23F"><b>冲击</b>#FFD23F</div>
+  <div style="background:#14142B;color:#FFFDF5"><b>墨线</b>#14142B</div>
+</div>
+<script src="cel3d.js"></script>
+<script>
+window.__done = false;
+document.fonts.ready.then(() => {
+  window.Cel3D.paint(document.getElementById('fx'), { t: 0.6, ring: 0.5, cx: 0.66, cy: 0.5, sc: 1.0, burst: 1 });
+  window.__done = true;
+});
+</script></body></html>

@@ -1,0 +1,34 @@
+<!doctype html>
+<html lang="zh"><head><meta charset="utf-8"><title>极光 v2 · 04 发推海报</title>
+<style>
+@import url(../../public/fonts/fontsource/noto-serif-sc/200.css);
+@import url(../../public/fonts/fontsource/noto-serif-sc/900.css);
+@import url(../../public/fonts/fontsource/unbounded/800.css);
+@import url(../../public/fonts/fontsource/geist-mono/400.css);
+* { margin:0; padding:0; box-sizing:border-box; }
+html, body { width:1920px; height:1080px; overflow:hidden; background:#06060C; color:#F7F5FF; }
+.card { position:absolute; left:360px; top:202px; width:1200px; height:675px; border-radius:28px; overflow:hidden; box-shadow:0 60px 140px rgba(0,0,0,.6), 0 0 0 1px rgba(255,255,255,.14); }
+.card canvas { position:absolute; inset:0; width:1200px; height:675px; display:block; }
+.hook { position:absolute; left:70px; top:76px; font-family:'Noto Serif SC', serif; font-weight:900; font-size:96px; line-height:1.12; letter-spacing:-.005em; text-shadow:0 4px 40px rgba(0,0,0,.25); }
+.hook i { font-style:normal; font-weight:200; }
+.sub { position:absolute; left:72px; bottom:66px; font-family:Unbounded; font-weight:800; font-size:64px; letter-spacing:-.01em; }
+.sub small { font-family:'Geist Mono', monospace; font-weight:400; font-size:15px; letter-spacing:.06em; display:block; margin-top:14px; opacity:.85; }
+.meta { position:absolute; right:40px; top:40px; font-family:'Geist Mono', monospace; font-size:13px; padding:9px 14px; border-radius:999px; background:rgba(13,13,26,.5); border:1px solid rgba(255,255,255,.3); }
+.out { position:absolute; left:360px; top:900px; font-family:'Geist Mono', monospace; font-size:14px; color:rgba(247,245,255,.6); width:1200px; display:flex; justify-content:space-between; }
+</style></head>
+<body>
+<div class="card">
+  <canvas id="bg" width="1200" height="675"></canvas>
+  <div class="hook">渐变是背景，<br><i>玻璃</i>才是材料。</div>
+  <div class="sub">极光 Aurora<small>一颗球 · 一个着色器 · 0 张图片</small></div>
+  <div class="meta">v2 · 发推版</div>
+</div>
+<div class="out"><span>1200 × 675 · 推特卡片比例</span><span>草稿 · 04 / 04</span></div>
+<script src="aurora.js"></script>
+<script>
+window.__done = false;
+document.fonts.ready.then(() => {
+  window.Aurora.paint(document.getElementById('bg'), { t: 0.6, seed: 2.2, orb: { x: 0.74, y: 0.36, r: 0.24 } });
+  window.__done = true;
+});
+</script></body></html>
