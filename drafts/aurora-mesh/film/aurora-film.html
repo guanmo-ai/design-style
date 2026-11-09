@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="zh"><head><meta charset="utf-8"><title>极光 v3 · 8s</title>
+<style>
+@import url(../../../public/fonts/fontsource/noto-serif-sc/200.css);
+@import url(../../../public/fonts/fontsource/noto-serif-sc/300.css);
+@import url(../../../public/fonts/fontsource/unbounded/300.css);
+@import url(../../../public/fonts/fontsource/unbounded/700.css);
+@import url(../../../public/fonts/fontsource/geist-mono/400.css);
+* { margin:0; padding:0; box-sizing:border-box; }
+html, body { width:1920px; height:1080px; overflow:hidden; background:#0D0D1A; color:#F7F5FF; font-family:'Noto Serif SC', serif; }
+#c { position:absolute; inset:0; width:1920px; height:1080px; display:block; }
+#sweep { position:absolute; inset:-200px; background:linear-gradient(105deg, transparent 40%, rgba(255,255,255,.0) 44%, rgba(255,255,255,.22) 50%, rgba(255,255,255,0) 56%, transparent 60%); mix-blend-mode:overlay; opacity:0; pointer-events:none; }
+#fade { position:absolute; inset:0; background:#0D0D1A; opacity:1; pointer-events:none; }
+.zh { position:absolute; left:88px; top:300px; font-weight:200; font-size:300px; line-height:1; letter-spacing:.03em; opacity:0; text-shadow:0 0 120px rgba(255,255,255,.22); }
+.en { position:absolute; left:94px; top:700px; font-family:Unbounded; font-weight:300; font-size:92px; letter-spacing:.32em; opacity:0; }
+.en b { font-weight:700; }
+.meta { position:absolute; left:94px; bottom:76px; font-family:'Geist Mono', monospace; font-size:14px; letter-spacing:.14em; color:rgba(247,245,255,.6); opacity:0; }
+.tag { position:absolute; right:94px; top:70px; font-family:'Geist Mono', monospace; font-size:14px; letter-spacing:.14em; color:rgba(247,245,255,.7); opacity:0; }
+.rule { position:absolute; left:94px; top:668px; width:0; height:1px; background:rgba(247,245,255,.5); }
+</style></head>
+<body>
+<canvas id="c" width="1920" height="1080"></canvas>
+<div id="sweep"></div>
+<div class="tag" id="tag">AURORA · v3 · FILM</div>
+<div class="zh" id="zh">极光</div>
+<div class="rule" id="rule"></div>
+<div class="en" id="en">AURORA</div>
+<div class="meta" id="meta">MESH GRADIENT · REFRACTION · 0 IMAGES</div>
+<div id="fade"></div>
+<script src="../aurora.js"></script>
+<script>
+const $ = id => document.getElementById(id);
+const clamp = (x, a = 0, b = 1) => Math.min(b, Math.max(a, x));
+const eo3 = x => 1 - Math.pow(1 - clamp(x), 3);
+const eio = x => { x = clamp(x); return x < .5 ? 4*x*x*x : 1 - Math.pow(-2*x + 2, 3) / 2; };
+
+window.frame = async f => {
+  const t = f / 30;
+  // 球：从 0.6 放大到 1，沿弧线慢慢走，半径呼吸
+  const grow = eo3((t - .6) / 1.6);
+  const ang = -.35 + .5 * eio(t / 8);
+  const orb = {
+    x: .70 + .035 * Math.cos(ang), y: .50 + .05 * Math.sin(ang * 1.3),
+    r: (.05 + .22 * grow) * (1 + .018 * Math.sin(t * 1.3))
+  };
+  window.Aurora.paint($('c'), { t: 1.0 + t * .32, seed: 4.2, orb: t < .3 ? null : orb, grain: .024 });
+  // 黑场渐隐
+  $('fade').style.opacity = 1 - clamp(t / 1.2);
+  // 标题：1.4s 出现，字间距收拢
+  const zt = clamp((t - 1.4) / 1.2);
+  $('zh').style.opacity = eo3(zt);
+  $('zh').style.transform = `translateY(${(1 - eo3(zt)) * 26}px)`;
+  $('rule').style.width = (eio(clamp((t - 2.2) / 1.2)) * 720) + 'px';
+  const et = clamp((t - 2.4) / 1.4);
+  $('en').style.opacity = eo3(et);
+  $('en').style.letterSpacing = (.32 - .2 * eo3(et)) + 'em';
+  $('meta').style.opacity = clamp((t - 3.4) / .8);
+  $('tag').style.opacity = clamp((t - 1.0) / .8);
+  // 光扫：3.6s 掠过玻璃，之后再有一次更弱的
+  const s1 = clamp((t - 3.6) / 1.6);
+  const s2 = clamp((t - 6.0) / 1.2);
+  $('sweep').style.opacity = (s1 > 0 && s1 < 1 ? Math.sin(s1 * Math.PI) * .9 : 0) + (s2 > 0 && s2 < 1 ? Math.sin(s2 * Math.PI) * .45 : 0);
+  $('sweep').style.transform = `translateX(${-900 + 2200 * eio(s1 > 0 && s1 < 1 ? s1 : (s2 > 0 ? s2 : 0))}px)`;
+};
+window.frame(0);
+window.ready = true;
+</script></body></html>
