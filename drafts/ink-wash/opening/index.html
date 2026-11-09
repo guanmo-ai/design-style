@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="zh"><head><meta charset="utf-8"><title>水墨 · 开场 8 秒</title>
+<style>
+@import url(../../../public/fonts/fontsource/noto-serif-sc/200.css);
+@import url(../../../public/fonts/fontsource/noto-serif-sc/400.css);
+@import url(../../../public/fonts/fontsource/noto-serif-sc/900.css);
+@import url(../../../public/fonts/fontsource/geist-mono/400.css);
+* { margin:0; padding:0; box-sizing:border-box; }
+html, body { width:1920px; height:1080px; overflow:hidden; background:#F2EDE1; color:#141413; font-family:'Noto Serif SC', serif; }
+#c { position:absolute; inset:0; width:1920px; height:1080px; display:block; }
+.frame { position:absolute; left:64px; top:52px; }
+.frame .ln { overflow:hidden; display:block; }
+.frame .ln span { display:inline-block; }
+#cn { font-family:'Geist Mono', monospace; font-size:15px; letter-spacing:.12em; background:#141413; color:#F2EDE1; padding:3px 9px; }
+#ct { font-weight:900; font-size:44px; line-height:1.15; margin-top:8px; }
+#cy { font-family:'Geist Mono', monospace; font-size:15px; letter-spacing:.06em; color:#5a5a55; margin-top:4px; }
+#cs { font-size:20px; color:#2a2a28; margin-top:6px; }
+#pg { position:absolute; left:64px; bottom:46px; font-family:'Geist Mono', monospace; font-size:15px; letter-spacing:.12em; }
+.sig { position:absolute; right:64px; bottom:46px; font-family:'Geist Mono', monospace; font-size:13px; letter-spacing:.12em; color:#6b6b66; }
+.rd { position:absolute; left:0; top:0; font-family:'Geist Mono', monospace; font-size:17px; color:#141413; background:rgba(242,237,225,.88); border-left:3px solid #C8372D; padding:4px 10px; white-space:nowrap; opacity:0; }
+.rd b { color:#C8372D; font-weight:400; }
+</style></head>
+<body>
+<canvas id="c" width="1920" height="1080"></canvas>
+<div class="frame">
+  <span class="ln"><span id="cn">00</span></span>
+  <span class="ln"><span id="ct">水墨</span></span>
+  <span class="ln"><span id="cy">INK WASH</span></span>
+  <span class="ln"><span id="cs"></span></span>
+</div>
+<div id="pg">00 / 05</div>
+<div class="sig">水墨 · INK WASH</div>
+<div class="rd" id="rd"></div><div class="rd" id="r1"></div><div class="rd" id="r2"></div><div class="rd" id="r3"></div>
+<div id="lb" style="position:absolute;border:2px dashed #C8372D;opacity:0;pointer-events:none"></div>
+<div class="rd" id="r4"></div><div class="rd" id="r5"></div><div class="rd" id="r6"></div><div class="rd" id="r7"></div>
+<script src="timeline.js"></script>
+<script src="brush.js"></script>
+<script src="scene.js"></script>
+</body></html>
