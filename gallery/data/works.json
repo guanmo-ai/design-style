@@ -1127,5 +1127,63 @@
         "kindEn": "Storyboard"
       }
     ]
+  },
+  {
+    "id": "024-ink-wash",
+    "number": "017",
+    "title": "水墨",
+    "description": "18.75秒水墨动效：笔触、墨滴、虾与一河两岸，连接茶馆界面的反馈、转场和五条视觉规则。",
+    "category": "水墨与界面",
+    "type": "style",
+    "titleEn": "Ink Wash",
+    "years": "2026",
+    "categoryEn": "Ink and interfaces",
+    "descriptionEn": "An 18.75-second ink-wash motion study connecting brush strokes, ink drops and sparse landscapes with a fictional tea-app interface.",
+    "tags": [
+      "水墨",
+      "笔触",
+      "动效",
+      "界面"
+    ],
+    "tagsEn": [
+      "Ink Wash",
+      "brushwork",
+      "motion",
+      "interface"
+    ],
+    "publishedAt": "2026-11-09T15:19:38Z",
+    "release": "day-24",
+    "asset": "024-ink-wash.mp4",
+    "sha256": "5ba83214af23c69ade13722b8ce1f214d8f81f623bf8fdbddf286a187940cc99",
+    "images": [
+      {
+        "file": "poster",
+        "title": "风格主视觉",
+        "titleEn": "Key visual",
+        "kind": "主视觉",
+        "kindEn": "Poster"
+      },
+      {
+        "file": "cheatsheet",
+        "title": "五条视觉规则",
+        "titleEn": "Five visual rules",
+        "kind": "规则速查",
+        "kindEn": "Quick reference"
+      },
+      {
+        "file": "app-ui",
+        "title": "界面概念",
+        "titleEn": "Interface concept",
+        "kind": "界面应用",
+        "kindEn": "Interface study"
+      },
+      {
+        "file": "storyboard",
+        "title": "原片分镜",
+        "titleEn": "Approved-film frames",
+        "kind": "分镜选帧",
+        "kindEn": "Storyboard"
+      }
+    ]
   }
 ]

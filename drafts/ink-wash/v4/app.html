@@ -1,0 +1,99 @@
+<!doctype html>
+<html lang="zh"><head><meta charset="utf-8"><title>水墨 v4 · 04 墨的转场</title>
+<style>
+@import url(../../../public/fonts/fontsource/noto-serif-sc/200.css);
+@import url(../../../public/fonts/fontsource/noto-serif-sc/400.css);
+@import url(../../../public/fonts/fontsource/noto-serif-sc/700.css);
+@import url(../../../public/fonts/fontsource/noto-serif-sc/900.css);
+@import url(../../../public/fonts/fontsource/geist-mono/400.css);
+* { margin:0; padding:0; box-sizing:border-box; }
+:root { --paper:#F3EEE2; --ink:#171716; --zhu:#C8372D; --mid:#6B6B66; }
+html, body { width:1920px; height:1080px; overflow:hidden; background:#E6DFCF; color:var(--ink); font-family:'Noto Serif SC', serif; }
+.left { position:absolute; left:84px; top:96px; width:540px; }
+.left .k { font-family:'Geist Mono', monospace; font-size:14px; color:var(--mid); letter-spacing:.14em; }
+.left h1 { font-weight:900; font-size:92px; line-height:1.08; margin-top:16px; }
+.left h1 em { font-style:normal; color:var(--zhu); }
+.left p { font-size:21px; line-height:1.8; margin-top:26px; color:#3a3a36; }
+.chips { display:flex; flex-wrap:wrap; gap:10px; margin-top:26px; }
+.chips span { font-family:'Geist Mono', monospace; font-size:14px; background:var(--ink); color:var(--paper); padding:7px 12px; }
+svg.wipe { position:absolute; left:84px; top:760px; }
+.phone { position:absolute; top:96px; width:360px; height:760px; border-radius:54px; background:#121211; padding:11px; box-shadow:0 40px 90px rgba(40,30,10,.25); }
+.scr { width:338px; height:738px; border-radius:44px; background:var(--paper); overflow:hidden; position:relative; }
+.isl { position:absolute; left:50%; top:12px; transform:translateX(-50%); width:110px; height:32px; background:#000; border-radius:999px; z-index:5; }
+.pg { position:absolute; inset:0; padding:70px 26px 0; }
+.pg .k { font-family:'Geist Mono', monospace; font-size:12px; color:var(--mid); }
+.pg h3 { font-weight:900; font-size:36px; margin-top:8px; }
+.it { display:flex; justify-content:space-between; border-bottom:1px solid #d4cbb7; padding:17px 0; font-size:17px; }
+.it em { font-style:normal; font-family:'Geist Mono', monospace; font-size:13px; color:var(--mid); }
+.big { font-weight:900; font-size:88px; line-height:1; writing-mode:vertical-rl; position:absolute; right:30px; top:90px; }
+.seal { display:inline-flex; align-items:center; justify-content:center; width:46px; height:46px; background:var(--zhu); color:var(--paper); font-weight:900; font-size:28px; border-radius:4px; }
+canvas.ov { position:absolute; inset:0; width:338px; height:738px; mix-blend-mode:multiply; z-index:3; }
+.cap { position:absolute; bottom:-74px; left:0; right:0; text-align:center; font-weight:900; font-size:24px; }
+.cap em { display:block; font-style:normal; font-family:'Geist Mono', monospace; font-weight:400; font-size:13px; color:var(--mid); margin-top:4px; }
+.foot { position:absolute; right:84px; bottom:40px; font-family:'Geist Mono', monospace; font-size:14px; color:var(--mid); }
+</style></head>
+<body>
+<div class="left">
+  <div class="k">04 · 落到产品</div>
+  <h1>墨的<br><em>转场</em></h1>
+  <p>点开一款茶，墨从指尖落下、晕满整屏，再退到四角，下一页从留白里浮出来。转场的遮罩就是同一个流场，只把阈值往下拉。</p>
+  <div class="chips"><span>900ms</span><span>WIPE 0 → 0.38 → −0.1</span><span>multiply 叠在页面上</span></div>
+</div>
+<svg class="wipe" id="wipe" width="520" height="200"></svg>
+
+<div class="phone" style="left:700px">
+  <div class="scr"><div class="isl"></div>
+    <div class="pg"><div class="k">茶单 · 今日 12 款</div><h3>一盏茶的时间</h3>
+      <div style="margin-top:18px"><div class="it"><span>白毫银针</span><em>¥68</em></div><div class="it"><span>大红袍</span><em>¥88</em></div><div class="it"><span>祁门红茶</span><em>¥58</em></div><div class="it"><span>凤凰单丛</span><em>¥78</em></div><div class="it"><span>太平猴魁</span><em>¥72</em></div></div>
+    </div>
+    <canvas class="ov" id="p1" width="338" height="738"></canvas>
+  </div>
+  <div class="cap">① 点下去<em>0ms · 一滴墨</em></div>
+</div>
+
+<div class="phone" style="left:1100px">
+  <div class="scr"><div class="isl"></div>
+    <div class="pg"><div class="k">茶单 · 今日 12 款</div><h3>一盏茶的时间</h3>
+      <div style="margin-top:18px"><div class="it"><span>白毫银针</span><em>¥68</em></div><div class="it"><span>大红袍</span><em>¥88</em></div><div class="it"><span>祁门红茶</span><em>¥58</em></div><div class="it"><span>凤凰单丛</span><em>¥78</em></div><div class="it"><span>太平猴魁</span><em>¥72</em></div></div>
+    </div>
+    <canvas class="ov" id="p2" width="338" height="738"></canvas>
+  </div>
+  <div class="cap">② 墨晕满屏<em>450ms · WIPE 0.38</em></div>
+</div>
+
+<div class="phone" style="left:1500px">
+  <div class="scr"><div class="isl"></div>
+    <div class="pg"><div class="k">大红袍 · 武夷 · 岩茶</div><h3 style="margin-top:6px">三泡</h3>
+      <div style="margin-top:20px; font-size:16px; line-height:1.9; color:#3a3a36; width:190px">岩骨花香。第一泡 5 秒出汤，第二泡 8 秒，第三泡 12 秒。</div>
+      <div style="position:absolute; left:26px; bottom:44px; display:flex; align-items:center; gap:12px; font-size:17px"><span class="seal">约</span>预约一席 · ¥88</div>
+    </div>
+    <div class="big">大红袍</div>
+    <canvas class="ov" id="p3" width="338" height="738"></canvas>
+  </div>
+  <div class="cap">③ 下一页从留白里浮出<em>900ms · 墨退到四角</em></div>
+</div>
+<div class="foot">04 / 04 · 水墨 INK</div>
+
+<script src="ink4.js"></script>
+<script>
+window.__done = false;
+document.fonts.ready.then(() => {
+  const base = { t: 1.4, seed: 5.3, scale: 2.4, back: .4 };
+  window.Ink4.paint(document.getElementById('p1'), Object.assign({}, base, { c: [.45, .51], spread: .075, wipe: -.2 }));
+  window.Ink4.paint(document.getElementById('p2'), Object.assign({}, base, { c: [.45, .51], spread: .5, wipe: .30, red: [.6, .7, .12, 1] }));
+  window.Ink4.paint(document.getElementById('p3'), Object.assign({}, base, { t: 1.9, c: [.5, .42], spread: .06, wipe: -.16 }));
+  // WIPE 曲线
+  const svg = document.getElementById('wipe'), W = 520, H = 200, P = 26;
+  const f = t => t < .5 ? .38 * (1 - Math.pow(1 - t / .5, 3)) : .38 - .48 * Math.pow((t - .5) / .5, 2);
+  const X = t => P + (W - 2 * P) * t, Y = v => H - P - (H - 2 * P) * (v + .12) / .54;
+  let d = ''; for (let i = 0; i <= 200; i++) { const t = i / 200; d += (i ? 'L' : 'M') + X(t).toFixed(1) + ' ' + Y(f(t)).toFixed(1); }
+  svg.innerHTML = `<line x1="${P}" x2="${W - P}" y1="${Y(0)}" y2="${Y(0)}" stroke="#b9b2a2" stroke-dasharray="4 5"/>
+    <path d="${d}" fill="none" stroke="#171716" stroke-width="4"/>
+    <circle cx="${X(.5)}" cy="${Y(.38)}" r="7" fill="#C8372D"/>
+    <text x="${P}" y="${P - 6}" font-family="Geist Mono" font-size="13" fill="#6B6B66">WIPE（墨的覆盖）</text>
+    <text x="${X(0) - 4}" y="${H - 4}" font-family="Geist Mono" font-size="12" fill="#6B6B66">0</text>
+    <text x="${X(.5) - 22}" y="${H - 4}" font-family="Geist Mono" font-size="12" fill="#6B6B66">450ms</text>
+    <text x="${X(1) - 40}" y="${H - 4}" font-family="Geist Mono" font-size="12" fill="#6B6B66">900ms</text>`;
+  window.__done = true;
+});
+</script></body></html>

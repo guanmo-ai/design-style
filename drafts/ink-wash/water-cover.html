@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="zh"><head><meta charset="utf-8"><title>水墨 v2 · 01 墨入水</title>
+<style>
+@import url(../../public/fonts/fontsource/noto-serif-sc/200.css);
+@import url(../../public/fonts/fontsource/noto-serif-sc/400.css);
+@import url(../../public/fonts/fontsource/noto-serif-sc/900.css);
+@import url(../../public/fonts/fontsource/geist-mono/400.css);
+@import url(../../public/fonts/fontsource/geist/300.css);
+* { margin:0; padding:0; box-sizing:border-box; }
+:root { --paper:#F3EEE2; --ink:#1A1A18; --zhu:#C8372D; --mid:#6B6B66; }
+html, body { width:1920px; height:1080px; overflow:hidden; background:var(--paper); color:var(--ink); font-family:'Noto Serif SC', serif; }
+#c { position:absolute; inset:0; width:1920px; height:1080px; display:block; }
+.mono { font-family:'Geist Mono', monospace; letter-spacing:.04em; }
+.vt { position:absolute; right:150px; top:110px; writing-mode:vertical-rl; font-weight:900; font-size:300px; line-height:1; letter-spacing:.04em; }
+.vs { position:absolute; right:460px; top:120px; writing-mode:vertical-rl; font-weight:200; font-size:64px; letter-spacing:.42em; color:var(--mid); }
+.seal { position:absolute; right:172px; bottom:110px; width:132px; height:132px; background:var(--zhu); color:var(--paper); display:flex; align-items:center; justify-content:center; font-weight:900; font-size:86px; border-radius:6px; box-shadow:0 0 0 6px var(--paper), 0 0 0 7px var(--zhu); }
+.en { position:absolute; left:72px; bottom:190px; font-family:Geist; font-weight:300; font-size:70px; letter-spacing:.2em; text-transform:uppercase; }
+.lede { position:absolute; left:72px; bottom:70px; font-size:22px; line-height:1.8; color:#3a3a36; }
+.tag { position:absolute; left:72px; top:56px; font-size:13px; display:flex; gap:24px; }
+.tag b { background:var(--ink); color:var(--paper); padding:4px 10px; font-weight:400; }
+</style></head>
+<body>
+<canvas id="c" width="1920" height="1080"></canvas>
+<div class="tag mono"><b>水墨 Ink Wash · v2</b><span>01 · 墨入水 · 第 0 帧</span></div>
+<div class="vs">留白</div>
+<div class="vt">水墨</div>
+<div class="seal">墨</div>
+<div class="en">Ink<br>in water</div>
+<div class="lede">一滴墨落进清水，它不扩散成圆，<br>而是长出卷须、墨丝和留白。</div>
+<script src="ink-water.js"></script>
+<script>
+window.__done = false;
+document.fonts.ready.then(() => {
+  window.InkWater.paint(document.getElementById('c'), { t: 1.0, seed: 3.7, c: [0.42, 0.52], spread: 0.22, scale: 2.4, red: [0.70, 0.30, 0.16, 1] });
+  window.__done = true;
+});
+</script></body></html>

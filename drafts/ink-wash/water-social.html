@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="zh"><head><meta charset="utf-8"><title>水墨 v2 · 04 发推海报</title>
+<style>
+@import url(../../public/fonts/fontsource/noto-serif-sc/200.css);
+@import url(../../public/fonts/fontsource/noto-serif-sc/900.css);
+@import url(../../public/fonts/fontsource/geist-mono/400.css);
+* { margin:0; padding:0; box-sizing:border-box; }
+html, body { width:1920px; height:1080px; overflow:hidden; background:#E8E2D3; color:#1A1A18; }
+.card { position:absolute; left:360px; top:202px; width:1200px; height:675px; border-radius:24px; overflow:hidden; box-shadow:0 60px 140px rgba(40,30,10,.25); }
+.card canvas { position:absolute; inset:0; width:1200px; height:675px; display:block; }
+.hook { position:absolute; left:70px; top:70px; font-family:'Noto Serif SC', serif; font-weight:900; font-size:104px; line-height:1.1; text-shadow:0 0 36px rgba(243,238,226,.95), 0 0 12px rgba(243,238,226,.8); }
+.hook i { font-style:normal; font-weight:200; }
+.sub { position:absolute; left:72px; bottom:58px; font-family:'Noto Serif SC', serif; font-weight:200; font-size:32px; letter-spacing:.06em; text-shadow:0 0 22px rgba(243,238,226,.95), 0 0 8px rgba(243,238,226,.9); }
+.meta { position:absolute; right:40px; top:40px; font-family:'Geist Mono', monospace; font-size:13px; background:#1A1A18; color:#F3EEE2; padding:9px 14px; }
+.out { position:absolute; left:360px; top:900px; width:1200px; display:flex; justify-content:space-between; font-family:'Geist Mono', monospace; font-size:14px; color:#6B6B66; }
+</style></head>
+<body>
+<div class="card">
+  <canvas id="bg" width="1200" height="675"></canvas>
+  <div class="hook">一滴墨，<br><i>落进清水</i></div>
+  <div class="sub">它不扩散成圆，它长出卷须。</div>
+  <div class="meta">水墨 v2 · 发推版</div>
+</div>
+<div class="out"><span>1200 × 675 · 推特卡片比例</span><span>草稿 · 04 / 04</span></div>
+<script src="ink-water.js"></script>
+<script>
+window.__done = false;
+document.fonts.ready.then(() => {
+  window.InkWater.paint(document.getElementById('bg'), { t: 1.5, seed: 2.9, c: [0.74, 0.50], spread: 0.22, scale: 2.4, red: [0.56, 0.22, 0.12, 1] });
+  window.__done = true;
+});
+</script></body></html>
