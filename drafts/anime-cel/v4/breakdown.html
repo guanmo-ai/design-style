@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="zh"><head><meta charset="utf-8"><title>赛璐璐 v4 · 03 拆解</title>
+<style>
+@import url(../../../public/fonts/fontsource/zcool-qingke-huangyou/400.css);
+@import url(../../../public/fonts/fontsource/geist-mono/400.css);
+@import url(../../../public/fonts/fontsource/noto-serif-sc/400.css);
+* { margin:0; padding:0; box-sizing:border-box; }
+html, body { width:1920px; height:1080px; overflow:hidden; background:#FFF6DA; color:#14142B; font-family:'Noto Serif SC', serif; }
+.hd { position:absolute; left:62px; top:52px; right:62px; display:flex; justify-content:space-between; align-items:flex-end; }
+.hd h2 { font-family:'ZCOOL QingKe HuangYou', sans-serif; font-weight:400; font-size:76px; line-height:1; }
+.hd h2 em { font-style:normal; color:#FF3B47; }
+.hd p { font-family:'Geist Mono', monospace; font-size:15px; line-height:1.7; text-align:right; color:#4a4a62; }
+.row { position:absolute; left:62px; top:196px; display:flex; gap:22px; align-items:flex-start; }
+.st { width:340px; }
+.st .cv { position:relative; width:340px; height:520px; border:4px solid #14142B; background:#FFFDF5; box-shadow:8px 8px 0 #14142B; overflow:hidden; }
+.st canvas { width:332px; height:512px; display:block; }
+.st .n { position:absolute; left:12px; top:12px; width:44px; height:44px; border-radius:50%; background:#14142B; color:#FFD23F; font-family:'ZCOOL QingKe HuangYou', sans-serif; font-size:26px; display:flex; align-items:center; justify-content:center; }
+.st.last .cv { border-color:#FF3B47; box-shadow:8px 8px 0 #FF3B47; }
+.st h3 { font-family:'ZCOOL QingKe HuangYou', sans-serif; font-weight:400; font-size:36px; margin-top:26px; }
+.st p { font-size:16px; line-height:1.7; margin-top:6px; color:#33334a; }
+.st code { display:inline-block; margin-top:12px; font-family:'Geist Mono', monospace; font-size:13.5px; background:#14142B; color:#FFD23F; padding:6px 10px; border-radius:4px; }
+.ft { position:absolute; left:62px; right:62px; bottom:40px; display:flex; justify-content:space-between; align-items:center; font-family:'Geist Mono', monospace; font-size:14px; }
+.sw { display:flex; gap:10px; }
+.sw span { display:flex; align-items:center; gap:8px; border:3px solid #14142B; padding:4px 10px 4px 4px; background:#FFFDF5; }
+.sw i { width:24px; height:24px; display:block; border:2px solid #14142B; }
+</style></head>
+<body>
+<div class="hd"><h2>一个着色器，<em>5 步</em>做出 3D 赛璐璐字</h2><p>每一格都是同一个渲染器真实画出来的<br>只改了一个开关 MODE = 1 · 2 · 3 · 4 · 0</p></div>
+<div class="row" id="row"></div>
+<div class="ft">
+  <div class="sw"><span><i style="background:#FF6B66"></i>#FF6B66</span><span><i style="background:#FF3B47"></i>#FF3B47</span><span><i style="background:#A8123A"></i>#A8123A</span><span><i style="background:#2E6BFF"></i>#2E6BFF</span><span><i style="background:#171757"></i>#171757</span><span><i style="background:#FFD23F"></i>#FFD23F</span><span><i style="background:#14142B"></i>#14142B</span></div>
+  <span>03 / 04 · 赛璐璐 CEL</span>
+</div>
+<script src="../../_lib/glkit.js"></script>
+<script src="cel-type.js"></script>
+<script>
+window.__done = false;
+(async () => {
+  await document.fonts.load('400 400px "ZCOOL QingKe HuangYou"', '咔!');
+  await document.fonts.ready;
+  const S = [
+    [1, '距离场', '把字变成“离边缘多远”。字内是负数，字外是正数，0 就是轮廓。', 'd = EDT(字形) − 0.07'],
+    [2, '挤出', '2D 距离沿 z 拉出厚度，倒一点圆角，字就有了侧面。', 'max(d, |z| − h)'],
+    [3, '三阶上色', '没有渐变：亮、中、暗三块。正面红，侧面蓝。', 'lit>.62 亮 · >.12 中 · 暗'],
+    [4, '描线 + 网点', '正面和侧面的交界画墨线，暗部叠网点，再加两道高光。', '|d|&lt;w ∧ ||z|−h|&lt;w'],
+    [0, '成片', '放射速度线、白色锯齿光晕、黄底网点。冲击帧再反相两帧。', '1 个着色器 · 0 张贴图']
+  ];
+  const row = document.getElementById('row');
+  S.forEach(([m, t, p, c], i) => {
+    const d = document.createElement('div');
+    d.className = 'st' + (i === 4 ? ' last' : '');
+    d.innerHTML = `<div class="cv"><canvas width="332" height="512"></canvas><span class="n">${i + 1}</span></div><h3>${t}</h3><p>${p}</p><code>${c}</code>`;
+    row.appendChild(d);
+    window.CelType.paint(d.querySelector('canvas'), {
+      mode: m, bg: m === 0 ? 0 : 1, bgc: m === 2 ? [.93, .92, .89] : [1, .992, .961],
+      rot: [.10, -.42, .08], cam: [1.9, -2.1, 4.9], tgt: [0, .12, 0], fov: 1.55, depth: .30,
+      burst: 1.1, sla: .7, cen: [.5, .5], time: 1.3, lw: .045
+    });
+  });
+  window.__done = true;
+})().catch(e => console.log('ERR', e.message));
+</script></body></html>

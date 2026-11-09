@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="zh"><head><meta charset="utf-8"><title>水墨 v4 · 02 动效配方</title>
+<style>
+@import url(../../../public/fonts/fontsource/noto-serif-sc/200.css);
+@import url(../../../public/fonts/fontsource/noto-serif-sc/400.css);
+@import url(../../../public/fonts/fontsource/noto-serif-sc/900.css);
+@import url(../../../public/fonts/fontsource/geist-mono/400.css);
+* { margin:0; padding:0; box-sizing:border-box; }
+html, body { width:1920px; height:1080px; overflow:hidden; background:#171716; color:#F3EEE2; font-family:'Geist Mono', monospace; }
+.hd { position:absolute; left:66px; top:48px; right:66px; display:flex; justify-content:space-between; align-items:flex-end; }
+.hd h2 { font-family:'Noto Serif SC', serif; font-weight:900; font-size:64px; line-height:1; }
+.hd h2 small { font-weight:200; font-size:30px; margin-left:16px; color:rgba(243,238,226,.75); }
+.hd p { font-size:15px; color:rgba(243,238,226,.65); text-align:right; line-height:1.7; }
+.strip { position:absolute; left:66px; top:150px; display:flex; gap:12px; }
+.fr canvas { width:288px; height:162px; display:block; }
+.fr { position:relative; }
+.fr b { position:absolute; left:8px; top:8px; font-weight:400; font-size:12px; background:#171716; color:#F3EEE2; padding:3px 7px; }
+.fr span { display:block; margin-top:9px; font-size:13px; color:rgba(243,238,226,.85); }
+.fr span i { font-style:normal; color:#E2574B; }
+svg { position:absolute; left:66px; top:372px; }
+.spec { position:absolute; left:66px; right:66px; bottom:52px; display:grid; grid-template-columns:repeat(4, 1fr); gap:16px; }
+.spec div { border:1px solid rgba(243,238,226,.25); padding:16px 18px; }
+.spec h4 { font-family:'Noto Serif SC', serif; font-weight:900; font-size:26px; }
+.spec h4 em { font-style:normal; font-family:'Geist Mono', monospace; font-weight:400; font-size:13px; color:rgba(243,238,226,.6); margin-left:8px; }
+.spec code { display:block; margin-top:8px; font-size:13.5px; line-height:1.65; }
+.spec code i { font-style:normal; color:#E2574B; }
+</style></head>
+<body>
+<div class="hd"><h2>墨入水配方<small>5 秒 · 6 个关键帧</small></h2><p>同一个着色器、同一条时间轴<br>半径、速度、缓动都可以直接复制</p></div>
+<div class="strip" id="strip"></div>
+<svg id="chart" width="1788" height="420"></svg>
+<div class="spec">
+  <div><h4>落墨<em>0.0–1.8s</em></h4><code>注入半径 0.03 → 0.25 · 阈值 −0.22 → 0<br>开场只有一滴，墨丝慢慢长满<br><i>cubic-bezier(.33,1,.68,1)</i></code></div>
+  <div><h4>晕开<em>0–5s 持续</em></h4><code>流场时间 = 1.2 + 0.42·t<br>景深层 0 → 0.5（2.2s）<br><i>不要停：停下就像图片</i></code></div>
+  <div><h4>朱砂<em>2.4–4.0s</em></h4><code>半径 0.03 → 0.11<br>只染淡处：×(1 − 墨×0.85)<br><i>cubic-bezier(.33,1,.68,1)</i></code></div>
+  <div><h4>题字 · 盖章<em>3.2–4.6s</em></h4><code>竖排从上往下 1.6s<br><i>cubic-bezier(.65,0,.35,1)</i><br>印章 4.4s · 1.5 → 1 · 回弹</code></div>
+</div>
+<script src="ink4.js"></script>
+<script src="ink-motion.js"></script>
+<script>
+window.__done = false;
+document.fonts.ready.then(() => {
+  const F = [[0.1, '落墨', '一滴'], [0.7, '晕开', '半径 0.18'], [1.4, '成形', '长出卷须'], [2.8, '朱砂', '从右上渗入'], [3.8, '流动', '景深浮现'], [5.0, '留白', '题字盖章']];
+  const strip = document.getElementById('strip');
+  F.forEach(([t, a, b]) => {
+    const d = document.createElement('div');
+    d.className = 'fr';
+    d.innerHTML = `<canvas width="288" height="162"></canvas><b>${t.toFixed(1)}s</b><span><i>${a}</i> · ${b}</span>`;
+    strip.appendChild(d);
+    window.Ink4.paint(d.querySelector('canvas'), window.InkMotion.params(t));
+  });
+  const svg = document.getElementById('chart');
+  const W = 1788, H = 420, P = 44, T = 5.4;
+  const X = t => P + (W - 2 * P) * t / T;
+  const Y = v => H - P - (H - 2 * P) * v;
+  const curve = (fn) => { let d = ''; for (let i = 0; i <= 500; i++) { const t = T * i / 500; d += (i ? 'L' : 'M') + X(t).toFixed(1) + ' ' + Y(fn(t)).toFixed(1); } return d; };
+  const S = t => window.InkMotion.state(t);
+  let g = '';
+  for (let k = 0; k <= 5; k++) g += `<line x1="${X(k)}" x2="${X(k)}" y1="${H - P}" y2="${H - P + 6}" stroke="rgba(243,238,226,.5)"/><text x="${X(k) - 10}" y="${H - P + 24}" fill="rgba(243,238,226,.6)" font-family="Geist Mono" font-size="13">${k}s</text>`;
+  g += `<line x1="${P}" x2="${W - P}" y1="${H - P}" y2="${H - P}" stroke="rgba(243,238,226,.25)"/>`;
+  g += `<path d="${curve(t => S(t).spread / .31)}" fill="none" stroke="#F3EEE2" stroke-width="4"/>`;
+  g += `<path d="${curve(t => S(t).redR / .11)}" fill="none" stroke="#E2574B" stroke-width="4"/>`;
+  g += `<path d="${curve(t => S(t).back / .5 * .8)}" fill="none" stroke="#8A8A84" stroke-width="3" stroke-dasharray="8 6"/>`;
+  g += `<path d="${curve(t => S(t).title * .62)}" fill="none" stroke="#C9B98A" stroke-width="3"/>`;
+  const sx = X(4.4);
+  g += `<circle cx="${sx}" cy="${Y(.62)}" r="9" fill="#C8372D"/><text x="${sx + 14}" y="${Y(.62) + 5}" fill="#E2574B" font-family="Geist Mono" font-size="13">盖章</text>`;
+  const L = [['#F3EEE2', '— 墨的注入半径'], ['#E2574B', '— 朱砂半径'], ['#8A8A84', '-- 景深层'], ['#C9B98A', '— 题字展开']];
+  L.forEach(([c, s], i) => g += `<text x="${P + 20}" y="${P + 6 + i * 22}" fill="${c}" font-family="Geist Mono" font-size="14">${s}</text>`);
+  svg.innerHTML = g;
+  window.__done = true;
+});
+</script></body></html>

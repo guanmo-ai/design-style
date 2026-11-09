@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="zh"><head><meta charset="utf-8"><title>赛璐璐 v4 · 04 落到产品</title>
+<style>
+@import url(../../../public/fonts/fontsource/zcool-qingke-huangyou/400.css);
+@import url(../../../public/fonts/fontsource/geist-mono/400.css);
+@import url(../../../public/fonts/fontsource/geist/400.css);
+@import url(../../../public/fonts/fontsource/geist/700.css);
+@import url(../../../public/fonts/fontsource/noto-serif-sc/400.css);
+* { margin:0; padding:0; box-sizing:border-box; }
+html, body { width:1920px; height:1080px; overflow:hidden; background:#FFD23F; color:#14142B; font-family:Geist, 'Noto Serif SC', sans-serif; }
+.dots { position:absolute; inset:0; background-image:radial-gradient(#F0B21A 28%, transparent 30%); background-size:14px 14px; opacity:.8; }
+.left { position:absolute; left:80px; top:70px; width:560px; }
+.left h1 { font-family:'ZCOOL QingKe HuangYou', sans-serif; font-weight:400; font-size:96px; line-height:1.05; color:#FFFDF5; -webkit-text-stroke:14px #14142B; paint-order:stroke fill; text-shadow:10px 10px 0 #14142B; }
+.left p { font-family:'Noto Serif SC', serif; font-size:21px; line-height:1.75; margin-top:34px; background:#FFFDF5; border:4px solid #14142B; padding:18px 22px; box-shadow:8px 8px 0 #14142B; }
+.chips { display:flex; flex-wrap:wrap; gap:12px; margin-top:28px; }
+.chips span { font-family:'Geist Mono', monospace; font-size:15px; background:#14142B; color:#FFD23F; padding:8px 14px; }
+.phone { position:absolute; top:80px; width:360px; height:760px; border:7px solid #14142B; border-radius:52px; background:#14142B; padding:10px; box-shadow:14px 14px 0 #14142B; }
+.scr { width:326px; height:726px; border-radius:40px; background:#F4F2EC; overflow:hidden; position:relative; }
+.top { height:92px; background:#FFFDF5; border-bottom:3px solid #14142B; display:flex; align-items:flex-end; padding:0 20px 14px; gap:12px; font-weight:700; font-size:17px; }
+.top i { width:36px; height:36px; border-radius:50%; background:#2E6BFF; border:3px solid #14142B; display:block; }
+.msg { position:absolute; left:16px; max-width:220px; background:#FFFDF5; border:3px solid #14142B; border-radius:18px 18px 18px 4px; padding:12px 14px; font-family:'Noto Serif SC', serif; font-size:15px; line-height:1.55; }
+.msg.me { left:auto; right:16px; background:#2E6BFF; color:#FFFDF5; border-radius:18px 18px 4px 18px; }
+.sticker { position:absolute; display:block; }
+.burst { position:absolute; }
+.cap { position:absolute; bottom:-104px; left:0; right:0; text-align:center; font-family:'ZCOOL QingKe HuangYou', sans-serif; font-size:30px; }
+.cap em { font-style:normal; font-family:'Geist Mono', monospace; font-size:14px; display:block; }
+.bar { position:absolute; left:0; right:0; bottom:0; height:76px; background:#FFFDF5; border-top:3px solid #14142B; display:flex; align-items:center; padding:0 16px; gap:10px; }
+.bar span { flex:1; height:44px; border:3px solid #14142B; border-radius:22px; font-size:14px; color:#7a7a8a; display:flex; align-items:center; padding:0 14px; }
+.bar b { width:44px; height:44px; border-radius:50%; background:#FF3B47; border:3px solid #14142B; display:flex; align-items:center; justify-content:center; color:#FFFDF5; font-family:'ZCOOL QingKe HuangYou', sans-serif; font-size:20px; font-weight:400; }
+.foot { position:absolute; right:80px; bottom:40px; font-family:'Geist Mono', monospace; font-size:14px; background:#FFFDF5; border:3px solid #14142B; padding:5px 12px; }
+</style></head>
+<body>
+<div class="dots"></div>
+<div class="left">
+  <h1>聊天里的<br>3D 贴纸</h1>
+  <p>按住“咔”键，字从屏幕深处砸出来：蓄力压扁、两帧反相冲击、弹一下，落成一张贴纸。整个过程 1.2 秒，透明底，直接叠在对话上。</p>
+  <div class="chips"><span>240 × 240 · 透明底</span><span>1.2s</span><span>2 帧冲击</span><span>WebGL 实时</span></div>
+</div>
+
+<div class="phone" style="left:700px">
+  <div class="scr">
+    <div class="top"><i></i>阿柚</div>
+    <div class="msg" style="top:120px">今晚的票抢到了吗？</div>
+    <div class="msg me" style="top:196px">抢到了！！</div>
+    <canvas class="sticker" id="s1" width="240" height="240" style="left:150px; top:300px; width:120px; height:120px;"></canvas>
+    <div class="bar"><span>按住发送…</span><b>咔</b></div>
+  </div>
+  <div class="cap">① 按住<em>0.30s · 远处飞来</em></div>
+</div>
+
+<div class="phone" style="left:1100px">
+  <div class="scr" style="background:#14142B">
+    <svg class="burst" width="326" height="726" viewBox="0 0 326 726" style="left:0;top:0">
+      <g stroke="#FFFDF5" stroke-width="5">
+        <line x1="163" y1="380" x2="0" y2="60"/><line x1="163" y1="380" x2="326" y2="40"/><line x1="163" y1="380" x2="0" y2="700"/><line x1="163" y1="380" x2="326" y2="726"/>
+        <line x1="163" y1="380" x2="20" y2="380"/><line x1="163" y1="380" x2="310" y2="390"/><line x1="163" y1="380" x2="120" y2="0"/><line x1="163" y1="380" x2="230" y2="726"/>
+        <line x1="163" y1="380" x2="300" y2="200"/><line x1="163" y1="380" x2="30" y2="560"/>
+      </g>
+    </svg>
+    <canvas class="sticker" id="s2" width="240" height="240" style="left:13px; top:230px; width:300px; height:300px;"></canvas>
+  </div>
+  <div class="cap">② 冲击<em>0.56s · 反相 2 帧</em></div>
+</div>
+
+<div class="phone" style="left:1500px">
+  <div class="scr">
+    <div class="top"><i></i>阿柚</div>
+    <div class="msg" style="top:120px">今晚的票抢到了吗？</div>
+    <div class="msg me" style="top:196px">抢到了！！</div>
+    <canvas class="sticker" id="s3" width="240" height="240" style="left:96px; top:270px; width:220px; height:220px;"></canvas>
+    <div class="msg" style="top:512px">哇！！！</div>
+    <div class="bar"><span>说点什么…</span><b>咔</b></div>
+  </div>
+  <div class="cap">③ 落成贴纸<em>1.20s · 定格</em></div>
+</div>
+<canvas id="big" width="440" height="440" style="position:absolute; left:110px; top:600px; width:440px; height:440px;"></canvas>
+<div style="position:absolute; left:84px; top:1010px; font-family:'Geist Mono', monospace; font-size:14px;">贴纸本体 · 透明底 · 可导出 APNG / WebM</div>
+<div class="foot">04 / 04 · 赛璐璐 CEL</div>
+
+<script src="../../_lib/glkit.js"></script>
+<script src="cel-type.js"></script>
+<script src="cel-motion.js"></script>
+<script>
+window.__done = false;
+(async () => {
+  await document.fonts.load('400 400px "ZCOOL QingKe HuangYou"', '咔!');
+  await document.fonts.ready;
+  const P = (t, ex) => window.CelMotion.params(t, Object.assign({ bg: 2, mode: 0, fov: 1.6, lw: .05 }, ex));
+  window.CelType.paint(document.getElementById('s1'), P(0.30, {}));
+  window.CelType.paint(document.getElementById('s2'), P(0.56, { impact: 1, flash: 0 }));
+  window.CelType.paint(document.getElementById('s3'), P(1.20, {}));
+  window.CelType.paint(document.getElementById('big'), P(1.20, { fov: 1.7, lw: .04 }));
+  window.__done = true;
+})().catch(e => console.log('ERR', e.message));
+</script></body></html>

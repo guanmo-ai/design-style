@@ -1,0 +1,31 @@
+<!doctype html>
+<html lang="zh"><head><meta charset="utf-8"><title>极光 v4 · 01 主图</title>
+<style>
+@import url(../../../public/fonts/fontsource/noto-serif-sc/200.css);
+@import url(../../../public/fonts/fontsource/noto-serif-sc/300.css);
+@import url(../../../public/fonts/fontsource/unbounded/300.css);
+@import url(../../../public/fonts/fontsource/geist-mono/400.css);
+* { margin:0; padding:0; box-sizing:border-box; }
+html, body { width:1920px; height:1080px; overflow:hidden; background:#02030A; color:#F2F5FF; font-family:'Noto Serif SC', serif; }
+#c { position:absolute; inset:0; width:1920px; height:1080px; display:block; }
+.hook { position:absolute; left:84px; top:76px; }
+.hook h1 { font-weight:300; font-size:48px; letter-spacing:.04em; }
+.hook p { font-family:'Geist Mono', monospace; font-size:14px; letter-spacing:.16em; color:rgba(242,245,255,.6); margin-top:14px; }
+.ttl { position:absolute; left:84px; bottom:92px; }
+.ttl h2 { font-weight:200; font-size:150px; line-height:1; letter-spacing:.08em; }
+.ttl span { display:block; font-family:Unbounded; font-weight:300; font-size:26px; letter-spacing:.62em; margin-top:18px; color:rgba(242,245,255,.8); }
+.foot { position:absolute; right:84px; bottom:56px; font-family:'Geist Mono', monospace; font-size:14px; letter-spacing:.12em; color:rgba(242,245,255,.6); text-align:right; line-height:1.8; }
+</style></head>
+<body>
+<canvas id="c" width="1920" height="1080"></canvas>
+<div class="hook"><h1>这场极光，是写出来的。</h1><p>1 SHADER · 0 IMAGES · REAL-TIME</p></div>
+<div class="ttl"><h2>极光</h2><span>AURORA</span></div>
+<div class="foot">5 层光帘 · 湖面倒影 · 玻璃折射<br>01 / 04</div>
+<script src="aurora4.js"></script>
+<script>
+window.__done = false;
+document.fonts.ready.then(() => {
+  window.Aurora4.paint(document.getElementById('c'), { t: 2.0, int: 1.0, orb: { x: .70, y: .45, r: .115 }, hor: .30, rip: .5, seed: 1.3 });
+  window.__done = true;
+});
+</script></body></html>

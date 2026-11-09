@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="zh"><head><meta charset="utf-8"><title>水墨 v4 · 03 拆解</title>
+<style>
+@import url(../../../public/fonts/fontsource/noto-serif-sc/200.css);
+@import url(../../../public/fonts/fontsource/noto-serif-sc/400.css);
+@import url(../../../public/fonts/fontsource/noto-serif-sc/900.css);
+@import url(../../../public/fonts/fontsource/geist-mono/400.css);
+* { margin:0; padding:0; box-sizing:border-box; }
+html, body { width:1920px; height:1080px; overflow:hidden; background:#ECE6D8; color:#171716; font-family:'Noto Serif SC', serif; }
+.hd { position:absolute; left:62px; top:56px; right:62px; display:flex; justify-content:space-between; align-items:flex-end; }
+.hd h2 { font-weight:900; font-size:66px; line-height:1.1; }
+.hd h2 em { font-style:normal; color:#C8372D; }
+.hd p { font-family:'Geist Mono', monospace; font-size:15px; line-height:1.7; text-align:right; color:#5a5a55; }
+.row { position:absolute; left:62px; top:196px; display:flex; gap:22px; }
+.st { width:340px; }
+.st canvas { width:340px; height:520px; display:block; box-shadow:0 18px 40px rgba(40,30,10,.16); }
+.st .n { font-family:'Geist Mono', monospace; font-size:13px; color:#8a8a84; margin-top:22px; letter-spacing:.1em; }
+.st h3 { font-weight:900; font-size:34px; margin-top:4px; }
+.st h3 i { font-style:normal; font-weight:200; font-size:20px; color:#6b6b66; margin-left:8px; }
+.st p { font-size:16px; line-height:1.7; margin-top:6px; color:#3a3a36; }
+.st code { display:inline-block; margin-top:10px; font-family:'Geist Mono', monospace; font-size:13px; background:#171716; color:#F3EEE2; padding:6px 10px; }
+.st.last code { background:#C8372D; }
+.ft { position:absolute; left:62px; right:62px; bottom:40px; display:flex; justify-content:space-between; font-family:'Geist Mono', monospace; font-size:14px; color:#5a5a55; }
+</style></head>
+<body>
+<div class="hd"><h2>墨丝从哪来？<em>扭两次</em>就有了</h2><p>每一格都是同一个着色器真实算出来的<br>只改了一个开关 MODE = 1 · 2 · 3 · 4 · 0</p></div>
+<div class="row" id="row"></div>
+<div class="ft"><span>Inigo Quilez 的域扭曲（domain warping）：f(p + 4·r)，r = fbm(p + 4·q)，q = fbm(p)</span><span>03 / 04 · 水墨 INK</span></div>
+<script src="ink4.js"></script>
+<script>
+window.__done = false;
+document.fonts.ready.then(() => {
+  const S = [
+    [1, '噪声', 'fbm', '五层噪声叠起来，只有云，没有墨丝。', 'v = fbm(p)'],
+    [2, '扭一次', 'warp ×1', '用噪声去推坐标，云开始被拉长、打卷。', 'fbm(p + 4·q)'],
+    [3, '扭两次', 'warp ×2', '再推一次，细长的卷须和漩涡就出来了。', 'fbm(p + 4·r)'],
+    [4, '取阈值', 'ink', '只留最浓的那部分，中心再注入一滴，纸就白了。', 'smoothstep(.6, .8, f + 注入)'],
+    [0, '成片', '+ 景深 + 朱砂', '后面加一层放大的淡墨当景深，再滴一点朱砂。', '3 层流场 · 0 张图片']
+  ];
+  const row = document.getElementById('row');
+  S.forEach(([m, t, en, p, c], i) => {
+    const d = document.createElement('div');
+    d.className = 'st' + (i === 4 ? ' last' : '');
+    d.innerHTML = `<canvas width="340" height="520"></canvas><div class="n">STEP ${i + 1}</div><h3>${t}<i>${en}</i></h3><p>${p}</p><code>${c}</code>`;
+    row.appendChild(d);
+    window.Ink4.paint(d.querySelector('canvas'), { mode: m, t: 1.2, seed: 3.7, c: [.5, .5], spread: .3, scale: 2.0, back: .5, red: [.62, .74, .14, 1] });
+  });
+  window.__done = true;
+});
+</script></body></html>
