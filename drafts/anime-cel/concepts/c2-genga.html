@@ -1,0 +1,69 @@
+<!doctype html><html lang="zh"><head><meta charset="utf-8"><title>赛璐璐 · 概念 2 · 原画 → 成片</title>
+<link rel="stylesheet" href="common.css">
+<style>body { background:#F3EEE2; } .hook { -webkit-text-stroke:12px #14142B; }</style></head><body>
+<canvas id="c" width="1920" height="1080"></canvas>
+<div class="hook" style="left:64px; top:54px; font-size:96px">左边 30 秒，右边 3 天</div>
+<div class="tag" style="left:64px; top:190px">原画（蓝铅笔）→ 清线 → 上色 → 阴影 → 高光 · <b>5 张赛璐璐片</b></div>
+<div class="tag" style="left:96px; bottom:84px">原画 · 蓝铅笔 · 辅助线保留</div>
+<div class="tag" style="right:96px; bottom:84px">成片 · <b>平涂 4 色 + 硬边阴影</b></div>
+<div class="num">02 / 06</div>
+<script src="eye.js"></script>
+<script>
+(function () {
+  const W = 1920, H = 1080, c = document.getElementById('c').getContext('2d');
+  const E = window.Eye;
+  function rng(seed) { let s = (seed * 2654435761) >>> 0 || 1; return () => { s ^= s << 13; s >>>= 0; s ^= s >>> 17; s ^= s << 5; s >>>= 0; return s / 4294967296; }; }
+  const S = 1.0, CX = 930, CY = 650;
+  // 分割线：斜 12°，从 (A) 到 (B)
+  const A = [1060, -20], B = [880, 1100];
+  const side = (x, y) => (B[0] - A[0]) * (y - A[1]) - (B[1] - A[1]) * (x - A[0]);
+  // —— 右：成片 ——
+  c.save(); c.beginPath(); c.moveTo(A[0], A[1]); c.lineTo(W + 10, -20); c.lineTo(W + 10, H + 20); c.lineTo(B[0], B[1]); c.closePath(); c.clip();
+  c.fillStyle = '#FFE3CF'; c.fillRect(0, 0, W, H);
+  c.setTransform(S, 0, 0, S, CX, CY);
+  for (const L of E.LAYERS) { c.save(); L.f(c, 1); c.restore(); }
+  c.restore();
+  // —— 左：蓝铅笔原画 ——
+  c.save(); c.beginPath(); c.moveTo(A[0], A[1]); c.lineTo(-10, -20); c.lineTo(-10, H + 20); c.lineTo(B[0], B[1]); c.closePath(); c.clip();
+  c.fillStyle = '#F7F4EA'; c.fillRect(0, 0, W, H);
+  // 动画纸：定位孔 + 横线
+  c.fillStyle = '#DCD6C6'; [[120, 40], [260, 40], [400, 40]].forEach(([x, y]) => { c.beginPath(); c.roundRect(x, y, 70, 22, 11); c.fill(); });
+  c.setTransform(S, 0, 0, S, CX, CY);
+  const r = rng(7), BL = 'rgba(52,108,230,';
+  const rough = (pts, n, a, w) => {
+    for (let k = 0; k < n; k++) {
+      c.strokeStyle = BL + a + ')'; c.lineWidth = w; c.beginPath();
+      pts.forEach((p, i) => { const x = p[0] + (r() - .5) * 9, y = p[1] + (r() - .5) * 9; i ? c.lineTo(x, y) : c.moveTo(x, y); });
+      c.stroke();
+    }
+  };
+  c.lineCap = 'round';
+  // 辅助线：十字、虹膜圆、眼框外接
+  c.setLineDash([14, 10]); c.strokeStyle = BL + '.45)'; c.lineWidth = 2;
+  c.beginPath(); c.moveTo(-560, E.IR[1]); c.lineTo(620, E.IR[1]); c.moveTo(E.IR[0], -480); c.lineTo(E.IR[0], 360); c.stroke();
+  c.beginPath(); c.ellipse(20, -30, 520, 300, 0, 0, 6.283); c.stroke();
+  c.setLineDash([]);
+  const circ = (cx, cy, rr) => { const p = []; for (let i = 0; i <= 40; i++) { const a = i / 40 * 6.283; p.push([cx + Math.cos(a) * rr, cy + Math.sin(a) * rr]); } return p; };
+  rough(circ(E.IR[0], E.IR[1], E.IRR), 3, .55, 3);
+  rough(circ(E.IR[0], E.IR[1] + 15, 82), 2, .5, 2.5);
+  rough(E.XS.map(x => [x, E.Up(x)]), 4, .6, 3.4);
+  rough(E.XS.filter(x => E.uOf(x) > .2).map(x => [x, E.Lo(x)]), 3, .45, 2.6);
+  rough(E.XS.filter(x => E.uOf(x) > .18 && E.uOf(x) < .8).map(x => [x, E.Up(x) - 68]), 2, .4, 2.4);
+  rough([[-390, -350], [-150, -410], [100, -425], [400, -395]], 3, .55, 3.4);
+  // 高光、阴影的范围用斜线标出来
+  c.strokeStyle = BL + '.5)'; c.lineWidth = 2;
+  c.beginPath(); c.ellipse(-25, -75, 54, 40, -.4, 0, 6.283); c.stroke();
+  for (let k = -6; k < 12; k++) { c.beginPath(); c.moveTo(-340 + k * 46, -120); c.lineTo(-300 + k * 46, -40); c.stroke(); }
+  c.font = '400 26px "Geist Mono"'; c.fillStyle = BL + '.75)';
+  c.fillText('影 →', -470, -60); c.fillText('HI', -12, -130); c.fillText('虹膜 R185', 230, -200);
+  c.restore();
+  // 分割线（金色描边 + 把手）
+  c.setTransform(1, 0, 0, 1, 0, 0);
+  c.strokeStyle = '#14142B'; c.lineWidth = 12; c.beginPath(); c.moveTo(A[0], A[1]); c.lineTo(B[0], B[1]); c.stroke();
+  c.strokeStyle = '#FFD23F'; c.lineWidth = 5; c.beginPath(); c.moveTo(A[0], A[1]); c.lineTo(B[0], B[1]); c.stroke();
+  const m = [(A[0] + B[0]) / 2 - 8, 640];
+  c.fillStyle = '#FFD23F'; c.strokeStyle = '#14142B'; c.lineWidth = 5; c.beginPath(); c.arc(m[0], m[1], 34, 0, 6.283); c.fill(); c.stroke();
+  c.fillStyle = '#14142B'; c.font = '400 30px "Geist Mono"'; c.textAlign = 'center'; c.textBaseline = 'middle'; c.fillText('⇆', m[0], m[1] + 2);
+  window.__done = true;
+})();
+</script></body></html>

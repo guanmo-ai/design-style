@@ -1,0 +1,78 @@
+<!doctype html><html lang="zh"><head><meta charset="utf-8"><title>赛璐璐 · 概念 4 · 光轨</title>
+<link rel="stylesheet" href="common.css"></head><body>
+<canvas id="c" width="1920" height="1080"></canvas>
+<div class="hook" style="left:64px; top:56px; font-size:96px">光轨 = 尾灯<br>过去 0.6 秒的路</div>
+<div class="tag" style="left:64px; top:300px; background:#14142B; color:#FFD23F; border-color:#FFD23F; box-shadow:6px 6px 0 #E8202E">AKIRA · <b>1988</b> · 大友克洋 · 侧滑</div>
+<div class="num">04 / 06</div>
+<script src="bike.js"></script>
+<script>
+(function () {
+  const W = 1920, H = 1080, c = document.getElementById('c').getContext('2d');
+  function rng(seed) { let s = (seed * 2654435761) >>> 0 || 1; return () => { s ^= s << 13; s >>>= 0; s ^= s >>> 17; s ^= s << 5; s >>>= 0; return s / 4294967296; }; }
+  const r = rng(1988), HZ = 520, VPX = 1180;
+  // 夜空
+  const g = c.createLinearGradient(0, 0, 0, HZ); g.addColorStop(0, '#03051A'); g.addColorStop(1, '#2A1F6B');
+  c.fillStyle = g; c.fillRect(0, 0, W, HZ);
+  // 城市：一点透视的两排楼，霓虹招牌
+  const NEON = [['#FF2E6E', '夜'], ['#2EE6FF', '電'], ['#FFD23F', '城'], ['#B66BFF', '光'], ['#FF6A1A', '速']];
+  function tower(x0, x1, top, side) {
+    c.fillStyle = side ? '#141238' : '#1C1A4E'; c.beginPath();
+    c.moveTo(x0, top); c.lineTo(x1, top + (x1 - x0) * .18 * (side ? 1 : -1)); c.lineTo(x1, HZ + 400); c.lineTo(x0, HZ + 400); c.closePath(); c.fill();
+  }
+  for (let k = 0; k < 9; k++) { const x0 = k * 120 - 40, h = 160 + r() * 260; tower(x0, x0 + 110, HZ - h - (8 - k) * 30, 1); }
+  for (let k = 0; k < 7; k++) { const x0 = 1300 + k * 100, h = 120 + r() * 220; tower(x0, x0 + 90, HZ - h - k * 10, 0); }
+  // 窗
+  for (let k = 0; k < 360; k++) { const x = r() * W, y = 80 + r() * (HZ - 60); if (Math.abs(x - VPX) < 120) continue; c.fillStyle = r() < .7 ? 'rgba(255,214,107,.85)' : 'rgba(120,220,255,.8)'; c.fillRect(x, y, 6, 9); }
+  // 霓虹招牌（竖排）
+  c.save(); c.globalCompositeOperation = 'lighter';
+  [[180, 140], [520, 220], [1460, 180], [1720, 120], [880, 260]].forEach(([x, y], k) => {
+    const [col, ch] = NEON[k];
+    const gg = c.createRadialGradient(x + 40, y + 110, 0, x + 40, y + 110, 220); gg.addColorStop(0, col + '88'); gg.addColorStop(1, col + '00');
+    c.fillStyle = gg; c.fillRect(x - 180, y - 110, 440, 440);
+    c.strokeStyle = col; c.lineWidth = 6; c.strokeRect(x, y, 80, 220);
+    c.fillStyle = col; c.font = '400 64px "ZCOOL QingKe HuangYou"'; c.textAlign = 'center'; c.fillText(ch, x + 40, y + 95); c.fillText(ch, x + 40, y + 185);
+  });
+  c.restore();
+  // 路面 + 湿地倒影
+  const rg = c.createLinearGradient(0, HZ, 0, H); rg.addColorStop(0, '#1A1640'); rg.addColorStop(1, '#07061A');
+  c.fillStyle = rg; c.fillRect(0, HZ, W, H - HZ);
+  c.save(); c.globalCompositeOperation = 'lighter';
+  [[220, '#FF2E6E'], [560, '#2EE6FF'], [1500, '#FFD23F'], [1760, '#B66BFF'], [920, '#FF6A1A']].forEach(([x, col]) => {
+    for (let k = 0; k < 18; k++) { c.fillStyle = col + '30'; c.fillRect(x + (r() - .5) * 60, HZ + 30 + k * 30, 90 + r() * 60, 6); }
+  });
+  c.restore();
+  // 车道线（透视）
+  c.fillStyle = '#E6E3D6';
+  for (let k = 0; k < 9; k++) { const t0 = Math.pow(k / 9, 2), t1 = Math.pow((k + .45) / 9, 2); const y0 = HZ + (H + 300 - HZ) * t0, y1 = HZ + (H + 300 - HZ) * t1; const w0 = 4 + 30 * t0, w1 = 4 + 30 * t1; const x0 = VPX + (1500 - VPX) * t0 * 0, x1 = VPX; c.beginPath(); c.moveTo(VPX - w0 + (380) * t0, y0); c.lineTo(VPX + w0 + 380 * t0, y0); c.lineTo(VPX + w1 + 380 * t1, y1); c.lineTo(VPX - w1 + 380 * t1, y1); c.closePath(); c.fill(); }
+  // 光轨：从消失点甩过来，绕到摩托尾灯（两条）
+  const BX = 640, BYp = 860, SC = .92;
+  const tail = [BX + 262 * SC, BYp - 220 * SC];
+  c.save(); c.globalCompositeOperation = 'lighter'; c.lineCap = 'round';
+  for (const [dx, dy] of [[0, 0], [-26, 56]]) {
+    const S0 = [VPX + 10 + dx * .1, HZ + 8], E0 = [tail[0] + dx, tail[1] + dy];
+    for (const [w, a, col] of [[110, .10, '255,30,60'], [54, .3, '255,40,70'], [22, .85, '255,90,110'], [7, 1, '255,230,230']]) {
+      c.strokeStyle = `rgba(${col},${a})`; c.lineWidth = w; c.beginPath(); c.moveTo(E0[0], E0[1]);
+      c.bezierCurveTo(E0[0] + 160, E0[1] - 6 + dy * .2, VPX - 90 + dx * .4, HZ + 70 + dy * .3, S0[0], S0[1]); c.stroke();
+    }
+  }
+  c.restore();
+  // 摩托（压车 43°）
+  c.save(); c.translate(0, BYp); c.scale(SC, SC); c.translate(BX / SC, 0);
+  window.drawBike(c, 0, .75, 1); c.restore();
+  // 倒影
+  c.save(); c.globalAlpha = .25; c.translate(0, BYp + 96 * SC * 2); c.scale(SC, -SC * .5); c.translate(BX / SC, 0); window.drawBike(c, 0, .75, 1); c.restore();
+  // 火花
+  c.save(); c.globalCompositeOperation = 'lighter'; c.lineCap = 'round';
+  for (let k = 0; k < 120; k++) {
+    const a = -Math.PI * (.05 + .45 * r()), sp = 80 + 380 * r(), x0 = BX + 235 * SC, y0 = BYp + 96 * SC;
+    const x = x0 + Math.cos(a) * sp, y = y0 + Math.sin(a) * sp * .6 + 40 * r();
+    c.strokeStyle = `rgba(255,${200 + r() * 55},120,${.5 + .5 * r()})`; c.lineWidth = 3 + 3 * r();
+    c.beginPath(); c.moveTo(x, y); c.lineTo(x - Math.cos(a) * 30, y - Math.sin(a) * 18); c.stroke();
+  }
+  c.restore();
+  // 漫画速度线（上方）
+  c.strokeStyle = 'rgba(255,255,255,.18)'; c.lineWidth = 2;
+  for (let k = 0; k < 50; k++) { const y = 360 + r() * 700; c.beginPath(); c.moveTo(1920, y); c.lineTo(1300 + r() * 400, y); c.stroke(); }
+  window.__done = true;
+})();
+</script></body></html>

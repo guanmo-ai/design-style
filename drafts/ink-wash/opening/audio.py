@@ -1,4 +1,4 @@
-"""水墨 · 开场 8 秒配乐（纯代码合成，无外部音源）。128 BPM · D 小调五声（D F G A C）。
+"""水墨 · 全片配乐（开场 8 秒 + 界面 + 五条规则 + 片尾）（纯代码合成，无外部音源）。128 BPM · D 小调五声（D F G A C）。
 一整首：定音鼓 + 低音铺底从第一拍走到最后；古筝（竖琴的 Karplus-Strong）弹五声句子，换章只换句子。
 每个零件一个声音，时间全部取自 timeline.js：
   每一笔：风声 + 一记鼓 · 盖章：电影冲击 + 铁砧 · 墨滴：上滑哨 → 落纸“噗” + 溅水沙沙
@@ -101,5 +101,56 @@ for t0 in (TL['mtn'], TL['mtn2'], TL['mtn3']):
     A.sfx(A.shimmer(.6, .5), t0, gain=.5, send=.5)
 A.place(A.bell(81, .8, 2.0), TL['liubai'], gain=.7, send=.5)
 A.place(A.timpani(38, .9, 1.6), TL['liubai'], gain=.9, send=.3)
+
+
+# —— 04 落到界面 ——
+A.sfx(A.whoosh(TL['rows'] - TL['ui0'], 300, 6000, .9, .5), TL['ui0'], gain=.8, send=.3)
+A.place(A.bell(74, .7, 1.4), TL['rows'], gain=.6, send=.4)
+for k in range(6):
+    t = TL['rows'] + (k * .06 if k < 2 else .14 + (k - 2) * BEAT / 2)
+    A.place(A.celesta(PENT[(k + 2) % len(PENT)] + 12, .8, 1.0), t, gain=.6, pan=-.3 + .12 * k, send=.3)
+A.place(A.marimba(62, 1.2), TL['tap'], gain=1.0)
+A.place(A.boom(.6, 120, 50, .5), TL['tap'], gain=.7, send=.2)
+A.sfx(A.whoosh(TL['detail'] - TL['wipeUI'], 200, 5000, 1.0, .6), TL['wipeUI'], gain=.8, send=.35)
+A.place(A.boom(.8, 100, 38, .8), TL['detail'], gain=.8, send=.3)
+for k, m in enumerate([62, 67, 69, 74, 77, 81]):
+    zheng(m, TL['detail'] + .05 + k * .04, .6, -.4 + .16 * k, 1.2)
+A.place(A.hit(.8, 29), TL['seal2'], gain=.9, send=.3)
+A.sfx(A.thock(50, 1.0), TL['seal2'], gain=.8)
+
+# —— 05 五条规则：每张卡一记定音鼓 + 钟，换场一笔刷子的风声 ——
+A.place(A.strings([50, 57, 62, 65], TL['end0'] - TL['rules0'] + .5, .6, .6, 1.0), TL['rules0'], gain=.7, send=.4)
+for i in range(5):
+    t = TL['rules0'] + i * TL['ruleStep']
+    A.sfx(A.whoosh(.3, 200, 8000, 1.0, .5), t - .15, gain=.9, send=.25)
+    A.place(A.timpani(38 if i % 2 == 0 else 43, .9, 1.2), t, gain=.9, send=.25)
+    A.place(A.bell(PENT[3 + i], .7, 1.2), t + .02, gain=.6, send=.45)
+    if i == 0:
+        for k in range(5):
+            A.place(A.marimba(PENT[k] + 12, 1.0), t + .05 + k * .08, gain=.8, pan=-.5 + .25 * k)
+    elif i == 1:
+        A.sfx(A.whoosh(.6, 400, 5000, .8, .5), t + .05, gain=.6, send=.2)
+    elif i == 2:
+        for k in range(8):
+            A.sfx(A.click(.7), t + .1 + k * .06, gain=.4, pan=.3)
+    elif i == 3:
+        A.place(A.hit(.7, 29), t + .12, gain=.8, send=.3)
+        A.sfx(A.thock(50, 1.0), t + .12, gain=.7)
+    else:
+        A.sfx(A.hiss(.5, .7), t + .05, gain=.5, send=.2)
+        A.sfx(A.whoosh(.5, 300, 6000, .8, .5), t + .05, gain=.6)
+
+# —— 片尾：重新写“水”→ 盖章 → 片名 → 署名 ——
+e0 = TL['end0']
+A.sfx(A.whoosh(.3, 200, 8000, 1.0, .5), e0 - .15, gain=.9, send=.25)
+for i, (d0, dd) in enumerate(zip([0, .3, .56, .74], [.3, .26, .18, .3])):
+    A.sfx(A.whoosh(max(dd, .25), 400, 6000, .9, .45), e0 + .12 + d0, gain=.9, send=.2)
+    A.place(A.timpani(38 + [0, 5, 7, 12][i], .7, 1.0), e0 + .12 + d0 + dd * .14, gain=.8, send=.25)
+A.place(A.hit(1.0, 26), e0 + 1.2, gain=1.0, send=.35)
+A.sfx(A.thock(50, 1.0), e0 + 1.2, gain=.8)
+for k, m in enumerate([62, 69, 74, 77, 81, 86]):
+    zheng(m, e0 + 1.35 + k * .05, .7, -.3 + .12 * k, 2.0)
+A.place(A.choir([50, 57, 62, 66], TL['end'] - e0 - 1.3, .9), e0 + 1.35, gain=.9, send=.5)
+A.place(A.bell(74, .9, 2.4), e0 + 1.85, gain=.8, send=.5)
 
 A.master(sys.argv[1] if len(sys.argv) > 1 else str(HERE / 'music.wav'), loop=False)
