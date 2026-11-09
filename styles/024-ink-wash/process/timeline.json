@@ -1,0 +1,50 @@
+{
+  "fps": 60,
+  "bpm": 128,
+  "frames": 1125,
+  "title": "水墨",
+  "segments": [
+    {
+      "label": "写“水”",
+      "start": 0,
+      "dur": 141,
+      "color": "#C8372D"
+    },
+    {
+      "label": "墨滴与蝌蚪",
+      "start": 141,
+      "dur": 112,
+      "color": "#C8372D"
+    },
+    {
+      "label": "淡墨成虾",
+      "start": 253,
+      "dur": 85,
+      "color": "#C8372D"
+    },
+    {
+      "label": "一河两岸",
+      "start": 338,
+      "dur": 140,
+      "color": "#C8372D"
+    },
+    {
+      "label": "落到界面",
+      "start": 478,
+      "dur": 197,
+      "color": "#C8372D"
+    },
+    {
+      "label": "五条规则",
+      "start": 675,
+      "dur": 281,
+      "color": "#C8372D"
+    },
+    {
+      "label": "片尾 · 首尾呼应",
+      "start": 956,
+      "dur": 169,
+      "color": "#C8372D"
+    }
+  ]
+}

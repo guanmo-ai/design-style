@@ -1,0 +1,35 @@
+<!doctype html>
+<html lang="zh"><head><meta charset="utf-8"><title>水墨 v4 · 01 主图</title>
+<style>
+@import url(../../../public/fonts/fontsource/noto-serif-sc/200.css);
+@import url(../../../public/fonts/fontsource/noto-serif-sc/400.css);
+@import url(../../../public/fonts/fontsource/noto-serif-sc/900.css);
+@import url(../../../public/fonts/fontsource/geist-mono/400.css);
+* { margin:0; padding:0; box-sizing:border-box; }
+:root { --paper:#F3EEE2; --ink:#171716; --zhu:#C8372D; --mid:#6B6B66; }
+html, body { width:1920px; height:1080px; overflow:hidden; background:var(--paper); color:var(--ink); font-family:'Noto Serif SC', serif; }
+#c { position:absolute; inset:0; width:1920px; height:1080px; display:block; }
+.hook { position:absolute; left:76px; top:70px; }
+.hook h1 { font-weight:900; font-size:66px; line-height:1.2; letter-spacing:.02em; }
+.hook p { font-weight:200; font-size:30px; margin-top:12px; letter-spacing:.04em; color:#3a3a36; }
+.vt { position:absolute; right:120px; top:96px; writing-mode:vertical-rl; font-weight:900; font-size:220px; line-height:1; letter-spacing:.06em; filter:url(#bleed); }
+.vs { position:absolute; right:370px; top:104px; writing-mode:vertical-rl; font-weight:200; font-size:46px; letter-spacing:.5em; color:var(--mid); }
+.seal { position:absolute; right:150px; top:620px; width:104px; height:104px; background:var(--zhu); color:var(--paper); display:flex; align-items:center; justify-content:center; font-weight:900; font-size:66px; border-radius:5px; filter:url(#bleed); }
+.foot { position:absolute; left:76px; right:76px; bottom:52px; display:flex; justify-content:space-between; font-family:'Geist Mono', monospace; font-size:14px; color:var(--mid); letter-spacing:.04em; }
+</style></head>
+<body>
+<svg width="0" height="0" style="position:absolute"><filter id="bleed" x="-5%" y="-5%" width="110%" height="110%"><feTurbulence type="fractalNoise" baseFrequency="0.045" numOctaves="3" seed="7" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale="8" xChannelSelector="R" yChannelSelector="G"/></filter></svg>
+<canvas id="c" width="1920" height="1080"></canvas>
+<div class="hook"><h1>这不是照片。</h1><p>是 1 个着色器，0 张图片。</p></div>
+<div class="vs">墨入水</div>
+<div class="vt">水墨</div>
+<div class="seal">墨</div>
+<div class="foot"><span>域扭曲 × 2 · fbm × 5 · 景深 1 层 · 朱砂 1 层</span><span>01 / 04 · 水墨 INK</span></div>
+<script src="ink4.js"></script>
+<script>
+window.__done = false;
+document.fonts.ready.then(() => {
+  window.Ink4.paint(document.getElementById('c'), { t: 1.2, seed: 3.7, c: [0.44, 0.48], spread: 0.25, scale: 2.5, red: [0.63, 0.68, 0.10, 1], back: .5 });
+  window.__done = true;
+});
+</script></body></html>

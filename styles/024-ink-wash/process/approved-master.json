@@ -1,0 +1,14 @@
+{
+  "id": "024-ink-wash",
+  "source": "drafts/ink-wash/opening/ink-full.mp4",
+  "source_commit": "04f0aed",
+  "sha256": "5ba83214af23c69ade13722b8ce1f214d8f81f623bf8fdbddf286a187940cc99",
+  "bytes": 3573483,
+  "fps": 60,
+  "durationFrames": 1125,
+  "durationSeconds": 18.75,
+  "approval": "用户明确水墨通过，并要求合入主干及在网页展示",
+  "release_tag": "day-24",
+  "release_asset": "024-ink-wash.mp4",
+  "master_policy": "只更名，保持原片字节与SHA-256"
+}
