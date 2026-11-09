@@ -114,7 +114,9 @@
     const back = t < ta - .12 ? 1 : 1 - ei3((t - (ta - .12)) / .12);
     return sep * back;
   }
-  function tilt(t) { return eo3((t - TL.split) / .5) * (1 - eio((t - 1.9) / .32)); }
+  function tilt(t) { return eo3((t - TL.split) / .5) * (1 - eio((t - TL.slam[4] + .1) / .32)); }
+  // 拆开以后整叠片子一直在绕着转（不停）
+  function orbit(t) { return .62 + .55 * eio((t - TL.split) / (TL.slam[4] - TL.split)); }
   function blinkO(t) {
     const u = on2(t - TL.blink);
     if (t < TL.blink || u > .42) return 1;
@@ -125,21 +127,22 @@
   function cam00(t) {
     const S0 = 1.30, S1 = .74, S2 = .98;
     let S = lerp(S0, S1, eo3((t - TL.split) / .55));
-    S = lerp(S, S2, eio((t - 1.55) / .5));
+    S = lerp(S, S2, eio((t - TL.slam[0] - .05) / .5));
     let cx = lerp(960, 860, eo3((t - TL.split) / .55)), cy = lerp(560, 640, eo3((t - TL.split) / .55));
-    cx = lerp(cx, 960, eio((t - 1.55) / .5)); cy = lerp(cy, 600, eio((t - 1.55) / .5));
+    cx = lerp(cx, 960, eio((t - TL.slam[0] - .05) / .5)); cy = lerp(cy, 600, eio((t - TL.slam[0] - .05) / .5));
     return { S, cx, cy };
   }
   const ISO = [.78, .26, -.62, .40];
   const GAP = 200;
   function drawStack(ctx, t) {
     const c = cam00(t), K = tilt(t);
-    const A = [lerp(1, ISO[0], K), lerp(0, ISO[1], K), lerp(0, ISO[2], K), lerp(1, ISO[3], K)];
+    const ph = orbit(t), ISOt = [Math.cos(ph) * 1.0, .52 * Math.sin(ph), -Math.sin(ph) * 1.0, .52 * Math.cos(ph)];
+    const A = [lerp(1, ISOt[0], K), lerp(0, ISOt[1], K), lerp(0, ISOt[2], K), lerp(1, ISOt[3], K)];
     const ys = [0]; for (let i = 1; i < 5; i++) ys.push(ys[i - 1] - GAP * gap(i, t));
     const mean = ys.reduce((a, b) => a + b, 0) / 5;
     const labels = [];
     for (let i = 0; i < 5; i++) {
-      const ox = c.cx + (i - 2) * 26 * K, oy = c.cy + (ys[i] - mean) * c.S / .6 * .6;
+      const ox = c.cx + (i - 2) * 26 * K, oy = c.cy + (ys[i] - mean) * c.S + 10 * K * Math.sin(t * 6 + i * 1.3);
       ctx.setTransform(A[0] * c.S, A[1] * c.S, A[2] * c.S, A[3] * c.S, ox, oy);
       if (K < .02) { ctx.save(); LAYERS[i].f(ctx, blinkO(t)); ctx.restore(); }
       else {
@@ -158,74 +161,194 @@
     return labels;
   }
 
-  // ═══════════ 01 多层摄影台 ═══════════
-  const VP = [960, 560];
-  const PAL = {
-    sky0: [hex('#5FAEFF'), hex('#0A0F2E')], sky1: [hex('#A6D6FF'), hex('#1B2156')], sky2: [hex('#FFE6C0'), hex('#5A2A5E')],
-    far: [hex('#7E93D6'), hex('#2A2F6B')], farRim: [hex('#B8C6F2'), hex('#4A4C8E')],
-    mid: [hex('#5CB46C'), hex('#20345A')], midSh: [hex('#3F8F56'), hex('#151F44')],
-    near: [hex('#2F7D4A'), hex('#101633')], tree: [hex('#1F5E3A'), hex('#0B1028')], treeHi: [hex('#3F9058'), hex('#1A2350')],
-    cloud: [hex('#FFFFFF'), hex('#4C4A8A')], cloudSh: [hex('#D6D2F4'), hex('#2C2A64')]
-  };
-  const P = (k, n) => rgb(mix(PAL[k][0], PAL[k][1], n));
+  // ═══════════ 01 多层摄影台 · 黄金时刻（电影级动画背景）═══════════
+  const VP = [960, 560], SUN = [1230, 545];
   function camZ(t) { return 5.6 * eio((t - TL.multi[0]) / (TL.multi[1] - TL.multi[0] + .3)); }
   const layerS = (z, t) => { const d = z - camZ(t); return d > .15 ? z / d : 0; };
-  function hills(ctx, s, base, amp, freq, seed, fill, sh) {
-    const r = rng(seed), ph = r() * 9;
-    const yAt = x => base - amp * (.55 + .45 * Math.sin(x * freq + ph) * Math.sin(x * freq * .37 + ph * 2));
-    const T = (x, y) => [VP[0] + (x - VP[0]) * s, VP[1] + (y - VP[1]) * s];
-    ctx.fillStyle = fill; ctx.beginPath();
-    for (let x = -1400; x <= 3400; x += 30) { const p = T(x, yAt(x)); x === -1400 ? ctx.moveTo(p[0], p[1]) : ctx.lineTo(p[0], p[1]); }
-    let p = T(3400, 2200); ctx.lineTo(p[0], p[1]); p = T(-1400, 2200); ctx.lineTo(p[0], p[1]); ctx.closePath(); ctx.fill();
-    if (sh) {   // 赛璐璐背景的硬边亮面：每座山的左坡一道
-      ctx.fillStyle = sh; ctx.beginPath();
-      for (let x = -1400; x <= 3400; x += 30) { const q = T(x, yAt(x)); x === -1400 ? ctx.moveTo(q[0], q[1]) : ctx.lineTo(q[0], q[1]); }
-      for (let x = 3400; x >= -1400; x -= 30) { const q = T(x, yAt(x) + 26 + 18 * Math.sin(x * .013)); ctx.lineTo(q[0], q[1]); }
-      ctx.closePath(); ctx.fill();
+  const Tz = (s, x, y) => [VP[0] + (x - VP[0]) * s, VP[1] + (y - VP[1]) * s];
+
+  // 积云精灵：剪影 → 向光面暖白 → 高光 → 底部压暗（只算一次）
+  function makeCloud(seed, w, h, flip) {
+    const c = document.createElement('canvas'); c.width = w; c.height = h;
+    const x = c.getContext('2d'), r = rng(seed), C = [];
+    for (let i = 0; i < 46; i++) {
+      const u = .08 + .84 * r(), bell = Math.pow(Math.sin(Math.PI * u), 1.4);
+      const rad = w * (.05 + .11 * r()) * (.6 + .6 * bell);
+      const cy0 = h * .86 - rad * .6 - r() * h * .62 * bell;
+      C.push([Math.min(Math.max(u * w, rad + 4), w - rad - 4), Math.max(cy0, rad + 4), rad]);
+    }
+    for (let i = 0; i < 10; i++) C.push([w * (.14 + .72 * i / 9), Math.min(h * .84, h - w * .08 - 4), w * .08]);
+    const L = flip ? [-.75, -.62] : [.75, -.62];
+    x.fillStyle = '#A3A6DA'; for (const [cx, cy, rr] of C) { x.beginPath(); x.arc(cx, cy, rr, 0, 6.283); x.fill(); }
+    x.globalCompositeOperation = 'source-atop';
+    x.fillStyle = '#C9C3EC'; for (const [cx, cy, rr] of C) { x.beginPath(); x.arc(cx + L[0] * rr * .18, cy + L[1] * rr * .18, rr * .95, 0, 6.283); x.fill(); }
+    x.fillStyle = '#FFF2DE'; for (const [cx, cy, rr] of C) { x.beginPath(); x.arc(cx + L[0] * rr * .34, cy + L[1] * rr * .34, rr * .84, 0, 6.283); x.fill(); }
+    x.fillStyle = '#FFFFFF'; for (const [cx, cy, rr] of C) { x.beginPath(); x.arc(cx + L[0] * rr * .52, cy + L[1] * rr * .52, rr * .55, 0, 6.283); x.fill(); }
+    const g = x.createLinearGradient(0, h * .55, 0, h); g.addColorStop(0, 'rgba(96,92,170,0)'); g.addColorStop(1, 'rgba(96,92,170,.55)');
+    x.fillStyle = g; x.fillRect(0, 0, w, h);
+    const g2 = x.createLinearGradient(flip ? w : 0, 0, flip ? 0 : w, 0); g2.addColorStop(0, 'rgba(255,190,120,0)'); g2.addColorStop(1, 'rgba(255,190,120,.30)');
+    x.fillStyle = g2; x.fillRect(0, 0, w, h);
+    return c;
+  }
+  const CLOUDS = [
+    { cv: makeCloud(11, 1300, 760, false), x: 120, y: 120, w: 1050, z: 70 },
+    { cv: makeCloud(23, 1100, 640, true), x: 1500, y: 170, w: 760, z: 60 },
+    { cv: makeCloud(37, 900, 500, false), x: -300, y: 330, w: 620, z: 44 },
+    { cv: makeCloud(41, 800, 460, true), x: 1680, y: 400, w: 520, z: 40 },
+    { cv: makeCloud(53, 600, 340, false), x: 640, y: 420, w: 330, z: 52 }
+  ];
+  function ridge(seed, x0, x1, base, amp, freq) {
+    const n = rng(seed), ph = n() * 9, ph2 = n() * 9;
+    return x => base - amp * (.5 + .32 * Math.sin(x * freq + ph) + .18 * Math.sin(x * freq * 2.7 + ph2) + .06 * Math.sin(x * freq * 9.3));
+  }
+  // 一层山：渐变填充（大气透视）+ 逆光山脊亮边
+  function hill(ctx, s, yf, top, bot, rim, rimW) {
+    const pts = []; for (let x = -1800; x <= 3800; x += 24) pts.push(Tz(s, x, yf(x)));
+    let ymin = 1e9; for (const p of pts) ymin = Math.min(ymin, p[1]);
+    const g = ctx.createLinearGradient(0, ymin, 0, ymin + 380 * s);
+    g.addColorStop(0, top); g.addColorStop(1, bot);
+    ctx.fillStyle = g; ctx.beginPath();
+    pts.forEach((p, i) => i ? ctx.lineTo(p[0], p[1]) : ctx.moveTo(p[0], p[1]));
+    let q = Tz(s, 3800, 2600); ctx.lineTo(q[0], q[1]); q = Tz(s, -1800, 2600); ctx.lineTo(q[0], q[1]); ctx.closePath(); ctx.fill();
+    if (rim) {
+      ctx.save(); ctx.globalCompositeOperation = 'lighter'; ctx.lineJoin = 'round';
+      const rg = ctx.createLinearGradient(SUN[0] - 1100, 0, SUN[0] + 1100, 0);
+      rg.addColorStop(0, 'rgba(255,200,120,0)'); rg.addColorStop(.5, rim); rg.addColorStop(1, 'rgba(255,200,120,0)');
+      ctx.strokeStyle = rg; ctx.lineWidth = rimW * Math.max(s, .5);
+      ctx.beginPath(); pts.forEach((p, i) => i ? ctx.lineTo(p[0], p[1] + rimW * .4 * s) : ctx.moveTo(p[0], p[1] + rimW * .4 * s)); ctx.stroke(); ctx.restore();
     }
   }
-  function cloud(ctx, s, x, y, w, n) {
-    const T = (a, b) => [VP[0] + (a - VP[0]) * s, VP[1] + (b - VP[1]) * s];
-    const blobs = [[-.35, 0, .3], [-.1, -.18, .36], [.2, -.1, .32], [.4, .05, .24], [0, .08, .4]];
-    ctx.fillStyle = P('cloudSh', n);
-    for (const [bx, by, br] of blobs) { const p = T(x + bx * w, y + by * w + w * .06); ctx.beginPath(); ctx.arc(p[0], p[1], br * w * s, 0, 6.283); ctx.fill(); }
-    ctx.fillStyle = P('cloud', n);
-    for (const [bx, by, br] of blobs) { const p = T(x + bx * w, y + by * w - w * .02); ctx.beginPath(); ctx.arc(p[0], p[1], br * w * s * .92, 0, 6.283); ctx.fill(); }
+  const R_FAR = ridge(3, 0, 0, 640, 210, .0031), R_FAR2 = ridge(7, 0, 0, 655, 140, .0047);
+  const R_MID = ridge(9, 0, 0, 790, 80, .0052), R_NEAR = ridge(13, 0, 0, 880, 70, .0068);
+  function makeTree(seed) {
+    const W = 1200, H = 1300, c = document.createElement('canvas'); c.width = W; c.height = H;
+    const x = c.getContext('2d'), r = rng(seed), C = [];
+    for (let i = 0; i < 34; i++) { const a = r() * 6.283, d = Math.sqrt(r()) * 330; C.push([600 + Math.cos(a) * d * 1.15, 470 + Math.sin(a) * d * .8, 90 + 110 * r()]); }
+    // 树干和枝
+    x.strokeStyle = '#2A1D24'; x.lineCap = 'round'; x.lineWidth = 64;
+    x.beginPath(); x.moveTo(610, 1290); x.quadraticCurveTo(570, 900, 600, 600); x.stroke();
+    x.lineWidth = 30; x.beginPath(); x.moveTo(596, 800); x.quadraticCurveTo(470, 690, 400, 600); x.stroke();
+    x.beginPath(); x.moveTo(604, 760); x.quadraticCurveTo(730, 680, 820, 590); x.stroke();
+    x.save();
+    x.fillStyle = '#163B2E'; for (const [cx, cy, rr] of C) { x.beginPath(); x.arc(cx, cy, rr, 0, 6.283); x.fill(); }
+    x.globalCompositeOperation = 'source-atop';
+    const L = [.72, -.6];
+    x.fillStyle = '#2C6A45'; for (const [cx, cy, rr] of C) { x.beginPath(); x.arc(cx + L[0] * rr * .22, cy + L[1] * rr * .22, rr * .9, 0, 6.283); x.fill(); }
+    x.fillStyle = '#6FB45A'; for (const [cx, cy, rr] of C) { x.beginPath(); x.arc(cx + L[0] * rr * .46, cy + L[1] * rr * .46, rr * .7, 0, 6.283); x.fill(); }
+    x.fillStyle = '#A9D873'; for (const [cx, cy, rr] of C) { x.beginPath(); x.arc(cx + L[0] * rr * .68, cy + L[1] * rr * .68, rr * .34, 0, 6.283); x.fill(); }
+    const g = x.createLinearGradient(1000, 0, 200, 0); g.addColorStop(0, 'rgba(255,190,110,.35)'); g.addColorStop(1, 'rgba(255,190,110,0)');
+    x.fillStyle = g; x.fillRect(0, 0, W, H);
+    x.restore();
+    return c;
   }
-  function tree(ctx, s, x, y, h, n) {
-    const T = (a, b) => [VP[0] + (a - VP[0]) * s, VP[1] + (b - VP[1]) * s];
-    let p = T(x, y), q = T(x, y - h * .5);
-    ctx.strokeStyle = rgb(mix(hex('#5B3A2A'), hex('#120E1E'), n)); ctx.lineWidth = h * .06 * s; ctx.lineCap = 'round';
-    ctx.beginPath(); ctx.moveTo(p[0], p[1]); ctx.lineTo(q[0], q[1]); ctx.stroke();
-    const blobs = [[0, -.62, .30], [-.22, -.48, .22], [.22, -.5, .22], [-.1, -.8, .2], [.12, -.78, .2]];
-    ctx.fillStyle = P('tree', n);
-    for (const [bx, by, br] of blobs) { const c = T(x + bx * h, y + by * h); ctx.beginPath(); ctx.arc(c[0], c[1], br * h * s, 0, 6.283); ctx.fill(); }
-    ctx.fillStyle = P('treeHi', n);
-    for (const [bx, by, br] of blobs) { const c = T(x + bx * h - br * h * .25, y + by * h - br * h * .25); ctx.beginPath(); ctx.arc(c[0], c[1], br * h * s * .55, 0, 6.283); ctx.fill(); }
+  const TREE_CV = [makeTree(71), makeTree(83)];
+  function bigTree(ctx, s, x, y, h, t, k) {
+    const cv = TREE_CV[k], sway = Math.sin(t * 1.6 + x) * .01;
+    const w = h * cv.width / cv.height * s, hh = h * s, p = Tz(s, x, y);
+    ctx.save(); ctx.translate(p[0], p[1]); ctx.rotate(sway); ctx.drawImage(cv, -w / 2, -hh, w, hh); ctx.restore();
   }
+  const GRASS = [3.4, 4.6].map((z, L) => { const r = rng(500 + L), B = []; for (let i = 0; i < 700; i++) B.push([-1100 + 4200 * r(), 80 + 190 * r(), .6 + .8 * r(), r() * 6]); return { z, B, y: L ? 1000 : 1060 }; });
+  function grass(ctx, s, G, t) {
+    // 草团：深色底，顶边起伏
+    const nz = rng(G.z * 100 | 0), ph = nz() * 9;
+    ctx.fillStyle = '#0F2A1C'; ctx.beginPath();
+    for (let x = -1200; x <= 3200; x += 40) { const p = Tz(s, x, G.y - 40 - 35 * Math.sin(x * .011 + ph) - 18 * Math.sin(x * .037)); x === -1200 ? ctx.moveTo(p[0], p[1]) : ctx.lineTo(p[0], p[1]); }
+    let q = Tz(s, 3200, 2400); ctx.lineTo(q[0], q[1]); q = Tz(s, -1200, 2400); ctx.lineTo(q[0], q[1]); ctx.closePath(); ctx.fill();
+    // 草叶：宽 → 尖的锥形，暗绿，叶尖被逆光照亮
+    for (const [bx, h, k, ph2] of G.B) {
+      const base = Tz(s, bx, G.y + 30), hh = h * k * s, sw = Math.sin(t * 2.2 + ph2 + bx * .004) * hh * .25 + hh * .12 * Math.sin(ph2 * 3);
+      if (base[0] < -200 || base[0] > W0 + 200) continue;
+      const w = Math.max(3, 14 * s * k * .6);
+      const tip = [base[0] + sw, base[1] - hh], mid = [base[0] + sw * .35, base[1] - hh * .55];
+      ctx.fillStyle = ph2 < 2 ? '#1D4A2C' : (ph2 < 4 ? '#163D25' : '#2A5E35');
+      ctx.beginPath(); ctx.moveTo(base[0] - w, base[1]); ctx.quadraticCurveTo(mid[0] - w * .4, mid[1], tip[0], tip[1]); ctx.quadraticCurveTo(mid[0] + w * .4, mid[1], base[0] + w, base[1]); ctx.closePath(); ctx.fill();
+      // 逆光：朝太阳一侧的叶缘一道亮线（只在靠近太阳的草上）
+      const near = 1 - Math.min(1, Math.abs(base[0] - SUN[0]) / 1100);
+      if (near > .05) {
+        ctx.strokeStyle = `rgba(255,226,140,${.85 * near})`; ctx.lineWidth = Math.max(1.2, w * .28);
+        ctx.beginPath(); ctx.moveTo(mid[0] + w * .25, mid[1]); ctx.quadraticCurveTo((mid[0] + tip[0]) / 2 + w * .2, (mid[1] + tip[1]) / 2, tip[0], tip[1]); ctx.stroke();
+      }
+    }
+  }
+  const MOTES = (() => { const r = rng(808), M = []; for (let i = 0; i < 90; i++) M.push([r() * 2200 - 140, 200 + r() * 800, 3 + 20 * r(), r() * 6, 1 + 3 * r()]); return M; })();
   function nightAmt(t) { return eio((t - TL.sunRed) / .5); }
   function drawMulti(ctx, t) {
     const n = nightAmt(t);
+    // 天空：四段渐变，地平线最暖
     const g = ctx.createLinearGradient(0, 0, 0, 700);
-    g.addColorStop(0, P('sky0', n)); g.addColorStop(.55, P('sky1', n)); g.addColorStop(1, P('sky2', n));
+    g.addColorStop(0, '#1A4FC4'); g.addColorStop(.42, '#3C98EA'); g.addColorStop(.72, '#9ED4F4'); g.addColorStop(.92, '#FFDDA8'); g.addColorStop(1, '#FFC27A');
     ctx.fillStyle = g; ctx.fillRect(0, 0, W0, H0);
-    // 太阳：变红、冲向镜头
-    const sr = t < TL.sunRed ? 70 : 70 * Math.exp((t - TL.sunRed) * 8.6);
-    const sx = lerp(1180, VP[0], eio((t - TL.sunRed) / .5)), sy = lerp(330, VP[1], eio((t - TL.sunRed) / .5));
-    const sunC = mix(hex('#FFF6C8'), hex('#E8202E'), eio((t - TL.sunRed + .05) / .25));
-    const s40 = layerS(40, t);
-    ctx.fillStyle = rgb(sunC); ctx.beginPath(); ctx.arc(VP[0] + (sx - VP[0]) * s40, VP[1] + (sy - VP[1]) * s40, sr * s40, 0, 6.283); ctx.fill();
-    if (sr < 900) {
-      cloud(ctx, layerS(28, t), 500, 250, 260, n); cloud(ctx, layerS(24, t), 1500, 200, 220, n);
-      hills(ctx, layerS(30, t), 620, 150, .004, 3, P('far', n), P('farRim', n));
-      cloud(ctx, layerS(18, t), 300, 420, 200, n);
-      hills(ctx, layerS(14, t), 700, 90, .006, 5, P('mid', n), rgb(mix(mix(PAL.mid[0], [255, 255, 255], .25), PAL.mid[1], n)));
-      ctx.fillStyle = P('midSh', n);
-      hills(ctx, layerS(8, t), 790, 60, .008, 9, P('near', n), null);
-      tree(ctx, layerS(9, t), 280, 790, 330, n); tree(ctx, layerS(9, t), 1640, 780, 300, n);
-      tree(ctx, layerS(6.6, t), 1500, 820, 420, n); tree(ctx, layerS(4.6, t), 520, 860, 520, n); tree(ctx, layerS(4.9, t), 1300, 870, 480, n);
+    // 太阳 + 光晕 + 光束（屏幕空间，太阳不随推镜移动——它在无穷远）
+    const sunR = t < TL.sunRed ? 64 : 64 * Math.exp((t - TL.sunRed) * 8.4);
+    const sp = [lerp(SUN[0], VP[0], eio((t - TL.sunRed) / .5)), lerp(SUN[1], VP[1], eio((t - TL.sunRed) / .5))];
+    ctx.save(); ctx.globalCompositeOperation = 'lighter';
+    const bl = ctx.createRadialGradient(sp[0], sp[1], 0, sp[0], sp[1], 760);
+    bl.addColorStop(0, 'rgba(255,236,190,.95)'); bl.addColorStop(.12, 'rgba(255,214,150,.55)'); bl.addColorStop(.4, 'rgba(255,170,110,.18)'); bl.addColorStop(1, 'rgba(255,150,100,0)');
+    ctx.fillStyle = bl; ctx.fillRect(0, 0, W0, H0);
+    for (let k = 0; k < 16; k++) {
+      const a = k / 16 * 6.283 + t * .05, w = .05 + .04 * Math.sin(k * 3.7);
+      ctx.fillStyle = `rgba(255,226,170,${.045 + .03 * Math.sin(k * 1.9 + t)})`;
+      ctx.beginPath(); ctx.moveTo(sp[0], sp[1]); ctx.lineTo(sp[0] + Math.cos(a - w) * 2600, sp[1] + Math.sin(a - w) * 2600); ctx.lineTo(sp[0] + Math.cos(a + w) * 2600, sp[1] + Math.sin(a + w) * 2600); ctx.closePath(); ctx.fill();
     }
-    if (sr > 400) { ctx.fillStyle = `rgba(232,32,46,${cl((sr - 400) / 700)})`; ctx.fillRect(0, 0, W0, H0); }
+    ctx.restore();
+    // 云（远 → 近）
+    for (const c of CLOUDS) {
+      const sc = layerS(c.z, t); if (!sc) continue;
+      const p = Tz(sc, c.x, c.y), w = c.w * sc, h = w * c.cv.height / c.cv.width;
+      ctx.drawImage(c.cv, p[0], p[1], w, h);
+    }
+    // 太阳本体（在远山之前画会被山挡住一半——压在地平线上）
+    const sunC = mix(hex('#FFF8DC'), hex('#E8202E'), eio((t - TL.sunRed + .05) / .25));
+    const drawSun = () => { ctx.fillStyle = rgb(sunC); ctx.beginPath(); ctx.arc(sp[0], sp[1], sunR, 0, 6.283); ctx.fill(); };
+    if (t < TL.sunRed) drawSun();
+    if (sunR < 1000) {
+      // 远山两层：越远越淡、越偏蓝；逆光山脊亮边
+      hill(ctx, layerS(80, t), R_FAR, 'rgba(150,170,226,1)', 'rgba(190,200,236,1)', 'rgba(255,214,160,.5)', 2);
+      hill(ctx, layerS(48, t), R_FAR2, '#7D96D2', '#A4B6E2', 'rgba(255,214,160,.55)', 2.5);
+      // 湖：倒映天空 + 太阳的光柱 + 闪烁的光点
+      const sl = layerS(24, t), y0 = Tz(sl, 0, 648)[1], y1 = Tz(sl, 0, 800)[1];
+      const lg = ctx.createLinearGradient(0, y0, 0, y1); lg.addColorStop(0, '#FFD9A0'); lg.addColorStop(.5, '#9FCFEF'); lg.addColorStop(1, '#4F8FD8');
+      ctx.fillStyle = lg; ctx.fillRect(0, y0, W0, y1 - y0);
+      ctx.save(); ctx.globalCompositeOperation = 'lighter';
+      const col = ctx.createLinearGradient(sp[0] - 120, 0, sp[0] + 120, 0); col.addColorStop(0, 'rgba(255,220,160,0)'); col.addColorStop(.5, 'rgba(255,230,180,.7)'); col.addColorStop(1, 'rgba(255,220,160,0)');
+      ctx.fillStyle = col; ctx.fillRect(sp[0] - 120, y0, 240, y1 - y0);
+      const r = rng(Math.floor(t * 20));
+      for (let k = 0; k < 70; k++) { const x = sp[0] + (r() - .5) * 900 * (1 + r()), y = y0 + (y1 - y0) * r(); const a = r() * (1 - Math.abs(x - sp[0]) / 900); if (a > .1) { ctx.fillStyle = `rgba(255,248,220,${a})`; ctx.fillRect(x - 6, y, 12 + 10 * r(), 2); } }
+      ctx.restore();
+      // 中景、近景山丘
+      hill(ctx, layerS(18, t), R_MID, '#86C85E', '#3E8A4C', 'rgba(255,236,150,.85)', 3);
+      bigTree(ctx, layerS(16, t), 1560, 770, 300, t, 1);
+      hill(ctx, layerS(9, t), R_NEAR, '#5DAA52', '#1F5A38', 'rgba(255,240,160,.9)', 3.5);
+      bigTree(ctx, layerS(9, t), 420, 880, 600, t, 0);
+      // 前景草（两层，推镜时从下方掠过）
+      for (const G of GRASS.slice().reverse()) { const sg = layerS(G.z, t); if (sg) grass(ctx, sg, G, t); }
+      // 逆光光尘
+      ctx.save(); ctx.globalCompositeOperation = 'lighter';
+      for (const [mx, my, z, ph, sz] of MOTES) {
+        const sm = layerS(z, t); if (!sm) continue;
+        const p = Tz(sm, mx + 30 * Math.sin(t * .7 + ph), my - 20 * t + 12 * Math.sin(t * 1.3 + ph));
+        const rr = sz * sm; if (rr > 60) continue;
+        const gg = ctx.createRadialGradient(p[0], p[1], 0, p[0], p[1], rr * 2.2);
+        gg.addColorStop(0, 'rgba(255,236,190,.75)'); gg.addColorStop(1, 'rgba(255,236,190,0)');
+        ctx.fillStyle = gg; ctx.beginPath(); ctx.arc(p[0], p[1], rr * 2.2, 0, 6.283); ctx.fill();
+      }
+      // 镜头光斑：沿 太阳 → 画面中心 的连线
+      const dx = 960 - sp[0], dy = 540 - sp[1];
+      [[.5, 40, 'rgba(160,220,255,.16)'], [.9, 22, 'rgba(255,200,140,.22)'], [1.35, 90, 'rgba(140,255,200,.08)'], [1.8, 30, 'rgba(255,160,200,.14)']].forEach(([k, rr, c]) => {
+        ctx.fillStyle = c; ctx.beginPath(); ctx.arc(sp[0] + dx * k, sp[1] + dy * k, rr, 0, 6.283); ctx.fill();
+      });
+      ctx.restore();
+    }
+    if (t >= TL.sunRed) drawSun();   // 变红以后冲到所有景物前面
+    // 调色：暖色叠加 + 暗角；太阳变红时整片压成洋红黄昏
+    ctx.save();
+    ctx.globalCompositeOperation = 'soft-light'; ctx.fillStyle = 'rgba(255,170,90,.35)'; ctx.fillRect(0, 0, W0, H0);
+    if (n > 0) { ctx.globalCompositeOperation = 'multiply'; const dg = ctx.createLinearGradient(0, 0, 0, H0); dg.addColorStop(0, `rgba(90,40,150,${n})`); dg.addColorStop(1, `rgba(255,110,70,${n})`); ctx.fillStyle = dg; ctx.fillRect(0, 0, W0, H0); }
+    ctx.globalCompositeOperation = 'source-over';
+    const vg = ctx.createRadialGradient(960, 540, 500, 960, 540, 1250); vg.addColorStop(0, 'rgba(10,10,40,0)'); vg.addColorStop(1, 'rgba(10,10,40,.38)');
+    ctx.fillStyle = vg; ctx.fillRect(0, 0, W0, H0);
+    ctx.restore();
+    if (sunR > 380) { ctx.fillStyle = `rgba(232,32,46,${cl((sunR - 380) / 700)})`; ctx.fillRect(0, 0, W0, H0); }
   }
 
   // ═══════════ 02 夜街 · 侧滑 ═══════════
@@ -444,11 +567,11 @@
     if (t > TL.dive[1] + .25 && t < TL.sunRed + .1) {
       const a = cl((t - TL.dive[1] - .25) / .15) * (1 - cl((t - TL.sunRed) / .1));
       const spd = z => { const d = z - camZ(t); return d > .15 ? z / (d * d) : 0; };
-      const base = spd(14);
-      tag(ctx, 1480, 470, a, `远山 ×${(spd(30) / base).toFixed(2)}`, null);
+      const base = spd(18);
+      tag(ctx, 1480, 470, a, `远山 ×${(spd(48) / base).toFixed(2)}`, null);
       tag(ctx, 1480, 520, a, `中景 ×1.00`, null);
-      tag(ctx, 1480, 570, a, `前景 ×${(spd(4.9) / base).toFixed(1)}`, null);
-      tag(ctx, 1480, 620, a, '同一个镜头，5 层速度', null);
+      { const v = spd(4.6) / base; tag(ctx, 1480, 570, a, v > 0 && v < 40 ? `前景草 ×${v.toFixed(1)}` : '前景草 · 已擦过镜头', null); }
+      tag(ctx, 1480, 620, a, '同一个镜头 · 9 层速度', null);
     }
     if (t > TL.skid && t < TL.impact) {
       const p = tailPt(Math.min(t, TL.bikeStop)), a = cl((t - TL.skid) / .12);
@@ -479,7 +602,7 @@
   window.frame = async f => {
     const t = f / 60;
     const im = impactMode(t);
-    const fast = (t > TL.dive[0] && t < TL.dive[1] + .1) || (t > TL.bikeIn && t < TL.bikeStop) || (t > TL.sunRed + .2 && t < TL.iris[1]) || (t > TL.split && t < TL.split + .5) || (t > 1.45 && t < 2.05);
+    const fast = (t > TL.dive[0] && t < TL.dive[1] + .1) || (t > TL.bikeIn && t < TL.bikeStop) || (t > TL.sunRed + .2 && t < TL.iris[1]) || (t > TL.split && t < TL.split + .5) || (t > TL.slam[0] - .05 && t < TL.slam[4] + .35);
     const SUB = im ? 1 : (fast ? 9 : 4), SH = .5 / 60;
     let labels = null;
     for (let k = 0; k < SUB; k++) {
