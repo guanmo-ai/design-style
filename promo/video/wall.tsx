@@ -77,7 +77,7 @@ export const Wall: React.FC<{f: number}> = ({f}) => {
               {showBack ? (
                 <Img src={COVERS[q.work]} style={{width: '100%', height: '100%', objectFit: 'cover', display: 'block'}} />
               ) : isInk ? (
-                <Img src={staticFile('promo/tiles/ink-full.jpg')} style={{width: '100%', height: '100%', display: 'block', transform: `scale(${lerp(1.035, 1, eo(seg(t, 0, 24), 2))})`}} />
+                <Img src={staticFile('promo/tiles/full/ink.jpg')} style={{width: '100%', height: '100%', display: 'block', transform: `scale(${lerp(1.035, 1, eo(seg(t, 0, 24), 2))})`}} />
               ) : (
                 <Img src={staticFile(`promo/tiles/${id}.jpg`)} style={{width: '100%', height: '100%', objectFit: 'cover', display: 'block'}} />
               )}
