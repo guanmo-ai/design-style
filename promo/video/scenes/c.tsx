@@ -303,4 +303,3 @@ export const MidCentury: React.FC<SceneProps> = ({t, len}) => {
     </Svg>
   );
 };
-export const _c = [lerp, back];

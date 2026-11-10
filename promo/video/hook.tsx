@@ -1,6 +1,6 @@
 /** 开场（第 0 帧）+ 固定外框。开场是设计工具里刚画出来的一个圆：默认灰 #D9D9D9，还没有任何风格。 */
 import React from 'react';
-import {BEAT, CX, CY, FONT, G, R, Rise, Svg, TL, back, cl, ei, eio, eo, hash, lerp, seg, slap} from './kit';
+import {CX, CY, FONT, G, R, Rise, Svg, TL, back, cl, ei, eio, eo, hash, lerp, seg, slap} from './kit';
 
 export const BRAND = {bg: '#f7f4ed', ink: '#352f2a', muted: '#786f65', accent: '#a34332', mark: '#ad4935', line: '#ded8cc', paper: '#fffdf8', seal: '#C8372D'};
 const SEL = '#0D99FF';
@@ -117,4 +117,3 @@ export const Hud: React.FC<{f: number}> = ({f}) => {
     </Svg>
   );
 };
-export const _unused = BEAT;

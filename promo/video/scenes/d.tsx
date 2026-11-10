@@ -1,6 +1,6 @@
 /** 第四组（一拍一个）：微缩景观 → 低多边形 → 字符画 → 生成艺术 */
 import React from 'react';
-import {CX, CY, Cv, FONT, G, P, R, Rise, SceneProps, Svg, back, cl, eo, hash, lerp, pop, pulse, rng, seg, slap, useUid} from '../kit';
+import {CX, CY, Cv, FONT, G, P, R, Rise, SceneProps, Svg, back, cl, eo, hash, pop, pulse, rng, seg, useUid} from '../kit';
 
 const mix = (a: string, b: string, k: number) => {
   const h = (s: string) => [1, 3, 5].map((i) => parseInt(s.slice(i, i + 2), 16));
@@ -319,4 +319,3 @@ export const Generative: React.FC<SceneProps> = ({t, len}) => {
     </Svg>
   );
 };
-export const _d = [lerp, slap, cl];

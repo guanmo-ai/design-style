@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # 宣传片出片：配乐 → 打包 → 画廊墙的 21 张小图 → 重新打包 → 分段渲染 → 拼接配乐（15 秒 · 1920×1080 · 60fps）
-# 用法：bash promo/make.sh            正片 out/design-style-promo.mp4
+# 用法：bash promo/make.sh            正片 out/design-style-promo.mp4（母带 out/promo-master.mp4）
 #       RESUME=1 bash promo/make.sh   接着上次渲到一半的分段继续（源码没改过才能用）
 #       PREVIEW=1 bash promo/make.sh  半分辨率草稿 out/promo-preview.mp4
 # 云端机器会被回收：正片按 150 帧一段渲，断了用 RESUME=1 接着渲（每一帧都是时间的纯函数，分段之间没有接缝）。
@@ -32,4 +32,6 @@ for a in 0 150 300 450 600 750; do
   fi
   CHUNKS+=("$f")
 done
-bash scripts/concat_chunks.sh public/promo/music.wav out/design-style-promo.mp4 "${CHUNKS[@]}"
+bash scripts/concat_chunks.sh public/promo/music.wav out/promo-master.mp4 "${CHUNKS[@]}"
+# 母带约 47 Mbps（颗粒和网点很吃码率）；发布版再压一遍，约 25 MB
+ffmpeg -v error -y -i out/promo-master.mp4 -c:v libx264 -preset slow -crf 20 -pix_fmt yuv420p -colorspace bt709 -color_primaries bt709 -color_trc bt709 -c:a copy -movflags +faststart out/design-style-promo.mp4

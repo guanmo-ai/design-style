@@ -1,10 +1,14 @@
 # 宣传片：同一个圆 × 21 种样子
 
+[![宣传片封面：同一个圆的 21 个样子](cover.jpg)](design-style-promo.mp4)
+
+**成片：[design-style-promo.mp4](design-style-promo.mp4)**（15 秒 · 1080p60 · 25 MB）
+
 Design Style 这个仓库的 15 秒宣传片。1920 × 1080 · 60fps · 150 BPM（一拍 24 帧）· Remotion（SVG + Canvas 2D，不用 WebGL）· 配乐由 Python 合成。
 
 ```bash
 npm ci && npm run fonts        # 依赖与开源字体
-npm run render:promo           # 配乐 → 墙上的 21 张小图 → 正片 out/design-style-promo.mp4
+npm run render:promo           # 配乐 → 墙上的 21 张小图 → 分段渲染 → out/design-style-promo.mp4（云端约 10 分钟）
 npm run preview:promo          # 半分辨率草稿 out/promo-preview.mp4
 npm run studio                 # 在浏览器里逐帧看（合成 Promo）
 ```
@@ -69,7 +73,9 @@ promo/
 │  └─ wall.tsx            # 画廊墙 + 片尾 + 两种布局的小图
 ├─ audio/make_music.py    # 配乐（C 大调，−14 LUFS）；check_music.py 出对齐检查图
 ├─ make_tiles.mjs         # 把 21 个圆定格成墙上的小图
-└─ make.sh                # 一条命令出片
+├─ make.sh                # 一条命令出片（150 帧一段，断了用 RESUME=1 接着渲）
+├─ design-style-promo.mp4 # 成片
+└─ cover.jpg              # 封面：第 704 帧，墙上的 21 个圆
 ```
 
 墙背面的 21 张封面直接用各期的 `video/cover.jpg`。字体全部是仓库已有的开源字体；片尾字标用画廊的 Newsreader。
