@@ -1,10 +1,11 @@
 import {mkdir, rm, cp, writeFile, access, readFile} from 'node:fs/promises';
 import path from 'node:path';
-import {root, cache, output, loadCatalog, sha256} from './catalog.mjs';
+import {root, cache, output, loadCatalog, sha256, PROMO_MEDIA} from './catalog.mjs';
 import {renderDocument, DOCUMENT_PAGES} from '../../gallery/render-documents.mjs';
 import {workDir} from '../../gallery/assets/model.mjs';
 
 const works = await loadCatalog();
+const promoMedia = await Promise.all(PROMO_MEDIA.map(async media => ({...media, sha256:await sha256(path.join(root, media.source))})));
 // Render and validate documents before replacing the previous usable build.
 const pages = [];
 for (const work of works) {
@@ -25,6 +26,12 @@ for (const file of ['index.html', 'assets', 'LICENSE', 'NOTICE.md']) await cp(pa
 await mkdir(path.join(output, 'data'), {recursive: true});
 await writeFile(path.join(output, 'data/works.json'), JSON.stringify(works, null, 2) + '\n');
 await mkdir(path.join(output, 'media'), {recursive: true});
+let homepage = await readFile(path.join(output, 'index.html'), 'utf8');
+for (const media of promoMedia) {
+  await cp(path.join(root, media.source), path.join(output, media.output));
+  homepage = homepage.replaceAll(media.placeholder, media.sha256);
+}
+await writeFile(path.join(output, 'index.html'), homepage);
 for (const work of works) {
   const destination = path.join(output, workDir(work));
   await mkdir(path.join(destination, 'video'), {recursive: true});
