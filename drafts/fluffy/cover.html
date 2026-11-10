@@ -1,0 +1,100 @@
+<!doctype html>
+<html lang="zh">
+<head>
+<meta charset="utf-8">
+<title>毛绒 · Fluffy · 第 0 帧</title>
+<style>
+@font-face { font-family: 'Fredoka'; src: url(../../public/fonts/Fredoka.ttf); font-weight: 300 700; }
+@font-face { font-family: 'GeistMono'; src: url(../../public/fonts/GeistMono.ttf); font-weight: 100 900; }
+@font-face { font-family: 'NotoSC'; src: url(../../public/fonts/NotoSansSC-Black.otf); font-weight: 900; }
+@font-face { font-family: 'NotoSC'; src: url(../../public/fonts/NotoSansSC-Bold.otf); font-weight: 700; }
+@font-face { font-family: 'NotoSC'; src: url(../../public/fonts/NotoSansSC-Medium.otf); font-weight: 500; }
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html, body { width: 1920px; height: 1080px; overflow: hidden; background: #5a46f0; color: #fff; font-family: NotoSC, sans-serif; }
+#cv { position: absolute; inset: 0; width: 1920px; height: 1080px; }
+.mono { font-family: GeistMono, monospace; letter-spacing: .04em; }
+.tl { position: absolute; left: 64px; top: 52px; font-size: 14px; display: flex; gap: 22px; align-items: center; text-transform: uppercase; color: rgba(255,255,255,.78); }
+.tl b { color: #fff; font-weight: 600; }
+.tl i { width: 34px; height: 1.5px; background: rgba(255,255,255,.6); }
+.tr { position: absolute; right: 64px; top: 46px; text-align: right; font-size: 13px; line-height: 1.85; color: rgba(255,255,255,.8); }
+.tr b { color: #fff; font-weight: 600; }
+.title { position: absolute; left: 64px; bottom: 56px; }
+.title h1 { font-family: Fredoka; font-weight: 700; font-size: 64px; letter-spacing: .01em; line-height: 1; }
+.title h1 span { font-family: NotoSC; font-weight: 900; font-size: 58px; margin-right: 18px; }
+.title p { margin-top: 16px; font-size: 24px; font-weight: 500; color: rgba(255,255,255,.92); }
+.call { position: absolute; display: flex; gap: 12px; align-items: flex-start; }
+.call .n { flex: none; width: 34px; height: 34px; border-radius: 17px; background: #fff; color: #4a36e0; font-family: Fredoka; font-weight: 700; font-size: 20px; display: grid; place-items: center; }
+.call .t { font-size: 20px; font-weight: 700; line-height: 1.3; text-shadow: 0 2px 12px rgba(40,20,140,.5); }
+.call .t small { display: block; margin-top: 5px; font-family: GeistMono; font-weight: 500; font-size: 13.5px; letter-spacing: .03em; color: rgba(255,255,255,.86); }
+svg.ln { position: absolute; inset: 0; }
+.spec { position: absolute; right: 64px; bottom: 56px; text-align: right; font-size: 13.5px; line-height: 1.9; color: rgba(255,255,255,.82); }
+.spec b { color: #fff; font-weight: 600; }
+</style>
+</head>
+<body>
+<canvas id="cv"></canvas>
+<svg class="ln" width="1920" height="1080" fill="none" stroke="#fff" stroke-width="1.6" stroke-linecap="round">
+  <path d="M404 606 L352 742" /><circle cx="404" cy="606" r="4" fill="#fff" />
+  <path d="M1506 262 L1560 196" /><circle cx="1506" cy="262" r="4" fill="#fff" />
+  <g opacity=".75" stroke-width="2.4">
+    <path d="M110 372 q64 -16 138 0" /><path d="M70 430 q90 -18 190 0" /><path d="M124 488 q58 -14 124 0" />
+  </g>
+</svg>
+<div class="tl mono"><b>Design Style</b><i></i><span>风格候选</span><i></i><span>Fluffy · 毛绒</span></div>
+<div class="tr mono"><b>第 0 帧</b> · frame 000<br>Canvas 2D · 逐根绘制</div>
+<div class="call" style="left: 64px; top: 268px; width: 300px;"><div class="n">1</div><div class="t">吹：根不动，尖先走<small>lag = 0–6f · 按离根的距离</small></div></div>
+<div class="call" style="left: 300px; top: 748px; width: 420px;"><div class="n">2</div><div class="t">梳：手指划过，毛往两边倒，沟沿堆高<small>push = 1 − (d / r)² · r = 34px</small></div></div>
+<div class="call" style="left: 1520px; top: 150px; width: 340px;"><div class="n">3</div><div class="t">长：从光秃秃的皮上长出来<small>len(t) = 46 · easeOutBack(t)</small></div></div>
+<div class="title"><h1><span>毛绒</span>Fluffy</h1><p>几万根毛，每一根都慢半拍。</p></div>
+<div class="spec mono"><b id="cnt">—</b> strands<br>spring k 180 · c 12 · overshoot 5%<br>#ff4fa3 · #ffc62e · #5a46f0</div>
+<script src="fur.js"></script>
+<script>
+(async () => {
+  await document.fonts.load('900 560px NotoSC', '毛绒'); await document.fonts.ready;
+  const k = window.devicePixelRatio || 1, cv = document.getElementById('cv'); cv.width = 1920 * k; cv.height = 1080 * k;
+  const g = cv.getContext('2d'), {cl} = Fur;
+  const bg = g.createLinearGradient(0, 0, 0, cv.height); bg.addColorStop(0, '#4a38ea'); bg.addColorStop(1, '#7f66ff');
+  g.fillStyle = bg; g.fillRect(0, 0, cv.width, cv.height);
+  const glow = g.createRadialGradient(960 * k, 480 * k, 0, 960 * k, 480 * k, 900 * k); glow.addColorStop(0, 'rgba(196,170,255,0.6)'); glow.addColorStop(1, 'rgba(196,170,255,0)');
+  g.fillStyle = glow; g.fillRect(0, 0, cv.width, cv.height);
+  const ch = (s, x) => (c) => { c.font = '900 590px NotoSC'; c.fillText(s, x, 716); };
+  const ball = (x, y, r) => (c) => { c.beginPath(); c.arc(x, y, r, 0, 7); c.fill(); };
+  const sm = (a, b, x) => { const u = cl((x - a) / (b - a)); return u * u * (3 - 2 * u); };
+  let total = 0;
+  // 远处的小毛球
+  total += Fur.shape(g, k, {draw: ball(1716, 852, 44), box: [1672, 808, 88, 88], color: '#ff7a3d', shade: '#8f1f1f', tip: '#ffe2c2', len: 30, puff: 26, density: 0.3, width: 1.4, comb: [0.1, 1], seed: 21});
+  total += Fur.shape(g, k, {draw: ball(214, 640, 30), box: [184, 610, 60, 60], color: '#f4f1ff', shade: '#6a58c8', tip: '#ffffff', len: 24, puff: 20, density: 0.32, width: 1.3, comb: [0.4, 1], seed: 22});
+  // 毛：① 风从左边吹（越靠左越弯）② 手指沿第三横划过去
+  const groove = [{pts: [[400, 596], [520, 588], [660, 578], [800, 566], [880, 560]], r: 34}];
+  total += Fur.shape(g, k, {draw: ch('毛', 330), box: [330, 190, 620, 620], color: '#ff4fa3', shade: '#7a0d5c', tip: '#ffe4f1', len: 48, puff: 38, density: 0.32, width: 1.45, seed: 3, grooves: groove,
+    wind: (x, y) => { const w = sm(700, 340, x) * sm(540, 400, y) * (0.8 + 0.4 * Math.sin(y * 0.05)); return [3.6 * w, -0.9 * w]; }});
+  // 绒：③ 右上角还没长出来
+  total += Fur.shape(g, k, {draw: ch('绒', 990), box: [990, 190, 620, 620], color: '#ffc62e', shade: '#a3340c', tip: '#fff9d9', len: 36, puff: 27, density: 0.34, width: 1.4, seed: 8,
+    grow: (x, y) => { const d = Math.hypot(x - 1590, y - 250); return Math.pow(sm(110, 330, d), 1.4); }});
+  // 一只会看人的毛球
+  total += Fur.shape(g, k, {draw: ball(1716, 470, 92), box: [1624, 378, 184, 184], color: '#3ee0b4', shade: '#0a6a78', tip: '#e6fff4', len: 44, puff: 44, density: 0.32, width: 1.45, comb: [0.05, 1], curl: 1.2, seed: 31});
+  g.save(); g.scale(k, k);
+  for (const [ex, ey] of [[1686, 462], [1738, 458]]) {
+    g.fillStyle = 'rgba(8,60,70,.35)'; g.beginPath(); g.ellipse(ex + 2, ey + 4, 21, 23, 0, 0, 7); g.fill();
+    g.fillStyle = '#fff'; g.beginPath(); g.ellipse(ex, ey, 20, 22, 0, 0, 7); g.fill();
+    g.fillStyle = '#15102e'; g.beginPath(); g.arc(ex - 8, ey + 5, 10.5, 0, 7); g.fill();
+    g.fillStyle = '#fff'; g.beginPath(); g.arc(ex - 11, ey + 1, 3.6, 0, 7); g.fill();
+  }
+  // 手指（一个圆点光标）停在沟的尽头
+  g.shadowColor = 'rgba(40,10,90,.45)'; g.shadowBlur = 18; g.shadowOffsetY = 8;
+  g.fillStyle = 'rgba(255,255,255,.96)'; g.beginPath(); g.arc(884, 560, 21, 0, 7); g.fill();
+  g.shadowColor = 'transparent'; g.strokeStyle = 'rgba(255,255,255,.55)'; g.lineWidth = 2; g.beginPath(); g.arc(884, 560, 33, 0, 7); g.stroke();
+  // 飘在空中的几根毛
+  const r = Fur.rng(77);
+  for (let i = 0; i < 46; i++) {
+    const x = 120 + r() * 1680, y = 150 + r() * 720, a = r() * 6.28, l = 16 + r() * 26, c = ['#ffb6dc', '#ffe58a', '#baf5e1', '#ffffff'][Math.floor(r() * 4)];
+    g.globalAlpha = 0.5 + r() * 0.4; g.strokeStyle = c; g.lineWidth = 1.4; g.lineCap = 'round';
+    g.beginPath(); g.moveTo(x, y); g.quadraticCurveTo(x + Math.cos(a) * l * 0.5 + 6, y + Math.sin(a) * l * 0.5 - 6, x + Math.cos(a) * l, y + Math.sin(a) * l); g.stroke();
+  }
+  g.restore();
+  document.getElementById('cnt').textContent = total.toLocaleString('en-US');
+  window.ready = true;
+})();
+</script>
+</body>
+</html>
