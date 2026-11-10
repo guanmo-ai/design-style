@@ -2,7 +2,7 @@ import {readdir, readFile, lstat} from 'node:fs/promises';
 import path from 'node:path';
 import {fileURLToPath} from 'node:url';
 import assert from 'node:assert/strict';
-import {loadCatalog, output, root, sha256} from './catalog.mjs';
+import {loadCatalog, output, root, sha256, PROMO_MEDIA} from './catalog.mjs';
 import {renderDocument, DOCUMENT_PAGES} from '../../gallery/render-documents.mjs';
 import {workDir} from '../../gallery/assets/model.mjs';
 
@@ -13,6 +13,7 @@ export async function checkRelease(base = output) {
     'assets/language-toggle.mjs', 'assets/icons/globe.svg', 'assets/icons/LICENSE-Lucide.txt',
     'assets/fonts/DMSans-latin.woff2', 'assets/fonts/Newsreader-latin.woff2',
     'assets/fonts/OFL-DMSans.txt', 'assets/fonts/OFL-Newsreader.txt']);
+  for (const media of PROMO_MEDIA) expected.add(media.output);
   for (const work of works) {
     expected.add(`media/${work.asset}`);
     expected.add(`${workDir(work)}/video/cover.jpg`);
@@ -42,6 +43,12 @@ export async function checkRelease(base = output) {
   assert.ok(bytes < 1_000_000_000, '发布产物超过 GitHub Pages 1 GB 限制');
   assert.deepEqual(JSON.parse(await readFile(path.join(base, 'data/works.json'), 'utf8')), works, '发布目录与内容源不一致');
   for (const work of works) assert.equal(await sha256(path.join(base, 'media', work.asset)), work.sha256, `视频校验失败：${work.id}`);
+  const homepage = await readFile(path.join(base, 'index.html'), 'utf8');
+  for (const media of PROMO_MEDIA) {
+    const digest = await sha256(path.join(root, media.source));
+    assert.equal(await sha256(path.join(base, media.output)), digest, `宣传片媒体校验失败：${media.output}`);
+    assert.ok(homepage.includes(`./${media.output}?v=${digest}`), `宣传片媒体版本不一致：${media.output}`);
+  }
 
   // Model the real project-site prefix, rather than testing only at localhost /.
   const prefix = 'https://guanmo-ai.github.io/design-style/';
@@ -63,7 +70,9 @@ export async function checkRelease(base = output) {
   }
   for (const [file, html] of htmlPages) {
     assert.ok(!/https?:\/\/(?:localhost|127\.0\.0\.1)|\/Users\/|\.gallery-cache/.test(html), `页面包含本地路径：${file}`);
-    for (const match of html.matchAll(/<(?:a|img|script|link)\b[^>]*?\b(?:href|src)="([^"]+)"/g)) checkLink(match[1], file);
+    for (const tag of html.matchAll(/<(?:a|img|script|link|video|source)\b[^>]*>/g)) {
+      for (const match of tag[0].matchAll(/\b(?:href|src|poster)="([^"]+)"/g)) checkLink(match[1], file);
+    }
   }
   for (const file of files) if (file.endsWith('.css')) {
     const css = await readFile(path.join(base, file), 'utf8');

@@ -5,6 +5,7 @@ import {renderLanguageToggle} from './language-toggle.mjs';
 const $ = selector => document.querySelector(selector);
 const viewer = $('#viewer');
 const imageViewer = $('#image-viewer');
+const promoPlayer = $('#promo-player');
 let works = [];
 let state = readState(location.href);
 let opener;
@@ -37,7 +38,7 @@ const previewObserver = typeof IntersectionObserver === 'function' ? new Interse
 }, {threshold:[0, 0.01]}) : null;
 
 function previewAllowed(preview) {
-  return preview.visible && previewsEnabled && !document.hidden && !viewer.open && !preview.failed;
+  return preview.visible && previewsEnabled && !document.hidden && !viewer.open && promoPlayer.paused && !preview.failed;
 }
 
 function stopPreview(preview, release = false) {
@@ -111,8 +112,15 @@ reducedMotion.addEventListener('change', () => {
   renderPreviewControl();
   syncPreviews();
 });
-document.addEventListener('visibilitychange', syncPreviews);
-window.addEventListener('pagehide', () => { for (const preview of previews.values()) stopPreview(preview, true); });
+for (const event of ['play', 'pause', 'ended']) promoPlayer.addEventListener(event, syncPreviews);
+document.addEventListener('visibilitychange', () => {
+  if (document.hidden) promoPlayer.pause();
+  syncPreviews();
+});
+window.addEventListener('pagehide', () => {
+  promoPlayer.pause();
+  for (const preview of previews.values()) stopPreview(preview, true);
+});
 window.addEventListener('pageshow', syncPreviews);
 
 function applyLanguage() {
@@ -182,6 +190,7 @@ function renderImages(work) {
 }
 
 function showDialog(trigger) {
+  promoPlayer.pause();
   if (!viewer.open) {
     opener = trigger || document.activeElement;
     viewer.showModal();

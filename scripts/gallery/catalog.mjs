@@ -6,6 +6,10 @@ import {TYPES, typeOf, workDir} from '../../gallery/assets/model.mjs';
 export const root = path.resolve(import.meta.dirname, '../..');
 export const cache = path.join(root, '.gallery-cache');
 export const output = path.join(root, 'dist');
+export const PROMO_MEDIA = [
+  {source:'promo/design-style-promo.mp4', output:'media/design-style-promo.mp4', placeholder:'__PROMO_VIDEO_SHA256__'},
+  {source:'promo/cover.jpg', output:'media/promo-cover.jpg', placeholder:'__PROMO_COVER_SHA256__'}
+];
 export async function sha256(file) {
   const hash = createHash('sha256');
   for await (const chunk of createReadStream(file)) hash.update(chunk);
