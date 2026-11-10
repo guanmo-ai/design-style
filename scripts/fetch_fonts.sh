@@ -4,8 +4,8 @@
 set -euo pipefail
 cd "$(dirname "$0")/.."
 mkdir -p public/fonts && cd public/fonts
-GF=https://github.com/google/fonts/raw/main/ofl
-NOTO=https://github.com/notofonts/noto-cjk/raw/main/Sans/SubsetOTF/SC
+GF=https://raw.githubusercontent.com/google/fonts/main/ofl   # 不用 github.com/…/raw：云端会话里会 403
+NOTO=https://raw.githubusercontent.com/notofonts/noto-cjk/main/Sans/SubsetOTF/SC
 curl -fsSL -o Jost.ttf          "$GF/jost/Jost%5Bwght%5D.ttf"                  # Futura 的开源替代
 curl -fsSL -o JetBrainsMono.ttf "$GF/jetbrainsmono/JetBrainsMono%5Bwght%5D.ttf" # 标注用等宽
 for w in Regular Medium Bold Black; do                                        # 中文：思源黑体 / Noto Sans SC
