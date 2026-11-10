@@ -20,6 +20,8 @@ for (const [id, frame] of jobs) {
   const composition = await selectComposition({serveUrl, id: 'Promo', puppeteerInstance: browser, chromiumOptions, inputProps});
   await renderStill({composition, serveUrl, frame, output: path.join(outDir, `${id}.jpg`), imageFormat: 'jpeg', jpegQuality: 92, scale: 0.5, puppeteerInstance: browser, overwrite: true, chromiumOptions, inputProps});
   console.log('tile', id, frame);
+  // 水墨那一格是镜头拉出来的起点：再出一张原尺寸的，接缝才对得上
+  if (id === 'ink') await renderStill({composition, serveUrl, frame, output: path.join(outDir, 'ink-full.jpg'), imageFormat: 'jpeg', jpegQuality: 96, scale: 1, puppeteerInstance: browser, overwrite: true, chromiumOptions, inputProps: {...inputProps, grain: false}});
 }
 await browser.close({silent: true});
 process.exit(0);

@@ -1,6 +1,6 @@
 /** 第五组：点云（一拍）→ 液态金属（一拍）→ 水墨（两拍，全片唯一一次留白） */
 import React from 'react';
-import {CX, CY, Cv, FONT, G, R, Rise, SceneProps, Svg, back, cl, ei, eio, eo, hash, lerp, pop, pulse, rng, seg, slap, useUid} from '../kit';
+import {CX, CY, Cv, FONT, G, R, Rise, SceneProps, Svg, cl, ei, eio, eo, hash, lerp, pulse, rng, seg, useUid} from '../kit';
 
 // ———————————————————— 022 点云：世界不是面，是带颜色的点 ————————————————————
 const turbo = (x: number) => {
@@ -191,6 +191,11 @@ const paper = () => {
   }
   return (paperTex = c);
 };
+let wetCv: HTMLCanvasElement | null = null;
+const wet = () => {
+  if (!wetCv) { wetCv = document.createElement('canvas'); wetCv.width = 640; wetCv.height = 640; }
+  return wetCv;
+};
 const n1 = (x: number) => { const i = Math.floor(x), f = x - i, u = f * f * (3 - 2 * f); return hash(i) * (1 - u) + hash(i + 1) * u; };
 export const Ink: React.FC<SceneProps & {drop?: number; seal?: number}> = ({t, drop = 24, seal = 36}) => {
   const INK = '20,20,19';
@@ -211,9 +216,11 @@ export const Ink: React.FC<SceneProps & {drop?: number; seal?: number}> = ({t, d
     const N = 170, upto = Math.floor(sm * N);
     if (upto > 0) {
       // 湿墨的洇边
-      g.save(); g.filter = 'blur(8px)'; g.strokeStyle = `rgba(${INK},0.2)`; g.lineCap = 'round';
-      for (let i = 0; i < upto; i += 3) { const s = i / N, a = pt(s, 0), b = pt(Math.min(1, (i + 3) / N), 0); g.lineWidth = wid(s) * (1.1 - 0.5 * s); g.beginPath(); g.moveTo(a[0], a[1]); g.lineTo(b[0], b[1]); g.stroke(); }
-      g.restore();
+      // （先不带滤镜画到离屏画布，再整张模糊一次：逐段带滤镜画会慢几十倍）
+      const off = wet(), h = off.getContext('2d')!;
+      h.clearRect(0, 0, 640, 640); h.strokeStyle = `rgb(${INK})`; h.lineCap = 'round';
+      for (let i = 0; i < upto; i += 3) { const s = i / N, a = pt(s, 0), b = pt(Math.min(1, (i + 3) / N), 0); h.lineWidth = wid(s) * (1.1 - 0.5 * s); h.beginPath(); h.moveTo(a[0] - CX + 320, a[1] - CY + 320); h.lineTo(b[0] - CX + 320, b[1] - CY + 320); h.stroke(); }
+      g.save(); g.filter = 'blur(8px)'; g.globalAlpha = 0.3; g.drawImage(off, CX - 320, CY - 320); g.restore();
       g.lineCap = 'round';
       for (let bri = 0; bri < 30; bri++) {
         const o = (bri / 29) * 2 - 1;
@@ -273,4 +280,3 @@ export const Ink: React.FC<SceneProps & {drop?: number; seal?: number}> = ({t, d
     </>
   );
 };
-export const _e = [back, pop, slap, G, Rise];

@@ -75,11 +75,12 @@ export const Stage: React.FC<{f: number; only?: string}> = ({f, only}) => {
   );
 };
 
-export const Promo: React.FC<{music?: boolean; blur?: number; shutter?: number; hud?: boolean; only?: string}> = ({music = true, blur = 8, shutter = 0.75, hud = true, only}) => {
+export const Promo: React.FC<{music?: boolean; blur?: number; shutter?: number; hud?: boolean; only?: string; grain?: boolean}> = ({music = true, blur = 8, shutter = 0.75, hud = true, only, grain = true}) => {
   loadFonts();
   const f = useCurrentFrame();
   const s0 = only ? -1e9 : sectionStart(f);
-  const n = Math.max(1, blur);
+  // 墙那一段每层有二十几张图，子帧少取几个
+  const n = Math.max(1, !only && f >= TL.wall.at && f < TL.end.at ? Math.min(blur, 5) : blur);
   return (
     <AbsoluteFill style={{background: '#f7f4ed', overflow: 'hidden'}}>
       {Array.from({length: n}, (_, k) => (
@@ -88,7 +89,7 @@ export const Promo: React.FC<{music?: boolean; blur?: number; shutter?: number; 
         </AbsoluteFill>
       ))}
       {hud && !only && <Hud f={f} />}
-      <Grain opacity={0.035} />
+      {grain && <Grain opacity={0.035} />}
       {music && !only && <Audio src={staticFile('promo/music.wav')} />}
     </AbsoluteFill>
   );
