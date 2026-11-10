@@ -1,9 +1,9 @@
-/** 开场（第 0 帧）+ 固定外框。开场是设计工具里刚画出来的一个圆：默认灰 #D9D9D9，还没有任何风格。 */
+/** 开场（第 0 帧）+ 固定外框 */
 import React from 'react';
-import {CX, CY, FONT, G, R, Rise, Svg, TL, back, cl, ei, eio, eo, hash, lerp, seg, slap} from './kit';
+import {AbsoluteFill, Img, staticFile} from 'remotion';
+import {CX, CY, FONT, G, R, Svg, TL, ei, hash, seg, slap} from './kit';
 
 export const BRAND = {bg: '#f7f4ed', ink: '#352f2a', muted: '#786f65', accent: '#a34332', mark: '#ad4935', line: '#ded8cc', paper: '#fffdf8', seal: '#C8372D'};
-const SEL = '#0D99FF';
 
 export const Cursor: React.FC<{x: number; y: number; s?: number}> = ({x, y, s = 1}) => (
   <g transform={`translate(${x} ${y}) scale(${s * 1.5})`}>
@@ -11,51 +11,60 @@ export const Cursor: React.FC<{x: number; y: number; s?: number}> = ({x, y, s = 
   </g>
 );
 
+/**
+ * 开场：第 0 帧就是全片最强的一张图——同一个圆被切成 21 片，每片是一种风格（背景也跟着切）。
+ * 图是墙上那 21 张定格的原尺寸版，圆心和半径都一样，所以拼起来还是一个正圆。
+ * 轮盘：砸下来时被打得飞转，慢慢停住；最后一拍越转越快，在拍点上切进包豪斯。
+ */
+const IDS = [...TL.scenes.map((s) => s.id), 'bento', 'masonry'];
+const N = IDS.length, WD = 360 / N;
 export const Hook: React.FC<{t: number}> = ({t}) => {
   const K = TL.hook;
-  const wind = seg(t, K.windup, 96 - K.windup);
-  const s = slap(t, 0.5, 9) * (1 - 0.14 * ei(wind, 2.2)); // 砸下来；最后一拍蓄力
-  const box = eo(seg(t, 4, 8), 4) * (1 - ei(seg(t, 84, 8), 2));
-  const br = R * s * lerp(1.3, 1, eo(seg(t, 4, 8), 4));
-  const n21 = Math.max(1, Math.round(21 * eo(seg(t, K.line2, 16), 2)));
-  const outP = (a: number) => 1 - ei(seg(t, a, 10), 3); // 文字沉回遮罩
-  const zh = {fontFamily: FONT.sc, fontWeight: 900, fill: BRAND.ink} as const;
-  // 光标：先停在选框右下角，再去点左下角的 style
-  const mv = eio(seg(t, 58, 24));
-  const cx = lerp(CX + R + 14, 486, mv), cy = lerp(CY + R + 14, 1006, mv) - 60 * Math.sin(Math.PI * mv);
-  const click = 1 - 0.22 * Math.sin(Math.PI * seg(t, 88, 7));
-  return (
-    <Svg bg={BRAND.bg}>
-      <defs>
-        <pattern id="hookgrid" width={48} height={48} patternUnits="userSpaceOnUse">
-          <circle cx={24} cy={24} r={1.6} fill={BRAND.line} />
-        </pattern>
-      </defs>
-      <rect width={1920} height={1080} fill="url(#hookgrid)" />
-      {'一个圆'.split('').map((ch, i) => (
-        <Rise key={i} x={132 + i * 164} y={596} size={164} w={200} p={seg(t, K.line1 + i * 4, 9) * outP(76 + i)} style={zh}>{ch}</Rise>
-      ))}
-      <Rise x={1268} y={572} size={200} w={640} p={seg(t, K.line2, 10) * outP(78)} style={{fontFamily: '"Inter Display"', fontWeight: 700, fill: BRAND.ink, letterSpacing: '-0.04em'}}>
-        ×{String(n21).padStart(2, '0')}
-      </Rise>
-      <Rise x={1272} y={668} size={66} w={640} p={seg(t, K.line2 + 6, 10) * outP(80)} style={{...zh, fontWeight: 700}}>种风格与布局</Rise>
-      <G s={s}>
-        <circle cx={CX} cy={CY} r={R} fill="#D9D9D9" />
+  const w = Math.max(0, t - K.windup);
+  const theta = -34 + 15 * 11 * (1 - Math.exp(-t / 11)) + 0.32 * t + (0.022 * Math.pow(w, 3.2)) / 3.2; // 度
+  const s = slap(t, 0.36, 10) * (1 + 0.12 * ei(seg(t, K.windup, 96 - K.windup), 2.4)); // 最后一拍往里吸
+  const pt = (deg: number, r: number) => [CX + Math.cos((deg * Math.PI) / 180) * r, CY + Math.sin((deg * Math.PI) / 180) * r];
+  const out = (a: number) => 1 - ei(seg(t, a, 8), 2);
+  const blk = (x: number, y: number, bw: number, bh: number, at: number, tilt: number, exit: number, child: React.ReactNode) => {
+    if (t < at) return null;
+    return (
+      <G x={x} y={y} s={slap(t - at, 0.45, 6) * out(exit)} r={tilt}>
+        <rect x={x - bw / 2} y={y - bh / 2} width={bw} height={bh} rx={16} fill="#141312" stroke="#F4F2EC" strokeWidth={5} />
+        {child}
       </G>
-      {box > 0.01 && (
-        <g opacity={cl(box * 3)}>
-          <rect x={CX - br} y={CY - br} width={br * 2} height={br * 2} fill="none" stroke={SEL} strokeWidth={2.5} />
-          {[[-1, -1], [1, -1], [1, 1], [-1, 1]].map(([a, b], i) => (
-            <rect key={i} x={CX + a * br - 7} y={CY + b * br - 7} width={14} height={14} fill="#fff" stroke={SEL} strokeWidth={2.5} />
-          ))}
-          <g transform={`translate(${CX} ${CY + br + 34})`}>
-            <rect x={-62} y={-17} width={124} height={34} rx={6} fill={SEL} />
-            <text textAnchor="middle" y={7} fontSize={21} fill="#fff" style={{fontFamily: FONT.ui, fontWeight: 600}}>420 × 420</text>
-          </g>
-        </g>
-      )}
-      <Cursor x={cx} y={cy} s={click * back(seg(t, 2, 8))} />
-    </Svg>
+    );
+  };
+  const zh = {fontFamily: FONT.sc, fontWeight: 900, fill: '#F4F2EC'} as const;
+  const n2 = '×21'.slice(0, Math.max(0, Math.floor((t - K.line2) / 3) + 1));
+  const n3 = '种样子'.slice(0, Math.max(0, Math.floor((t - K.line2 - 9) / 3) + 1));
+  return (
+    <AbsoluteFill style={{background: '#141312'}}>
+      <AbsoluteFill style={{transform: `scale(${s})`, transformOrigin: `${CX}px ${CY}px`}}>
+        {IDS.map((id, i) => {
+          const a0 = theta + i * WD - 90, a1 = a0 + WD + 0.12;
+          const p = [pt(a0, 1400), pt((a0 + a1) / 2, 1420), pt(a1, 1400)];
+          return (
+            <Img key={id} src={staticFile(`promo/tiles/full/${id}.jpg`)} style={{position: 'absolute', left: 0, top: 0, width: 1920, height: 1080, clipPath: `polygon(${CX}px ${CY}px, ${p.map((q) => `${q[0].toFixed(1)}px ${q[1].toFixed(1)}px`).join(', ')})`}} />
+          );
+        })}
+        <Svg>
+          {IDS.map((_, i) => {
+            const q = pt(theta + i * WD - 90, 1400);
+            return <line key={i} x1={CX} y1={CY} x2={q[0]} y2={q[1]} stroke="#F4F2EC" strokeWidth={4} />;
+          })}
+          <circle cx={CX} cy={CY} r={7} fill="#F4F2EC" />
+          {/* 同一个圆：一圈线把 21 片箍在一起 */}
+          <circle cx={CX} cy={CY} r={R + 2} fill="none" stroke="#F4F2EC" strokeWidth={5} />
+        </Svg>
+      </AbsoluteFill>
+      <Svg>
+        {'一个圆'.split('').map((ch, i) =>
+          blk(236 + i * 168, 540, 152, 152, K.line1 + i * 4, [-3, 2, -2][i], 76 + i * 2, <text x={236 + i * 168} y={582} textAnchor="middle" fontSize={116} style={zh}>{ch}</text>),
+        )}
+        {blk(1486, 486, 396, 176, K.line2, 2, 80, <text x={1486} y={540} textAnchor="middle" fontSize={150} fill="#F4F2EC" style={{fontFamily: '"Inter Display"', fontWeight: 700, letterSpacing: '-0.03em'}}>{n2}</text>)}
+        {blk(1486, 660, 396, 128, K.line2 + 9, -2, 82, <text x={1486} y={692} textAnchor="middle" fontSize={88} style={zh}>{n3}</text>)}
+      </Svg>
+    </AbsoluteFill>
   );
 };
 
@@ -75,7 +84,7 @@ export const Hud: React.FC<{f: number}> = ({f}) => {
   const out = ei(seg(f, TL.wall.at, 9), 2);
   if (out >= 1) return null;
   const k = sc ? slap(t, 0.1, 6) : 1;
-  const val = sc ? sc.id : 'none';
+  const val = sc ? sc.id : '*';
   const shown = sc
     ? val.split('').map((ch, j) => (t > 1.5 + j * 0.55 ? ch : GLYPH[Math.floor(hash(j * 7.3 + Math.floor(f) * 1.7) * GLYPH.length)])).join('')
     : val;
