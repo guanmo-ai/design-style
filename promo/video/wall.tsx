@@ -3,7 +3,6 @@ import React from 'react';
 import {AbsoluteFill, Img, staticFile} from 'remotion';
 import {CX, CY, FONT, G, R, Rise, Svg, TL, back, cl, ei, eio, eo, lerp, pop, seg, slap} from './kit';
 import {BRAND} from './hook';
-import {Ink} from './scenes/e';
 import c001 from '../../styles/001-bauhaus/video/cover.jpg';
 import c002 from '../../styles/002-swiss-style/video/cover.jpg';
 import c003 from '../../styles/003-constructivism/video/cover.jpg';
@@ -61,7 +60,7 @@ export const Wall: React.FC<{f: number}> = ({f}) => {
   const dmax = Math.max(...CELLS.map((q) => Math.hypot(q.c - INK_CELL.c, q.r - INK_CELL.r)));
   return (
     <AbsoluteFill style={{background: BRAND.bg, overflow: 'hidden'}}>
-      <div style={{position: 'absolute', left: 0, top: 0, width: 1920, height: 1080, transformOrigin: '0 0', transform: `translate(${960 - wx * S}px, ${540 - wy * S}px) scale(${S})`, perspective: 2400, perspectiveOrigin: '960px 540px'}}>
+      <div style={{position: 'absolute', left: 0, top: 0, width: 1920, height: 1080, transformOrigin: '0 0', transform: `translate(${960 - wx * S}px, ${540 - wy * S}px) scale(${S})`}}>
         {CELLS.map((q, i) => {
           const p = cell(q.r, q.c);
           const isInk = q.work === 18;
@@ -70,21 +69,18 @@ export const Wall: React.FC<{f: number}> = ({f}) => {
           const fl = back(seg(f, K.flip[0] + (d / dmax) * (K.flip[1] - K.flip[0] - 15), 15), 1.25);
           const lift = Math.sin(Math.PI * cl(fl));
           const id = WORK_IDS[q.work];
-          const face: React.CSSProperties = {position: 'absolute', inset: 0, borderRadius: rad, overflow: 'hidden', backfaceVisibility: 'hidden'};
+          // 只有正在翻的牌才走 3D（每张牌自己的透视）；没在翻的都是平面，软件渲染才跑得动
+          const deg = 180 * fl, flipping = fl > 0.002 && Math.abs(fl - 1) > 0.002, showBack = deg >= 90;
+          const tf = flipping ? `perspective(1500px) translateZ(${90 * lift}px) rotateY(${showBack ? deg - 180 : deg}deg) scale(${inS})` : `scale(${inS})`;
           return (
-            <div key={i} style={{position: 'absolute', left: p.x, top: p.y + COLDRIFT[q.c] * drift, width: TW, height: TH, transformStyle: 'preserve-3d', transform: `translateZ(${90 * lift}px) rotateY(${180 * fl}deg) scale(${inS})`, zIndex: lift > 0.01 ? 5 : 1}}>
-              <div style={{...face, boxShadow: `0 ${6 + 30 * lift}px ${16 + 50 * lift}px rgba(53,47,42,${0.16 + 0.14 * lift})`}}>
-                {isInk ? (
-                  <div style={{width: 1920, height: 1080, transformOrigin: '0 0', transform: `scale(${TW / 1920})`}}>
-                    <AbsoluteFill style={{transform: `scale(${lerp(1.035, 1, eo(seg(t, 0, 24), 2))})`}}><Ink t={47.999} len={48} /></AbsoluteFill>
-                  </div>
-                ) : (
-                  <Img src={staticFile(`promo/tiles/${id}.jpg`)} style={{width: '100%', height: '100%', objectFit: 'cover', display: 'block'}} />
-                )}
-              </div>
-              <div style={{...face, transform: 'rotateY(180deg)', boxShadow: '0 6px 16px rgba(53,47,42,0.2)'}}>
+            <div key={i} style={{position: 'absolute', left: p.x, top: p.y + COLDRIFT[q.c] * drift, width: TW, height: TH, transform: tf, zIndex: flipping ? 5 : 1, borderRadius: rad, overflow: 'hidden', boxShadow: `0 ${6 + 30 * lift}px ${16 + 50 * lift}px rgba(53,47,42,${0.16 + 0.14 * lift})`}}>
+              {showBack ? (
                 <Img src={COVERS[q.work]} style={{width: '100%', height: '100%', objectFit: 'cover', display: 'block'}} />
-              </div>
+              ) : isInk ? (
+                <Img src={staticFile('promo/tiles/ink-full.jpg')} style={{width: '100%', height: '100%', display: 'block', transform: `scale(${lerp(1.035, 1, eo(seg(t, 0, 24), 2))})`}} />
+              ) : (
+                <Img src={staticFile(`promo/tiles/${id}.jpg`)} style={{width: '100%', height: '100%', objectFit: 'cover', display: 'block'}} />
+              )}
             </div>
           );
         })}
@@ -224,4 +220,3 @@ export const Masonry: React.FC = () => {
     </Svg>
   );
 };
-export const _w = [Rise, CY];
