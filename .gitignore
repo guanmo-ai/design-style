@@ -7,3 +7,5 @@ dist/
 .gallery-cache/
 __pycache__/
 .venv/
+# 宣传片的生成物（配乐、墙上的小图、从画廊拷来的字体）：bash promo/make.sh 会重新生成
+public/promo/
