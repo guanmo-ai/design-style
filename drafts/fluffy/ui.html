@@ -1,0 +1,270 @@
+<!doctype html>
+<html lang="zh">
+<head>
+<meta charset="utf-8">
+<title>毛绒 · Fluffy · 落到界面里</title>
+<style>
+@font-face { font-family: 'Fredoka'; src: url(../../public/fonts/Fredoka.ttf); font-weight: 300 700; }
+@font-face { font-family: 'GeistMono'; src: url(../../public/fonts/GeistMono.ttf); font-weight: 100 900; }
+@font-face { font-family: 'NotoSC'; src: url(../../public/fonts/NotoSansSC-Black.otf); font-weight: 900; }
+@font-face { font-family: 'NotoSC'; src: url(../../public/fonts/NotoSansSC-Bold.otf); font-weight: 700; }
+@font-face { font-family: 'NotoSC'; src: url(../../public/fonts/NotoSansSC-Medium.otf); font-weight: 500; }
+:root { --ink: #15102e; --vio: #5a46f0; --pink: #ff4fa3; --paper: #f6f2ff; }
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html, body { width: 1920px; height: 1080px; overflow: hidden; background: var(--paper); color: var(--ink); font-family: NotoSC, sans-serif; }
+#cv { position: absolute; inset: 0; width: 1920px; height: 1080px; z-index: 1; pointer-events: none; }
+.u { position: absolute; z-index: 0; }   /* flat surfaces under the fur */
+.o { position: absolute; z-index: 2; }   /* crisp labels over the fur */
+.mono { font-family: GeistMono, monospace; letter-spacing: .04em; }
+.tl { left: 64px; top: 46px; font-size: 14px; display: flex; gap: 22px; align-items: center; text-transform: uppercase; color: rgba(21,16,46,.62); }
+.tl b { color: var(--ink); font-weight: 600; }
+.tl i { width: 34px; height: 1.5px; background: rgba(21,16,46,.35); }
+.tr { right: 64px; top: 40px; text-align: right; font-size: 13px; line-height: 1.85; color: rgba(21,16,46,.62); }
+.tr b { color: var(--ink); font-weight: 600; }
+.sub { left: 64px; top: 76px; font-size: 26px; font-weight: 700; letter-spacing: .01em; }
+.sub em { font-style: normal; font-family: Fredoka; font-weight: 700; font-size: 28px; margin: 0 2px 0 6px; }
+.sub span { color: rgba(21,16,46,.45); font-weight: 500; margin: 0 4px; }
+
+/* browser */
+.browser { left: 64px; top: 136px; width: 946px; height: 626px; background: #fff; border: 1.5px solid rgba(21,16,46,.1); border-radius: 28px; overflow: hidden; box-shadow: 0 24px 60px -24px rgba(60,40,160,.22); }
+.browser .bar { position: absolute; left: 0; right: 0; top: 0; height: 52px; }
+.dots { position: absolute; left: 22px; top: 20px; display: flex; gap: 8px; }
+.dots i { width: 12px; height: 12px; border-radius: 6px; background: #e7e2f6; }
+.url { position: absolute; left: 50%; top: 11px; transform: translateX(-50%); width: 300px; height: 30px; border-radius: 15px; background: #f3effc; display: flex; align-items: center; justify-content: center; gap: 8px; font-size: 13px; color: rgba(21,16,46,.7); }
+.url i { width: 8px; height: 8px; border-radius: 4px; background: #3ee0b4; }
+.hero { position: absolute; left: 0; right: 0; top: 52px; bottom: 0; background: var(--vio); }
+.nav { left: 120px; top: 206px; width: 832px; height: 40px; display: flex; align-items: center; color: #fff; }
+.logo { display: flex; align-items: center; gap: 10px; font-size: 20px; font-weight: 900; }
+.logo i { width: 24px; height: 24px; border-radius: 12px; background: #3ee0b4; box-shadow: inset -4px -4px 0 rgba(10,106,120,.35); }
+.logo em { font-style: normal; font-family: Fredoka; font-weight: 600; font-size: 20px; opacity: .8; margin-left: 2px; }
+.links { margin-left: auto; display: flex; gap: 30px; font-size: 15px; font-weight: 500; color: rgba(255,255,255,.78); }
+.bag { margin-left: 34px; height: 36px; padding: 0 16px; border-radius: 18px; background: #fff; color: var(--vio); font-size: 14px; font-weight: 700; display: flex; align-items: center; gap: 8px; }
+.bag b { font-family: Fredoka; font-weight: 700; width: 20px; height: 20px; border-radius: 10px; background: var(--vio); color: #fff; font-size: 12px; display: grid; place-items: center; }
+.h1 { color: #fff; font-weight: 900; font-size: 92px; line-height: 1; letter-spacing: .02em; }
+.lede { color: rgba(255,255,255,.86); font-size: 20px; font-weight: 500; }
+.cta-label { height: 46px; padding: 0 26px; border-radius: 23px; background: #fff; font-size: 20px; font-weight: 900; display: flex; align-items: center; gap: 8px; box-shadow: 0 4px 12px rgba(120,60,0,.25); }
+.ghost { height: 60px; padding: 0 26px; border-radius: 30px; border: 2px solid rgba(255,255,255,.5); color: #fff; font-size: 18px; font-weight: 700; display: flex; align-items: center; gap: 10px; }
+.tag { background: #fff; border-radius: 20px; padding: 14px 18px 12px; transform: rotate(-5deg); box-shadow: 0 14px 30px -10px rgba(20,8,90,.45); }
+.tag b { display: block; font-family: Fredoka; font-weight: 700; font-size: 34px; color: var(--vio); line-height: 1; }
+.tag small { display: block; margin-top: 6px; font-size: 13px; font-weight: 700; color: rgba(21,16,46,.6); }
+
+/* phones */
+.phone { top: 136px; width: 246px; height: 520px; background: #fff; border: 1.5px solid rgba(21,16,46,.1); border-radius: 40px; box-shadow: 0 24px 50px -22px rgba(60,40,160,.25); overflow: hidden; }
+.phone .island { position: absolute; left: 50%; top: 11px; width: 74px; height: 22px; margin-left: -37px; border-radius: 11px; background: var(--ink); }
+.phone .time { position: absolute; left: 26px; top: 13px; font-family: InterD, Fredoka; font-weight: 600; font-size: 13px; }
+.phone .sig { position: absolute; right: 24px; top: 16px; display: flex; gap: 5px; align-items: flex-end; }
+.sig i { width: 3px; border-radius: 1px; background: var(--ink); }
+.sig u { width: 20px; height: 10px; border-radius: 3px; border: 1.5px solid var(--ink); margin-left: 3px; position: relative; }
+.sig u::after { content: ''; position: absolute; left: 1.5px; top: 1.5px; width: 11px; height: 4px; border-radius: 1px; background: var(--ink); }
+.ptitle { position: absolute; left: 22px; top: 50px; font-size: 26px; font-weight: 900; line-height: 1; }
+.pnote { position: absolute; left: 22px; top: 84px; font-size: 12px; font-weight: 500; color: rgba(21,16,46,.5); }
+.pava { position: absolute; right: 20px; top: 50px; width: 32px; height: 32px; border-radius: 16px; background: #f3effc; display: grid; place-items: center; }
+.pava i { width: 14px; height: 14px; border-radius: 7px; background: #ffc62e; }
+.count { position: absolute; left: 0; right: 0; top: 338px; text-align: center; }
+.count b { font-family: Fredoka; font-weight: 700; font-size: 36px; line-height: 1; }
+.count small { display: block; margin-top: 4px; font-size: 12px; font-weight: 500; color: rgba(21,16,46,.5); }
+.plus { position: absolute; top: 340px; height: 22px; padding: 0 8px; border-radius: 11px; background: var(--pink); color: #fff; font-family: Fredoka; font-weight: 700; font-size: 14px; display: grid; place-items: center; }
+.list { position: absolute; left: 14px; right: 14px; top: 404px; height: 88px; border-radius: 22px; background: #f6f2ff; padding: 6px 14px; }
+.row { height: 38px; display: flex; align-items: center; gap: 10px; font-size: 13px; font-weight: 700; }
+.row + .row { border-top: 1px solid rgba(21,16,46,.07); }
+.row i { width: 22px; height: 22px; border-radius: 11px; flex: none; }
+.row span { margin-left: auto; font-size: 11px; font-weight: 500; color: rgba(21,16,46,.45); }
+.home { position: absolute; left: 50%; bottom: 8px; width: 90px; height: 4px; margin-left: -45px; border-radius: 2px; background: var(--ink); opacity: .85; }
+.cap { top: 680px; width: 246px; }
+.cap .t { display: flex; align-items: center; gap: 10px; font-size: 24px; font-weight: 900; line-height: 1; }
+.chip { flex: none; width: 30px; height: 30px; border-radius: 15px; background: var(--vio); color: #fff; font-family: Fredoka; font-weight: 700; font-size: 17px; display: grid; place-items: center; }
+.cap small { display: block; margin-top: 12px; font-size: 12.5px; color: rgba(21,16,46,.62); letter-spacing: .02em; }
+.arrow { top: 349px; width: 26px; height: 26px; border-radius: 13px; background: #fff; border: 1.5px solid rgba(21,16,46,.1); display: grid; place-items: center; font-family: Fredoka; font-weight: 700; font-size: 14px; color: var(--vio); }
+
+/* recipe cards */
+.card { top: 792px; width: 433px; height: 224px; background: #fff; border: 1.5px solid rgba(21,16,46,.08); border-radius: 28px; }
+.ct { top: 818px; width: 220px; }
+.ct .t { display: flex; align-items: center; gap: 12px; font-size: 26px; font-weight: 900; line-height: 1; }
+.ct p { margin-top: 18px; font-size: 15px; font-weight: 500; line-height: 1.55; color: rgba(21,16,46,.66); }
+.swatch { top: 818px; width: 150px; height: 110px; border-radius: 18px; }
+.f { top: 950px; width: 381px; height: 40px; border-radius: 14px; background: #f6f2ff; display: flex; align-items: center; padding: 0 14px; font-size: 13.5px; color: var(--ink); letter-spacing: .02em; }
+.f b { font-weight: 600; color: var(--vio); margin-right: 10px; }
+</style>
+</head>
+<body>
+<canvas id="cv"></canvas>
+
+<div class="o tl mono"><b>Design Style</b><i></i><span>风格候选</span><i></i><span>Fluffy · 毛绒</span></div>
+<div class="o tr mono"><b>落到界面里</b> · web + app<br>Canvas 2D · 逐根绘制</div>
+<div class="o sub">毛绒<em>Fluffy</em><span>—</span>让界面有“手感”：按钮、开关、角色、空状态</div>
+
+<!-- ① browser -->
+<div class="u browser">
+  <div class="bar"><div class="dots"><i></i><i></i><i></i></div><div class="url mono"><i></i>fluffy.design</div></div>
+  <div class="hero"></div>
+</div>
+<div class="o nav"><div class="logo"><i></i>毛球<em>Puffball</em></div><div class="links"><span>全部毛球</span><span>怎么养</span><span>故事</span></div><div class="bag">购物袋<b>2</b></div></div>
+<div class="o h1" id="h1" style="left: 120px; top: 0;">摸得<br>到的</div>
+<div class="o lede" id="lede" style="left: 120px; top: 0;">几万根毛，每一根都会回你一下。</div>
+<div class="o cta-label" id="ctaL" style="left: 0; top: 0;">摸一下</div>
+<div class="o ghost" id="ghost" style="left: 0; top: 0;">看看全家<span style="font-family: Fredoka">→</span></div>
+<div class="o tag" id="tag" style="left: 742px; top: 290px;"><b>¥59</b><small>一只 · 第 128 号</small></div>
+
+<!-- ② phones -->
+<div id="phones"></div>
+
+<!-- ③ recipes -->
+<div id="cards"></div>
+
+<script src="fur.js"></script>
+<script>
+// ——— layout constants (CSS px) ———
+const HERO = {x: 65.5, y: 189.5, w: 943, h: 571, r: 26.5};
+const PH = [1050, 1330, 1610], PT = 136, PW = 246, PHH = 520;
+const CX = [64, 517, 970, 1423], CW = 433;
+const HEART = {dx: 123, dy: 230};   // heart centre inside a phone
+
+// ——— static HTML: phones + captions + cards ———
+const beats = [
+  ['静止', 'len 22 · scale 1.00', '128'],
+  ['按下', 'push = 1 − (d/r)² · ×0.94', '128'],
+  ['松手', 'len ×1.2 · 过冲 5% · +1', '129'],
+];
+let html = '';
+beats.forEach(([t, m, n], i) => {
+  const x = PH[i];
+  html += `<div class="u phone" style="left:${x}px"></div>
+  <div class="o phone" style="left:${x}px;background:none;border-color:transparent;box-shadow:none">
+    <div class="island"></div><div class="time">9:41</div>
+    <div class="sig"><i style="height:5px"></i><i style="height:7px"></i><i style="height:9px"></i><u></u></div>
+    <div class="ptitle">毛球</div><div class="pnote">今天也被摸了很多下</div>
+    <div class="pava"><i></i></div>
+    <div class="count"><b style="${i === 2 ? 'color:#ff4fa3' : ''}">${n}</b><small>次摸摸</small></div>
+    ${i === 2 ? '<div class="plus" style="left:160px">+1</div>' : ''}
+    <div class="list">
+      <div class="row"><i style="background:#ffc62e"></i>阿黄摸了你<span>${i === 2 ? '刚刚' : '2 分钟'}</span></div>
+      <div class="row"><i style="background:#3ee0b4"></i>小薄荷摸了你<span>1 小时</span></div>
+    </div>
+    <div class="home"></div>
+  </div>
+  <div class="o cap" style="left:${x}px"><div class="t"><span class="chip">${i + 1}</span>${t}</div><small class="mono">${m}</small></div>`;
+  if (i < 2) html += `<div class="o arrow" style="left:${x + PW + 4}px">→</div>`;
+});
+document.getElementById('phones').innerHTML = html;
+
+const recipes = [
+  ['慢半拍', '毛尖比毛根晚到几帧，<br>风一吹，尖先走。', 'lag', '= 0–6f × 离根的距离', '#5a46f0'],
+  ['回弹', '按下压扁，松手<br>多弹出去 5% 再回来。', 'spring', 'k 180 · c 12 · 过冲 5%', '#f6f2ff'],
+  ['逆毛', '手指划过，毛往两边倒，<br>沟沿堆高。', 'push', '= 1 − (d / r)² · r 34px', '#f6f2ff'],
+  ['生长', '从光滑的皮上，<br>一根根长出来。', 'len(t)', '= L · easeOutBack(t)', '#f6f2ff'],
+];
+html = '';
+recipes.forEach(([t, p, a, b, bg], i) => {
+  const x = CX[i];
+  html += `<div class="u card" style="left:${x}px"></div>
+  <div class="u swatch" style="left:${x + CW - 26 - 150}px;background:${bg}"></div>
+  <div class="o ct" style="left:${x + 26}px"><div class="t"><span class="chip">${i + 1}</span>${t}</div><p>${p}</p></div>
+  <div class="o f mono" style="left:${x + 26}px"><b>${a}</b>${b}</div>`;
+});
+document.getElementById('cards').innerHTML = html;
+
+(async () => {
+  await document.fonts.load('900 260px NotoSC', '软摸得到的'); await document.fonts.load('700 20px NotoSC', '毛'); await document.fonts.load('500 20px NotoSC', '毛');
+  await document.fonts.load('700 30px Fredoka', 'F'); await document.fonts.load('500 13px GeistMono', 'a'); await document.fonts.ready;
+  const k = window.devicePixelRatio || 1, cv = document.getElementById('cv'); cv.width = 1920 * k; cv.height = 1080 * k;
+  const g = cv.getContext('2d'), {cl} = Fur;
+  const sm = (a, b, x) => { const u = cl((x - a) / (b - a)); return u * u * (3 - 2 * u); };
+  const rr = (x, y, w, h, r) => (c) => { c.beginPath(); c.roundRect(x, y, w, h, r); c.fill(); };
+  const ball = (x, y, rx, ry = rx) => (c) => { c.beginPath(); c.ellipse(x, y, rx, ry, 0, 0, 7); c.fill(); };
+  const heartPath = (c, cx, cy, s) => { // s = side of the rotated square; width ≈ 1.71 s
+    const h = s / Math.SQRT2, q = h / 2; cy += s * 0.07;
+    c.beginPath(); c.moveTo(cx, cy - h); c.lineTo(cx + h, cy); c.lineTo(cx, cy + h); c.lineTo(cx - h, cy); c.closePath(); c.fill();
+    c.beginPath(); c.arc(cx - q, cy - q, s / 2, 0, 7); c.fill(); c.beginPath(); c.arc(cx + q, cy - q, s / 2, 0, 7); c.fill();
+  };
+  const heart = (cx, cy, s) => (c) => heartPath(c, cx, cy, s);
+  const clip = (x, y, w, h, r, f) => { g.save(); g.beginPath(); g.roundRect(x * k, y * k, w * k, h * k, Array.isArray(r) ? r.map((v) => v * k) : r * k); g.clip(); f(); g.restore(); };
+  const flat = (f) => { g.save(); g.scale(k, k); f(g); g.restore(); };
+  const finger = (x, y, ring) => flat((c) => {
+    c.shadowColor = 'rgba(40,10,90,.4)'; c.shadowBlur = 18; c.shadowOffsetY = 8;
+    c.fillStyle = 'rgba(255,255,255,.97)'; c.beginPath(); c.arc(x, y, 21, 0, 7); c.fill();
+    c.shadowColor = 'transparent'; c.strokeStyle = ring; c.lineWidth = 2; c.beginPath(); c.arc(x, y, 33, 0, 7); c.stroke();
+  });
+  const hairs = (seed, n, f) => flat((c) => { const r = Fur.rng(seed); c.lineCap = 'round'; for (let i = 0; i < n; i++) f(c, r); });
+  const PINK = {color: '#ff4fa3', shade: '#7a0d5c', tip: '#ffe4f1'}, YEL = {color: '#ffc62e', shade: '#a3340c', tip: '#fff9d9'};
+  const MINT = {color: '#3ee0b4', shade: '#0a6a78', tip: '#e6fff4'}, ORA = {color: '#ff7a3d', shade: '#8f1f1f', tip: '#ffe2c2'}, WHT = {color: '#f4f1ff', shade: '#6a58c8', tip: '#ffffff'};
+  let total = 0;
+
+  // ——— ① browser hero ———
+  // headline: "摸得/到的" flat, "软" fur — place by real glyph bounds
+  const FS = 292, mc = document.createElement('canvas').getContext('2d'); mc.font = `900 ${FS}px NotoSC`;
+  const m = mc.measureText('软'), GL = 352, GT = 266; // glyph left/top
+  const gx = GL + m.actualBoundingBoxLeft, gy = GT + m.actualBoundingBoxAscent, gw = m.actualBoundingBoxLeft + m.actualBoundingBoxRight, gh = m.actualBoundingBoxAscent + m.actualBoundingBoxDescent;
+  const gBottom = GT + gh;
+  const h1 = document.getElementById('h1'); h1.style.top = (gBottom - 184 - 2) + 'px';
+  const LEDE_T = gBottom + 40; document.getElementById('lede').style.top = LEDE_T + 'px';
+  const CTA = {x: 120, y: LEDE_T + 50, w: 264, h: 84};
+  const ctaL = document.getElementById('ctaL'); ctaL.style.left = (CTA.x + CTA.w / 2 - 66) + 'px'; ctaL.style.top = (CTA.y + CTA.h / 2 - 23) + 'px'; ctaL.style.width = '132px'; ctaL.style.justifyContent = 'center';
+  const gh2 = document.getElementById('ghost'); gh2.style.left = (CTA.x + CTA.w + 44) + 'px'; gh2.style.top = (CTA.y + CTA.h / 2 - 30) + 'px';
+  console.log('glyph', gw | 0, gh | 0, 'bottom', gBottom | 0, 'cta', CTA.y, CTA.y + CTA.h);
+
+  clip(HERO.x, HERO.y, HERO.w, HERO.h, [0, 0, HERO.r, HERO.r], () => {
+    total += Fur.shape(g, k, {draw: (c) => { c.font = `700 ${FS}px NotoSC`; c.fillText('软', gx, gy); }, box: [GL, GT, gw, gh], ...PINK, len: 21, puff: 15, density: 0.34, width: 1.3, comb: [0.2, 1], seed: 41, shadowColor: 'rgba(30,14,80,1)'});
+    // CTA pill — cursor came in from the lower right and parted the fur on its way
+    const fx = CTA.x + CTA.w - 36, fy = CTA.y + 16;
+    total += Fur.shape(g, k, {draw: rr(CTA.x, CTA.y, CTA.w, CTA.h, 42), box: [CTA.x, CTA.y, CTA.w, CTA.h], ...YEL, len: 22, puff: 20, density: 0.34, width: 1.3, comb: [0.3, 1], seed: 42, shadowColor: 'rgba(30,14,80,1)',
+      grooves: [{pts: [[fx + 12, CTA.y + 72], [fx + 2, CTA.y + 56], [fx - 2, CTA.y + 36], [fx, fy]], r: 16}]});
+    // mascot, cropped by the browser edge
+    const MX = 958, MY = 640;
+    total += Fur.shape(g, k, {draw: ball(MX, MY, 96), box: [MX - 96, MY - 96, 192, 192], ...MINT, len: 42, puff: 44, density: 0.32, width: 1.45, comb: [0.05, 1], curl: 1.2, seed: 43, shadowColor: 'rgba(30,14,80,1)'});
+    flat((c) => {
+      for (const [ex, ey] of [[MX - 34, MY - 10], [MX + 18, MY - 14]]) {
+        c.fillStyle = 'rgba(8,60,70,.35)'; c.beginPath(); c.ellipse(ex + 2, ey + 4, 21, 23, 0, 0, 7); c.fill();
+        c.fillStyle = '#fff'; c.beginPath(); c.ellipse(ex, ey, 20, 22, 0, 0, 7); c.fill();
+        c.fillStyle = '#15102e'; c.beginPath(); c.arc(ex - 9, ey + 4, 10.5, 0, 7); c.fill();
+        c.fillStyle = '#fff'; c.beginPath(); c.arc(ex - 12, ey, 3.6, 0, 7); c.fill();
+      }
+    });
+    finger(fx, fy, 'rgba(255,255,255,.6)');
+    hairs(17, 14, (c, r) => { // a few loose hairs drifting in the hero, like the poster
+      const x = 560 + r() * 400, y = 270 + r() * 420, a = r() * 6.28, l = 14 + r() * 20;
+      if (Math.hypot(x - 958, y - 640) < 150 || (x < 720 && y > 520)) return;
+      c.globalAlpha = 0.45 + r() * 0.35; c.strokeStyle = ['#ffb6dc', '#ffe58a', '#baf5e1', '#ffffff'][Math.floor(r() * 4)]; c.lineWidth = 1.4;
+      c.beginPath(); c.moveTo(x, y); c.quadraticCurveTo(x + Math.cos(a) * l * 0.5 + 5, y + Math.sin(a) * l * 0.5 - 5, x + Math.cos(a) * l, y + Math.sin(a) * l); c.stroke();
+    });
+  });
+
+  // ——— ② phones: rest / press / release ———
+  const PS = 80;
+  PH.forEach((px, i) => {
+    const cx = px + HEART.dx, cy = PT + HEART.dy;
+    const s = PS * [1, 0.94, 1.05][i], len = 22 * [1, 0.86, 1.2][i];
+    const fx = cx + 8, fy = cy + 6;
+    const opts = {draw: heart(cx, cy, s), box: [cx - s * 0.86, cy - s * 0.8, s * 1.72, s * 1.6], ...PINK, len, puff: 20, density: 0.34, width: 1.3, comb: [0.15, 1], seed: 50 + i, shadowColor: 'rgba(170,60,150,1)'};
+    if (i === 1) { opts.grooves = [{pts: [[fx, fy], [fx + 0.5, fy]], r: 46}]; opts.wind = (x, y) => { const d = Math.hypot(x - fx, y - fy) || 1, w = Math.exp(-d / 60) * 0.8; return [(x - fx) / d * w, (y - fy) / d * w]; }; }
+    if (i === 2) { opts.wind = (x, y) => { const d = Math.hypot(x - cx, y - cy) || 1, w = 0.9 * sm(10, 90, d); return [cl((x - cx) / 60, -1, 1) * w, (y - cy) / d * w]; }; opts.curl = 1.1; }
+    clip(px + 1.5, PT + 1.5, PW - 3, PHH - 3, 38.5, () => {
+      total += Fur.shape(g, k, opts);
+      if (i === 2) hairs(91, 26, (c, r) => {
+        const a = r() * 6.28, d0 = 98 + r() * 26, l = 10 + r() * 14, x = cx + Math.cos(a) * d0, y = cy + 4 + Math.sin(a) * d0 * 0.9;
+        if (x < px + 18 || x > px + PW - 34 || y > cy + 92) return; c.globalAlpha = 0.55 + r() * 0.4; c.strokeStyle = ['#ff4fa3', '#ffb6dc', '#d02a7f'][Math.floor(r() * 3)]; c.lineWidth = 1.4;
+        c.beginPath(); c.moveTo(x, y); c.quadraticCurveTo(x + Math.cos(a + 0.6) * l * 0.6, y + Math.sin(a + 0.6) * l * 0.6, x + Math.cos(a) * l, y + Math.sin(a) * l); c.stroke();
+      });
+      if (i === 1) finger(fx, fy, 'rgba(90,70,240,.35)');
+    });
+  });
+
+  // ——— ③ swatches ———
+  const SW = (i) => [CX[i] + CW - 26 - 150, 818, 150, 110];
+  { const [x, y, w, h] = SW(0); clip(x, y, w, h, 18, () => { total += Fur.shape(g, k, {draw: rr(x - 20, y - 20, w + 40, h + 40, 0), box: [x - 20, y - 20, w + 40, h + 40], ...MINT, len: 22, puff: 16, density: 0.34, width: 1.2, comb: [0, 1], seed: 61, shadow: false,
+    wind: (X, Y) => { const t = sm(y, y + h, Y); return [3.4 * (0.08 + 0.92 * t) * (0.85 + 0.3 * Math.sin(Y * 0.09)), -0.6 * t]; }}); }); }
+  { const [x, y, w, h] = SW(1); clip(x, y, w, h, 18, () => {
+    flat((c) => { c.setLineDash([4, 5]); c.strokeStyle = 'rgba(90,70,240,.45)'; c.lineWidth = 1.5; c.beginPath(); c.ellipse(x + 75, y + 52, 32, 42, 0, 0, 7); c.stroke();
+      c.setLineDash([]); c.strokeStyle = 'rgba(21,16,46,.14)'; c.beginPath(); c.moveTo(x + 16, y + 98); c.lineTo(x + w - 16, y + 98); c.stroke(); });
+    total += Fur.shape(g, k, {draw: ball(x + 75, y + 70, 46, 28), box: [x + 29, y + 42, 92, 56], ...ORA, len: 18, puff: 16, density: 0.34, width: 1.2, comb: [0.1, 1], seed: 62, shadowColor: 'rgba(120,60,90,1)'}); }); }
+  { const [x, y, w, h] = SW(2); clip(x, y, w, h, 18, () => { total += Fur.shape(g, k, {draw: rr(x - 20, y - 20, w + 40, h + 40, 0), box: [x - 20, y - 20, w + 40, h + 40], ...PINK, len: 20, puff: 16, density: 0.34, width: 1.2, comb: [0.2, 1], seed: 63, shadow: false,
+    grooves: [{pts: [[x - 10, y + 80], [x + 30, y + 86], [x + 60, y + 60], [x + 90, y + 34], [x + 125, y + 36], [x + 160, y + 46]], r: 15}]}); }); }
+  { const [x, y, w, h] = SW(3); clip(x, y, w, h, 18, () => { total += Fur.shape(g, k, {draw: rr(x - 20, y - 20, w + 40, h + 40, 0), box: [x - 20, y - 20, w + 40, h + 40], ...YEL, len: 22, puff: 16, density: 0.34, width: 1.25, comb: [0.2, 1], seed: 64, shadow: false,
+    grow: (X) => Math.pow(sm(x + 6, x + 140, X), 1.7)});
+    flat((c) => { const gr = c.createRadialGradient(x + 26, y + 34, 0, x + 26, y + 34, 34); gr.addColorStop(0, 'rgba(255,255,255,.55)'); gr.addColorStop(1, 'rgba(255,255,255,0)'); c.fillStyle = gr; c.beginPath(); c.ellipse(x + 26, y + 34, 22, 34, 0.5, 0, 7); c.fill(); }); }); }
+
+  console.log('strands', total);
+  window.ready = true;
+})();
+</script>
+</body>
+</html>
