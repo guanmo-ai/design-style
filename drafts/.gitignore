@@ -12,3 +12,5 @@ candidates-5.html
 !liquid-chrome/*.html
 !point-cloud/*.html
 !thermal/*.html
+# 第七轮候选（毛绒）同理：手写源码
+!fluffy/*.html
