@@ -6,7 +6,8 @@
     "jsx": "react-jsx",
     "strict": true,
     "skipLibCheck": true,
+    "resolveJsonModule": true,
     "noEmit": true
   },
-  "include": ["src", "styles"]
+  "include": ["src", "styles", "promo"]
 }

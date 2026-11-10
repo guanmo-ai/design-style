@@ -1,0 +1,219 @@
+{
+ "fps": 60,
+ "bpm": 150,
+ "beat": 24,
+ "duration": 900,
+ "hook": {
+  "at": 0,
+  "slam": 0,
+  "line1": 8,
+  "code": 30,
+  "line2": 48,
+  "windup": 72
+ },
+ "scenes": [
+  {
+   "id": "bauhaus",
+   "no": "001",
+   "at": 96,
+   "len": 48,
+   "en": "Bauhaus",
+   "zh": "包豪斯",
+   "year": "1919—1933"
+  },
+  {
+   "id": "swiss",
+   "no": "002",
+   "at": 144,
+   "len": 48,
+   "en": "Swiss Style",
+   "zh": "瑞士国际主义",
+   "year": "1950—1970"
+  },
+  {
+   "id": "constructivism",
+   "no": "003",
+   "at": 192,
+   "len": 48,
+   "en": "Constructivism",
+   "zh": "构成主义",
+   "year": "1917—1932"
+  },
+  {
+   "id": "memphis",
+   "no": "004",
+   "at": 240,
+   "len": 48,
+   "en": "Memphis",
+   "zh": "孟菲斯",
+   "year": "1980—1988"
+  },
+  {
+   "id": "popart",
+   "no": "005",
+   "at": 288,
+   "len": 24,
+   "en": "Pop Art",
+   "zh": "波普艺术",
+   "year": "1956—1970"
+  },
+  {
+   "id": "y2k",
+   "no": "006",
+   "at": 312,
+   "len": 24,
+   "en": "Y2K",
+   "zh": "千禧未来主义",
+   "year": "1997—2004"
+  },
+  {
+   "id": "riso",
+   "no": "008",
+   "at": 336,
+   "len": 24,
+   "en": "Risograph",
+   "zh": "孔版印刷",
+   "year": "1946—今天"
+  },
+  {
+   "id": "neobrutal",
+   "no": "009",
+   "at": 360,
+   "len": 24,
+   "en": "Neo-Brutalism",
+   "zh": "新粗野主义",
+   "year": "2021—今天"
+  },
+  {
+   "id": "artdeco",
+   "no": "013",
+   "at": 384,
+   "len": 24,
+   "en": "Art Deco",
+   "zh": "装饰艺术",
+   "year": "1925—1939"
+  },
+  {
+   "id": "glass",
+   "no": "014",
+   "at": 408,
+   "len": 24,
+   "en": "Liquid Glass",
+   "zh": "液态玻璃",
+   "year": "2013—今天"
+  },
+  {
+   "id": "futurism",
+   "no": "015",
+   "at": 432,
+   "len": 24,
+   "en": "Futurism",
+   "zh": "未来主义",
+   "year": "1909—1944"
+  },
+  {
+   "id": "midcentury",
+   "no": "017",
+   "at": 456,
+   "len": 24,
+   "en": "Mid-Century Modern",
+   "zh": "中世纪现代",
+   "year": "1945—1965"
+  },
+  {
+   "id": "diorama",
+   "no": "018",
+   "at": 480,
+   "len": 24,
+   "en": "Diorama",
+   "zh": "微缩景观",
+   "year": "1950s—今天"
+  },
+  {
+   "id": "lowpoly",
+   "no": "019",
+   "at": 504,
+   "len": 24,
+   "en": "Low Poly",
+   "zh": "低多边形",
+   "year": "1993—今天"
+  },
+  {
+   "id": "ascii",
+   "no": "020",
+   "at": 528,
+   "len": 24,
+   "en": "ASCII Art",
+   "zh": "字符画",
+   "year": "1960s—今天"
+  },
+  {
+   "id": "generative",
+   "no": "021",
+   "at": 552,
+   "len": 24,
+   "en": "Generative Art",
+   "zh": "生成艺术",
+   "year": "1960s—今天"
+  },
+  {
+   "id": "pointcloud",
+   "no": "022",
+   "at": 576,
+   "len": 24,
+   "en": "Point Cloud",
+   "zh": "点云",
+   "year": "1960s—今天"
+  },
+  {
+   "id": "chrome",
+   "no": "023",
+   "at": 600,
+   "len": 24,
+   "en": "Liquid Chrome",
+   "zh": "液态金属",
+   "year": "1991—今天"
+  },
+  {
+   "id": "ink",
+   "no": "024",
+   "at": 624,
+   "len": 48,
+   "en": "Ink Wash",
+   "zh": "水墨",
+   "year": "唐—今天"
+  }
+ ],
+ "accents": {
+  "bauhaus2": 120,
+  "swiss2": 168,
+  "wedge2": 216,
+  "memphisBounce": 264,
+  "inkDrop": 648,
+  "inkSeal": 660
+ },
+ "wall": {
+  "at": 672,
+  "settle": 700,
+  "flip": [
+   706,
+   746
+  ],
+  "push": [
+   744,
+   768
+  ]
+ },
+ "end": {
+  "at": 768,
+  "chips": [
+   792,
+   804,
+   816,
+   828,
+   840,
+   852
+  ],
+  "seal": 864
+ }
+}

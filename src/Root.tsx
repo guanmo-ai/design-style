@@ -1,5 +1,6 @@
 import React from 'react';
 import {Composition} from 'remotion';
+import {Promo, PROMO_DURATION} from '../promo/video/Promo';
 import {Bauhaus, BAUHAUS_DURATION} from '../styles/001-bauhaus/video/Bauhaus';
 import {BentoGrid, BENTO_DURATION} from '../layouts/01-bento-grid/video/BentoGrid';
 import {Masonry, MASONRY_DURATION} from '../layouts/02-masonry/video/Masonry';
@@ -19,6 +20,15 @@ import {MidCenturyModern, MIDCENTURYMODERN_DURATION} from '../styles/017-mid-cen
 // 统一规格：1920×1080 · 60fps · 15s
 export const Root: React.FC = () => (
   <>
+    <Composition
+      id="Promo"
+      component={Promo}
+      durationInFrames={PROMO_DURATION}
+      fps={60}
+      width={1920}
+      height={1080}
+      defaultProps={{music: true, blur: 8, shutter: 0.75, hud: true}}
+    />
     <Composition
       id="S001-Bauhaus"
       component={Bauhaus}
