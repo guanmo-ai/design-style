@@ -1,0 +1,44 @@
+<!doctype html><meta charset="utf-8"><title>毛绒 · 可以摸的毛球</title>
+<!-- 直接用浏览器打开（需要显卡）：鼠标移上去把毛拨开，拖动甩一甩，右边四个滑块对应四条规则。?rows=400 是正片的 40 万根。 -->
+<style>html, body { margin: 0; background: #1b36c9; overflow: hidden; font: 15px/1.5 ui-monospace, monospace; color: #fff; }
+canvas { display: block; width: 100vw; height: 56.25vw; max-height: 100vh; cursor: grab; }
+#ui { position: fixed; right: 20px; top: 20px; background: rgba(0, 0, 40, .35); padding: 14px 18px; border-radius: 14px; }
+#ui label { display: block; margin: 4px 0; } #ui input { width: 180px; vertical-align: middle; }</style>
+<canvas id="c" width="1920" height="1080"></canvas>
+<div id="ui"><label>根深尖浅 <input id="grad" type="range" min="0" max="1" step="0.01" value="1"></label><label>乱一点　 <input id="mess" type="range" min="0" max="1" step="0.01" value="1"></label>
+<label>逆光镶边 <input id="rim" type="range" min="0" max="3" step="0.01" value="1"></label><label>慢半拍　 <input id="spring" type="range" min="0" max="2" step="0.01" value="1"></label></div>
+<script src="../_lib/glkit.js"></script><script src="fur.js"></script><script src="shapes.js"></script>
+<script>
+const Q = new URLSearchParams(location.search), $ = id => document.getElementById(id), M = FUR.m4, cv = $('c');
+const F = FUR.create(cv, { rows: +(Q.get('rows') || 150), K: 4 }), wmul = Math.sqrt(400 / (F.N / 1024));
+F.addShape('ball', SHAPES.fromPrims(F.N, [{ type: 'ell', c: [0, 1, 0], r: [1, 1, 1] }]));
+const PINK = { root: '#7d0a3c', tip: '#ff4f97', len: 1, curl: 0.07, gloss: 1, droop: 0.22 }, FLAT = { ...PINK, root: '#e23a82', tip: '#e23a82' };
+const mixHex = (a, b, t) => '#' + [0, 1, 2].map(k => Math.round(255 * Math.pow(FUR.srgb(a)[k] * (1 - t) + FUR.srgb(b)[k] * t, 1 / 2.2)).toString(16).padStart(2, '0')).join('');
+// 身体的姿态历史（60 帧）：毛尖 = 历史 ⊗ 弹簧的冲激响应
+const KS = FUR.springKernel(2.6, 0.22), KH = FUR.springKernel(4.6, 0.3), hist = [];
+let pos = [0, 0], vel = [0, 0], drag = null, push = null, t = 0;
+const eye = [0, 1.25, 5.2], at = [0, 1.05, 0], fov = 0.55;
+const ray = e => { const r = cv.getBoundingClientRect(), nx = (e.clientX - r.left) / r.width * 2 - 1, ny = 1 - (e.clientY - r.top) / r.height * 2, th = Math.tan(fov / 2);
+  const d = [nx * th * 16 / 9, ny * th - 0.2 / 5.2, -1], l = Math.hypot(...d); return d.map(v => v / l); };
+cv.onpointerdown = e => { drag = [e.clientX, e.clientY, pos[0], pos[1]]; cv.setPointerCapture(e.pointerId); };
+cv.onpointerup = () => drag = null;
+cv.onpointermove = e => {
+  if (drag) { pos = [drag[2] + (e.clientX - drag[0]) / 300, drag[3] - (e.clientY - drag[1]) / 300]; push = null; return; }
+  const d = ray(e), oc = [eye[0] - pos[0], eye[1] - 1 - pos[1], eye[2]], b = oc[0] * d[0] + oc[1] * d[1] + oc[2] * d[2], c = oc[0] ** 2 + oc[1] ** 2 + oc[2] ** 2 - 1.15 ** 2, h = b * b - c;
+  push = h > 0 ? [0, 1, 2].map(k => eye[k] + d[k] * (-b - Math.sqrt(h))).concat(0.4) : null;                    // 鼠标那条射线打在球上的点
+};
+function loop() {
+  t += 1 / 60;
+  if (!drag) { vel = vel.map((v, k) => (v - pos[k] * 0.06) * 0.88); pos = pos.map((p, k) => p + vel[k]); }       // 松手：弹回原位
+  const m = M.T(pos[0], pos[1], 0); hist.unshift(m); if (hist.length > 60) hist.pop();
+  const soft = new Float32Array(16), stiff = new Float32Array(16);
+  for (let k = 0; k < 60; k++) { const h = hist[Math.min(k, hist.length - 1)]; for (let i = 0; i < 16; i++) { soft[i] += h[i] * KS[k]; stiff[i] += h[i] * KH[k]; } }
+  F.setPart(0, m, soft, stiff, 1, 1);
+  const g = +$('grad').value, ms = +$('mess').value, rim = +$('rim').value;
+  F.tone(0, { ...PINK, root: mixHex(FLAT.root, PINK.root, g), tip: mixHex(FLAT.tip, PINK.tip, g), curl: 0.07 * ms, droop: 0.22 * ms });
+  F.render({ A: 'ball', t, eye, at, fov, len: 0.15, width: 0.007 * wmul, base: 0.035, bg: ['#2f58ff', '#1b36c9'], occ: [[pos[0], 1 + pos[1], 0, 0.98]], wind: [1, 0.15, 0.2, 0.1],
+    deep: 1 - 0.7 * g, vary: ms, frizz: 0.4 * ms, clump: 0.55 * ms, rimCol: [1.1 * rim, 1.0 * rim, 1.2 * rim], spring: +$('spring').value, push: push ? [push] : [] });
+  window.__done = true; requestAnimationFrame(loop);
+}
+loop();
+</script>
