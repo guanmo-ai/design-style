@@ -48,6 +48,9 @@ get Silkscreen-Bold.ttf    "$GF/silkscreen/Silkscreen-Bold.ttf"
 get Inter.ttf "$GF/inter/Inter%5Bopsz,wght%5D.ttf"
 # 第六轮候选 液态金属：站酷庆科黄油体（圆头粗体中文，被做成会滴落的镀铬字；OFL）
 get ZCOOLQingKeHuangYou.ttf "$GF/zcoolqingkehuangyou/ZCOOLQingKeHuangYou-Regular.ttf"
+# 手绘候选（drafts/hand-drawn）：站酷快乐体（手写感的中文，蜡笔字和铅笔批注）+ Caveat（手写数字和英文）；均为 OFL
+get ZCOOLKuaiLe-Regular.ttf "$GF/zcoolkuaile/ZCOOLKuaiLe-Regular.ttf"
+get Caveat.ttf              "$GF/caveat/Caveat%5Bwght%5D.ttf"
 # 布局 01 Bento Grid：Inter Display（标题）+ Inter（正文）+ Geist Mono（数字 / 标注）
 TMP=$(mktemp -d)
 get "$TMP/inter.zip" https://github.com/rsms/inter/releases/download/v4.1/Inter-4.1.zip

@@ -1,0 +1,21 @@
+<!doctype html><meta charset="utf-8">
+<style>
+@font-face{font-family:Bangers;src:url(../../public/fonts/Bangers-Regular.ttf)}
+@font-face{font-family:NotoBlack;src:url(../../public/fonts/NotoSansSC-Black.otf)}
+@font-face{font-family:NotoBold;src:url(../../public/fonts/NotoSansSC-Bold.otf)}
+@font-face{font-family:KuaiLe;src:url(../../public/fonts/ZCOOLKuaiLe-Regular.ttf)}
+@font-face{font-family:Caveat;src:url(../../public/fonts/Caveat.ttf);font-weight:400 700}
+@font-face{font-family:Mono;src:url(../../public/fonts/JetBrainsMono.ttf);font-weight:100 800}
+html,body{margin:0;background:#000}canvas{display:block}
+</style>
+<canvas id="c" width="1920" height="1080"></canvas>
+<script src="lib.js"></script><script src="cat.js"></script><script src="fx.js"></script><script src="fx2d.js"></script>
+<script>
+const SCENES = {};
+const name = new URLSearchParams(location.search).get('s');
+const sc = document.createElement('script'); sc.src = 'scenes/' + name + '.js';
+sc.onload = async () => { await Promise.all(['Bangers','NotoBlack','NotoBold','KuaiLe','Caveat','Mono'].map(f => document.fonts.load('40px ' + f, '猫A')));
+  const ctx = document.getElementById('c').getContext('2d'); await SCENES[name](ctx, +(new URLSearchParams(location.search).get('seed') || 0)); window.ready = true; };
+sc.onerror = () => { window.ready = true; console.error('no scene'); };
+document.head.appendChild(sc);
+</script>
