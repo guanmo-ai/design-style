@@ -3,9 +3,15 @@ import {openSync, closeSync} from 'node:fs';
 import {execFileSync} from 'node:child_process';
 import path from 'node:path';
 import {fileURLToPath} from 'node:url';
-import {cache, loadCatalog, sha256} from './catalog.mjs';
+import {cache, loadCatalog, sha256, videoSource} from './catalog.mjs';
+import {isOverview} from '../../gallery/assets/model.mjs';
 
 export async function syncVideo(work, directory = cache, run = execFileSync) {
+  if (isOverview(work)) {
+    if (await sha256(videoSource(work)) !== work.sha256) throw new Error(`${work.title} 的仓库视频校验失败`);
+    console.log(`${work.title}：使用仓库视频，SHA-256 核验通过`);
+    return;
+  }
   await mkdir(directory, {recursive: true});
   const file = path.join(directory, work.asset);
   if (await access(file).then(() => true, () => false)) {

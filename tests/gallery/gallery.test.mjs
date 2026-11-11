@@ -48,7 +48,7 @@ test('布局作品放在 layouts/，编号独立，标签和源码路径随类�
   assert.equal(videoUrl(bento), `./media/01-bento-grid.mp4?v=${bento.sha256}`);
   assert.deepEqual(selectWorks(works, {type: 'layout'}).map(work => work.id), ['02-masonry', '01-bento-grid']);
   assert.ok(selectWorks(works, {type: 'style'}).every(work => work.type === 'style'));
-  assert.equal(selectWorks(works, {query: '布局 便当'}).length, 1);
+  assert.equal(selectWorks(works, {type:'layout', query: '布局 便当'}).length, 1);
   assert.equal(typeOf({}), 'style');
 });
 
@@ -111,7 +111,7 @@ test('空列表、单部影片和不在筛选结果内的直达影片不提供�
   assert.equal(typeof adjacentWork, 'function');
   const works = await loadCatalog();
   assert.equal(adjacentWork([], {}, '001-bauhaus', 1), undefined);
-  assert.equal(adjacentWork(works, {query: '包豪斯'}, '001-bauhaus', -1), undefined);
+  assert.equal(adjacentWork(works, {query: '三原色'}, '001-bauhaus', -1), undefined);
   assert.equal(adjacentWork(works, {type: 'layout'}, '003-constructivism', 1), undefined);
 });
 
@@ -139,4 +139,26 @@ test('同名视频更新哈希后使用不同 URL，避免继续播放缓存的�
   const updated = {...work, sha256: 'f'.repeat(64)};
   assert.notEqual(videoUrl(work), videoUrl(updated));
   assert.equal(new URL(videoUrl(updated), 'https://example.com/').pathname, `/media/${work.asset}`);
+});
+
+test('风格汇总作为普通风格 999 参与搜索、筛选和导航，保留原宣传片源码', async () => {
+  const works = await loadCatalog();
+  const overview = works.find(work => work.id === '999-style-overview');
+  assert.equal(workLabel(overview), '风格 999');
+  assert.equal(overview.title, '风格汇总');
+  assert.equal(overview.duration, 15);
+  assert.equal(overview.fps, 60);
+  assert.equal(overview.chapters.length, 19);
+  assert.equal(overview.images.length, 0);
+  assert.match(overview.coverSha256, /^[a-f0-9]{64}$/);
+  assert.equal(sourceUrl(overview, 'video'), 'https://github.com/guanmo-ai/design-style/tree/main/promo/video');
+  assert.equal(sourceUrl(overview), 'https://github.com/guanmo-ai/design-style/tree/main/promo/');
+  assert.equal(selectWorks(works, {type:'style', query:'999'})[0].id, overview.id);
+  assert.ok(selectWorks(works, {query:'风格汇总'}).includes(overview));
+  assert.ok(!selectWorks(works, {type:'layout'}).includes(overview));
+  assert.equal(adjacentWork(works, {type:'style'}, overview.id, 1).id, '024-ink-wash');
+  for (const number of ['001', '998']) {
+    assert.throws(() => validateEntries(works.map(work => work === overview ? {...work, number} : work)), /汇总的上架期号/);
+  }
+  assert.throws(() => validateEntries(works.map(work => work === overview ? {...work, type:'layout'} : work)));
 });

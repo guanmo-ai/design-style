@@ -2,14 +2,12 @@ import {readFile, access} from 'node:fs/promises';
 import path from 'node:path';
 import {createHash} from 'node:crypto';
 import {createReadStream} from 'node:fs';
-import {TYPES, typeOf, workDir} from '../../gallery/assets/model.mjs';
+import {TYPES, typeOf, workDir, isOverview} from '../../gallery/assets/model.mjs';
 export const root = path.resolve(import.meta.dirname, '../..');
 export const cache = path.join(root, '.gallery-cache');
 export const output = path.join(root, 'dist');
-export const PROMO_MEDIA = [
-  {source:'promo/design-style-promo.mp4', output:'media/design-style-promo.mp4', placeholder:'__PROMO_VIDEO_SHA256__'},
-  {source:'promo/cover.jpg', output:'media/promo-cover.jpg', placeholder:'__PROMO_COVER_SHA256__'}
-];
+export const videoSource = work => isOverview(work) ? path.join(root, 'promo/design-style-promo.mp4') : path.join(cache, work.asset);
+export const coverSource = work => `${workDir(work)}/${isOverview(work) ? 'cover.jpg' : 'video/cover.jpg'}`;
 export async function sha256(file) {
   const hash = createHash('sha256');
   for await (const chunk of createReadStream(file)) hash.update(chunk);
@@ -23,16 +21,18 @@ export function validateEntries(works) {
     if (!TYPES[work.type].id.test(work.id) || ids.has(work.id)) throw new Error('作品 ID 无效或重复');
     ids.add(work.id);
     if (work.videoDir !== undefined && !['video', 'video3d'].includes(work.videoDir)) throw new Error(`${work.id} 的视频源码目录无效`);
-    if (!/^[\w.-]+$/.test(work.release) || work.asset !== `${work.id}.mp4` || !/^[a-f0-9]{64}$/.test(work.sha256)) throw new Error(`${work.id} 的 Release 配置无效`);
+    if ((!isOverview(work) && !/^[\w.-]+$/.test(work.release)) || work.asset !== `${work.id}.mp4` || !/^[a-f0-9]{64}$/.test(work.sha256)) throw new Error(`${work.id} 的视频配置无效`);
     for (const key of ['number', 'title', 'titleEn', 'years', 'category', 'categoryEn', 'description', 'descriptionEn']) if (typeof work[key] !== 'string' || !work[key].trim()) throw new Error(`${work.id} 缺少 ${key}`);
     if (!Number.isFinite(Date.parse(work.publishedAt))) throw new Error('发布日期无效');
     if (!Array.isArray(work.tags) || work.tags.some(tag => typeof tag !== 'string')) throw new Error('标签格式无效');
     if (!Array.isArray(work.tagsEn) || !work.tagsEn.length || work.tagsEn.some(tag => typeof tag !== 'string' || !tag.trim())) throw new Error('英文标签格式无效');
-    if (!Array.isArray(work.images) || work.images.length !== 4 || new Set(work.images.map(image => image.file)).size !== 4 || work.images.some(image => !/^[a-z0-9-]+$/.test(image.file) || !image.title || !image.kind)) throw new Error('风格图配置无效');
+    const imageCount = isOverview(work) ? 0 : 4;
+    if (!Array.isArray(work.images) || work.images.length !== imageCount || new Set(work.images.map(image => image.file)).size !== imageCount || work.images.some(image => !/^[a-z0-9-]+$/.test(image.file) || !image.title || !image.kind)) throw new Error('风格图配置无效');
     if (work.images.some(image => !['titleEn','kindEn'].every(key => typeof image[key] === 'string' && image[key].trim()))) throw new Error('英文图解配置不完整');
+    if (isOverview(work) && (work.type !== 'style' || work.number !== '999')) throw new Error('风格汇总的上架期号必须为 999');
   }
   for (const type of Object.keys(TYPES)) {
-    const numbers = works.filter(work => work.type === type).map(work => work.number).sort((a, b) => Number(a) - Number(b));
+    const numbers = works.filter(work => work.type === type && !isOverview(work)).map(work => work.number).sort((a, b) => Number(a) - Number(b));
     const width = type === 'style' ? 3 : 2;
     if (numbers.some((number, index) => number !== String(index + 1).padStart(width, '0'))) {
       throw new Error(`${TYPES[type].name}的上架期号必须从 ${'1'.padStart(width, '0')} 开始连续编号，不能重复或跳号`);
@@ -43,6 +43,13 @@ export async function loadCatalog() {
   const works = JSON.parse(await readFile(path.join(root, 'gallery/data/works.json'), 'utf8'));
   validateEntries(works);
   return Promise.all(works.map(async work => {
+    if (isOverview(work)) {
+      const timeline = JSON.parse(await readFile(path.join(root, 'promo/timeline.json'), 'utf8'));
+      await Promise.all(['promo/cover.jpg', 'promo/design-style-promo.mp4', 'promo/video'].map(file => access(path.join(root, file))));
+      return {...work, duration:timeline.duration / timeline.fps, fps:timeline.fps, width:1920, height:1080,
+        coverSha256:await sha256(path.join(root, coverSource(work))),
+        chapters:timeline.scenes.map(scene => ({label:scene.zh, start:scene.at / timeline.fps}))};
+    }
     const base = path.join(root, workDir(work));
     const tokens = JSON.parse(await readFile(path.join(base, 'tokens.json'), 'utf8'));
     const timeline = JSON.parse(await readFile(path.join(base, 'process/timeline.json'), 'utf8'));

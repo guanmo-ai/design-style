@@ -1185,5 +1185,35 @@
         "kindEn": "Storyboard"
       }
     ]
+  },
+  {
+    "id": "999-style-overview",
+    "type": "style",
+    "number": "999",
+    "title": "风格汇总",
+    "titleEn": "Style Overview",
+    "years": "2026",
+    "category": "19 种风格 + 2 种布局",
+    "categoryEn": "19 styles + 2 layouts",
+    "description": "《同一个圆，21 种样子》：15 秒汇总 19 种设计风格——包豪斯、瑞士国际主义、构成主义、孟菲斯、波普艺术、千禧未来主义、孔版印刷、新粗野主义、装饰艺术、液态玻璃、未来主义、中世纪现代、微缩景观、低多边形、字符画、生成艺术、点云、液态金属、水墨；另含便当盒布局与瀑布流布局。",
+    "descriptionEn": "One circle, 21 expressions. A 15-second overview of 19 design styles: Bauhaus, Swiss Style, Constructivism, Memphis, Pop Art, Y2K, Risograph, Neo-Brutalism, Art Deco, Liquid Glass, Futurism, Mid-Century Modern, Diorama, Low Poly, ASCII Art, Generative Art, Point Cloud, Liquid Chrome, Ink Wash; plus Bento Grid and Masonry layouts.",
+    "tags": [
+      "风格汇总",
+      "合集",
+      "同一个圆",
+      "设计风格",
+      "布局"
+    ],
+    "tagsEn": [
+      "style overview",
+      "compilation",
+      "one circle",
+      "design styles",
+      "layouts"
+    ],
+    "publishedAt": "2026-11-10T15:15:13Z",
+    "asset": "999-style-overview.mp4",
+    "sha256": "badff329b746a24c7d060451fca19ba66dfcfc97455cabc77fa9ae11f9c13613",
+    "images": []
   }
 ]

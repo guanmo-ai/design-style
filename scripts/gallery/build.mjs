@@ -1,14 +1,22 @@
-import {mkdir, rm, cp, writeFile, access, readFile} from 'node:fs/promises';
+import {mkdir, rm, cp, writeFile, access, readFile, readdir} from 'node:fs/promises';
+import {createHash} from 'node:crypto';
 import path from 'node:path';
-import {root, cache, output, loadCatalog, sha256, PROMO_MEDIA} from './catalog.mjs';
+import {root, output, loadCatalog, sha256, videoSource, coverSource} from './catalog.mjs';
 import {renderDocument, DOCUMENT_PAGES} from '../../gallery/render-documents.mjs';
-import {workDir} from '../../gallery/assets/model.mjs';
+import {workDir, isOverview} from '../../gallery/assets/model.mjs';
 
 const works = await loadCatalog();
-const promoMedia = await Promise.all(PROMO_MEDIA.map(async media => ({...media, sha256:await sha256(path.join(root, media.source))})));
+// One content version for the module graph keeps cached imports in the same build.
+const assets = path.join(root, 'gallery/assets');
+const assetFiles = (await readdir(assets)).filter(file => /\.(?:mjs|css)$/.test(file)).sort();
+const assetVersion = createHash('sha256');
+for (const file of assetFiles) assetVersion.update(file).update(await readFile(path.join(assets, file)));
+const version = assetVersion.digest('hex');
+const versionHtml = html => html.replace(/\b(src|href)="([^"?]+\.(?:mjs|css))"/g, `$1="$2?v=${version}"`);
 // Render and validate documents before replacing the previous usable build.
 const pages = [];
 for (const work of works) {
+  if (isOverview(work)) continue;
   for (const {kind, language, file, slug} of DOCUMENT_PAGES) {
     const document = renderDocument(await readFile(path.join(root, workDir(work), file), 'utf8'), work, kind, language);
     await Promise.all(document.assets.map(asset => access(path.join(root, workDir(work), asset))));
@@ -16,33 +24,32 @@ for (const work of works) {
   }
 }
 for (const work of works) {
-  const file = path.join(cache, work.asset);
+  const file = videoSource(work);
   if (!await access(file).then(() => true, () => false)) throw new Error(`缺少 ${work.asset}，请先运行 npm run gallery:sync`);
   if (await sha256(file) !== work.sha256) throw new Error(`${work.asset} 校验失败，请运行 npm run gallery:sync`);
 }
 await rm(output, {recursive: true, force: true});
 await mkdir(output, {recursive: true});
 for (const file of ['index.html', 'assets', 'LICENSE', 'NOTICE.md']) await cp(path.join(root, 'gallery', file), path.join(output, file), {recursive: true});
+await writeFile(path.join(output, 'index.html'), versionHtml(await readFile(path.join(output, 'index.html'), 'utf8')));
+for (const file of assetFiles.filter(file => file.endsWith('.mjs'))) {
+  const module = await readFile(path.join(assets, file), 'utf8');
+  await writeFile(path.join(output, 'assets', file), module.replace(/(from\s*['"])(\.\/[^'"?]+\.mjs)(['"])/g, `$1$2?v=${version}$3`));
+}
 await mkdir(path.join(output, 'data'), {recursive: true});
 await writeFile(path.join(output, 'data/works.json'), JSON.stringify(works, null, 2) + '\n');
 await mkdir(path.join(output, 'media'), {recursive: true});
-let homepage = await readFile(path.join(output, 'index.html'), 'utf8');
-for (const media of promoMedia) {
-  await cp(path.join(root, media.source), path.join(output, media.output));
-  homepage = homepage.replaceAll(media.placeholder, media.sha256);
-}
-await writeFile(path.join(output, 'index.html'), homepage);
 for (const work of works) {
   const destination = path.join(output, workDir(work));
   await mkdir(path.join(destination, 'video'), {recursive: true});
-  await cp(path.join(root, workDir(work), 'video/cover.jpg'), path.join(destination, 'video/cover.jpg'));
-  await cp(path.join(root, workDir(work), 'images/preview'), path.join(destination, 'images/preview'), {recursive: true});
-  await cp(path.join(cache, work.asset), path.join(output, 'media', work.asset));
+  await cp(path.join(root, coverSource(work)), path.join(destination, 'video/cover.jpg'));
+  if (work.images.length) await cp(path.join(root, workDir(work), 'images/preview'), path.join(destination, 'images/preview'), {recursive: true});
+  await cp(videoSource(work), path.join(output, 'media', work.asset));
 }
 for (const page of pages) {
   const directory = path.join(output, 'read', page.work.id);
   await mkdir(directory, {recursive: true});
-  await writeFile(path.join(directory, `${page.slug}.html`), page.html);
+  await writeFile(path.join(directory, `${page.slug}.html`), versionHtml(page.html));
   for (const asset of page.assets) {
     const destination = path.join(output, workDir(page.work), asset);
     await mkdir(path.dirname(destination), {recursive: true});

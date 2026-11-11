@@ -7,6 +7,11 @@
 <table>
   <tr>
     <td align="center" valign="top" width="33%">
+      <a href="https://guanmo-ai.github.io/design-style/?lang=zh#work-999-style-overview"><img src="promo/cover.jpg" width="240" alt="风格汇总 视频封面" /></a><br />
+      <a href="https://guanmo-ai.github.io/design-style/?lang=zh#work-999-style-overview"><b>风格汇总</b></a><br />
+      <sub>Style Overview · 15 秒</sub>
+    </td>
+    <td align="center" valign="top" width="33%">
       <a href="https://guanmo-ai.github.io/design-style/?lang=zh#work-024-ink-wash"><img src="styles/024-ink-wash/video/cover.jpg" width="240" alt="水墨 视频封面" /></a><br />
       <a href="https://guanmo-ai.github.io/design-style/?lang=zh#work-024-ink-wash"><b>水墨</b></a><br />
       <sub>Ink Wash · 18.75 秒</sub>
@@ -16,13 +21,13 @@
       <a href="https://guanmo-ai.github.io/design-style/?lang=zh#work-023-liquid-chrome"><b>液态金属</b></a><br />
       <sub>Liquid Chrome · 18 秒</sub>
     </td>
+  </tr>
+  <tr>
     <td align="center" valign="top" width="33%">
       <a href="https://guanmo-ai.github.io/design-style/?lang=zh#work-022-point-cloud"><img src="styles/022-point-cloud/video/cover.jpg" width="240" alt="点云 视频封面" /></a><br />
       <a href="https://guanmo-ai.github.io/design-style/?lang=zh#work-022-point-cloud"><b>点云</b></a><br />
       <sub>Point Cloud · 19.5 秒</sub>
     </td>
-  </tr>
-  <tr>
     <td align="center" valign="top" width="33%">
       <a href="https://guanmo-ai.github.io/design-style/?lang=zh#work-021-generative-art"><img src="styles/021-generative-art/video/cover.jpg" width="240" alt="生成艺术 视频封面" /></a><br />
       <a href="https://guanmo-ai.github.io/design-style/?lang=zh#work-021-generative-art"><b>生成艺术</b></a><br />
@@ -33,13 +38,13 @@
       <a href="https://guanmo-ai.github.io/design-style/?lang=zh#work-020-ascii-art"><b>字符画</b></a><br />
       <sub>ASCII Art · 18 秒</sub>
     </td>
+  </tr>
+  <tr>
     <td align="center" valign="top" width="33%">
       <a href="https://guanmo-ai.github.io/design-style/?lang=zh#work-017-mid-century-modern"><img src="styles/017-mid-century-modern/video/cover.jpg" width="240" alt="中世纪现代 视频封面" /></a><br />
       <a href="https://guanmo-ai.github.io/design-style/?lang=zh#work-017-mid-century-modern"><b>中世纪现代</b></a><br />
       <sub>Mid-Century Modern · 15 秒</sub>
     </td>
-  </tr>
-  <tr>
     <td align="center" valign="top" width="33%">
       <a href="https://guanmo-ai.github.io/design-style/?lang=zh#work-018-diorama"><img src="styles/018-diorama/video/cover.jpg" width="240" alt="微缩景观 视频封面" /></a><br />
       <a href="https://guanmo-ai.github.io/design-style/?lang=zh#work-018-diorama"><b>微缩景观</b></a><br />
@@ -50,13 +55,13 @@
       <a href="https://guanmo-ai.github.io/design-style/?lang=zh#work-019-low-poly"><b>低多边形</b></a><br />
       <sub>Low Poly · 20 秒</sub>
     </td>
+  </tr>
+  <tr>
     <td align="center" valign="top" width="33%">
       <a href="https://guanmo-ai.github.io/design-style/?lang=zh#work-014-liquid-glass"><img src="styles/014-liquid-glass/video/cover.jpg" width="240" alt="液态玻璃 视频封面" /></a><br />
       <a href="https://guanmo-ai.github.io/design-style/?lang=zh#work-014-liquid-glass"><b>液态玻璃</b></a><br />
       <sub>Liquid Glass · 20 秒</sub>
     </td>
-  </tr>
-  <tr>
     <td align="center" valign="top" width="33%">
       <a href="https://guanmo-ai.github.io/design-style/?lang=zh#work-013-art-deco"><img src="styles/013-art-deco/video/cover.jpg" width="240" alt="装饰艺术 视频封面" /></a><br />
       <a href="https://guanmo-ai.github.io/design-style/?lang=zh#work-013-art-deco"><b>装饰艺术</b></a><br />
@@ -67,13 +72,13 @@
       <a href="https://guanmo-ai.github.io/design-style/?lang=zh#work-009-neo-brutalism"><b>新粗野主义</b></a><br />
       <sub>Neo-Brutalism · 20 秒</sub>
     </td>
+  </tr>
+  <tr>
     <td align="center" valign="top" width="33%">
       <a href="https://guanmo-ai.github.io/design-style/?lang=zh#work-008-risograph"><img src="styles/008-risograph/video/cover.jpg" width="240" alt="孔版印刷 视频封面" /></a><br />
       <a href="https://guanmo-ai.github.io/design-style/?lang=zh#work-008-risograph"><b>孔版印刷</b></a><br />
       <sub>Risograph · 15 秒</sub>
     </td>
-  </tr>
-  <tr>
     <td align="center" valign="top" width="33%">
       <a href="https://guanmo-ai.github.io/design-style/?lang=zh#work-005-pop-art"><img src="styles/005-pop-art/video/cover.jpg" width="240" alt="波普艺术 视频封面" /></a><br />
       <a href="https://guanmo-ai.github.io/design-style/?lang=zh#work-005-pop-art"><b>波普艺术</b></a><br />
@@ -84,13 +89,13 @@
       <a href="https://guanmo-ai.github.io/design-style/?lang=zh#work-004-memphis"><b>孟菲斯</b></a><br />
       <sub>Memphis · 15 秒</sub>
     </td>
+  </tr>
+  <tr>
     <td align="center" valign="top" width="33%">
       <a href="https://guanmo-ai.github.io/design-style/?lang=zh#work-003-constructivism"><img src="styles/003-constructivism/video/cover.jpg" width="240" alt="构成主义 视频封面" /></a><br />
       <a href="https://guanmo-ai.github.io/design-style/?lang=zh#work-003-constructivism"><b>构成主义</b></a><br />
       <sub>Constructivism · 15 秒</sub>
     </td>
-  </tr>
-  <tr>
     <td align="center" valign="top" width="33%">
       <a href="https://guanmo-ai.github.io/design-style/?lang=zh#work-02-masonry"><img src="layouts/02-masonry/video/cover.jpg" width="240" alt="瀑布流布局 视频封面" /></a><br />
       <a href="https://guanmo-ai.github.io/design-style/?lang=zh#work-02-masonry"><b>瀑布流布局</b></a><br />
@@ -101,13 +106,13 @@
       <a href="https://guanmo-ai.github.io/design-style/?lang=zh#work-002-swiss-style"><b>瑞士国际主义</b></a><br />
       <sub>Swiss Style · 15 秒</sub>
     </td>
+  </tr>
+  <tr>
     <td align="center" valign="top" width="33%">
       <a href="https://guanmo-ai.github.io/design-style/?lang=zh#work-01-bento-grid"><img src="layouts/01-bento-grid/video/cover.jpg" width="240" alt="便当盒布局 视频封面" /></a><br />
       <a href="https://guanmo-ai.github.io/design-style/?lang=zh#work-01-bento-grid"><b>便当盒布局</b></a><br />
       <sub>Bento Grid · 15 秒</sub>
     </td>
-  </tr>
-  <tr>
     <td align="center" valign="top" width="33%">
       <a href="https://guanmo-ai.github.io/design-style/?lang=zh#work-001-bauhaus"><img src="styles/001-bauhaus/video/cover.jpg" width="240" alt="包豪斯 视频封面" /></a><br />
       <a href="https://guanmo-ai.github.io/design-style/?lang=zh#work-001-bauhaus"><b>包豪斯</b></a><br />
