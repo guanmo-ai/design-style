@@ -1,6 +1,7 @@
 import {REPO, TYPES, typeOf, workDir, isOverview, sourceUrl, releaseUrl, videoUrl, formatTime, escapeHtml as h, selectWorks, adjacentWork, readState} from './model.mjs';
 import {resolveLanguage, languageUrl, text, content, documentHref} from './i18n.mjs';
 import {renderLanguageToggle} from './language-toggle.mjs';
+import {reducedMotion, animate, captureLayout, animateLayout, animateDeparture, moveIndicator, openDialog, closeDialog, installPressFeedback} from './motion.mjs';
 
 const $ = selector => document.querySelector(selector);
 const viewer = $('#viewer');
@@ -24,7 +25,6 @@ const links = work => (isOverview(work) ? [external(sourceUrl(work), t('source')
   external(sourceUrl(work, 'video'), t('source'))
 ]).join('');
 
-const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
 let previewsEnabled = !reducedMotion.matches && !navigator.connection?.saveData;
 const previews = new Map();
 const previewObserver = typeof IntersectionObserver === 'function' ? new IntersectionObserver(entries => {
@@ -32,12 +32,15 @@ const previewObserver = typeof IntersectionObserver === 'function' ? new Interse
     const preview = previews.get(entry.target);
     if (!preview) continue;
     preview.visible = entry.isIntersecting && entry.intersectionRatio >= 0.01;
-    updatePreview(preview);
   }
+  syncPreviews();
 }, {threshold:[0, 0.01]}) : null;
 
 function previewAllowed(preview) {
-  return preview.visible && previewsEnabled && !document.hidden && !viewer.open && !preview.failed;
+  if (!preview.visible || !previewsEnabled || document.hidden || viewer.open || preview.failed) return false;
+  // Keep decoder work bounded while the user interacts with the gallery.
+  const budget = innerWidth <= 600 ? 2 : 4;
+  return [...previews.values()].filter(item => item.visible && !item.failed).indexOf(preview) < budget;
 }
 
 function stopPreview(preview, release = false) {
@@ -76,7 +79,11 @@ function syncPreviews() {
 function renderPreviewControl() {
   const button = $('#toggle-previews');
   button.hidden = !previewObserver;
-  button.textContent = t(previewsEnabled ? 'pausePreviews' : 'playPreviews');
+  const nextText = t(previewsEnabled ? 'pausePreviews' : 'playPreviews');
+  if (button.textContent !== nextText) {
+    button.textContent = nextText;
+    animate(button, [{opacity:.5},{opacity:1}], {duration:200}, 'label');
+  }
   button.setAttribute('aria-pressed', String(previewsEnabled));
 }
 
@@ -143,18 +150,45 @@ function updateUrl() {
 function render() {
   // 单一作品列表，使用标签筛选两个系列。
   const types = ['all', ...Object.keys(TYPES).filter(type => works.some(work => typeOf(work) === type))];
-  $('#types').innerHTML = types.map(type =>
-    `<button type="button" class="category" data-type="${h(type)}" aria-pressed="${state.type === type}">${t(type)}<span>${type === 'all' ? works.length : works.filter(work => typeOf(work) === type).length}</span></button>`
-  ).join('');
+  for (const type of types) {
+    let button = $(`#types [data-type="${type}"]`);
+    if (!button) {
+      button = document.createElement('button');
+      button.type = 'button';
+      button.className = 'category';
+      button.dataset.type = type;
+      $('#types').append(button);
+    }
+    button.setAttribute('aria-pressed', String(state.type === type));
+    button.innerHTML = `${t(type)}<span>${type === 'all' ? works.length : works.filter(work => typeOf(work) === type).length}</span>`;
+  }
+  moveIndicator($('#types'));
   const selected = selectWorks(works, state);
   $('#total-count').textContent = String(works.length).padStart(2, '0');
   $('#result-count').textContent = t('resultCount', {total:works.length, count:selected.length});
   $('#empty').hidden = selected.length !== 0;
-  previewObserver?.disconnect();
-  for (const preview of previews.values()) stopPreview(preview, true);
-  previews.clear();
-  $('#works').innerHTML = selected.map(work => `
-    <article class="work-card">
+  const container = $('#works');
+  const before = captureLayout(container);
+  const retained = new Map([...container.children].map(card => [card.dataset.id, card]));
+  const ids = new Set(selected.map(work => work.id));
+  for (const [id, card] of retained) {
+    if (ids.has(id)) continue;
+    animateDeparture(card);
+    const cover = card.querySelector('.cover-button');
+    const preview = previews.get(cover);
+    if (preview) stopPreview(preview, true);
+    previewObserver?.unobserve(cover);
+    previews.delete(cover);
+    card.remove();
+  }
+  let cursor = container.firstElementChild;
+  for (const work of selected) {
+    let card = retained.get(work.id);
+    if (!card) {
+      card = document.createElement('article');
+      card.className = 'work-card';
+      card.dataset.id = work.id;
+      card.innerHTML = `
       <button type="button" class="card-open" data-play="${h(work.id)}" aria-label="${h(t('view', {title:language === 'zh' ? `${work.title} ${work.titleEn}` : title(work)}))}">
         <span class="cover-button">
           <img src="${h(coverPath(work))}" alt="${h(t('cover', {title:title(work)}))}" width="${work.width}" height="${work.height}">
@@ -162,13 +196,23 @@ function render() {
         </span>
         <span class="card-title">${h(title(work))}${language === 'zh' ? ` <span>${h(work.titleEn)}</span>` : ''}</span>
         <span class="card-meta">${h(label(work))} · ${h(content(work, 'category', language))} · ${h(work.years)}</span>
-      </button>
-    </article>`).join('');
-  for (const button of document.querySelectorAll('#works [data-play]')) {
-    addPreview(button.querySelector('.cover-button'), selected.find(work => work.id === button.dataset.play));
+      </button>`;
+      addPreview(card.querySelector('.cover-button'), work);
+    } else if (card.dataset.renderLanguage !== language) {
+      card.querySelector('.card-open').setAttribute('aria-label', t('view', {title:language === 'zh' ? `${work.title} ${work.titleEn}` : title(work)}));
+      card.querySelector('img').alt = t('cover', {title:title(work)});
+      card.querySelector('.card-type').textContent = workTypeText(work);
+      card.querySelector('.card-title').innerHTML = `${h(title(work))}${language === 'zh' ? ` <span>${h(work.titleEn)}</span>` : ''}`;
+      card.querySelector('.card-meta').textContent = `${label(work)} · ${content(work, 'category', language)} · ${work.years}`;
+    }
+    card.dataset.renderLanguage = language;
+    // Keep retained video elements in place: typing and language changes must
+    // not restart their downloads, decoders, or playback timelines.
+    if (card !== cursor) container.insertBefore(card, cursor);
+    cursor = card.nextElementSibling;
   }
-  // Language changes replace cards; keep the dialog's original return target alive.
-  if (opener?.dataset.play) opener = [...document.querySelectorAll('[data-play]')].find(node => node.dataset.play === opener.dataset.play);
+  animateLayout(container, before);
+  if (opener?.dataset.play && !opener.isConnected) opener = [...document.querySelectorAll('[data-play]')].find(node => node.dataset.play === opener.dataset.play);
 }
 
 function renderImages(work) {
@@ -185,11 +229,9 @@ function renderImages(work) {
 }
 
 function showDialog(trigger) {
-  if (!viewer.open) {
-    opener = trigger || document.activeElement;
-    viewer.showModal();
-    syncPreviews();
-  }
+  if (!viewer.open) opener = trigger || document.activeElement;
+  openDialog(viewer, trigger?.querySelector('.cover-button') || trigger);
+  syncPreviews();
   viewer.scrollTop = 0;
 }
 
@@ -212,7 +254,8 @@ function renderWorkText(work) {
     ${renderImages(work)}`;
 }
 
-function showWork(work, trigger) {
+function showWork(work, trigger, direction = 0) {
+  const alreadyOpen = viewer.open;
   $('.player')?.pause();
   currentWorkId = work.id;
   $('#viewer-media').innerHTML = `<video class="player" controls playsinline preload="metadata" poster="${h(coverPath(work))}" src="${videoUrl(work)}"></video><p class="player-error" hidden></p>`;
@@ -225,38 +268,45 @@ function showWork(work, trigger) {
   url.searchParams.set('lang', language);
   history.replaceState(null, '', url);
   showDialog(trigger);
+  if (alreadyOpen) {
+    animate($('#viewer-media'), [{opacity:0,transform:`translateX(${direction * 24}px)`},{opacity:1,transform:'none'}], {duration:300});
+    animate($('#viewer-content'), [{opacity:.2,transform:'translateY(8px)'},{opacity:1,transform:'none'}], {duration:300});
+  }
   // Only an explicit click starts playback; deep links open paused.
   if (trigger) player.play().catch(() => {});
 }
 
 function navigateWork(direction, trigger) {
   const work = adjacentWork(works, state, currentWorkId, direction);
-  if (work) showWork(work, trigger);
+  if (work) showWork(work, trigger, direction);
 }
 
-function showImage(work, index) {
+function showImage(work, index, trigger) {
   const image = work.images[index];
   $('.player')?.pause();
   $('#image-viewer-label').textContent = t('imagePreview');
   $('#image-viewer-content').innerHTML = `<img class="art-preview" src="${imagePath(work, image)}" alt="${h(content(image, 'title', language))}">
     <div class="viewer-details"><div><h2 id="image-viewer-title">${h(content(image, 'title', language))}</h2><p>${h(title(work))} · 1080 × 1350 · ${t('editable')}</p></div><div class="viewer-actions"><a class="button" href="${imagePath(work, image)}" download="${work.id}-${image.file}.svg">${t('download')}</a>${external(sourceUrl(work, `images/${image.file}.svg`), t('viewSource'))}</div></div>`;
-  imageViewer.showModal();
+  openDialog(imageViewer, trigger?.querySelector('.image-wrap') || trigger);
   imageViewer.scrollTop = 0;
 }
 
-$('#image-close').addEventListener('click', () => imageViewer.close());
+$('#image-close').addEventListener('click', () => closeDialog(imageViewer));
+imageViewer.addEventListener('cancel', event => {event.preventDefault();closeDialog(imageViewer);});
 imageViewer.addEventListener('close', () => $('#image-viewer-content').replaceChildren());
 imageViewer.addEventListener('click', event => {
   const rect = imageViewer.getBoundingClientRect();
-  if (event.target === imageViewer && (event.clientX < rect.left || event.clientX > rect.right || event.clientY < rect.top || event.clientY > rect.bottom)) imageViewer.close();
+  if (event.target === imageViewer && (event.clientX < rect.left || event.clientX > rect.right || event.clientY < rect.top || event.clientY > rect.bottom)) closeDialog(imageViewer);
 });
 
-$('#close').addEventListener('click', () => viewer.close());
+function closeWork() { $('.player')?.pause(); closeDialog(viewer); }
+$('#close').addEventListener('click', closeWork);
+viewer.addEventListener('cancel', event => {event.preventDefault();closeWork();});
 $('#previous-work').addEventListener('click', event => navigateWork(-1, event.currentTarget));
 $('#next-work').addEventListener('click', event => navigateWork(1, event.currentTarget));
 viewer.addEventListener('click', event => {
   const rect = viewer.getBoundingClientRect();
-  if (event.target === viewer && (event.clientX < rect.left || event.clientX > rect.right || event.clientY < rect.top || event.clientY > rect.bottom)) viewer.close();
+  if (event.target === viewer && (event.clientX < rect.left || event.clientX > rect.right || event.clientY < rect.top || event.clientY > rect.bottom)) closeWork();
 });
 viewer.addEventListener('close', () => {
   $('.player')?.pause();
@@ -285,10 +335,10 @@ $('#works').addEventListener('click', event => {
 });
 $('#viewer-content').addEventListener('click', event => {
   const button = event.target.closest('[data-image]');
-  if (button) showImage(works.find(work => work.id === button.dataset.work), Number(button.dataset.image));
+  if (button) showImage(works.find(work => work.id === button.dataset.work), Number(button.dataset.image), button);
 });
 document.addEventListener('click', event => {
-  const button = event.target.closest('[data-language]');
+  const button = event.target.closest('.language-trigger[data-language]');
   if (!button || !['zh','en'].includes(button.dataset.language)) return;
   const controlId = button.closest('.language-control').id;
   language = button.dataset.language;
@@ -328,6 +378,10 @@ function restoreNavigation() {
 }
 window.addEventListener('popstate', restoreNavigation);
 window.addEventListener('hashchange', restoreNavigation);
+installPressFeedback();
+new ResizeObserver(() => moveIndicator($('#types'))).observe($('#types'));
+window.addEventListener('resize', syncPreviews);
+document.fonts.ready.then(() => moveIndicator($('#types')));
 try {
   const response = await fetch('./data/works.json', {cache:'no-cache'});
   if (!response.ok) throw new Error('catalog');

@@ -19,6 +19,11 @@ By Guanmo [@guanmo_ai](https://x.com/guanmo_ai)
 <table>
   <tr>
     <td align="center" valign="top" width="33%">
+      <a href="https://guanmo-ai.github.io/design-style/?lang=en#work-025-plush"><img src="styles/025-plush/video/cover.jpg" width="240" alt="Plush film cover" /></a><br />
+      <a href="https://guanmo-ai.github.io/design-style/?lang=en#work-025-plush"><b>Plush</b></a><br />
+      <sub>20 seconds</sub>
+    </td>
+    <td align="center" valign="top" width="33%">
       <a href="https://guanmo-ai.github.io/design-style/?lang=en#work-999-style-overview"><img src="promo/cover.jpg" width="240" alt="Style Overview film cover" /></a><br />
       <a href="https://guanmo-ai.github.io/design-style/?lang=en#work-999-style-overview"><b>Style Overview</b></a><br />
       <sub>15 seconds</sub>
@@ -28,13 +33,13 @@ By Guanmo [@guanmo_ai](https://x.com/guanmo_ai)
       <a href="https://guanmo-ai.github.io/design-style/?lang=en#work-024-ink-wash"><b>Ink Wash</b></a><br />
       <sub>18.75 seconds</sub>
     </td>
+  </tr>
+  <tr>
     <td align="center" valign="top" width="33%">
       <a href="https://guanmo-ai.github.io/design-style/?lang=en#work-023-liquid-chrome"><img src="styles/023-liquid-chrome/video/cover.jpg" width="240" alt="Liquid Chrome film cover" /></a><br />
       <a href="https://guanmo-ai.github.io/design-style/?lang=en#work-023-liquid-chrome"><b>Liquid Chrome</b></a><br />
       <sub>18 seconds</sub>
     </td>
-  </tr>
-  <tr>
     <td align="center" valign="top" width="33%">
       <a href="https://guanmo-ai.github.io/design-style/?lang=en#work-022-point-cloud"><img src="styles/022-point-cloud/video/cover.jpg" width="240" alt="Point Cloud film cover" /></a><br />
       <a href="https://guanmo-ai.github.io/design-style/?lang=en#work-022-point-cloud"><b>Point Cloud</b></a><br />
@@ -45,13 +50,13 @@ By Guanmo [@guanmo_ai](https://x.com/guanmo_ai)
       <a href="https://guanmo-ai.github.io/design-style/?lang=en#work-021-generative-art"><b>Generative Art</b></a><br />
       <sub>18 seconds</sub>
     </td>
+  </tr>
+  <tr>
     <td align="center" valign="top" width="33%">
       <a href="https://guanmo-ai.github.io/design-style/?lang=en#work-020-ascii-art"><img src="styles/020-ascii-art/video/cover.jpg" width="240" alt="ASCII Art film cover" /></a><br />
       <a href="https://guanmo-ai.github.io/design-style/?lang=en#work-020-ascii-art"><b>ASCII Art</b></a><br />
       <sub>18 seconds</sub>
     </td>
-  </tr>
-  <tr>
     <td align="center" valign="top" width="33%">
       <a href="https://guanmo-ai.github.io/design-style/?lang=en#work-017-mid-century-modern"><img src="styles/017-mid-century-modern/video/cover.jpg" width="240" alt="Mid-Century Modern film cover" /></a><br />
       <a href="https://guanmo-ai.github.io/design-style/?lang=en#work-017-mid-century-modern"><b>Mid-Century Modern</b></a><br />
@@ -62,13 +67,13 @@ By Guanmo [@guanmo_ai](https://x.com/guanmo_ai)
       <a href="https://guanmo-ai.github.io/design-style/?lang=en#work-018-diorama"><b>Diorama</b></a><br />
       <sub>20 seconds</sub>
     </td>
+  </tr>
+  <tr>
     <td align="center" valign="top" width="33%">
       <a href="https://guanmo-ai.github.io/design-style/?lang=en#work-019-low-poly"><img src="styles/019-low-poly/video/cover.jpg" width="240" alt="Low Poly film cover" /></a><br />
       <a href="https://guanmo-ai.github.io/design-style/?lang=en#work-019-low-poly"><b>Low Poly</b></a><br />
       <sub>20 seconds</sub>
     </td>
-  </tr>
-  <tr>
     <td align="center" valign="top" width="33%">
       <a href="https://guanmo-ai.github.io/design-style/?lang=en#work-014-liquid-glass"><img src="styles/014-liquid-glass/video/cover.jpg" width="240" alt="Liquid Glass film cover" /></a><br />
       <a href="https://guanmo-ai.github.io/design-style/?lang=en#work-014-liquid-glass"><b>Liquid Glass</b></a><br />
@@ -79,13 +84,13 @@ By Guanmo [@guanmo_ai](https://x.com/guanmo_ai)
       <a href="https://guanmo-ai.github.io/design-style/?lang=en#work-013-art-deco"><b>Art Deco</b></a><br />
       <sub>20 seconds</sub>
     </td>
+  </tr>
+  <tr>
     <td align="center" valign="top" width="33%">
       <a href="https://guanmo-ai.github.io/design-style/?lang=en#work-009-neo-brutalism"><img src="styles/009-neo-brutalism/video/cover.jpg" width="240" alt="Neo-Brutalism film cover" /></a><br />
       <a href="https://guanmo-ai.github.io/design-style/?lang=en#work-009-neo-brutalism"><b>Neo-Brutalism</b></a><br />
       <sub>20 seconds</sub>
     </td>
-  </tr>
-  <tr>
     <td align="center" valign="top" width="33%">
       <a href="https://guanmo-ai.github.io/design-style/?lang=en#work-008-risograph"><img src="styles/008-risograph/video/cover.jpg" width="240" alt="Risograph film cover" /></a><br />
       <a href="https://guanmo-ai.github.io/design-style/?lang=en#work-008-risograph"><b>Risograph</b></a><br />
@@ -96,13 +101,13 @@ By Guanmo [@guanmo_ai](https://x.com/guanmo_ai)
       <a href="https://guanmo-ai.github.io/design-style/?lang=en#work-005-pop-art"><b>Pop Art</b></a><br />
       <sub>18 seconds</sub>
     </td>
+  </tr>
+  <tr>
     <td align="center" valign="top" width="33%">
       <a href="https://guanmo-ai.github.io/design-style/?lang=en#work-004-memphis"><img src="styles/004-memphis/video/cover.jpg" width="240" alt="Memphis film cover" /></a><br />
       <a href="https://guanmo-ai.github.io/design-style/?lang=en#work-004-memphis"><b>Memphis</b></a><br />
       <sub>15 seconds</sub>
     </td>
-  </tr>
-  <tr>
     <td align="center" valign="top" width="33%">
       <a href="https://guanmo-ai.github.io/design-style/?lang=en#work-003-constructivism"><img src="styles/003-constructivism/video/cover.jpg" width="240" alt="Constructivism film cover" /></a><br />
       <a href="https://guanmo-ai.github.io/design-style/?lang=en#work-003-constructivism"><b>Constructivism</b></a><br />
@@ -113,13 +118,13 @@ By Guanmo [@guanmo_ai](https://x.com/guanmo_ai)
       <a href="https://guanmo-ai.github.io/design-style/?lang=en#work-02-masonry"><b>Masonry</b></a><br />
       <sub>15 seconds</sub>
     </td>
+  </tr>
+  <tr>
     <td align="center" valign="top" width="33%">
       <a href="https://guanmo-ai.github.io/design-style/?lang=en#work-002-swiss-style"><img src="styles/002-swiss-style/video/cover.jpg" width="240" alt="Swiss Style film cover" /></a><br />
       <a href="https://guanmo-ai.github.io/design-style/?lang=en#work-002-swiss-style"><b>Swiss Style</b></a><br />
       <sub>15 seconds</sub>
     </td>
-  </tr>
-  <tr>
     <td align="center" valign="top" width="33%">
       <a href="https://guanmo-ai.github.io/design-style/?lang=en#work-01-bento-grid"><img src="layouts/01-bento-grid/video/cover.jpg" width="240" alt="Bento Grid film cover" /></a><br />
       <a href="https://guanmo-ai.github.io/design-style/?lang=en#work-01-bento-grid"><b>Bento Grid</b></a><br />

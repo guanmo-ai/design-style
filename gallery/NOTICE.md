@@ -8,3 +8,9 @@
 - 网站视频仅来自 `guanmo-ai/design-style` 自身 GitHub Releases，构建前核验 SHA-256。
 - 封面、风格图、时间轴与规格均来自本仓库 `styles/` 与 `layouts/`。不包含 Awesome AI Motion 的作品数据或第三方媒体。
 - 本目录的 MIT 许可适用于画廊代码；视频、图片及原有项目内容的使用规则遵循仓库 README。转载请注明观默 @guanmo_ai。
+
+## 交互动效（2026-11-11）
+
+- [Amicro](https://github.com/Subhan-code/Amicro--Micro-transitions-)：沿用 `registry/lib/presets.ts` 的 `snappy` / `smooth` 弹簧参数，改写为原生 Web Animations API 采样，用于筛选指示器、卡片位置变化与预览展开。未引入其 React、Tailwind 或 Motion 运行时。MIT 许可全文见 `assets/licenses/LICENSE-Amicro.txt`。
+- [Microsoft Fluent UI](https://github.com/microsoft/fluentui/blob/master/packages/react-components/react-motion/library/src/motions/motionTokens.ts)：沿用快慢时长与减速、加速曲线，用于按压、退出和内容切换。MIT 许可全文见 `assets/licenses/LICENSE-FluentUI.txt`。未使用其字体、图标或品牌素材。
+- 当前动效适配代码为 `assets/motion.mjs`；首页直接展示作品选择，没有独立宣传短片区域。尊重系统减少动态效果设置。

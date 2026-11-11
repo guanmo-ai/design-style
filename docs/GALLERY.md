@@ -42,6 +42,8 @@ npm run gallery:check   # 构建后检查发布文件、Pages 子路径链接、
 
 ## GitHub Pages
 
+首页直接进入作品选择，交互动效采用原生 Web Animations API，参考 Amicro 弹簧参数与 Microsoft Fluent UI 的动效节奏，来源与许可见 `gallery/NOTICE.md`。卡片按作品 ID 保留，搜索与切换语言不重建仍在列表中的预览；同时自动播放上限为桌面 4 个、窄屏 2 个。系统减少动态效果设置会关闭过渡并默认暂停预览。本轮发布与审查见 [2026-11-11 记录](reviews/2026-11-11-gallery-plush/REVIEW.md)，上线状态以实际部署记录为准。
+
 地址：<https://guanmo-ai.github.io/design-style/>。
 
 `.github/workflows/pages.yml` 在推送 `main` 或手动触发时运行：安装锁定依赖 → 测试 → 下载本仓库 Release 视频并核验 → 构建 → 发布产物检查 → 部署 Pages。构建失败时不部署。Actions 仅在部署任务中授予 Pages 与 OIDC 写权限，第三方 Action 固定到提交 SHA。
