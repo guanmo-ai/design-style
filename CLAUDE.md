@@ -12,6 +12,8 @@
 
 开工时先问：这种材料 / 风格**自己会怎么动**？把这一条做到最好，再考虑骨架。
 
+**动效的底线是毛绒那一期**（`drafts/plush/film/plush-film.mp4`，主人：“很丝滑”“以后至少达到这样的标准”，要“让人有惊艳的感觉”）。交片前跑 `python3 drafts/_lib/smooth.py <成片.mp4>`，逐个核对它列出的跳变；拆解见 `docs/DESIGN_NOTES.md` 的“丝滑是怎么来的”。
+
 ## 东西在哪
 
 - `styles/NNN-name/`、`layouts/NN-name/`：已上架的期（视频源码、图、指南、制作过程）

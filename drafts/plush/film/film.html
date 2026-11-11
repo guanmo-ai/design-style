@@ -71,7 +71,7 @@ function hud(f, s, VP) {
   H.style.opacity = s.fade ?? 1;
   // 外框：左上章节、右上进度
   let ci = 0; TL.chapters.forEach((c, i) => { if (f >= c[0]) ci = i; });
-  const [c0, no, ti, sub] = TL.chapters[ci], cs = ci === 0 ? 14 : c0, hide = ci === 7 || (s.rule !== undefined);
+  const [c0, no, ti, sub] = TL.chapters[ci], cs = ci === 0 ? 14 : c0, hide = ci === 7 || (f >= TL.rules[0] && f < TL.ui);   // 规则卡那一章不显示左上的章节（最后 6 帧卡片已收走，也别闪回来）
   $('chap').innerHTML = hide ? '' : `<div class="no">${D(no + ' / 07', f, cs, { kind: 'small' })}</div><div class="ti">${D(ti, f, cs + 2, { rate: 2.5, kind: 'title' })}</div><div class="sub">${D(sub, f, cs + 12, { rate: 0.8 })}</div>`;
   $('prog').innerHTML = ci === 7 ? '' : `<i><b style="width:${Math.min(100, f / TL.out * 100).toFixed(1)}%"></b></i>${no} / 07`;
   // 左下：这一章的参数
@@ -81,8 +81,8 @@ function hud(f, s, VP) {
   let big = '';
   if (s.rule !== undefined) { const c = TL.rules[s.rule], [w, subs] = RULES[s.rule], k = prog(f, c, c + 7), sc = lerp(1.5, 1, ease.out5(k)); TFX.slam(c);
     const tag = s.rule === 4 ? '' : `<span class="tag ${s.ruleOn > 0.5 ? 'on' : ''}">${s.ruleOn > 0.5 ? '开' : '关'}</span>`;
-    big += `<div class="rno">${D('规则 0' + (s.rule + 1) + ' / 05', f, c, { kind: 'small' })}${f >= c + 4 ? tag : ''}</div><div class="word" style="transform:scale(${sc.toFixed(3)});opacity:${Math.min(1, k * 3).toFixed(2)}">${w}</div>`;
-    big += `<div class="rsub mono">${subs.map((l, i) => `<div>${D(l, f, c + 9 + i * 9, { rate: 0.6 })}</div>`).join('')}</div>`; }
+    big += `<div class="rno">${D('规则 0' + (s.rule + 1) + ' / 05', f, c, { kind: 'small' })}${f >= c + 4 ? tag : ''}</div><div class="word" style="transform:scale(${sc.toFixed(3)});opacity:${(Math.min(1, k * 3) * (1 - prog(f, TL.uiMorph[0] - 7, TL.uiMorph[0] - 1))).toFixed(2)}">${w}</div>`;
+    big += `<div class="rsub mono" style="opacity:${(1 - prog(f, TL.uiMorph[0] - 7, TL.uiMorph[0] - 1)).toFixed(2)}">${subs.map((l, i) => `<div>${D(l, f, c + 9 + i * 9, { rate: 0.6 })}</div>`).join('')}</div>`; }
   if (s.countShown !== undefined && f >= TL.oneGrow) big += `<div class="count">×&thinsp;${D(s.countShown.toLocaleString('en-US'), f, TL.oneGrow, { rate: 1 })}<small>根</small></div>`;
   if (VP && f >= TL.oneGrow + 4 && f < TL.counts[1]) { const a = proj(VP, [0.012, 2.135, 0]), b = proj(VP, [0.012, 2.012, 0]), o = 1 - prog(f, TL.counts[0], TL.counts[1]);
     big += `<div class="call mono" style="left:${a[0] + 120}px;top:${a[1] - 20}px;opacity:${o}">${D('尖 #FF4F97 · 浅、细', f, TL.oneGrow + 4, { rate: 0.7 })}</div><div class="call mono" style="left:${b[0] + 120}px;top:${b[1] - 20}px;opacity:${o}">${D('根 #7D0A3C · 深、粗', f, TL.oneGrow + 10, { rate: 0.7 })}</div>`; }

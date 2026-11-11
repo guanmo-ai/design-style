@@ -212,10 +212,13 @@ function stateAt(F, f) {
   // 06 界面：墙 + 开关的轨道画在背景里；心被点之前是灰的
   if (shape === 'ui' || (mi >= 0 && (MORPHS[mi][3] === 'ui' || MORPHS[mi][2] === 'ui'))) {
     const inUI = MORPHS[mi][3] === 'ui' ? ease.inOut2(prog(f, TL.uiMorph[0], TL.uiMorph[1])) : 1 - ease.inOut2(prog(f, TL.outMorph[0], TL.outMorph[0] + 14));
-    s.wallMix = inUI; if (inUI > 0.5) { s.wall = -0.02; s.key = [0.35, 0.75, 0.9]; s.keyCol = [2.0, 1.95, 1.9]; s.amb = [0.42, 0.4, 0.42]; s.vignette = 0.05; s.spot = [0.5, 0.5, 0]; }
+    // 地面 → 墙：亮度、光、暗角、影子全部按 inUI 渐变；只有“换成一面墙”这件事在 0.92 才切，那时两边已经一样了
+    const onWall = inUI > 0.92; s.wallMix = inUI; if (onWall) s.wall = -0.02;
+    s.key = lerp3([0.45, 0.8, 0.5], [0.35, 0.75, 0.9], inUI); s.keyCol = lerp3([2.3, 2.15, 1.95], [2.0, 1.95, 1.9], inUI); s.amb = lerp3([0.3, 0.3, 0.36], [0.42, 0.4, 0.42], inUI);
+    s.vignette = lerp(0.3, 0.05, inUI); s.spot = [0.5, 0.55, 0.35 * (1 - inUI)]; s.shadow = onWall ? prog(inUI, 0.92, 1) : 1 - inUI;
     const like = ease.out3(prog(f, TL.tapHeart + 3, TL.tapHeart + 12)); F.tone(TONE.heart, palMix(PAL.heartOff, PAL.heart, like));
     const on = f < TL.toggle ? 0 : ease.out3(prog(f, TL.toggle, TL.toggle + 12));
-    s.pill = [LAY.track[0], LAY.track[1], 0.26, 0.142]; s.pillCol = hexMix('#d9cfd6', '#34d27b', on); s.pillOn = inUI > 0.5 ? prog(f, TL.ui + 10, TL.ui + 22) : 0;
+    s.pill = [LAY.track[0], LAY.track[1], 0.26, 0.142]; s.pillCol = hexMix('#d9cfd6', '#34d27b', on); s.pillOn = onWall ? prog(f, TL.ui + 10, TL.ui + 22) * prog(inUI, 0.92, 1) : 0;
     s.occ.push([LAY.heart[0], LAY.heart[1] - 0.02, 0.1, 0.36 * pop(f, TL.ui + 6, 3, 0.4)], [...xf(P[SLOT.knob], [LAY.knobOff[0], LAY.knobOff[1], 0.06]), 0.13],
       ...LAY.dots.map((d, i) => [...xf(P[SLOT.d1 + i], [d[0], d[1], 0.05]), 0.1]));
     s.len = 0.15; s.width = 0.004; s.base = 0.014; s.clumpSize = 0.05; s.wind = [1, 0, 0, 0.04];

@@ -224,7 +224,7 @@ const FUR = (() => {
   // 布景：一面无缝的弧形背景墙 + 地面；地上是每颗球的软影子和接触阴影
   const BG_FS = `#version 300 es
   precision highp float; in vec2 uv; out vec4 o;
-  uniform mat4 uIVP; uniform vec3 uEye, uKey, uBgA, uBgB, uSpot; uniform vec4 uOcc[10]; uniform float uShadow, uFloorY, uWall, uPillOn; uniform vec4 uPill; uniform vec3 uPillCol;
+  uniform mat4 uIVP; uniform vec3 uEye, uKey, uBgA, uBgB, uSpot; uniform vec4 uOcc[10]; uniform float uShadow, uFloorY, uWall, uPillOn, uWallMix; uniform vec4 uPill; uniform vec3 uPillCol;
   void main(){
     vec4 h = uIVP*vec4(uv*2.0-1.0, 1.0, 1.0); vec3 rd = normalize(h.xyz/h.w - uEye);
     vec3 c; float sh = 1.0;
@@ -234,7 +234,7 @@ const FUR = (() => {
     float wall = uWall > -50.0 ? 0.0 : smoothstep(9.0, 22.0, length(P.xz));   // 远处地面卷成墙
     float g = clamp(rd.y*1.6 + 0.5, 0., 1.);
     vec3 wallc = mix(uBgB, uBgA, g);
-    vec3 floorc = uWall > -50.0 ? uBgA : uBgB*1.12;
+    vec3 floorc = uWall > -50.0 ? uBgA : uBgB*mix(1.12, 1.0, uWallMix);
     c = mix(floorc, wallc, max(wall, step(1e8, t)));
     if (uWall < -50.0) c += uBgA*uSpot.z*exp(-dot(uv-uSpot.xy, uv-uSpot.xy)*5.0);   // 主角背后一团光
     if (t < 1e8) { for (int i=0;i<10;i++){ if (uOcc[i].w > 0.0){
@@ -246,7 +246,7 @@ const FUR = (() => {
       vec2 q = abs(P.xy - uPill.xy) - vec2(uPill.z - uPill.w, 0.0); float d = length(max(q, 0.0)) + min(max(q.x, q.y), 0.0) - uPill.w*uPillOn;
       c = mix(c, uPillCol*(0.86 + 0.14*smoothstep(-0.07, 0.0, d - 0.02*(P.y - uPill.y)/uPill.w)), smoothstep(0.004, -0.004, d)); }
     c *= mix(1.0, sh, uShadow);
-    if (uWall > -50.0) { vec3 y = min(c, 0.985); c = (sqrt((1.0-y)*(1.0-y) + 4.0*y/9.0) - (1.0-y))*4.5; }   // 界面的墙：把调色曲线反过来，白就是白
+    { vec3 y = min(c, 0.985); c = mix(c, (sqrt((1.0-y)*(1.0-y) + 4.0*y/9.0) - (1.0-y))*4.5, uWallMix); }      // 界面的墙：把调色曲线反过来，白就是白。按 uWallMix 渐变过去，不能在某一帧突然切（整屏会跳亮）
     o = vec4(c, 1.0);
   }`;
   const POST_BRIGHT = `#version 300 es
@@ -387,7 +387,7 @@ const FUR = (() => {
       gl.clearColor(0, 0, 0, 1); gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
       gl.useProgram(P.bg);
       U(P.bg, 'uIVP', inv(VP)); U(P.bg, 'uEye', s.eye); U(P.bg, 'uKey', key); U(P.bg, 'uBgA', srgb(s.bg?.[0] ?? '#3a5bff')); U(P.bg, 'uBgB', srgb(s.bg?.[1] ?? '#2038c8'));
-      U(P.bg, 'uSpot', s.spot ?? [0.5, 0.55, 0.35]); gl.uniform4fv(P.bg.u.uOcc, occ); U(P.bg, 'uShadow', s.shadow ?? 1); U(P.bg, 'uFloorY', s.floor ?? 0); U(P.bg, 'uWall', s.wall ?? -99); U(P.bg, 'uPill', s.pill ?? [0, 0, 0, 0]); U(P.bg, 'uPillCol', srgb(s.pillCol ?? '#cccccc')); U(P.bg, 'uPillOn', s.pillOn ?? 0);
+      U(P.bg, 'uSpot', s.spot ?? [0.5, 0.55, 0.35]); gl.uniform4fv(P.bg.u.uOcc, occ); U(P.bg, 'uShadow', s.shadow ?? 1); U(P.bg, 'uFloorY', s.floor ?? 0); U(P.bg, 'uWall', s.wall ?? -99); U(P.bg, 'uWallMix', s.wallMix ?? 0); U(P.bg, 'uPill', s.pill ?? [0, 0, 0, 0]); U(P.bg, 'uPillCol', srgb(s.pillCol ?? '#cccccc')); U(P.bg, 'uPillOn', s.pillOn ?? 0);
       draw3();
       gl.enable(gl.DEPTH_TEST); gl.bindVertexArray(emptyVAO);
       const amb = (s.amb ?? [0.3, 0.3, 0.36]), keyCol = s.keyCol ?? [2.3, 2.15, 1.95], cnt = Math.min(N, Math.round(s.count ?? N));
