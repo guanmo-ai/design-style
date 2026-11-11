@@ -1,125 +1,62 @@
 <!doctype html><meta charset="utf-8"><title>毛绒 Plush · 全片</title>
 <!-- 逐帧渲染：node ../../_lib/film-gl.cjs film.html <帧目录> 0 1200。预览（毛少四倍、粗一倍）：加查询串 rows=100&wmul=1.9 -->
-<style>
-@font-face { font-family: 'ZCOOL'; src: url(../../../public/fonts/ZCOOLQingKeHuangYou.ttf); }
-@font-face { font-family: 'Unbounded'; src: url(../../../public/fonts/Unbounded.ttf); font-weight: 200 900; }
-@font-face { font-family: 'GeistMono'; src: url(../../../public/fonts/GeistMono.ttf); font-weight: 100 900; }
-@font-face { font-family: 'NotoSC'; src: url(../../../public/fonts/NotoSansSC-Bold.otf); font-weight: 700; }
-@font-face { font-family: 'NotoSC'; src: url(../../../public/fonts/NotoSansSC-Medium.otf); font-weight: 500; }
-html, body { margin: 0; background: #000; overflow: hidden; }
-#stage { position: relative; width: 1920px; height: 1080px; overflow: hidden; }
-canvas { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; }
-#hud { position: absolute; inset: 0; color: var(--ink); font-family: 'NotoSC'; font-weight: 500; --ink: #fff; --sh: 0 2px 14px rgba(10, 10, 60, .35); text-shadow: var(--sh); }
-#hud.dark { --ink: #2b1420; --sh: none; }
-#hud > div, #uiwrap > div { position: absolute; }
-#uiwrap { left: 0; top: 0; width: 1920px; height: 1080px; transform-origin: 0 0; }
-.mono { font-family: 'GeistMono', 'NotoSC'; font-weight: 500; letter-spacing: .01em; }
-#chap { left: 72px; top: 58px; }
-#chap .no { font-family: 'GeistMono'; font-size: 26px; opacity: .78; letter-spacing: .08em; }
-#chap .ti { font-family: 'ZCOOL'; font-size: 60px; line-height: 1.15; margin-top: 2px; }
-#chap .sub { font-size: 30px; opacity: .92; margin-top: 6px; }
-#prog { right: 72px; top: 62px; font-family: 'GeistMono'; font-size: 26px; letter-spacing: .08em; opacity: .85; }
-#prog i { display: inline-block; width: 150px; height: 4px; background: rgba(255, 255, 255, .28); vertical-align: middle; margin-right: 18px; border-radius: 2px; position: relative; top: -2px; }
-#hud.dark #prog i { background: rgba(43, 20, 32, .2); }
-#prog i b { display: block; height: 100%; background: var(--ink); border-radius: 2px; }
-#params { left: 72px; bottom: 60px; font-size: 31px; line-height: 1.55; }
-#big { inset: 0; }
-.word { position: absolute; left: 104px; top: 300px; font-family: 'ZCOOL'; font-size: 196px; line-height: 1; white-space: nowrap; transform-origin: 0 60%; }
-.rno { position: absolute; left: 112px; top: 236px; white-space: nowrap; font-family: 'GeistMono'; font-size: 30px; letter-spacing: .1em; opacity: .85; }
-.rsub { position: absolute; left: 112px; top: 536px; font-size: 32px; line-height: 1.6; white-space: nowrap; }
-.tag { display: inline-block; font-family: 'NotoSC'; font-weight: 700; font-size: 26px; padding: 3px 18px 5px; border-radius: 30px; border: 3px solid var(--ink); margin-left: 22px; vertical-align: middle; text-shadow: none; }
-.tag.on { background: #fff; color: #1b36c9; }
-.count { position: absolute; right: 76px; bottom: 48px; font-family: 'ZCOOL'; font-size: 132px; line-height: 1; text-align: right; white-space: nowrap; }
-.count small { font-size: 46px; margin-left: 12px; }
-.call { position: absolute; font-size: 27px; white-space: nowrap; }
-.call::before { content: ''; position: absolute; right: 100%; top: 50%; width: 74px; height: 3px; background: var(--ink); margin-right: 14px; border-radius: 2px; }
-#phone { left: 380px; top: 50px; width: 480px; height: 980px; box-sizing: border-box; border: 11px solid #24121c; border-radius: 74px; text-shadow: none; color: #2b1420; box-shadow: 0 30px 80px rgba(120, 60, 30, .22), inset 0 0 0 2px rgba(255, 255, 255, .5); }
-#phone .isl { position: absolute; left: 50%; top: 16px; width: 124px; height: 34px; margin-left: -62px; background: #24121c; border-radius: 20px; }
-#phone .time { position: absolute; left: 40px; top: 22px; font-family: 'GeistMono'; font-size: 20px; font-weight: 600; }
-#phone .h { position: absolute; left: 34px; top: 78px; font-family: 'ZCOOL'; font-size: 40px; }
-#phone .cap { position: absolute; left: 0; right: 0; top: 498px; text-align: center; font-size: 22px; opacity: .8; }
-#phone .ln { position: absolute; left: 34px; right: 34px; height: 2px; background: rgba(43, 20, 32, .1); }
-#phone .row { position: absolute; left: 36px; font-size: 26px; font-weight: 700; }
-#phone .row small { display: block; font-size: 18px; font-weight: 500; opacity: .6; margin-top: 2px; }
-#spec { left: 0; top: 0; }
-#spec .b { position: absolute; left: 920px; width: 520px; }
-#spec .t { font-family: 'ZCOOL'; font-size: 60px; line-height: 1.1; }
-#spec .t span { font-family: 'GeistMono'; font-size: 20px; opacity: .6; margin-right: 14px; vertical-align: 12px; }
-#spec .l { font-size: 21px; line-height: 1.6; white-space: nowrap; }
-#cursor { width: 64px; height: 64px; margin: -32px 0 0 -32px; border-radius: 50%; background: rgba(255, 255, 255, .34); border: 3px solid rgba(255, 255, 255, .95); box-sizing: border-box; box-shadow: 0 6px 20px rgba(0, 0, 0, .25); }
-#hud.dark #cursor { background: rgba(43, 20, 32, .16); border-color: rgba(43, 20, 32, .7); }
-#end { left: 0; right: 0; top: 902px; text-align: center; }
-#end .en { font-family: 'Unbounded'; font-weight: 700; font-size: 46px; letter-spacing: .52em; margin-left: .52em; }
-#end .by { font-size: 28px; margin-top: 18px; opacity: .92; }
-</style>
-<div id="stage"><canvas id="c" width="1920" height="1080"></canvas>
-<div id="hud"><div id="chap"></div><div id="prog"></div><div id="params"></div><div id="big"></div><div id="uiwrap"><div id="phone"></div><div id="spec"></div></div><div id="cursor"></div><div id="end"></div></div></div>
+<link rel="stylesheet" href="../../_lib/kit/hud.css">
+<div id="stage"><canvas id="c" width="1920" height="1080"></canvas></div>
 <script src="../../_lib/glkit.js"></script><script src="../../_lib/typefx.js"></script>
-<script src="../fur.js"></script><script src="../shapes.js"></script><script src="timeline.js"></script><script src="scenes.js"></script>
+<script src="../../_lib/kit/motion.js"></script><script src="../../_lib/kit/director.js"></script><script src="../../_lib/kit/stage.js"></script><script src="../../_lib/kit/shapes.js"></script><script src="../../_lib/kit/hud.js"></script>
+<script src="../../_lib/fur/fur.js"></script><script src="timeline.js"></script><script src="scenes.js"></script>
 <script>
-const Q = new URLSearchParams(location.search), $ = id => document.getElementById(id), D = (h, f, f0, o) => TFX.decode(h, f, f0, o);
+const Q = new URLSearchParams(location.search), $ = id => document.getElementById(id);
 const RULES = [['根深尖浅', ['根 #7D0A3C → 尖 #FF4F97', '越靠根越暗：亮度 ×0.3']], ['乱一点', ['长短 ±28% · 方向 ±0.4', '几十根并成一撮，各倒各的']], ['逆光镶边', ['rim = (1 − N·V)³ × 毛尖', '光从背后来，轮廓会发亮']],
   ['慢半拍', ['毛尖 = 身体的运动 ⊗ 弹簧', '2.6 Hz · ζ 0.22：晚 5 帧，冲过头 30%']], ['一按就倒', ['拨开半径 0.42', '手一走，毛跟着合上']]];
 const PARAMS = [[26, 120, ['409,600 根毛，每根都是一根弹簧']], [176, 225, ['长 0.15 · 宽 0.007 · 根粗尖细']], [262, 322, ['毛长 ×0.5：毛越短，越硬挺', '根 #4A2A10 → 尖 #DCAE6E']],
   [372, 427, ['身体 ×0.9 · 鼻口 ×0.42', '同一只熊，两种毛长']], [468, 510, ['毛长 ×1.3 · 下垂 0.42', '一甩：毛尖晚 5 帧才到']]];
 const SPEC = [[TL.ui + 34, '点赞', ['按下 scale 1 → 0.76，5 帧', '松手 弹簧 3.6 Hz · ζ 0.26', '灰 → 粉 0.15 s']], [TL.toggle - 26, '开关', ['钮滑 66 px，过冲 12%', '毛再晚 5 帧，抖 3 下']], [TL.load[0] - 22, '加载', ['三颗球，各晚 7.5 帧', '落地压扁 0.75']]];
-const proj = (VP, p) => { const w = VP[3] * p[0] + VP[7] * p[1] + VP[11] * p[2] + VP[15];
-  return [((VP[0] * p[0] + VP[4] * p[1] + VP[8] * p[2] + VP[12]) / w * 0.5 + 0.5) * 1920, (0.5 - (VP[1] * p[0] + VP[5] * p[1] + VP[9] * p[2] + VP[13]) / w * 0.5) * 1080]; };
 
 function hud(f, s, VP) {
-  const H = $('hud'); H.classList.toggle('dark', f >= TL.uiMorph[0] + 24 && f < TL.outMorph[0] + 12);
-  H.style.opacity = s.fade ?? 1;
-  // 外框：左上章节、右上进度
-  let ci = 0; TL.chapters.forEach((c, i) => { if (f >= c[0]) ci = i; });
-  const [c0, no, ti, sub] = TL.chapters[ci], cs = ci === 0 ? 14 : c0, hide = ci === 7 || (f >= TL.rules[0] && f < TL.ui);   // 规则卡那一章不显示左上的章节（最后 6 帧卡片已收走，也别闪回来）
-  $('chap').innerHTML = hide ? '' : `<div class="no">${D(no + ' / 07', f, cs, { kind: 'small' })}</div><div class="ti">${D(ti, f, cs + 2, { rate: 2.5, kind: 'title' })}</div><div class="sub">${D(sub, f, cs + 12, { rate: 0.8 })}</div>`;
-  $('prog').innerHTML = ci === 7 ? '' : `<i><b style="width:${Math.min(100, f / TL.out * 100).toFixed(1)}%"></b></i>${no} / 07`;
-  // 左下：这一章的参数
-  const pr = PARAMS.find(p => f >= p[0] && f < p[1]);
-  $('params').innerHTML = pr ? pr[2].map((l, i) => `<div class="mono">${D(l, f, pr[0] + i * 12, { rate: 0.7 })}</div>`).join('') : '';
+  HUD.layer({ dark: f >= TL.uiMorph[0] + 24 && f < TL.outMorph[0] + 12, fade: s.fade ?? 1 });
+  // 外框：左上章节、右上进度。规则卡那一章不显示左上的章节（最后 6 帧卡片已收走，也别闪回来）
+  const ci = chapterAt(TL.chapters, f);
+  HUD.chapter(f, TL.chapters, { total: '07', hide: ci === 7 || (f >= TL.rules[0] && f < TL.ui), noProgress: ci === 7, progress: f / TL.out });
+  HUD.params(f, PARAMS);
   // 中间的大字：规则卡 / 毛的根数 / 标注
   let big = '';
-  if (s.rule !== undefined) { const c = TL.rules[s.rule], [w, subs] = RULES[s.rule], k = prog(f, c, c + 7), sc = lerp(1.5, 1, ease.out5(k)); TFX.slam(c);
-    const tag = s.rule === 4 ? '' : `<span class="tag ${s.ruleOn > 0.5 ? 'on' : ''}">${s.ruleOn > 0.5 ? '开' : '关'}</span>`;
-    big += `<div class="rno">${D('规则 0' + (s.rule + 1) + ' / 05', f, c, { kind: 'small' })}${f >= c + 4 ? tag : ''}</div><div class="word" style="transform:scale(${sc.toFixed(3)});opacity:${(Math.min(1, k * 3) * (1 - prog(f, TL.uiMorph[0] - 7, TL.uiMorph[0] - 1))).toFixed(2)}">${w}</div>`;
-    big += `<div class="rsub mono" style="opacity:${(1 - prog(f, TL.uiMorph[0] - 7, TL.uiMorph[0] - 1)).toFixed(2)}">${subs.map((l, i) => `<div>${D(l, f, c + 9 + i * 9, { rate: 0.6 })}</div>`).join('')}</div>`; }
-  if (s.countShown !== undefined && f >= TL.oneGrow) big += `<div class="count">×&thinsp;${D(s.countShown.toLocaleString('en-US'), f, TL.oneGrow, { rate: 1 })}<small>根</small></div>`;
-  if (VP && f >= TL.oneGrow + 4 && f < TL.counts[1]) { const a = proj(VP, [0.012, 2.135, 0]), b = proj(VP, [0.012, 2.012, 0]), o = 1 - prog(f, TL.counts[0], TL.counts[1]);
-    big += `<div class="call mono" style="left:${a[0] + 120}px;top:${a[1] - 20}px;opacity:${o}">${D('尖 #FF4F97 · 浅、细', f, TL.oneGrow + 4, { rate: 0.7 })}</div><div class="call mono" style="left:${b[0] + 120}px;top:${b[1] - 20}px;opacity:${o}">${D('根 #7D0A3C · 深、粗', f, TL.oneGrow + 10, { rate: 0.7 })}</div>`; }
-  $('big').innerHTML = big;
-  // 06 手机：先有容器（从下面弹上来），毛再倒进去
-  const inPhone = f >= TL.phone[0] && f < TL.outMorph[0] + 16, ph = $('phone'), sp = $('spec');
-  ph.style.display = sp.style.display = inPhone ? 'block' : 'none';
-  if (inPhone) { const up = pop(f, TL.phone[0], 2.4, 0.5), dn = ease.in3(prog(f, TL.outMorph[0], TL.outMorph[0] + 16));
-    ph.style.transform = `translateY(${((1 - up) * 1100 + dn * 1150).toFixed(1)}px)`;
-    const k = 9 / s.eye[2], cxp = 960 + s.at[0] * UI.ppu, cyp = 540 - (s.at[1] - 1.5) * UI.ppu, lock = f >= 772 && f < TL.outMorph[0];   // 镜头贴着墙推拉，手机这层跟着一起缩放
-    $('uiwrap').style.transform = lock ? `translate(${(960 - k * cxp).toFixed(2)}px,${(540 - k * cyp).toFixed(2)}px) scale(${k.toFixed(4)})` : `translate(${(960 - 1.5 * 720).toFixed(2)}px,${(540 - 1.5 * (f < 900 ? 400 : 730)).toFixed(2)}px) scale(1.5)`;
+  if (s.rule !== undefined) { const [w, subs] = RULES[s.rule];
+    big += HUD.ruleCard(f, { at: TL.rules[s.rule], label: '规则 0' + (s.rule + 1) + ' / 05', word: w, subs, tag: s.rule === 4 ? null : { on: s.ruleOn > 0.5, onText: '开', offText: '关' }, out: prog(f, TL.uiMorph[0] - 7, TL.uiMorph[0] - 1) }); }
+  if (s.countShown !== undefined && f >= TL.oneGrow) big += HUD.count(f, { text: s.countShown.toLocaleString('en-US'), at: TL.oneGrow, unit: '根' });
+  if (VP && f >= TL.oneGrow + 4 && f < TL.counts[1]) { const o = 1 - prog(f, TL.counts[0], TL.counts[1]);
+    big += HUD.callout(f, { p: proj(VP, [0.012, 2.135, 0]), text: '尖 #FF4F97 · 浅、细', at: TL.oneGrow + 4, opacity: o }) + HUD.callout(f, { p: proj(VP, [0.012, 2.012, 0]), text: '根 #7D0A3C · 深、粗', at: TL.oneGrow + 10, opacity: o }); }
+  HUD.big(big);
+  // 06 手机：先有容器（从下面弹上来），毛再倒进去；镜头贴着墙推拉，手机这层跟着一起缩放
+  const inPhone = f >= TL.phone[0] && f < TL.outMorph[0] + 16, D = HUD.D;
+  if (!inPhone) HUD.phone(f, { show: false });
+  else { const up = pop(f, TL.phone[0], 2.4, 0.5), dn = ease.in3(prog(f, TL.outMorph[0], TL.outMorph[0] + 16));
+    const k = 9 / s.eye[2], cxp = 960 + s.at[0] * UI.ppu, cyp = 540 - (s.at[1] - 1.5) * UI.ppu, lock = f >= 772 && f < TL.outMorph[0];
     const likes = f >= TL.tapHeart + 4 ? '1,025' : '1,024', t0 = TL.ui + 16;
-    ph.innerHTML = `<div class="isl"></div><div class="time">9:41</div><div class="h">${D('毛绒日记', f, t0, { rate: 2.5, kind: 'title' })}</div>
+    HUD.phone(f, { show: true, y: (1 - up) * 1100 + dn * 1150,
+      wrap: lock ? `translate(${(960 - k * cxp).toFixed(2)}px,${(540 - k * cyp).toFixed(2)}px) scale(${k.toFixed(4)})` : `translate(${(960 - 1.5 * 720).toFixed(2)}px,${(540 - 1.5 * (f < 900 ? 400 : 730)).toFixed(2)}px) scale(1.5)`,
+      inner: `<div class="h">${D('毛绒日记', f, t0, { rate: 2.5, kind: 'title' })}</div>
       <div class="cap">${D('捏一下 · ' + likes, f, t0 + 10, { rate: 0.8, kind: 'small' })}</div><div class="ln" style="top:580px"></div>
       <div class="row" style="top:646px">${D('消息提醒', f, t0 + 16, { rate: 1.5, kind: 'small' })}<small>${f >= TL.toggle + 6 ? '已打开' : '已关闭'}</small></div><div class="ln" style="top:762px"></div>
-      <div class="cap" style="top:902px">${D('正在加载…', f, TL.load[0] - 14, { rate: 1.2, kind: 'small' })}</div>`;
-    const act = f < TL.toggle - 26 ? 0 : f < TL.load[0] - 22 ? 1 : 2;
-    sp.style.opacity = 1 - dn;
-    sp.innerHTML = SPEC.map(([t, name, ls], i) => f < t ? '' : `<div class="b" style="top:${[300, 618, 800][i]}px;opacity:${i === act ? 1 : i === act - 1 ? 0.35 : 0}"><div class="t"><span>0${i + 1}</span>${D(name, f, t, { rate: 3, kind: 'title' })}</div>${ls.map((l, j) => `<div class="l mono">${D(l, f, t + 8 + j * 9, { rate: 0.6 })}</div>`).join('')}</div>`).join(''); }
+      <div class="cap" style="top:902px">${D('正在加载…', f, TL.load[0] - 14, { rate: 1.2, kind: 'small' })}</div>`,
+      blocks: SPEC, tops: [300, 618, 800], active: f < TL.toggle - 26 ? 0 : f < TL.load[0] - 22 ? 1 : 2, specOpacity: 1 - dn }); }
   // 手指
-  const cu = $('cursor'); let cp = null, press = 0;
+  let cp = null, press = 0;
   if (VP && s.rule === 4 && s.push.length) cp = proj(VP, s.push[0]);
   if (VP && f >= TL.tapHeart - 16 && f < TL.tapHeart + 14) { const a = proj(VP, [LAY.heart[0], LAY.heart[1], 0.2]), t = ease.out3(prog(f, TL.tapHeart - 16, TL.tapHeart - 3)), out = ease.in2(prog(f, TL.tapHeart + 6, TL.tapHeart + 14));
     cp = [a[0] + (1 - t) * 190 + out * 150, a[1] + (1 - t) * 230 + out * 190]; press = f >= TL.tapHeart - 2 && f < TL.tapHeart + 5 ? 1 : 0; }
   if (VP && f >= TL.toggle - 18 && f < TL.toggle + 12) { const a = proj(VP, [LAY.knobOff[0], LAY.knobOff[1], 0.1]), b = proj(VP, [LAY.knobOn[0], LAY.knobOn[1], 0.1]), t = ease.out3(prog(f, TL.toggle - 18, TL.toggle - 5)), k = ease.out3(prog(f, TL.toggle, TL.toggle + 7)), out = ease.in2(prog(f, TL.toggle + 5, TL.toggle + 12));
     cp = [lerp(a[0], b[0], k) + (1 - t) * 160 + out * 120, a[1] + (1 - t) * 200 + out * 160]; press = f >= TL.toggle - 4 && f < TL.toggle + 6 ? 1 : 0; }
-  cu.style.display = cp ? 'block' : 'none';
-  if (cp) { cu.style.left = cp[0].toFixed(1) + 'px'; cu.style.top = cp[1].toFixed(1) + 'px'; cu.style.transform = `scale(${press ? 0.78 : 1})`; }
+  HUD.cursor(cp, press);
   // 片尾：字是毛拼的，下面一行英文 + 署名
-  $('end').innerHTML = f < TL.final - 14 ? '' : `<div class="en">${D('PLUSH', f, TL.final - 14, { rate: 3, kind: 'title' })}</div><div class="by">${D('每天一个设计风格 · 观默 @guanmo_ai', f, TL.sign, { rate: 1.2 })}</div>`;
+  HUD.endCard(f, { at: TL.final - 14, en: 'PLUSH', signAt: TL.sign });
 }
 
 let F;
 (async () => {
-  await Promise.all(['ZCOOL', 'GeistMono', 'NotoSC', 'Unbounded'].map(n => document.fonts.load(`700 40px ${n}`, '毛绒Aa1'))); await document.fonts.ready;
+  HUD.mount(); await HUD.fonts('毛绒Aa1');
   const wmul = +(Q.get('wmul') || 1);
-  F = FUR.create($('c'), { rows: +(Q.get('rows') || 400), K: +(Q.get('k') || 4) });
+  F = FUR.create(STAGE.create($('c')), { rows: +(Q.get('rows') || 400), K: +(Q.get('k') || 4) });
   buildShapes(F);
   for (let f = 0; f < TL.end; f++) hud(f, stateAt(F, f), null);          // 空跑一遍：把所有出字的时间登记给配乐
   window.events = () => ({ cues: TFX.list() });

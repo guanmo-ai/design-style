@@ -1,0 +1,43 @@
+<!doctype html><meta charset="utf-8"><title>__TITLE__ · 全片</title>
+<!-- 逐帧渲染：node ../../_lib/film-gl.cjs film.html <帧目录> 0 <总帧数>。出片：bash make.sh；三分钟预览：PREVIEW=1 bash make.sh -->
+<link rel="stylesheet" href="../../_lib/kit/hud.css">
+<div id="stage"><canvas id="c" width="1920" height="1080"></canvas></div>
+<script src="../../_lib/glkit.js"></script><script src="../../_lib/typefx.js"></script>
+<script src="../../_lib/kit/motion.js"></script><script src="../../_lib/kit/director.js"></script><script src="../../_lib/kit/stage.js"></script><script src="../../_lib/kit/shapes.js"></script><script src="../../_lib/kit/hud.js"></script>
+<script src="timeline.js"></script><script src="scenes.js"></script>
+<script>
+const Q = new URLSearchParams(location.search), TOTAL = String(TL.chapters.length - 1).padStart(2, '0');
+// 左下角的参数：[[从第几帧, 到第几帧, [一行, 一行…]], …]——把关键数值直接写在画面上，设计师能抄走
+const PARAMS = [[TL.hit + 14, TL.ch1, ['弹簧 2.0 Hz · ζ 0.22：晚几帧到，冲过头，再抖回来']], [TL.swing + 6, TL.final, ['主角甩一下，附属物晚半拍', '软的一组慢，硬的一组快']]];
+
+// 画面上的字（每一块都是可选的，见 ../../_lib/kit/hud.js：章节外框、参数、规则卡、大数字、标注线、手机框、手指、片尾署名）
+function hud(f, s, VP) {
+  HUD.layer({ fade: s.fade ?? 1 });
+  const ci = chapterAt(TL.chapters, f), last = ci === TL.chapters.length - 1;
+  HUD.chapter(f, TL.chapters, { total: TOTAL, hide: last, noProgress: last, progress: f / TL.final });
+  HUD.params(f, PARAMS);
+  HUD.big('');
+  HUD.phone(f, { show: false });
+  HUD.cursor(null);
+  HUD.endCard(f, { at: TL.final, en: '__NAME__'.toUpperCase(), signAt: TL.sign });
+}
+
+// 画一帧：st.begin（布景）→ 你的东西 → 珠子 → st.end（泛光、调色）。返回 VP，给 HUD 把 3D 点投到屏幕上用。
+function renderFrame(st, s) {
+  const c = st.frame(s);
+  st.begin(s, c);
+  // ← 你的渲染器在这里画（用 c.VP、c.key、c.px；深度测试是开着的）
+  st.beads(s.beads, s, c);
+  return st.end(s, c);
+}
+
+(async () => {
+  HUD.mount(); await HUD.fonts('__TITLE__Aa1');
+  const st = STAGE.create(document.getElementById('c'));
+  for (let f = 0; f < TL.end; f++) hud(f, stateAt(f), null);             // 空跑一遍：把所有出字的时间登记给配乐
+  window.events = () => ({ cues: TFX.list() });
+  window.frame = async f => { const s = stateAt(f); hud(f, s, renderFrame(st, s)); await new Promise(r => requestAnimationFrame(() => r())); };
+  await window.frame(+(Q.get('f') || 0));
+  window.ready = true; window.__done = true;
+})().catch(e => { console.log('ERR ' + (e.stack || e.message).slice(0, 4000)); });
+</script>

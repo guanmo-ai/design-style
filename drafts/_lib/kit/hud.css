@@ -1,0 +1,52 @@
+/* kit/hud.css — 画面上的字和框（配 hud.js）。1920×1080；颜色跟着 --ink 走，#hud.dark 是浅色背景上的深色字。
+   字体路径相对这个文件：public/fonts（npm run fonts 下载）。每一块都是可选的，不用就不调。 */
+@font-face { font-family: 'ZCOOL'; src: url(../../../public/fonts/ZCOOLQingKeHuangYou.ttf); }
+@font-face { font-family: 'Unbounded'; src: url(../../../public/fonts/Unbounded.ttf); font-weight: 200 900; }
+@font-face { font-family: 'GeistMono'; src: url(../../../public/fonts/GeistMono.ttf); font-weight: 100 900; }
+@font-face { font-family: 'NotoSC'; src: url(../../../public/fonts/NotoSansSC-Bold.otf); font-weight: 700; }
+@font-face { font-family: 'NotoSC'; src: url(../../../public/fonts/NotoSansSC-Medium.otf); font-weight: 500; }
+html, body { margin: 0; background: #000; overflow: hidden; }
+#stage { position: relative; width: 1920px; height: 1080px; overflow: hidden; }
+canvas { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; }
+#hud { position: absolute; inset: 0; color: var(--ink); font-family: 'NotoSC'; font-weight: 500; --ink: #fff; --sh: 0 2px 14px rgba(10, 10, 60, .35); text-shadow: var(--sh); }
+#hud.dark { --ink: #2b1420; --sh: none; }
+#hud > div, #uiwrap > div { position: absolute; }
+#uiwrap { left: 0; top: 0; width: 1920px; height: 1080px; transform-origin: 0 0; }
+.mono { font-family: 'GeistMono', 'NotoSC'; font-weight: 500; letter-spacing: .01em; }
+#chap { left: 72px; top: 58px; }
+#chap .no { font-family: 'GeistMono'; font-size: 26px; opacity: .78; letter-spacing: .08em; }
+#chap .ti { font-family: 'ZCOOL'; font-size: 60px; line-height: 1.15; margin-top: 2px; }
+#chap .sub { font-size: 30px; opacity: .92; margin-top: 6px; }
+#prog { right: 72px; top: 62px; font-family: 'GeistMono'; font-size: 26px; letter-spacing: .08em; opacity: .85; }
+#prog i { display: inline-block; width: 150px; height: 4px; background: rgba(255, 255, 255, .28); vertical-align: middle; margin-right: 18px; border-radius: 2px; position: relative; top: -2px; }
+#hud.dark #prog i { background: rgba(43, 20, 32, .2); }
+#prog i b { display: block; height: 100%; background: var(--ink); border-radius: 2px; }
+#params { left: 72px; bottom: 60px; font-size: 31px; line-height: 1.55; }
+#big { inset: 0; }
+.word { position: absolute; left: 104px; top: 300px; font-family: 'ZCOOL'; font-size: 196px; line-height: 1; white-space: nowrap; transform-origin: 0 60%; }
+.rno { position: absolute; left: 112px; top: 236px; white-space: nowrap; font-family: 'GeistMono'; font-size: 30px; letter-spacing: .1em; opacity: .85; }
+.rsub { position: absolute; left: 112px; top: 536px; font-size: 32px; line-height: 1.6; white-space: nowrap; }
+.tag { display: inline-block; font-family: 'NotoSC'; font-weight: 700; font-size: 26px; padding: 3px 18px 5px; border-radius: 30px; border: 3px solid var(--ink); margin-left: 22px; vertical-align: middle; text-shadow: none; }
+.tag.on { background: #fff; color: #1b36c9; }
+.count { position: absolute; right: 76px; bottom: 48px; font-family: 'ZCOOL'; font-size: 132px; line-height: 1; text-align: right; white-space: nowrap; }
+.count small { font-size: 46px; margin-left: 12px; }
+.call { position: absolute; font-size: 27px; white-space: nowrap; }
+.call::before { content: ''; position: absolute; right: 100%; top: 50%; width: 74px; height: 3px; background: var(--ink); margin-right: 14px; border-radius: 2px; }
+#phone { left: 380px; top: 50px; width: 480px; height: 980px; box-sizing: border-box; border: 11px solid #24121c; border-radius: 74px; text-shadow: none; color: #2b1420; box-shadow: 0 30px 80px rgba(120, 60, 30, .22), inset 0 0 0 2px rgba(255, 255, 255, .5); }
+#phone .isl { position: absolute; left: 50%; top: 16px; width: 124px; height: 34px; margin-left: -62px; background: #24121c; border-radius: 20px; }
+#phone .time { position: absolute; left: 40px; top: 22px; font-family: 'GeistMono'; font-size: 20px; font-weight: 600; }
+#phone .h { position: absolute; left: 34px; top: 78px; font-family: 'ZCOOL'; font-size: 40px; }
+#phone .cap { position: absolute; left: 0; right: 0; top: 498px; text-align: center; font-size: 22px; opacity: .8; }
+#phone .ln { position: absolute; left: 34px; right: 34px; height: 2px; background: rgba(43, 20, 32, .1); }
+#phone .row { position: absolute; left: 36px; font-size: 26px; font-weight: 700; }
+#phone .row small { display: block; font-size: 18px; font-weight: 500; opacity: .6; margin-top: 2px; }
+#spec { left: 0; top: 0; }
+#spec .b { position: absolute; left: 920px; width: 520px; }
+#spec .t { font-family: 'ZCOOL'; font-size: 60px; line-height: 1.1; }
+#spec .t span { font-family: 'GeistMono'; font-size: 20px; opacity: .6; margin-right: 14px; vertical-align: 12px; }
+#spec .l { font-size: 21px; line-height: 1.6; white-space: nowrap; }
+#cursor { width: 64px; height: 64px; margin: -32px 0 0 -32px; border-radius: 50%; background: rgba(255, 255, 255, .34); border: 3px solid rgba(255, 255, 255, .95); box-sizing: border-box; box-shadow: 0 6px 20px rgba(0, 0, 0, .25); }
+#hud.dark #cursor { background: rgba(43, 20, 32, .16); border-color: rgba(43, 20, 32, .7); }
+#end { left: 0; right: 0; top: 902px; text-align: center; }
+#end .en { font-family: 'Unbounded'; font-weight: 700; font-size: 46px; letter-spacing: .52em; margin-left: .52em; }
+#end .by { font-size: 28px; margin-top: 18px; opacity: .92; }
