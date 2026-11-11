@@ -20,21 +20,4 @@ const TL = {
     [750, "06", "用在界面", "按钮会被捏扁，毛晚半拍"],
     [1020, "07", "", ""]]
 };
-const clamp = (x, a = 0, b = 1) => Math.max(a, Math.min(b, x));
-const lerp = (a, b, t) => a + (b - a) * t;
-const lerp3 = (a, b, t) => [lerp(a[0], b[0], t), lerp(a[1], b[1], t), lerp(a[2], b[2], t)];
-const prog = (f, a, b) => clamp((f - a) / (b - a));
-const ease = {
-  in2: t => t * t, in3: t => t * t * t, out2: t => 1 - (1 - t) * (1 - t), out3: t => 1 - Math.pow(1 - t, 3), out5: t => 1 - Math.pow(1 - t, 5),
-  inOut2: t => t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2,
-  inOut3: t => t < 0.5 ? 4 * t * t * t : 1 - Math.pow(-2 * t + 2, 3) / 2,
-  outBack: (t, s = 1.7) => 1 + (s + 1) * Math.pow(t - 1, 3) + s * Math.pow(t - 1, 2),
-};
-// 欠阻尼弹簧的阶跃响应：0 → 1，冲过头再回来
-const spring = (sec, freq = 2.6, zeta = 0.38) => {
-  if (sec <= 0) return 0; const w = 2 * Math.PI * freq, wd = w * Math.sqrt(1 - zeta * zeta);
-  return 1 - Math.exp(-zeta * w * sec) * (Math.cos(wd * sec) + zeta * w / wd * Math.sin(wd * sec));
-};
-const pop = (f, f0, freq, zeta) => spring((f - f0) / 60, freq, zeta);
-// 一下“压扁再弹回”：f0 那一帧开始，d 帧压到最扁（1 − amt），之后弹簧弹回 1
-const squash = (f, f0, amt = 0.25, d = 5, freq = 3.2, zeta = 0.3) => f < f0 ? 1 : f < f0 + d ? 1 - amt * ease.out2((f - f0) / d) : 1 - amt * (1 - spring((f - f0 - d) / 60, freq, zeta));
+// 缓动、弹簧、压扁这些通用的动作函数在 ../../_lib/kit/motion.js

@@ -1,6 +1,6 @@
 // scenes.js — 毛绒全片的“导演”：有哪些形状（buildShapes）、每个零件每一帧在哪（poses）、每一帧的镜头 / 光 / 颜色（stateAt）。
 // 每一帧都是帧号的纯函数，所以能并行渲、断了能接着渲。
-const M = FUR.m4;
+// 通用的部分在 ../../_lib/kit/：动作（motion.js）、镜头 / 颜色接力 / 转场（director.js）、舞台（stage.js）、撒点（shapes.js）；毛的渲染器在 ../../_lib/fur/fur.js
 const SLOT = { ball: 0, g1: 1, g2: 2, saucer: 3, cup: 4, spoon: 5, body: 6, head: 7, muzzle: 8, earL: 9, earR: 10, armL: 11, armR: 12, legL: 13, legR: 14, hat: 15, heart: 16, knob: 17, d1: 18, d2: 19, d3: 20 };
 const TONE = { pink: 0, tan: 1, tanLight: 2, bear: 3, muzzle: 4, lime: 5, heart: 6, knob: 7, dA: 8, dB: 9, dC: 10 };
 const PAL = {
@@ -72,11 +72,6 @@ function buildShapes(F) {
   F.addShape('ui', SHAPES.merge([heart, knob, dots], 29));
 }
 
-const about = (p, m) => M.chain(M.T(p[0], p[1], p[2]), m, M.T(-p[0], -p[1], -p[2]));
-const ID = M.ident();
-// 压扁（体积不变）：以 pivot 为“脚底”，高 ×sy，宽 ×1/√sy
-const sq = (pivot, sy) => about(pivot, M.S(1 / Math.sqrt(sy), sy, 1 / Math.sqrt(sy)));
-
 function ballPose(f) {
   let x = 0, y = 0, sy = 1, rz = 0;
   if (f < 120) {
@@ -104,9 +99,6 @@ function glyphPose(f, i) {
   const bob = 0.03 * Math.sin(f / 19 + i * 1.7);
   return M.chain(M.T(0, bob, 0), about(c, M.chain(M.RZ((i ? -1 : 1) * 0.16 * (1 - p)), M.S(lerp(0.5, 1, p)))));
 }
-// 一个零件“啵”地弹出来：从 pivot 那一点长到原大（过冲），顺便从上面掉下来一点
-const popIn = (f, f0, pivot, drop = 0) => { const p = pop(f, f0, 3.4, 0.36); return M.chain(M.T(0, drop * (1 - Math.min(1, prog(f, f0, f0 + 7)) ** 2), 0), about(pivot, M.S(Math.max(0.002, p)))); };
-
 function poses(f) {
   const P = new Array(21).fill(ID), G = new Array(21).fill(1);
   P[SLOT.ball] = ballPose(f); P[SLOT.g1] = glyphPose(f, 0); P[SLOT.g2] = glyphPose(f, 1);
@@ -140,11 +132,9 @@ function poses(f) {
 }
 
 // 弹簧滤波：零件的“软 / 硬”姿态 = 它过去 60 帧的姿态 ⊗ 弹簧的冲激响应
-const KS = FUR.springKernel(2.6, 0.22, 60, 60), KH = FUR.springKernel(4.6, 0.3, 60, 60);
+const KS = KIT.springKernel(2.6, 0.22, 60, 60), KH = KIT.springKernel(4.6, 0.3, 60, 60);
 function setParts(F, f) {
-  const now = poses(f), soft = now.P.map(() => new Float32Array(16)), stiff = now.P.map(() => new Float32Array(16));
-  for (let k = 0; k < 60; k++) { const p = k === 0 ? now.P : poses(f - k - 0.5).P, a = KS[k], b = KH[k];
-    for (let s = 0; s < p.length; s++) { const m = p[s], so = soft[s], st = stiff[s]; for (let i = 0; i < 16; i++) { so[i] += m[i] * a; st[i] += m[i] * b; } } }
+  const { now, filtered: [soft, stiff] } = springPoses(poses, f, [KS, KH]);
   now.P.forEach((m, s) => F.setPart(s, m, soft[s], stiff[s], now.G[s], 1));
   return now;
 }
@@ -158,32 +148,16 @@ const CAM = [[0, [0, 1.75, 5.7], [0, 1.62, 0], 0.55], [14, [0, 1.5, 5.9], [0, 1.
   [252, [0, 2.7, 5.5], [0, 0.55, 0], 0.55], [322, [0.7, 2.3, 5.1], [0, 0.55, 0], 0.55], [348, [0, 1.45, 7.5], [0, 1.22, 0], 0.55], [427, [0, 1.4, 6.7], [0, 1.22, 0], 0.55],
   [460, [0, 1.95, 7.3], [0, 1.4, 0], 0.55], [510, [0, 1.85, 6.9], [0, 1.4, 0], 0.55], [536, [-1.45, 1.25, 6.5], [-1.45, 1.05, 0], 0.55], [744, [-1.45, 1.25, 6.3], [-1.45, 1.05, 0], 0.55],
   [772, ...uiCam(720, 400, 1.5)], [884, ...uiCam(720, 400, 1.5)], [900, ...uiCam(720, 620, 1.5)], [944, ...uiCam(720, 620, 1.5)], [960, ...uiCam(720, 730, 1.5)], [1014, ...uiCam(720, 730, 1.5)], [1050, [0, 1.35, 5.4], [0, 1.1, 0], 0.55], [1080, [0, 1.4, 5.7], [0, 1.15, 0], 0.55], [1116, [0, 1.5, 7.5], [0, 1.4, 0], 0.55], [1200, [0, 1.5, 7.0], [0, 1.4, 0], 0.55]];
-function camAt(f) {
-  let i = 0; while (i + 2 < CAM.length && f >= CAM[i + 1][0]) i++;
-  const a = CAM[i], b = CAM[i + 1], t = ease.inOut3(prog(f, a[0], b[0]));
-  const at = lerp3(a[2], b[2], t), da = [0, 1, 2].map(k => a[1][k] - a[2][k]), db = [0, 1, 2].map(k => b[1][k] - b[2][k]);
-  const la = Math.hypot(...da), lb = Math.hypot(...db), dir = lerp3(da.map(v => v / la), db.map(v => v / lb), t), dl = Math.hypot(...dir), dist = la * Math.pow(lb / la, t);
-  return { eye: [0, 1, 2].map(k => at[k] + dir[k] / dl * dist), at, fov: lerp(a[3], b[3], t) };
-}
 // 背景色接力：[帧, 颜色名]，在换章的那次变形里渐变过去
-const BGS = [[0, 'blue'], [TL.cupMorph[0], 'green'], [TL.bearMorph[0], 'violet'], [TL.hatMorph[0], 'magenta'], [510, 'blue'], [TL.rules[1], 'violet'], [TL.rules[2], 'green'], [TL.rules[3], 'blue'], [TL.rules[4], 'violet'], [TL.uiMorph[0], 'cream'], [TL.outMorph[0], 'blue']];
-const hexMix = (a, b, t) => { const A = FUR.srgb(a), B = FUR.srgb(b); return '#' + [0, 1, 2].map(k => Math.round(255 * Math.pow(lerp(A[k], B[k], t), 1 / 2.2)).toString(16).padStart(2, '0')).join(''); };
-function bgAt(f) {
-  let i = 0; while (i + 1 < BGS.length && f >= BGS[i + 1][0]) i++;
-  const cur = BG[BGS[i][1]], prev = BG[BGS[Math.max(0, i - 1)][1]], inRule = BGS[i][0] >= TL.rules[1] && BGS[i][0] <= TL.rules[4];
-  const t = ease.inOut2(prog(f, BGS[i][0], BGS[i][0] + (inRule ? 5 : 26)));
-  return [hexMix(prev[0], cur[0], t), hexMix(prev[1], cur[1], t)];
-}
-const palMix = (a, b, t) => ({ root: hexMix(a.root, b.root, t), tip: hexMix(a.tip, b.tip, t), len: lerp(a.len, b.len, t), curl: lerp(a.curl, b.curl, t), gloss: lerp(a.gloss, b.gloss, t), droop: lerp(a.droop, b.droop, t) });
-const xf = (m, p) => [m[0] * p[0] + m[4] * p[1] + m[8] * p[2] + m[12], m[1] * p[0] + m[5] * p[1] + m[9] * p[2] + m[13], m[2] * p[0] + m[6] * p[1] + m[10] * p[2] + m[14]];
+const BGS = [[0, 'blue'], [TL.cupMorph[0], 'green'], [TL.bearMorph[0], 'violet'], [TL.hatMorph[0], 'magenta'], [510, 'blue'], [TL.rules[1], 'violet', 5], [TL.rules[2], 'green', 5], [TL.rules[3], 'blue', 5], [TL.rules[4], 'violet', 5], [TL.uiMorph[0], 'cream'], [TL.outMorph[0], 'blue']];
+const palMix = mixObj;
 
 // 这一帧交给渲染器的全部参数
 function stateAt(F, f) {
-  const ps = setParts(F, f), P = ps.P, cam = camAt(f), bg = bgAt(f);
-  let mi = -1; MORPHS.forEach((m, i) => { if (f >= m[0]) mi = i; });
+  const ps = setParts(F, f), P = ps.P, cam = camAt(CAM, f), bg = colorAt(BGS, BG, f);
+  const mo = morphAt(MORPHS, f, 'ball'), mi = mo.mi;
   const s = { t: f / 60, ...cam, bg, len: 0.15, width: 0.007, wind: [1, 0.15, 0.2, 0.1], occ: [], beads: [], push: [], base: 0.03, f };
-  if (mi < 0) s.A = 'ball';
-  else { const m = MORPHS[mi], D = m[1] - m[0]; s.A = m[2]; s.B = m[3]; s.arc = m[4]; s.spread = 0.6; s.mix = prog(f, m[0], m[1]); s.settle = Math.max(0, f - m[1]) / D * 1.6; }
+  Object.assign(s, mo.set);
   if (s.mix > 0 && s.mix < 1 && s.B !== 'ball') s.base = 0;               // 飞在半路的毛不带“皮”
   const shape = s.mix === undefined || s.mix >= 1 ? (s.B || s.A) : null, ballC = xf(P[SLOT.ball], [0, 1, 0]);
   const inBall = shape === 'ball' || (mi >= 0 && MORPHS[mi][2] === 'ball' && s.mix < 0.4);

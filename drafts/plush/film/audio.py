@@ -11,6 +11,7 @@ import numpy as np
 HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE.parents[1] / '_lib'))
 from song import Song  # noqa: E402
+from softfx import SoftFX  # noqa: E402  “噗”“啵”、刷过去、弹簧音、软的落地
 
 TL = json.loads(re.sub(r'//[^\n]*', '', re.search(r'const TL = (\{.*?\});', (HERE / 'timeline.js').read_text(), re.S).group(1)))
 F, DM, BB, C, AM = [65, 69, 72], [62, 65, 69], [62, 65, 70], [60, 64, 67], [64, 69, 72]
@@ -18,39 +19,14 @@ CH = [(0, 41, F), (60, 34, BB), (120, 38, DM), (180, 36, C), (225, 41, F), (285,
       (525, 41, F), (570, 38, DM), (615, 34, BB), (660, 36, C), (705, 33, AM), (750, 41, F), (810, 34, BB), (870, 38, DM), (930, 36, C),
       (990, 34, BB), (1020, 36, C), (1080, 41, F), (1140, 41, F)]
 END, FIN = TL['end'], TL['final']
-S = Song(END, CH, seed=23)
+class PlushSong(Song, SoftFX):
+    pass
+
+
+S = PlushSong(END, CH, seed=23)
+poof, bop, brush, boing, thump = S.poof, S.bop, S.brush, S.boing, S.thump
 fr = S.fr
 rng = np.random.default_rng(9)
-
-
-def poof(level=1.0, d=0.32, fc=1500):
-    """毛蓬开的“噗”：低通噪声，音头 20 毫秒，像拍了一下枕头"""
-    t = S.tt(d)
-    n = S.fft_filter(S.rng.standard_normal(len(t)), lo=120, hi=fc)
-    return n * np.minimum(1, t / 0.02) * np.exp(-t / (d * 0.3)) * level * 0.9
-
-
-def bop(m, level=1.0, d=0.16):
-    """零件“啵”地弹出来：正弦，音高先往上一挑再落回"""
-    t = S.tt(d)
-    f = S.midi(m) * (1 + 0.5 * np.exp(-t / 0.018))
-    y = np.sin(2 * np.pi * np.cumsum(f) / S.SR) + 0.2 * np.sin(4 * np.pi * np.cumsum(f) / S.SR)
-    return y * np.minimum(1, t / 0.003) * np.exp(-t / (d * 0.4)) * level * 0.5
-
-
-def brush(d=0.4, level=1.0, up=True):
-    """一大把毛飞过去：带通噪声扫频，很软"""
-    t = S.tt(d)
-    n = S.rng.standard_normal(len(t))
-    lo = S.fft_filter(n, lo=300, hi=1400) * (1 - t / d if up else t / d) + S.fft_filter(n, lo=1400, hi=5200) * (t / d if up else 1 - t / d)
-    return lo * np.sin(np.pi * t / d) ** 1.4 * level * 0.5
-
-
-def boing(m, level=1.0, d=0.5):
-    """压扁再弹回：音高跟着弹簧抖"""
-    t = S.tt(d)
-    f = S.midi(m) * (1 + 0.22 * np.exp(-t / 0.11) * np.cos(2 * np.pi * 5.5 * t))
-    return np.sin(2 * np.pi * np.cumsum(f) / S.SR) * np.minimum(1, t / 0.004) * np.exp(-t / 0.2) * level * 0.4
 
 
 def lead(m, d):
@@ -62,13 +38,6 @@ def lead(m, d):
 
 def pluck(m):
     return S.pizz(m + 12, 0.9)
-
-
-def thump(at, level=1.0):
-    """落地：圆底鼓 + 低频 + 噗"""
-    S.place(S.kick(1.2 * level), fr(at), 1.0); S.kicks.append(at)
-    S.sfx(S.boom(0.8 * level, 100, 36, 0.7), fr(at), 0.7)
-    S.sfx(poof(1.0 * level, 0.4), fr(at), 0.9, send=0.25)
 
 
 # —— 乐队：开场只有落地的重击，炸开拼字那一拍（52）全乐队进来；“一根毛”（120—165）和片尾最后一跳前留空 ——

@@ -7,15 +7,15 @@ canvas { display: block; width: 100vw; height: 56.25vw; max-height: 100vh; curso
 <canvas id="c" width="1920" height="1080"></canvas>
 <div id="ui"><label>根深尖浅 <input id="grad" type="range" min="0" max="1" step="0.01" value="1"></label><label>乱一点　 <input id="mess" type="range" min="0" max="1" step="0.01" value="1"></label>
 <label>逆光镶边 <input id="rim" type="range" min="0" max="3" step="0.01" value="1"></label><label>慢半拍　 <input id="spring" type="range" min="0" max="2" step="0.01" value="1"></label></div>
-<script src="../_lib/glkit.js"></script><script src="fur.js"></script><script src="shapes.js"></script>
+<script src="../_lib/glkit.js"></script><script src="../_lib/kit/motion.js"></script><script src="../_lib/kit/director.js"></script><script src="../_lib/kit/stage.js"></script><script src="../_lib/kit/shapes.js"></script><script src="../_lib/fur/fur.js"></script>
 <script>
-const Q = new URLSearchParams(location.search), $ = id => document.getElementById(id), M = FUR.m4, cv = $('c');
-const F = FUR.create(cv, { rows: +(Q.get('rows') || 150), K: 4 }), wmul = Math.sqrt(400 / (F.N / 1024));
+const Q = new URLSearchParams(location.search), $ = id => document.getElementById(id), cv = $('c');
+const F = FUR.create(STAGE.create(cv), { rows: +(Q.get('rows') || 150), K: 4 }), wmul = Math.sqrt(400 / (F.N / 1024));
 F.addShape('ball', SHAPES.fromPrims(F.N, [{ type: 'ell', c: [0, 1, 0], r: [1, 1, 1] }]));
 const PINK = { root: '#7d0a3c', tip: '#ff4f97', len: 1, curl: 0.07, gloss: 1, droop: 0.22 }, FLAT = { ...PINK, root: '#e23a82', tip: '#e23a82' };
-const mixHex = (a, b, t) => '#' + [0, 1, 2].map(k => Math.round(255 * Math.pow(FUR.srgb(a)[k] * (1 - t) + FUR.srgb(b)[k] * t, 1 / 2.2)).toString(16).padStart(2, '0')).join('');
+const mixHex = hexMix;
 // 身体的姿态历史（60 帧）：毛尖 = 历史 ⊗ 弹簧的冲激响应
-const KS = FUR.springKernel(2.6, 0.22), KH = FUR.springKernel(4.6, 0.3), hist = [];
+const KS = KIT.springKernel(2.6, 0.22), KH = KIT.springKernel(4.6, 0.3), hist = [];
 let pos = [0, 0], vel = [0, 0], drag = null, push = null, t = 0;
 const eye = [0, 1.25, 5.2], at = [0, 1.05, 0], fov = 0.55;
 const ray = e => { const r = cv.getBoundingClientRect(), nx = (e.clientX - r.left) / r.width * 2 - 1, ny = 1 - (e.clientY - r.top) / r.height * 2, th = Math.tan(fov / 2);
