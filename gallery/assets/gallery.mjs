@@ -1,11 +1,10 @@
-import {REPO, TYPES, typeOf, workDir, sourceUrl, releaseUrl, videoUrl, formatTime, escapeHtml as h, selectWorks, adjacentWork, readState} from './model.mjs';
+import {REPO, TYPES, typeOf, workDir, isOverview, sourceUrl, releaseUrl, videoUrl, formatTime, escapeHtml as h, selectWorks, adjacentWork, readState} from './model.mjs';
 import {resolveLanguage, languageUrl, text, content, documentHref} from './i18n.mjs';
 import {renderLanguageToggle} from './language-toggle.mjs';
 
 const $ = selector => document.querySelector(selector);
 const viewer = $('#viewer');
 const imageViewer = $('#image-viewer');
-const promoPlayer = $('#promo-player');
 let works = [];
 let state = readState(location.href);
 let opener;
@@ -18,12 +17,12 @@ const workTypeText = (work, suffix = '') => t(`${typeOf(work)}${suffix}`);
 const label = work => t(`${typeOf(work)}Label`, {number:work.number});
 const external = (url, label) => `<a href="${h(url)}" target="_blank" rel="noopener noreferrer">${label}</a>`;
 const imagePath = (work, image) => `./${workDir(work)}/images/preview/${image.file}.svg`;
-const coverPath = work => `./${workDir(work)}/video/cover.jpg`;
-const links = work => [
+const coverPath = work => `./${workDir(work)}/video/cover.jpg${work.coverSha256 ? `?v=${work.coverSha256}` : ''}`;
+const links = work => (isOverview(work) ? [external(sourceUrl(work), t('source'))] : [
   `<a href="${h(documentHref(work, 'guide', language, state))}">${workTypeText(work, 'Guide')}</a>`,
   `<a href="${h(documentHref(work, 'process', language, state))}">${t('process')}</a>`,
   external(sourceUrl(work, 'video'), t('source'))
-].join('');
+]).join('');
 
 const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
 let previewsEnabled = !reducedMotion.matches && !navigator.connection?.saveData;
@@ -38,7 +37,7 @@ const previewObserver = typeof IntersectionObserver === 'function' ? new Interse
 }, {threshold:[0, 0.01]}) : null;
 
 function previewAllowed(preview) {
-  return preview.visible && previewsEnabled && !document.hidden && !viewer.open && promoPlayer.paused && !preview.failed;
+  return preview.visible && previewsEnabled && !document.hidden && !viewer.open && !preview.failed;
 }
 
 function stopPreview(preview, release = false) {
@@ -112,13 +111,8 @@ reducedMotion.addEventListener('change', () => {
   renderPreviewControl();
   syncPreviews();
 });
-for (const event of ['play', 'pause', 'ended']) promoPlayer.addEventListener(event, syncPreviews);
-document.addEventListener('visibilitychange', () => {
-  if (document.hidden) promoPlayer.pause();
-  syncPreviews();
-});
+document.addEventListener('visibilitychange', syncPreviews);
 window.addEventListener('pagehide', () => {
-  promoPlayer.pause();
   for (const preview of previews.values()) stopPreview(preview, true);
 });
 window.addEventListener('pageshow', syncPreviews);
@@ -178,6 +172,7 @@ function render() {
 }
 
 function renderImages(work) {
+  if (!work.images.length) return '';
   return `<section class="resources" aria-labelledby="resources-title">
     <div class="section-heading"><h2 id="resources-title">${workTypeText(work, 'Images')}</h2><p class="section-note">${t('imageHint')}</p></div>
     <div class="image-grid">${work.images.map((image, index) => `
@@ -190,7 +185,6 @@ function renderImages(work) {
 }
 
 function showDialog(trigger) {
-  promoPlayer.pause();
   if (!viewer.open) {
     opener = trigger || document.activeElement;
     viewer.showModal();
@@ -210,7 +204,7 @@ function renderWorkText(work) {
     $(selector).title = adjacent ? t(key, {title:title(adjacent)}) : t('noOther');
   }
   $('#viewer-label').textContent = `${label(work)} / DESIGN STYLE`;
-  $('.player-error').innerHTML = t('playbackError') + external(releaseUrl(work), t('release'));
+  $('.player-error').innerHTML = t('playbackError') + external(isOverview(work) ? sourceUrl(work, 'design-style-promo.mp4') : releaseUrl(work), t(isOverview(work) ? 'source' : 'release'));
   $('#viewer-content').innerHTML = `
     <div class="viewer-details"><div><h2 id="viewer-title">${h(title(work))}${language === 'zh' ? ` · ${h(work.titleEn)}` : ''}</h2><p>${h(content(work, 'description', language))}</p></div></div>
     <div class="work-links" style="margin-top:20px">${links(work)}<div data-language-control="viewer-language">${renderLanguageToggle({language,id:'viewer-language'})}</div></div>

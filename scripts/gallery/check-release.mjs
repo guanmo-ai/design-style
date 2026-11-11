@@ -2,9 +2,9 @@ import {readdir, readFile, lstat} from 'node:fs/promises';
 import path from 'node:path';
 import {fileURLToPath} from 'node:url';
 import assert from 'node:assert/strict';
-import {loadCatalog, output, root, sha256, PROMO_MEDIA} from './catalog.mjs';
+import {loadCatalog, output, root, sha256, coverSource} from './catalog.mjs';
 import {renderDocument, DOCUMENT_PAGES} from '../../gallery/render-documents.mjs';
-import {workDir} from '../../gallery/assets/model.mjs';
+import {workDir, isOverview} from '../../gallery/assets/model.mjs';
 
 export async function checkRelease(base = output) {
   const works = await loadCatalog();
@@ -13,11 +13,11 @@ export async function checkRelease(base = output) {
     'assets/language-toggle.mjs', 'assets/icons/globe.svg', 'assets/icons/LICENSE-Lucide.txt',
     'assets/fonts/DMSans-latin.woff2', 'assets/fonts/Newsreader-latin.woff2',
     'assets/fonts/OFL-DMSans.txt', 'assets/fonts/OFL-Newsreader.txt']);
-  for (const media of PROMO_MEDIA) expected.add(media.output);
   for (const work of works) {
     expected.add(`media/${work.asset}`);
     expected.add(`${workDir(work)}/video/cover.jpg`);
     for (const image of work.images) expected.add(`${workDir(work)}/images/preview/${image.file}.svg`);
+    if (isOverview(work)) continue;
     for (const {kind, language, file, slug} of DOCUMENT_PAGES) {
       expected.add(`read/${work.id}/${slug}.html`);
       const markdown = await readFile(path.join(root, workDir(work), file), 'utf8');
@@ -43,17 +43,17 @@ export async function checkRelease(base = output) {
   assert.ok(bytes < 1_000_000_000, '发布产物超过 GitHub Pages 1 GB 限制');
   assert.deepEqual(JSON.parse(await readFile(path.join(base, 'data/works.json'), 'utf8')), works, '发布目录与内容源不一致');
   for (const work of works) assert.equal(await sha256(path.join(base, 'media', work.asset)), work.sha256, `视频校验失败：${work.id}`);
-  const homepage = await readFile(path.join(base, 'index.html'), 'utf8');
-  for (const media of PROMO_MEDIA) {
-    const digest = await sha256(path.join(root, media.source));
-    assert.equal(await sha256(path.join(base, media.output)), digest, `宣传片媒体校验失败：${media.output}`);
-    assert.ok(homepage.includes(`./${media.output}?v=${digest}`), `宣传片媒体版本不一致：${media.output}`);
+  for (const work of works.filter(isOverview)) {
+    assert.equal(await sha256(path.join(base, workDir(work), 'video/cover.jpg')), await sha256(path.join(root, coverSource(work))), '风格汇总封面校验失败');
   }
 
   // Model the real project-site prefix, rather than testing only at localhost /.
   const prefix = 'https://guanmo-ai.github.io/design-style/';
   const htmlPages = new Map();
   for (const file of files) if (file.endsWith('.html')) htmlPages.set(file, await readFile(path.join(base, file), 'utf8'));
+  const homepage = htmlPages.get('index.html');
+  const assetVersion = /assets\/gallery\.mjs\?v=([a-f0-9]{64})/.exec(homepage)?.[1];
+  assert.ok(assetVersion, '首页脚本缺少内容版本号');
   let checkedLinks = 0;
   function checkLink(value, from) {
     const url = new URL(value.replaceAll('&amp;', '&'), new URL(from, prefix));
@@ -61,6 +61,7 @@ export async function checkRelease(base = output) {
     assert.ok(url.href.startsWith(prefix), `链接逃逸站点子路径：${from} → ${value}`);
     const relative = decodeURIComponent(url.pathname.slice(new URL(prefix).pathname.length)) || 'index.html';
     assert.ok(files.has(relative), `本地链接目标不存在：${from} → ${value}`);
+    if (/\.(?:mjs|css)$/.test(relative)) assert.equal(url.searchParams.get('v'), assetVersion, `静态资源版本不一致：${from} → ${value}`);
     if (url.hash && htmlPages.has(relative)) {
       const id = decodeURIComponent(url.hash.slice(1));
       const isWork = relative === 'index.html' && works.some(work => id === `work-${work.id}`);
@@ -77,6 +78,10 @@ export async function checkRelease(base = output) {
   for (const file of files) if (file.endsWith('.css')) {
     const css = await readFile(path.join(base, file), 'utf8');
     for (const match of css.matchAll(/url\(["']?([^"')]+)["']?\)/g)) checkLink(match[1], file);
+  }
+  for (const file of files) if (file.endsWith('.mjs')) {
+    const module = await readFile(path.join(base, file), 'utf8');
+    for (const match of module.matchAll(/from\s*['"](\.\/[^'"]+)['"]/g)) checkLink(match[1], file);
   }
   return {files: files.size, checkedLinks, bytes, works: works.length};
 }

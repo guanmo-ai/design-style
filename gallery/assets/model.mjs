@@ -1,4 +1,5 @@
 export const REPO = 'https://github.com/guanmo-ai/design-style';
+export const isOverview = work => work.id === '999-style-overview';
 // 两个系列统一展示，类型用于卡片标签与筛选。
 export const TYPES = {
   style: {name: '设计风格', dir: 'styles', id: /^\d{3}-[a-z0-9-]+$/, guide: '风格指南', images: '风格图解', label: number => `风格 ${number}`},
@@ -6,7 +7,7 @@ export const TYPES = {
 };
 export const typeOf = work => Object.hasOwn(TYPES, work.type ?? 'style') ? (work.type ?? 'style') : 'style';
 export const typeInfo = work => TYPES[typeOf(work)];
-export const workDir = work => `${typeInfo(work).dir}/${work.id}`;
+export const workDir = work => isOverview(work) ? 'promo' : `${typeInfo(work).dir}/${work.id}`;
 export const workLabel = work => typeInfo(work).label(work.number);
 export const sourceUrl = (work, file = '') => {
   const source = file === 'video' ? work.videoDir || file : file;
@@ -19,7 +20,7 @@ export const escapeHtml = value => String(value).replace(/[&<>"']/g, char => ({'
 export function selectWorks(works, {query = '', type = 'all', category = 'all', sort = 'latest'} = {}) {
   const terms = query.toLocaleLowerCase().trim().split(/\s+/).filter(Boolean);
   return works.filter(work => (type === 'all' || typeOf(work) === type) && (category === 'all' || work.category === category) &&
-    terms.every(term => [work.title, work.titleEn, work.description, work.descriptionEn, typeInfo(work).name, work.type === 'layout' ? 'layouts' : 'design styles', work.categoryEn, ...work.tags, ...(work.tagsEn || [])].join(' ').toLocaleLowerCase().includes(term)))
+    terms.every(term => [work.number, work.title, work.titleEn, work.description, work.descriptionEn, typeInfo(work).name, work.type === 'layout' ? 'layouts' : 'design styles', work.categoryEn, ...work.tags, ...(work.tagsEn || [])].join(' ').toLocaleLowerCase().includes(term)))
     .sort((a, b) => (sort === 'oldest' ? 1 : -1) * (a.publishedAt.localeCompare(b.publishedAt) || a.id.localeCompare(b.id)));
 }
 export function adjacentWork(works, state, currentId, direction) {

@@ -1,7 +1,7 @@
 import {readFile, writeFile} from 'node:fs/promises';
 import path from 'node:path';
-import {root, loadCatalog} from './catalog.mjs';
-import {escapeHtml, selectWorks, workDir} from '../../gallery/assets/model.mjs';
+import {root, loadCatalog, coverSource} from './catalog.mjs';
+import {escapeHtml, selectWorks} from '../../gallery/assets/model.mjs';
 
 const works = selectWorks(await loadCatalog());
 for (const language of ['zh','en']) {
@@ -11,7 +11,7 @@ for (const language of ['zh','en']) {
       const url = `https://guanmo-ai.github.io/design-style/?lang=${language}#work-${work.id}`;
       const title = language === 'en' ? work.titleEn : work.title;
       return `    <td align="center" valign="top" width="33%">
-      <a href="${url}"><img src="${workDir(work)}/video/cover.jpg" width="240" alt="${escapeHtml(title)} ${language === 'en' ? 'film cover' : '视频封面'}" /></a><br />
+      <a href="${url}"><img src="${coverSource(work)}" width="240" alt="${escapeHtml(title)} ${language === 'en' ? 'film cover' : '视频封面'}" /></a><br />
       <a href="${url}"><b>${escapeHtml(title)}</b></a><br />
       <sub>${language === 'en' ? `${work.duration} seconds` : `${escapeHtml(work.titleEn)} · ${work.duration} 秒`}</sub>
     </td>`;

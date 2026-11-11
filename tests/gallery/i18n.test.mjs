@@ -4,7 +4,7 @@ import {readFile} from 'node:fs/promises';
 import path from 'node:path';
 import {resolveLanguage, languageUrl, text, messages, documentHref} from '../../gallery/assets/i18n.mjs';
 import {loadCatalog, root, validateEntries} from '../../scripts/gallery/catalog.mjs';
-import {selectWorks, adjacentWork, workDir} from '../../gallery/assets/model.mjs';
+import {selectWorks, adjacentWork, workDir, isOverview} from '../../gallery/assets/model.mjs';
 import {renderDocument} from '../../gallery/render-documents.mjs';
 
 test('未指定语言时始终进入中文，显式英文链接仍有效，切换保留当前浏览状态', () => {
@@ -38,6 +38,7 @@ test('每期英文简介、标签、图片标题和英文阅读文档齐全；�
     for (const key of ['descriptionEn','categoryEn']) assert.ok(work[key]?.trim(), `${work.id}: ${key}`);
     assert.ok(work.tagsEn.length > 0);
     for (const image of work.images) assert.ok(image.titleEn && image.kindEn);
+    if (isOverview(work)) continue;
     for (const [kind,file] of [['guide','README.en.md'],['process','PROCESS.en.md']]) {
       const markdown = await readFile(path.join(root, workDir(work), file), 'utf8');
       const {html} = renderDocument(markdown, work, kind, 'en');

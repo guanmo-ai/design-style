@@ -6,6 +6,7 @@ import {createHash} from 'node:crypto';
 import os from 'node:os';
 import path from 'node:path';
 import {syncVideo} from '../../scripts/gallery/sync.mjs';
+import {loadCatalog} from '../../scripts/gallery/catalog.mjs';
 
 const video = Buffer.alloc(2 * 1024 * 1024, 0x7f);
 const work = {title: '测试作品', release: 'day-09', asset: '009-test.mp4', sha256: createHash('sha256').update(video).digest('hex')};
@@ -71,4 +72,13 @@ test('缺失、重名、非数字 ID、草稿或错误 tag 的附件不能进入
     assert.equal(calls.length, 1);
     assert.deepEqual(await readdir(directory), []);
   }
+});
+
+test('风格 999 校验仓库原视频，无需 Release 或额外缓存', async t => {
+  const directory = await fixture(t);
+  const overview = (await loadCatalog()).find(work => work.id === '999-style-overview');
+  const noDownload = () => assert.fail('汇总视频不应请求 Release');
+  await syncVideo(overview, directory, noDownload);
+  assert.deepEqual(await readdir(directory), []);
+  await assert.rejects(syncVideo({...overview, sha256:'0'.repeat(64)}, directory, noDownload), /仓库视频校验失败/);
 });
