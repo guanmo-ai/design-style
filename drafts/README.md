@@ -30,7 +30,7 @@
 | 中世纪现代 Mid-Century Modern · `mid-century/` | **下周做** |
 | 液态金属 Liquid Chrome · `liquid-chrome/` | 正式目录 [023 · 液态金属 Liquid Chrome](../styles/023-liquid-chrome)；保留本草稿目录作为原片及渲染源码来源。 |
 | 点云 Point Cloud · `point-cloud/` | 正式目录 [022 · 点云 Point Cloud](../styles/022-point-cloud)；保留本草稿目录作为原片及渲染源码来源。 |
-| 毛绒 Plush · `plush/` | **全片已出，等主人审片（2026-11-10）**：20 秒 · 1080p60，见下面“第七轮” |
+| 毛绒 Plush · `plush/` | **已授权正式收录（2026-11-11）**：风格 018，见 [`025-plush`](../styles/025-plush/README.md) |
 | 热成像 Thermal · `thermal/` | 候选图和温度场源码 |
 | 第四轮候选：低多边形 / 体素 / 等距微缩（从参考视频提取） | 等主人选，见下 |
 | 第三轮候选：赛博朋克 / 城市流行 / 膨胀风 | 等主人选（与第四轮一起看） |
@@ -50,7 +50,7 @@
 - **可以摸的 demo** `plush/demo.html`：有显卡的电脑直接打开，鼠标拨毛、拖着甩，四个滑块对应四条规则。
 - 和前几期不一样的地方：布景没有用“黑场 + 聚光灯”，换成了糖果色无缝背景（毛绒要的是软和亮）；色彩接力是粉 / 蓝 → 驼 / 绿 → 金 / 紫 → 荧光绿 / 洋红 → 奶油白。
 
-成片：[毛绒](plush/film/plush-film.mp4)。还没做的：四张风格图、tokens、正式期号——等主人审片后再补。
+成片：[毛绒](plush/film/plush-film.mp4)。四张风格图、tokens、时间轴与中英文阅读页见 [正式目录](../styles/025-plush/README.md)，网站期号为「风格 018」。
 
 ## 第六轮：液态金属 + 点云全片（2026-11-06）
 
@@ -72,8 +72,7 @@
 
 ![第六轮三个候选并排](candidates-6.png)
 
-| | 液态金属 Liquid Chrome · `liquid-chrome/` | 点云 Point Cloud · `point-cloud/` | 毛绒 Plush · `plush/` | **全片已出，等主人审片（2026-11-10）**：20 秒 · 1080p60，见下面“第七轮” |
-| 热成像 Thermal · `thermal/` |
+| | 液态金属 Liquid Chrome · `liquid-chrome/` | 点云 Point Cloud · `point-cloud/` | 热成像 Thermal · `thermal/` |
 |---|---|---|---|
 | 年代 | 1991《终结者 2》T-1000 → 千禧镀铬字 → 酸性设计 → 今天的 3D 字与 AI 形象 | 1960s 激光测距 → 2010 Kinect → 2020 手机 LiDAR → 2023 高斯泼溅 | 1800 赫歇尔发现红外 → 1960s 军用热像仪 → 今天的时装片与 MV |
 | 一句话 | 它自己没有颜色，颜色全是它照到的世界 | 世界不是面，是几百万个带颜色的点 | 不拍颜色，拍温度——静帧里看得见时间 |

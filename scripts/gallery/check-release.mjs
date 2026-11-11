@@ -11,6 +11,7 @@ export async function checkRelease(base = output) {
   const expected = new Set(['index.html', 'LICENSE', 'NOTICE.md', '.nojekyll', 'data/works.json',
     'assets/gallery.css', 'assets/gallery.mjs', 'assets/model.mjs', 'assets/reader.css', 'assets/reader.mjs', 'assets/i18n.mjs', 'assets/mark.svg',
     'assets/language-toggle.mjs', 'assets/icons/globe.svg', 'assets/icons/LICENSE-Lucide.txt',
+    'assets/motion.mjs', 'assets/licenses/LICENSE-Amicro.txt', 'assets/licenses/LICENSE-FluentUI.txt',
     'assets/fonts/DMSans-latin.woff2', 'assets/fonts/Newsreader-latin.woff2',
     'assets/fonts/OFL-DMSans.txt', 'assets/fonts/OFL-Newsreader.txt']);
   for (const work of works) {

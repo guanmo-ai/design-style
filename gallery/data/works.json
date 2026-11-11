@@ -1215,5 +1215,67 @@
     "asset": "999-style-overview.mp4",
     "sha256": "badff329b746a24c7d060451fca19ba66dfcfc97455cabc77fa9ae11f9c13613",
     "images": []
+  },
+  {
+    "id": "025-plush",
+    "type": "style",
+    "number": "018",
+    "title": "毛绒",
+    "titleEn": "Plush",
+    "years": "当代",
+    "category": "材质与界面",
+    "categoryEn": "Materials and interfaces",
+    "description": "同一批 409,600 根毛，变成毛球、泰迪熊和界面里的点赞、开关与加载。20 秒看懂根深尖浅、逆光和晚半拍的弹簧跟随。",
+    "descriptionEn": "A 20-second material study: the same 409,600 strands become a ball, a teddy bear and playful interface feedback. Explore root-to-tip shading, rim light and spring-driven follow-through.",
+    "tags": [
+      "毛绒",
+      "毛发",
+      "材质",
+      "泰迪熊",
+      "弹簧",
+      "微交互"
+    ],
+    "tagsEn": [
+      "plush",
+      "fur",
+      "material",
+      "teddy bear",
+      "spring",
+      "micro-interactions"
+    ],
+    "publishedAt": "2026-11-11T14:58:15Z",
+    "release": "day-25",
+    "asset": "025-plush.mp4",
+    "sha256": "f9b765cfad1b5e8c402925ed63ea4e81e21d9a79f7e2f1568304bad461c5f0a3",
+    "images": [
+      {
+        "file": "poster",
+        "title": "一张海报，认识毛绒",
+        "kind": "风格海报",
+        "titleEn": "Plush at a glance",
+        "kindEn": "Style poster"
+      },
+      {
+        "file": "cheatsheet",
+        "title": "五条毛绒规则",
+        "kind": "规则速查",
+        "titleEn": "Five rules for plush materials",
+        "kindEn": "Quick reference"
+      },
+      {
+        "file": "app-ui",
+        "title": "点赞、开关与加载",
+        "kind": "界面应用",
+        "titleEn": "Likes, toggles and loading",
+        "kindEn": "UI application"
+      },
+      {
+        "file": "storyboard",
+        "title": "同一批毛的形状接力",
+        "kind": "分镜选帧",
+        "titleEn": "One set of strands, many forms",
+        "kindEn": "Storyboard"
+      }
+    ]
   }
 ]
