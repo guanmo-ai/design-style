@@ -203,7 +203,7 @@ npm run gallery:serve
 git clone https://github.com/guanmo-ai/design-style.git && cd design-style
 npm ci
 npm run fonts                  # 下载开源字体到 public/fonts（Jost / JetBrains Mono / TeX Gyre Heros / Oswald / Fredoka / Bangers / Unbounded / Michroma / Silkscreen / Archivo / Space Mono / Space Grotesk / Tinos / Inter / Geist Mono / Selawik / Instrument Serif / Noto Sans SC）
-pip install numpy fonttools
+pip install -r requirements.txt   # numpy / scipy / Pillow / fonttools / matplotlib
 
 npm run studio                 # 在浏览器里逐帧预览、改参数
 npm run render:001             # 生成配乐 → 渲染 out/001-bauhaus.mp4

@@ -203,7 +203,7 @@ Rendering also requires **Python 3.10+**, **ffmpeg**, and Git.
 ```bash
 npm ci
 npm run fonts
-pip install numpy fonttools
+pip install -r requirements.txt   # numpy / scipy / Pillow / fonttools / matplotlib
 npm run studio
 
 # Example: render Bauhaus and rebuild its images
