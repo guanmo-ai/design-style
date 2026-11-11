@@ -18,7 +18,10 @@
 
 - `styles/NNN-name/`、`layouts/NN-name/`：已上架的期（视频源码、图、指南、制作过程）
 - `drafts/`：没上架的草稿和候选；`drafts/README.md` 是每一轮主人说了什么的记录
-- `drafts/_lib/`：WebGL / Canvas 片子的共用工具（逐帧截图、联系表、一整首歌的配乐骨架、出字的声音）
+- `drafts/_lib/kit/`：**做片子的组件**（动作、镜头 / 颜色接力 / 转场、舞台、HUD、撒点）和新片模板，从毛绒成片拆出来的；起新片：`node drafts/_lib/kit/new_film.mjs <短名> "<标题>"`，说明见 [`README.md`](drafts/_lib/kit/README.md)
+- `drafts/_lib/fur/`：专用组件——毛绒渲染器（毛、草、毛线这类才用）
+- `drafts/_lib/`：其余共用工具（逐帧截图、联系表、量丝滑、一整首歌的配乐骨架、软的音效、出字的声音）
+- `.claude/skills/style-film/`：做一期新片的做法（skill）
 - `drafts/plush/`：最近一期（毛绒），[`PROCESS.md`](drafts/plush/PROCESS.md) 是从一个词到成片的完整过程
 - `src/`、`scripts/`：早期 Remotion 片子的入口和工具；`gallery/`：网页画廊
 - `docs/GPU_MOTION.md`：没有显卡的云端怎么渲 WebGL（实测的坑和数字）
