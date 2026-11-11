@@ -1,0 +1,10 @@
+<!doctype html><meta charset="utf-8">
+<style>html,body{margin:0;background:#000}canvas{display:block}</style>
+<canvas id="c" width="1920" height="1080"></canvas>
+<script src="../hand-drawn/lib.js"></script><script src="paint.js"></script>
+<script>
+const SCENES = {}; const q = new URLSearchParams(location.search), name = q.get('s');
+const sc = document.createElement('script'); sc.src = 'scenes/' + name + '.js';
+sc.onload = async () => { await SCENES[name](document.getElementById('c').getContext('2d'), q); window.ready = true; };
+sc.onerror = () => { console.error('no scene'); window.ready = true; }; document.head.appendChild(sc);
+</script>
