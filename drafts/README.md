@@ -31,7 +31,7 @@
 | 液态金属 Liquid Chrome · `liquid-chrome/` | 正式目录 [023 · 液态金属 Liquid Chrome](../styles/023-liquid-chrome)；保留本草稿目录作为原片及渲染源码来源。 |
 | 点云 Point Cloud · `point-cloud/` | 正式目录 [022 · 点云 Point Cloud](../styles/022-point-cloud)；保留本草稿目录作为原片及渲染源码来源。 |
 | 毛绒 Plush · `plush/` | **全片已出，等主人审片（2026-11-10）**：20 秒 · 1080p60，见下面“第七轮” |
-| 手绘 Hand-drawn · `hand-drawn/` | **候选图已出，等主人选方向（2026-11-11）**：漫画墨线 / 速写本乱线 / 手绘特效各两张，见下面“第八轮” |
+| 手绘 Hand-drawn · `hand-drawn/` | 候选图、源文件与制作说明见下文。 |
 | 热成像 Thermal · `thermal/` | 候选图和温度场源码 |
 | 第四轮候选：低多边形 / 体素 / 等距微缩（从参考视频提取） | 等主人选，见下 |
 | 第三轮候选：赛博朋克 / 城市流行 / 膨胀风 | 等主人选（与第四轮一起看） |
@@ -44,7 +44,8 @@
 ## 第八轮：手绘 · 三个方向的候选图（2026-11-11）
 
 
-六张静帧和源码在 [`hand-drawn/`](hand-drawn/README.md)。等主人看图后定方向，还没做片子。
+六张静帧和源码在 [`hand-drawn/`](hand-drawn/README.md)，制作过程和数据在 [`hand-drawn/PROCESS.md`](hand-drawn/PROCESS.md)。
+
 
 ## 第七轮：毛绒 Plush 全片（2026-11-10，未占期号）
 
