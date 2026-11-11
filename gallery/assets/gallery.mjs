@@ -329,7 +329,7 @@ function restoreNavigation() {
 window.addEventListener('popstate', restoreNavigation);
 window.addEventListener('hashchange', restoreNavigation);
 try {
-  const response = await fetch('./data/works.json');
+  const response = await fetch('./data/works.json', {cache:'no-cache'});
   if (!response.ok) throw new Error('catalog');
   works = await response.json();
   $('#loading').hidden = true;
