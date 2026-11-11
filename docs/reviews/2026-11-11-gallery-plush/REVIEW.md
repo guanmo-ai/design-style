@@ -39,3 +39,10 @@
 - 减少动态效果模式实测动画数、播放预览数均为 0；当前浏览器控制台无错误或警告。实体手机、其他浏览器及主观音效未重新验收。
 
 截图：[桌面](desktop.jpg)、[手机](mobile.jpg)。Release、真实发布时间与线上部署结果在完成后追加。
+
+
+## Release
+
+[day-25](https://github.com/guanmo-ai/design-style/releases/tag/day-25) 已于 `2026-11-11T15:12:17Z` 发布。远端成片附件 22,862,729 字节，digest 与已审原片 SHA-256 一致；同发 SHA256SUMS。作品目录已对齐真实 Release published_at。Release 标签指向已审源码提交 `c015334`，自动源码归档包含正式作品目录、原始毛绒工程和公共组件。
+
+Pages 部署及线上校验待完成后补记。
