@@ -45,4 +45,17 @@
 
 [day-25](https://github.com/guanmo-ai/design-style/releases/tag/day-25) 已于 `2026-11-11T15:12:17Z` 发布。远端成片附件 22,862,729 字节，digest 与已审原片 SHA-256 一致；同发 SHA256SUMS。作品目录已对齐真实 Release published_at。Release 标签指向已审源码提交 `c015334`，自动源码归档包含正式作品目录、原始毛绒工程和公共组件。
 
-Pages 部署及线上校验待完成后补记。
+Pages 部署及线上校验已完成，见下。
+
+
+## 主干与线上
+
+- 功能及 Release 元数据已合入主干 `770046f36fde55e009b9c3acbc79534fb9d08239`；本地主干同步完成。
+- [Pages 构建与部署](https://github.com/guanmo-ai/design-style/actions/runs/43046110289)成功；[主干安全 CI](https://github.com/guanmo-ai/design-style/actions/runs/43046110302)成功。上线前审查后的分支 CI `43045793158` 亦成功。
+- [正式首页](https://guanmo-ai.github.io/design-style/)已直接进入 21 项作品选择，没有独立宣传影片区；[毛绒](https://guanmo-ai.github.io/design-style/?lang=zh#work-025-plush)显示「风格 018」。
+- 在线完整读取成片，22,862,729 字节，SHA-256 与原片完全一致；未另存远端媒体。
+- 线上四个中英文阅读页和四张 SVG 均 HTTP 200；入口 JS/CSS 与本地已校验构建字节一致；作品 publishedAt 与真实 Release 一致。
+- 独立内置浏览器在线实际播放至 20 秒结束，1920×1080，无媒体错误；关闭后焦点回到毛绒卡片，控制台无错误或警告。
+- 主工作区原有 38 个受保护文件保持原字节；其中包括未完成风格和脚本/Root 改动。恢复备份位于本机 `.git/codex-local-backups/gallery-plush-20261111T151340Z/`，不随站点发布。
+
+线上核验时间（UTC）：`2026-11-11T15:17:32.759965+00:00`。截图：[正式首页](live-home.jpg)、[线上毛绒片尾](live-plush.jpg)。
