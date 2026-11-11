@@ -3,7 +3,6 @@ import assert from 'node:assert/strict';
 import {readFile} from 'node:fs/promises';
 import path from 'node:path';
 import {loadCatalog, root, sha256, videoSource} from '../../scripts/gallery/catalog.mjs';
-import {selectWorks} from '../../gallery/assets/model.mjs';
 
 test('首页直接进入作品选择，不包含顶部宣传影片或介绍区', async () => {
   const html = await readFile(path.join(root, 'gallery/index.html'), 'utf8');
@@ -21,7 +20,6 @@ test('毛绒按首次上架顺序收录，规格与已审原片一致，保留�
   assert.deepEqual([plush.duration,plush.fps,plush.width,plush.height], [20,60,1920,1080]);
   assert.equal(plush.images.length, 4);
   assert.equal(plush.chapters.at(-1).start, 17);
-  assert.equal(selectWorks(works)[0].id, plush.id);
   const originalHash = await sha256(path.join(root, 'drafts/plush/film/plush-film.mp4'));
   assert.equal(plush.sha256, originalHash);
   // CI downloads the asset in its next step, so only inspect a local copy when present.

@@ -163,6 +163,8 @@ by 观默 [@guanmo_ai](https://x.com/guanmo_ai)
 
 ### 设计风格 · Style
 
+下表沿用制作目录编号；网站期号按首次上架顺序独立排列。
+
 | 期 | 风格 | 年代 | 一句话 | |
 |:-:|---|---|---|---|
 | **001** | [**包豪斯 Bauhaus**](styles/001-bauhaus) | 1919—1933 | 圆、方、三角 + 红黄蓝，把“好看”变成可以教的规则 | [🎬 视频](https://github.com/guanmo-ai/design-style/releases/tag/day-01) · [🛠 过程](styles/001-bauhaus/PROCESS.md) |
@@ -180,6 +182,7 @@ by 观默 [@guanmo_ai](https://x.com/guanmo_ai)
 | **019** | [**低多边形 Low Poly**](styles/019-low-poly) | 1993—今天 | 一个面，一个颜色：三角面从纸上翻起，拼成山谷、灯塔与小星球 | [🎬 视频](https://github.com/guanmo-ai/design-style/releases/tag/day-19) · [🛠 过程](styles/019-low-poly/PROCESS.md) |
 | **020** | [**字符画 ASCII Art**](styles/020-ascii-art) | 1960s—今天 | 没有像素，只有字：把亮度变成字，把乱码变成界面反馈 | [🎬 视频](https://github.com/guanmo-ai/design-style/releases/tag/day-20) · [🛠 过程](styles/020-ascii-art/PROCESS.md) |
 | **021** | [**生成艺术 Generative Art**](styles/021-generative-art) | 1960s—今天 | 不画画，写规则：从流场与种子，到手机上的头像、封面和票券 | [🎬 视频](https://github.com/guanmo-ai/design-style/releases/tag/day-21) · [🛠 过程](styles/021-generative-art/PROCESS.md) |
+| **025** | [**毛绒 Plush**](styles/025-plush) | 2026 | 同一批四十万根毛，从毛球接力到泰迪熊与界面，身体先动、毛晚半拍 | [🎬 视频](https://github.com/guanmo-ai/design-style/releases/tag/day-25) · [🛠 过程](styles/025-plush/PROCESS.md) |
 
 ### 布局方式 · Layout
 
@@ -188,7 +191,7 @@ by 观默 [@guanmo_ai](https://x.com/guanmo_ai)
 | **01** | [**便当盒布局 Bento Grid**](layouts/01-bento-grid) | 2020s— | 大小不一的圆角格子，一格一事，用面积告诉你谁最重要 | [🎬 视频](https://github.com/guanmo-ai/design-style/releases/tag/layout-01) · [🛠 过程](layouts/01-bento-grid/PROCESS.md) |
 | **02** | [**瀑布流布局 Masonry**](layouts/02-masonry) | 2009— | 列宽固定、高度跟着内容走，每一张都落进最短的那一列 | [🎬 视频](https://github.com/guanmo-ai/design-style/releases/tag/layout-02) · [🛠 过程](layouts/02-masonry/PROCESS.md) |
 
-计划中（顺序可能调整）：装饰艺术 Art Deco · 新粗野主义网页 Neo-Brutalism · Y2K · 日式极简 …… 想看哪个，来 X 上告诉我。
+计划中（顺序可能调整）：装饰艺术 Art Deco · 新粗野主义网页 Neo-Brutalism · Y2K …… 想看哪个，来 X 上告诉我。
 
 ## 本地运行
 

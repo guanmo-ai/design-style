@@ -175,6 +175,9 @@ The gallery interface, descriptions, search, and reading pages support **Chinese
 | 019 | [Low Poly](styles/019-low-poly/README.en.md) — One face, one colour: triangles flip up from paper into a valley, a lighthouse and a planet. [Film](https://github.com/guanmo-ai/design-style/releases/tag/day-19) | [Production overview](styles/019-low-poly/PROCESS.en.md) | 1993–today |
 | 020 | [ASCII Art](styles/020-ascii-art/README.en.md) — Characters turn luminance and scrambled text into interface feedback. [Film](https://github.com/guanmo-ai/design-style/releases/tag/day-20) | [Production overview](styles/020-ascii-art/PROCESS.en.md) | 1960s–today |
 | 021 | [Generative Art](styles/021-generative-art/README.en.md) — Flow fields and seeds become avatars, covers and tickets. [Film](https://github.com/guanmo-ai/design-style/releases/tag/day-21) | [Production overview](styles/021-generative-art/PROCESS.en.md) | 1960s–today |
+| 025 | [Plush](styles/025-plush/README.en.md) — The same strands relay from objects to interface feedback. [Film](https://github.com/guanmo-ai/design-style/releases/tag/day-25) | [Production overview](styles/025-plush/PROCESS.en.md) | 2026 |
+
+This table uses production directory numbers; gallery episode numbers follow first publication order.
 
 ### Layouts
 
