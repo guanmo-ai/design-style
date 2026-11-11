@@ -64,6 +64,7 @@
     "test": "npm run gallery:test && npm run test:security && npm run test:motion",
     "test:security": "node --test tests/security/*.test.mjs",
     "new:style": "node scripts/new_style.mjs",
+    "new:film": "node drafts/_lib/kit/new_film.mjs",
     "test:motion": "node --test tests/motion/*.test.mjs",
     "test:media": "python3 -m unittest discover -s tests/motion -p 'test_*.py'",
     "music:017": "python3 styles/017-mid-century-modern/audio/make_music.py",

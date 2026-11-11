@@ -1,3 +1,5 @@
+> 这份讲的是早期 Remotion 那条线（`src/lib/motion`、`scripts/lib`）。WebGL / Canvas 这条线的组件和新片模板在 [`drafts/_lib/kit/`](../drafts/_lib/kit/README.md)（2026-11-11，从毛绒成片拆出来）。
+
 # 可复用动效与配乐
 
 从已完成的 003 → 004 → 001 / 布局 02 / 005，以及 015 提炼。风格画面、分镜、时间轴、配色和字体继续由各期负责。共用库不导入任何一期的 tokens；原片的 `ui.tsx` / `kit.tsx` 是注入原 tokens 的适配层，可以直接照着调用。
