@@ -1,4 +1,4 @@
-<!doctype html><meta charset="utf-8"><title>沙画 · 全片</title>
+<!doctype html><meta charset="utf-8"><title>沙画 · 全片 v2</title>
 <!-- 逐帧渲染：node ../../_lib/film-gl.cjs film.html <帧目录> 0 <总帧数>。出片：bash make.sh；预览：PREVIEW=1 bash make.sh -->
 <style>
 @font-face { font-family: 'Brush'; src: url(../../../public/fonts/ZhiMangXing-Regular.ttf); }
@@ -8,118 +8,111 @@
 html, body { margin: 0; background: #000; overflow: hidden; }
 #stage { position: relative; width: 1920px; height: 1080px; overflow: hidden; }
 canvas { position: absolute; left: 0; top: 0; }
-#hud { position: absolute; inset: 0; color: #fff1d6; font-family: NotoSC; font-weight: 500; text-shadow: 0 0 14px rgba(20,9,3,.95), 0 0 3px rgba(20,9,3,.9); }
+#hud { position: absolute; inset: 0; color: #fff4dc; font-family: NotoSC; font-weight: 500; text-shadow: 0 0 16px rgba(20,9,3,.9), 0 0 3px rgba(20,9,3,.85); }
 #hud > div { position: absolute; }
-.mono { font-family: GeistMono, NotoSC; font-weight: 500; letter-spacing: .02em; }
+.mono { font-family: GeistMono, NotoSC; font-weight: 500; }
 #chap { left: 72px; top: 56px; }
 #chap .no { font-family: GeistMono; font-size: 24px; opacity: .75; letter-spacing: .1em; }
-#chap .ti { font-family: Brush; font-size: 84px; line-height: 1.05; margin-top: 4px; color: #ffe6b5; }
-#chap .sub { font-size: 30px; margin-top: 6px; }
-#prog { right: 72px; top: 62px; font-family: GeistMono; font-size: 24px; letter-spacing: .1em; opacity: .85; }
-#prog i { display: inline-block; width: 150px; height: 3px; background: rgba(255,241,214,.25); vertical-align: middle; margin-right: 18px; position: relative; top: -2px; }
-#prog i b { display: block; height: 100%; background: #ffd27d; }
-#params { left: 72px; top: 300px; font-size: 28px; line-height: 1.6; }
-#params .k { color: #ffd27d; }
-#panel { left: 72px; top: 330px; width: 600px; }
-#panel .hd span { white-space: nowrap; } #panel .hd b { white-space: nowrap; font-size: 22px; }
-#panel .hd { font-size: 26px; display: flex; justify-content: space-between; }
-#panel .hd b { color: #ffd27d; font-weight: 500; }
-#panel .lg { font-size: 22px; margin-top: 8px; opacity: .9; }
-#sw { left: 72px; top: 760px; display: flex; gap: 22px; }
-#sw .c { width: 250px; }
-#sw .c i { display: block; height: 70px; border-radius: 10px; box-shadow: 0 0 0 1.5px rgba(255,241,214,.5); }
-#sw .c div { font-size: 21px; margin-top: 8px; white-space: nowrap; }
-.lab { position: absolute; font-size: 26px; white-space: nowrap; }
-.lab .k { color: #ffd27d; }
-.pct { position: absolute; font-family: GeistMono; font-size: 64px; color: #ffe6b5; }
-#end { left: 0; right: 0; top: 760px; text-align: center; color: #2a1608; text-shadow: 0 0 18px rgba(255,236,200,.8); }
+#chap .ti { font-family: Brush; font-size: 92px; line-height: 1.05; margin-top: 4px; }
+#chap .sub { font-size: 30px; margin-top: 4px; }
+#prog { right: 72px; top: 62px; font-family: GeistMono; font-size: 24px; letter-spacing: .1em; }
+#prog i { display: inline-block; width: 150px; height: 3px; background: rgba(255,244,220,.25); vertical-align: middle; margin-right: 18px; position: relative; top: -2px; }
+#prog i b { display: block; height: 100%; background: #fff4dc; }
+#params { left: 72px; bottom: 58px; font-size: 28px; line-height: 1.6; }
+.k { color: #ffd27d; }
+#rule { left: 0; top: 0; }
+.chip { position: absolute; width: 230px; }
+.chip i { display: block; height: 64px; border-radius: 10px; box-shadow: 0 0 0 2px rgba(255,244,220,.6); }
+.chip div { font-size: 24px; margin-top: 8px; white-space: nowrap; }
+.big { position: absolute; font-family: Brush; font-size: 120px; white-space: nowrap; }
+.lab { position: absolute; font-size: 28px; white-space: nowrap; }
+.lab::before { content: ''; position: absolute; top: 50%; width: 60px; height: 2px; background: currentColor; }
+.lab.l::before { right: calc(100% + 14px); } .lab.r::before { left: calc(100% + 14px); }
+#end { left: 0; right: 0; top: 760px; text-align: center; color: #2a1404; text-shadow: 0 0 20px rgba(255,236,190,.9); }
 #end .en { font-family: GeistMono; font-size: 30px; letter-spacing: .5em; }
-#end .by { font-size: 28px; margin-top: 18px; opacity: .92; }
+#end .by { font-size: 28px; margin-top: 16px; }
 </style>
-<div id="stage"><canvas id="c" width="1920" height="1080"></canvas><canvas id="ov" width="1920" height="1080"></canvas>
-<div id="hud"><div id="chap"></div><div id="prog"></div><div id="params"></div><div id="panel"></div><div id="sw"></div><div id="ui"></div><div id="end"></div></div></div>
+<div id="stage"><canvas id="c" width="1920" height="1080"></canvas>
+<div id="hud"><div id="chap"></div><div id="prog"></div><div id="params"></div><div id="rule"></div><div id="end"></div></div></div>
 <script src="../../_lib/typefx.js"></script>
-<script src="sandfilm.js"></script><script src="timeline.js"></script><script src="scenes.js"></script>
+<script src="grains.js"></script><script src="timeline.js"></script>
 <script>
-const Q = new URLSearchParams(location.search);
-const $ = id => document.getElementById(id);
-const D = (h, f, f0, o = {}) => TFX.decode(h, f, f0, Object.assign({ glyphs: 'dots' }, o));   // 字像沙粒一样落定：前沿是“·:•”
-const chapterAt = f => { let i = 0; for (let k = 0; k < TL.chapters.length; k++) if (f >= TL.chapters[k][0]) i = k; return i; };
-const prog = (f, a, b) => Math.max(0, Math.min(1, (f - a) / (b - a)));
-const hex = c => '#' + c.map(v => v.toString(16).padStart(2, '0')).join('').toUpperCase();
-const SW = [[0.08, '薄 · 擦过'], [0.45, '中 · 掌抹'], [1.2, '厚 · 倒上']].map(([h, n]) => [h, n, hex(SANDFILM.colorOf(h))]);
-const PARAMS = [[22, 200, ['手指划过：中间推空，两边堆起沙脊', '透光 <span class="k">T = e<sup>−k·h</sup></span> · k = 2.6']],
-  [236, 474, ['亮 = 擦（推走沙）· 暗 = 倒（加上沙）', '眼白：掌侧一抹，沙厚 1.0 → <span class="k">0.07</span>']]];
+const Q = new URLSearchParams(location.search), W = 1920, H = 1080, $ = id => document.getElementById(id);
+const { sm, clamp } = GRAINS;
+const prog = (f, a, b) => clamp((f - a) / (b - a));
+const D = (h, f, f0, o = {}) => TFX.decode(h, f, f0, Object.assign({ glyphs: 'dots' }, o));
 
-let SUM0 = null;
-function hud(f, E) {
-  const ci = chapterAt(f), [c0, no, ti, sub] = TL.chapters[ci], last = f >= TL.fin, cs = ci === 0 ? -80 : c0;
-  const nx = ci + 1 < TL.chapters.length ? TL.chapters[ci + 1][0] : 1e9, cfade = 1 - prog(f, nx - 12, nx);
-  $('chap').style.opacity = cfade.toFixed(3); $('prog').style.opacity = (f < TL.fin ? 1 - prog(f, TL.fin - 12, TL.fin) : 0).toFixed(3);
-  $('chap').innerHTML = last ? '' : `<div class="no">${D(no + ' / 03', f, cs, { rate: 1 })}</div><div class="ti">${D(ti, f, cs + 3, { rate: 3, kind: 'title' })}</div><div class="sub">${D(sub, f, cs + 14, { rate: 0.8 })}</div>`;
-  $('prog').innerHTML = last ? '' : `<i><b style="width:${(Math.min(1, f / TL.fin) * 100).toFixed(1)}%"></b></i>${no} / 03`;
+// —— 镜头：[帧, cx, cy, zoom, rot]，推拉按对数插值（每帧放大同样的倍数），段与段之间速度连续（Catmull-Rom）——
+const CAM = [[-160, 1120, 600, 1.42, -0.05], [0, 1100, 560, 1.3, -0.03], [96, 1060, 510, 1.06, 0.0], [180, 980, 490, 1.12, 0.012], [244, 965, 485, 1.28, 0.0], [284, 962, 482, 2.4, -0.01], [316, 960, 480, 6.0, -0.03],
+  [346, 990, 560, 1.22, 0.03], [440, 1010, 600, 1.08, -0.012], [480, 960, 560, 1.06, 0.0], [580, 960, 560, 1.14, 0.0], [670, 960, 556, 1.24, 0.0], [720, 960, 540, 1.06, 0.0],
+  [790, 960, 560, 1.3, 0.035], [850, 960, 640, 1.62, -0.02], [880, 960, 560, 1.25, 0.0], [930, 960, 540, 1.34, 0.14], [970, 960, 540, 1.1, 0.0], [1120, 960, 530, 1.26, 0.0]];
+function camAt(f) {
+  let i = 0; while (i < CAM.length - 2 && f >= CAM[i + 1][0]) i++;
+  const k0 = CAM[Math.max(0, i - 1)], k1 = CAM[i], k2 = CAM[i + 1], k3 = CAM[Math.min(CAM.length - 1, i + 2)];
+  const t = clamp((f - k1[0]) / (k2[0] - k1[0]));
+  const cr = (a, b, c, d) => { const t2 = t * t, t3 = t2 * t; return 0.5 * (2 * b + (-a + c) * t + (2 * a - 5 * b + 4 * c - d) * t2 + (-a + 3 * b - 3 * c + d) * t3); };
+  const v = j => j === 3 ? Math.exp(cr(Math.log(k0[3]), Math.log(k1[3]), Math.log(k2[3]), Math.log(k3[3]))) : cr(k0[j], k1[j], k2[j], k3[j]);
+  return { cx: v(1), cy: v(2), zoom: Math.max(1.02, v(3)), rot: v(4) };
+}
+// —— 灯箱的颜色接力：每一章换一种光 ——
+const LIGHT = [[-160, [255, 226, 176]], [100, [255, 226, 176]], [180, [196, 218, 255]], [312, [196, 218, 255]], [330, [255, 150, 116]], [460, [255, 150, 116]], [520, [255, 246, 230]], [680, [255, 246, 230]], [750, [176, 240, 230]], [880, [176, 240, 230]], [970, [255, 214, 150]], [1120, [255, 222, 160]]];
+function lightAt(f) { let i = 0; while (i < LIGHT.length - 2 && f >= LIGHT[i + 1][0]) i++; const a = LIGHT[i], b = LIGHT[i + 1], t = sm(prog(f, a[0], b[0])); return a[1].map((v, c) => v + (b[1][c] - v) * t); }
+// 透光颜色（给规则卡用：三档沙厚 → 白光下的颜色）
+const hex = c => '#' + c.map(v => Math.round(v).toString(16).padStart(2, '0')).join('').toUpperCase();
+const colorOf = h => [0.8, 1.12, 1.75].map((t, c) => { let T = Math.exp(-2.6 * h * t); T = T * T * (3 - 2 * T) * 0.6 + T * 0.4; return [255, 246, 230][c] * T + [10, 5, 3][c] * (1 - T); });
+const CHIPS = [[0.05, '薄'], [0.5, '中'], [1.6, '厚']].map(([h, n]) => [h, n, hex(colorOf(h))]);
+
+const chapterAt = f => { let i = 0; TL.chapters.forEach((c, k) => { if (f >= c[0]) i = k; }); return i; };
+const PARAMS = [[10, 98, ['2,000,000 粒沙 · 每一粒都在飞', '换幕 = 一道沙浪扫过去']], [190, 300, ['瞳孔是一层沙：它会看你']], [380, 456, ['鲸、水花、海：三层沙，各走各的']]];
+function hud(f) {
+  const ci = chapterAt(f), [c0, no, ti, sub] = TL.chapters[ci], last = f >= TL.storm, cs = ci === 0 ? -60 : c0 + 6;
+  const nx = ci + 1 < TL.chapters.length ? TL.chapters[ci + 1][0] : 1e9;
+  $('chap').style.opacity = (1 - prog(f, nx - 12, nx)).toFixed(3);
+  $('chap').innerHTML = last ? '' : `<div class="no">${D(no + ' / 04', f, cs, { rate: 1 })}</div><div class="ti">${D(ti, f, cs + 3, { rate: 3, kind: 'title' })}</div><div class="sub">${D(sub, f, cs + 14, { rate: 0.8 })}</div>`;
+  $('prog').style.opacity = (1 - prog(f, TL.storm - 12, TL.storm)).toFixed(3);
+  $('prog').innerHTML = `<i><b style="width:${(clamp(f / TL.storm) * 100).toFixed(1)}%"></b></i>${no} / 04`;
   const pr = PARAMS.find(p => f >= p[0] && f < p[1]); $('params').style.opacity = pr ? (1 - prog(f, pr[1] - 12, pr[1])).toFixed(3) : 0;
   $('params').innerHTML = pr ? pr[2].map((l, i) => `<div class="mono">${D(l, f, pr[0] + i * 14, { rate: 0.7 })}</div>`).join('') : '';
-  // 02 截面面板 + 三档颜色
-  const inP = f >= TL.ch2 + 20 && f < TL.ch3 - 4;
-  const pa = Math.min(prog(f, TL.ch2 + 20, TL.ch2 + 34), 1 - prog(f, TL.ch3 - 20, TL.ch3 - 4));
-  $('panel').style.opacity = pa.toFixed(3);
-  $('panel').innerHTML = inP ? `<div class="hd mono"><span>${D('扫描线截面', f, TL.ch2 + 22, { rate: 1 })}</span><b>${D('推走 ' + (E && E.mv ? E.mv[0] : '0') + ' · 堆起 ' + (E && E.mv ? E.mv[1] : '0') + ' · 总量 ' + (E && E.sum != null ? E.sum : '100.0') + '%', f, TL.ch2 + 30, { rate: 0.7 })}</b></div><div style="height:250px"></div><div class="lg mono">${D('沙厚 h（褐）· 透过来的光 T（金）', f, TL.ch2 + 40, { rate: 0.6 })}</div>` : '';
-  const sa = Math.min(prog(f, 628, 644), 1 - prog(f, TL.ch3 - 20, TL.ch3 - 4));
-  $('sw').style.opacity = sa.toFixed(3);
-  $('sw').innerHTML = f >= 628 && f < TL.ch3 ? SW.map(([h, n, c], i) => `<div class="c" style="transform:translateY(${(1 - SANDFILM.ease.o(prog(f, 628 + i * 6, 646 + i * 6))) * 30}px)"><i style="background:${c}"></i><div class="mono">${D(c, f, 632 + i * 6, { rate: 0.8 })}</div><div>${D('h ' + h + ' · ' + n, f, 640 + i * 6, { rate: 0.8 })}</div></div>`).join('') : '';
-  // 03 界面标注
-  let ui = '';
-  if (f >= 780 && f < TL.fin) {
-    const fa = 1 - prog(f, TL.fin - 16, TL.fin);
-    const p = Math.round(72 * SANDFILM.ease.io(prog(f, 814, 872))), sl = Math.round(60 * SANDFILM.ease.io(prog(f, 846, 896)));
-    ui += `<div class="lab mono" style="left:400px;top:636px;opacity:${fa}">${D('一指旋开 → <span class="k">按钮</span>', f, 782, { rate: 0.8 })}</div>`;
-    if (f >= 814) ui += `<div class="lab mono" style="left:400px;top:1006px;opacity:${fa}">${D('一指绕一圈 → <span class="k">进度</span>', f, 816, { rate: 0.8 })} <span class="k">${p}%</span></div>`;
-    if (f >= 820) ui += `<div class="lab mono" style="left:760px;top:636px;opacity:${fa}">${D('推着一团沙走 → <span class="k">滑杆</span>', f, 822, { rate: 0.8 })} <span class="k">${sl}%</span></div>`;
-    if (f >= 856) ui += `<div class="lab mono" style="left:1300px;top:636px;opacity:${fa}">${D('拖过去，身后就亮了 → <span class="k">开</span>', f, 860, { rate: 0.8 })}</div>`;
-  }
-  $('ui').innerHTML = ui;
-  // 收束
-  $('end').innerHTML = f >= TL.title + 40 ? `<div class="en">${D('SAND ANIMATION', f, TL.title + 40, { rate: 2, kind: 'title' })}</div><div class="by">${D('每天一个设计风格 · 观默 @guanmo_ai', f, TL.sign, { rate: 1.2 })}</div>` : '';
-}
-
-// 02 的扫描线 + 截面图（直接从这一帧的沙里取样）
-function scan(g, F, f) {
-  const a = Math.min(prog(f, TL.ch2 + 20, TL.ch2 + 34), 1 - prog(f, TL.ch3 - 20, TL.ch3 - 4)); if (a <= 0) return null;
-  const y = RC[1], x0 = 640, x1 = 1590, n = 300;
-  g.save(); g.globalAlpha = a;
-  // 扫描线：从左往右亮出来
-  const reach = x0 + (x1 - x0) * SANDFILM.ease.o(prog(f, TL.ch2 + 20, TL.ch2 + 50));
-  g.strokeStyle = 'rgba(255,214,140,.85)'; g.lineWidth = 2; g.setLineDash([10, 8]); g.beginPath(); g.moveTo(x0, y); g.lineTo(reach, y); g.stroke(); g.setLineDash([]);
-  // 面板里的曲线
-  const px = 72, py = 382, pw = 600, ph = 240;
-  g.fillStyle = 'rgba(18,8,3,.62)'; g.fillRect(px - 14, py - 6, pw + 28, ph + 14);
-  const hs = [], Ts = []; for (let i = 0; i <= n; i++) { const x = x0 + (x1 - x0) * i / n; const h = x <= reach ? F.sample(x, y) : 0; hs.push(h); Ts.push(Math.exp(-2.6 * h * 1.12)); }
-  g.beginPath(); g.moveTo(px, py + ph * 0.62); hs.forEach((h, i) => g.lineTo(px + pw * i / n, py + ph * 0.62 - Math.min(3.2, h) * 42)); g.lineTo(px + pw, py + ph * 0.62); g.closePath(); g.fillStyle = '#8a5a2c'; g.fill();
-  g.fillStyle = '#ffe7b8'; g.fillRect(px, py + ph * 0.62 + 2, pw, 4);
-  g.strokeStyle = '#ffd27d'; g.lineWidth = 2.5; g.beginPath(); Ts.forEach((T, i) => { const X = px + pw * i / n, Y = py + ph - 8 - T * 70; i ? g.lineTo(X, Y) : g.moveTo(X, Y); }); g.stroke();
-  // 取样点：沿扫描线来回走
-  const u = 0.5 + 0.42 * Math.sin((f - TL.ch2) / 40), sx = x0 + (x1 - x0) * u;
-  if (sx <= reach) { const h = F.sample(sx, y); g.fillStyle = '#ffd27d'; g.beginPath(); g.arc(sx, y, 7, 0, 7); g.fill(); g.strokeStyle = 'rgba(255,214,140,.9)'; g.lineWidth = 1.5; g.beginPath(); g.moveTo(px + pw * u, py); g.lineTo(px + pw * u, py + ph); g.stroke();
-    g.font = '500 22px GeistMono'; g.fillStyle = '#fff1d6'; g.fillText(`h ${h.toFixed(2)} → T ${(Math.exp(-2.6 * h * 1.12) * 100).toFixed(0)}%`, Math.min(sx + 14, 1700), y - 16); }
-  g.restore(); return true;
+  let r = '';
+  // 规则 1：越厚越暗（三个色块从沙带上“取样”出来）
+  if (f >= 516 && f < 580) { const a = 1 - prog(f, 564, 578);
+    r += `<div class="big" style="left:240px;top:250px;opacity:${a}">${D('越厚，越暗', f, 518, { rate: 3, kind: 'title' })}</div><div class="lab mono" style="left:240px;top:400px;opacity:${a}">${D('透过来的光 <span class="k">T = e<sup>−k·h</sup></span> · k = 2.6', f, 526, { rate: 0.7 })}</div>`;
+    CHIPS.forEach(([h, n, c], i) => { const x = [250, 950, 1640][i] - 115, k = sm(prog(f, 528 + i * 5, 546 + i * 5)); r += `<div class="chip" style="left:${x}px;top:${676 + (1 - k) * 40}px;opacity:${(k * a).toFixed(3)}"><i style="background:${c}"></i><div class="mono">${D(c, f, 532 + i * 5, { rate: 0.8 })}</div><div>${D('h ' + h + ' · ' + n, f, 538 + i * 5, { rate: 0.8 })}</div></div>`; }); }
+  // 规则 2：沙守恒（一指分开，沙堆到两边）
+  if (f >= 590 && f < 684) { const a = 1 - prog(f, 668, 682);
+    r += `<div class="big" style="left:240px;top:250px;opacity:${a}">${D('沙不会消失', f, 592, { rate: 3, kind: 'title' })}</div><div class="lab mono" style="left:240px;top:400px;opacity:${a}">${D('一指划过：中间推空 = <span class="k">两边堆高</span> · 总量不变', f, 600, { rate: 0.7 })}</div>`;
+    if (f >= 630) r += `<div class="lab mono l" style="left:1760px;top:${FIN.y0 - FIN.R - 64}px;opacity:${a}">${D('沙脊 ↑', f, 630, { rate: 1 })}</div><div class="lab mono l" style="left:1760px;top:${FIN.y0 + FIN.R + 34}px;opacity:${a}">${D('沙脊 ↓', f, 634, { rate: 1 })}</div>`; }
+  // 界面
+  if (f >= 756 && f < 892) { const a = 1 - prog(f, 876, 890), p = Math.round(100 * (0.08 + 0.64 * sm(prog(f, TL.ui + 10, TL.ui + 100))));
+    r += `<div class="lab mono l" style="left:${PH.x + 330}px;top:${UIY.bar - 22}px;opacity:${a}">${D('进度：沙流过去', f, 762, { rate: 0.8 })} <span class="k">${p}%</span></div>`;
+    if (f >= 770) r += `<div class="lab mono r" style="right:${W - PH.x + 330}px;top:${UIY.btn - 20}px;opacity:${a}">${D('按钮：三角是空出来的', f, 772, { rate: 0.8 })}</div>`;
+    if (f >= 810) r += `<div class="lab mono l" style="left:${PH.x + 330}px;top:${UIY.tog - 22}px;opacity:${a}">${D('开关：圆钮拨过去', f, 812, { rate: 0.8 })}</div>`; }
+  $('rule').innerHTML = r;
+  $('end').innerHTML = f >= TL.title + 30 ? `<div class="en">${D('SAND ANIMATION', f, TL.title + 30, { rate: 2, kind: 'title' })}</div><div class="by">${D('每天一个设计风格 · 观默 @guanmo_ai', f, TL.sign, { rate: 1.2 })}</div>` : '';
 }
 
 (async () => {
-  await Promise.all(['300px Brush', '700 30px NotoSC', '500 30px NotoSC', '500 24px GeistMono'].map(s => document.fonts.load(s, '沙画眼睛Aa1%'))); await document.fonts.ready;
-  const E = SANDFILM.engine(W, H, ops, baseScene, +(Q.get('res') || 0.5));
-  const draw = SANDFILM.renderer($('c').getContext('2d'), W, H);
-  const ov = $('ov').getContext('2d');
-  for (let f = 0; f < TL.end; f++) hud(f, null);                       // 空跑一遍：把所有出字的时间登记给配乐
-  window.events = () => ({ cues: TFX.list(), ops: ops.map(o => ({ f0: o.f0, f1: o.f1, kind: o.kind, r: o.r || 0, palm: !!o.streak })) });
-  const sumOf = F => { let s = 0; for (let i = 0; i < F.d.length; i++) s += F.d[i]; return s; };
-  const F0 = E.at(TL.ch2).F; SUM0 = sumOf(F0); const D0 = F0.d.slice();   // 沙守恒的参照：涟漪开始前那一刻的总沙量
+  await Promise.all(['400 300px Brush', '700 30px NotoSC', '500 30px NotoSC', '500 24px GeistMono'].map(s => document.fonts.load(s, '沙画月亮掉进海里定时关灯Aa1%'))); await document.fonts.ready;
+  await new Promise(r => { const sc = document.createElement('script'); sc.src = 'targets.js'; sc.onload = r; document.body.appendChild(sc); });   // 字体到了再画每一幕（片名、歌名是用字体画进沙里的）
+  const empty = { layers: [{ dens: new Float32Array(GW * GH) }] };
+  const scenes = [empty, S_moon, S_eye, S_whale, S_wedge, S_band, S_ui, S_title];
+  const TR = { wind: { spread: 0.6, lift: 0.75, amp: 80 }, vortex: { spread: 0.45, lift: 0.45, turns: 0.9 }, burst: { spread: 0.5, lift: 0.9, amp: 300 }, pour: { spread: 0.6, lift: 0.7 }, storm: { spread: 0.45, lift: 0.8, turns: 1.3 } };
+  const DIRS = [Math.PI, -0.4, -0.7, 0, Math.PI, Math.PI / 2, 0.3];
+  const CEN = [null, [1070, 415], [960, 480], null, null, null, [960, 540]];
+  const trans = TL.trans.map(([f0, f1, from, to, kind], i) => Object.assign({ f0, f1, from, to, kind, dir: DIRS[i], c: CEN[i] }, TR[kind]));
+  trans[4].amp = 20; trans[4].lift = 0.25; trans[4].spread = 0.35; trans[2].amp = 160; trans[2].spread = 0.6; trans[2].lift = 0.48;
+  let mx = 0; for (const s of scenes) { let t = 0; for (const l of s.layers) for (const v of l.dens) t += v; mx = Math.max(mx, t); }
+  const N = +(Q.get('n') || 2000000), m = mx / (N * 0.985);
+  const AW = 1920, AH = 1080;
+  const RW = 1920, RH = 1080; const G = GRAINS.build({ W, H, GW, GH, N, m, AW, AH, RW, RH, scenes, trans, seed: 5 });
+  const ground = new Float32Array(RW * RH), air = new Float32Array(AW * AH), airZ = new Float32Array((AW >> 2) * (AH >> 2));
+  const draw = GRAINS.renderer($('c').getContext('2d'), W, H, RW, RH, AW, AH);
+  for (let f = 0; f < TL.end; f++) hud(f);
+  window.events = () => ({ cues: TFX.list() });
   window.frame = async f => {
-    const { F, fx } = E.at(f);
-    draw(F, f, { light: 1 + 0.012 * Math.sin(f / 70) + 0.05 * SANDFILM.ease.io2(prog(f, TL.dot, TL.end)) });   // 最后一撮沙落下，灯慢慢亮一点
-    ov.clearRect(0, 0, W, H); SANDFILM.grains(ov, fx, f);
-    let sum = null, mv = null; if (f >= TL.ch2 && f < TL.ch3) { sum = (sumOf(F) / SUM0 * 100).toFixed(1); let a = 0, b = 0; for (let i = 0; i < F.d.length; i++) { const d = F.d[i] - D0[i]; if (d < 0) a -= d; else b += d; } const fmt = v => Math.round(v * 4).toLocaleString('en-US'); mv = [fmt(a), fmt(b)]; }
-    scan(ov, F, f); hud(f, { sum, mv });
+    G.frame(f, ground, air, airZ);
+    draw(ground, air, airZ, camAt(f), { col: lightAt(f), c: [960, 560] });
+    hud(f);
     await new Promise(r => requestAnimationFrame(() => r()));
   };
   if (!Q.get('noinit')) await window.frame(+(Q.get('f') || 0));
