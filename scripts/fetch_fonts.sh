@@ -48,6 +48,10 @@ get Silkscreen-Bold.ttf    "$GF/silkscreen/Silkscreen-Bold.ttf"
 get Inter.ttf "$GF/inter/Inter%5Bopsz,wght%5D.ttf"
 # 第六轮候选 液态金属：站酷庆科黄油体（圆头粗体中文，被做成会滴落的镀铬字；OFL）
 get ZCOOLQingKeHuangYou.ttf "$GF/zcoolqingkehuangyou/ZCOOLQingKeHuangYou-Regular.ttf"
+# 第七轮候选 浮世绘 / 新艺术运动：Cormorant（高对比衬线）+ Cinzel Decorative（带花饰的大写）+ Yuji Syuku（毛笔印章字）；均为 OFL
+get Cormorant.ttf              "$GF/cormorant/Cormorant%5Bwght%5D.ttf"
+get CinzelDecorative-Bold.ttf  "$GF/cinzeldecorative/CinzelDecorative-Bold.ttf"
+get YujiSyuku-Regular.ttf      "$GF/yujisyuku/YujiSyuku-Regular.ttf"
 # 布局 01 Bento Grid：Inter Display（标题）+ Inter（正文）+ Geist Mono（数字 / 标注）
 TMP=$(mktemp -d)
 get "$TMP/inter.zip" https://github.com/rsms/inter/releases/download/v4.1/Inter-4.1.zip
