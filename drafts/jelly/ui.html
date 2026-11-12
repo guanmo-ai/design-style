@@ -1,0 +1,48 @@
+<!doctype html>
+<html lang="zh"><head><meta charset="utf-8"><title>果冻 Jelly · 图标</title>
+<link rel="stylesheet" href="../_lib/soft/still.css">
+<style>:root { --ink: #3b2a66; }</style></head>
+<body>
+<canvas id="gl"></canvas>
+<div class="ov">
+  <div class="tl"><div class="n">04 / 06</div><h1>果冻图标</h1><p>半透明的身体 · 不透明的白芯</p></div>
+  <div class="tr">CANDIDATE · JELLY</div>
+  <div class="bl"><div class="k">越厚越浓 · 边缘最亮 · 高光只留一块</div><div class="z">压下去是扁的，弹起来是长的，落地再晃两下</div></div>
+  <div class="br">观默</div>
+</div>
+<script src="../_lib/glkit.js"></script>
+<script src="../_lib/soft/soft.js"></script>
+<script>
+(async () => {
+  await document.fonts.ready;
+  const q = new URLSearchParams(location.search), sc = +(q.get('s') || 1), spp = +(q.get('spp') || 16);
+  const cv = document.getElementById('gl'); cv.width = 1920 * sc; cv.height = 1080 * sc;
+  const star = (() => { let d = ''; for (let i = 0; i < 10; i++) { const r = i % 2 ? 19 : 44, a = -Math.PI / 2 + i * Math.PI / 5; d += (i ? 'L' : 'M') + (50 + r * Math.cos(a)).toFixed(1) + ' ' + (52 + r * Math.sin(a)).toFixed(1); } return d + 'Z'; })();
+  const icons = [
+    SOFT.path('M50 88 C20 64 7 47 7 31 C7 17 18 8 30 8 C39 8 46 13 50 21 C54 13 61 8 70 8 C82 8 93 17 93 31 C93 47 80 64 50 88 Z'),                       // 心
+    SOFT.path('M32 18 L82 50 L32 82 Z', { round: 14 }),                                                                                                  // 播放
+    SOFT.path(star, { round: 10 }),                                                                                                                      // 星
+    SOFT.path('M14 24 Q14 12 26 12 L74 12 Q86 12 86 24 L86 56 Q86 68 74 68 L50 68 L30 86 L32 68 L26 68 Q14 68 14 56 Z', { round: 4 }),                    // 对话
+    SOFT.path('M58 6 L22 54 L45 54 L39 94 L78 43 L54 43 Z', { round: 8 }),                                                                               // 闪电
+    SOFT.path('M40 12 H60 V40 H88 V60 H60 V88 H40 V60 H12 V40 H40 Z', { round: 10 }),                                                                     // 加号
+    SOFT.path('M30 78 A16 16 0 0 1 28 46 A24 24 0 0 1 74 40 A19 19 0 0 1 72 78 Z', { round: 6 }),                                                         // 云
+  ];
+  const cols = ['#ff2f6d', '#ff7a14', '#ffc814', '#3fd23a', '#16c8c0', '#3a7dff', '#9a4dff'];
+  // 后排 3 块、前排 4 块，错开站着；[x, z, 离地, 压扁 y, 左右转, 前后仰]
+  const lay = [[-1.95, -2.2, 0, 1, 10, -10], [0, -2.2, 0.6, 1.13, -4, -6], [1.95, -2.2, 0, 1, -12, -10],
+               [-2.92, 1.2, 0, 1, 14, -12], [-0.97, 1.2, 0, 0.8, 4, -12], [0.97, 1.2, 0, 1, -6, -12], [2.92, 1.2, 0.02, 1.03, -15, -12]];
+  const order = [1, 0, 2, 4, 3, 6, 5], colo = [5, 0, 2, 4, 6, 1, 3];
+  const items = [], inner = [], B = 0.74, T = 0.27;
+  lay.forEach(([x, z, lift, sy, ry, rx], i) => {
+    const sxz = 1 / Math.sqrt(sy), y = lift + B * sy * Math.cos(rx * Math.PI / 180) + T * Math.sin(-rx * Math.PI / 180) - 0.012, base = { pos: [x, y, z], rot: [rx, ry, 0], sq: [sxz, sy, sxz] };
+    items.push({ ...base, shape: 'rbox', b: [B, B, T], R: 0.26, col: cols[colo[i]] });
+    inner.push({ ...base, shape: 'slab', mask: order[i], s: 0.56, H: 0.2, R: 0.09 });
+  });
+  await SOFT.render(cv, {
+    mode: 'jelly', eye: [0, 6.5, 10.2], at: [0, 0.5, -0.1], fov: 0.5,
+    floor: '#fbf7ff', wall: ['#d9d2ff', '#f1ecff'], key: [-0.3, 0.74, -0.6], keyCol: [3.1, 3.0, 2.9], wallY: [-0.6, -0.36], far: [5, 13],
+    masks: icons, items, inner, innerCol: '#ffffff', d0: 0.5, bubbles: [0.16, 0.2], exposure: 1.0, bloom: 0.1, vignette: 0.12,
+  }, { spp, log: m => console.log(m) });
+  window.__done = true;
+})();
+</script></body></html>

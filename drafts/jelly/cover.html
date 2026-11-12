@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="zh"><head><meta charset="utf-8"><title>果冻 Jelly · 封面</title>
+<link rel="stylesheet" href="../_lib/soft/still.css">
+<style>:root { --ink: #5a2540; }</style></head>
+<body>
+<canvas id="gl"></canvas>
+<div class="ov">
+  <div class="tl"><div class="n">00 / 06</div><h1>果冻</h1><p>Jelly · 半透明的软糖质感</p></div>
+  <div class="tr">CANDIDATE · JELLY</div>
+  <div class="bl"><div class="k">透光 n 1.36 · 晃 3.2 Hz · ζ 0.16</div><div class="z">碰一下，晃三下才停；影子是一摊有颜色的光</div></div>
+  <div class="br">观默</div>
+</div>
+<span class="pre">J</span><span class="pre" style="font-family:Unbounded;font-weight:900">J</span>
+<script src="../_lib/glkit.js"></script>
+<script src="../_lib/soft/soft.js"></script>
+<script>
+(async () => {
+  await document.fonts.ready; await document.fonts.load('700 100px Fredoka'); await document.fonts.load('900 100px Unbounded');
+  const q = new URLSearchParams(location.search), sc = +(q.get('s') || 1), spp = +(q.get('spp') || 16);
+  const cv = document.getElementById('gl'); cv.width = 1920 * sc; cv.height = 1080 * sc;
+  const F = "700 $px Fredoka", SZ = 1.5, FAT = 0.05, S1 = 1.17;
+  const word = 'JELLY', cols = ['#ff2f6d', '#ff7a14', '#ffc814', '#3fd23a', '#3a7dff'];
+  const wd = [...word].map(ch => SOFT.inkSize(ch, F, SZ, FAT)[0] * S1), gap = 0.13, tot = wd.reduce((a, b) => a + b + gap, -gap);
+  let x0 = -tot / 2; const xs = wd.map(w => { const c = x0 + w / 2; x0 += w + gap; return c; });
+  const sh = [0.10, -0.06, 0.12, -0.09, 0.07], ry = [8, -5, 3, -4, -9], sqy = [0.97, 1.04, 0.95, 1.05, 1.0];
+  const hh = (SZ + FAT) / 2 * S1;                                           // 半高
+  const items = [...word].map((ch, i) => ({ shape: 'slab', mask: i, pos: [xs[i], hh * sqy[i] - 0.01, 0], s: S1, sq: [1 / Math.sqrt(sqy[i]), sqy[i], 1], rot: [0, ry[i], 0], shear: [sh[i], 0], H: 0.29, R: 0.175, B: 0.075, col: cols[i] }));
+  // 前面散着的小块：方糖、半球、一颗心
+  items.push(
+    { shape: 'rbox', pos: [-3.15, 0.3, 2.3], rot: [0, 28, 0], b: [0.33, 0.3, 0.33], R: 0.11, col: '#9a4dff' },
+    { shape: 'dome', pos: [1.75, 0.0, 3.3], r: 0.44, R: 0.1, col: '#ff2f6d' },
+    { shape: 'rbox', pos: [3.2, 0.26, 2.5], rot: [0, -20, 0], b: [0.29, 0.26, 0.29], R: 0.1, col: '#16c8c0' },
+    { shape: 'dome', pos: [-0.55, 0.0, 3.45], r: 0.32, R: 0.08, col: '#ffc814' });
+  await SOFT.render(cv, {
+    mode: 'jelly', eye: [0, 3.1, 10.6], at: [0, 0.98, 0.9], fov: 0.5,
+    floor: '#fff6ee', wall: ['#ffd3e2', '#ffeef0'], key: [-0.35, 0.72, -0.6], keyCol: [3.1, 3.0, 2.85], fill: 1.0, wallY: [-0.2, 0.02], far: [5, 13],
+    masks: [...word].map(ch => SOFT.glyph(ch, F, SZ, FAT)), items, d0: 0.68, bubbles: [0.17, 0.24], exposure: 1.0, bloom: 0.1, vignette: 0.12,
+  }, { spp, log: m => console.log(m) });
+  window.__done = true;
+})();
+</script></body></html>

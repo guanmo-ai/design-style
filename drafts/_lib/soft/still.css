@@ -1,0 +1,20 @@
+@font-face { font-family: 'Unbounded'; src: url(../../../public/fonts/Unbounded.ttf); font-weight: 200 900; }
+@font-face { font-family: 'Fredoka'; src: url(../../../public/fonts/Fredoka.ttf); font-weight: 300 700; }
+@font-face { font-family: 'GeistMono'; src: url(../../../public/fonts/GeistMono.ttf); font-weight: 100 900; }
+@font-face { font-family: 'NotoSC'; src: url(../../../public/fonts/NotoSansSC-Black.otf); font-weight: 900; }
+@font-face { font-family: 'NotoSC'; src: url(../../../public/fonts/NotoSansSC-Medium.otf); font-weight: 500; }
+@font-face { font-family: 'ZCOOL'; src: url(../../../public/fonts/ZCOOLQingKeHuangYou.ttf); }
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html, body { width: 1920px; height: 1080px; overflow: hidden; background: #fff; }
+#gl { position: absolute; inset: 0; width: 1920px; height: 1080px; display: block; }
+.ov { position: absolute; inset: 0; pointer-events: none; color: var(--ink); }
+.tl { position: absolute; left: 72px; top: 60px; }
+.tl .n { font: 500 22px GeistMono; letter-spacing: .08em; opacity: .7; }
+.tl h1 { font: 58px ZCOOL; line-height: 1.15; margin-top: 6px; }
+.tl p { font: 500 26px NotoSC; margin-top: 4px; opacity: .8; }
+.tr { position: absolute; right: 72px; top: 64px; font: 500 22px GeistMono; letter-spacing: .08em; opacity: .7; }
+.bl { position: absolute; left: 72px; bottom: 62px; }
+.bl .k { font: 500 30px GeistMono; letter-spacing: .02em; }
+.bl .z { font: 500 30px NotoSC; margin-top: 8px; }
+.br { position: absolute; right: 72px; bottom: 62px; font: 34px ZCOOL; opacity: .85; }
+.pre { position: absolute; left: -999px; font: 700 20px Fredoka; }
