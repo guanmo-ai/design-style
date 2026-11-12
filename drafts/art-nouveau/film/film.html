@@ -1,0 +1,135 @@
+<!doctype html><meta charset="utf-8">
+<style>html,body{margin:0;background:#000;overflow:hidden}canvas{display:block}</style>
+<canvas id="c" width="1920" height="1080"></canvas>
+<script src="path.js"></script><script src="world.js"></script><script src="timeline.js"></script>
+<script src="engine.js"></script><script src="scenes.js"></script><script src="chapters.js"></script>
+<script>
+// 新艺术运动 · 一根线。window.frame(f) 画第 f 帧（帧号的纯函数）。
+const cv = document.getElementById('c'), out = cv.getContext('2d');
+const sub = document.createElement('canvas'); sub.width = 1920; sub.height = 1080; let ctx = sub.getContext('2d');
+const E = ENG, S = SCENES, P = S.PAL, { MASTER, M } = WORLD, F = CH.FONT;
+const Q = new URLSearchParams(location.search);
+const BG = { cream: '#EFE6CF', dusk: '#2C3846', night: '#17131C' };
+function bgAt(f) { const K = TL.bg; let i = 0; while (i < K.length - 1 && K[i + 1][0] <= f) i++; if (i === K.length - 1) return BG[K[i][1]];
+  return E.mixc(BG[K[i][1]], BG[K[i + 1][1]], E.sm((f - K[i][0]) / (K[i + 1][0] - K[i][0]))); }
+const dark = f => { const c = bgAt(f); return 1 - (parseInt(c.slice(1, 3), 16) * .3 + parseInt(c.slice(3, 5), 16) * .59 + parseInt(c.slice(5, 7), 16) * .11) / 230; };
+
+// 纸纹：一张小噪声图，铺在世界坐标里（跟着纸走，不跟着镜头）
+const grain = ((ctx) => { const g = document.createElement('canvas'); g.width = g.height = 256; const x = g.getContext('2d'), d = x.createImageData(256, 256), r = E.rng(3);
+  for (let i = 0; i < d.data.length; i += 4) { const v = r(); d.data[i] = 90; d.data[i + 1] = 70; d.data[i + 2] = 40; d.data[i + 3] = v * 26; } x.putImageData(d, 0, 0); return ctx.createPattern(g, 'repeat'); })(ctx);
+// 远景：几根淡淡的大鞭线，跟镜头有视差
+const GHOST = (() => { const r = E.rng(21), out = []; for (let i = 0; i < 22; i++) { const L = 900 + r() * 1400, sg = r() < .5 ? 1 : -1;
+  out.push(PATH.curve((r() - .5) * 9000, (r() - .5) * 5200, r() * 6.28, L, PATH.whip(L, -.4, 20 + r() * 10, 5, sg), 26, 3, 120).map(q => Object.assign(q, { wd: q.w }))); } return out; })();
+
+function draw(f) {
+  const [cx, cy, z] = E.cam(f);
+  const bg = bgAt(f), dk = dark(f); E.NIGHT = dk;
+  ctx.setTransform(1, 0, 0, 1, 0, 0);
+  ctx.fillStyle = bg; ctx.fillRect(0, 0, 1920, 1080);
+  // 远景（视差 0.55）
+  ctx.save(); ctx.translate(960, 540); ctx.scale(z * .6, z * .6); ctx.translate(-cx * .55 / .6, -cy * .55 / .6);
+  ctx.globalAlpha = .07 + .05 * dk; for (const g of GHOST) S.ribbon(ctx, g, dk > .5 ? '#3A3550' : '#C9BB95', { ol: 0, ink: 'rgba(0,0,0,0)', hi: 'rgba(0,0,0,0)' }); ctx.restore();
+  // 世界
+  ctx.save(); ctx.translate(960, 540); ctx.scale(z, z); ctx.translate(-cx, -cy);
+  ctx.fillStyle = grain; ctx.globalAlpha = .9 - .5 * dk; ctx.fillRect(cx - 960 / z, cy - 540 / z, 1920 / z, 1080 / z); ctx.globalAlpha = 1;
+  CH.titleBack(ctx, f); CH.haloBack(ctx, f); CH.metroBack(ctx, f); CH.lampBack(ctx, f);
+  // 枝条和叶子（在主线下面）
+  const flowers = [];
+  for (const B of S.BR) {
+    const r = E.branchPts(B, f); if (!r) continue;
+    S.ribbon(ctx, r.pts, B.color, { ol: 2.6 });
+    for (const u of (B.leaves || [])) { const k = Math.floor(u * (r.P.length - 1)); if (u * B.L > r.sTip) continue; const q = r.P[k], o = E.spring((f - B.t0 - B.dur * u * .6) / 20, .55, 9);
+      S.leaf(ctx, q.x, q.y, q.th + (k % 2 ? 1 : -1) * 1.0, 80 * o, P.SAGE); S.leaf(ctx, q.x, q.y, q.th - (k % 2 ? 1 : -1) * 1.0, 64 * o, P.OLIVE); }
+    if (B.flower && r.g > .8) { const q = r.pts[r.pts.length - 1]; flowers.push([q, B.flower, B.t0 + B.dur * .9]); }
+  }
+  const sTip = E.clamp(E.L(f), 1, E.Lend);
+  for (const l of S.LEAVES) { if (l.s > sTip - 100) continue; const q = PATH.at(MASTER, l.s), o = E.spring((f - l.t0) / 22, .55, 9);
+    S.leaf(ctx, q.x, q.y, q.th + l.side * (1.0 + .5 * (1 - Math.min(1, o))), l.size * o, l.color); }
+  // 主线
+  const m = E.masterAt(f);
+  S.ribbon(ctx, m.pts, S.masterColor, { ol: 3.4, gold: .55 });
+  for (const [q, fl, t] of flowers) S.lily(ctx, q.x, q.y, q.th, fl.size, fl.color, E.spring((f - t) / 26, .5, 9));
+  CH.comb(ctx, f); CH.haloFront(ctx, f); CH.metroFront(ctx, f); CH.lampFront(ctx, f); CH.phone(ctx, f); CH.rules(ctx, f); CH.finale(ctx, f);
+  // 梢头：一点金光 + 一路掉下来的金粉（晚到、慢慢落、慢慢灭）
+  ctx.globalCompositeOperation = 'lighter';
+  const r = E.rng(1);
+  for (let k = 0; k < 48; k++) {
+    const fe = Math.floor(f) - k; if (fe < -60) break;
+    const se = E.clamp(E.L(fe), 1, E.Lend), v = E.V(fe);
+    const q = PATH.at(MASTER, se);
+    for (let j = 0; j < 2; j++) {
+      const rr = E.rng(fe * 7 + j * 131), a = rr() * 6.28, sp = .6 + rr() * 1.8, age = f - fe;
+      const x = q.x + Math.cos(a) * sp * age * 2.2, y = q.y + Math.sin(a) * sp * age * 2.2 + age * age * .02;
+      const al = (1 - age / 48) * .8 * E.smr(1, 12, v); if (al <= 0) continue;
+      ctx.fillStyle = E.rgba('#F4C86A', al * .8); ctx.beginPath(); ctx.arc(x, y, (1.4 + rr() * 2.2) / Math.sqrt(z), 0, 7); ctx.fill();
+    }
+  }
+  const tq = m.pts[m.pts.length - 1], gl = E.clamp(E.V(f) / 14) * (1 - E.smr(TL.curl, TL.curl + 40, f)) + E.spring((f - TL.curl) / 20) * Math.exp(-Math.max(0, f - TL.curl) / 30) * 2;
+  if (gl > .01) { const R = 30 / Math.sqrt(z); const gr = ctx.createRadialGradient(tq.x, tq.y, 0, tq.x, tq.y, R * (1 + gl * .5)); gr.addColorStop(0, E.rgba('#FFE7A3', Math.min(.7, .4 * gl))); gr.addColorStop(1, 'rgba(255,231,163,0)');
+    ctx.fillStyle = gr; ctx.beginPath(); ctx.arc(tq.x, tq.y, R * (1 + gl * .5), 0, 7); ctx.fill(); }
+  ctx.globalCompositeOperation = 'source-over';
+  CH.titleFront(ctx, f);
+  ctx.restore();
+  hud(f, dk);
+}
+
+// 屏幕上的字：章节说明（左下，手机那一章放右上）、片尾
+function hud(f, dk) {
+  const ink = E.mixc(P.INK, '#F3EAD6', E.smr(.35, .65, dk)), sub = E.mixc('#5a4f40', '#CFC4AE', E.smr(.35, .65, dk));
+  const C = TL.captions;
+  { // 字幕底下垫一层淡淡的底色，线从后面穿过去也看得清
+    let al = 0, right = false; for (let i = 0; i < C.length; i++) { const t0 = C[i][0], t1 = (C[i + 1] ? C[i + 1][0] : TL.endcard) - 26; const a = E.smr(t0 - 10, t0 + 10, f) * (1 - E.smr(t1 + 10, t1 + 40, f)); if (a > al) { al = a; right = C[i][1] === '05'; } }
+    if (al > 0 && !right) { const bg = bgAt(f); ctx.save(); ctx.translate(320, 1010); ctx.scale(1.9, .55); const g = ctx.createRadialGradient(0, 0, 0, 0, 0, 420); g.addColorStop(0, E.rgba(bg, .82 * al)); g.addColorStop(.6, E.rgba(bg, .55 * al)); g.addColorStop(1, E.rgba(bg, 0)); ctx.fillStyle = g; ctx.fillRect(-420, -420, 840, 840); ctx.restore(); }
+  }
+  for (let i = 0; i < C.length; i++) {
+    const [t0, no, title, s2] = C[i], t1 = (C[i + 1] ? C[i + 1][0] : TL.endcard) - 26;
+    if (f < t0 || f > t1 + 40) continue;
+    const right = no === '05', x = right ? 1850 : 72, al = right ? 'right' : 'left';
+    if (!s2) { E.riseText(ctx, title, x, 1000, f, t0, { font: `700 40px ${F.serif}`, size: 40, color: ink, out: t1, align: al }); continue; }
+    if (right) { E.riseText(ctx, title, x, 110, f, t0, { font: `900 50px ${F.serif}`, size: 50, color: ink, out: t1, align: al }); E.riseText(ctx, s2, x, 160, f, t0 + 10, { font: `600 30px ${F.serif}`, size: 30, color: sub, out: t1, align: al, kind: 'small' }); continue; }
+    E.riseText(ctx, no, x, 930, f, t0, { font: `italic 600 44px ${F.corm}`, size: 44, color: P.GOLD, out: t1, kind: 'none' });
+    E.riseText(ctx, title, x + 64, 930, f, t0 + 2, { font: `900 50px ${F.serif}`, size: 50, color: ink, out: t1 });
+    E.riseText(ctx, s2, x + 64, 990, f, t0 + 12, { font: `600 30px ${F.serif}`, size: 30, color: sub, out: t1, kind: 'small' });
+  }
+  if (f > 30 && f < 100 && false) return;
+  // 鞭线那一章的规则①
+  if (f > 180 && f < 330) {
+    E.riseText(ctx, '曲率梳：金线越长，弯得越急', 1850, 110, f, 196, { font: `700 34px ${F.serif}`, size: 34, color: ink, align: 'right', out: 300 });
+    E.riseText(ctx, '从根到梢，曲率一路变大', 1850, 160, f, 206, { font: `600 28px ${F.serif}`, size: 28, color: sub, align: 'right', out: 300, kind: 'small' });
+  }
+  // 片尾
+  const e0 = TL.endcard;
+  if (f >= e0) {
+    const pl = E.smr(e0, e0 + 30, f);
+    ctx.save(); ctx.translate(960, 500); ctx.scale(1.25, .62); const gr = ctx.createRadialGradient(0, 0, 80, 0, 0, 640); gr.addColorStop(0, E.rgba(P.CREAM, .96 * pl)); gr.addColorStop(.6, E.rgba(P.CREAM, .8 * pl)); gr.addColorStop(1, E.rgba(P.CREAM, 0));
+    ctx.fillStyle = gr; ctx.fillRect(-800, -800, 1600, 1600); ctx.restore();
+    E.riseText(ctx, '整支片子，只有一根线', 960, 330, f, e0, { font: `700 40px ${F.serif}`, size: 40, color: P.PLUM, align: 'center' });
+    E.riseText(ctx, '新艺术运动', 960, 500, f, e0 + 14, { font: `900 150px ${F.serif}`, size: 150, color: P.INK, align: 'center', kind: 'title', rate: 3 });
+    E.riseText(ctx, 'ART NOUVEAU · 1890 — 1910', 960, 568, f, e0 + 30, { font: `700 34px ${F.cinzel}`, size: 34, color: P.OLIVE, align: 'center', kind: 'small', rate: .6 });
+    E.riseText(ctx, '观默', 960, 650, f, TL.curl, { font: `700 40px ${F.serif}`, size: 40, color: P.PLUM, align: 'center', kind: 'title', rate: 4 });
+  }
+  // 暗角
+  const v = ctx.createRadialGradient(960, 540, 500, 960, 540, 1150); v.addColorStop(0, 'rgba(20,14,8,0)'); v.addColorStop(1, `rgba(20,14,8,${.18 + .2 * dk})`);
+  ctx.fillStyle = v; ctx.fillRect(0, 0, 1920, 1080);
+}
+
+// 运动模糊：一帧里取 4 个子帧（快门 180°）做平均。?mb=1 关掉（快速预览）
+const MB = +(Q.get('mb') || 4);
+function frameMB(f) {
+  if (MB <= 1) { draw(f); out.drawImage(sub, 0, 0); return; }
+  for (let i = 0; i < MB; i++) { draw(f + ((i + .5) / MB - .5) * .5); out.globalAlpha = 1 / (i + 1); out.drawImage(sub, 0, 0); }
+  out.globalAlpha = 1;
+}
+window.frame = async f => { frameMB(f); };
+window.events = () => { for (let f = 0; f < TL.end; f++) draw(f);
+  const flowers = S.BR.filter(B => B.flower).map(B => B.t0 + B.dur * .9);
+  return { cues: [...E.cues.values()].filter(c => c[3] !== 'none').sort((a, b) => a[0] - b[0]),
+    speed: Array.from({ length: TL.end }, (_, f) => +E.V(f).toFixed(2)), flowers, leaves: S.LEAVES.map(l => l.t0), ...CH.EV }; };
+(async () => {
+  const fonts = [['NotoSerif', 'NotoSerifSC.ttf', '200 900'], ['Corm', 'Cormorant.ttf', '300 700'], ['Cinzel', 'CinzelDecorative-Bold.ttf', '700']];
+  for (const [n, file, w] of fonts) { const ff = new FontFace(n, `url(../../../public/fonts/${file})`, { weight: w }); await ff.load(); document.fonts.add(ff); }
+  for (const w of ['600', '700', '900']) await document.fonts.load(`${w} 40px NotoSerif`, '新艺术运动一根线');
+  frameMB(+(Q.get('f') || 0));
+  window.ready = true;
+})();
+</script>
