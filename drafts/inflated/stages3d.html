@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="zh"><head><meta charset="utf-8"><title>充气 Inflated · 从平到鼓</title>
+<link rel="stylesheet" href="../_lib/soft/still.css">
+<style>:root { --ink: #ffffff; }
+.st { position: absolute; top: 790px; width: 300px; margin-left: -150px; text-align: center; }
+.st b { display: block; font: 500 34px GeistMono; } .st span { display: block; font: 500 24px NotoSC; margin-top: 4px; opacity: .85; }</style></head>
+<body>
+<canvas id="gl"></canvas>
+<div class="ov">
+  <div class="tl"><div class="n">01 / 06</div><h1>从平到鼓</h1><p>同一颗心，气压从 0 到 1</p></div>
+  <div class="tr">CANDIDATE · INFLATED</div>
+  <div id="st"></div>
+  <div class="bl"><div class="k">厚度 = 气压 × √(到边的距离)</div><div class="z">气越足褶越少；边上那一圈缝永远是扁的</div></div>
+  <div class="br">观默</div>
+</div>
+<script src="../_lib/glkit.js"></script>
+<script src="../_lib/soft/soft.js"></script>
+<script>
+(async () => {
+  await document.fonts.ready;
+  const q = new URLSearchParams(location.search), sc = +(q.get('s') || 1), spp = +(q.get('spp') || 16);
+  const cv = document.getElementById('gl'); cv.width = 1920 * sc; cv.height = 1080 * sc;
+  const heart = SOFT.path('M50 88 C20 64 7 47 7 31 C7 17 18 8 30 8 C39 8 46 13 50 21 C54 13 61 8 70 8 C82 8 93 17 93 31 C93 47 80 64 50 88 Z', { scale: 0.95 });
+  const ps = [0.0, 0.3, 0.65, 1.0], xs = [-4.2, -1.4, 1.4, 4.2], lab = ['没气', '刚有形', '鼓起来', '绷紧'];
+  // 越鼓越立得起来：没气的平躺在地上，吹满的站直
+  const items = ps.map((p, i) => { const tilt = -80 + 66 * p, H = 0.36 * (0.03 + 0.97 * p), S = 1.38, hy = 0.76 * S;
+    const y = hy * Math.cos(tilt * Math.PI / 180) + (H * S + 0.01) * Math.sin(-tilt * Math.PI / 180) + 0.015;
+    return { shape: 'pillow', mask: 0, pos: [xs[i], y, 0], s: S, rot: [tilt, [8, -5, 4, -8][i], [-6, 4, -3, 5][i]], H: 0.36, R: 0.4, wr: 0.5, p, col: '#ff2f7a', metal: 0.22, rough: 0.05 }; });
+  document.getElementById('st').innerHTML = ps.map((p, i) => `<div class="st" style="left:${960 + xs[i] * 172}px"><b>p = ${p.toFixed(2).replace(/0$/, '')}</b><span>${lab[i]}</span></div>`).join('');
+  await SOFT.render(cv, {
+    mode: 'puff', eye: [0, 5.0, 11.6], at: [0, 0.6, 0], fov: 0.5,
+    floor: '#ffc928', wall: ['#ffdf6b', '#ffd03a'], key: [0.4, 0.82, 0.5], keyCol: [3.0, 2.95, 2.85], wallY: [-0.3, -0.05], far: [6, 14], soft: 0.09,
+    masks: [heart], items, exposure: 1.0, bloom: 0.12, vignette: 0.2,
+  }, { spp, log: m => console.log(m) });
+  window.__done = true;
+})();
+</script></body></html>

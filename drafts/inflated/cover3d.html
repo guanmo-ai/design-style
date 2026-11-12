@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="zh"><head><meta charset="utf-8"><title>充气 Inflated · 封面</title>
+<link rel="stylesheet" href="../_lib/soft/still.css">
+<style>:root { --ink: #ffffff; }</style></head>
+<body>
+<canvas id="gl"></canvas>
+<div class="ov">
+  <div class="tl"><div class="n">00 / 06</div><h1>充气</h1><p>Inflated · 一切都是吹起来的</p></div>
+  <div class="tr">CANDIDATE · INFLATED</div>
+  <div class="bl"><div class="k">气压 0 → 1 · 0.6 秒 · 过冲 8%</div><div class="z">平的图形“噗”地鼓起来；挨在一起就互相挤扁</div></div>
+  <div class="br">观默</div>
+</div>
+<span class="pre">P</span>
+<script src="../_lib/glkit.js"></script>
+<script src="../_lib/soft/soft.js"></script>
+<script>
+(async () => {
+  await document.fonts.ready; await document.fonts.load('700 100px Fredoka');
+  const q = new URLSearchParams(location.search), sc = +(q.get('s') || 1), spp = +(q.get('spp') || 16);
+  const cv = document.getElementById('gl'); cv.width = 1920 * sc; cv.height = 1080 * sc;
+  const F = "700 $px Fredoka", SZ = 1.5, FAT = 0.03, S1 = 1.25;
+  const word = 'PUFFY', cols = ['#ff4f9a', '#ffd21f', '#f1eef9', '#ff7a1f', '#35e0b4'];
+  const wd = [...word].map(ch => SOFT.inkSize(ch, F, SZ, FAT)[0] * S1), gap = -0.1, tot = wd.reduce((a, b) => a + b + gap, -gap);
+  let x0 = -tot / 2; const xs = wd.map(w => { const c = x0 + w / 2; x0 += w + gap; return c; });
+  const rz = [-7, 5, -4, 6, -8], ry = [10, -6, 4, -5, -10], dy = [0.0, 0.12, 0.02, 0.1, 0.0], dz = [0, 0.1, -0.08, 0.1, 0];
+  const hh = (SZ + FAT) / 2 * S1;
+  const items = [...word].map((ch, i) => ({ shape: 'pillow', mask: i, pos: [xs[i], hh + 0.02 + dy[i], dz[i]], s: S1, rot: [-7, ry[i], rz[i]], H: 0.21, R: 0.17, wr: 0.55, p: 1, col: cols[i], rough: 0.05 }));
+  const star = (() => { let d = ''; for (let i = 0; i < 10; i++) { const r = i % 2 ? 21 : 44, a = -Math.PI / 2 + i * Math.PI / 5; d += (i ? 'L' : 'M') + (50 + r * Math.cos(a)).toFixed(1) + ' ' + (52 + r * Math.sin(a)).toFixed(1); } return d + 'Z'; })();
+  const masks = [...word].map(ch => SOFT.glyph(ch, F, SZ, FAT));
+  masks.push(SOFT.path(star, { round: 12 }), SOFT.path('M50 88 C20 64 7 47 7 31 C7 17 18 8 30 8 C39 8 46 13 50 21 C54 13 61 8 70 8 C82 8 93 17 93 31 C93 47 80 64 50 88 Z'));
+  // 飘着的：一颗镀银的星、一颗心、一个泳圈
+  items.push(
+    { shape: 'pillow', mask: 5, pos: [1.1, 3.72, -1.6], s: 0.8, rot: [-10, 18, 14], H: 0.3, R: 0.42, wr: 0.7, col: '#e9edf5', metal: 1, rough: 0.03 },
+    { shape: 'pillow', mask: 6, pos: [4.25, 2.95, -0.9], s: 0.85, rot: [-8, -22, -12], H: 0.34, R: 0.5, wr: 0.6, col: '#ff3d5e', rough: 0.05 },
+    { shape: 'sphere', pos: [-3.7, 0.36, 1.7], r: 0.36, col: '#ffd21f' },
+    { shape: 'sphere', pos: [3.75, 0.33, 2.0], r: 0.33, col: '#8a63ff' });
+  await SOFT.render(cv, {
+    mode: 'puff', eye: [0, 2.6, 11.2], at: [0, 1.35, 0], fov: 0.5,
+    floor: '#2f6bff', wall: ['#5b9bff', '#3a78ff'], key: [0.45, 0.8, 0.55], keyCol: [3.0, 2.95, 2.85], wallY: [-0.12, 0.2], far: [6, 14], soft: 0.09,
+    masks, items, squish: [[0, 1], [1, 2], [2, 3], [3, 4]], exposure: 1.0, bloom: 0.12, vignette: 0.2,
+  }, { spp, log: m => console.log(m) });
+  window.__done = true;
+})();
+</script></body></html>

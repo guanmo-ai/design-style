@@ -33,6 +33,7 @@ bash drafts/<短名>/film/make.sh
 | `shapes.js` | `SHAPES.fromPrims`（椭球 / 胶囊 / 旋转体）、`fromMask`（把字、心形、图标“充气”）、`merge`：把形状变成 N 个均匀的点（位置 + 法线 + 零件号 + 色号） | `../glkit.js`（只有 fromMask 要） |
 | `template/` + `new_film.mjs` | 新片的空架子 | 上面全部 |
 | `../fur/fur.js` | **专用**：毛绒渲染器（一根根的细带、Kajiya–Kay、成撮、逆光镶边、弹簧滞后、形状之间飞、被手拨开）。毛、草、地毯、毛线、羽毛、流苏用得上 | motion、stage |
+| `../soft/soft.js` | **专用**：软材料的光线步进渲染器，一份场景描述、两种材料——果冻（透光、按厚度染色、有颜色的光斑、气泡）和充气（亮皮、压合的缝和褶、互相挤扁）。目前只出过静帧（`../soft/stills.sh`） | `../glkit.js` |
 | `../softfx.py` | 噗、啵、刷过去、弹簧音、软的落地：`class MySong(Song, SoftFX)` | `../song.py` |
 | `../song.py` | 一整首歌的骨架（鼓、贝斯、铺底、琶音、主旋律、换章、出字的“嗒”和砸字） | `scripts/lib/audio` |
 | `../film-gl.cjs` `../events.cjs` `../contact.py` `../smooth.py` | 逐帧渲染（可续渲）、导出出字时间、联系表、量跳变和死区 | — |
