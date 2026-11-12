@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="zh">
+<head>
+<meta charset="utf-8">
+<title>第八轮候选 · 三种手绘</title>
+<style>
+@font-face { font-family: 'NotoSC'; src: url(../public/fonts/NotoSansSC-Black.otf); font-weight: 900; }
+@font-face { font-family: 'NotoSC'; src: url(../public/fonts/NotoSansSC-Bold.otf); font-weight: 700; }
+@font-face { font-family: 'NotoSC'; src: url(../public/fonts/NotoSansSC-Regular.otf); font-weight: 400; }
+@font-face { font-family: 'GeistMono'; src: url(../public/fonts/GeistMono.ttf); font-weight: 100 900; }
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html, body { width: 1960px; background: #0b0b0d; color: #f2f2f4; font-family: NotoSC, sans-serif; }
+.wrap { padding: 40px 30px 34px; }
+.head { display: flex; align-items: baseline; gap: 24px; margin-bottom: 30px; }
+.head h1 { font-weight: 900; font-size: 30px; }
+.head span { font-family: GeistMono; font-size: 13px; color: #8d8d96; letter-spacing: .06em; }
+.grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 30px; }
+.col h2 { font-weight: 900; font-size: 30px; }
+.col h2 small { font-family: GeistMono; font-weight: 400; font-size: 20px; margin-left: 8px; color: #cfcfd6; }
+.col .line { font-size: 14px; color: #8d8d96; margin-top: 8px; }
+.col .one { font-size: 16px; margin-top: 10px; font-weight: 700; }
+.col img { width: 100%; display: block; border-radius: 6px; margin-top: 18px; outline: 1px solid rgba(255,255,255,.08); }
+.col .cap { font-size: 13.5px; line-height: 1.7; color: #b9b9c2; margin-top: 10px; }
+.col .cap b { color: #fff; }
+.c1 .one { color: #ff9a62; } .c2 .one { color: #ffd27d; } .c3 .one { color: #ff8fb2; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="head"><h1>第八轮候选 · 三种“手绘”</h1><span>笔 / 沙 / 水 · 每个风格两张：第 0 帧 + 落到界面上 · 全部是程序现算的（Canvas 2D，纯 CPU），没有一张贴图</span></div>
+  <div class="grid">
+    <div class="col c1">
+      <h2>马克笔<small>Marker Rendering</small></h2>
+      <div class="line">1950s 底特律设计室 → 今天每一辆车、每一双鞋的第一张图</div>
+      <div class="one">一笔就是一层，叠一遍深一档——不能改。</div>
+      <img src="marker/png/cover.png">
+      <div class="cap"><b>第 0 帧</b> · 64 笔画完一辆概念跑车（原创造型）：蓝铅笔结构线 → 背景斜扫 → 车身浅 / 中 / 深三层 → 玻璃留一道反光 → 针管笔勾线 → 最后一笔白。每一笔都是透明的扁头笔触，重叠处变深、起笔收笔积墨。</div>
+      <img src="marker/png/ui.png">
+      <div class="cap"><b>界面</b> · 车企官网把手稿原样当头图，按钮底色是一笔马克笔；手机配置器换一组笔就是另一台车，下面是“手稿回放”的三个阶段。配方：叠色 = multiply、扁头宽度随走向变、三层就够。</div>
+    </div>
+    <div class="col c2">
+      <h2>沙画<small>Sand Animation</small></h2>
+      <div class="line">1970s 动画短片 → 晚会舞台与发布会 → 今天抖音的“一把沙讲完一个故事”</div>
+      <div class="one">亮是擦出来的，暗是倒上去的；画面只会变形，不会切换。</div>
+      <img src="sand-art/png/cover.png">
+      <div class="cap"><b>第 0 帧</b> · 月夜海面：沙是一张厚度图，灯箱透光 T = e<sup>−k·h</sup>，薄处透出琥珀色。手指划过时沙被推到两边，每道亮线旁都有一道暗沙脊；右下那个浪头正画到一半（下一秒卷成一只眼睛）。</div>
+      <img src="sand-art/png/ui.png">
+      <div class="cap"><b>界面</b> · 沙画巡演官网：标题是用手指“写”在沙上的，滚动 = 一指擦开；睡前沙画 App 的进度条、播放键都是擦出来的亮。配方：厚度 → 透光、沙脊、掌抹渐变、倒沙。</div>
+    </div>
+    <div class="col c3">
+      <h2>水彩<small>Watercolor</small></h2>
+      <div class="line">1500s 丢勒的草地 → 英国风景水彩 → 今天 IG 上的“松弛感花卉”</div>
+      <div class="one">画家只决定颜色落在哪，剩下的交给水：流、渗、干。</div>
+      <img src="watercolor/png/cover.png">
+      <div class="cap"><b>第 0 帧</b> · 一朵大花：背景两色湿画法互渗、绕开花留白；每片颜色是 40 层变形水痕，湿边更深、颜料沉进纸纹；左上一滴水正在长成回流花。右下角罩染表：三色叠出九色。</div>
+      <img src="watercolor/png/ui.png">
+      <div class="cap"><b>界面</b> · 花店官网：同一套画法换三组颜色就是三束花；天气 App 的天空是一张湿画法，雨的概率是一滴颜色的大小，温度条是一笔。配方：变形多边形叠层、湿边、颗粒、T = 纸 × 色<sup>d</sup>。</div>
+    </div>
+  </div>
+</div>
+</body>
+</html>
