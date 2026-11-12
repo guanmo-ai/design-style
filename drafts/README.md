@@ -31,7 +31,7 @@
 | 液态金属 Liquid Chrome · `liquid-chrome/` | 正式目录 [023 · 液态金属 Liquid Chrome](../styles/023-liquid-chrome)；保留本草稿目录作为原片及渲染源码来源。 |
 | 点云 Point Cloud · `point-cloud/` | 正式目录 [022 · 点云 Point Cloud](../styles/022-point-cloud)；保留本草稿目录作为原片及渲染源码来源。 |
 | 毛绒 Plush · `plush/` | **已授权正式收录（2026-11-11）**：风格 018，见 [`025-plush`](../styles/025-plush/README.md) |
-| 新艺术运动 Art Nouveau · `art-nouveau/` | 正式作品目录为 `styles/026-art-nouveau/`。 |
+| 新艺术运动 Art Nouveau · `art-nouveau/` | 正式目录 [026 · 新艺术运动](../styles/026-art-nouveau/README.md)，画廊风格 019。 |
 | 热成像 Thermal · `thermal/` | 候选图和温度场源码 |
 | 第四轮候选：低多边形 / 体素 / 等距微缩（从参考视频提取） | 等主人选，见下 |
 | 第三轮候选：赛博朋克 / 城市流行 / 膨胀风 | 等主人选（与第四轮一起看） |
@@ -41,7 +41,7 @@
 | ~~拟物 Skeuomorphism~~ | **不做**（图已删） |
 
 
-## 第八轮：新艺术运动 Art Nouveau 全片（2026-11-12，未占期号）
+## 第八轮：新艺术运动 Art Nouveau 全片（2026-11-12，网站风格 019）
 
 新艺术运动的候选图见 `art-nouveau/png/`，短片以连续生长的鞭线组织画面。
 
