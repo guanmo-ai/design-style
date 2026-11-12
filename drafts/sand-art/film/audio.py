@@ -1,6 +1,7 @@
-"""沙画 配乐（一整首歌）。120 BPM（一拍 = 30 帧）· A 小调：钢琴分解和弦 + 弦乐铺底，从第一章起轻轻加一点鼓。
-每一个手法都有声音：手指 = 一道短的沙沙声，倒沙 = 更细的“嘶”，手掌 = 长而厚的一把沙推过去；最后一撮沙落下 = 一记闷鼓 + 镲。
-时间都来自 events.json（node ../../_lib/events.cjs film.html events.json）：手法的起止帧、每个字落定的“嗒”。python3 audio.py out.wav"""
+"""沙画 v2 配乐（一整首歌，19 秒）。120 BPM（一拍 = 30 帧）· F 大调（F–C–Dm–B♭，每两拍换一个和弦）。
+照毛绒那一首的做法：从第一拍到最后一拍是同一支乐队——鼓、沙锤、贝斯、竖琴分解和弦、马林巴 + 钢片琴的主旋律。
+没有任何噪声类音效（第一版的“沙沙”声叠在一起就是噪音）：每次换幕是一串竖琴刮奏，沙落定是钢片琴的亮点，音高都跟着和弦走。
+时间取自 timeline.js；每个字落定的“嗒”取自 events.json（node ../../_lib/events.cjs film.html events.json）。python3 audio.py out.wav"""
 import json
 import re
 import sys
@@ -14,68 +15,89 @@ from song import Song  # noqa: E402
 from softfx import SoftFX  # noqa: E402
 
 TL = json.loads(re.sub(r'//[^\n]*', '', re.search(r'const TL = (\{.*?\});', (HERE / 'timeline.js').read_text(), re.S).group(1)))
-EV = json.loads((HERE / 'events.json').read_text())
-AM, F, C, G, E = [69, 72, 76], [65, 69, 72], [67, 72, 76], [67, 71, 74], [68, 71, 76]
-CH = [(0, 45, AM), (120, 41, F), (TL['ch1'], 48, C), (330, 43, G), (TL['ch2'], 45, AM), (600, 41, F), (TL['ch3'], 48, C), (840, 40, E),
-      (TL['fin'], 41, F), (TL['title'], 43, G), (TL['dot'], 45, AM)]
 END = TL['end']
+F, C, DM, BB, GM, A = [65, 69, 72], [64, 67, 72], [62, 65, 69], [62, 65, 70], [62, 67, 70], [64, 69, 73]
+PROG = [(41, F), (36, C), (38, DM), (34, BB)]
+CH = []
+for k, f0 in enumerate(range(0, END + 60, 60)):
+    r, ch = PROG[k % 4]
+    CH.append((f0, r, ch))
+CH[-3] = (CH[-3][0], 34, BB)          # 片尾：B♭ → C → F 收住
+CH[-2] = (CH[-2][0], 36, C)
+CH[-1] = (CH[-1][0], 41, F)
 
 
 class FilmSong(Song, SoftFX):
-    def sand(self, d, level=1.0, fine=False):
-        """沙沙声：带通噪声，颗粒感来自随机的小脉冲；fine = 倒沙的细嘶声"""
-        t = self.tt(max(0.06, d))
-        n = self.rng.standard_normal(len(t))
-        grit = (self.rng.random(len(t)) < (0.012 if fine else 0.006)) * self.rng.standard_normal(len(t)) * 3
-        lo, hi = (2500, 9000) if fine else (700, 5200)
-        y = self.fft_filter(n * 0.6 + grit, lo=lo, hi=hi)
-        env = np.minimum(1, t / 0.03) * np.minimum(1, (t[-1] - t + 1e-3) / 0.08) * (0.75 + 0.25 * np.sin(np.pi * t / t[-1]))
-        return y * env * level * 0.35
+    def gliss(self, at, n=8, up=True, level=1.0):
+        """竖琴刮奏：沿和弦一个音一个音往上（或往下），十六分音符的一半"""
+        for i in range(n):
+            k = i if up else n - 1 - i
+            m = self.tone(at, k, 0)
+            self.sfx(self.harp(m, 1.2, 0.9), self.fr(at + i * 3.75), 0.32 * level, -0.5 + i / n, send=0.4)
 
 
-S = FilmSong(END, CH, seed=11)
+S = FilmSong(END, CH, seed=31)
 fr = S.fr
+T = {name: f0 for (f0, f1, a, b, name) in [tuple(t) for t in TL['trans']]}
 
-# —— 乐队：钢琴分解和弦从第 0 帧起；弦乐铺底；第一章起轻鼓；收束前一拍抽掉鼓 ——
-for i, (s, _, ns) in enumerate(CH):
-    e = CH[i + 1][0] if i + 1 < len(CH) else END + 90
-    S.place(S.strings([n - 12 for n in ns], fr(e - s) + 0.4, 0.8, att=0.5, rel=1.0), fr(s), 0.22, send=0.45, bus=S.PUMP)
-S.arp(0, TL['dot'], 0.9, pattern=(0, 1, 2, 4, 2, 1), inst=lambda m: S.grand(m - 12, 1.2, 0.55))
-S.drums(TL['ch1'], TL['fin'] - 30, clap=False, open_hat=False, level=0.45)
-S.bassline(TL['ch2'], TL['fin'] - 30, 0.5)
-S.hook(TL['ch2'], [(0, 81, 2), (2, 79, 2), (4, 76, 4), (8, 74, 2), (10, 76, 6)], 0.7, inst=lambda m, d: S.grand(m, d + 0.6, 0.6) * 1.4)
-S.hook(TL['ch3'], [(0, 79, 2), (2, 81, 2), (4, 84, 4), (8, 83, 2), (10, 79, 6)], 0.7, inst=lambda m, d: S.grand(m, d + 0.6, 0.6) * 1.4)
-for t in (TL['ch1'], TL['ch2'], TL['ch3']):
-    S.transition(t, True, 0.35)
-S.place(S.rev_cymbal(0.9, 0.7), fr(TL['fin']) - 0.9, 0.5)                    # 收束前：反向镲吸进去
-S.place(S.timpani(41, 1.0), fr(TL['fin']), 0.8); S.kicks.append(TL['fin'])    # 两掌推下去
-S.place(S.choir([57, 60, 65], fr(TL['dot'] - TL['fin']) + 0.5, 0.6), fr(TL['fin']), 0.35, send=0.5)
 
-# —— 每个手法一个声音 ——
-for o in EV['ops']:
-    if o['f1'] < 0:
+def lead(m, d):
+    y = S.marimba(m, 1.0) * 1.4
+    c = S.celesta(m + 12, max(d, 0.3), 0.3)
+    n = max(len(y), len(c))
+    return np.pad(y, (0, n - len(y))) + np.pad(c, (0, n - len(c)))
+
+
+# —— 乐队（片头 2 拍只有竖琴和铺底；第 60 帧鼓进来；收束前一拍抽掉鼓）——
+FIN = TL['title']
+BRK = [(TL['storm'] - 30, TL['storm'])]
+S.pad(0.9, wave='square', fc=1200)
+S.arp(0, END - 30, 1.3, pattern=(0, 1, 2, 3, 2, 1, 2, 4), inst=lambda m: S.harp(m, 1.0, 0.8))
+S.drums(60, FIN, skip=BRK, level=0.75)
+for fm in np.arange(60, FIN, 7.5):
+    if not any(a <= fm < z for a, z in BRK):
+        S.place(S.shaker(0.9), fr(fm), 0.7 if fm % 15 else 0.4, -0.35)
+S.bassline(60, FIN, skip=BRK, level=0.85)
+HOOK = {}
+for b in range(2, (FIN // 30) - 1, 2):
+    s0 = b * 30
+    k = (b // 2) % 4
+    HOOK[s0] = [[(0, 77, 1), (1, 74, 1), (2, 72, 2)], [(0, 76, 1), (1, 79, 1), (2, 84, 2)], [(0, 81, 1), (1, 77, 1), (2, 74, 2)], [(0, 77, 1), (1, 82, 1), (2, 86, 2)]][k]
+for s0, notes in HOOK.items():
+    if not any(a <= s0 < z for a, z in BRK):
+        S.hook(s0, notes, 0.85, inst=lead)
+
+# —— 每次换幕：竖琴刮奏 + 一把很轻的风（沙飞起来），速度最快的一刻一记低音 ——
+for (f0, f1, a, b, kind) in TL['trans']:
+    if f1 < 0:
         continue
-    f0 = max(0, o['f0']); d = fr(o['f1'] - f0)
-    if o['kind'] == 'push':
-        if o['palm']:
-            S.sfx(S.sand(d + 0.1, 1.6), fr(f0), 0.9, 0.0, send=0.3)
-            S.sfx(S.poof(0.8, d * 0.8, 600), fr(f0), 0.5)
-        else:
-            lvl = 0.45 + min(0.6, o['r'] / 20)
-            S.sfx(S.sand(d, lvl), fr(f0), 0.7, -0.3 + 0.6 * ((f0 * 7919) % 100) / 100, send=0.2)
-    elif o['kind'] == 'pour':
-        S.sfx(S.sand(d + 0.05, 0.55, fine=True), fr(f0), 0.6, 0.2, send=0.25)
-    elif o['kind'] == 'morph':
-        S.sfx(S.sand(d, 0.5, fine=True), fr(f0), 0.5, send=0.3)
-    elif o['kind'] == 'fn':
-        S.sfx(S.sand(d, 0.7, fine=True), fr(f0), 0.6, send=0.3)
+    f0 = max(0, f0)
+    S.gliss(f0, 8, up=kind != 'pour', level=1.0)
+    mid = (f0 + f1) / 2
+    S.sfx(S.bop(S.tone(mid, 0, -1), 0.9, 0.3), fr(mid), 0.35, send=0.3)
+    for i in range(4):                                     # 沙落定：钢片琴的亮点，沿和弦往上
+        S.sfx(S.celesta(S.tone(f1, i, 1), 1.0, 0.5), fr(f1 - 12 + i * 3.75), 0.22, 0.6 - 0.4 * i, send=0.5)
 
-# 收束：最后一撮沙落在拍上
-S.thump(TL['dot'], 0.9)
-S.place(S.crash(0.7), fr(TL['dot']), 0.45, send=0.5)
-S.place(S.grand(45, 4.0, 0.9) + S.grand(57, 4.0, 0.7) + S.grand(64, 4.0, 0.6), fr(TL['dot']), 0.5, send=0.4)
+# —— 主要动作 ——
+S.thump(40, 0.8)                                            # 第一幕落定
+S.sfx(S.marimba(S.tone(TL['eye'] + 50, 2, 1), 1.0), fr(TL['eye'] + 50), 0.4, 0.5)    # 瞳孔往右看
+S.sfx(S.marimba(S.tone(TL['eye'] + 90, 0, 1), 1.0), fr(TL['eye'] + 90), 0.4, -0.5)   # 往左看
+S.place(S.swell([60, 65, 69, 72], fr(TL['trans'][2][0] - TL['dive']), 0.7), fr(TL['dive']), 0.3, send=0.5)   # 钻进瞳孔：和弦慢慢涨上来
+S.place(S.timpani(41, 1.0), fr(TL['whale']), 0.6); S.kicks.append(TL['whale'])            # 炸开 → 鲸鱼
+S.place(S.choir([65, 69, 72], 2.0, 0.6), fr(TL['whale']), 0.25, send=0.6)
+S.sfx(S.glide(53, 77, 0.6, 0.8), fr(TL['whale'] + 20), 0.25, send=0.4)                   # 鲸鱼跃起
+S.sfx(S.glide(48, 72, 1.0, 0.7), fr(TL['finger']), 0.25, send=0.4)                       # 一指分开沙带
+S.sfx(S.glide(60, 72, 1.4, 0.6), fr(TL['ui'] + 10), 0.2, send=0.4)                        # 进度：沙流过去
+S.sfx(S.bop(S.tone(TL['toggle'], 2, 1), 1.0, 0.2), fr(TL['toggle'] + 12), 0.6, 0.3)      # 开关拨过去
+S.place(S.rev_cymbal(0.9, 0.7), fr(TL['storm']) - 0.9, 0.4)                              # 沙暴前吸一口气
+S.place(S.swell([65, 69, 72, 77], 1.4, 0.8), fr(TL['storm']), 0.3, send=0.6)
+S.thump(TL['title'], 1.0)                                                                 # 片名落定
+S.place(S.crash(0.7), fr(TL['title']), 0.45, send=0.5)
+S.thump(TL['dot'], 0.9)                                                                   # 最后一撮沙
+for i, m in enumerate([77, 81, 84, 89]):
+    S.sfx(S.celesta(m, 1.6, 0.8), fr(TL['dot'] + i * 3.75), 0.35, -0.3 + 0.2 * i, send=0.6)
 
-# —— 文字：每个字落定一声“嗒” ——
-S.text_cues(EV['cues'], 0.6)
+# —— 文字：每个字落定一声“嗒”（压低一点，不抢旋律）——
+S.text_cues(json.loads((HERE / 'events.json').read_text())['cues'], 0.5)
 
 S.master(sys.argv[1] if len(sys.argv) > 1 else str(HERE / 'music.wav'), loop=False)
