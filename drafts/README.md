@@ -31,7 +31,7 @@
 | 液态金属 Liquid Chrome · `liquid-chrome/` | 正式目录 [023 · 液态金属 Liquid Chrome](../styles/023-liquid-chrome)；保留本草稿目录作为原片及渲染源码来源。 |
 | 点云 Point Cloud · `point-cloud/` | 正式目录 [022 · 点云 Point Cloud](../styles/022-point-cloud)；保留本草稿目录作为原片及渲染源码来源。 |
 | 毛绒 Plush · `plush/` | **已授权正式收录（2026-11-11）**：风格 018，见 [`025-plush`](../styles/025-plush/README.md) |
-| 新艺术运动 Art Nouveau · `art-nouveau/` | **全片已做（2026-11-12），等主人审片**；同轮候选浮世绘 `ukiyo-e/` 图留着 |
+| 新艺术运动 Art Nouveau · `art-nouveau/` | 正式作品目录为 `styles/026-art-nouveau/`。 |
 | 热成像 Thermal · `thermal/` | 候选图和温度场源码 |
 | 第四轮候选：低多边形 / 体素 / 等距微缩（从参考视频提取） | 等主人选，见下 |
 | 第三轮候选：赛博朋克 / 城市流行 / 膨胀风 | 等主人选（与第四轮一起看） |
@@ -50,7 +50,7 @@
 - **技术**：Canvas 2D，0.07 秒 / 帧，4 子帧运动模糊；`smooth.py` 跳变 0、死区 0、最大 10.9。
 - **配乐**：一支 3/4 拍圆舞曲（竖琴、拨弦、钢片琴、弦乐），台灯亮和收束落在小节线上。
 
-成片：[新艺术运动](art-nouveau/film/art-nouveau-film.mp4)。等主人审片。
+成片：[新艺术运动](art-nouveau/film/art-nouveau-film.mp4)。四张风格图、tokens、时间轴和中英文指南见 [正式目录](../styles/026-art-nouveau/README.md)。
 
 ## 第七轮：毛绒 Plush 全片（2026-11-10，未占期号）
 

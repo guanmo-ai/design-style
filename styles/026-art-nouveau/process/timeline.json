@@ -1,0 +1,50 @@
+{
+  "fps": 60,
+  "bpm": 180,
+  "frames": 1260,
+  "title": "新艺术运动",
+  "segments": [
+    {
+      "label": "封面与片名",
+      "start": 0,
+      "dur": 100,
+      "color": "#6B3A4A"
+    },
+    {
+      "label": "鞭线",
+      "start": 100,
+      "dur": 220,
+      "color": "#6B3A4A"
+    },
+    {
+      "label": "穆夏 · 光环",
+      "start": 320,
+      "dur": 160,
+      "color": "#6B3A4A"
+    },
+    {
+      "label": "吉马德 · 地铁口",
+      "start": 480,
+      "dur": 160,
+      "color": "#6B3A4A"
+    },
+    {
+      "label": "蒂芙尼 · 台灯",
+      "start": 640,
+      "dur": 230,
+      "color": "#6B3A4A"
+    },
+    {
+      "label": "今天 · 用在界面",
+      "start": 870,
+      "dur": 240,
+      "color": "#6B3A4A"
+    },
+    {
+      "label": "片尾 · 一根线 · 观默",
+      "start": 1110,
+      "dur": 150,
+      "color": "#6B3A4A"
+    }
+  ]
+}
