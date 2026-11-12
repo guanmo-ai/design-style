@@ -1,0 +1,17 @@
+<!doctype html><meta charset="utf-8"><body style="margin:0;background:#EFE6CF">
+<canvas id="c" width="1920" height="1080"></canvas>
+<script src="path.js"></script><script src="world.js"></script>
+<script>
+const c = document.getElementById('c').getContext('2d');
+c.translate(960, 540); c.scale(.25, .25);
+c.strokeStyle = '#0002'; c.lineWidth = 4; c.strokeRect(-3840, -2160, 7680, 4320);
+const P = WORLD.MASTER;
+c.fillStyle = '#4E5A34';
+c.beginPath();
+for (const q of P) c.lineTo(q.x + Math.cos(q.th + Math.PI / 2) * q.w / 2, q.y + Math.sin(q.th + Math.PI / 2) * q.w / 2);
+for (let i = P.length - 1; i >= 0; i--) { const q = P[i]; c.lineTo(q.x - Math.cos(q.th + Math.PI / 2) * q.w / 2, q.y - Math.sin(q.th + Math.PI / 2) * q.w / 2); }
+c.fill();
+c.font = '60px sans-serif'; c.fillStyle = '#B5402F';
+for (const [k, s] of Object.entries(WORLD.M)) { const q = PATH.at(P, s); c.beginPath(); c.arc(q.x, q.y, 18, 0, 7); c.fill(); c.fillText(k, q.x + 24, q.y - 20); }
+document.title = 'len ' + P[P.length - 1].s.toFixed(0);
+</script>

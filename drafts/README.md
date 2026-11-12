@@ -31,6 +31,7 @@
 | 液态金属 Liquid Chrome · `liquid-chrome/` | 正式目录 [023 · 液态金属 Liquid Chrome](../styles/023-liquid-chrome)；保留本草稿目录作为原片及渲染源码来源。 |
 | 点云 Point Cloud · `point-cloud/` | 正式目录 [022 · 点云 Point Cloud](../styles/022-point-cloud)；保留本草稿目录作为原片及渲染源码来源。 |
 | 毛绒 Plush · `plush/` | **已授权正式收录（2026-11-11）**：风格 018，见 [`025-plush`](../styles/025-plush/README.md) |
+| 新艺术运动 Art Nouveau · `art-nouveau/` | **全片已做（2026-11-12），等主人审片**；同轮候选浮世绘 `ukiyo-e/` 图留着 |
 | 热成像 Thermal · `thermal/` | 候选图和温度场源码 |
 | 第四轮候选：低多边形 / 体素 / 等距微缩（从参考视频提取） | 等主人选，见下 |
 | 第三轮候选：赛博朋克 / 城市流行 / 膨胀风 | 等主人选（与第四轮一起看） |
@@ -39,6 +40,17 @@
 | 迷幻海报 Psychedelic · `psychedelic/` | **放到最后做** |
 | ~~拟物 Skeuomorphism~~ | **不做**（图已删） |
 
+
+## 第八轮：新艺术运动 Art Nouveau 全片（2026-11-12，未占期号）
+
+新艺术运动的候选图见 `art-nouveau/png/`，短片以连续生长的鞭线组织画面。
+
+- **画面** `art-nouveau/film/`：**整支片子只有一根线。** 它从标题拱的左脚出发，顺时针绕一圈——鞭线（曲率梳）→ 穆夏的光环 → 吉马德的地铁口（黄昏，灯亮）→ 蒂芙尼的台灯（夜里，玻璃一块块嵌进去，灯亮）→ 手机机身和界面（三条规则 + 色板）——再回到标题脚下卷进去；片尾拉远，整支片子就是一根鞭线。分镜见 [`art-nouveau/film/STORYBOARD.md`](art-nouveau/film/STORYBOARD.md)，过程见 [`art-nouveau/PROCESS.md`](art-nouveau/PROCESS.md)。
+- **签名物理**：梢头像蕨菜一样卷着，一边长一边松开；卷曲量 = 生长速度过一根弹簧。
+- **技术**：Canvas 2D，0.07 秒 / 帧，4 子帧运动模糊；`smooth.py` 跳变 0、死区 0、最大 10.9。
+- **配乐**：一支 3/4 拍圆舞曲（竖琴、拨弦、钢片琴、弦乐），台灯亮和收束落在小节线上。
+
+成片：[新艺术运动](art-nouveau/film/art-nouveau-film.mp4)。等主人审片。
 
 ## 第七轮：毛绒 Plush 全片（2026-11-10，未占期号）
 
