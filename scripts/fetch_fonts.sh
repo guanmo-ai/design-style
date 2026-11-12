@@ -52,6 +52,14 @@ get ZCOOLQingKeHuangYou.ttf "$GF/zcoolqingkehuangyou/ZCOOLQingKeHuangYou-Regular
 get Cormorant.ttf              "$GF/cormorant/Cormorant%5Bwght%5D.ttf"
 get CinzelDecorative-Bold.ttf  "$GF/cinzeldecorative/CinzelDecorative-Bold.ttf"
 get YujiSyuku-Regular.ttf      "$GF/yujisyuku/YujiSyuku-Regular.ttf"
+# 第八轮候选 手绘（马克笔 / 沙画 / 水彩）：手写标注 Caveat、马克笔标题 Permanent Marker（Apache）、
+# 中文手写 龙藏体 / 志莽行书、标题衬线 Fraunces（正 + 斜）；其余 OFL
+get Caveat.ttf              "$GF/caveat/Caveat%5Bwght%5D.ttf"
+get PermanentMarker-Regular.ttf "https://raw.githubusercontent.com/google/fonts/main/apache/permanentmarker/PermanentMarker-Regular.ttf"
+get LongCang-Regular.ttf    "$GF/longcang/LongCang-Regular.ttf"
+get ZhiMangXing-Regular.ttf "$GF/zhimangxing/ZhiMangXing-Regular.ttf"
+get Fraunces.ttf            "$GF/fraunces/Fraunces%5BSOFT,WONK,opsz,wght%5D.ttf"
+get Fraunces-Italic.ttf     "$GF/fraunces/Fraunces-Italic%5BSOFT,WONK,opsz,wght%5D.ttf"
 # 布局 01 Bento Grid：Inter Display（标题）+ Inter（正文）+ Geist Mono（数字 / 标注）
 TMP=$(mktemp -d)
 get "$TMP/inter.zip" https://github.com/rsms/inter/releases/download/v4.1/Inter-4.1.zip

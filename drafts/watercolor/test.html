@@ -1,0 +1,4 @@
+<!doctype html><html><head><meta charset="utf-8"><style>html,body{margin:0;width:1920px;height:1080px}canvas{display:block}</style></head><body><canvas id="c" width="1920" height="1080"></canvas>
+<script src="wc.js"></script><script src="flower.js"></script><script>
+const t0=performance.now();const c=document.getElementById('c').getContext('2d');const P=new WC.Paper(c,1920,1080);drawFlower(P);P.flush();console.log('ms',performance.now()-t0);window.ready=true;
+</script></body></html>
