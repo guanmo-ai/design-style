@@ -1,4 +1,4 @@
-"""马克笔 v2 · 配乐（一整首歌，约 15 秒）。144 BPM（一拍 = 25 帧，一小节 = 100 帧，第一小节的重拍在第 50 帧），G 大调，
+"""马克笔 v3 · 配乐（一整首歌，约 19 秒，六个场景）。144 BPM（一拍 = 25 帧，一小节 = 100 帧，第一小节的重拍在第 50 帧），G 大调，
 G — D — Em — C 每小节一个和弦。明亮的放克流行：紧的底鼓、二四拍拍手、十六分闭镲、八度跳的贝斯、电钢琴反拍和弦，
 主旋律 = 拨弦 + 马林巴 + 一点方波（记得住的四小节，后半段升八度再来一遍）。
 
@@ -21,7 +21,6 @@ from softfx import SoftFX  # noqa: E402
 
 EV = json.loads((HERE / 'events.json').read_text())
 END, BEAT = EV['end'], EV['beat']
-MK = EV['marks']
 BAR = 4 * BEAT
 G, D, EM, C = [67, 71, 74], [66, 69, 74], [64, 67, 71], [64, 67, 72]
 PROG = [(43, G), (38, D), (40, EM), (36, C)]
@@ -59,12 +58,11 @@ S = MarkerSong(END, CH, beat=BEAT, seed=31)
 fr = S.fr
 rng = np.random.default_rng(4)
 CAPON = EV['capOn']
-PRESS = EV['press']
-SW = [MK['T_SW1'], MK['T_SW2'], MK['T_SW3']]
-LAND = EV['land']
+DW, DWL = EV['dwell'], EV['dwellLen']
+HITS = EV['hits']
 
 # ================= 乐队 =================
-BRK = [(PRESS + 2, PRESS + 34), (CAPON - 50, CAPON)]          # 长按积墨、扣帽前半小节：鼓停
+BRK = [(DW + 1, DW + DWL + 2), (CAPON - 50, CAPON)]          # 笔停在鞋头上积墨、扣帽前半小节：鼓停
 S.drums(50, CAPON, skip=BRK, level=0.9)
 for fm in np.arange(50, CAPON, BEAT / 4):
     if not any(a <= fm < z for a, z in BRK):
@@ -105,82 +103,60 @@ for i in range(20):
     b0 = 50 + i * BAR
     if b0 + BAR > CAPON + 1:
         break
-    notes = [n for n in PH[i % 4] if not (PRESS - 4 < b0 + n[0] * BEAT / 2 < PRESS + 34)]
+    notes = [n for n in PH[i % 4] if not (DW - 2 < b0 + n[0] * BEAT / 2 < DW + DWL + 2)]
     oct_ = 12 if i >= 4 else 0
     S.hook(b0, [(p, m + oct_, ln) for p, m, ln in notes], 1.0, inst=lead)
 
-# ================= 开场：拔帽 → 倒带 → 第一拍 =================
+# ================= 开场：海报 → 拔帽 → 第一组巨笔 =================
 S.sfx(S.cap(1.0, True), fr(EV['capOff']), 0.9, 0.3, send=0.2)
-r0, r1 = EV['rew']
-S.sfx(S.tape_stop(fr(r1 - r0) + 0.1, 62, 1.0)[::-1].copy(), fr(r0), 0.5, 0, send=0.3)
-S.sfx(S.rev_cymbal(fr(r1 - r0), 1.0), fr(r0), 0.5, 0, send=0.3)
-for k in range(28):                                   # 倒带：越来越密的倒着的擦纸声
-    u = (k / 28) ** 0.6
-    at = r0 + (r1 - r0) * u
-    S.sfx(S.nib(0.03, 1.0, S.tone(at, k % 3, 1), 1.2, 'flick')[::-1].copy(), fr(at), 0.10, float(rng.uniform(-0.6, 0.6)))
-S.place(S.crash(1.0), fr(50), 0.7, 0.1, send=0.3)
+S.sfx(S.rev_cymbal(0.7, 1.0), fr(50) - 0.7, 0.55, 0, send=0.3)
+
+# ================= 换场景：一组巨笔扫满屏幕（风 + 低音擦纸，扫完那一帧镲 + 底鼓）=================
+for i, h in enumerate(HITS):
+    S.sfx(S.whoosh(0.42, 220, 5200, 1.0, 0.7), fr(h - 22), 0.65, -0.5 + 0.2 * i, send=0.3)
+    for j in range(3):
+        S.sfx(S.nib(0.1, 1.0, S.tone(h, j, -1), 0.55, 'press'), fr(h - 16 + j * 5), 0.35, -0.4 + 0.4 * j, send=0.15)
+    S.place(S.crash(1.0), fr(h), 0.7, 0.1, send=0.4)
+    S.place(S.kick(1.25), fr(h), 1.0); S.kicks.append(h)
+    S.sfx(S.boom(0.7, 120, 42, 0.5), fr(h), 0.4)
 
 # ================= 笔触：同一个十六分音符格子只出一声 =================
-TOOLV = {'black': (0.20, 0.9), 'blue': (0.18, 1.0), 'orange': (0.17, 1.0), 'pencil': (0.11, 1.5), 'liner': (0.09, 1.7), 'white': (0.12, 1.8), '': (0.13, 1.1)}
+TOOLV = {'marker': (0.17, 1.0), 'pencil': (0.11, 1.5), 'liner': (0.09, 1.7), 'white': (0.12, 1.8)}
 slots = {}
 for s in EV['strokes']:
-    if s['tool'] == 'giant':
+    if s['layer'] == 'swipe':
         continue
     k = int(round((s['t'] - 50) / (BEAT / 4)))
     slots.setdefault(k, []).append(s)
 for k, ss in sorted(slots.items()):
     at = min(s['t'] for s in ss)
     s = max(ss, key=lambda s: s['len'])
-    lv, br = TOOLV.get(s['tool'], TOOLV[''])
-    if s['kind'] in ('liner', 'pencil', 'white'):
-        lv, br = TOOLV.get(s['kind'], TOOLV[''])
+    lv, br = TOOLV.get(s['kind'], TOOLV['marker'])
     lv *= min(1.5, 0.75 + 0.18 * (len(ss) - 1)) * min(1.2, 0.7 + s['len'] / 900)
     d = fr(min(8, max(s['d'] for s in ss)))
     S.sfx(S.nib(d, 1.0, S.tone(at, k % 3, 1), br, 'press'), fr(at), lv, float(np.clip(np.sin(k * 0.7) * 0.5, -0.6, 0.6)), send=0.08)
 
-# ================= 巨笔：低音的擦纸 + 风；扫到一半是小节线（镲）；设备落地“咚” =================
-for i, t0 in enumerate(SW):
-    S.sfx(S.whoosh(0.55, 250, 5000, 1.0, 0.55), fr(t0 - 4), 0.6, -0.4 + 0.4 * i, send=0.3)
-    S.sfx(S.nib(0.42, 1.0, S.tone(t0, 0, -1), 0.6, 'press'), fr(t0), 0.55, 0.0, send=0.2)
-    hit = 50 + BAR * round((t0 + 13 - 50) / BAR)
-    S.place(S.crash(1.0), fr(hit), 0.65, 0.1, send=0.4)
-    S.place(S.kick(1.2), fr(hit), 1.0); S.kicks.append(hit)
-for name in ('web', 'phone'):
-    t = LAND[name] + 6
-    S.sfx(S.thock(43, 1.0), fr(t), 0.6, 0.2, send=0.2)
-    S.sfx(S.boom(0.7, 110, 45, 0.5), fr(t), 0.45)
-S.sfx(S.thock(48, 0.8), fr(LAND['paper'] + 6), 0.4, -0.2)
-
-# 白色巨笔：钢片琴往上刮 + 一圈亮
-S.sfx(S.shimmer(0.9, 0.9), fr(SW[2] + 2), 0.35, send=0.5)
-for k, m in enumerate([79, 83, 86, 91, 95, 98]):
-    S.sfx(S.celesta(m, 1.0, 0.8), fr(SW[2] + 2 + k * 2.2), 0.32, -0.5 + 0.2 * k, send=0.5)
-
-# ================= 网页 =================
-cur = EV['cursor']
-S.sfx(S.whoosh(0.25, 800, 4000, 0.6, 0.6), fr(cur - 12), 0.15, 0.3)
-S.sfx(S.click(1.0, lo=1500, hi=6000, d=0.006), fr(PRESS), 0.6, 0.0)
-S.sfx(S.swell([67, 71, 74, 79], fr(32), 1.0), fr(PRESS), 0.55, 0, send=0.6)          # 长按：墨一圈圈渗开
-S.sfx(S.glide(55, 48, 0.35, 0.8), fr(PRESS + 2), 0.22, 0, send=0.4)
-S.sfx(S.bell(86, 0.7, 1.4), fr(PRESS + 20), 0.3, 0.2, send=0.6)
-S.sfx(S.click(0.8, lo=1200, hi=5000, d=0.006), fr(PRESS + 33), 0.45, 0.0)
-S.sfx(S.whoosh(0.4, 400, 3000, 0.7, 0.5), fr(EV['scroll']), 0.35, 0.0, send=0.2)       # 页面往下滚
+# 02 规则 ③：笔停在鞋头上——鼓停，一个和弦慢慢鼓起来，墨晕开时一声铃
+S.sfx(S.swell([67, 71, 74, 79], fr(DWL + 4), 1.0), fr(DW), 0.6, 0, send=0.6)
+S.sfx(S.glide(55, 48, 0.35, 0.8), fr(DW + 2), 0.22, 0, send=0.4)
+S.sfx(S.bell(86, 0.7, 1.4), fr(DW + DWL * 0.6), 0.32, 0.2, send=0.6)
+# 03 规则 ①：灰笔一遍、两遍、三遍——马林巴往下走三个音（越来越深）
+for j, m in enumerate([79, 74, 67]):
+    S.sfx(S.marimba(m, 1.0), fr(EV['gray'] + 10 + j * 12), 0.45, -0.3 + 0.3 * j, send=0.3)
+# 04 网页：点击 + 滚动 + 卡片弹出
+S.sfx(S.click(1.0, lo=1500, hi=6000, d=0.006), fr(EV['click']), 0.6, 0.0)
+S.sfx(S.bop(S.tone(EV['click'], 2, 1), 0.9, 0.18), fr(EV['click']), 0.45, 0.0, send=0.3)
+S.sfx(S.whoosh(0.4, 400, 3000, 0.7, 0.5), fr(EV['scroll']), 0.35, 0.0, send=0.2)
 for k, t in enumerate(EV['cards']):
-    S.sfx(S.bop(S.tone(t, k, 1), 0.9, 0.18), fr(t - 6), 0.5, -0.5 + 0.33 * k, send=0.3)
-
-# ================= 手机 =================
+    S.sfx(S.bop(S.tone(t, k, 1), 0.9, 0.18), fr(t - 4), 0.5, -0.5 + 0.33 * k, send=0.3)
+# 05 App：点色块“嗒 + 啵”、卡片滑走、进度条灌满
 for k, t in enumerate(EV['taps']):
     S.sfx(S.click(1.1, lo=1500, hi=6000, d=0.006), fr(t), 0.55, 0.3)
     S.sfx(S.bop(S.tone(t, k + 1, 1), 1.0, 0.18), fr(t), 0.5, 0.3, send=0.3)
     S.sfx(S.whoosh(0.22, 600, 4500, 0.7, 0.5), fr(t + 2), 0.25, -0.2)
-tg = EV['toggle']
-S.sfx(S.click(1.1, lo=1500, hi=6000, d=0.006), fr(tg), 0.55, 0.3)
-S.sfx(S.glide(62, 74, 0.12, 0.8), fr(tg + 1), 0.35, 0.3)
-pg = EV['prog']
-S.sfx(S.riser(0.32, 0.6, 600, 5000), fr(pg), 0.3, 0.2)
-S.sfx(S.celesta(91, 1.2, 0.9), fr(pg + 18), 0.45, 0.2, send=0.5)
-
-# 白点：一颗一声“叮”
+S.sfx(S.riser(0.28, 0.6, 600, 5000), fr(EV['prog']), 0.3, 0.2)
+# 06 白：一道一声高音，白点钢片琴往上
+S.sfx(S.shimmer(0.8, 0.8), fr(EV['white']), 0.3, send=0.5)
 for k, t in enumerate(EV['dots']):
     S.sfx(S.tink([95, 98, 103, 107][k % 4], 0.8, 0.2), fr(t), 0.22, -0.4 + 0.25 * (k % 4), send=0.4)
 
