@@ -73,8 +73,8 @@ function cam(S, f) {
   const key = S.k + '|' + Math.round(f * 64); if (camMemo.has(key)) return camMemo.get(key);
   const sg = 7; let acc = [0, 0, 0, 0], sw = 0;
   for (let k = -21; k <= 21; k += 1.5) { const w = Math.exp(-k * k / (2 * sg * sg)); const q = camTarget(S, f + k); acc[0] += q[0] * w; acc[1] += q[1] * w; acc[2] += Math.log(q[2]) * w; acc[3] += q[3] * w; sw += w; }
-  const punch = Math.exp(-Math.max(0, f - S.hit) / 9) * smr(S.hit - 4, S.hit + 1, f);           // 扫完那一下：镜头往里“顶”一下再退回
-  const z = Math.exp(acc[2] / sw) * (1 + .07 * punch), sh = 9 * Math.exp(-Math.max(0, f - S.hit) / 7) * smr(S.hit - 3, S.hit + 2, f);
+  const punch = S.k ? Math.exp(-Math.max(0, f - S.hit) / 9) * smr(S.hit - 4, S.hit + 1, f) : 0;           // 扫完那一下：镜头往里“顶”一下再退回
+  const z = Math.exp(acc[2] / sw) * (1 + .07 * punch), sh = S.k ? 9 * Math.exp(-Math.max(0, f - S.hit) / 7) * smr(S.hit - 3, S.hit + 2, f) : 0;
   const r = { x: acc[0] / sw, y: acc[1] / sw - sh / z, z, r: acc[3] / sw * Math.PI / 180 }; camMemo.set(key, r); return r;
 }
 function camM(c) { const cs = Math.cos(c.r) * c.z, sn = Math.sin(c.r) * c.z; return [cs, sn, -sn, cs, 960 - (cs * c.x - sn * c.y), 540 - (sn * c.x + cs * c.y)]; }
@@ -166,7 +166,7 @@ function phoneUI(c, S, f, M, over) {
 }
 function notes(c, S, f, M) {
   const k = S.k;
-  if (k === 0) { setM(c, mul(M, S.G.paper(f))); const g = S.marks;
+  if (k === 0 && false) { setM(c, mul(M, S.G.paper(f))); const g = S.marks;
     hand(c, '② 白是留出来的', 230, 230, f, g.g2 + 2, { font: big(60), size: 60, color: INKC, rate: 1.1 });
     hand(c, '④ 最后一笔，才是白', 1060, 230, f, g.g7, { font: big(60), size: 60, color: INKC, rate: 1.1 });
     hand(c, '二十分钟的活，2.5 秒', 230, 950, f, g.g6 + 6, { font: sans(30, 700), size: 30, color: '#3C3F46', rate: .5, kind: 'small' }); }
@@ -244,10 +244,11 @@ function hud(f, k) {
   ctx.save(); ctx.setTransform(1, 0, 0, 1, 0, 0);
   let n = 0; for (const s of SCN.ALL) if (s.t0 <= (f < SC[0].swipe0 ? END : f) && s.layer !== 'swipe') n++;
   const name = f < SC[0].swipe0 ? SCN.NAMES[5] : S.name;
-  ctx.globalAlpha = .85; ctx.fillStyle = lum(bgc) < .45 ? '#ECE9E1' : '#1F2126'; ctx.font = `600 22px ${FONT.mono}`; ctx.textBaseline = 'alphabetic';
+  const hudA = k === 0 ? smr(SC[0].T_REVEAL - 30, SC[0].T_REVEAL, f) : 1;          // v5：开场微距时不出 HUD
+  ctx.globalAlpha = .85 * hudA; ctx.fillStyle = lum(bgc) < .45 ? '#ECE9E1' : '#1F2126'; ctx.font = `600 22px ${FONT.mono}`; ctx.textBaseline = 'alphabetic';
   ctx.textAlign = 'left'; ctx.fillText('NO. —  马克笔 · MARKER   ' + name, 72, 60);
   ctx.textAlign = 'right'; ctx.fillText(`STROKE ${String(n).padStart(3, '0')} / ${SCN.ALL.filter(s => s.layer !== 'swipe').length}`, 1848, 60);
-  ctx.globalAlpha = .55; ctx.font = `500 18px ${FONT.mono}`; ctx.textAlign = 'left'; ctx.fillText('ALCOHOL INK · CHISEL 6 MM · 1 STROKE = 1 LAYER', 72, 88);
+  ctx.globalAlpha = .55 * hudA; ctx.font = `500 18px ${FONT.mono}`; ctx.textAlign = 'left'; ctx.fillText('ALCOHOL INK · CHISEL 6 MM · 1 STROKE = 1 LAYER', 72, 88);
   ctx.restore();
 }
 
@@ -261,6 +262,9 @@ window.events = () => {
   return { end: END, beat: BEAT, cues: [...cues.values()].sort((a, b) => a[0] - b[0]), strokes: strokesE, hits: SCN.HITS, capOff: CAP_OFF, capOn: CAP_ON,
     dots: SC.flatMap(S => S.dots.map(d => d.t)), dwell: SC[1].dwellAt, dwellLen: SC[1].dwell.dwell, gray: SC[2].grayStart, click: SC[3].T_CLICK, scroll: SC[3].T_SCROLL,
     taps: SC[4].taps.map(t => t.t), prog: SC[4].T_PROG, white: SC[5].T_WHITE, text: SC[5].T_TEXT, cards: SC[3].cards.map(c => c.list[0].t0),
+    opening: (() => { const S = SC[0], cams = []; for (let i = 0; i <= 3 * 110; i++) { const f = i / 3 - 1 / 3; cams.push(camM(cam(S, f))); }
+      const sw = [S.swatchBlue, S.swatchOrange].map(s => ({ P: s.P.map(q => INK.apply(S.G.paper(0), q.x, q.y)), w: s.w, th: s.th, color: s.color, alpha: s.alpha }));
+      return { cams, step: 1 / 3, f0: -1 / 3, swatch: sw, pool: S.pool, Z0: S.Z0, reveal: S.T_REVEAL, sheet: S.sheet, desk: lighter(S.bg) }; })(),
     drive: SC[0].T_DRIVE, hop: SC[1].T_HOP, light: SC[2].T_LIGHT, lights: SC[2].lights.map(s => s.t0), cardAnim: SC[3].cards.map(c => [c.n, c.tA]), wave: SC[5].T_WAVE };
 };
 (async () => {

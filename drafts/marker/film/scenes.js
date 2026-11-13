@@ -20,7 +20,7 @@ const SCN = (() => {
   }
 
   // 场景时间：hit = 巨笔扫完、这个场景接管画面的那一帧
-  const HITS = [50, 250, 400, 550, 750, 900], CAP = 1100, END = 1160;
+  const HITS = [0, 250, 400, 550, 750, 900], CAP = 1100, END = 1160;
   const SWIPE0 = k => HITS[k] - 5 * 2.6 - 7;
   // 布景入场：巨笔扫完以后，纸 / 卡片 / 浏览器 / 手机从画外弹进来（弹簧，过冲约 5%）
   const spr = t => { if (t <= 0) return 0; const z = .55, w = 9, wd = w * Math.sqrt(1 - z * z); return 1 - Math.exp(-z * w * t) * (Math.cos(wd * t) + z * w / wd * Math.sin(wd * t)); };
@@ -48,8 +48,8 @@ const SCN = (() => {
   function scene(k, build) {
     const all = [], gen = GEN(all, 11 + k * 17), G = {};
     const S = { k, all, gen, G, hit: HITS[k], end: k < 5 ? HITS[k + 1] : END, bg: BG[k], name: NAMES[k], dots: [], marks: {} };
-    S.swipe = swipe(gen, BG[k], S.hit, { ang: k % 2 ? 0.45 : -0.5 });
-    S.swipe0 = Math.min(...S.swipe.map(s => s.t0));
+    S.swipe = k ? swipe(gen, BG[k], S.hit, { ang: k % 2 ? 0.45 : -0.5 }) : [];
+    S.swipe0 = k ? Math.min(...S.swipe.map(s => s.t0)) : -1e9;
     build(S, gen, G);
     // 画不完就整体压快：最后一笔要在下一组巨笔开扫前 10 帧画完（白点、批注跟着一起缩）
     const body = S.all.filter(s => s.layer !== 'swipe' && s.layer !== 'deco'), t0 = S.hit + 2, last = Math.max(...body.map(s => s.t0 + (s.dwell || 0) + s.dur)), lim = (k < 5 ? SWIPE0(k + 1) : CAP - 30) - 10 - (S.tail || 0);
@@ -64,20 +64,25 @@ const SCN = (() => {
 
   // ================= 01 汽车：暗的工作室，台灯照着一张纸 =================
   scene(0, (S, gen, G) => {
-    S.sheet = { cx: 960, cy: 560, w: 1440, h: 800, rot: -0.025 };
-    G.paper = f => INK.mul(enter(f, S.hit, 0, 900, 0.12, 960, 560), rot(S.sheet.cx, S.sheet.cy, S.sheet.rot));
-    // 车画完就开走：先往后一蹲，再加速冲出纸面（车头朝左）
+    // v5：片子从这张纸角上的一道试色条开始（放大 40 倍），镜头一路往外拉，才看到整辆车。车在开场之前就画完了。
+    S.sheet = { cx: 960, cy: 585, w: 1440, h: 860, rot: -0.025 };
+    G.paper = () => rot(S.sheet.cx, S.sheet.cy, S.sheet.rot);
     S.T_DRIVE = 1e9;
     G.drive = f => { const q = f - S.T_DRIVE; if (q <= -6) return IDM; const sq = q < 0 ? Math.sin(Math.PI * (q + 6) / 6) : 0; const dx = q > 0 ? -1300 * Math.pow(q / 26, 2.2) : 0;
       const pitch = (q < 0 ? -.03 * sq : .035 * Math.exp(-q / 6) * Math.min(1, q / 3)); const c2 = Math.cos(pitch), s2 = Math.sin(pitch);
       return INK.mul([1, 0, 0, 1, dx + 18 * sq, 0], about(960 + 345 * .9, 800, [c2, s2, -s2, c2, 0, 0])); };
-    const c = gen.car({ x: 960, y: 800, s: .9, color: gen.COL.orange, t0: S.hit + 4, rate: 1.6, hop: .3, G: f => G.paper(f), Gbody: f => INK.mul(G.paper(f), G.drive(f)), layer: 'paper', tools: true, dotGap: 2.5 });
-    S.dots = c.dots; S.marks = c.marks; S.carEnd = c.end; S.T_DRIVE = c.end + 14;
-    S.tail = 16;
-    // 速度线：车冲出去的那一刻，在车尾后面甩几笔
+    const c = gen.car({ x: 960, y: 800, s: .9, color: gen.COL.orange, t0: -700, rate: 1.6, hop: .3, G: f => G.paper(f), Gbody: f => INK.mul(G.paper(f), G.drive(f)), layer: 'paper', dotGap: 2.5 });
+    S.dots = c.dots; S.marks = c.marks; S.carEnd = c.end;
+    // 纸角上的试色条：一道蓝（早就干了），一道橙压在上面，笔在右端停过（积墨）——开场的微距就是拍这里
+    S.swatchBlue = gen.add('marker', [[1430, 998], [1540, 941], [1650, 881]], { w: 34, th: 9, nib: 1.08, color: '#3B74E3', alpha: .55, dur: 6, t0: -300, layer: 'paper', G: f => G.paper(f) });
+    S.swatchOrange = gen.add('marker', [[1546, 945], [1460, 929], [1370, 905]], { w: 30, th: 8, nib: 1.79, color: '#F0642E', alpha: .82, dur: 6, dwell: 30, t0: -42, layer: 'paper', G: f => G.paper(f), dens: 1.3 });
+    S.pool = INK.apply(G.paper(0), 1546, 945); S.tail = 16;
+    S.T_DRIVE = 172;
     S.speed = [];
     for (let i = 0; i < 7; i++) { const y = 800 - 40 - i * 34, x0 = 960 + 560 * .9 + 30 - (i % 2) * 40; S.speed.push(gen.add('marker', [[x0 - 40, y], [x0 + 260 + i * 20, y - 4]], { w: 14, th: 4, nib: 1.5, color: i % 2 ? '#3B74E3' : '#24262B', alpha: .85, dur: 3, prof: 'flick', taper: .9, t0: S.T_DRIVE + 2 + i * 1.2, G: f => G.paper(f), layer: 'paper' })); }
-    S.cam = [[S.hit - 20, 720, 600, 1.3, -6], [S.hit + 70, 1120, 620, 1.22, 3], [S.hit + 130, 1000, 600, 1.1, 1], [S.T_DRIVE, 980, 580, 1.0, 0], [S.end - 4, 760, 560, .94, -3]];
+    const Z0 = 17, P0 = S.pool, cx0 = P0[0] - 280 / Z0, cy0 = P0[1] - 100 / Z0;
+    S.Z0 = Z0; S.T_REVEAL = 150;
+    S.cam = [[0, cx0, cy0, Z0, 7], [40, cx0 - 4, cy0 - 2, Z0 * .9, 6], [88, P0[0] - 30, P0[1] - 10, 5.0, 2], [S.T_REVEAL - 14, 960, 560, 1.0, 0], [S.T_DRIVE - 4, 975, 575, 1.0, 0], [S.end - 4, 760, 560, .94, -3]];
   });
 
   // ================= 02 球鞋：青色底上一张斜放的卡片 =================
