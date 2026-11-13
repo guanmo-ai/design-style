@@ -1,0 +1,48 @@
+<!doctype html><meta charset="utf-8"><title>湿拓 Marbling · 全片</title>
+<!-- 逐帧渲染：node ../../_lib/film-gl.cjs film.html <帧目录> 0 960。出片：bash make.sh；预览：PREVIEW=1 bash make.sh（半分辨率、不补抗锯齿） -->
+<style>
+@font-face { font-family: 'GeistMono'; src: url(../../../public/fonts/GeistMono.ttf); font-weight: 100 900; }
+@font-face { font-family: 'SerifSC'; src: url(../../../public/fonts/NotoSerifSC.ttf); font-weight: 200 900; }
+@font-face { font-family: 'Instrument'; src: url(../../../public/fonts/InstrumentSerif-Regular.ttf); }
+@font-face { font-family: 'Instrument'; src: url(../../../public/fonts/InstrumentSerif-Italic.ttf); font-style: italic; }
+@font-face { font-family: 'SansSC'; src: url(../../../public/fonts/NotoSansSC-Medium.otf); font-weight: 500; }
+html, body { margin: 0; background: #17140F; overflow: hidden; }
+#stage { position: relative; width: 1920px; height: 1080px; overflow: hidden; }
+#stage canvas { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; }
+#hud { position: absolute; inset: 0; pointer-events: none; color: #17140F; font-family: 'GeistMono', 'SansSC', monospace; }
+.tag { position: absolute; background: rgba(251, 246, 236, 0.94); padding: 14px 20px 12px; box-shadow: 0 6px 18px rgba(23, 20, 15, 0.22); font-size: 27px; line-height: 1.42; white-space: nowrap; letter-spacing: 0.01em; }
+.tag b { font-weight: 700; } .tag .k { display: inline-block; background: #17140F; color: #F4EBDD; padding: 0 9px; margin-right: 12px; font-family: 'SerifSC'; font-weight: 700; }
+.tag .s { font-size: 22px; opacity: 0.72; }
+#chain { left: 48px; top: 42px; font-size: 26px; }
+#chain span { padding: 2px 8px; } #chain span.on { background: #17140F; color: #F4EBDD; }
+#zoom { position: absolute; right: 64px; top: 40px; font-family: 'Instrument'; font-style: italic; font-size: 150px; line-height: 1; color: #FBF6EC; text-shadow: 0 4px 24px rgba(23, 20, 15, 0.45); }
+#pal { left: 48px; bottom: 44px; font-size: 21px; display: flex; gap: 14px; padding: 12px 16px; }
+#pal i { display: inline-block; width: 26px; height: 26px; vertical-align: -6px; margin-right: 8px; border: 1.5px solid rgba(23, 20, 15, 0.25); }
+#sign { position: absolute; font-family: 'SerifSC'; font-weight: 700; font-size: 40px; color: #17140F; letter-spacing: 0.3em; }
+#signsub { position: absolute; font-size: 22px; color: #17140F; letter-spacing: 0.04em; }
+</style>
+<div id="stage"><canvas id="c" width="1920" height="1080"></canvas><canvas id="tools" width="1920" height="1080"></canvas><div id="hud"></div></div>
+<script src="../../_lib/glkit.js"></script><script src="../../_lib/typefx.js"></script><script src="../../_lib/kit/motion.js"></script>
+<script src="marble.js"></script><script src="timeline.js"></script><script src="scene.js"></script><script src="tools.js"></script><script src="hud.js"></script>
+<script>
+const Q = new URLSearchParams(location.search), PREVIEW = Q.has('preview');
+(async () => {
+  await Promise.all(['700 80px SerifSC', '400 40px GeistMono', '700 40px GeistMono', 'italic 80px Instrument', '80px Instrument', '500 30px SansSC'].map(s => document.fonts.load(s, '湿拓观默滴耙梳卷MARBLING×0123')));
+  const glc = document.getElementById('c');
+  if (PREVIEW) { glc.width = 960; glc.height = 540; }
+  const M = MARBLE.create(glc);
+  M.setLabel(0, LABELS.front()); M.setLabel(1, LABELS.back());
+  for (let f = 0; f < TL.end; f++) HUDM.draw(f, stateAt(f));          // 空跑一遍：把所有出字的时间登记给配乐
+  window.events = () => ({ cues: TFX.list(), drops: B.drops.map(d => [d.f, d.a, d.col, d.small ? 1 : 0, d.x]) });
+  window.frame = async f => {
+    const s = stateAt(f);
+    const g = Object.assign({}, s, { cam: PREVIEW ? [s.cam[0], s.cam[1], s.cam[2] * 0.5, s.cam[3]] : s.cam, ss: PREVIEW ? 1 : 4, time: f });
+    await M.render(g);
+    TOOLS.draw(document.getElementById('tools'), f, s);
+    HUDM.draw(f, s);
+    await new Promise(r => requestAnimationFrame(() => r()));
+  };
+  await window.frame(+(Q.get('f') || 0));
+  window.ready = true;
+})().catch(e => { console.log('ERR ' + (e.stack || e.message).slice(0, 4000)); });
+</script>
