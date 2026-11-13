@@ -62,12 +62,12 @@ DW, DWL = EV['dwell'], EV['dwellLen']
 HITS = EV['hits']
 
 # ================= 乐队 =================
-BRK = [(DW + 1, DW + DWL + 2), (CAPON - 50, CAPON)]          # 笔停在鞋头上积墨、扣帽前半小节：鼓停
+BRK = [(CAPON - 50, CAPON)]          # 扣帽前半小节：鼓停（积墨那一下鼓不停了——主人：“第 5 秒好像有停顿”）
 S.drums(50, CAPON, skip=BRK, level=0.9)
 for fm in np.arange(50, CAPON, BEAT / 4):
     if not any(a <= fm < z for a, z in BRK):
         S.place(S.shaker(0.8), fr(fm), 0.55 if (fm - 50) % (BEAT / 2) else 0.3, 0.35)
-S.bassline(50, CAPON, skip=BRK[:1], level=1.0)
+S.bassline(50, CAPON, level=1.0)
 S.pad(0.9, wave='saw', fc=1500)
 
 
@@ -81,8 +81,6 @@ def epiano(ms, d=0.22):
 
 
 for fm in np.arange(50 + BEAT / 2, CAPON, BEAT):
-    if any(a <= fm < z for a, z in BRK[:1]):
-        continue
     ch = S.chord(fm)[2]
     S.place(epiano([m - 12 for m in ch] + [ch[0]]), fr(fm), 0.55, 0.15 * (1 if int(fm / BEAT) % 2 else -1), send=0.2, bus=S.PUMP)
 
@@ -103,7 +101,7 @@ for i in range(20):
     b0 = 50 + i * BAR
     if b0 + BAR > CAPON + 1:
         break
-    notes = [n for n in PH[i % 4] if not (DW - 2 < b0 + n[0] * BEAT / 2 < DW + DWL + 2)]
+    notes = PH[i % 4]
     oct_ = 12 if i >= 4 else 0
     S.hook(b0, [(p, m + oct_, ln) for p, m, ln in notes], 1.0, inst=lead)
 
@@ -137,7 +135,7 @@ for k, ss in sorted(slots.items()):
     S.sfx(S.nib(d, 1.0, S.tone(at, k % 3, 1), br, 'press'), fr(at), lv, float(np.clip(np.sin(k * 0.7) * 0.5, -0.6, 0.6)), send=0.08)
 
 # 02 规则 ③：笔停在鞋头上——鼓停，一个和弦慢慢鼓起来，墨晕开时一声铃
-S.sfx(S.swell([67, 71, 74, 79], fr(DWL + 4), 1.0), fr(DW), 0.6, 0, send=0.6)
+S.sfx(S.swell([67, 71, 74, 79], fr(DWL + 10), 1.0), fr(DW), 0.4, 0, send=0.6)
 S.sfx(S.glide(55, 48, 0.35, 0.8), fr(DW + 2), 0.22, 0, send=0.4)
 S.sfx(S.bell(86, 0.7, 1.4), fr(DW + DWL * 0.6), 0.32, 0.2, send=0.6)
 # 03 规则 ①：灰笔一遍、两遍、三遍——马林巴往下走三个音（越来越深）
@@ -159,6 +157,30 @@ S.sfx(S.riser(0.28, 0.6, 600, 5000), fr(EV['prog']), 0.3, 0.2)
 S.sfx(S.shimmer(0.8, 0.8), fr(EV['white']), 0.3, send=0.5)
 for k, t in enumerate(EV['dots']):
     S.sfx(S.tink([95, 98, 103, 107][k % 4], 0.8, 0.2), fr(t), 0.22, -0.4 + 0.25 * (k % 4), send=0.4)
+
+# ================= 画完的东西动起来 =================
+# 车开走：先蹲（低音）→ 引擎一轰 + 风
+dv = EV['drive']
+S.sfx(S.engine(0.9, 60, 230, 1.0, 0.7), fr(dv - 5), 0.7, 0.2, send=0.15)
+S.sfx(S.whoosh(0.45, 300, 6000, 1.0, 0.4), fr(dv + 2), 0.5, -0.5, send=0.2)
+# 球鞋翻一圈：蹲 → 往上“咻” → 落地“咚”+ 弹簧
+hp = EV['hop']
+S.sfx(S.glide(55, 79, 0.3, 0.8), fr(hp), 0.35, 0, send=0.3)
+S.sfx(S.whoosh(0.5, 400, 5000, 1.0, 0.5), fr(hp + 4), 0.45, 0.3, send=0.2)
+S.sfx(S.thock(43, 1.0), fr(hp + 30), 0.6, 0, send=0.2)
+S.sfx(S.boing(55, 0.9), fr(hp + 31), 0.45, 0, send=0.3)
+# 窗户一层层亮：钢片琴往上走
+for k, t in enumerate(EV['lights'][::2]):
+    S.sfx(S.celesta([79, 83, 86, 88, 91, 95, 98][k % 7], 0.9, 0.8), fr(t), 0.3, -0.4 + 0.12 * k, send=0.5)
+# 卡片里的东西：鞋翻、耳机弹、椅子摇、台灯晃
+for k, (n, t) in enumerate(EV['cardAnim']):
+    S.sfx(S.bop(S.tone(t, k, 1), 0.9, 0.2), fr(t), 0.45, -0.5 + 0.33 * k, send=0.3)
+    if n in ('chair', 'lamp'):
+        S.sfx(S.boing(60 + 3 * k, 0.6), fr(t + 2), 0.3, -0.5 + 0.33 * k)
+# 大字一个个跳起来：马林巴往上走
+for k in range(6):
+    S.sfx(S.marimba([67, 71, 74, 79, 83, 86][k], 1.0), fr(EV['wave'] + k * 4), 0.45, -0.5 + 0.2 * k, send=0.3)
+    S.sfx(S.thock(48 + k, 0.5), fr(EV['wave'] + k * 4 + 16), 0.22, -0.5 + 0.2 * k)
 
 # ================= 收束：扣帽 =================
 S.sfx(S.whoosh(0.4, 500, 4000, 0.8, 0.7), fr(CAPON - 46), 0.35, 0.5)

@@ -22,7 +22,10 @@ function GEN(all, seed = 5) {
   const ADV = { M: 92, A: 84, R: 80, K: 80, E: 82, I: 36, T: 82, '0': 82, '1': 60, ' ': 40 };
   function letters(str, x, y, h, o) {
     const out = []; let cx = x; const k = h / 100;
-    for (const ch of str) { for (const g of GLYPH[ch] || []) out.push(add('marker', g.map(p => [cx + p[0] * k, y + p[1] * k]), Object.assign({ w: h * 0.24, th: h * 0.06, nib: -0.62, color: COL.black, alpha: 0.95, dens: 2.6, dur: 3, prof: 'press', poly: ch !== '0' }, o))); cx += ADV[ch] * k; }
+    let li = 0;
+    for (const ch of str) { const extra = o.letterG ? { G: o.letterG(li, cx + ADV[ch] * k * 0.4, y + h) } : {};
+      for (const g of GLYPH[ch] || []) out.push(add('marker', g.map(p => [cx + p[0] * k, y + p[1] * k]), Object.assign({ w: h * 0.24, th: h * 0.06, nib: -0.62, color: COL.black, alpha: 0.95, dens: 2.6, dur: 3, prof: 'press', poly: ch !== '0' }, o, extra, { letterG: undefined, li })));
+      cx += ADV[ch] * k; li++; }
     return out;
   }
 
@@ -84,9 +87,10 @@ function GEN(all, seed = 5) {
       L('white', [[-480, -178], [-150, -208], [200, -212], [470, -208]].map(T), 2.4 * Math.max(.6, s), COL.white, { alpha: .8, prof: 'flick' }),
       L('white', [[60, -268], [128, -334]].map(T), 7 * Math.max(.6, s), COL.white, { alpha: .55 })];
     groups.push(wh);
+    if (o.Gbody) groups.forEach((g, i) => { if (i >= (o.pencil !== false ? 1 : 0) + (o.sweeps !== false ? 1 : 0)) for (const st of g) st.G = o.Gbody; });
     let t = o.t0; const marks = {};
     groups.forEach((g, i) => { marks['g' + i] = t; t = seq(g, t, hop); });
-    const dots = [[-524, -178, 6], [-200, -232, 4.5], [60, -342, 4], [-460, -180, 3.2]].map((d, i) => ({ p: T(d), r: d[2] * s, t: t + 2 + i * (o.dotGap ?? 3), G: o.G, vclip: o.vclip, layer: o.layer }));
+    const dots = [[-524, -178, 6], [-200, -232, 4.5], [60, -342, 4], [-460, -180, 3.2]].map((d, i) => ({ p: T(d), r: d[2] * s, t: t + 2 + i * (o.dotGap ?? 3), G: o.Gbody || o.G, vclip: o.vclip, layer: o.layer }));
     return { end: t, dots, marks, BODY, T };
   }
 

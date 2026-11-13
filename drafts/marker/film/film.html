@@ -73,7 +73,8 @@ function cam(S, f) {
   const key = S.k + '|' + Math.round(f * 64); if (camMemo.has(key)) return camMemo.get(key);
   const sg = 7; let acc = [0, 0, 0, 0], sw = 0;
   for (let k = -21; k <= 21; k += 1.5) { const w = Math.exp(-k * k / (2 * sg * sg)); const q = camTarget(S, f + k); acc[0] += q[0] * w; acc[1] += q[1] * w; acc[2] += Math.log(q[2]) * w; acc[3] += q[3] * w; sw += w; }
-  const z = Math.exp(acc[2] / sw), sh = 9 * Math.exp(-Math.max(0, f - S.hit) / 7) * smr(S.hit - 3, S.hit + 2, f);
+  const punch = Math.exp(-Math.max(0, f - S.hit) / 9) * smr(S.hit - 4, S.hit + 1, f);           // 扫完那一下：镜头往里“顶”一下再退回
+  const z = Math.exp(acc[2] / sw) * (1 + .07 * punch), sh = 9 * Math.exp(-Math.max(0, f - S.hit) / 7) * smr(S.hit - 3, S.hit + 2, f);
   const r = { x: acc[0] / sw, y: acc[1] / sw - sh / z, z, r: acc[3] / sw * Math.PI / 180 }; camMemo.set(key, r); return r;
 }
 function camM(c) { const cs = Math.cos(c.r) * c.z, sn = Math.sin(c.r) * c.z; return [cs, sn, -sn, cs, 960 - (cs * c.x - sn * c.y), 540 - (sn * c.x + cs * c.y)]; }
@@ -175,6 +176,9 @@ function notes(c, S, f, M) {
   if (k === 2) { setM(c, M);
     hand(c, '① 一笔一层：叠一遍，深一档', 80, 120, f, S.grayStart + 2, { font: big(64), size: 64, color: '#1F2126', rate: 1 });
     const L = S.faceLabels; [['×1', L.L, 0], ['×2', L.R, 12], ['×3', L.S, 24]].forEach(([t, p, d]) => pop(c, f, S.grayStart + 10 + d, p[0], p[1], () => { c.fillStyle = '#FFFDF7'; c.font = `700 96px ${FONT.latin}`; c.fillText(t, p[0] - 40, p[1]); cue(S.grayStart + 10 + d, 1, 1, 'text'); })); }
+  if (k === 2) { setM(c, M); c.strokeStyle = '#1F2126'; c.lineWidth = 3; c.lineCap = 'round';
+    for (const b of S.birds) { const q = f - b.t0; if (q < 0) continue; const x = b.x0 + q * b.sp, y = b.y + Math.sin(q * .2) * 10, w = Math.sin(q * .9) * 10 * b.s; if (x > 2100) continue;
+      c.beginPath(); c.moveTo(x - 18 * b.s, y - w); c.quadraticCurveTo(x - 8 * b.s, y - w * .3, x, y); c.quadraticCurveTo(x + 8 * b.s, y - w * .3, x + 18 * b.s, y - w); c.stroke(); } }
   if (k === 4) { setM(c, M); hand(c, '换一支笔 = 换一辆车', 110, 1010, f, S.hit + 20, { font: big(66), size: 66, color: '#1F2126', rate: 1 }); }
   if (k === 5) { setM(c, M);
     hand(c, '马克笔 · 一笔一层，不能改', 156, 720, f, S.T_TEXT, { font: big(92), size: 92, color: '#FFFDF7', rate: 1.6, kind: 'title' });
@@ -256,7 +260,8 @@ window.events = () => {
   const strokesE = SCN.ALL.map(s => ({ t: s.t0 + (s.dwell || 0), d: s.dur, tool: s.tool || '', kind: s.kind, layer: s.layer, len: s.P[s.P.length - 1].s, scene: s.scene, dwell: s.dwell || 0 }));
   return { end: END, beat: BEAT, cues: [...cues.values()].sort((a, b) => a[0] - b[0]), strokes: strokesE, hits: SCN.HITS, capOff: CAP_OFF, capOn: CAP_ON,
     dots: SC.flatMap(S => S.dots.map(d => d.t)), dwell: SC[1].dwellAt, dwellLen: SC[1].dwell.dwell, gray: SC[2].grayStart, click: SC[3].T_CLICK, scroll: SC[3].T_SCROLL,
-    taps: SC[4].taps.map(t => t.t), prog: SC[4].T_PROG, white: SC[5].T_WHITE, text: SC[5].T_TEXT, cards: SC[3].cards.map(c => c.list[0].t0) };
+    taps: SC[4].taps.map(t => t.t), prog: SC[4].T_PROG, white: SC[5].T_WHITE, text: SC[5].T_TEXT, cards: SC[3].cards.map(c => c.list[0].t0),
+    drive: SC[0].T_DRIVE, hop: SC[1].T_HOP, light: SC[2].T_LIGHT, lights: SC[2].lights.map(s => s.t0), cardAnim: SC[3].cards.map(c => [c.n, c.tA]), wave: SC[5].T_WAVE };
 };
 (async () => {
   const fonts = [['LongCang', 'LongCang-Regular.ttf', '400'], ['Caveat', 'Caveat.ttf', '400 700'], ['NotoSans', 'NotoSansSC-Medium.otf', '500'], ['NotoSans', 'NotoSansSC-Bold.otf', '700'], ['JBMono', 'JetBrainsMono.ttf', '100 800'], ['PMarker', 'PermanentMarker-Regular.ttf', '400']];

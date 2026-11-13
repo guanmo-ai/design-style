@@ -28,6 +28,23 @@ const SCN = (() => {
   const BG = ['#2A2C31', '#11A086', '#D8CBAE', '#6E52D8', '#F2B01E', '#F0642E'];
   const NAMES = ['01 汽车 · 设计草图', '02 球鞋', '03 建筑 · 两点透视', '04 网页 · 官网', '05 App · 配置器', '06 一支笔'];
 
+  // —— 画完以后让它动起来 ——
+  const IDM = [1, 0, 0, 1, 0, 0];
+  const about = (px, py, M) => INK.mul([1, 0, 0, 1, px, py], INK.mul(M, [1, 0, 0, 1, -px, -py]));
+  // 跳一下：先蹲（8 帧）→ 腾空（dur 帧，可以翻一圈）→ 落地压扁再弹回；每一段首尾都接得上
+  function hopM(f, t0, px, py, o) {
+    const p = f - t0; if (p <= -8) return IDM;
+    let sx = 1, sy = 1, tx = 0, ty = 0, r = 0;
+    if (p < 0) { const a = Math.sin(Math.PI * (p + 8) / 8); sy = 1 - .16 * a; sx = 1 + .08 * a; }
+    else if (p < o.dur) { const u = p / o.dur, e = u * u * (3 - 2 * u); ty = -o.H * 4 * u * (1 - u); r = (o.spin || 0) * e + (o.rot || 0) * Math.sin(Math.PI * u); tx = (o.dx || 0) * e; const st = Math.sin(Math.PI * u); sy = 1 + .1 * st; sx = 1 - .05 * st; }
+    else { const q = p - o.dur, d = Math.exp(-q / 7) * Math.sin(q * .55); sy = 1 - .18 * d; sx = 1 + .09 * d; tx = o.dx || 0; r = o.spin || 0; }
+    const c = Math.cos(r), s2 = Math.sin(r);
+    return INK.mul([1, 0, 0, 1, px + tx, py + ty], INK.mul([c, s2, -s2, c, 0, 0], INK.mul([sx, 0, 0, sy, 0, 0], [1, 0, 0, 1, -px, -py])));
+  }
+  // 摇 / 晃：绕支点转，衰减振荡，从 0 开始
+  function rockM(f, t0, px, py, A, w = .45, dec = 22) { const q = f - t0; if (q <= 0) return IDM; const r = A * Math.sin(q * w) * Math.exp(-q / dec); const c = Math.cos(r), s2 = Math.sin(r); return about(px, py, [c, s2, -s2, c, 0, 0]); }
+  function pulseM(f, t0, px, py, A = .14) { const q = f - t0; if (q <= 0) return IDM; const k = 1 + A * Math.sin(q * .5) * Math.exp(-q / 10); return about(px, py, [k, 0, 0, k, 0, 0]); }
+
   function scene(k, build) {
     const all = [], gen = GEN(all, 11 + k * 17), G = {};
     const S = { k, all, gen, G, hit: HITS[k], end: k < 5 ? HITS[k + 1] : END, bg: BG[k], name: NAMES[k], dots: [], marks: {} };
@@ -35,9 +52,9 @@ const SCN = (() => {
     S.swipe0 = Math.min(...S.swipe.map(s => s.t0));
     build(S, gen, G);
     // 画不完就整体压快：最后一笔要在下一组巨笔开扫前 10 帧画完（白点、批注跟着一起缩）
-    const body = S.all.filter(s => s.layer !== 'swipe' && s.layer !== 'deco'), t0 = S.hit + 2, last = Math.max(...body.map(s => s.t0 + (s.dwell || 0) + s.dur)), lim = (k < 5 ? SWIPE0(k + 1) : CAP - 30) - 10;
+    const body = S.all.filter(s => s.layer !== 'swipe' && s.layer !== 'deco'), t0 = S.hit + 2, last = Math.max(...body.map(s => s.t0 + (s.dwell || 0) + s.dur)), lim = (k < 5 ? SWIPE0(k + 1) : CAP - 30) - 10 - (S.tail || 0);
     if (last > lim) { const sc = (lim - t0) / (last - t0); for (const s of body) { if (s.t0 < t0) continue; s.t0 = t0 + (s.t0 - t0) * sc; s.dur *= sc; if (s.dwell) s.dwell *= sc; }
-      for (const d of S.dots) d.t = t0 + (d.t - t0) * sc; for (const key of ['dwellAt', 'grayStart', 'T_PROG', 'T_CLICK', 'T_SCROLL', 'T_WHITE', 'T_TEXT', 'carEnd']) if (S[key] > t0) S[key] = t0 + (S[key] - t0) * sc;
+      for (const d of S.dots) d.t = t0 + (d.t - t0) * sc; for (const key of ['dwellAt', 'grayStart', 'T_PROG', 'T_CLICK', 'T_SCROLL', 'T_WHITE', 'T_TEXT', 'carEnd', 'T_HOP', 'T_LIGHT', 'T_DRIVE', 'T_WAVE']) if (S[key] > t0) S[key] = t0 + (S[key] - t0) * sc;
       for (const key in S.marks) S.marks[key] = t0 + (S.marks[key] - t0) * sc; for (const K of S.cam) if (K[0] > t0 && K[0] < S.end - 10) K[0] = t0 + (K[0] - t0) * sc; S.fit = sc; }
     S.all.sort((a, b) => a.t0 - b.t0);
     S.all.forEach(s => { s.end = s.t0 + (s.dwell || 0) + s.dur; s.scene = k; });
@@ -49,9 +66,18 @@ const SCN = (() => {
   scene(0, (S, gen, G) => {
     S.sheet = { cx: 960, cy: 560, w: 1440, h: 800, rot: -0.025 };
     G.paper = f => INK.mul(enter(f, S.hit, 0, 900, 0.12, 960, 560), rot(S.sheet.cx, S.sheet.cy, S.sheet.rot));
-    const c = gen.car({ x: 960, y: 800, s: .9, color: gen.COL.orange, t0: S.hit + 4, rate: 1.85, hop: .35, G: f => G.paper(f), layer: 'paper', tools: true, dotGap: 2.5 });
-    S.dots = c.dots; S.marks = c.marks; S.carEnd = c.end;
-    S.cam = [[S.hit - 20, 720, 600, 1.3, -6], [S.hit + 70, 1120, 620, 1.22, 3], [S.hit + 140, 1000, 600, 1.1, 1], [S.end - 4, 960, 560, .98, 0]];
+    // 车画完就开走：先往后一蹲，再加速冲出纸面（车头朝左）
+    S.T_DRIVE = 1e9;
+    G.drive = f => { const q = f - S.T_DRIVE; if (q <= -6) return IDM; const sq = q < 0 ? Math.sin(Math.PI * (q + 6) / 6) : 0; const dx = q > 0 ? -1300 * Math.pow(q / 26, 2.2) : 0;
+      const pitch = (q < 0 ? -.03 * sq : .035 * Math.exp(-q / 6) * Math.min(1, q / 3)); const c2 = Math.cos(pitch), s2 = Math.sin(pitch);
+      return INK.mul([1, 0, 0, 1, dx + 18 * sq, 0], about(960 + 345 * .9, 800, [c2, s2, -s2, c2, 0, 0])); };
+    const c = gen.car({ x: 960, y: 800, s: .9, color: gen.COL.orange, t0: S.hit + 4, rate: 1.6, hop: .3, G: f => G.paper(f), Gbody: f => INK.mul(G.paper(f), G.drive(f)), layer: 'paper', tools: true, dotGap: 2.5 });
+    S.dots = c.dots; S.marks = c.marks; S.carEnd = c.end; S.T_DRIVE = c.end + 14;
+    S.tail = 16;
+    // 速度线：车冲出去的那一刻，在车尾后面甩几笔
+    S.speed = [];
+    for (let i = 0; i < 7; i++) { const y = 800 - 40 - i * 34, x0 = 960 + 560 * .9 + 30 - (i % 2) * 40; S.speed.push(gen.add('marker', [[x0 - 40, y], [x0 + 260 + i * 20, y - 4]], { w: 14, th: 4, nib: 1.5, color: i % 2 ? '#3B74E3' : '#24262B', alpha: .85, dur: 3, prof: 'flick', taper: .9, t0: S.T_DRIVE + 2 + i * 1.2, G: f => G.paper(f), layer: 'paper' })); }
+    S.cam = [[S.hit - 20, 720, 600, 1.3, -6], [S.hit + 70, 1120, 620, 1.22, 3], [S.hit + 130, 1000, 600, 1.1, 1], [S.T_DRIVE, 980, 580, 1.0, 0], [S.end - 4, 760, 560, .94, -3]];
   });
 
   // ================= 02 球鞋：青色底上一张斜放的卡片 =================
@@ -66,14 +92,17 @@ const SCN = (() => {
       lines: [[[-120, -60], [-40, -82], [40, -106], [120, -112]], [[-200, -18], [206, -18]], [[80, -168], [110, -150], [140, -150]], [[-44, -112], [86, -160]],
         ...[0, 1, 2, 3, 4].map(i => [[-36 + i * 26, -104 - i * 10], [-24 + i * 26, -130 - i * 10]]), [[-128, -38], [-140, -86]], [[150, -38], [150, -110]]],
       hl: [[-180, -74], [-130, -86], [-80, -98], [-40, -116]] };
-    const p = gen.product('shoe', { x: 980, y: 800, s: 3.1, color: '#E8473C', t0: S.hit + 4, rate: 1.75, G: f => G.card(f), layer: 'paper' });
+    S.T_HOP = 1e9; G.shoe = f => INK.mul(G.card(f), hopM(f, S.T_HOP, 980, 800, { H: 300, dur: 30, spin: -Math.PI * 2, dx: -60 }));
+    const p = gen.product('shoe', { x: 980, y: 800, s: 3.1, color: '#E8473C', t0: S.hit + 4, rate: 1.3, G: f => G.shoe(f), layer: 'paper' });
     // 规则 ③：笔停在鞋头上，墨一圈圈晕开
     const T = q => [980 + q[0] * 3.1, 800 + q[1] * 3.1];
-    S.dwell = gen.add('marker', [T([-170, -56]), T([-120, -60]), T([-60, -66])], { w: 120, th: 34, nib: 1.35, color: '#B8231B', alpha: .62, dur: 7, dwell: 26, prof: 'press', G: f => G.card(f), layer: 'paper', dens: 1.3, sheen: 1.3 });
+    S.dwell = gen.add('marker', [T([-170, -56]), T([-120, -60]), T([-60, -66])], { w: 120, th: 34, nib: 1.35, color: '#B8231B', alpha: .62, dur: 6, dwell: 14, prof: 'press', G: f => G.shoe(f), layer: 'paper', dens: 1.3, sheen: 1.3 });
     const iD = 12; S.dwell.t0 = p.list[iD].t0 + 2; const shift = S.dwell.dwell + S.dwell.dur + 2; for (const s of p.list.slice(iD)) s.t0 += shift;
     S.dwellAt = S.dwell.t0; S.dwellPt = T([-170, -56]);
+    S.T_HOP = Math.max(...p.list.map(s => s.t0 + s.dur)) + 12;
+    S.tail = 46;
     tools(S.all.filter(s => s.layer === 'paper'), 'shoe');
-    S.cam = [[S.hit - 20, 960, 560, .96, 7], [S.dwellAt - 14, 980, 600, 1.02, 4], [S.dwellAt + 4, S.dwellPt[0] + 150, S.dwellPt[1] + 30, 2.0, 2], [S.dwellAt + 30, S.dwellPt[0] + 210, S.dwellPt[1] + 10, 1.85, 1], [S.end - 4, 990, 580, 1.0, -2]];
+    S.cam = [[S.hit - 20, 960, 560, .96, 7], [S.dwellAt - 12, 980, 600, 1.05, 4], [S.dwellAt + 2, S.dwellPt[0] + 150, S.dwellPt[1] + 30, 1.9, 2], [S.dwellAt + 18, S.dwellPt[0] + 220, S.dwellPt[1] + 10, 1.75, 1], [S.T_HOP - 10, 990, 560, .98, -1], [S.end - 4, 960, 520, .9, -3]];
   });
 
   // ================= 03 建筑：牛皮纸上的两点透视 =================
@@ -92,12 +121,12 @@ const SCN = (() => {
     // 棱
     for (const [a, b] of [[TL, [FX, FT]], [[FX, FT], TR], [BL, [FX, FB]], [[FX, FB], BRt], [TL, BL], [[FX, FT], [FX, FB]], [TR, BRt]]) A('liner', [a, b], { w: 2.6, color: '#1A1B1F', dur: 2.6, prof: 'flick' });
     // 天：蓝色斜扫，绕开楼
-    for (let i = 0; i < 10; i++) { const x = 60 + i * 190, a = [x, 640 - (i % 3) * 30], b = [x + 160, 80 + (i % 2) * 40]; A('marker', i % 2 ? [b, a] : [a, b], { w: 130, th: 34, nib: .25, color: '#3B74E3', alpha: .45, dur: 2.4, clip: OUT, clipRule: 'evenodd', tool: 'sky' }); }
+    for (let i = 0; i < 8; i++) { const x = 60 + i * 240, a = [x, 640 - (i % 3) * 30], b = [x + 160, 80 + (i % 2) * 40]; A('marker', i % 2 ? [b, a] : [a, b], { w: 130, th: 34, nib: .25, color: '#3B74E3', alpha: .45, dur: 2.4, clip: OUT, clipRule: 'evenodd', tool: 'sky' }); }
     // 规则 ①：同一支灰笔，左面一遍、右面两遍、影子三遍
     const rows = (face, clip, n, color, alpha, tool, V) => { const [a, b, c2, d] = face; for (let i = 0; i < n; i++) { const t = (i + .5) / n; const p = lerpP(a, d, t), q = lerpP(b, c2, t); A('marker', i % 2 ? [q, p] : [p, q], { w: 96, th: 26, nib: 1.5, color, alpha, dur: 2.1, clip, tool }); } };
-    rows(LF, clipL, 11, '#8E949E', .42, 'gray');
-    rows(RF, clipR, 11, '#8E949E', .42, 'gray'); rows(RF, clipR, 11, '#8E949E', .42, 'gray');
-    for (let k = 0; k < 3; k++) for (let i = 0; i < 3; i++) { const a = lerpP([FX, FB], [1180, 1110], (i + .5) / 3), b = lerpP(BRt, [1980, 1010], (i + .5) / 3); A('marker', [a, b], { w: 70, th: 20, nib: 1.5, color: '#8E949E', alpha: .45, dur: 1.8, clip: clipS, tool: 'gray' }); }
+    rows(LF, clipL, 7, '#8E949E', .42, 'gray');
+    rows(RF, clipR, 7, '#8E949E', .42, 'gray'); rows(RF, clipR, 7, '#8E949E', .42, 'gray');
+    for (let k = 0; k < 3; k++) for (let i = 0; i < 2; i++) { const a = lerpP([FX, FB], [1180, 1110], (i + .5) / 2), b = lerpP(BRt, [1980, 1010], (i + .5) / 2); A('marker', [a, b], { w: 70, th: 20, nib: 1.5, color: '#8E949E', alpha: .45, dur: 1.8, clip: clipS, tool: 'gray' }); }
     // 每层的玻璃带
     for (let f = 1; f < 8; f++) { const s = f / 8 - .03; const pf = lerpP([FX, FT], [FX, FB], s); const l = at(VL, pf, LX + 20), r = at(VR, pf, RX - 20);
       A('marker', [l, [FX - 8, pf[1]]], { w: 30, th: 9, nib: 1.55, color: '#2D3442', alpha: .72, dur: 1.4, clip: clipL, tool: 'black' }); A('marker', [[FX + 8, pf[1]], r], { w: 30, th: 9, nib: 1.55, color: '#2D3442', alpha: .8, dur: 1.4, clip: clipR, tool: 'black' }); }
@@ -106,11 +135,18 @@ const SCN = (() => {
     // 白：楼角一道 + 几个窗的反光
     A('white', [[FX, FT + 8], [FX, FB - 8]], { w: 4, color: '#FFFDF7', alpha: .95, dur: 3, prof: 'flick' });
     A('white', [[FX + 6, FT + 10], at(VR, [FX, FT + 10], RX - 30)], { w: 3, color: '#FFFDF7', alpha: .9, dur: 2.4, prof: 'flick' });
-    const tEnd = gen.seq(L, S.hit + 3, .35);
+    let tEnd = gen.seq(L, S.hit + 3, .3);
+    // 画完：窗户一层层亮起来（暖黄一笔，从下往上）
+    S.lights = [];
+    for (let fl = 7; fl >= 1; fl--) { const sv = fl / 8 - .03; const pf = lerpP([FX, FT], [FX, FB], sv); const l = at(VL, pf, LX + 40), r = at(VR, pf, RX - 40);
+      for (const [a, b, cl] of [[lerpP(l, [FX - 10, pf[1]], .15), lerpP(l, [FX - 10, pf[1]], .85), clipL], [lerpP([FX + 10, pf[1]], r, .15), lerpP([FX + 10, pf[1]], r, .85), clipR]])
+        S.lights.push(gen.add('marker', [a, b], { w: 22, th: 7, nib: 1.55, color: '#FFD45C', alpha: .92, mode: 'source-over', dur: 2.2, clip: cl, layer: 'paper', sheen: 1.5 })); }
+    S.T_LIGHT = tEnd + 2; tEnd = gen.seq(S.lights, S.T_LIGHT, .15);
+    S.birds = [0, 1, 2, 3, 4].map(i => ({ t0: S.hit + 30 + i * 6, y: 160 + i * 34 + (i % 2) * 20, x0: -120 - i * 60, sp: 13 + i * 1.5, s: 1 - i * .1 }));
     S.dots = [[1000, 300, 5], [1180, 420, 4], [1320, 560, 4.5], [640, 380, 4]].map((d, i) => ({ p: [d[0], d[1]], r: d[2], t: tEnd + 2 + i * 3 }));
     S.faceLabels = { L: [610, 560], R: [1240, 560], S: [1480, 1060] };
     S.grayStart = L.find(s => s.tool === 'gray').t0;
-    S.cam = [[S.hit - 20, 960, 600, .92, -4], [S.hit + 30, 1000, 540, 1.0, -2], [S.grayStart + 10, 980, 560, 1.08, 0], [S.end - 4, 940, 560, 1.12, 2]];
+    S.cam = [[S.hit - 20, 960, 600, .92, -4], [S.hit + 30, 1000, 540, 1.0, -2], [S.grayStart + 10, 980, 560, 1.08, 0], [S.T_LIGHT, 980, 560, 1.0, 1], [S.end - 4, 900, 620, .9, 4]];
   });
 
   // ================= 04 网页：紫色底上一整面官网 =================
@@ -127,7 +163,11 @@ const SCN = (() => {
     S.car = gen.car({ x: 1140, y: 560, s: .56, color: gen.COL.orange, t0: S.hit + 2, rate: .5, hop: .1, G: f => G.web(f), vclip: S.WEBCLIP, layer: 'web', dotGap: 1.5 });
     S.cta = gen.add('marker', [[70, 600], [370, 594]], Object.assign({ w: 80, th: 22, nib: 1.45, color: gen.COL.orange, alpha: .78, dur: 4, t0: S.hit + 30, prof: 'press' }, wb));
     const CARDS = [['sneaker', gen.COL.teal, '运动鞋'], ['phones', gen.COL.violet, '耳机'], ['chair', gen.COL.yellow, '躺椅'], ['lamp', gen.COL.red, '台灯']];
-    S.cards = CARDS.map(([n, c, label], i) => { const cx = 60 + i * 390 + 180, cy = 1060; const p = gen.product(n, { x: cx, y: cy, s: .74, color: c, t0: S.T_SCROLL + 12 + i * 3, rate: .9, G: f => G.web(f), vclip: S.WEBCLIP, layer: 'web' }); return { n, c, label, cx, cy, ...p }; });
+    S.cards = CARDS.map(([n, c, label], i) => { const cx = 60 + i * 390 + 180, cy = 1060; const card = { n, c, label, cx, cy, tA: 1e9 };
+      const anim = f => n === 'sneaker' ? hopM(f, card.tA, cx, cy, { H: 70, dur: 16, spin: -Math.PI * 2 }) : n === 'phones' ? pulseM(f, card.tA, cx, cy - 70, .16) : n === 'chair' ? rockM(f, card.tA, cx, cy, .22) : rockM(f, card.tA, cx - 52, cy - 10, .35, .35, 26);
+      const p = gen.product(n, { x: cx, y: cy, s: .74, color: c, t0: S.T_SCROLL + 12 + i * 3, rate: .9, G: f => INK.mul(G.web(f), anim(f)), vclip: S.WEBCLIP, layer: 'web' });
+      Object.assign(card, p); card.tA = p.end + 4 + i * 5; return card; });
+    S.tail = 24;
     S.dots = S.car.dots;
     S.T_CLICK = S.cta.t0 + 30;
     S.cam = [[S.hit - 20, 960, 540, .94, 3], [S.hit + 40, 760, 470, 1.25, 1], [S.T_CLICK + 4, 520, 620, 1.45, -1], [S.T_SCROLL + 16, 960, 560, 1.0, 0], [S.end - 4, 980, 560, 1.06, 1]];
@@ -162,13 +202,15 @@ const SCN = (() => {
 
   // ================= 06 一支笔：橙色底，整屏大字 =================
   scene(5, (S, gen, G) => {
-    const lt = gen.letters('MARKER', 150, 200, 340, { dur: 4, tool: 'giantBlack', layer: 'paper', w: 92, th: 22 });
+    S.T_WAVE = 1e9; S.LG = [];
+    const lt = gen.letters('MARKER', 150, 200, 340, { dur: 4, tool: 'giantBlack', layer: 'paper', w: 92, th: 22, letterG: (i, cx, by) => { const g = f => hopM(f, S.T_WAVE + i * 4, cx, by, { H: 90, dur: 16 }); S.LG[i] = g; return g; } });
     let t = gen.seq(lt, S.hit + 2, .9);
     // 白：每个字母的左边一道高光
     const hl = [[150 + 20, 230, 150 + 34, 520], [150 + 92 * 3.4 + 40, 300, 150 + 92 * 3.4 + 90, 260], [150 + (92 + 84) * 3.4 + 20, 240, 150 + (92 + 84) * 3.4 + 20, 510], [150 + (92 + 84 + 80) * 3.4 + 20, 240, 150 + (92 + 84 + 80) * 3.4 + 20, 510], [150 + (92 + 84 + 80 + 80) * 3.4 + 20, 240, 150 + (92 + 84 + 80 + 80) * 3.4 + 20, 510], [150 + (92 + 84 + 80 + 80 + 82) * 3.4 + 20, 240, 150 + (92 + 84 + 80 + 80 + 82) * 3.4 + 20, 510]];
-    const wh = hl.map(([a, b, c, d]) => gen.add('white', [[a, b], [a + (c - a) * .4, b + (d - b) * .4]], { w: 6, color: '#FFFDF7', alpha: .95, dur: 2.2, prof: 'flick', layer: 'paper' }));
+    const wh = hl.map(([a, b, c, d], i) => gen.add('white', [[a, b], [a + (c - a) * .4, b + (d - b) * .4]], { G: f => S.LG[i](f), w: 6, color: '#FFFDF7', alpha: .95, dur: 2.2, prof: 'flick', layer: 'paper' }));
     S.T_WHITE = t + 4; t = gen.seq(wh, S.T_WHITE, .9);
-    S.dots = [[150 + 30, 236, 9], [150 + (92 + 84) * 3.4 + 26, 246, 8], [150 + (92 + 84 + 80 + 80 + 82) * 3.4 + 26, 246, 9]].map((d, i) => ({ p: [d[0], d[1]], r: d[2], t: t + 2 + i * BEAT / 2 }));
+    S.dots = [[150 + 30, 236, 9, 0], [150 + (92 + 84) * 3.4 + 26, 246, 8, 2], [150 + (92 + 84 + 80 + 80 + 82) * 3.4 + 26, 246, 9, 5]].map((d, i) => ({ p: [d[0], d[1]], r: d[2], t: t + 2 + i * BEAT / 2, G: f => S.LG[d[3]](f) }));
+    S.T_WAVE = t + 2 + 3 * BEAT / 2 + 4;
     S.T_TEXT = t + 6;
     S.cam = [[S.hit - 20, 900, 400, 1.3, -4], [S.hit + 50, 1000, 420, 1.15, -1], [S.T_TEXT, 960, 540, 1.02, 0], [END, 960, 540, 1.0, 0]];
   });
