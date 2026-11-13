@@ -18,3 +18,4 @@ ffmpeg -y -loglevel error -framerate 60 -i "$OUT/%04d.jpg" -i "$OUT.wav" -c:v li
   -colorspace bt709 -color_primaries bt709 -color_trc bt709 -c:a aac -b:a 192k -movflags +faststart -shortest "$NAME-film.mp4"
 echo "wrote $NAME-film.mp4"
 python3 ../../_lib/smooth.py "$NAME-film.mp4"      # 逐个核对它列出的跳变是不是有意的
+python3 ../../_lib/cover.py "$NAME-film.mp4"       # 第一个画面：存下第 0 帧和缩略图，报“要改”就改
