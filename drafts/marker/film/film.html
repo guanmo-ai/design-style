@@ -3,289 +3,364 @@
 <canvas id="c" width="1920" height="1080"></canvas>
 <script src="ink.js"></script><script src="board.js"></script>
 <script>
-// 马克笔 · 一张纸、137 笔。window.frame(f) 画第 f 帧（帧号的纯函数）。
-// 0—50 帧：第 0 帧是画完的整张（封面），拔帽、整张倒放回白纸；之后镜头骑着笔尖把它重新画一遍；最后扣上笔帽。
+// 马克笔 v2 · 一支笔，从纸画到网页、画到手机。window.frame(f) 画第 f 帧（帧号的纯函数）。
+// 第 0 帧 = 片尾全景（封面）：拔帽，整张桌面倒放回空；然后一站一站画回来，换站 = 一道巨笔扫过去、设备落到桌上；最后扣帽。
 const cv = document.getElementById('c'), out = cv.getContext('2d');
 const sub = document.createElement('canvas'); sub.width = 1920; sub.height = 1080; const ctx = sub.getContext('2d');
 const Q = new URLSearchParams(location.search);
-const { clamp, mul, apply } = INK, Bd = BOARD, MK = Bd.marks, COL = Bd.COL, BEAT = Bd.BEAT;
+const { clamp, mul, apply } = INK, Bd = BOARD, MK = Bd.marks, COL = Bd.COL, BEAT = Bd.BEAT, W = Bd.W, P = Bd.P, BR = Bd.BROW, PH = Bd.PHONE, PA = Bd.PAPER;
 const sm = t => (t = clamp(t), t * t * (3 - 2 * t)), smr = (a, b, x) => sm((x - a) / (b - a)), lerp = (a, b, t) => a + (b - a) * t;
 const ssm = t => (t = clamp(t), t * t * t * (t * (6 * t - 15) + 10));
 const spring = (t, z = .55, w = 9) => { if (t <= 0) return 0; const wd = w * Math.sqrt(1 - z * z); return 1 - Math.exp(-z * w * t) * (Math.cos(wd * t) + z * w / wd * Math.sin(wd * t)); };
-const CAP_ON = BOARD.marks.T_REV + 4 * BOARD.BEAT,   // 扣帽落在下一个小节线上
-      END = CAP_ON + 60, CAP_OFF = 3, REW0 = 6, REW1 = 50;
-const FONT = { hand: 'LongCang', latin: 'Caveat', sans: 'NotoSans', mono: 'JBMono' };
-const INKC = '#2148A8';                          // 批注用的蓝色针管笔
+const CAP_ON = MK.T_CAP, END = CAP_ON + 60, CAP_OFF = 3, REW0 = 6, REW1 = 50;
+const FONT = { hand: 'LongCang', latin: 'Caveat', sans: 'NotoSans', mono: 'JBMono', mk: 'PMarker' };
+const INKC = '#2148A8', DESK = '#E9E4D8', SHEET = '#FBFAF6';
+const ZFULL = 1920 / Bd.WORLD.W, CFULL = [Bd.WORLD.W / 2, Bd.WORLD.H / 2];
 
-// —— 时间：倒放开场把“纸上画到哪”映射回去 ——
-const TFULL = MK.T_DRAW_END + 60;
-function tau(f) { if (f >= REW1) return f; if (f <= REW0) return TFULL; const u = (f - REW0) / (REW1 - REW0); return lerp(TFULL, REW1 - 0.01, ssm(u)); }
+// —— 倒放：纸上“画到哪”的时间 ——
+const TFULL = MK.T_DRAW_END + 40;
+function tau(f) { if (f >= REW1) return f; if (f <= REW0) return TFULL; return lerp(TFULL, REW1 - 0.01, ssm((f - REW0) / (REW1 - REW0))); }
 
-// —— 组变换：车活过来（片尾） ——
-const TR = MK.T_REV;
-const pulse = u => u <= 0 ? 0 : u * u * Math.exp(2 * (1 - u));            // 0 起步、速度连续，u=1 到顶
-function carShift(f) { const u = (f - TR) / 16; const g = pulse(u) - 0.3 * pulse((f - TR - 24) / 14); return 120 * g; }
-function carPitch(f) { const d = (carShift(f + .5) - carShift(f - .5)); return -0.0035 * d; }
-function wheelAng(f) { // 角速度：起步猛、慢慢停
-  const x = f - TR; if (x <= 0) return 0; const k = 1 / 60; let a = 0; const n = Math.ceil(x);
-  for (let i = 0; i < n; i++) { const t = Math.min(1, x - i); const ti = i + t / 2; a += t * 0.55 * (1 - Math.exp(-ti / 4)) * Math.exp(-ti / 34); } return a; }
+// —— 组变换 ——
 const rot = (cx, cy, a) => { const c = Math.cos(a), s = Math.sin(a); return [c, s, -s, c, cx - c * cx + s * cy, cy - s * cx - c * cy]; };
-Bd.G.car = f => { const dx = carShift(f), p = carPitch(f), rc = Bd.wheelC(Bd.WR); return mul([1, 0, 0, 1, dx, 0], rot(rc[0], rc[1] + 95, p)); };
-for (const [k, cx] of [['wheelF', Bd.WF], ['wheelR', Bd.WR]]) { const c = Bd.wheelC(cx); Bd.G[k] = f => mul(Bd.G.car(f), rot(c[0], c[1], wheelAng(f))); }
-for (const S of Bd.all) { if (S.group) { const g = S.group; S.G = f => Bd.G[g](f); } if (S.clipGroup) { const g = S.clipGroup; S.clipG = f => Bd.G[g](f); } }
+const tr = (x, y) => [1, 0, 0, 1, x, y];
+const T_SCROLL = W.T_SCROLL, SCROLL = 700;
+const scrollAt = f => SCROLL * ssm((f - T_SCROLL) / 24);
+// 设备“落到桌上”：从上面掉下来、压一下、弹回（弹簧，过冲约 5%）
+const LAND = { web: MK.T_SW1 + 10, phone: MK.T_SW2 + 10, paper: MK.T_TITLE_END - 10 };
+function landM(name, f, cx, cy) { const k = spring((f - LAND[name]) / 26, .5, 9); if (k <= 0) return null; const s = 0.86 + 0.14 * k; const y = (1 - Math.min(1, k)) * -90; return mul(tr(cx, cy + y), mul([s, 0, 0, s, 0, 0], tr(-cx, -cy))); }
+const IDM = [1, 0, 0, 1, 0, 0];
+Bd.G.paper = f => mul(landM('paper', f, PA.cx, PA.cy) || IDM, rot(PA.cx, PA.cy, PA.rot));
+Bd.G.webDev = f => landM('web', f, BR.x + BR.w / 2, BR.y + BR.h / 2) || IDM;
+Bd.G.web = f => mul(Bd.G.webDev(f), tr(BR.x, BR.y + BR.chrome - scrollAt(f)));
+Bd.G.phoneDev = f => landM('phone', f, PH.x + PH.w / 2, PH.y + PH.h / 2) || IDM;
+Bd.G.phone = f => mul(Bd.G.phoneDev(f), tr(PH.sx, PH.sy));
+// 手机里的卡片：点一下色块，旧卡往左滑走、新卡从右边滑进来
+const TAPS = P.taps.map(t => t.t);
+function cardX(k, f) { const inn = k === 0 ? -1e9 : TAPS[k - 1] + 2, outt = k < TAPS.length ? TAPS[k] + 2 : 1e9;
+  return PH.sw * (1 - ssm((f - inn) / 14)) * (k === 0 ? 0 : 1) - PH.sw * ssm((f - outt) / 14); }
+P.cards.forEach((c, k) => { Bd.G[c.name] = f => mul(Bd.G.phone(f), tr(cardX(k, f), 0)); });
+for (const S of Bd.all) if (S.vclip) { const dev = S.layer === 'web' ? 'webDev' : 'phoneDev'; const C = S.vclip; S.vclipG = f => Bd.G[dev](f); }
+// 设备在落地之前不存在：vclip 也要跟着设备动
+const vclipM = (S, f, cam) => S.vclipG ? mul(cam, S.vclipG(f)) : cam;
 
-// —— 笔：每支笔的位置 = 正在画的那一笔的笔尖；两笔之间按“末速度 → 初速度”做三次插值（速度连续），抬起来一点 ——
-const TOOLS = { pencil: { color: COL.pencil, kind: 'pencil' }, black: { color: COL.black, kind: 'marker' }, blue: { color: COL.blue, kind: 'marker' }, orange: { color: COL.orange, kind: 'marker' }, liner: { color: COL.liner, kind: 'liner' }, white: { color: '#F2EFE6', kind: 'white' } };
+// —— 笔 ——
+const TOOLS = { pencil: { color: COL.pencil, kind: 'pencil' }, black: { color: COL.black, kind: 'marker' }, blue: { color: COL.blue, kind: 'marker' }, orange: { color: COL.orange, kind: 'marker' },
+  liner: { color: COL.liner, kind: 'liner' }, white: { color: '#F2EFE6', kind: 'white' }, giant: { color: COL.orange, kind: 'marker', scale: 3.4 } };
 for (const k in TOOLS) TOOLS[k].S = Bd.all.filter(S => S.tool === k).sort((a, b) => a.t0 - b.t0);
-const ENTER = [520, 380], EXIT = [560, 420];  // 笔从右下角进出（纸面方向，按镜头缩放）
+const tipW = (S, f) => { const q = INK.tip(S, f); if (!S.G) return q; const M = S.G(f); const [x, y] = apply(M, q.x, q.y); return Object.assign({}, q, { x, y, vx: M[0] * q.vx + M[2] * q.vy, vy: M[1] * q.vx + M[3] * q.vy }); };
 function hermite(p0, v0, p1, v1, T, u) { const u2 = u * u, u3 = u2 * u; const h00 = 2 * u3 - 3 * u2 + 1, h10 = u3 - 2 * u2 + u, h01 = -2 * u3 + 3 * u2, h11 = u3 - u2;
   return [h00 * p0[0] + h10 * T * v0[0] + h01 * p1[0] + h11 * T * v1[0], h00 * p0[1] + h10 * T * v0[1] + h01 * p1[1] + h11 * T * v1[1]]; }
 function penAt(k, f) {
-  const L = TOOLS[k].S; if (!L.length) return null;
-  const first = L[0], last = L[L.length - 1];
-  const tin = 16, tout = 18;
-  if (f < first.t0 - tin || f > last.end + tout) return null;
+  const L = TOOLS[k].S; if (!L.length) return null; const sc = TOOLS[k].scale || 1;
+  const EN = [560 * sc, 420 * sc], EX = [600 * sc, 460 * sc], tin = 14, tout = 16;
+  if (f < L[0].t0 - tin || f > L[L.length - 1].end + tout) return null;
   for (let i = 0; i < L.length; i++) {
-    const S = L[i];
-    if (f >= S.t0 && f <= S.end) { const q = INK.tip(S, f); return { x: q.x, y: q.y, lift: 0, down: true, S }; }
-    const N = L[i + 1];
-    if (f < S.t0) { // 进场
-      const a = INK.tip(S, S.t0), z = 1; const p0 = [a.x + ENTER[0], a.y + ENTER[1]]; const T = tin; const u = (f - (S.t0 - T)) / T;
-      const p = hermite(p0, [-ENTER[0] / T * 1.6, -ENTER[1] / T * 1.6], [a.x, a.y], [0, 0], T, u); return { x: p[0], y: p[1], lift: 1 - sm(u), down: false };
-    }
-    if (N && f > S.end && f < N.t0) {
-      const a = INK.tip(S, S.end - 1e-3), b = INK.tip(N, N.t0); const T = N.t0 - S.end, u = (f - S.end) / T;
-      const va = [a.vx, a.vy], vb = [0, 0];
-      const p = hermite([a.x, a.y], va, [b.x, b.y], vb, T, u); const d = Math.hypot(b.x - a.x, b.y - a.y);
-      return { x: p[0], y: p[1], lift: Math.sin(Math.PI * u) * Math.min(1, 0.25 + d / 260), down: false };
-    }
-    if (!N && f > S.end) { // 退场
-      const a = INK.tip(S, S.end - 1e-3); const T = tout, u = (f - S.end) / T;
-      const p = hermite([a.x, a.y], [a.vx, a.vy], [a.x + EXIT[0], a.y + EXIT[1]], [EXIT[0] / T * 1.6, EXIT[1] / T * 1.6], T, u); return { x: p[0], y: p[1], lift: sm(u * 2), down: false };
-    }
+    const S = L[i], N = L[i + 1];
+    if (f >= S.t0 && f <= S.end) { const q = tipW(S, f); return { x: q.x, y: q.y, lift: 0, S }; }
+    if (f < S.t0) { const a = tipW(S, S.t0), T = tin, u = (f - (S.t0 - T)) / T; const p = hermite([a.x + EN[0], a.y + EN[1]], [-EN[0] / T * 1.6, -EN[1] / T * 1.6], [a.x, a.y], [0, 0], T, u); return { x: p[0], y: p[1], lift: 1 - sm(u) }; }
+    if (N && f > S.end && f < N.t0) { const a = tipW(S, S.end - 1e-3), b = tipW(N, N.t0), T = N.t0 - S.end, u = (f - S.end) / T;
+      if (T > 40) { // 间隔太久：先离场，再回来
+        if (u < .5) { const p = hermite([a.x, a.y], [a.vx, a.vy], [a.x + EX[0], a.y + EX[1]], [0, 0], T / 2, u * 2); return { x: p[0], y: p[1], lift: sm(u * 4) }; }
+        const p = hermite([b.x + EN[0], b.y + EN[1]], [0, 0], [b.x, b.y], [0, 0], T / 2, u * 2 - 1); return { x: p[0], y: p[1], lift: 1 - sm((u - .5) * 2) }; }
+      const p = hermite([a.x, a.y], [a.vx, a.vy], [b.x, b.y], [0, 0], T, u); const d = Math.hypot(b.x - a.x, b.y - a.y);
+      return { x: p[0], y: p[1], lift: Math.sin(Math.PI * u) * Math.min(1, 0.25 + d / (260 * sc)) }; }
+    if (!N && f > S.end) { const a = tipW(S, S.end - 1e-3), T = tout, u = (f - S.end) / T; const p = hermite([a.x, a.y], [a.vx, a.vy], [a.x + EX[0], a.y + EX[1]], [EX[0] / T * 1.6, EX[1] / T * 1.6], T, u); return { x: p[0], y: p[1], lift: sm(u * 2) }; }
   }
   return null;
 }
+const giantColor = f => { const S = TOOLS.giant.S.find(S => f <= S.end + 16) || TOOLS.giant.S[TOOLS.giant.S.length - 1]; return S.color === COL.white ? '#EDEBE4' : S.color; };
 
-// —— 镜头：关键帧（可以跟着某支笔）→ 平滑插值 → 高斯磨平（位置、速度都连续）——
-const T = Bd.T, dw = Bd.dwellStroke;
-const dwP = INK.tip(dw, dw.t0), OUT0 = Bd.lin[0];
+// —— 镜头 ——
+const wpt = (x, y) => [BR.x + x, BR.y + BR.chrome + y];                 // 网页内容坐标 → 世界（未滚动）
+const ppt = (x, y) => [PH.sx + x, PH.sy + y];
+const CTAW = wpt(250, 676), CARDW = ppt(254, 520);
 const CAM = [
-  [0, 960, 540, 1.0, 0], [8, 960, 540, 1.0, 0],
-  [REW1, 300, 846, 2.15, -4],
-  [MK.T_TITLE_END - 14, 470, 846, 2.05, -2],
-  [MK.T_TITLE_END + 14, 1040, 650, 1.32, 3],
-  [MK.T_PENCIL_END + 8, 900, 600, 1.45, 4, 'blue', .55, 0], [MK.T_SWEEP_END - 6, 1300, 580, 1.5, 3, 'blue', .55, 0],
-  [MK.T_RULE1 + 8, 1590, 215, 2.25, 0], [MK.T_RULE1 + 40, 1600, 215, 2.3, 0],
-  [MK.T_PASS1 + 6, 1060, 600, 1.6, -7, 'orange', 0, .5], [MK.T_RULE3 - 26, 1060, 640, 1.6, -6, 'orange', 0, .5],
-  [MK.T_RULE3 - 4, dwP.x + 110, dwP.y + 40, 3.2, -3], [MK.T_RULE3 + 26, dwP.x + 150, dwP.y + 40, 3.0, -2],
-  [MK.T_RULE3 + 52, 1040, 690, 1.55, -4], [MK.T_DARK_END - 40, 1100, 720, 1.5, -2],
-  [MK.T_DARK_END - 6, 1590, 240, 2.0, 0],
-  [MK.T_DARK_END + 22, 1000, 620, 1.7, 2], [MK.T_BLK_END - 6, 1100, 700, 1.7, 2],
-  [OUT0.t0 + 2, 1060, 640, 2.2, -3, OUT0, .6], [OUT0.end - 2, 1060, 640, 2.2, -1, OUT0, .6], [OUT0.end + 14, 1060, 650, 1.75, 0],
-  [MK.T_LINE_END + 4, 1040, 650, 1.55, 0],
-  [MK.T_WHITE + 60, 1000, 610, 1.4, 0],
-  [MK.T_REV + 2, 1020, 640, 1.38, 0], [MK.T_REV + 40, 960, 560, 1.06, 0],
-  [MK.T_REV + 70, 960, 540, 1.0, 0], [END, 960, 540, 1.035, 0]];
-// 跟笔：K[6] = 横向跟多少，K[7] = 纵向跟多少（之字形来回扫的段落只跟前进的方向，不然镜头会跟着笔来回晃）
-function camKey(i, f) { const K = CAM[i]; let x = K[1], y = K[2]; if (K[5]) { const p = typeof K[5] === 'object' ? INK.tip(K[5], clamp(f + 6, K[5].t0, K[5].end - 1e-3)) : penAt(K[5], f + 6); if (p) { x = lerp(x, p.x, K[6]); y = lerp(y, p.y, K[7] ?? K[6]); } } return [x, y, Math.log(K[3]), K[4]]; }
-function camTarget(f) {
-  let i = 0; while (i < CAM.length - 2 && CAM[i + 1][0] <= f) i++;
-  const a = camKey(i, f), b = camKey(i + 1, f), A = CAM[i][0], Bf = CAM[i + 1][0];
-  const u = ssm((f - A) / (Bf - A));
-  return a.map((v, k) => lerp(v, b[k], u));
-}
+  [0, ...CFULL, ZFULL, 0], [8, ...CFULL, ZFULL, 0],
+  [REW1, 980, 420, 1.0, -3], [MK.T_TITLE_END - 2, 1080, 440, 1.0, -1],
+  [MK.CAR.g0 + 18, 1330, 1480, 1.05, -2], [MK.CAR.g4 + 2, 1300, 1540, 1.22, -4], [MK.T_CAR_END - 6, 1330, 1520, 1.12, 0],
+  [MK.T_SW1 + 4, 2600, 1900, .62, 4, 'giant', .55], [MK.T_SW1 + 22, 3300, 1300, .7, 2, 'giant', .45],
+  [MK.T_WEB + 14, BR.x + BR.w / 2, BR.y + BR.h / 2, 1.0, 0], [W.T_CURSOR, BR.x + BR.w / 2, BR.y + BR.h / 2 + 20, 1.02, 0],
+  [W.T_PRESS + 4, CTAW[0] + 160, CTAW[1] - 40, 1.9, -2], [W.T_PRESS + 30, CTAW[0] + 200, CTAW[1] - 40, 2.0, -1],
+  [T_SCROLL + 12, BR.x + BR.w / 2, BR.y + BR.h / 2 + 40, 1.0, 0], [MK.T_WEB_END + 4, BR.x + BR.w / 2, BR.y + BR.h / 2 + 50, 1.04, 1],
+  [MK.T_SW2 + 4, 3000, 1700, .6, -3, 'giant', .5], [MK.T_SW2 + 22, 3700, 2000, .66, -1, 'giant', .4],
+  [MK.T_PH + 14, PH.x + PH.w / 2 - 60, PH.y + PH.h / 2, .84, 3], [TAPS[0] - 4, CARDW[0] - 40, CARDW[1] + 150, 1.3, 2],
+  [P.T_TOGGLE + 6, CARDW[0] - 30, CARDW[1] + 330, 1.25, 0], [MK.T_PH_END - 2, PH.x + PH.w / 2 - 60, PH.y + PH.h / 2 + 40, .95, 0],
+  [MK.T_SW3 + 6, 3000, 1800, .66, -2, 'giant', .45], [MK.T_SW3 + 22, 3300, 1650, .62, 0],
+  [MK.T_STRIP + 6, 1000, 2150, .8, 0], [MK.T_STRIP_END - 4, 1200, 2120, .74, 0],
+  [CAP_ON - 30, ...CFULL, ZFULL, 0], [END, CFULL[0], CFULL[1], ZFULL * 1.03, 0]];
+function camKey(i, f) { const K = CAM[i]; let x = K[1], y = K[2]; if (K[5]) { const p = penAt(K[5], f + 4); if (p) { x = lerp(x, p.x, K[6]); y = lerp(y, p.y, K[6]); } } return [x, y, Math.log(K[3]), K[4]]; }
+function camTarget(f) { let i = 0; while (i < CAM.length - 2 && CAM[i + 1][0] <= f) i++; const a = camKey(i, f), b = camKey(i + 1, f), u = ssm((f - CAM[i][0]) / (CAM[i + 1][0] - CAM[i][0])); return a.map((v, k) => lerp(v, b[k], u)); }
 const camMemo = new Map();
 function cam(f) {
   const key = Math.round(f * 64); if (camMemo.has(key)) return camMemo.get(key);
   const sg = 7; let acc = [0, 0, 0, 0], sw = 0;
   for (let k = -21; k <= 21; k += 1.5) { const w = Math.exp(-k * k / (2 * sg * sg)); const q = camTarget(f + k); for (let j = 0; j < 4; j++) acc[j] += q[j] * w; sw += w; }
-  let [x, y, lz, r] = acc.map(v => v / sw);
-  // 片尾车一冲：镜头往下“咚”一下（单向）
-  const sh = 14 * Math.exp(-Math.max(0, f - TR - 6) / 7) * smr(TR, TR + 6, f);
-  const res = { x, y: y - sh, z: Math.exp(lz), r: r * Math.PI / 180 };
+  const [x, y, lz, r] = acc.map(v => v / sw);
+  let sh = 0; for (const t of [MK.T_SW1 + 13, MK.T_SW2 + 13, LAND.web + 6, LAND.phone + 6]) sh += 10 * Math.exp(-Math.max(0, f - t) / 7) * smr(t - 3, t + 3, f);
+  const res = { x, y: y - sh / Math.exp(lz), z: Math.exp(lz), r: r * Math.PI / 180 };
   camMemo.set(key, res); return res;
 }
 function camM(c) { const cs = Math.cos(c.r) * c.z, sn = Math.sin(c.r) * c.z; return [cs, sn, -sn, cs, 960 - (cs * c.x - sn * c.y), 540 - (sn * c.x + cs * c.y)]; }
+const setM = (c, M) => c.setTransform(M[0], M[1], M[2], M[3], M[4], M[5]);
 
-// —— 纸：冷白马克笔纸 + 纤维（跟着纸走）——
-const PAPER = '#F4F1EA';
+// —— 纸纹 ——
 const grain = (() => { const g = document.createElement('canvas'); g.width = g.height = 384; const x = g.getContext('2d'), d = x.createImageData(384, 384), r = INK.rng(3);
   for (let i = 0; i < d.data.length; i += 4) { const v = r(); d.data[i] = 120; d.data[i + 1] = 110; d.data[i + 2] = 92; d.data[i + 3] = v * 22; } x.putImageData(d, 0, 0);
   x.globalAlpha = .09; x.strokeStyle = '#7a705f'; for (let i = 0; i < 160; i++) { const X = r() * 384, Y = r() * 384, a = r() * 6.28, l = 4 + r() * 12; x.lineWidth = .6; x.beginPath(); x.moveTo(X, Y); x.lineTo(X + Math.cos(a) * l, Y + Math.sin(a) * l); x.stroke(); }
   return ctx.createPattern(g, 'repeat'); })();
 
-// —— 手写批注：从左往右写出来（每个字登记一声）——
+// —— 字（每个字一声）——
 const cues = new Map();
-function cue(f0, n, rate, kind) { const k = f0 + '|' + kind + '|' + n; if (!cues.has(k)) cues.set(k, [f0, n, rate, kind]); }
+function cue(f0, n, rate, kind) { const k = f0.toFixed(1) + '|' + kind + '|' + n; if (!cues.has(k)) cues.set(k, [f0, n, rate, kind]); }
 function hand(c, txt, x, y, f, f0, o = {}) {
-  if (f < f0) return; const rate = o.rate ?? 2.2; const n = [...txt].length; cue(f0, n, rate, o.kind || 'text');
+  if (f < f0) return; const rate = o.rate ?? 1.6; const n = [...txt].length; if (!o.silent) cue(f0, n, rate, o.kind || 'text');
   c.save(); c.font = o.font; c.textBaseline = 'alphabetic'; c.textAlign = 'left';
-  const W = c.measureText(txt).width; const x0 = o.align === 'right' ? x - W : o.align === 'center' ? x - W / 2 : x;
-  const prog = clamp((f - f0) / (n * rate)); const edge = x0 + W * prog;
-  const fade = o.out ? 1 - smr(o.out, o.out + 16, f) : 1; if (fade <= 0) { c.restore(); return; }
-  c.beginPath(); c.rect(x0 - 40, y - o.size * 1.4, edge - x0 + 40 + o.size * 0.3, o.size * 2); c.clip();
-  c.globalAlpha = (o.alpha ?? 1) * fade; c.fillStyle = o.color; c.fillText(txt, x0, y);
-  c.restore();
-  return { x0, W, edge, done: prog >= 1 };
+  const Wd = c.measureText(txt).width; const x0 = o.align === 'right' ? x - Wd : o.align === 'center' ? x - Wd / 2 : x;
+  const prog = clamp((f - f0) / (n * rate)); const edge = x0 + Wd * prog;
+  c.beginPath(); c.rect(x0 - 60, y - o.size * 1.4, edge - x0 + 60 + o.size * 0.3, o.size * 2); c.clip();
+  c.globalAlpha = (o.alpha ?? 1); c.fillStyle = o.color; c.fillText(txt, x0, y); c.restore();
 }
-// 批注的箭头：针管笔一笔画出来
-function arrowPts(a, b, bend) { const out = []; const mx = (a[0] + b[0]) / 2 - (b[1] - a[1]) * bend, my = (a[1] + b[1]) / 2 + (b[0] - a[0]) * bend;
-  for (let i = 0; i <= 30; i++) { const t = i / 30; out.push([(1 - t) * (1 - t) * a[0] + 2 * (1 - t) * t * mx + t * t * b[0], (1 - t) * (1 - t) * a[1] + 2 * (1 - t) * t * my + t * t * b[1]]); } return out; }
-const ARROWS = [];
-function mkArrow(a, b, bend, t0, dur = 12) { const P = arrowPts(a, b, bend); const n = P.length, e = P[n - 1], d = P[n - 4]; const ang = Math.atan2(e[1] - d[1], e[0] - d[0]);
-  const S = { kind: 'liner', P: INK.dense(P, 2), w: 2.4, color: INKC, alpha: 1, t0, dur, prof: 'press', seed: t0 }; S.end = t0 + dur;
-  const hd = [[e[0] - Math.cos(ang - .45) * 18, e[1] - Math.sin(ang - .45) * 18], e, [e[0] - Math.cos(ang + .45) * 18, e[1] - Math.sin(ang + .45) * 18]];
-  const H = { kind: 'liner', P: INK.dense(hd, 2, true), w: 2.4, color: INKC, alpha: 1, t0: t0 + dur + 1, dur: 4, prof: 'even', seed: t0 + 1 }; H.end = H.t0 + 4;
-  ARROWS.push(S, H); }
-const NOTE2 = MK.T_PASS1 + 52, NOTE3 = MK.T_RULE3 + 8, NOTE4 = MK.T_WHITE + 8, NOTE1 = MK.T_RULE1 + 6;
-mkArrow([500, 236], T([-330, -192]), -.22, NOTE2 + 20);
-mkArrow([604, 462], [dwP.x - 18, dwP.y - 22], -.3, NOTE3 + 18);
-mkArrow([905, 222], T([-40, -330]), .2, NOTE4 + 22);
+function pop(c, f, f0, cx, cy, draw) { const k = spring((f - f0) / 20, .5, 9); if (k <= 0) return; c.save(); c.translate(cx, cy); c.scale(k, k); c.translate(-cx, -cy); c.globalAlpha *= Math.min(1, k * 1.5); draw(); c.restore(); }
+const big = s => `400 ${s}px ${FONT.hand}`, sans = (s, w = 500) => `${w} ${s}px ${FONT.sans}`;
 
-function notes(c, f) {
-  const big = s => `400 ${s}px ${FONT.hand}`, sans = s => `500 ${s}px ${FONT.sans}`;
-  // ① 试色条上方
-  hand(c, '① 一笔一层：叠一遍，深一档', 1352, 122, f, NOTE1, { font: big(36), size: 36, color: INKC, rate: 1.8 });
-  for (let k = 0; k < 3; k++) hand(c, '×' + (k + 1), Bd.SW.x + k * (Bd.SW.w + Bd.SW.gap) + Bd.SW.w / 2 - 12, 282, f, NOTE1 + 14 + k * 6, { font: `600 34px ${FONT.latin}`, size: 34, color: INKC, rate: 2 });
-  hand(c, '透明墨 · 正片叠底 multiply', 1358, 320, f, NOTE1 + 30, { font: sans(24), size: 24, color: '#5B6170', rate: 1.2, kind: 'small' });
-  // ② 白是留出来的
-  hand(c, '② 白是留出来的', 72, 262, f, NOTE2, { font: big(52), size: 52, color: INKC, rate: 2.2 });
-  hand(c, '肩线下那一道亮，一笔都没画', 74, 304, f, NOTE2 + 16, { font: sans(26), size: 26, color: '#5B6170', rate: 1.1, kind: 'small' });
-  // ③ 停得越久，墨越深
-  hand(c, '③ 停得越久，墨越深', 72, 488, f, NOTE3, { font: big(52), size: 52, color: INKC, rate: 2.2 });
-  hand(c, '起笔、收笔会积墨——手画的证据', 74, 530, f, NOTE3 + 16, { font: sans(26), size: 26, color: '#5B6170', rate: 1.1, kind: 'small' });
-  // ④ 最后一笔才是白
-  hand(c, '④ 最后一笔，才是白', 600, 196, f, NOTE4, { font: big(52), size: 52, color: INKC, rate: 2.2 });
-  // 标题下面
-  hand(c, '马克笔 · 设计草图', 78, 948, f, MK.T_TITLE_END - 20, { font: `700 40px ${FONT.sans}`, size: 40, color: '#1F2126', rate: 2.2 });
-  hand(c, '快、透明、不能改：三支笔、一支白，二十分钟出一辆车', 80, 994, f, MK.T_TITLE_END - 4, { font: sans(24), size: 24, color: '#5B6170', rate: .9, kind: 'small' });
-  // 署名
-  hand(c, '观默', 1196, 1046, f, CAP_ON - 34, { font: big(50), size: 50, color: '#1F2126', rate: 4, align: 'right', kind: 'title' });
-}
-
-// —— 一支马克笔（双头，原创造型）：屏幕空间里画；lift 抬起时影子分开 ——
+// —— 一支马克笔（原创造型）——
 function drawPen(c, sx, sy, z, color, kind, lift, capT = 0, alpha = 1) {
-  const A = 0.6;                          // 笔杆朝右下
-  const s = z * (kind === 'marker' ? 0.92 : 0.8) * (1 + 0.06 * lift);
+  const A = 0.6, s = z * (kind === 'marker' ? 0.92 : 0.8) * (1 + 0.06 * lift);
   c.save(); c.globalAlpha = alpha;
-  // 影子：灯在左上
   const off = (6 + 46 * lift) * z;
   c.save(); c.translate(sx + off * .7, sy + off); c.rotate(A); c.scale(s, s);
-  c.fillStyle = `rgba(60,48,36,${0.16 - 0.06 * lift})`; c.filter = `blur(${(3 + 10 * lift) * z}px)`;
+  c.fillStyle = `rgba(60,48,36,${0.16 - 0.06 * lift})`; c.filter = `blur(${Math.min(30, (3 + 10 * lift) * z)}px)`;
   c.beginPath(); c.roundRect(10, -22, 560, 44, 22); c.fill(); c.filter = 'none'; c.restore();
   c.translate(sx, sy - 16 * lift * z); c.rotate(A); c.scale(s, s);
   if (kind === 'marker') {
-    // 扁头
     c.fillStyle = color; c.beginPath(); c.moveTo(-2, -7); c.lineTo(22, -11); c.lineTo(22, 11); c.lineTo(2, 9); c.closePath(); c.fill();
     c.fillStyle = 'rgba(255,255,255,.25)'; c.fillRect(4, -8, 14, 3);
-    // 套筒
     const g1 = c.createLinearGradient(0, -20, 0, 20); g1.addColorStop(0, '#d9dbe0'); g1.addColorStop(.45, '#f7f7f8'); g1.addColorStop(1, '#9aa0a8');
     c.fillStyle = g1; c.beginPath(); c.moveTo(22, -11); c.lineTo(60, -21); c.lineTo(60, 21); c.lineTo(22, 11); c.closePath(); c.fill();
-    // 笔杆
     const g2 = c.createLinearGradient(0, -24, 0, 24); g2.addColorStop(0, '#d8d8d4'); g2.addColorStop(.35, '#ffffff'); g2.addColorStop(.7, '#ecebe6'); g2.addColorStop(1, '#a9a8a2');
     c.fillStyle = g2; c.beginPath(); c.roundRect(58, -24, 470, 48, 10); c.fill();
-    // 色环 + 尾端
     c.fillStyle = color; c.fillRect(150, -24, 16, 48); c.beginPath(); c.roundRect(470, -24, 66, 48, [4, 18, 18, 4]); c.fill();
-    c.fillStyle = 'rgba(255,255,255,.28)'; c.fillRect(470, -18, 60, 6);
-    c.fillStyle = 'rgba(0,0,0,.08)'; c.fillRect(58, 14, 470, 10);
-    // 笔帽（扣上时）
+    c.fillStyle = 'rgba(255,255,255,.28)'; c.fillRect(470, -18, 60, 6); c.fillStyle = 'rgba(0,0,0,.08)'; c.fillRect(58, 14, 470, 10);
     if (capT > 0) { const k = 1 - capT; c.save(); c.translate(-90 * k * k, -60 * k * k); c.rotate(-1.2 * k * k);
-      const g3 = c.createLinearGradient(0, -27, 0, 27); g3.addColorStop(0, color); g3.addColorStop(.4, '#ffffff'); g3.addColorStop(.55, color); g3.addColorStop(1, '#00000055');
-      c.fillStyle = color; c.beginPath(); c.roundRect(-14, -27, 186, 54, [24, 6, 6, 24]); c.fill(); c.fillStyle = g3; c.globalAlpha = alpha * .35; c.fill(); c.globalAlpha = alpha;
+      c.fillStyle = color; c.beginPath(); c.roundRect(-14, -27, 186, 54, [24, 6, 6, 24]); c.fill();
       c.fillStyle = 'rgba(255,255,255,.45)'; c.fillRect(10, -20, 140, 5); c.fillStyle = 'rgba(0,0,0,.18)'; c.fillRect(160, -27, 12, 54); c.restore(); }
   } else {
-    // 细笔（铅笔 / 针管笔 / 白笔）
     const body = kind === 'pencil' ? '#3C6FD0' : kind === 'white' ? '#EDEBE4' : '#1E2024';
     c.fillStyle = kind === 'pencil' ? '#2C2A28' : '#9aa0a8'; c.beginPath(); c.moveTo(0, 0); c.lineTo(26, -6); c.lineTo(26, 6); c.closePath(); c.fill();
     c.fillStyle = kind === 'pencil' ? '#E9C9A0' : '#c9ccd2'; c.beginPath(); c.moveTo(20, -6); c.lineTo(60, -14); c.lineTo(60, 14); c.lineTo(20, 6); c.closePath(); c.fill();
-    const g = c.createLinearGradient(0, -15, 0, 15); g.addColorStop(0, body); g.addColorStop(.35, kind === 'white' ? '#ffffff' : '#ffffff55'); g.addColorStop(.5, body); g.addColorStop(1, '#00000044');
-    c.fillStyle = body; c.beginPath(); c.roundRect(58, -15, 500, 30, 8); c.fill(); c.fillStyle = g; c.globalAlpha = alpha * .5; c.fill(); c.globalAlpha = alpha;
-    if (kind === 'white') { c.fillStyle = '#E8E4D8'; c.fillRect(150, -15, 12, 30); }
+    c.fillStyle = body; c.beginPath(); c.roundRect(58, -15, 500, 30, 8); c.fill(); c.fillStyle = 'rgba(255,255,255,.35)'; c.fillRect(64, -11, 480, 6);
   }
   c.restore();
 }
 
-// —— 一帧 ——
-function strokeCount(t) { let n = 0; for (const S of Bd.all) if (S.t0 <= t) n++; return n; }
+// ================= 设备和界面 =================
+function shadowBox(c, x, y, w, h, r, blur = 60, a = .22) { c.save(); c.shadowColor = `rgba(50,38,25,${a})`; c.shadowBlur = blur; c.shadowOffsetY = blur * .4; c.fillStyle = '#fff'; c.beginPath(); c.roundRect(x, y, w, h, r); c.fill(); c.restore(); }
+function sheet(c, f, M) { // 纸
+  const G = Bd.G.paper(f); if (f < LAND.paper) return; setM(c, mul(M, G));
+  shadowBox(c, PA.cx - PA.w / 2, PA.cy - PA.h / 2, PA.w, PA.h, 4, 50, .18); c.fillStyle = SHEET; c.fillRect(PA.cx - PA.w / 2, PA.cy - PA.h / 2, PA.w, PA.h);
+}
+function browserFrame(c, f, M) {
+  if (f < LAND.web) return false; const D = mul(M, Bd.G.webDev(f)); setM(c, D);
+  shadowBox(c, BR.x, BR.y, BR.w, BR.h, 22, 90, .26);
+  c.save(); c.beginPath(); c.roundRect(BR.x, BR.y, BR.w, BR.h, 22); c.clip();
+  c.fillStyle = '#F7F5EF'; c.fillRect(BR.x, BR.y + BR.chrome, BR.w, BR.h - BR.chrome);
+  c.fillStyle = '#ECE9E1'; c.fillRect(BR.x, BR.y, BR.w, BR.chrome);
+  ['#E8685A', '#E9B949', '#5DBB63'].forEach((col, i) => { c.fillStyle = col; c.beginPath(); c.arc(BR.x + 36 + i * 30, BR.y + 32, 9, 0, 7); c.fill(); });
+  c.fillStyle = '#fff'; c.beginPath(); c.roundRect(BR.x + 150, BR.y + 14, 640, 36, 10); c.fill();
+  c.fillStyle = '#6B6F78'; c.font = `500 20px ${FONT.mono}`; c.fillText('kite.auto / 01', BR.x + 170, BR.y + 39);
+  c.restore(); return true;
+}
+function webUI(c, f, M, over) {
+  const G = mul(M, Bd.G.web(f)); setM(c, G);
+  const t0 = MK.T_WEB;
+  if (!over) {
+    // 导航
+    c.save(); c.globalAlpha = smr(t0, t0 + 8, f);
+    c.fillStyle = '#2A2C31'; c.font = sans(26); ['车型', '设计手稿', '门店'].forEach((s, i) => c.fillText(s, 1180 + i * 130, 72));
+    c.restore();
+    pop(c, f, t0 + 4, 1660, 62, () => { c.fillStyle = '#1C1D21'; c.beginPath(); c.roundRect(1580, 36, 180, 54, 27); c.fill(); c.fillStyle = '#fff'; c.font = sans(24, 700); c.fillText('预约试驾', 1622, 72); });
+    hand(c, 'sketch no.01 — 先画出来，再造出来', 84, 222, f, t0 + 6, { font: big(46), size: 46, color: INKC, rate: .8 });
+    hand(c, '一辆从马克笔里开出来的车：首页这张就是第一张手稿，', 84, 540, f, MK.T_HERO - 6, { font: sans(28), size: 28, color: '#3C3F46', rate: .5, kind: 'small' });
+    hand(c, '每一道颜色都是一笔，没有修。', 84, 584, f, MK.T_HERO, { font: sans(28), size: 28, color: '#3C3F46', rate: .5, kind: 'small' });
+    // 手稿回放的标签
+    pop(c, f, t0 + 12, 1560, 300, () => { c.fillStyle = 'rgba(28,29,33,.85)'; c.beginPath(); c.roundRect(1480, 278, 170, 44, 22); c.fill(); c.fillStyle = '#fff'; c.font = `600 20px ${FONT.mono}`; c.fillText('▶ REPLAY 8×', 1498, 307); });
+    // 往下：卡片
+    hand(c, '同一支笔，画什么都行', 84, 864, f, T_SCROLL + 8, { font: big(60), size: 60, color: INKC, rate: 1.2 });
+    W.cards.forEach((cd, i) => pop(c, f, T_SCROLL + 10 + i * 3, cd.cx, cd.cy - 100, () => {
+      c.save(); c.shadowColor = 'rgba(50,38,25,.14)'; c.shadowBlur = 30; c.shadowOffsetY = 10; c.fillStyle = '#fff'; c.beginPath(); c.roundRect(cd.cx - 200, 900, 400, 360, 22); c.fill(); c.restore();
+      c.fillStyle = '#2A2C31'; c.font = sans(26, 700); c.fillText(cd.label, cd.cx - 176, 1234); c.fillStyle = cd.c; c.beginPath(); c.roundRect(cd.cx + 110, 1214, 66, 22, 11); c.fill(); }));
+    // 数字
+    [['0–100', '3.4 秒'], ['620', '公里续航'], ['64', '笔 · 第一张手稿'], ['20', '分钟画完']].forEach(([n, l], i) => {
+      const t = T_SCROLL + 30 + i * 4; if (f < t) return; const k = spring((f - t) / 18, .55, 9);
+      c.save(); c.globalAlpha = Math.min(1, k * 1.4); c.fillStyle = '#1C1D21'; c.font = `400 ${74}px ${FONT.mk}`; c.fillText(n, 84 + i * 430, 1390 + (1 - Math.min(1, k)) * 30);
+      c.fillStyle = '#5B6170'; c.font = sans(24); c.fillText(l, 86 + i * 430, 1430); c.restore(); cue(t, 2, 2, 'small');
+    });
+  } else {
+    // 按钮的字压在笔触上面
+    if (f > W.cta.t0 + 3) { const pr = W.T_PRESS, held = f > pr && f < pr + 33; const k = held ? 0.94 : 1; c.save(); c.translate(240, 676); c.scale(k, k); c.translate(-240, -676);
+      c.fillStyle = '#1C1D21'; c.font = sans(30, 700); c.globalAlpha = smr(W.cta.t0 + 3, W.cta.t0 + 8, f); c.fillText('预约试驾 →', 120, 688); c.restore();
+      c.fillStyle = '#1C1D21'; c.font = sans(26, 500); c.globalAlpha = smr(W.cta.t0 + 6, W.cta.t0 + 12, f); c.fillText('看 64 笔手稿的全过程 ▶', 452, 688); c.fillRect(452, 700, 300 * smr(W.cta.t0 + 6, W.cta.t0 + 16, f), 2.5); c.globalAlpha = 1; }
+    // 规则 ③：按得越久，墨越深
+    hand(c, '③ 按得越久，墨越深', 120, 790, f, W.T_PRESS + 8, { font: big(50), size: 50, color: INKC, rate: 1.2 });
+    hand(c, '长按 = 笔停在纸上：墨一圈圈渗开', 124, 836, f, W.T_PRESS + 18, { font: sans(24), size: 24, color: '#5B6170', rate: .6, kind: 'small' });
+    // 光标（不跟着页面滚）
+    const ct0 = W.T_CURSOR - 16; if (f > ct0 && f < T_SCROLL + 40) {
+      const u = ssm((f - ct0) / 20), u2 = ssm((f - (W.T_PRESS + 36)) / 24);
+      let x = lerp(980, 250, u), y = lerp(980, 690, u); x = lerp(x, 1300, u2); y = lerp(y, 980, u2);
+      const press = f > W.T_PRESS && f < W.T_PRESS + 33 ? 0.86 : 1;
+      c.save(); c.translate(x, y + scrollAt(f)); c.scale(1.6 * press, 1.6 * press);
+      c.fillStyle = '#111'; c.strokeStyle = '#fff'; c.lineWidth = 2.4; c.beginPath(); c.moveTo(0, 0); c.lineTo(0, 30); c.lineTo(8, 23); c.lineTo(14, 36); c.lineTo(19, 34); c.lineTo(13, 21); c.lineTo(23, 21); c.closePath(); c.stroke(); c.fill(); c.restore();
+      if (f > W.T_PRESS) { const r = (f - W.T_PRESS) * 3, a = Math.max(0, 1 - (f - W.T_PRESS) / 34); c.strokeStyle = `rgba(194,56,26,${a * .5})`; c.lineWidth = 3; c.beginPath(); c.arc(250, 690 + scrollAt(f), 30 + r, 0, 7); c.stroke(); }
+    }
+  }
+}
+function phoneFrame(c, f, M) {
+  if (f < LAND.phone) return false; setM(c, mul(M, Bd.G.phoneDev(f)));
+  c.save(); c.shadowColor = 'rgba(40,30,20,.32)'; c.shadowBlur = 80; c.shadowOffsetY = 34; c.fillStyle = '#18191C'; c.beginPath(); c.roundRect(PH.x, PH.y, PH.w, PH.h, 82); c.fill(); c.restore();
+  c.strokeStyle = '#3A3C42'; c.lineWidth = 4; c.beginPath(); c.roundRect(PH.x + 3, PH.y + 3, PH.w - 6, PH.h - 6, 80); c.stroke();
+  c.fillStyle = '#F7F5EF'; c.beginPath(); c.roundRect(PH.sx, PH.sy, PH.sw, PH.sh, 56); c.fill();
+  return true;
+}
+
+function selIdx(f) { let k = 0; P.taps.forEach(t => { if (f >= t.t) k = t.sw; }); return k; }
+function phoneUI(c, f, M, over) {
+  setM(c, mul(M, Bd.G.phone(f))); const t0 = MK.T_PH;
+  if (!over) {
+    c.fillStyle = '#1C1D21'; c.font = `600 22px ${FONT.mono}`; c.fillText('9:41', 40, 50); c.fillRect(PH.sw - 70, 38, 30, 13);
+    c.fillStyle = '#111'; c.beginPath(); c.roundRect(PH.sw / 2 - 60, 22, 120, 34, 17); c.fill();
+    hand(c, '配一辆你的 →', 40, 132, f, t0 + 2, { font: big(40), size: 40, color: INKC, rate: 1 });
+    pop(c, f, t0 + 4, 140, 200, () => { c.fillStyle = '#1C1D21'; c.font = `400 76px ${FONT.mk}`; c.fillText('KITE 01', 38, 228); });
+    c.save(); c.globalAlpha = smr(t0 + 6, t0 + 12, f); c.fillStyle = '#5B6170'; c.font = sans(22); c.fillText('起售 ¥329,000 · 交付 12 周', 40, 268); c.restore();
+    pop(c, f, t0 + 6, 254, 460, () => { c.save(); c.shadowColor = 'rgba(50,38,25,.12)'; c.shadowBlur = 24; c.shadowOffsetY = 8; c.fillStyle = '#fff'; c.beginPath(); c.roundRect(20, 300, PH.sw - 40, 330, 26); c.fill(); c.restore(); });
+    c.save(); c.globalAlpha = smr(t0 + 8, t0 + 14, f); c.fillStyle = '#5B6170'; c.font = sans(22); c.fillText('车身色', 40, 662); c.textAlign = 'right'; c.fillStyle = '#1C1D21'; c.font = sans(22, 700);
+    c.fillText(['日落橙', '极光青', '石墨灰', '钴蓝'][selIdx(f)] + ' · 3 层', PH.sw - 40, 662); c.restore();
+    // 开关
+    [['显示结构线', 800, P.T_TOGGLE], ['手稿回放', 880, 1e9]].forEach(([lab, y, tt], i) => {
+      c.save(); c.globalAlpha = smr(t0 + 10 + i * 3, t0 + 16 + i * 3, f); c.fillStyle = '#1C1D21'; c.font = sans(26); c.fillText(lab, 40, y + 10);
+      const on = ssm((f - tt) / 12); c.fillStyle = on > .5 ? COL.blue : '#D9D6CE'; c.beginPath(); c.roundRect(PH.sw - 130, y - 22, 90, 44, 22); c.fill();
+      c.fillStyle = '#fff'; c.beginPath(); c.arc(PH.sw - 108 + 46 * on, y, 17, 0, 7); c.fill(); c.restore(); });
+    c.save(); c.globalAlpha = smr(t0 + 14, t0 + 20, f); c.fillStyle = '#1C1D21'; c.font = sans(24, 700); c.fillText('下载手稿 · 64 笔', 40, 970);
+    c.textAlign = 'right'; c.font = `600 22px ${FONT.mono}`; const pct = Math.round(100 * clamp((f - P.T_PROG) / 18)); c.fillText(pct + '%', PH.sw - 40, 970);
+    c.fillStyle = '#E4E0D6'; c.beginPath(); c.roundRect(40, 990, PH.sw - 80, 28, 14); c.fill(); c.restore();
+    pop(c, f, t0 + 16, 254, 1100, () => { c.fillStyle = '#1C1D21'; c.beginPath(); c.roundRect(30, 1060, PH.sw - 60, 76, 38); c.fill(); c.fillStyle = '#fff'; c.font = sans(28, 700); c.fillText('下定金', 70, 1108); c.font = `600 22px ${FONT.mono}`; c.textAlign = 'right'; c.fillText('¥ 5,000 · 可退', PH.sw - 70, 1106); c.textAlign = 'left'; });
+  } else {
+    // 选中的色块：一个针管笔圈
+    const k = selIdx(f), k0 = Math.max(0, k - 1), tk = k ? P.taps[k - 1].t : -1e9, u = ssm((f - tk) / 10);
+    if (f > t0 + 12) { const x = lerp(85 + k0 * 112, 85 + k * 112, u); c.strokeStyle = '#1C1D21'; c.lineWidth = 3; c.beginPath(); c.ellipse(x, 688, 52, 34, -.06, 0, 7); c.stroke(); }
+    // 手指点一下
+    for (const tp of [...P.taps.map(t => [t.t, 85 + t.sw * 112, 688]), [P.T_TOGGLE, PH.sw - 85, 800]]) {
+      const [tt, x, y] = tp; if (f < tt - 12 || f > tt + 20) continue;
+      const down = smr(tt - 12, tt - 2, f) * (1 - smr(tt + 4, tt + 14, f));
+      c.fillStyle = `rgba(30,30,35,${.22 * down})`; c.beginPath(); c.arc(x, y, 46 - 10 * down, 0, 7); c.fill();
+      const r = Math.max(0, f - tt) * 4; c.strokeStyle = `rgba(30,30,35,${.35 * Math.max(0, 1 - (f - tt) / 20)})`; c.lineWidth = 3; c.beginPath(); c.arc(x, y, 20 + r, 0, 7); c.stroke();
+    }
+  }
+}
+
+// ================= 批注（纸上 / 桌面）=================
+function paperNotes(c, f, M) {
+  setM(c, mul(M, Bd.G.paper(f)));
+  const g = MK.CAR;
+  hand(c, '② 白是留出来的', 330, 1010, f, g.g2 + 2, { font: big(64), size: 64, color: INKC, rate: 1.2 });
+  hand(c, '④ 最后一笔，才是白', 1420, 1010, f, g.g7 + 2, { font: big(64), size: 64, color: INKC, rate: 1.2 });
+  hand(c, '二十分钟的活，2.6 秒', 340, 2010, f, g.g6 + 10, { font: sans(34, 700), size: 34, color: '#3C3F46', rate: .6, kind: 'small' });
+}
+function deskNotes(c, f, M) {
+  setM(c, M);
+  hand(c, '马克笔 · 一笔一层，不能改', 300, 700, f, MK.T_TITLE_END - 14, { font: big(110), size: 110, color: '#1F2126', rate: 1.6, kind: 'title' });
+  // 两道巨笔叠出来的地方
+  hand(c, '① 叠一遍，深一档', 2560, 1560, f, MK.T_SW2 + 22, { font: big(80), size: 80, color: '#1F2126', rate: 1.4 });
+  hand(c, '正片叠底 multiply：两层透明墨相乘', 2566, 1630, f, MK.T_SW2 + 34, { font: sans(32), size: 32, color: '#3C3F46', rate: .5, kind: 'small' });
+  // 试色条
+  for (let k = 0; k < 3; k++) hand(c, '×' + (k + 1), Bd.SWX.x + k * (Bd.SWX.w + Bd.SWX.gap) + Bd.SWX.w / 2 - 20, 2460, f, MK.T_STRIP + 8 + k * 6, { font: `600 54px ${FONT.latin}`, size: 54, color: INKC, rate: 2 });
+  hand(c, '观默', 3720, 2520, f, CAP_ON - 40, { font: big(90), size: 90, color: '#1F2126', rate: 5, align: 'right', kind: 'title' });
+}
+
+// ================= 一帧 =================
+const BYL = { bg: [], bg2: [], title: [], paper: [], web: [], phone: [] };
+for (const S of Bd.all) (BYL[S.layer] || BYL.paper).push(S);
+function strokes(c, list, tt, M, rew) { for (const S of list) { if (S.t0 > tt) break; const o = { noSheen: rew }; if (S.kind === 'marker') INK.draw(c, S, tt, M, o); else INK.line(c, S, tt, M, o); } }
+function dots(c, tt, M, layer) {
+  for (const d of Bd.DOTS) { if (d.layer !== layer) continue; const k = spring((tt - d.t) / 14, .5, 10); if (k <= 0) continue; const G = mul(M, d.G(tt)); const [X, Y] = apply(G, d.p[0], d.p[1]); const sc = Math.hypot(G[0], G[1]);
+    c.save(); if (d.vclip) { setM(c, mul(M, (d.layer === 'web' ? Bd.G.webDev : Bd.G.phoneDev)(tt))); c.clip(d.vclip); c.setTransform(1, 0, 0, 1, 0, 0); }
+    c.fillStyle = '#ffffff'; c.beginPath(); c.arc(X, Y, d.r * sc * k, 0, 7); c.fill();
+    const fl = Math.exp(-Math.max(0, tt - d.t) / 8) * smr(d.t, d.t + 2, tt); if (fl > .01) { const R = 60 * sc; const g = c.createRadialGradient(X, Y, 0, X, Y, R); g.addColorStop(0, `rgba(255,255,255,${.7 * fl})`); g.addColorStop(1, 'rgba(255,255,255,0)'); c.fillStyle = g; c.fillRect(X - R, Y - R, 2 * R, 2 * R); }
+    c.restore(); }
+}
+// 设备 vclip 要跟着设备落地的变换走：把 vclip 包一层
+for (const S of Bd.all) if (S.vclip) { const raw = S.vclip, dev = S.layer === 'web' ? 'webDev' : 'phoneDev'; S._vclip = raw; }
+const _draw = INK.draw, _line = INK.line;
+function withDev(fn) { return (c, S, f, cam, o) => { if (!S._vclip) return fn(c, S, f, cam, o); const D = mul(cam, Bd.G[S.layer === 'web' ? 'webDev' : 'phoneDev'](f)); c.save(); setM(c, D); c.clip(S._vclip); c.setTransform(1, 0, 0, 1, 0, 0); S.vclip = null; fn(c, S, f, cam, o); S.vclip = S._vclip; c.restore(); }; }
+INK.draw = withDev(_draw); INK.line = withDev(_line);
+
 function draw(f) {
-  const tt = tau(f), c = cam(f), M = camM(c);
+  const tt = tau(f), c = cam(f), M = camM(c), rew = f < REW1;
   ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.globalCompositeOperation = 'source-over'; ctx.globalAlpha = 1;
-  ctx.fillStyle = PAPER; ctx.fillRect(0, 0, 1920, 1080);
-  ctx.setTransform(M[0], M[1], M[2], M[3], M[4], M[5]); ctx.fillStyle = grain; ctx.fillRect(-1600, -1200, 5200, 3600);
-  ctx.setTransform(1, 0, 0, 1, 0, 0);
-  const rew = f < REW1;
-  // 纸上的笔画（按开始时间叠）
-  for (const S of Bd.all) {
-    if (S.t0 > tt) break;
-    if (S.kind === 'marker') INK.draw(ctx, S, tt, M, { noSheen: rew });
-    else INK.line(ctx, S, tt, M);
+  ctx.fillStyle = DESK; ctx.fillRect(0, 0, 1920, 1080);
+  setM(ctx, M); ctx.fillStyle = grain; ctx.fillRect(-3000, -3000, 11000, 9000); ctx.setTransform(1, 0, 0, 1, 0, 0);
+  strokes(ctx, BYL.bg, tt, M, rew);
+  strokes(ctx, BYL.bg2, tt, M, rew);
+  strokes(ctx, BYL.title, tt, M, rew);
+  deskNotes(ctx, tt, M); ctx.setTransform(1, 0, 0, 1, 0, 0);
+  // 纸
+  sheet(ctx, tt, M); ctx.setTransform(1, 0, 0, 1, 0, 0);
+  if (tt >= LAND.paper) { ctx.save(); setM(ctx, mul(M, Bd.G.paper(tt))); ctx.setTransform(1, 0, 0, 1, 0, 0); strokes(ctx, BYL.paper, tt, M, rew); ctx.restore(); dots(ctx, tt, M, 'paper'); paperNotes(ctx, tt, M); ctx.setTransform(1, 0, 0, 1, 0, 0); }
+  // 网页
+  if (browserFrame(ctx, tt, M)) {
+    ctx.save(); setM(ctx, mul(M, Bd.G.webDev(tt))); ctx.clip(Bd.WEBCLIP); ctx.setTransform(1, 0, 0, 1, 0, 0);
+    webUI(ctx, tt, M, false); ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.restore();
+    strokes(ctx, BYL.web, tt, M, rew); dots(ctx, tt, M, 'web');
+    ctx.save(); setM(ctx, mul(M, Bd.G.webDev(tt))); ctx.clip(Bd.WEBCLIP); webUI(ctx, tt, M, true); ctx.restore(); ctx.setTransform(1, 0, 0, 1, 0, 0);
   }
-  // 白点：一个个“叮”出来
-  for (const d of Bd.DOTS) { const k = spring((tt - d.t) / 14, .5, 10); if (k <= 0) continue; const G = mul(M, Bd.G.car(tt)); const [X, Y] = apply(G, d.p[0], d.p[1]);
-    ctx.fillStyle = '#ffffff'; ctx.beginPath(); ctx.arc(X, Y, d.r * c.z * Math.max(0, k), 0, 7); ctx.fill();
-    const fl = Math.exp(-Math.max(0, tt - d.t) / 8) * smr(d.t, d.t + 2, tt); if (fl > .01) { const g = ctx.createRadialGradient(X, Y, 0, X, Y, 46 * c.z); g.addColorStop(0, `rgba(255,255,255,${.7 * fl})`); g.addColorStop(1, 'rgba(255,255,255,0)'); ctx.fillStyle = g; ctx.fillRect(X - 50 * c.z, Y - 50 * c.z, 100 * c.z, 100 * c.z); } }
-  // 批注（纸面上，跟着纸走）
-  ctx.setTransform(M[0], M[1], M[2], M[3], M[4], M[5]); notes(ctx, tt); ctx.setTransform(1, 0, 0, 1, 0, 0);
-  for (const S of ARROWS) if (S.t0 <= tt) INK.line(ctx, S, tt, M);
+  // 手机
+  if (phoneFrame(ctx, tt, M)) {
+    ctx.save(); setM(ctx, mul(M, Bd.G.phoneDev(tt))); ctx.clip(Bd.PHCLIP); phoneUI(ctx, tt, M, false); ctx.restore(); ctx.setTransform(1, 0, 0, 1, 0, 0);
+    strokes(ctx, BYL.phone, tt, M, rew); dots(ctx, tt, M, 'phone');
+    ctx.save(); setM(ctx, mul(M, Bd.G.phoneDev(tt))); ctx.clip(Bd.PHCLIP); phoneUI(ctx, tt, M, true); ctx.restore(); ctx.setTransform(1, 0, 0, 1, 0, 0);
+  }
   // 笔
-  if (!rew) {
-    const act = [];
-    for (const k in TOOLS) { const p = penAt(k, f); if (p) act.push([k, p]); }
-    for (const [k, p] of act) { const [X, Y] = apply(M, p.x, p.y); drawPen(ctx, X, Y, c.z, TOOLS[k].color, TOOLS[k].kind, p.lift); }
-  }
-  // 开场 / 片尾那支橙色笔：躺在纸上，拔帽 → 飞走；片尾飞回来、扣帽
+  if (!rew) for (const k in TOOLS) { const p = penAt(k, f); if (!p) continue; const [X, Y] = apply(M, p.x, p.y); const col = k === 'giant' ? giantColor(f) : TOOLS[k].color; drawPen(ctx, X, Y, c.z * (TOOLS[k].scale || 1), col, TOOLS[k].kind, p.lift); }
   restPen(f, M, c);
   hud(f, tt);
 }
-const REST = [1250, 900];                                     // 笔躺下时笔尖的位置（纸面）
+const REST = [1900, 2300];
 function restPen(f, M, c) {
-  let x = REST[0], y = REST[1], lift = 0, cap = 1, al = 1;
-  if (f < 30) { // 拔帽：帽先飞，笔再抬起来走
-    cap = 1 - smr(CAP_OFF, CAP_OFF + 8, f); const u = smr(CAP_OFF + 4, 28, f); x += 700 * u * u; y += 420 * u * u; lift = Math.min(1, u * 3);
-  } else if (f > CAP_ON - 46) { // 回来、躺下、扣帽
-    const u = 1 - ssm((f - (CAP_ON - 46)) / 30); x += 700 * u * u; y += 420 * u * u; lift = Math.min(1, u * 2.5) * 0.9 + 0.1 * (1 - smr(CAP_ON - 14, CAP_ON, f));
-    cap = smr(CAP_ON - 14, CAP_ON, f);
-  } else return;
-  const [X, Y] = apply(M, x, y);
-  const bump = f >= CAP_ON ? 0.02 * Math.exp(-(f - CAP_ON) / 6) * Math.sin((f - CAP_ON) * 0.9) : 0;
-  drawPen(ctx, X, Y, c.z * (1 + bump), COL.orange, 'marker', lift, cap, al);
+  let x = REST[0], y = REST[1], lift = 0, cap = 1;
+  if (f < 30) { cap = 1 - smr(CAP_OFF, CAP_OFF + 8, f); const u = smr(CAP_OFF + 4, 28, f); x += 1800 * u * u; y += 1200 * u * u; lift = Math.min(1, u * 3); }
+  else if (f > CAP_ON - 46) { const u = 1 - ssm((f - (CAP_ON - 46)) / 30); x += 1800 * u * u; y += 1200 * u * u; lift = Math.min(1, u * 2.5) * .9 + .1 * (1 - smr(CAP_ON - 14, CAP_ON, f)); cap = smr(CAP_ON - 14, CAP_ON, f); }
+  else return;
+  const [X, Y] = apply(M, x, y); const bump = f >= CAP_ON ? 0.03 * Math.exp(-(f - CAP_ON) / 6) * Math.sin((f - CAP_ON) * 0.9) : 0;
+  drawPen(ctx, X, Y, c.z * 2.4 * (1 + bump), COL.orange, 'marker', lift, cap);
 }
-
 function hud(f, tt) {
   ctx.save(); ctx.setTransform(1, 0, 0, 1, 0, 0);
-  const n = strokeCount(tt), N = Bd.all.length;
-  const al = 1;
-  { const g = ctx.createLinearGradient(0, 0, 0, 120); g.addColorStop(0, 'rgba(244,241,234,.92)'); g.addColorStop(.7, 'rgba(244,241,234,.6)'); g.addColorStop(1, 'rgba(244,241,234,0)'); ctx.fillStyle = g; ctx.fillRect(0, 0, 1920, 120); }
-  ctx.globalAlpha = .82 * al; ctx.fillStyle = '#2A2C31'; ctx.font = `600 22px ${FONT.mono}`; ctx.textBaseline = 'alphabetic';
-  ctx.textAlign = 'left'; ctx.fillText('NO. —  马克笔 · MARKER RENDERING', 72, 60);
-  ctx.textAlign = 'right'; ctx.fillText(`STROKE ${String(n).padStart(3, '0')} / ${N}`, 1848, 60);
-  ctx.globalAlpha = .55 * al; ctx.font = `500 18px ${FONT.mono}`; ctx.textAlign = 'left'; ctx.fillText('ALCOHOL INK · CHISEL 6 MM · 1 STROKE = 1 LAYER', 72, 88);
-  // 暗角
+  { const g = ctx.createLinearGradient(0, 0, 0, 120); g.addColorStop(0, 'rgba(233,228,216,.92)'); g.addColorStop(.7, 'rgba(233,228,216,.55)'); g.addColorStop(1, 'rgba(233,228,216,0)'); ctx.fillStyle = g; ctx.fillRect(0, 0, 1920, 120); }
+  let n = 0; for (const S of Bd.all) if (S.t0 <= tt) n++;
+  const st = tt < MK.T_TITLE_END ? '00 标题' : tt < MK.T_SW1 ? '01 纸 · 概念车' : tt < MK.T_SW2 ? '02 网页 · 官网' : tt < MK.T_SW3 ? '03 手机 · 配置器' : '04 一支笔';
+  ctx.globalAlpha = .82; ctx.fillStyle = '#2A2C31'; ctx.font = `600 22px ${FONT.mono}`; ctx.textBaseline = 'alphabetic';
+  ctx.textAlign = 'left'; ctx.fillText('NO. —  马克笔 · MARKER   ' + st, 72, 60);
+  ctx.textAlign = 'right'; ctx.fillText(`STROKE ${String(n).padStart(3, '0')} / ${Bd.all.length}`, 1848, 60);
+  ctx.globalAlpha = .55; ctx.font = `500 18px ${FONT.mono}`; ctx.textAlign = 'left'; ctx.fillText('ALCOHOL INK · CHISEL 6 MM · 1 STROKE = 1 LAYER', 72, 88);
   const v = ctx.createRadialGradient(960, 540, 560, 960, 540, 1180); v.addColorStop(0, 'rgba(40,30,20,0)'); v.addColorStop(1, 'rgba(40,30,20,.16)');
-  ctx.globalAlpha = 1; ctx.fillStyle = v; ctx.fillRect(0, 0, 1920, 1080);
-  ctx.restore();
+  ctx.globalAlpha = 1; ctx.fillStyle = v; ctx.fillRect(0, 0, 1920, 1080); ctx.restore();
 }
 
-// 运动模糊：每帧取几个子帧平均（快门 180°）。?mb=1 关掉
 const MB = +(Q.get('mb') || 3);
-function frameMB(f) {
-  if (MB <= 1) { draw(f); out.drawImage(sub, 0, 0); return; }
-  for (let i = 0; i < MB; i++) { draw(f + ((i + .5) / MB - .5) * .5); out.globalAlpha = 1 / (i + 1); out.drawImage(sub, 0, 0); }
-  out.globalAlpha = 1;
-}
+function frameMB(f) { if (MB <= 1) { draw(f); out.drawImage(sub, 0, 0); return; }
+  for (let i = 0; i < MB; i++) { draw(f + ((i + .5) / MB - .5) * .5); out.globalAlpha = 1 / (i + 1); out.drawImage(sub, 0, 0); } out.globalAlpha = 1; }
 window.frame = async f => { frameMB(f); };
 window.events = () => {
-  for (let f = 0; f < END; f += 1) { const tt = tau(f); notes(ctx, tt); }
-  const strokes = Bd.all.map(S => ({ t: S.t0 + (S.dwell || 0), d: S.dur, tool: S.tool, kind: S.kind, len: S.P[S.P.length - 1].s, dwell: S.dwell || 0 }));
-  return { end: END, beat: BEAT, cues: [...cues.values()].sort((a, b) => a[0] - b[0]), strokes, dots: Bd.DOTS.map(d => d.t), marks: MK, capOff: CAP_OFF, capOn: CAP_ON, rew: [REW0, REW1],
-    arrows: ARROWS.filter((_, i) => i % 2 === 0).map(S => S.t0), notes: { n1: NOTE1, n2: NOTE2, n3: NOTE3, n4: NOTE4 } };
+  for (let f = 0; f < END; f += 1) { const tt = tau(f); deskNotes(ctx, tt, IDM); paperNotes(ctx, tt, IDM); webUI(ctx, tt, IDM, false); webUI(ctx, tt, IDM, true); phoneUI(ctx, tt, IDM, false); }
+  const strokesE = Bd.all.map(S => ({ t: S.t0 + (S.dwell || 0), d: S.dur, tool: S.tool || '', kind: S.kind, layer: S.layer, len: S.P[S.P.length - 1].s, w: S.w, dwell: S.dwell || 0 }));
+  return { end: END, beat: BEAT, cues: [...cues.values()].sort((a, b) => a[0] - b[0]), strokes: strokesE, dots: Bd.DOTS.map(d => d.t), marks: MK, capOff: CAP_OFF, capOn: CAP_ON, rew: [REW0, REW1],
+    land: LAND, taps: TAPS, toggle: P.T_TOGGLE, prog: P.T_PROG, press: W.T_PRESS, cursor: W.T_CURSOR, scroll: T_SCROLL, cards: W.cards.map(c => c.list[0].t0), phoneCards: P.cards.map(c => c.t0) };
 };
 (async () => {
-  const fonts = [['LongCang', 'LongCang-Regular.ttf', '400'], ['Caveat', 'Caveat.ttf', '400 700'], ['NotoSans', 'NotoSansSC-Medium.otf', '500'], ['NotoSans', 'NotoSansSC-Bold.otf', '700'], ['JBMono', 'JetBrainsMono.ttf', '100 800']];
+  const fonts = [['LongCang', 'LongCang-Regular.ttf', '400'], ['Caveat', 'Caveat.ttf', '400 700'], ['NotoSans', 'NotoSansSC-Medium.otf', '500'], ['NotoSans', 'NotoSansSC-Bold.otf', '700'], ['JBMono', 'JetBrainsMono.ttf', '100 800'], ['PMarker', 'PermanentMarker-Regular.ttf', '400']];
   for (const [n, file, w] of fonts) { const ff = new FontFace(n, `url(../../../public/fonts/${file})`, { weight: w }); await ff.load(); document.fonts.add(ff); }
-  await document.fonts.load(`400 40px LongCang`, '一笔层叠遍深档白是留出来的停得越久墨越最后才观默①②③④');
-  await document.fonts.load(`500 24px NotoSans`, '肩线下那一道亮'); await document.fonts.load(`700 40px NotoSans`, '马克笔设计草图');
+  await document.fonts.load(`400 40px LongCang`, '一笔层叠遍深档白是留出来的停得越久墨越最后才观默①②③④按配辆你同支画什么都行马克不能改正片底');
+  await document.fonts.load(`500 24px NotoSans`, '肩线下那一道亮'); await document.fonts.load(`700 40px NotoSans`, '预约试驾运动鞋耳机躺椅台灯下定金');
   frameMB(+(Q.get('f') || 0));
   window.ready = true;
 })();

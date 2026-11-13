@@ -120,7 +120,7 @@ const INK = (() => {
       }
     }
     // 2) 沿路径按时间盖章：每一段的墨量 ∝ 停留时间（= 段长 / 速度）
-    const ds = Math.max(1.2, th / 5);
+    const ds = Math.max(1.2, th / 5, 1.1 / sc);            // 章距：至少隔 1 个屏幕像素（拉远时不白算）
     const vMean = L / S.dur;
     for (let s = 0; s <= g.s; s += ds) {
       const q = at(P, s);
@@ -144,6 +144,7 @@ const INK = (() => {
     m.restore(); m.setTransform(1, 0, 0, 1, 0, 0); m.globalAlpha = 1; m.globalCompositeOperation = 'source-in';
     m.fillStyle = S.color; m.fillRect(x0, y0, x1 - x0, y1 - y0); m.globalCompositeOperation = 'source-over';
     ctx.save();
+    if (S.vclip) { ctx.setTransform(cam[0], cam[1], cam[2], cam[3], cam[4], cam[5]); ctx.clip(S.vclip); ctx.setTransform(1, 0, 0, 1, 0, 0); }
     if (S.clip) { const C = S.clipG ? mul(cam, S.clipG(f)) : M; ctx.setTransform(C[0], C[1], C[2], C[3], C[4], C[5]); ctx.clip(S.clip, S.clipRule || 'nonzero'); ctx.setTransform(1, 0, 0, 1, 0, 0); }
     ctx.globalCompositeOperation = S.mode || 'multiply'; ctx.globalAlpha = (S.alpha ?? 0.8) * (opt.alpha ?? 1);
     ctx.drawImage(MASK, x0, y0, x1 - x0, y1 - y0, x0, y0, x1 - x0, y1 - y0);
@@ -170,7 +171,9 @@ const INK = (() => {
     const g = progress(S, f); if (!g) return;
     const M = S.G ? mul(cam, S.G(f)) : cam;
     const P = S.P, L = g.L; if (g.s <= 0.5) return;
-    ctx.save(); ctx.setTransform(M[0], M[1], M[2], M[3], M[4], M[5]);
+    ctx.save();
+    if (S.vclip) { ctx.setTransform(cam[0], cam[1], cam[2], cam[3], cam[4], cam[5]); ctx.clip(S.vclip); }
+    ctx.setTransform(M[0], M[1], M[2], M[3], M[4], M[5]);
     if (S.clip) ctx.clip(S.clip);
     ctx.lineCap = 'round'; ctx.lineJoin = 'round';
     ctx.globalCompositeOperation = S.kind === 'white' ? 'source-over' : (S.mode || 'multiply');
