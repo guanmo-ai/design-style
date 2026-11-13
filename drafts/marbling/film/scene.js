@@ -112,12 +112,12 @@ function stateAt(f) {
   const st = { cam, ops0: [], ops1: [], rip: [], sheet: [SHEET[0], SHEET[1], 0, 0], paper: [0, 0, 0, 0], curl: [1, 0, -1e5, CURL_R], f };
   const A = [...SET_A, COMB_A];
   if (f < TL.peel1[0]) st.ops0 = A.map(o => o(f)).filter(Boolean);
-  else if (f < TL.lay2[0] + 31) st.ops0 = B.ops.map(o => o(f)).filter(Boolean);
+  else if (f < TL.peel2[0]) st.ops0 = B.ops.map(o => o(f)).filter(Boolean);
   const printA = () => A.map(o => o(TL.lay1[1])).filter(Boolean), printB = () => B.ops.map(o => o(TL.lay2[0])).filter(Boolean);
   // 第一张纸
   if (f >= TL.lay1[0] && f < TL.peel1[0]) {
     const q = (WD + 300) * ease.inOut2(prog(f, TL.lay1[0], TL.lay1[1]));
-    st.paper = [1, S0D, q, 0.8 * prog(f, TL.lay1[0] + 8, TL.lay1[1] + 4)]; st.curl = [ND[0], ND[1], 0, CURL_R];
+    st.paper = [1, S0D, q, 0.8 * prog(f, TL.lay1[0] + 8, TL.lay1[1])]; st.curl = [ND[0], ND[1], 0, CURL_R];
     st.ops1 = [];
   }
   if (f >= TL.peel1[0] && f < 300) {
@@ -130,7 +130,7 @@ function stateAt(f) {
   // 最后一张纸
   if (f >= TL.lay2[0] && f < TL.peel2[0]) {
     const q = (WPAPER + 260) * ease.inOut2(prog(f, TL.lay2[0], TL.lay2[1]));
-    st.paper = [1, -SHEET[0], q, 0.8 * prog(f, TL.lay2[0] + 6, TL.lay2[1] + 4)]; st.curl = [1, 0, 0, CURL_R];
+    st.paper = [1, -SHEET[0], q, 0.8 * prog(f, TL.lay2[0] + 6, TL.lay2[1])]; st.curl = [1, 0, 0, CURL_R];
   }
   if (f >= TL.peel2[0]) {
     st.ops0 = []; st.ops1 = printB();
