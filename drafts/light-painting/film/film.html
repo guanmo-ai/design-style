@@ -1,0 +1,103 @@
+<!doctype html><meta charset="utf-8"><title>光绘 Light Painting · 全片</title>
+<!-- 逐帧渲染：node ../../_lib/film-gl.cjs film.html <帧目录> 0 960。出片：bash make.sh。单帧：film.html?f=0 -->
+<link rel="stylesheet" href="../../_lib/kit/hud.css">
+<style>
+  #hud { --sh: 0 1px 3px rgba(0, 0, 0, .85), 0 0 18px rgba(0, 0, 0, .55); }
+  #rule { left: 64px; top: 52px; }
+  #rule .ti { font-family: 'ZCOOL'; font-size: 50px; line-height: 1.1; }
+  #rule .ti b { font-family: 'Unbounded'; font-weight: 700; font-size: 24px; letter-spacing: .28em; margin-left: 18px; vertical-align: 8px; }
+  #rule .sub { font-size: 27px; opacity: .9; margin-top: 8px; }
+  #shut { right: 64px; top: 50px; text-align: right; }
+  #shut .lb { font-size: 24px; opacity: .8; letter-spacing: .06em; }
+  #shut .num { font-family: 'GeistMono'; font-weight: 600; font-size: 74px; line-height: 1; margin-top: 4px; font-variant-numeric: tabular-nums; }
+  #shut .num small { font-size: 34px; margin-left: 8px; opacity: .85; }
+  #shut .bar { width: 300px; height: 6px; background: rgba(255, 255, 255, .2); border-radius: 3px; margin: 14px 0 0 auto; position: relative; overflow: hidden; }
+  #shut .bar b { position: absolute; right: 0; top: 0; bottom: 0; background: #fff; border-radius: 3px; box-shadow: 0 0 12px rgba(150, 220, 255, .9); }
+  #calls { inset: 0; }
+  #calls svg { position: absolute; inset: 0; overflow: visible; }
+  .cl { position: absolute; white-space: nowrap; font-family: 'GeistMono', 'NotoSC'; font-size: 27px; line-height: 1.45; }
+  .cl.r { text-align: right; }
+  .cl .k { font-family: 'NotoSC'; font-weight: 700; }
+  #params { left: 64px; bottom: 54px; font-size: 27px; line-height: 1.6; }
+  #end { top: auto; bottom: 46px; }
+  #phone, #spec, #cursor, #chap, #prog { display: none !important; }
+  #end .by { font-size: 28px; margin-top: 0; }
+</style>
+<div id="stage"><canvas id="c" width="1920" height="1080"></canvas></div>
+<script src="../../_lib/glkit.js"></script><script src="../../_lib/typefx.js"></script>
+<script src="../../_lib/kit/motion.js"></script><script src="../../_lib/kit/director.js"></script><script src="../../_lib/kit/hud.js"></script>
+<script src="timeline.js"></script><script src="scene.js"></script><script src="light.js"></script>
+<script>
+const Q = new URLSearchParams(location.search);
+const $ = id => document.getElementById(id), D = (h, f, f0, o) => TFX.decode(h, f, f0, o);
+const sec = f => f / 60, cl = (x, a, b) => Math.max(a, Math.min(b, x)), pr = (x, a, b) => cl((x - a) / (b - a), 0, 1);
+const fadeIO = (f, a, b, k = 10) => pr(f, a, a + k) * (1 - pr(f, b - k, b));
+
+// 标注：[从, 到, 锚点(f) → 世界坐标, 字的偏移 [dx, dy], 行]——数直接标在正在发生的画面上
+const CALLS = [
+  [40, 104, () => SCENE.lastDot, [110, 70], ['<span class="k">停住</span> 0.4 s → 过曝的亮点']],
+  [72, 112, f => SCENE.light(sec(Math.min(f, 106)) - 0.0).p.map((v, i) => i === 1 ? 0.28 : i === 0 ? cl(v, -0.6, 0.6) : 0.1), [-40, 120], ['<span class="k">甩过去</span> 5 m/s → 一根细线', '亮度 ∝ 1 / 速度']],
+  [122, 214, f => SCENE.light(sec(f)).p, [80, -130], ['<span class="k">收快门</span>：画面 = 最近 T 秒的光', '最早的光先消失，一路追到光点']],
+  [304, 426, () => [SCENE.ORB[0], SCENE.ORB[1] + SCENE.ORB_R, SCENE.ORB[2]], [90, -110], ['<span class="k">光球</span> 绳长 0.85 m · 4.2 圈/s', '圈再绕竖轴 0.5 圈/s · LED 6500 K']],
+  [500, 606, f => [SCENE.stickX(sec(f) - SCENE.T_STICK0), SCENE.STICK.y1 + 0.03, SCENE.STICK.z], [-30, -150], ['<span class="k">光棒</span> 48 颗 LED，每颗按时间换颜色', 'x = v · t：时间摊成了空间']],
+  [672, 786, () => [SCENE.WOOL[0] + 0.7, SCENE.WOOL[1] + 0.6, SCENE.WOOL[2]], [70, -90], ['<span class="k">钢丝棉</span> 火星 2700 K · g = 9.8 m/s²', '沿切线飞出 · 落地弹跳 e = 0.45']],
+];
+const PARAMS = [[812, 960, ['加法混合 · CSS <span class="k">mix-blend-mode: plus-lighter</span>', '发光 = 三层模糊叠加 σ 4 / 8 / 16 px']]];
+
+function hud(f, M) {
+  const L = M ? LT : null;
+  $('rule').innerHTML = `<div class="ti">${D('光绘', f, 6, { rate: 3, kind: 'title' })}<b>${D('LIGHT PAINTING', f, 10, { rate: 1, kind: 'small' })}</b></div><div class="sub">${D('画面 = 快门开着的这段时间里，所有光加起来', f, 22, { rate: 0.9 })}</div>`;
+  const T = SCENE.shutterT(f);
+  const closed = f >= TL.final;
+  $('shut').innerHTML = `<div class="lb">${D(closed ? '快门合上' : '快门开着 · T', f, closed ? TL.final : 4, { rate: 1, kind: 'small' })}</div><div class="num">${T.toFixed(2)}<small>s</small></div><div class="bar"><b style="width:${(100 * cl(Math.log(T / 0.15) / Math.log(25 / 0.15), 0.02, 1)).toFixed(1)}%"></b></div>`;
+  let svg = '', html = '';
+  for (const [a, b, anchor, [dx, dy], lines] of CALLS) {
+    const txt = lines.map((l, i) => `<div>${D(l, f, a + 4 + i * 12, { rate: 0.7 })}</div>`).join('');   // 空跑时也登记声音
+    if (f < a || f >= b || !L) continue;
+    const p = L.proj(M, anchor(f)), op = fadeIO(f, a, b, 8);
+    const q = [p[0] + dx, p[1] + dy], k = pr(f, a, a + 10);
+    const e = [p[0] + (q[0] - p[0]) * k, p[1] + (q[1] - p[1]) * k];
+    svg += `<circle cx="${p[0].toFixed(1)}" cy="${p[1].toFixed(1)}" r="9" fill="none" stroke="#fff" stroke-width="2.5" opacity="${op}"/><line x1="${p[0].toFixed(1)}" y1="${p[1].toFixed(1)}" x2="${e[0].toFixed(1)}" y2="${e[1].toFixed(1)}" stroke="#fff" stroke-width="2.5" opacity="${op}"/>`;
+    const right = dx < 0;
+    html += `<div class="cl ${right ? 'r' : ''}" style="${right ? `right:${(1920 - q[0] + 12).toFixed(1)}px` : `left:${(q[0] + 12).toFixed(1)}px`};top:${(q[1] - (dy < 0 ? 78 : -6)).toFixed(1)}px;opacity:${op.toFixed(2)}">${txt}</div>`;
+  }
+  $('calls').innerHTML = `<svg width="1920" height="1080">${svg}</svg>${html}`;
+  HUD.params(f, PARAMS);
+  $('end').innerHTML = `<div class="by">${D('每天一个设计风格 · 观默 @guanmo_ai', f, TL.final + 6, { rate: 1.2 })}</div>`;
+}
+
+let LT, bitmap;
+// 光棒显示的位图：“LIGHT PAINTING”，48 行高（一颗 LED 一行）
+function makeBitmap() {
+  const H = 48, W = Math.round(48 * (SCENE.STICK.x1 - SCENE.STICK.x0) / (SCENE.STICK.y1 - SCENE.STICK.y0));
+  const cv = document.createElement('canvas'); cv.width = W; cv.height = H;
+  const g = cv.getContext('2d'); g.fillStyle = '#fff'; g.textBaseline = 'middle'; g.textAlign = 'center';
+  let fs = 44; g.font = `800 ${fs}px Unbounded`;
+  const mw = g.measureText('LIGHT PAINTING').width; fs = Math.min(44, fs * (W * 0.96) / mw); g.font = `800 ${fs}px Unbounded`;
+  g.fillText('LIGHT PAINTING', W / 2, H / 2 + 2);
+  const px = g.getImageData(0, 0, W, H).data;
+  return { W, H, at(u, v) { const x = Math.floor(cl(u, 0, 0.9999) * W), y = Math.floor((1 - cl(v, 0, 1)) * (H - 0.001)); return px[(y * W + x) * 4 + 3] / 255; } };
+}
+
+(async () => {
+  HUD.mount();
+  document.getElementById('hud').insertAdjacentHTML('beforeend', '<div id="rule"></div><div id="shut"></div><div id="calls"></div>');
+  await HUD.fonts('光绘观默LIGHTPAINTING0123456789');
+  await document.fonts.load('800 40px Unbounded', 'LIGHT PAINTING');
+  bitmap = makeBitmap();
+  SCENE.buildStick(bitmap);
+  LT = LIGHT.create(document.getElementById('c'), SCENE.data);
+  for (let f = 0; f < TL.end; f++) hud(f, null);             // 空跑一遍：把所有出字的时间登记给配乐
+  window.events = () => ({ cues: TFX.list(), speed: Array.from({ length: TL.end }, (_, f) => +SCENE.speed(Math.min(sec(f), SCENE.T_FINAL - 0.01)).toFixed(2)) });
+  window.frame = async f => {
+    const t = Math.min(sec(f), SCENE.T_FINAL), T = SCENE.shutterT(f), cam = SCENE.camera(f);
+    const stop = 1 - 0.18 * pr(f, TL.wool, TL.wool + 60) * (1 - pr(f, TL.woolEnd - 20, TL.woolEnd)) - 0.4 * pr(f, TL.open, TL.opened);   // 光太多时收一点曝光（像摄影师收光圈）
+    const flash = f >= TL.final ? 1 + 0.35 * Math.exp(-(f - TL.final) / 7) : 1;
+    const M = await LT.render({ cam, t, T, ranges: SCENE.ranges(t, T), heads: SCENE.heads(t), gain: +(Q.get('gain') || 1), exposure: +(Q.get('ex') || 1.0) * flash * stop, bloom: +(Q.get('bl') || 0.25), threshold: +(Q.get('th') || 1.6), time: sec(f), grainSeed: 1 + f % 97 });
+    hud(f, M);
+    await new Promise(r => requestAnimationFrame(() => r()));
+  };
+  await window.frame(+(Q.get('f') || 0));
+  window.ready = true; window.__done = true;
+})().catch(e => { console.log('ERR ' + (e.stack || e.message).slice(0, 4000)); });
+</script>
