@@ -69,25 +69,26 @@ function penAt(k, f) {
 
 // —— 镜头：关键帧（可以跟着某支笔）→ 平滑插值 → 高斯磨平（位置、速度都连续）——
 const T = Bd.T, dw = Bd.dwellStroke;
-const dwP = INK.tip(dw, dw.t0);
+const dwP = INK.tip(dw, dw.t0), OUT0 = Bd.lin[0];
 const CAM = [
   [0, 960, 540, 1.0, 0], [8, 960, 540, 1.0, 0],
   [REW1, 300, 846, 2.15, -4],
   [MK.T_TITLE_END - 14, 470, 846, 2.05, -2],
   [MK.T_TITLE_END + 14, 1040, 650, 1.32, 3],
-  [196, 900, 600, 1.45, 4, 'blue', .55], [290, 1300, 560, 1.5, 3, 'blue', .55],
+  [MK.T_PENCIL_END + 8, 900, 600, 1.45, 4, 'blue', .55, 0], [MK.T_SWEEP_END - 6, 1300, 580, 1.5, 3, 'blue', .55, 0],
   [MK.T_RULE1 + 8, 1590, 215, 2.25, 0], [MK.T_RULE1 + 40, 1600, 215, 2.3, 0],
-  [MK.T_PASS1 + 6, 1000, 640, 1.6, -7, 'orange', .5], [MK.T_RULE3 - 26, 900, 640, 1.6, -6, 'orange', .5],
+  [MK.T_PASS1 + 6, 1060, 600, 1.6, -7, 'orange', 0, .5], [MK.T_RULE3 - 26, 1060, 640, 1.6, -6, 'orange', 0, .5],
   [MK.T_RULE3 - 4, dwP.x + 110, dwP.y + 40, 3.2, -3], [MK.T_RULE3 + 26, dwP.x + 150, dwP.y + 40, 3.0, -2],
-  [MK.T_RULE3 + 52, 1000, 690, 1.55, -4, 'orange', .45], [MK.T_DARK_END - 40, 1100, 720, 1.5, -2, 'orange', .45],
+  [MK.T_RULE3 + 52, 1040, 690, 1.55, -4], [MK.T_DARK_END - 40, 1100, 720, 1.5, -2],
   [MK.T_DARK_END - 6, 1590, 240, 2.0, 0],
-  [MK.T_DARK_END + 22, 1040, 640, 1.7, 2, 'black', .5], [MK.T_BLK_END - 6, 1100, 700, 1.7, 2, 'black', .5],
-  [MK.T_BLK_END + 8, 0, 0, 2.3, -3, 'liner', 1], [MK.T_LINE_END - 30, 0, 0, 2.3, -1, 'liner', 1],
+  [MK.T_DARK_END + 22, 1000, 620, 1.7, 2], [MK.T_BLK_END - 6, 1100, 700, 1.7, 2],
+  [OUT0.t0 + 2, 1060, 640, 2.2, -3, OUT0, .6], [OUT0.end - 2, 1060, 640, 2.2, -1, OUT0, .6], [OUT0.end + 14, 1060, 650, 1.75, 0],
   [MK.T_LINE_END + 4, 1040, 650, 1.55, 0],
   [MK.T_WHITE + 60, 1000, 610, 1.4, 0],
   [MK.T_REV + 2, 1020, 640, 1.38, 0], [MK.T_REV + 40, 960, 560, 1.06, 0],
   [MK.T_REV + 70, 960, 540, 1.0, 0], [END, 960, 540, 1.035, 0]];
-function camKey(i, f) { const K = CAM[i]; let x = K[1], y = K[2]; if (K[5]) { const p = penAt(K[5], f + 6); if (p) { x = lerp(x, p.x, K[6]); y = lerp(y, p.y, K[6]); } else if (K[6] === 1) { x = 1060; y = 640; } } return [x, y, Math.log(K[3]), K[4]]; }
+// 跟笔：K[6] = 横向跟多少，K[7] = 纵向跟多少（之字形来回扫的段落只跟前进的方向，不然镜头会跟着笔来回晃）
+function camKey(i, f) { const K = CAM[i]; let x = K[1], y = K[2]; if (K[5]) { const p = typeof K[5] === 'object' ? INK.tip(K[5], clamp(f + 6, K[5].t0, K[5].end - 1e-3)) : penAt(K[5], f + 6); if (p) { x = lerp(x, p.x, K[6]); y = lerp(y, p.y, K[7] ?? K[6]); } } return [x, y, Math.log(K[3]), K[4]]; }
 function camTarget(f) {
   let i = 0; while (i < CAM.length - 2 && CAM[i + 1][0] <= f) i++;
   const a = camKey(i, f), b = camKey(i + 1, f), A = CAM[i][0], Bf = CAM[i + 1][0];
