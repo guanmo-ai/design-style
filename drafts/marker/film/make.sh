@@ -14,6 +14,12 @@ if [ -n "${PREVIEW:-}" ]; then
   echo "wrote $NAME-preview.mp4"; python3 ../../_lib/smooth.py "$NAME-preview.mp4" 30; exit 0
 fi
 node ../../_lib/film-gl.cjs film.html "$OUT" 0 "$END" 3 1
+# v5 开场的微距（放大 40 倍的一笔）：macro.py 覆盖第 0—85 帧，70—85 和 film.html 的帧交叉淡化。macro.py / events.json 没变就不重渲
+SIG=$(cat macro.py events.json | sha256sum | cut -c1-16)
+if [ "$(cat "$OUT/.macro" 2>/dev/null)" != "$SIG" ]; then
+  for f in $(seq 70 85); do F=$(printf %04d $f); [ -f "$OUT/canvas-$F.jpg" ] || cp "$OUT/$F.jpg" "$OUT/canvas-$F.jpg"; done
+  python3 macro.py "$OUT" 0 86 > /dev/null && echo "$SIG" > "$OUT/.macro"
+fi
 ffmpeg -y -loglevel error -framerate 60 -i "$OUT/%04d.jpg" -i "$OUT.wav" -c:v libx264 -preset slow -crf 18 -pix_fmt yuv420p \
   -colorspace bt709 -color_primaries bt709 -color_trc bt709 -c:a aac -b:a 192k -movflags +faststart -shortest "$NAME-film.mp4"
 echo "wrote $NAME-film.mp4"

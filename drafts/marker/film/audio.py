@@ -63,11 +63,12 @@ HITS = EV['hits']
 
 # ================= 乐队 =================
 BRK = [(CAPON - 50, CAPON)]          # 扣帽前半小节：鼓停（积墨那一下鼓不停了——主人：“第 5 秒好像有停顿”）
-S.drums(50, CAPON, skip=BRK, level=0.9)
-for fm in np.arange(50, CAPON, BEAT / 4):
+REVEAL = EV['opening']['reveal']                     # v5：开场是微距，鼓在镜头拉开、整辆车出现的那一拍（第 150 帧）才进
+S.drums(REVEAL, CAPON, skip=BRK, level=0.9)
+for fm in np.arange(REVEAL, CAPON, BEAT / 4):
     if not any(a <= fm < z for a, z in BRK):
         S.place(S.shaker(0.8), fr(fm), 0.55 if (fm - 50) % (BEAT / 2) else 0.3, 0.35)
-S.bassline(50, CAPON, level=1.0)
+S.bassline(REVEAL, CAPON, level=1.0)
 S.pad(0.9, wave='saw', fc=1500)
 
 
@@ -80,7 +81,7 @@ def epiano(ms, d=0.22):
     return y * np.minimum(1, t / 0.003) * np.where(t < d, np.exp(-t / 0.4), np.exp(-d / 0.4) * np.exp(-(t - d) / 0.06)) * 0.25
 
 
-for fm in np.arange(50 + BEAT / 2, CAPON, BEAT):
+for fm in np.arange(REVEAL + BEAT / 2, CAPON, BEAT):
     ch = S.chord(fm)[2]
     S.place(epiano([m - 12 for m in ch] + [ch[0]]), fr(fm), 0.55, 0.15 * (1 if int(fm / BEAT) % 2 else -1), send=0.2, bus=S.PUMP)
 
@@ -99,6 +100,8 @@ PH = [[(0, 74, 1), (1, 79, 1), (2, 78, 1), (3, 79, 1), (5, 83, 2), (7, 81, 1)],
       [(0, 76, 3), (3, 72, 1), (4, 74, 2), (6, 79, 2)]]
 for i in range(20):
     b0 = 50 + i * BAR
+    if b0 < REVEAL:
+        continue
     if b0 + BAR > CAPON + 1:
         break
     notes = PH[i % 4]
@@ -106,11 +109,30 @@ for i in range(20):
     S.hook(b0, [(p, m + oct_, ln) for p, m, ln in notes], 1.0, inst=lead)
 
 # ================= 开场：海报 → 拔帽 → 第一组巨笔 =================
-S.sfx(S.cap(1.0, True), fr(EV['capOff']), 0.9, 0.3, send=0.2)
-S.sfx(S.rev_cymbal(0.7, 1.0), fr(50) - 0.7, 0.55, 0, send=0.3)
+# ================= 开场（v5）：放大 40 倍的一笔 → 镜头往外拉 → 整辆车 =================
+# 微距：很安静，笔头离开纸面一声湿的“啵”，积墨渗开是一个慢慢亮起来的和弦；字一个个出来
+S.sfx(S.bop(52, 0.9, 0.25), fr(1), 0.55, 0.3, send=0.4)
+S.sfx(S.strings([55, 62, 67, 71], 2.6, 1.0, att=0.04, rel=0.8, bright=2600), fr(0), 0.5, 0, send=0.5)
+S.sfx(S.celesta(79, 2.0, 1.0), fr(0), 0.4, 0.1, send=0.6)
+S.sfx(S.swell([55, 62, 67, 71], 2.2, 1.0), fr(0), 0.45, 0, send=0.6)
+S.sfx(S.celesta(83, 2.0, 0.9), fr(10), 0.35, 0.2, send=0.6)
+S.sfx(S.celesta(86, 2.0, 0.8), fr(34), 0.3, -0.2, send=0.6)
+for k in range(11):
+    S.sfx(S.type_tick(S.tone(6 + k * 1.8, k % 3, 2), 0.7), fr(6 + k * 1.8), 0.35, -0.4 + 0.08 * k, send=0.15)
+# 拉开：风 + 上行的 riser，钢片琴越来越密，落在第 150 帧（小节线）全乐队 + 镲 + 底鼓
+S.sfx(S.riser(fr(REVEAL - 50), 0.9, 300, 7000), fr(50), 0.45, 0, send=0.3)
+S.sfx(S.whoosh(1.2, 200, 5000, 1.0, 0.75), fr(REVEAL - 72), 0.55, -0.3, send=0.3)
+for k in range(10):
+    S.sfx(S.celesta([67, 71, 74, 79, 83, 86, 91, 95, 98, 103][k], 0.6, 0.7), fr(REVEAL - 40 + k * 4), 0.22, -0.5 + 0.1 * k, send=0.4)
+S.sfx(S.rev_cymbal(0.5, 1.0), fr(REVEAL) - 0.5, 0.55, 0, send=0.3)
+S.place(S.crash(1.0), fr(REVEAL), 0.75, 0.1, send=0.4)
+S.place(S.kick(1.3), fr(REVEAL), 1.0); S.kicks.append(REVEAL)
+S.sfx(S.boom(0.9, 110, 40, 0.8), fr(REVEAL), 0.5)
 
 # ================= 换场景：一组巨笔扫满屏幕（风 + 低音擦纸，扫完那一帧镲 + 底鼓）=================
 for i, h in enumerate(HITS):
+    if h <= 0:          # v5：第一个场景没有巨笔换场（开场是微距）
+        continue
     S.sfx(S.whoosh(0.42, 220, 5200, 1.0, 0.7), fr(h - 22), 0.65, -0.5 + 0.2 * i, send=0.3)
     for j in range(3):
         S.sfx(S.nib(0.1, 1.0, S.tone(h, j, -1), 0.55, 'press'), fr(h - 16 + j * 5), 0.35, -0.4 + 0.4 * j, send=0.15)
