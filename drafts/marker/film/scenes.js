@@ -24,7 +24,7 @@ const SCN = (() => {
   const SWIPE0 = k => HITS[k] - 5 * 2.6 - 7;
   // 布景入场：巨笔扫完以后，纸 / 卡片 / 浏览器 / 手机从画外弹进来（弹簧，过冲约 5%）
   const spr = t => { if (t <= 0) return 0; const z = .55, w = 9, wd = w * Math.sqrt(1 - z * z); return 1 - Math.exp(-z * w * t) * (Math.cos(wd * t) + z * w / wd * Math.sin(wd * t)); };
-  const enter = (f, hit, dx, dy, da, cx, cy, dur = 22) => { const u = 1 - spr((f - hit) / dur); return INK.mul([1, 0, 0, 1, dx * u, dy * u], rot(cx, cy, da * u)); };
+  const enter = (f, hit, dx, dy, da, cx, cy, dur = 30) => { const u = 1 - spr((f - hit) / dur); return INK.mul([1, 0, 0, 1, dx * u, dy * u], rot(cx, cy, da * u)); };
   const BG = ['#2A2C31', '#11A086', '#D8CBAE', '#6E52D8', '#F2B01E', '#F0642E'];
   const NAMES = ['01 汽车 · 设计草图', '02 球鞋', '03 建筑 · 两点透视', '04 网页 · 官网', '05 App · 配置器', '06 一支笔'];
 
