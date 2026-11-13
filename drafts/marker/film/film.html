@@ -213,7 +213,10 @@ function draw(f) {
     const P = k <= 0 ? SC[5] : SC[k - 1], fp = k <= 0 ? END : f, cp = cam(P, fp), MP = camM(cp);
     drawScene(ctx, P, fp, MP, cp.z); if (k > 0) pens(ctx, P, f, MP, cp.z);
     if (k <= 0) restPen(f, MP, cp, P);
-    if (k >= 0) { const c = cam(S, f), M = camM(c); strokes(ctx, S, f, M, 'swipe'); pens(ctx, S, f, M, c.z, 'giant'); }
+    if (k >= 0) { const c = cam(S, f), M = camM(c);
+      // 巨笔扫完前 8 帧：新场景的底色从下面透上来，扫完那一帧正好铺满（换场景这一帧看不出来）
+      ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.globalAlpha = smr(S.hit - 9, S.hit, f); ctx.fillStyle = lighter(S.bg); ctx.fillRect(0, 0, 1920, 1080); ctx.globalAlpha = 1;
+      strokes(ctx, S, f, M, 'swipe'); pens(ctx, S, f, M, c.z, 'giant'); }
   } else {
     const c = cam(S, f), M = camM(c);
     drawScene(ctx, S, f, M, c.z); pens(ctx, S, f, M, c.z);
