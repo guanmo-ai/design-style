@@ -20,7 +20,7 @@ PREVIEW=1 bash drafts/<短名>/film/make.sh
 bash drafts/<短名>/film/make.sh
 ```
 
-预览约 2 分钟（云端，不含毛的舞台 0.4 秒 / 帧）。出片脚本最后会自动量一遍“丝滑”。
+预览约 2 分钟（云端，不含毛的舞台 0.4 秒 / 帧）。出片脚本最后会自动量一遍“丝滑”，并查一遍第一个画面（`../cover.py`：第 0 帧就是 X 上的封面，必须是全片最抓人的那一刻）。
 
 ## 有什么
 
@@ -35,7 +35,7 @@ bash drafts/<短名>/film/make.sh
 | `../fur/fur.js` | **专用**：毛绒渲染器（一根根的细带、Kajiya–Kay、成撮、逆光镶边、弹簧滞后、形状之间飞、被手拨开）。毛、草、地毯、毛线、羽毛、流苏用得上 | motion、stage |
 | `../softfx.py` | 噗、啵、刷过去、弹簧音、软的落地：`class MySong(Song, SoftFX)` | `../song.py` |
 | `../song.py` | 一整首歌的骨架（鼓、贝斯、铺底、琶音、主旋律、换章、出字的“嗒”和砸字） | `scripts/lib/audio` |
-| `../film-gl.cjs` `../events.cjs` `../contact.py` `../smooth.py` | 逐帧渲染（可续渲）、导出出字时间、联系表、量跳变和死区 | — |
+| `../film-gl.cjs` `../events.cjs` `../contact.py` `../smooth.py` `../cover.py` | 逐帧渲染（可续渲）、导出出字时间、联系表、量跳变和死区、查第一个画面 | — |
 
 每个文件开头的注释写了用法；参数的含义写在函数上面。
 
