@@ -1,0 +1,98 @@
+<!doctype html><meta charset="utf-8"><title>翻牌显示 Split-Flap · 全片</title>
+<!-- 逐帧渲染：node ../../_lib/film-gl.cjs film.html <帧目录> 0 960。查询串：S=子帧数（默认 8），f=先画哪一帧 -->
+<style>
+@font-face { font-family: Oswald; src: url(../../../public/fonts/Oswald.ttf); font-weight: 200 700; }
+@font-face { font-family: NotoSC; src: url(../../../public/fonts/NotoSansSC-Black.otf); font-weight: 900; }
+@font-face { font-family: NotoSC; src: url(../../../public/fonts/NotoSansSC-Bold.otf); font-weight: 700; }
+@font-face { font-family: NotoSC; src: url(../../../public/fonts/NotoSansSC-Medium.otf); font-weight: 500; }
+@font-face { font-family: JBM; src: url(../../../public/fonts/JetBrainsMono.ttf); font-weight: 100 800; }
+@font-face { font-family: NotoSCM; src: url(../../../public/fonts/NotoSansSC-Medium.otf); font-weight: 500; }
+html, body { margin: 0; background: #050505; overflow: hidden; }
+#stage { position: relative; width: 1920px; height: 1080px; }
+canvas { display: block; }
+#ann { position: absolute; inset: 0; pointer-events: none; }
+#ann svg { position: absolute; inset: 0; }
+.lab { position: absolute; font: 500 30px/1.2 JBM, NotoSCM, monospace; color: #F2EDE3; white-space: nowrap; letter-spacing: 0.01em;
+  padding: 7px 12px 8px; background: rgba(10,10,10,0.78); border-left: 3px solid #FFD400; }
+</style>
+<div id="stage"><canvas id="c" width="1920" height="1080"></canvas><div id="ann"><svg width="1920" height="1080"></svg></div></div>
+<script src="../../_lib/typefx.js"></script>
+<script src="flap.js"></script><script src="wall.js"></script><script src="scenes.js"></script>
+<script>
+const Q = new URLSearchParams(location.search), S = +(Q.get('S') || 8), SHUTTER = 0.55;
+const ANNEL = document.getElementById('ann'), SVG = ANNEL.querySelector('svg');
+let R = null;
+function project(VP, p) {
+  const x = VP[0] * p[0] + VP[4] * p[1] + VP[8] * p[2] + VP[12], y = VP[1] * p[0] + VP[5] * p[1] + VP[9] * p[2] + VP[13], w = VP[3] * p[0] + VP[7] * p[1] + VP[11] * p[2] + VP[15];
+  return [(x / w * 0.5 + 0.5) * 1920, (0.5 - y / w * 0.5) * 1080];
+}
+function hud(f) {
+  const VP = R ? R.camera(camAt(f)) : null;
+  let svg = '', html = '';
+  for (const A of ANN) {
+    const txt = TFX.decode(A.text, f, A.a, { rate: 1, lead: 3, kind: 'small' });   // 每次出字都登记给配乐
+    if (f < A.a || f >= A.b || !VP) continue;
+    const op = Math.min(1, (f - A.a) / 6, (A.b - f) / 8);
+    const [x, y] = project(VP, A.p(f));
+    const lx = x + A.off[0], ly = y + A.off[1];
+    const grow = Math.min(1, (f - A.a) / 8);
+    const ex = x + (lx - x) * grow, ey = y + (ly - y) * grow;
+    svg += `<g opacity="${op}"><line x1="${x}" y1="${y}" x2="${ex}" y2="${ey}" stroke="#FFD400" stroke-width="2"/><circle cx="${x}" cy="${y}" r="6" fill="none" stroke="#FFD400" stroke-width="2.5"/><circle cx="${x}" cy="${y}" r="2.2" fill="#FFD400"/></g>`;
+    const left = A.off[0] < 0;
+    html += `<div class="lab" style="opacity:${op};left:${left ? lx - 4 : lx + 4}px;top:${ly - 22}px;transform:translateX(${left ? '-100%' : '0'})">${txt || '&nbsp;'}</div>`;
+  }
+  SVG.innerHTML = svg;
+  ANNEL.querySelectorAll('.lab').forEach(e => e.remove());
+  ANNEL.insertAdjacentHTML('beforeend', html);
+}
+const PCS = new Float32Array(8 * 8000), GH = new Float32Array(8 * 64);
+function ghosts(t) {
+  // 特写里：每次倒计时翻牌后，留下掉落过程的频闪轮廓（每帧一张：间距越来越大 = θ ∝ t²）
+  let n = 0;
+  if (t < TL.push1 - 10 || t > TL.pull0 + 20) return 0;
+  const [x, y] = [cx(FOCUS % COLS), cy((FOCUS / COLS) | 0)];
+  for (const tk of TL.ticks) {
+    const d = t - tk;
+    if (d < 0 || d > 30) continue;
+    const a = Math.min(1, d / 2) * (1 - Math.max(0, (d - 18) / 12));
+    for (const u of [0.25, 0.5, 0.75]) {
+      if (d < u * WALL.F) continue;
+      const o = n * 8; GH.set([x, y, WALL.theta(u), 4, 0, 0, a * 0.95, 0], o); n++;
+    }
+  }
+  return n;
+}
+(async () => {
+  await Promise.all([document.fonts.load('600 40px Oswald'), document.fonts.load('900 40px NotoSC', '观默'), document.fonts.load('700 40px NotoSC', '翻牌'), document.fonts.load('500 40px NotoSC', '翻牌'), document.fonts.load('500 20px JBM'), document.fonts.load('500 20px NotoSCM', '影子')]);
+  await document.fonts.ready;
+  buildFilm();
+  for (let f = 0; f < TL.end; f++) hud(f);   // 空跑：登记出字
+  R = FLAP.create(document.getElementById('c'), WALL.atlas());
+  window.proj = (t) => { const VP = R.camera(camAt(t)); const P = p => project(VP, p).map(Math.round);
+    return { wall: [P([-30, 16.9, 0]), P([30, 16.9, 0]), P([-30, -16.9, 0]), P([30, -16.9, 0])], title: [P([cx(3) - 0.5, cy(1) + 0.65, 0]), P([cx(56) + 0.5, cy(22) - 0.65, 0])] }; };
+  window.stats = () => {
+    const L = []; for (let id = 0; id < N; id++) for (const t of WALL.landings(id, 2000)) L.push([t, id]);
+    L.sort((a, b) => b[0] - a[0]);
+    const hist = new Array(20).fill(0); for (const [t] of L) if (t >= 0 && t < 1200) hist[Math.floor(t / 60)]++;
+    let fl0 = 0; for (let id = 0; id < N; id++) if (WALL.state(id, 0).u >= 0) fl0++;
+    return { proj0: window.proj(0), proj959: window.proj(959), top: L.slice(0, 6).map(([t, id]) => [t, id % COLS, (id / COLS) | 0]), hist, flipping0: fl0 };
+  };
+  window.events = () => {
+    const lands = new Array(TL.end + 60).fill(0); let last = 0, lastId = -1;
+    for (let id = 0; id < N; id++) for (const t of WALL.landings(id, TL.end + 60)) { if (t >= 0) lands[Math.floor(t)]++; if (t > last) { last = t; lastId = id; } }
+    return { cues: TFX.list(), lands, last, lastId, ticks: TL.ticks, impact: TL.impact };
+  };
+  window.frame = async f => {
+    R.render(S, i => {
+      const t = f - SHUTTER / 2 + SHUTTER * (i + 0.5) / S;
+      const cam = camAt(t);
+      const n = WALL.pieces(t, PCS);
+      return { cam, pieces: PCS, n, ghosts: GH, ng: ghosts(t), lamp: lampAt(t) };
+    }, { bloom: 0.55, seed: f % 97, expo: 1.0 });
+    hud(f);
+    await new Promise(r => requestAnimationFrame(() => r()));
+  };
+  await window.frame(+(Q.get('f') || 0));
+  window.ready = true;
+})().catch(e => { console.log('ERR ' + (e.stack || e.message).slice(0, 4000)); });
+</script>
