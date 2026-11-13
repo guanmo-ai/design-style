@@ -1,0 +1,291 @@
+<!doctype html><meta charset="utf-8">
+<style>html,body{margin:0;background:#000;overflow:hidden}canvas{display:block}</style>
+<canvas id="c" width="1920" height="1080"></canvas>
+<script src="ink.js"></script><script src="board.js"></script>
+<script>
+// 马克笔 · 一张纸、137 笔。window.frame(f) 画第 f 帧（帧号的纯函数）。
+// 0—50 帧：第 0 帧是画完的整张（封面），拔帽、整张倒放回白纸；之后镜头骑着笔尖把它重新画一遍；最后扣上笔帽。
+const cv = document.getElementById('c'), out = cv.getContext('2d');
+const sub = document.createElement('canvas'); sub.width = 1920; sub.height = 1080; const ctx = sub.getContext('2d');
+const Q = new URLSearchParams(location.search);
+const { clamp, mul, apply } = INK, Bd = BOARD, MK = Bd.marks, COL = Bd.COL, BEAT = Bd.BEAT;
+const sm = t => (t = clamp(t), t * t * (3 - 2 * t)), smr = (a, b, x) => sm((x - a) / (b - a)), lerp = (a, b, t) => a + (b - a) * t;
+const ssm = t => (t = clamp(t), t * t * t * (t * (6 * t - 15) + 10));
+const spring = (t, z = .55, w = 9) => { if (t <= 0) return 0; const wd = w * Math.sqrt(1 - z * z); return 1 - Math.exp(-z * w * t) * (Math.cos(wd * t) + z * w / wd * Math.sin(wd * t)); };
+const CAP_ON = BOARD.marks.T_REV + 4 * BOARD.BEAT,   // 扣帽落在下一个小节线上
+      END = CAP_ON + 60, CAP_OFF = 3, REW0 = 6, REW1 = 50;
+const FONT = { hand: 'LongCang', latin: 'Caveat', sans: 'NotoSans', mono: 'JBMono' };
+const INKC = '#2148A8';                          // 批注用的蓝色针管笔
+
+// —— 时间：倒放开场把“纸上画到哪”映射回去 ——
+const TFULL = MK.T_DRAW_END + 60;
+function tau(f) { if (f >= REW1) return f; if (f <= REW0) return TFULL; const u = (f - REW0) / (REW1 - REW0); return lerp(TFULL, REW1 - 0.01, ssm(u)); }
+
+// —— 组变换：车活过来（片尾） ——
+const TR = MK.T_REV;
+const pulse = u => u <= 0 ? 0 : u * u * Math.exp(2 * (1 - u));            // 0 起步、速度连续，u=1 到顶
+function carShift(f) { const u = (f - TR) / 16; const g = pulse(u) - 0.3 * pulse((f - TR - 24) / 14); return 120 * g; }
+function carPitch(f) { const d = (carShift(f + .5) - carShift(f - .5)); return -0.0035 * d; }
+function wheelAng(f) { // 角速度：起步猛、慢慢停
+  const x = f - TR; if (x <= 0) return 0; const k = 1 / 60; let a = 0; const n = Math.ceil(x);
+  for (let i = 0; i < n; i++) { const t = Math.min(1, x - i); const ti = i + t / 2; a += t * 0.55 * (1 - Math.exp(-ti / 4)) * Math.exp(-ti / 34); } return a; }
+const rot = (cx, cy, a) => { const c = Math.cos(a), s = Math.sin(a); return [c, s, -s, c, cx - c * cx + s * cy, cy - s * cx - c * cy]; };
+Bd.G.car = f => { const dx = carShift(f), p = carPitch(f), rc = Bd.wheelC(Bd.WR); return mul([1, 0, 0, 1, dx, 0], rot(rc[0], rc[1] + 95, p)); };
+for (const [k, cx] of [['wheelF', Bd.WF], ['wheelR', Bd.WR]]) { const c = Bd.wheelC(cx); Bd.G[k] = f => mul(Bd.G.car(f), rot(c[0], c[1], wheelAng(f))); }
+for (const S of Bd.all) { if (S.group) { const g = S.group; S.G = f => Bd.G[g](f); } if (S.clipGroup) { const g = S.clipGroup; S.clipG = f => Bd.G[g](f); } }
+
+// —— 笔：每支笔的位置 = 正在画的那一笔的笔尖；两笔之间按“末速度 → 初速度”做三次插值（速度连续），抬起来一点 ——
+const TOOLS = { pencil: { color: COL.pencil, kind: 'pencil' }, black: { color: COL.black, kind: 'marker' }, blue: { color: COL.blue, kind: 'marker' }, orange: { color: COL.orange, kind: 'marker' }, liner: { color: COL.liner, kind: 'liner' }, white: { color: '#F2EFE6', kind: 'white' } };
+for (const k in TOOLS) TOOLS[k].S = Bd.all.filter(S => S.tool === k).sort((a, b) => a.t0 - b.t0);
+const ENTER = [520, 380], EXIT = [560, 420];  // 笔从右下角进出（纸面方向，按镜头缩放）
+function hermite(p0, v0, p1, v1, T, u) { const u2 = u * u, u3 = u2 * u; const h00 = 2 * u3 - 3 * u2 + 1, h10 = u3 - 2 * u2 + u, h01 = -2 * u3 + 3 * u2, h11 = u3 - u2;
+  return [h00 * p0[0] + h10 * T * v0[0] + h01 * p1[0] + h11 * T * v1[0], h00 * p0[1] + h10 * T * v0[1] + h01 * p1[1] + h11 * T * v1[1]]; }
+function penAt(k, f) {
+  const L = TOOLS[k].S; if (!L.length) return null;
+  const first = L[0], last = L[L.length - 1];
+  const tin = 16, tout = 18;
+  if (f < first.t0 - tin || f > last.end + tout) return null;
+  for (let i = 0; i < L.length; i++) {
+    const S = L[i];
+    if (f >= S.t0 && f <= S.end) { const q = INK.tip(S, f); return { x: q.x, y: q.y, lift: 0, down: true, S }; }
+    const N = L[i + 1];
+    if (f < S.t0) { // 进场
+      const a = INK.tip(S, S.t0), z = 1; const p0 = [a.x + ENTER[0], a.y + ENTER[1]]; const T = tin; const u = (f - (S.t0 - T)) / T;
+      const p = hermite(p0, [-ENTER[0] / T * 1.6, -ENTER[1] / T * 1.6], [a.x, a.y], [0, 0], T, u); return { x: p[0], y: p[1], lift: 1 - sm(u), down: false };
+    }
+    if (N && f > S.end && f < N.t0) {
+      const a = INK.tip(S, S.end - 1e-3), b = INK.tip(N, N.t0); const T = N.t0 - S.end, u = (f - S.end) / T;
+      const va = [a.vx, a.vy], vb = [0, 0];
+      const p = hermite([a.x, a.y], va, [b.x, b.y], vb, T, u); const d = Math.hypot(b.x - a.x, b.y - a.y);
+      return { x: p[0], y: p[1], lift: Math.sin(Math.PI * u) * Math.min(1, 0.25 + d / 260), down: false };
+    }
+    if (!N && f > S.end) { // 退场
+      const a = INK.tip(S, S.end - 1e-3); const T = tout, u = (f - S.end) / T;
+      const p = hermite([a.x, a.y], [a.vx, a.vy], [a.x + EXIT[0], a.y + EXIT[1]], [EXIT[0] / T * 1.6, EXIT[1] / T * 1.6], T, u); return { x: p[0], y: p[1], lift: sm(u * 2), down: false };
+    }
+  }
+  return null;
+}
+
+// —— 镜头：关键帧（可以跟着某支笔）→ 平滑插值 → 高斯磨平（位置、速度都连续）——
+const T = Bd.T, dw = Bd.dwellStroke;
+const dwP = INK.tip(dw, dw.t0);
+const CAM = [
+  [0, 960, 540, 1.0, 0], [8, 960, 540, 1.0, 0],
+  [REW1, 300, 846, 2.15, -4],
+  [MK.T_TITLE_END - 14, 470, 846, 2.05, -2],
+  [MK.T_TITLE_END + 14, 1040, 650, 1.32, 3],
+  [196, 900, 600, 1.45, 4, 'blue', .55], [290, 1300, 560, 1.5, 3, 'blue', .55],
+  [MK.T_RULE1 + 8, 1590, 215, 2.25, 0], [MK.T_RULE1 + 40, 1600, 215, 2.3, 0],
+  [MK.T_PASS1 + 6, 1000, 640, 1.6, -7, 'orange', .5], [MK.T_RULE3 - 26, 900, 640, 1.6, -6, 'orange', .5],
+  [MK.T_RULE3 - 4, dwP.x + 110, dwP.y + 40, 3.2, -3], [MK.T_RULE3 + 26, dwP.x + 150, dwP.y + 40, 3.0, -2],
+  [MK.T_RULE3 + 52, 1000, 690, 1.55, -4, 'orange', .45], [MK.T_DARK_END - 40, 1100, 720, 1.5, -2, 'orange', .45],
+  [MK.T_DARK_END - 6, 1590, 240, 2.0, 0],
+  [MK.T_DARK_END + 22, 1040, 640, 1.7, 2, 'black', .5], [MK.T_BLK_END - 6, 1100, 700, 1.7, 2, 'black', .5],
+  [MK.T_BLK_END + 8, 0, 0, 2.3, -3, 'liner', 1], [MK.T_LINE_END - 30, 0, 0, 2.3, -1, 'liner', 1],
+  [MK.T_LINE_END + 4, 1040, 650, 1.55, 0],
+  [MK.T_WHITE + 60, 1000, 610, 1.4, 0],
+  [MK.T_REV + 2, 1020, 640, 1.38, 0], [MK.T_REV + 40, 960, 560, 1.06, 0],
+  [MK.T_REV + 70, 960, 540, 1.0, 0], [END, 960, 540, 1.035, 0]];
+function camKey(i, f) { const K = CAM[i]; let x = K[1], y = K[2]; if (K[5]) { const p = penAt(K[5], f + 6); if (p) { x = lerp(x, p.x, K[6]); y = lerp(y, p.y, K[6]); } else if (K[6] === 1) { x = 1060; y = 640; } } return [x, y, Math.log(K[3]), K[4]]; }
+function camTarget(f) {
+  let i = 0; while (i < CAM.length - 2 && CAM[i + 1][0] <= f) i++;
+  const a = camKey(i, f), b = camKey(i + 1, f), A = CAM[i][0], Bf = CAM[i + 1][0];
+  const u = ssm((f - A) / (Bf - A));
+  return a.map((v, k) => lerp(v, b[k], u));
+}
+const camMemo = new Map();
+function cam(f) {
+  const key = Math.round(f * 64); if (camMemo.has(key)) return camMemo.get(key);
+  const sg = 7; let acc = [0, 0, 0, 0], sw = 0;
+  for (let k = -21; k <= 21; k += 1.5) { const w = Math.exp(-k * k / (2 * sg * sg)); const q = camTarget(f + k); for (let j = 0; j < 4; j++) acc[j] += q[j] * w; sw += w; }
+  let [x, y, lz, r] = acc.map(v => v / sw);
+  // 片尾车一冲：镜头往下“咚”一下（单向）
+  const sh = 14 * Math.exp(-Math.max(0, f - TR - 6) / 7) * smr(TR, TR + 6, f);
+  const res = { x, y: y - sh, z: Math.exp(lz), r: r * Math.PI / 180 };
+  camMemo.set(key, res); return res;
+}
+function camM(c) { const cs = Math.cos(c.r) * c.z, sn = Math.sin(c.r) * c.z; return [cs, sn, -sn, cs, 960 - (cs * c.x - sn * c.y), 540 - (sn * c.x + cs * c.y)]; }
+
+// —— 纸：冷白马克笔纸 + 纤维（跟着纸走）——
+const PAPER = '#F4F1EA';
+const grain = (() => { const g = document.createElement('canvas'); g.width = g.height = 384; const x = g.getContext('2d'), d = x.createImageData(384, 384), r = INK.rng(3);
+  for (let i = 0; i < d.data.length; i += 4) { const v = r(); d.data[i] = 120; d.data[i + 1] = 110; d.data[i + 2] = 92; d.data[i + 3] = v * 22; } x.putImageData(d, 0, 0);
+  x.globalAlpha = .09; x.strokeStyle = '#7a705f'; for (let i = 0; i < 160; i++) { const X = r() * 384, Y = r() * 384, a = r() * 6.28, l = 4 + r() * 12; x.lineWidth = .6; x.beginPath(); x.moveTo(X, Y); x.lineTo(X + Math.cos(a) * l, Y + Math.sin(a) * l); x.stroke(); }
+  return ctx.createPattern(g, 'repeat'); })();
+
+// —— 手写批注：从左往右写出来（每个字登记一声）——
+const cues = new Map();
+function cue(f0, n, rate, kind) { const k = f0 + '|' + kind + '|' + n; if (!cues.has(k)) cues.set(k, [f0, n, rate, kind]); }
+function hand(c, txt, x, y, f, f0, o = {}) {
+  if (f < f0) return; const rate = o.rate ?? 2.2; const n = [...txt].length; cue(f0, n, rate, o.kind || 'text');
+  c.save(); c.font = o.font; c.textBaseline = 'alphabetic'; c.textAlign = 'left';
+  const W = c.measureText(txt).width; const x0 = o.align === 'right' ? x - W : o.align === 'center' ? x - W / 2 : x;
+  const prog = clamp((f - f0) / (n * rate)); const edge = x0 + W * prog;
+  const fade = o.out ? 1 - smr(o.out, o.out + 16, f) : 1; if (fade <= 0) { c.restore(); return; }
+  c.beginPath(); c.rect(x0 - 40, y - o.size * 1.4, edge - x0 + 40 + o.size * 0.3, o.size * 2); c.clip();
+  c.globalAlpha = (o.alpha ?? 1) * fade; c.fillStyle = o.color; c.fillText(txt, x0, y);
+  c.restore();
+  return { x0, W, edge, done: prog >= 1 };
+}
+// 批注的箭头：针管笔一笔画出来
+function arrowPts(a, b, bend) { const out = []; const mx = (a[0] + b[0]) / 2 - (b[1] - a[1]) * bend, my = (a[1] + b[1]) / 2 + (b[0] - a[0]) * bend;
+  for (let i = 0; i <= 30; i++) { const t = i / 30; out.push([(1 - t) * (1 - t) * a[0] + 2 * (1 - t) * t * mx + t * t * b[0], (1 - t) * (1 - t) * a[1] + 2 * (1 - t) * t * my + t * t * b[1]]); } return out; }
+const ARROWS = [];
+function mkArrow(a, b, bend, t0, dur = 12) { const P = arrowPts(a, b, bend); const n = P.length, e = P[n - 1], d = P[n - 4]; const ang = Math.atan2(e[1] - d[1], e[0] - d[0]);
+  const S = { kind: 'liner', P: INK.dense(P, 2), w: 2.4, color: INKC, alpha: 1, t0, dur, prof: 'press', seed: t0 }; S.end = t0 + dur;
+  const hd = [[e[0] - Math.cos(ang - .45) * 18, e[1] - Math.sin(ang - .45) * 18], e, [e[0] - Math.cos(ang + .45) * 18, e[1] - Math.sin(ang + .45) * 18]];
+  const H = { kind: 'liner', P: INK.dense(hd, 2, true), w: 2.4, color: INKC, alpha: 1, t0: t0 + dur + 1, dur: 4, prof: 'even', seed: t0 + 1 }; H.end = H.t0 + 4;
+  ARROWS.push(S, H); }
+const NOTE2 = MK.T_PASS1 + 52, NOTE3 = MK.T_RULE3 + 8, NOTE4 = MK.T_WHITE + 8, NOTE1 = MK.T_RULE1 + 6;
+mkArrow([500, 236], T([-330, -192]), -.22, NOTE2 + 20);
+mkArrow([604, 462], [dwP.x - 18, dwP.y - 22], -.3, NOTE3 + 18);
+mkArrow([905, 222], T([-40, -330]), .2, NOTE4 + 22);
+
+function notes(c, f) {
+  const big = s => `400 ${s}px ${FONT.hand}`, sans = s => `500 ${s}px ${FONT.sans}`;
+  // ① 试色条上方
+  hand(c, '① 一笔一层：叠一遍，深一档', 1352, 122, f, NOTE1, { font: big(36), size: 36, color: INKC, rate: 1.8 });
+  for (let k = 0; k < 3; k++) hand(c, '×' + (k + 1), Bd.SW.x + k * (Bd.SW.w + Bd.SW.gap) + Bd.SW.w / 2 - 12, 282, f, NOTE1 + 14 + k * 6, { font: `600 34px ${FONT.latin}`, size: 34, color: INKC, rate: 2 });
+  hand(c, '透明墨 · 正片叠底 multiply', 1358, 320, f, NOTE1 + 30, { font: sans(24), size: 24, color: '#5B6170', rate: 1.2, kind: 'small' });
+  // ② 白是留出来的
+  hand(c, '② 白是留出来的', 72, 262, f, NOTE2, { font: big(52), size: 52, color: INKC, rate: 2.2 });
+  hand(c, '肩线下那一道亮，一笔都没画', 74, 304, f, NOTE2 + 16, { font: sans(26), size: 26, color: '#5B6170', rate: 1.1, kind: 'small' });
+  // ③ 停得越久，墨越深
+  hand(c, '③ 停得越久，墨越深', 72, 488, f, NOTE3, { font: big(52), size: 52, color: INKC, rate: 2.2 });
+  hand(c, '起笔、收笔会积墨——手画的证据', 74, 530, f, NOTE3 + 16, { font: sans(26), size: 26, color: '#5B6170', rate: 1.1, kind: 'small' });
+  // ④ 最后一笔才是白
+  hand(c, '④ 最后一笔，才是白', 600, 196, f, NOTE4, { font: big(52), size: 52, color: INKC, rate: 2.2 });
+  // 标题下面
+  hand(c, '马克笔 · 设计草图', 78, 948, f, MK.T_TITLE_END - 20, { font: `700 40px ${FONT.sans}`, size: 40, color: '#1F2126', rate: 2.2 });
+  hand(c, '快、透明、不能改：三支笔、一支白，二十分钟出一辆车', 80, 994, f, MK.T_TITLE_END - 4, { font: sans(24), size: 24, color: '#5B6170', rate: .9, kind: 'small' });
+  // 署名
+  hand(c, '观默', 1196, 1046, f, CAP_ON - 34, { font: big(50), size: 50, color: '#1F2126', rate: 4, align: 'right', kind: 'title' });
+}
+
+// —— 一支马克笔（双头，原创造型）：屏幕空间里画；lift 抬起时影子分开 ——
+function drawPen(c, sx, sy, z, color, kind, lift, capT = 0, alpha = 1) {
+  const A = 0.6;                          // 笔杆朝右下
+  const s = z * (kind === 'marker' ? 0.92 : 0.8) * (1 + 0.06 * lift);
+  c.save(); c.globalAlpha = alpha;
+  // 影子：灯在左上
+  const off = (6 + 46 * lift) * z;
+  c.save(); c.translate(sx + off * .7, sy + off); c.rotate(A); c.scale(s, s);
+  c.fillStyle = `rgba(60,48,36,${0.16 - 0.06 * lift})`; c.filter = `blur(${(3 + 10 * lift) * z}px)`;
+  c.beginPath(); c.roundRect(10, -22, 560, 44, 22); c.fill(); c.filter = 'none'; c.restore();
+  c.translate(sx, sy - 16 * lift * z); c.rotate(A); c.scale(s, s);
+  if (kind === 'marker') {
+    // 扁头
+    c.fillStyle = color; c.beginPath(); c.moveTo(-2, -7); c.lineTo(22, -11); c.lineTo(22, 11); c.lineTo(2, 9); c.closePath(); c.fill();
+    c.fillStyle = 'rgba(255,255,255,.25)'; c.fillRect(4, -8, 14, 3);
+    // 套筒
+    const g1 = c.createLinearGradient(0, -20, 0, 20); g1.addColorStop(0, '#d9dbe0'); g1.addColorStop(.45, '#f7f7f8'); g1.addColorStop(1, '#9aa0a8');
+    c.fillStyle = g1; c.beginPath(); c.moveTo(22, -11); c.lineTo(60, -21); c.lineTo(60, 21); c.lineTo(22, 11); c.closePath(); c.fill();
+    // 笔杆
+    const g2 = c.createLinearGradient(0, -24, 0, 24); g2.addColorStop(0, '#d8d8d4'); g2.addColorStop(.35, '#ffffff'); g2.addColorStop(.7, '#ecebe6'); g2.addColorStop(1, '#a9a8a2');
+    c.fillStyle = g2; c.beginPath(); c.roundRect(58, -24, 470, 48, 10); c.fill();
+    // 色环 + 尾端
+    c.fillStyle = color; c.fillRect(150, -24, 16, 48); c.beginPath(); c.roundRect(470, -24, 66, 48, [4, 18, 18, 4]); c.fill();
+    c.fillStyle = 'rgba(255,255,255,.28)'; c.fillRect(470, -18, 60, 6);
+    c.fillStyle = 'rgba(0,0,0,.08)'; c.fillRect(58, 14, 470, 10);
+    // 笔帽（扣上时）
+    if (capT > 0) { const k = 1 - capT; c.save(); c.translate(-90 * k * k, -60 * k * k); c.rotate(-1.2 * k * k);
+      const g3 = c.createLinearGradient(0, -27, 0, 27); g3.addColorStop(0, color); g3.addColorStop(.4, '#ffffff'); g3.addColorStop(.55, color); g3.addColorStop(1, '#00000055');
+      c.fillStyle = color; c.beginPath(); c.roundRect(-14, -27, 186, 54, [24, 6, 6, 24]); c.fill(); c.fillStyle = g3; c.globalAlpha = alpha * .35; c.fill(); c.globalAlpha = alpha;
+      c.fillStyle = 'rgba(255,255,255,.45)'; c.fillRect(10, -20, 140, 5); c.fillStyle = 'rgba(0,0,0,.18)'; c.fillRect(160, -27, 12, 54); c.restore(); }
+  } else {
+    // 细笔（铅笔 / 针管笔 / 白笔）
+    const body = kind === 'pencil' ? '#3C6FD0' : kind === 'white' ? '#EDEBE4' : '#1E2024';
+    c.fillStyle = kind === 'pencil' ? '#2C2A28' : '#9aa0a8'; c.beginPath(); c.moveTo(0, 0); c.lineTo(26, -6); c.lineTo(26, 6); c.closePath(); c.fill();
+    c.fillStyle = kind === 'pencil' ? '#E9C9A0' : '#c9ccd2'; c.beginPath(); c.moveTo(20, -6); c.lineTo(60, -14); c.lineTo(60, 14); c.lineTo(20, 6); c.closePath(); c.fill();
+    const g = c.createLinearGradient(0, -15, 0, 15); g.addColorStop(0, body); g.addColorStop(.35, kind === 'white' ? '#ffffff' : '#ffffff55'); g.addColorStop(.5, body); g.addColorStop(1, '#00000044');
+    c.fillStyle = body; c.beginPath(); c.roundRect(58, -15, 500, 30, 8); c.fill(); c.fillStyle = g; c.globalAlpha = alpha * .5; c.fill(); c.globalAlpha = alpha;
+    if (kind === 'white') { c.fillStyle = '#E8E4D8'; c.fillRect(150, -15, 12, 30); }
+  }
+  c.restore();
+}
+
+// —— 一帧 ——
+function strokeCount(t) { let n = 0; for (const S of Bd.all) if (S.t0 <= t) n++; return n; }
+function draw(f) {
+  const tt = tau(f), c = cam(f), M = camM(c);
+  ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.globalCompositeOperation = 'source-over'; ctx.globalAlpha = 1;
+  ctx.fillStyle = PAPER; ctx.fillRect(0, 0, 1920, 1080);
+  ctx.setTransform(M[0], M[1], M[2], M[3], M[4], M[5]); ctx.fillStyle = grain; ctx.fillRect(-1600, -1200, 5200, 3600);
+  ctx.setTransform(1, 0, 0, 1, 0, 0);
+  const rew = f < REW1;
+  // 纸上的笔画（按开始时间叠）
+  for (const S of Bd.all) {
+    if (S.t0 > tt) break;
+    if (S.kind === 'marker') INK.draw(ctx, S, tt, M, { noSheen: rew });
+    else INK.line(ctx, S, tt, M);
+  }
+  // 白点：一个个“叮”出来
+  for (const d of Bd.DOTS) { const k = spring((tt - d.t) / 14, .5, 10); if (k <= 0) continue; const G = mul(M, Bd.G.car(tt)); const [X, Y] = apply(G, d.p[0], d.p[1]);
+    ctx.fillStyle = '#ffffff'; ctx.beginPath(); ctx.arc(X, Y, d.r * c.z * Math.max(0, k), 0, 7); ctx.fill();
+    const fl = Math.exp(-Math.max(0, tt - d.t) / 8) * smr(d.t, d.t + 2, tt); if (fl > .01) { const g = ctx.createRadialGradient(X, Y, 0, X, Y, 46 * c.z); g.addColorStop(0, `rgba(255,255,255,${.7 * fl})`); g.addColorStop(1, 'rgba(255,255,255,0)'); ctx.fillStyle = g; ctx.fillRect(X - 50 * c.z, Y - 50 * c.z, 100 * c.z, 100 * c.z); } }
+  // 批注（纸面上，跟着纸走）
+  ctx.setTransform(M[0], M[1], M[2], M[3], M[4], M[5]); notes(ctx, tt); ctx.setTransform(1, 0, 0, 1, 0, 0);
+  for (const S of ARROWS) if (S.t0 <= tt) INK.line(ctx, S, tt, M);
+  // 笔
+  if (!rew) {
+    const act = [];
+    for (const k in TOOLS) { const p = penAt(k, f); if (p) act.push([k, p]); }
+    for (const [k, p] of act) { const [X, Y] = apply(M, p.x, p.y); drawPen(ctx, X, Y, c.z, TOOLS[k].color, TOOLS[k].kind, p.lift); }
+  }
+  // 开场 / 片尾那支橙色笔：躺在纸上，拔帽 → 飞走；片尾飞回来、扣帽
+  restPen(f, M, c);
+  hud(f, tt);
+}
+const REST = [1250, 900];                                     // 笔躺下时笔尖的位置（纸面）
+function restPen(f, M, c) {
+  let x = REST[0], y = REST[1], lift = 0, cap = 1, al = 1;
+  if (f < 30) { // 拔帽：帽先飞，笔再抬起来走
+    cap = 1 - smr(CAP_OFF, CAP_OFF + 8, f); const u = smr(CAP_OFF + 4, 28, f); x += 700 * u * u; y += 420 * u * u; lift = Math.min(1, u * 3);
+  } else if (f > CAP_ON - 46) { // 回来、躺下、扣帽
+    const u = 1 - ssm((f - (CAP_ON - 46)) / 30); x += 700 * u * u; y += 420 * u * u; lift = Math.min(1, u * 2.5) * 0.9 + 0.1 * (1 - smr(CAP_ON - 14, CAP_ON, f));
+    cap = smr(CAP_ON - 14, CAP_ON, f);
+  } else return;
+  const [X, Y] = apply(M, x, y);
+  const bump = f >= CAP_ON ? 0.02 * Math.exp(-(f - CAP_ON) / 6) * Math.sin((f - CAP_ON) * 0.9) : 0;
+  drawPen(ctx, X, Y, c.z * (1 + bump), COL.orange, 'marker', lift, cap, al);
+}
+
+function hud(f, tt) {
+  ctx.save(); ctx.setTransform(1, 0, 0, 1, 0, 0);
+  const n = strokeCount(tt), N = Bd.all.length;
+  const al = 1;
+  { const g = ctx.createLinearGradient(0, 0, 0, 120); g.addColorStop(0, 'rgba(244,241,234,.92)'); g.addColorStop(.7, 'rgba(244,241,234,.6)'); g.addColorStop(1, 'rgba(244,241,234,0)'); ctx.fillStyle = g; ctx.fillRect(0, 0, 1920, 120); }
+  ctx.globalAlpha = .82 * al; ctx.fillStyle = '#2A2C31'; ctx.font = `600 22px ${FONT.mono}`; ctx.textBaseline = 'alphabetic';
+  ctx.textAlign = 'left'; ctx.fillText('NO. —  马克笔 · MARKER RENDERING', 72, 60);
+  ctx.textAlign = 'right'; ctx.fillText(`STROKE ${String(n).padStart(3, '0')} / ${N}`, 1848, 60);
+  ctx.globalAlpha = .55 * al; ctx.font = `500 18px ${FONT.mono}`; ctx.textAlign = 'left'; ctx.fillText('ALCOHOL INK · CHISEL 6 MM · 1 STROKE = 1 LAYER', 72, 88);
+  // 暗角
+  const v = ctx.createRadialGradient(960, 540, 560, 960, 540, 1180); v.addColorStop(0, 'rgba(40,30,20,0)'); v.addColorStop(1, 'rgba(40,30,20,.16)');
+  ctx.globalAlpha = 1; ctx.fillStyle = v; ctx.fillRect(0, 0, 1920, 1080);
+  ctx.restore();
+}
+
+// 运动模糊：每帧取几个子帧平均（快门 180°）。?mb=1 关掉
+const MB = +(Q.get('mb') || 3);
+function frameMB(f) {
+  if (MB <= 1) { draw(f); out.drawImage(sub, 0, 0); return; }
+  for (let i = 0; i < MB; i++) { draw(f + ((i + .5) / MB - .5) * .5); out.globalAlpha = 1 / (i + 1); out.drawImage(sub, 0, 0); }
+  out.globalAlpha = 1;
+}
+window.frame = async f => { frameMB(f); };
+window.events = () => {
+  for (let f = 0; f < END; f += 1) { const tt = tau(f); notes(ctx, tt); }
+  const strokes = Bd.all.map(S => ({ t: S.t0 + (S.dwell || 0), d: S.dur, tool: S.tool, kind: S.kind, len: S.P[S.P.length - 1].s, dwell: S.dwell || 0 }));
+  return { end: END, beat: BEAT, cues: [...cues.values()].sort((a, b) => a[0] - b[0]), strokes, dots: Bd.DOTS.map(d => d.t), marks: MK, capOff: CAP_OFF, capOn: CAP_ON, rew: [REW0, REW1],
+    arrows: ARROWS.filter((_, i) => i % 2 === 0).map(S => S.t0), notes: { n1: NOTE1, n2: NOTE2, n3: NOTE3, n4: NOTE4 } };
+};
+(async () => {
+  const fonts = [['LongCang', 'LongCang-Regular.ttf', '400'], ['Caveat', 'Caveat.ttf', '400 700'], ['NotoSans', 'NotoSansSC-Medium.otf', '500'], ['NotoSans', 'NotoSansSC-Bold.otf', '700'], ['JBMono', 'JetBrainsMono.ttf', '100 800']];
+  for (const [n, file, w] of fonts) { const ff = new FontFace(n, `url(../../../public/fonts/${file})`, { weight: w }); await ff.load(); document.fonts.add(ff); }
+  await document.fonts.load(`400 40px LongCang`, '一笔层叠遍深档白是留出来的停得越久墨越最后才观默①②③④');
+  await document.fonts.load(`500 24px NotoSans`, '肩线下那一道亮'); await document.fonts.load(`700 40px NotoSans`, '马克笔设计草图');
+  frameMB(+(Q.get('f') || 0));
+  window.ready = true;
+})();
+</script>

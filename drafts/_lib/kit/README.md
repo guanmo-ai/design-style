@@ -36,6 +36,7 @@ bash drafts/<短名>/film/make.sh
 | `../softfx.py` | 噗、啵、刷过去、弹簧音、软的落地：`class MySong(Song, SoftFX)` | `../song.py` |
 | `../song.py` | 一整首歌的骨架（鼓、贝斯、铺底、琶音、主旋律、换章、出字的“嗒”和砸字） | `scripts/lib/audio` |
 | `../film-gl.cjs` `../events.cjs` `../contact.py` `../smooth.py` | 逐帧渲染（可续渲）、导出出字时间、联系表、量跳变和死区 | — |
+| `../audiocheck.py` | 量配乐：响度、峰值、噪音感、律动、空洞，和毛绒并排比（BGM 音效是必须守的第 5 条） | ffmpeg |
 
 每个文件开头的注释写了用法；参数的含义写在函数上面。
 
