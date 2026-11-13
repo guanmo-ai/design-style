@@ -202,8 +202,9 @@ function webUI(c, f, M, over) {
       c.fillStyle = '#1C1D21'; c.font = sans(30, 700); c.globalAlpha = smr(W.cta.t0 + 3, W.cta.t0 + 8, f); c.fillText('预约试驾 →', 120, 688); c.restore();
       c.fillStyle = '#1C1D21'; c.font = sans(26, 500); c.globalAlpha = smr(W.cta.t0 + 6, W.cta.t0 + 12, f); c.fillText('看 64 笔手稿的全过程 ▶', 452, 688); c.fillRect(452, 700, 300 * smr(W.cta.t0 + 6, W.cta.t0 + 16, f), 2.5); c.globalAlpha = 1; }
     // 规则 ③：按得越久，墨越深
-    hand(c, '③ 按得越久，墨越深', 120, 790, f, W.T_PRESS + 8, { font: big(50), size: 50, color: INKC, rate: 1.2 });
-    hand(c, '长按 = 笔停在纸上：墨一圈圈渗开', 124, 836, f, W.T_PRESS + 18, { font: sans(24), size: 24, color: '#5B6170', rate: .6, kind: 'small' });
+    { const fa = 1 - smr(T_SCROLL, T_SCROLL + 12, f);   // 页面往下滚时淡掉，不压到下面的标题
+      hand(c, '③ 按得越久，墨越深', 120, 790, f, W.T_PRESS + 8, { font: big(50), size: 50, color: INKC, rate: 1.2, alpha: fa });
+      hand(c, '长按 = 笔停在纸上：墨一圈圈渗开', 124, 836, f, W.T_PRESS + 18, { font: sans(24), size: 24, color: '#5B6170', rate: .6, kind: 'small', alpha: fa }); }
     // 光标（不跟着页面滚）
     const ct0 = W.T_CURSOR - 16; if (f > ct0 && f < T_SCROLL + 40) {
       const u = ssm((f - ct0) / 20), u2 = ssm((f - (W.T_PRESS + 36)) / 24);
