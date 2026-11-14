@@ -15,8 +15,8 @@ if [ -n "${PREVIEW:-}" ]; then
 fi
 node render.cjs film.html "$OUT" 0 1080 1
 # 细羽纹很难压：两遍编码定码率（≤ 25 MB）
-ffmpeg -y -loglevel error -framerate 60 -i "$OUT/%04d.jpg" -c:v libx264 -preset slow -b:v 11000k -pass 1 -passlogfile "$OUT.log" -pix_fmt yuv420p -an -f null /dev/null
-ffmpeg -y -loglevel error -framerate 60 -i "$OUT/%04d.jpg" -i "$OUT.wav" -c:v libx264 -preset slow -b:v 11000k -pass 2 -passlogfile "$OUT.log" -pix_fmt yuv420p \
+ffmpeg -y -loglevel error -framerate 60 -i "$OUT/%04d.jpg" -c:v libx264 -preset slow -b:v 10500k -pass 1 -passlogfile "$OUT.log" -pix_fmt yuv420p -an -f null /dev/null
+ffmpeg -y -loglevel error -framerate 60 -i "$OUT/%04d.jpg" -i "$OUT.wav" -c:v libx264 -preset slow -b:v 10500k -pass 2 -passlogfile "$OUT.log" -pix_fmt yuv420p \
   -colorspace bt709 -color_primaries bt709 -color_trc bt709 -c:a aac -b:a 192k -movflags +faststart -shortest "$NAME-film.mp4"
 echo "wrote $NAME-film.mp4"
 python3 ../../_lib/smooth.py "$NAME-film.mp4"
