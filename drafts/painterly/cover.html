@@ -1,0 +1,226 @@
+<!doctype html>
+<html lang="zh">
+<head>
+<meta charset="utf-8">
+<title>绘画感 3D · Painterly 3D · 第 0 帧</title>
+<style>
+@font-face { font-family: 'Archivo'; src: url(../../public/fonts/Archivo.ttf); font-weight: 100 900; font-stretch: 62% 125%; }
+@font-face { font-family: 'GeistMono'; src: url(../../public/fonts/GeistMono.ttf); font-weight: 100 900; }
+@font-face { font-family: 'NotoSC'; src: url(../../public/fonts/NotoSansSC-Black.otf); font-weight: 900; }
+@font-face { font-family: 'NotoSC'; src: url(../../public/fonts/NotoSansSC-Bold.otf); font-weight: 700; }
+@font-face { font-family: 'NotoSC'; src: url(../../public/fonts/NotoSansSC-Regular.otf); font-weight: 400; }
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html, body { width: 1920px; height: 1080px; overflow: hidden; background: #1b1b1b; color: #fff; font-family: NotoSC, sans-serif; }
+#gl { display: none; }
+#c { position: absolute; inset: 0; width: 1920px; height: 1080px; }
+.mono { font-family: GeistMono, monospace; letter-spacing: .05em; }
+.ov { position: absolute; inset: 0; pointer-events: none; }
+.tl { position: absolute; left: 64px; top: 50px; font-size: 13px; color: rgba(255,255,255,.62); display: flex; gap: 26px; text-transform: uppercase; }
+.tl b { color: #fff; font-weight: 500; }
+.vp { position: absolute; left: 64px; bottom: 54px; font-size: 12px; color: rgba(255,255,255,.55); line-height: 1.8; }
+.vp b { color: rgba(255,255,255,.85); font-weight: 500; }
+.sub { position: absolute; left: 70px; top: 352px; width: 540px; }
+.sub h2 { font-family: Archivo; font-weight: 800; font-stretch: 125%; font-size: 30px; letter-spacing: .2em; color: #fff; }
+.sub .yr { font-size: 13px; color: rgba(255,255,255,.62); margin-top: 10px; }
+.sub p { font-size: 19px; line-height: 1.75; color: rgba(255,255,255,.86); margin-top: 22px; }
+.sub p em { font-style: normal; color: #ffb36b; }
+svg.lines { position: absolute; inset: 0; }
+.call { position: absolute; width: 292px; font-size: 13px; line-height: 1.62; color: rgba(255,255,255,.9); padding: 10px 12px; background: rgba(16,10,30,.6); backdrop-filter: blur(8px); border-left: 2px solid #ffb36b; }
+.call .k { display: block; font-family: GeistMono; font-size: 12px; color: #fff; margin-bottom: 4px; letter-spacing: .03em; }
+.call .k i { font-style: normal; color: #ffb36b; margin-right: 8px; }
+.layers { position: absolute; right: 64px; bottom: 54px; display: flex; gap: 10px; align-items: flex-end; }
+.layers .cap { font-size: 13px; color: rgba(255,255,255,.88); margin-right: 14px; align-self: center; font-family: NotoSC; line-height: 1.5; text-align: right; }
+.layers .cap small { display: block; font-family: GeistMono; font-size: 11px; color: rgba(255,255,255,.6); letter-spacing: .04em; }
+.lyr { width: 92px; text-align: center; font-size: 11px; color: rgba(255,255,255,.55); }
+.lyr .sw { height: 40px; border-radius: 3px; border: 1px solid rgba(255,255,255,.18); display: flex; align-items: center; justify-content: center; margin-bottom: 7px; background: rgba(0,0,0,.25); }
+.lyr .sw i { display: block; border-radius: 50%; background: rgba(255,255,255,.85); }
+.lyr.on { color: #ffb36b; } .lyr.on .sw { border-color: #ffb36b; }
+.lyr.done { color: rgba(255,255,255,.85); }
+.chips { position: absolute; right: 64px; top: 46px; display: flex; gap: 6px; align-items: center; font-size: 11px; color: rgba(255,255,255,.7); }
+.chips span.c { width: 30px; height: 30px; border-radius: 3px; display: block; border: 1px solid rgba(0,0,0,.25); }
+.chips .lab { margin-right: 10px; font-family: NotoSC; font-size: 12px; text-align: right; line-height: 1.45; }
+.chips .lab small { display: block; font-family: GeistMono; font-size: 10.5px; color: rgba(255,255,255,.55); }
+.chipcol { display: flex; flex-direction: column; align-items: center; gap: 5px; }
+</style>
+</head>
+<body>
+<canvas id="gl" width="8" height="8"></canvas>
+<canvas id="c"></canvas>
+<div class="ov" id="ov" style="display:none">
+  <div class="tl mono"><span><b>候选 · CANDIDATE</b></span><span>绘画感 3D · Painterly 3D</span><span>2018 平行宇宙 → 2021 双城之战 → 今天</span></div>
+  <div class="sub">
+    <h2>PAINTERLY 3D</h2>
+    <div class="yr mono">SPIDER-VERSE 2018 · ARCANE 2021 · PUSS IN BOOTS 2022 · MUTANT MAYHEM 2023</div>
+    <p>先在 3D 里把形和光摆准，再让画家<em>一笔一笔画上去</em>：光只有三档，笔触顺着形体走，线是手画的，蒸汽是 2D 的。</p>
+  </div>
+  <div class="vp mono"><b>User Perspective</b> · Solid · Workbench<br>(1) Teapot · Utah 1975 · 6,320 tris</div>
+  <svg class="lines" id="lines" width="1920" height="1080"></svg>
+  <div id="calls"></div>
+  <div class="chips mono" id="chips"></div>
+  <div class="layers mono" id="layers"></div>
+</div>
+<script src="../_lib/glkit.js"></script>
+<script src="paint.js"></script>
+<script>
+const Q = new URLSearchParams(location.search);
+const num = (k, d) => (Q.get(k) !== null ? +Q.get(k) : d);
+(async () => {
+  await document.fonts.load('900 100px NotoSC', '绘画感'); await document.fonts.ready;
+  const W = 1920, H = 1080, DPR = devicePixelRatio;
+  const gl = GLK.create(document.getElementById('gl'));
+  const cam = { ro: [num('rx', 0.1), num('ry', 2.3), num('rz', 5.5)], ta: [num('tx', -0.25), num('ty', 0.7), 0], fov: num('fov', 2.4), rot: num('rot', -0.12),
+    light: [num('lx', 1.0), num('ly', 0.85), num('lz', 0.35)], cup: true, cupPos: [num('cx', 2.9), 0, num('cz', -1.5)], cupRot: 0.6 };
+  const B = await PAINT.gbuffer(gl, W, H, cam);
+  const R = PAINT.rng(11);
+
+  const cv = document.getElementById('c'); cv.width = W * DPR; cv.height = H * DPR;
+  const ctx = cv.getContext('2d'); ctx.scale(DPR, DPR);
+
+  // —— 视口那一面（粘土灰 + 网格）——
+  const clay = document.createElement('canvas'); clay.width = W; clay.height = H; clay.getContext('2d').putImageData(PAINT.clayImage(B), 0, 0);
+  ctx.imageSmoothingQuality = 'high'; ctx.drawImage(clay, 0, 0, W, H);
+
+  // —— 画的那一面 ——
+  const glowC = [num('gx', 1500), num('gy', 250)];
+  const bgTop = PAINT.hex('#0d2633'), bgMid = PAINT.hex('#1a4651'), glow = PAINT.hex('#e08850'), glow2 = PAINT.hex('#b8436a');
+  const horizonY = (() => { for (let y = 0; y < H; y++) if (B.id[y * W + 40] > 0) return y; return H; })();
+  const bgColor = (x, y) => {
+    let c = PAINT.mix3(bgTop, bgMid, Math.min(1, y / horizonY));
+    const d = Math.hypot((x - glowC[0]) / 1.25, y - glowC[1]);
+    c = PAINT.mix3(c, glow2, 0.55 * Math.exp(-Math.pow(d / 520, 2)));
+    c = PAINT.mix3(c, glow, 0.85 * Math.exp(-Math.pow(d / 300, 2)));
+    return c;
+  };
+  // 桌面：台灯打出的一圈光，越远越暗
+  const pool = [0.3, 0.6], poolR = 4.0;
+  for (let i = 0; i < W * H; i++) if (((B.id[i] / 10) | 0) === 4) { const r = Math.hypot(B.px[i] - pool[0], B.pz[i] - pool[1]); B.ndl[i] *= Math.exp(-Math.pow(r / poolR, 2)); }
+  const F = PAINT.targetField(B, PAINT.PAL, { bgColor, seed: 3, bands: [0.08, 0.2, num('b3', 0.68)], bandsBy: { 4: [0.07, 0.16, 0.86] } });
+  const ang = PAINT.directionField(B, { dirBlur: 5 });
+
+  // 由粗到细四层，每层的“刷到哪了”往右错开——画面从左到右就是一幅画从起稿到完成
+  const X0 = num('x0', 870), DX = num('dx', 95);
+  const nz = PAINT.vnoise(5);
+  function region(x0, seed) {
+    const r = PAINT.rng(seed), p = new Path2D(); p.moveTo(W + 20, -20);
+    let first = true;
+    for (let y = -20; y <= H + 20; y += 2.2) {
+      const base = x0 + 60 * Math.sin(y / 240 + 0.6) + 22 * Math.sin(y / 83 + seed);
+      let st = (nz(y / 2.2, seed * 3.1) - 0.5) * 46 + (nz(y / 16, seed) - 0.5) * 40;
+      if (r() < 0.07) st -= r() * 120;
+      const x = base + st; p.lineTo(x, y);
+    }
+    p.lineTo(W + 20, H + 20); p.closePath(); return p;
+  }
+  const L = PAINT.LAYERS;
+  const bgLayers = [{ size: 46, grid: 22, len: 3.0, tol: 200, cj: 16, alpha: 0.95 }, { size: 28, grid: 14, len: 3.2, tol: 200, cj: 12, alpha: 0.9 }];
+  const isObj = (i, f) => f.m !== 0;
+  const isBg = (i, f) => f.m === 0;
+  const regs = [];
+  for (let k = 0; k < 4; k++) regs.push(region(X0 + DX * k, 3 + k));
+  for (let k = 0; k < 4; k++) {
+    ctx.save(); ctx.clip(regs[k]);
+    if (k < 2) PAINT.paintLayer(ctx, B, F, ang, Object.assign({}, bgLayers[k], { filter: isBg }), R, {});
+    const filt = k < 2 ? isObj : PAINT.detailFilter(B, F, k === 2 ? 6 : 3);
+    PAINT.paintLayer(ctx, B, F, ang, Object.assign({}, L[k], { base: k < 2, filter: k < 2 ? isObj : (i, f) => f.m !== 0 && (f.b >= 4 || filt(i, f)) }), R, {});
+    ctx.restore();
+    await GLK.tick();
+  }
+  // 轮廓：画的那一面是手画墨线；视口那一面是 Blender 的橙色选中描边
+  const E = PAINT.edgeMap(B), lines = PAINT.traceEdges(E, W, H);
+  ctx.save(); ctx.clip(regs[3]); PAINT.drawLines(ctx, B, lines, R, { w0: 0.9, w1: 3.4 }); ctx.restore();
+  ctx.save();
+  const inv = new Path2D(); inv.rect(-50, -50, W + 100, H + 100); inv.addPath(regs[0]); ctx.clip(inv, 'evenodd');
+  const sil = new Uint8Array(W * H);
+  for (let y = 1; y < H - 1; y++) for (let x = 1; x < W - 1; x++) { const i = y * W + x; const a = (B.id[i] / 10) | 0; if (a !== 1) continue; for (const j of [i + 1, i - 1, i + W, i - W]) if (((B.id[j] / 10) | 0) !== 1) { sil[i] = 1; break; } }
+  ctx.strokeStyle = '#ffa031'; ctx.lineWidth = 2; ctx.lineJoin = 'round';
+  for (const l of PAINT.traceEdges(sil, W, H)) { ctx.beginPath(); l.forEach((p, k) => k ? ctx.lineTo(p[0], p[1]) : ctx.moveTo(p[0], p[1])); ctx.stroke(); }
+  // 3D 游标（红白虚线圈）
+  const o = B.cam([0, 0, 0]);
+  ctx.setLineDash([5, 5]); ctx.lineWidth = 1.6; ctx.strokeStyle = '#e8e8e8'; ctx.beginPath(); ctx.arc(o[0], o[1] + 1, 13, 0, 7); ctx.stroke();
+  ctx.lineDashOffset = 5; ctx.strokeStyle = '#d33'; ctx.beginPath(); ctx.arc(o[0], o[1] + 1, 13, 0, 7); ctx.stroke(); ctx.setLineDash([]);
+  ctx.restore();
+
+  // —— 2D 手画特效：壶嘴冒出来的蒸汽 ——
+  const tip = B.cam(PAINT.potToWorld(cam, [1.66, 1.16, 0]));
+  const steam = [
+    { s: [0, -6], c: [[-10, -50], [22, -105], [-6, -160], [30, -200], [64, -196], [60, -168]], w: 15 },
+    { s: [16, -14], c: [[46, -52], [84, -70], [92, -112], [70, -128], [56, -110]], w: 10 },
+    { s: [-8, -36], c: [[-40, -76], [-34, -118], [-62, -140], [-80, -126]], w: 8 },
+  ];
+  const bez = (P, n) => { const out = []; for (let k = 0; k <= n; k++) { const t = k / n; // Catmull-Rom 过点
+      const s = t * (P.length - 1), i = Math.min(P.length - 2, Math.floor(s)), u = s - i; const p0 = P[Math.max(0, i - 1)], p1 = P[i], p2 = P[i + 1], p3 = P[Math.min(P.length - 1, i + 2)];
+      const f = (a, b, c, d) => 0.5 * ((2 * b) + (-a + c) * u + (2 * a - 5 * b + 4 * c - d) * u * u + (-a + 3 * b - 3 * c + d) * u * u * u);
+      out.push([f(p0[0], p1[0], p2[0], p3[0]), f(p0[1], p1[1], p2[1], p3[1])]); } return out; };
+  for (const s of steam) {
+    const P = [[tip[0] + s.s[0], tip[1] + s.s[1]], ...s.c.map(c => [tip[0] + c[0], tip[1] + c[1]])];
+    PAINT.wisp(ctx, bez(P, 60), s.w, { fill: '#f7ead6', shade: '#a6cfcc', shx: -7, shy: 5, lw: 2.6, shape: u => 0.55 + 0.45 * Math.sin(u * Math.PI * 0.9 + 0.3) });
+  }
+  // 飘散的小团
+  for (const [dx, dy, r] of [[96, -236, 9], [118, -262, 5.5], [-70, -176, 6], [40, -250, 4]]) {
+    const pth = new Path2D(); pth.arc(tip[0] + dx, tip[1] + dy, r, 0, 7);
+    ctx.fillStyle = '#f7ead6'; ctx.fill(pth); ctx.save(); ctx.clip(pth); ctx.fillStyle = '#a6cfcc'; ctx.beginPath(); ctx.arc(tip[0] + dx + r * 0.5, tip[1] + dy + r * 0.45, r, 0, 7); ctx.fill();
+    ctx.fillStyle = '#f7ead6'; ctx.beginPath(); ctx.arc(tip[0] + dx - r * 0.25, tip[1] + dy - r * 0.25, r * 0.85, 0, 7); ctx.fill(); ctx.restore();
+    ctx.strokeStyle = '#1b0f2e'; ctx.lineWidth = 2; ctx.stroke(pth); }
+  // 闪光
+  const hiPt = (() => { let b = null, bv = 0; for (let i = 0; i < W * H; i++) if (((B.id[i] / 10) | 0) === 1 && B.spec[i] > bv && (i % W) > X0 + 3 * DX + 40 && B.id[i] % 10 === 0) { bv = B.spec[i]; b = [i % W, (i / W) | 0]; } return b; })();
+  if (hiPt) { PAINT.sparkle(ctx, hiPt[0] + 34, hiPt[1] - 30, 17); PAINT.sparkle(ctx, hiPt[0] + 62, hiPt[1] - 4, 8); }
+
+  // —— 标题：“绘画感”是画出来的，“3D”是视口里的线框字 ——
+  const T = document.createElement('canvas'); T.width = W * DPR; T.height = H * DPR; const tc = T.getContext('2d'); tc.scale(DPR, DPR);
+  const tx = 62, ty = 300, fs = 196;
+  // 先在一张小图上算标题的颜色场，再用同一支笔画
+  const TW = 760, TH = 260; const tB = { W: TW, H: TH, id: new Int16Array(TW * TH) };
+  const tmp = document.createElement('canvas'); tmp.width = TW; tmp.height = TH; const t2 = tmp.getContext('2d');
+  t2.font = `900 ${fs}px NotoSC`; t2.textBaseline = 'alphabetic'; t2.fillStyle = '#fff'; t2.fillText('绘画感', 0, 212);
+  const ta = t2.getImageData(0, 0, TW, TH).data;
+  const TF = new Array(TW * TH), tang = new Float32Array(TW * TH);
+  const cA = PAINT.hex('#ff9a4d'), cB = PAINT.hex('#f0477a'), cC = PAINT.hex('#ffd27a');
+  for (let i = 0; i < TW * TH; i++) { const x = i % TW, y = (i / TW) | 0; tang[i] = -0.32 + 0.12 * Math.sin(x / 90);
+    if (ta[i * 4 + 3] > 40) { let c = PAINT.mix3(cC, cA, Math.min(1, y / 150)); c = PAINT.mix3(c, cB, Math.max(0, Math.min(1, (x - 300) / 460 + (y - 120) / 300))); TF[i] = { c, b: 0, m: 9 }; } }
+  const tR = PAINT.rng(21);
+  for (const lay of [{ size: 22, grid: 10, len: 4, tol: 999, cj: 20 }, { size: 11, grid: 6, len: 5, tol: 999, cj: 16 }, { size: 5, grid: 3.5, len: 6, tol: 999, cj: 14 }])
+    PAINT.paintLayer(tc, tB, TF, tang, lay, tR, { x: tx, y: ty - 212 });
+  // 遮罩稍微比字大一点：字 + 一圈 4px 的边
+  const M = document.createElement('canvas'); M.width = W * DPR; M.height = H * DPR; const mc = M.getContext('2d'); mc.scale(DPR, DPR);
+  mc.font = `900 ${fs}px NotoSC`; mc.fillStyle = '#000'; mc.strokeStyle = '#000'; mc.lineWidth = 4; mc.lineJoin = 'round'; mc.strokeText('绘画感', tx, ty); mc.fillText('绘画感', tx, ty);
+  tc.setTransform(1, 0, 0, 1, 0, 0); tc.globalCompositeOperation = 'destination-in'; tc.drawImage(M, 0, 0); tc.globalCompositeOperation = 'source-over';
+  ctx.save(); ctx.shadowColor = 'rgba(10,5,20,.55)'; ctx.shadowBlur = 24; ctx.shadowOffsetY = 8; ctx.drawImage(T, 0, 0, W, H); ctx.restore();
+  ctx.drawImage(T, 0, 0, W, H);
+  // “3D”：线框描边
+  ctx.font = '800 150px Archivo'; ctx.fontStretch = 'expanded';
+  ctx.lineWidth = 1.6; ctx.strokeStyle = 'rgba(235,235,235,.9)'; ctx.strokeText('3D', tx + 640, ty - 22);
+  ctx.setLineDash([3, 5]); ctx.strokeStyle = 'rgba(255,160,49,.9)'; ctx.strokeText('3D', tx + 646, ty - 16); ctx.setLineDash([]);
+
+  PAINT.canvasTexture(ctx, W, H, { alpha: 0.13 });
+
+  // —— 标注 ——
+  if (Q.get('ov') !== '0') {
+    document.getElementById('ov').style.display = '';
+    const find = (pred, pick) => { let b = null; for (let y = 4; y < H - 4; y += 2) for (let x = X0 + 2 * DX + 40; x < W - 4; x += 2) { const i = y * W + x; if (pred(i) && (!b || pick(x, y, b))) b = [x, y]; } return b; };
+    const pot = i => ((B.id[i] / 10) | 0) === 1 && B.id[i] % 10 === 0;
+    const term = find(i => pot(i) && F[i] && F[i].b === 1, (x, y, b) => y > b[1]);
+    const lit = find(i => pot(i) && F[i] && F[i].b === 3, (x, y, b) => (x + y) > (b[0] + b[1]));
+    const spoutLine = B.cam(PAINT.potToWorld(cam, [1.25, 0.33, 0.12]));
+    const calls = [
+      { p: term, to: [num('c1x', 700), num('c1y', 850)], k: '<i>01</i>光只分三档', z: '暗 · 交界 · 中 · 亮。交界那一档最饱和，是“画出来”和“渲出来”最大的区别。' },
+      { p: lit, to: [num('c2x', 1012), num('c2y', 850)], k: '<i>02</i>笔触 ⟂ ∇L', z: '每一笔都顺着等光线走，颜色一变就停笔。由粗到细四层，后一层只补有变化的地方。' },
+      { p: [spoutLine[0], spoutLine[1]], to: [num('c3x', 1570), num('c3y', 720)], k: '<i>03</i>w = 0.9 + 3.2·(1 − L)^1.4', z: '线是手画的：亮面断开（“丢边”），背光的地方加粗。' },
+      { p: [tip[0] + 60, tip[1] - 200], to: [num('c4x', 1570), num('c4y', 300)], k: '<i>04</i>3D 一拍一 · 特效一拍二', z: '蒸汽、闪光是 2D 手画的：平涂两色 + 墨线，每秒 12 张。' },
+    ];
+    let svg = '', html = '';
+    for (const c of calls) { if (!c.p) continue; const [x, y] = c.p, [tx2, ty2] = c.to;
+      svg += `<circle cx="${x}" cy="${y}" r="4" fill="#ffb36b" stroke="#1b0f2e" stroke-width="1.5"/><polyline points="${x},${y} ${tx2 < x ? tx2 + 292 : tx2},${ty2 + 20}" fill="none" stroke="rgba(255,179,107,.8)" stroke-width="1"/>`;
+      html += `<div class="call" style="left:${tx2}px;top:${ty2}px"><span class="k">${c.k}</span>${c.z}</div>`; }
+    document.getElementById('lines').innerHTML = svg; document.getElementById('calls').innerHTML = html;
+    const P = PAINT.PAL[1];
+    document.getElementById('chips').innerHTML = `<div class="lab">茶壶的六个颜色<small>暗 · 交界 · 中 · 亮 · 高光 · 反光</small></div>` +
+      ['sh', 'term', 'mid', 'lit', 'hi', 'rim'].map(k => `<div class="chipcol"><span class="c" style="background:${P[k]}"></span>${P[k].slice(1).toUpperCase()}</div>`).join('');
+    const names = ['起稿', '铺色', '塑形', '收细'];
+    document.getElementById('layers').innerHTML = `<div class="cap">由粗到细 · 四层<small>LAYER 4 / 4 · 正在收细</small></div>` + PAINT.LAYERS.map((l, k) =>
+      `<div class="lyr ${k === 3 ? 'on' : 'done'}"><div class="sw"><i style="width:${Math.min(30, l.size)}px;height:${Math.min(30, l.size)}px"></i></div>${k + 1} · ${names[k]} · ${l.size}px</div>`).join('');
+  }
+  window.__done = true;
+})().catch(e => { console.log('ERR', e.stack.slice(0, 3000)); window.__done = true; });
+</script>
+</body>
+</html>

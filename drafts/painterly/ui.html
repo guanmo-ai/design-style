@@ -1,0 +1,320 @@
+<!doctype html>
+<html lang="zh">
+<head>
+<meta charset="utf-8">
+<title>绘画感 3D · Painterly 3D · 网页与 App</title>
+<style>
+@font-face { font-family: 'Archivo'; src: url(../../public/fonts/Archivo.ttf); font-weight: 100 900; font-stretch: 62% 125%; }
+@font-face { font-family: 'GeistMono'; src: url(../../public/fonts/GeistMono.ttf); font-weight: 100 900; }
+@font-face { font-family: 'Geist'; src: url(../../public/fonts/Geist.ttf); font-weight: 100 900; }
+@font-face { font-family: 'NotoSC'; src: url(../../public/fonts/NotoSansSC-Black.otf); font-weight: 900; }
+@font-face { font-family: 'NotoSC'; src: url(../../public/fonts/NotoSansSC-Bold.otf); font-weight: 700; }
+@font-face { font-family: 'NotoSC'; src: url(../../public/fonts/NotoSansSC-Regular.otf); font-weight: 400; }
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html, body { width: 1920px; height: 1080px; overflow: hidden; background: #120c1c; color: #fff; font-family: NotoSC, sans-serif; }
+#gl { display: none; }
+.mono { font-family: GeistMono, monospace; letter-spacing: .04em; }
+canvas.pane { position: absolute; left: 0; top: 0; display: block; }
+.hdr { position: absolute; left: 64px; right: 64px; top: 36px; display: flex; justify-content: space-between; font-size: 13px; color: rgba(255,255,255,.6); }
+.hdr b { color: #fff; font-weight: 500; }
+/* 浏览器 */
+.br { position: absolute; left: 64px; top: 78px; width: 1010px; height: 668px; border-radius: 14px; overflow: hidden; background: #0d2633; border: 1px solid rgba(255,255,255,.12); }
+.br .bar { position: absolute; left: 0; right: 0; top: 0; height: 40px; background: #1a1424; display: flex; align-items: center; padding-left: 18px; gap: 8px; z-index: 3; }
+.br .bar i { width: 11px; height: 11px; border-radius: 50%; background: rgba(255,255,255,.18); display: block; }
+.br .bar .url { margin-left: 22px; height: 24px; width: 420px; border-radius: 6px; background: rgba(255,255,255,.07); font-size: 12px; color: rgba(255,255,255,.65); display: flex; align-items: center; padding-left: 12px; }
+.br .page { position: absolute; left: 0; top: 40px; width: 1010px; height: 628px; }
+.nav { position: absolute; left: 44px; right: 40px; top: 26px; display: flex; align-items: center; z-index: 2; }
+.logo { font-weight: 900; font-size: 24px; letter-spacing: .06em; }
+.logo small { font-family: Archivo; font-stretch: 125%; font-weight: 700; font-size: 11px; letter-spacing: .3em; margin-left: 10px; color: #ffb36b; vertical-align: 3px; }
+.nav .items { margin-left: auto; display: flex; gap: 30px; font-size: 14px; color: rgba(255,255,255,.85); align-items: center; }
+.nav .cart { padding: 8px 16px; border-radius: 99px; background: #f7ead6; color: #1b0f2e; font-weight: 700; font-size: 13px; }
+.hero { position: absolute; left: 44px; top: 112px; width: 400px; z-index: 2; }
+.tag { display: inline-flex; gap: 8px; align-items: center; font-size: 12px; padding: 5px 12px 5px 6px; border-radius: 99px; background: rgba(0,0,0,.28); border: 1px solid rgba(255,255,255,.18); }
+.tag b { background: #ffb36b; color: #1b0f2e; border-radius: 99px; padding: 1px 8px; font-weight: 700; }
+.hero h1 { font-size: 64px; line-height: 1.12; font-weight: 900; margin-top: 22px; letter-spacing: .01em; }
+.hero h1 em { font-style: normal; color: #ffb36b; }
+.hero p { font-size: 15px; line-height: 1.8; color: rgba(255,255,255,.82); margin-top: 18px; width: 360px; }
+.cta { margin-top: 26px; display: flex; gap: 16px; align-items: center; }
+.cta .b1 { background: #ff8a4c; color: #1b0f2e; font-weight: 700; padding: 13px 22px; border-radius: 99px; font-size: 15px; border: 2px solid #1b0f2e; box-shadow: 3px 3px 0 #1b0f2e; }
+.cta .b2 { font-size: 14px; color: rgba(255,255,255,.85); }
+.glz { position: absolute; left: 44px; bottom: 34px; z-index: 2; display: flex; gap: 14px; align-items: flex-end; }
+.glz .g { width: 76px; font-size: 11.5px; color: rgba(255,255,255,.75); text-align: center; }
+.glz .g canvas { position: static; display: block; width: 76px; height: 40px; margin-bottom: 6px; }
+.glz .g.on { color: #fff; }
+.glz .g.on canvas { outline: 2px solid #f7ead6; outline-offset: 3px; border-radius: 4px; }
+.price { position: absolute; right: 40px; bottom: 34px; z-index: 2; text-align: right; }
+.price b { font-family: Archivo; font-stretch: 112%; font-weight: 800; font-size: 40px; }
+.price small { display: block; font-size: 12px; color: rgba(255,255,255,.7); margin-top: 2px; }
+.pin { position: absolute; z-index: 2; font-size: 11.5px; color: #fff; white-space: nowrap; }
+.pin small { display: block; color: rgba(255,255,255,.7); font-size: 10.5px; }
+svg.ov { position: absolute; inset: 0; z-index: 2; pointer-events: none; }
+/* 手机 */
+.ph { position: absolute; top: 78px; width: 236px; height: 520px; border-radius: 40px; background: #0b0710; border: 2px solid rgba(255,255,255,.16); }
+.ph .scr { position: absolute; left: 8px; top: 8px; width: 216px; height: 500px; border-radius: 32px; overflow: hidden; background: #0d2633; }
+.ph .sb { position: absolute; left: 22px; right: 20px; top: 14px; display: flex; justify-content: space-between; font-size: 11px; font-weight: 700; z-index: 3; font-family: Geist; }
+.ph .isl { position: absolute; left: 50%; top: 11px; width: 74px; height: 22px; border-radius: 99px; background: #000; transform: translateX(-50%); z-index: 4; }
+.ph .ttl { position: absolute; left: 18px; right: 18px; top: 54px; z-index: 3; }
+.ph .ttl .k { font-size: 10.5px; color: rgba(255,255,255,.75); display: flex; align-items: center; gap: 6px; }
+.ph .ttl .k i { width: 6px; height: 6px; border-radius: 50%; background: #ffb36b; display: block; }
+.ph .ttl h3 { font-size: 21px; line-height: 1.3; font-weight: 900; margin-top: 8px; }
+.ph .bot { position: absolute; left: 14px; right: 14px; bottom: 18px; z-index: 3; }
+.btn { background: #ff8a4c; color: #1b0f2e; font-weight: 700; border-radius: 99px; text-align: center; padding: 12px 0; font-size: 14px; border: 2px solid #1b0f2e; box-shadow: 3px 3px 0 #1b0f2e; }
+.sw { display: flex; gap: 8px; justify-content: center; }
+.sw span { width: 34px; height: 34px; border-radius: 50%; border: 2px solid #1b0f2e; display: block; }
+.sw span.on { outline: 2px solid #f7ead6; outline-offset: 2px; }
+.cap { position: absolute; top: 616px; width: 236px; }
+.cap .h { font-size: 15px; font-weight: 700; }
+.cap .h i { font-family: GeistMono; font-style: normal; color: #ffb36b; font-size: 12px; margin-right: 6px; font-weight: 400; }
+.cap p { font-size: 12.5px; line-height: 1.7; color: rgba(255,255,255,.72); margin-top: 8px; }
+.arrow { position: absolute; top: 300px; font-size: 10.5px; color: rgba(255,255,255,.7); text-align: center; width: 40px; }
+/* 配方卡 */
+.card { position: absolute; top: 766px; width: 430px; height: 284px; border-radius: 12px; background: rgba(255,255,255,.035); border: 1px solid rgba(255,255,255,.1); padding: 20px 22px; }
+.card .f { font-size: 12px; color: rgba(255,255,255,.75); }
+.card .f i { font-style: normal; color: #ffb36b; margin-right: 8px; }
+.card h4 { font-size: 18px; font-weight: 700; margin-top: 8px; }
+.card p { font-size: 12.5px; line-height: 1.65; color: rgba(255,255,255,.66); margin-top: 6px; }
+.card .viz { position: absolute; left: 22px; right: 22px; bottom: 30px; height: 112px; }
+.card .viz canvas { position: absolute; }
+.card .lab { position: absolute; font-size: 10.5px; color: rgba(255,255,255,.6); text-align: center; width: 112px; }
+</style>
+</head>
+<body>
+<canvas id="gl" width="8" height="8"></canvas>
+<div class="hdr mono"><span><b>候选 · 绘画感 3D</b> &nbsp;·&nbsp; 落到界面上：3D 摆光，画家上色</span><span>器物店 · 网页 + APP · 拖着转 / 换釉色 / 加购</span></div>
+
+<div class="br">
+  <div class="bar"><i></i><i></i><i></i><div class="url mono">glaze.studio / 犹他壶</div></div>
+  <div class="page" id="page">
+    <div class="nav"><div class="logo">釉里<small>GLAZE</small></div><div class="items"><span>壶</span><span>杯</span><span>釉色</span><span>窑志</span><span class="cart">购物车 · 0</span></div></div>
+    <div class="hero">
+      <div class="tag"><b>新釉</b>第 07 窑 · 朱泥</div>
+      <h1>一把壶，<br><em>画</em>出来的。</h1>
+      <p>每一件都先在 3D 里摆好光，再按三档光一笔一笔上色。拖着转一转——笔触跟着釉面走，不会在屏幕上“游泳”。</p>
+      <div class="cta"><span class="b1">拖着转一圈 ↻</span><span class="b2">看釉色怎么画 →</span></div>
+    </div>
+    <div class="glz" id="glz"></div>
+    <div class="price"><b>¥680</b><small>320 ml · 犹他壶型 · 手绘三档釉</small></div>
+    <svg class="ov" id="heroOv" width="1010" height="628"></svg>
+    <div id="pins"></div>
+  </div>
+</div>
+
+<div class="ph" style="left:1110px"><div class="scr" id="p1"><div class="isl"></div><div class="sb"><span>9:41</span><span>●●● 100</span></div>
+  <div class="ttl"><div class="k"><i></i>犹他壶 · 朱泥</div><h3>拖一下，<br>看它转。</h3></div>
+  <div class="bot"><div class="btn">¥680 · 加入购物车</div></div></div></div>
+<div class="ph" style="left:1366px"><div class="scr" id="p2"><div class="isl"></div><div class="sb"><span>9:41</span><span>●●● 100</span></div>
+  <div class="ttl"><div class="k"><i></i>换釉色 · 朱泥 → 青瓷</div><h3>一笔<br>刷过去。</h3></div>
+  <div class="bot"><div class="sw" id="sw2"></div></div></div></div>
+<div class="ph" style="left:1622px"><div class="scr" id="p3"><div class="isl"></div><div class="sb"><span>9:41</span><span>●●● 100</span></div>
+  <div class="ttl"><div class="k"><i></i>已加入 · 1 件</div><h3>“噗”——<br>进了购物车。</h3></div>
+  <div class="bot"><div class="btn" style="transform:scale(.95);box-shadow:1px 1px 0 #1b0f2e">已加入 ✓</div></div></div></div>
+<div class="arrow mono" style="left:1347px">拖<br>→</div>
+<div class="arrow mono" style="left:1603px">选<br>→</div>
+
+<div class="cap" style="left:1110px"><div class="h"><i>01</i>拖 · 笔触粘在壶上</div><p>笔是撒在物体表面上的（物体坐标），转动时跟着釉面一起转；光是世界里的，三档的分界线自己滑过去。</p></div>
+<div class="cap" style="left:1366px"><div class="h"><i>02</i>选 · 一笔刷过去</div><p>换颜色不用淡入淡出：新釉色像一支大笔从左刷到右，刷痕的毛边就是进度条。</p></div>
+<div class="cap" style="left:1622px"><div class="h"><i>03</i>加 · 2D 的一团烟</div><p>按下去冒一团手画的烟和闪光，一拍二（12 张/秒）；壶和镜头照样 60 帧丝滑。</p></div>
+
+<div class="card" style="left:64px"><div class="f mono"><i>A</i>L = max(N·L, 0) · shadow → 档位</div><h4>光只分三档</h4><p>同一颗球：渲出来是连续的灰，分档才像画。交界那一档要比中间色更饱和、更红。</p><div class="viz" id="vA"></div></div>
+<div class="card" style="left:518px"><div class="f mono"><i>B</i>θ = ∠∇L + 90° · 26 → 15 → 8.5 → 4.6 px</div><h4>笔触顺着等光线走</h4><p>方向场用双倍角平滑后沿着它走笔，颜色一变就停；后一层只补颜色有变化的地方。</p><div class="viz" id="vB"></div></div>
+<div class="card" style="left:972px"><div class="f mono"><i>C</i>w = 0.9 + 3.2 · (1 − L)^1.4</div><h4>线是画的：亮处丢边</h4><p>受光越强线越细，L 超过 0.78 直接断开；背光一侧最粗。整圈一样粗的描边就是“渲出来的”。</p><div class="viz" id="vC"></div></div>
+<div class="card" style="left:1426px"><div class="f mono"><i>D</i>3D · 60 fps &nbsp;|&nbsp; FX · 12 fps</div><h4>两种节奏叠在一起</h4><p>壶、镜头、光一帧一动，丝滑；烟、闪光、拖影一拍二，每张停两帧。手绘感来自这个落差。</p><div class="viz" id="vD"></div></div>
+
+<script src="../_lib/glkit.js"></script>
+<script src="paint.js"></script>
+<script>
+const Q = new URLSearchParams(location.search);
+const num = (k, d) => (Q.get(k) !== null ? +Q.get(k) : d);
+const DPR = devicePixelRatio;
+function pane(parent, w, h, x = 0, y = 0, z = 1) { const c = document.createElement('canvas'); c.className = 'pane'; c.width = Math.round(w * DPR); c.height = Math.round(h * DPR);
+  Object.assign(c.style, { width: w + 'px', height: h + 'px', left: x + 'px', top: y + 'px', zIndex: z }); parent.appendChild(c); const ctx = c.getContext('2d'); ctx.scale(DPR, DPR); return ctx; }
+const PALx = (over) => Object.assign({}, PAINT.PAL, { 1: over });
+const GLAZE = {
+  zhu: PAINT.PAL[1],
+  qing: { sh: '#173947', core: '#0f2734', term: '#23786f', mid: '#5fae98', lit: '#b8e2c2', hi: '#f4ffef', rim: '#ff8fb1', sky: '#3e6190' },
+  lan: { sh: '#191a4e', core: '#10103a', term: '#3438b0', mid: '#4b67d6', lit: '#93b2f6', hi: '#eef4ff', rim: '#ffb35c', sky: '#3a3f8a' },
+  xiang: { sh: '#45375e', core: '#2e2342', term: '#b0705e', mid: '#e1cba9', lit: '#fbf0da', hi: '#ffffff', rim: '#6fe0d8', sky: '#6a6aa0' },
+};
+const bgFn = (W, H, gx, gy, horizon, s = 1) => { const top = PAINT.hex('#0d2633'), mid = PAINT.hex('#1a4651'), gl1 = PAINT.hex('#e08850'), gl2 = PAINT.hex('#b8436a');
+  return (x, y) => { let c = PAINT.mix3(top, mid, Math.min(1, y / horizon)); const d = Math.hypot((x - gx) / 1.25, y - gy);
+    c = PAINT.mix3(c, gl2, 0.55 * Math.exp(-Math.pow(d / (520 * s), 2))); c = PAINT.mix3(c, gl1, 0.85 * Math.exp(-Math.pow(d / (300 * s), 2))); return c; }; };
+const horizonOf = B => { for (let y = 0; y < B.H; y++) if (B.id[y * B.W + 4] > 0) return y; return B.H; };
+(async () => {
+  await document.fonts.ready;
+  const gl = GLK.create(document.getElementById('gl'));
+  const L = [1.0, 0.85, 0.35];
+
+  // —— 网页主图：整块背景都是画的 ——
+  {
+    const W = 1010, H = 628, page = document.getElementById('page');
+    const ctx = pane(page, W, H, 0, 0, 0);
+    const cam = { ro: [num('hx', -0.9), num('hy', 2.2), num('hz', 5.4)], ta: [num('htx', -1.55), num('hty', 0.85), 0], fov: num('hf', 1.9), rot: num('hr', -0.5), light: L, cup: true, cupPos: [2.4, 0, -1.6], cupRot: 0.6 };
+    const B = await PAINT.gbuffer(gl, W, H, cam);
+    const { F } = await PAINT.paintPanel(gl, ctx, cam, { B, w: W, h: H, k: 0.82, bgColor: bgFn(W, H, 760, 120, horizonOf(B), 0.8), pool: [0.3, 0.6, 4.0], seed: 5 });
+    // 蒸汽
+    const tip = B.cam(PAINT.potToWorld(cam, [1.66, 1.16, 0]));
+    const cr = (P, n) => { const out = []; for (let k = 0; k <= n; k++) { const t = k / n, s = t * (P.length - 1), i = Math.min(P.length - 2, Math.floor(s)), u = s - i;
+      const p0 = P[Math.max(0, i - 1)], p1 = P[i], p2 = P[i + 1], p3 = P[Math.min(P.length - 1, i + 2)];
+      const f = (a, b, c, d) => 0.5 * ((2 * b) + (-a + c) * u + (2 * a - 5 * b + 4 * c - d) * u * u + (-a + 3 * b - 3 * c + d) * u * u * u);
+      out.push([f(p0[0], p1[0], p2[0], p3[0]), f(p0[1], p1[1], p2[1], p3[1])]); } return out; };
+    window.__cr = cr;
+    for (const s of [{ s: [0, -4], c: [[-8, -40], [16, -84], [-4, -126], [24, -156], [50, -152], [46, -130]], w: 11 }, { s: [12, -10], c: [[34, -40], [64, -54], [70, -86], [52, -98], [42, -84]], w: 7.5 }])
+      PAINT.wisp(ctx, cr([[tip[0] + s.s[0], tip[1] + s.s[1]], ...s.c.map(c => [tip[0] + c[0], tip[1] + c[1]])], 50), s.w, { fill: '#f7ead6', shade: '#a6cfcc', shx: -5, shy: 4, lw: 2, shape: u => 0.55 + 0.45 * Math.sin(u * Math.PI * 0.9 + 0.3) });
+    PAINT.canvasTexture(ctx, W, H, { alpha: 0.12 });
+    // 标注：交界和反光
+    const pick = (b) => { let best = null; for (let y = 10; y < H - 10; y += 2) for (let x = 520; x < W - 10; x += 2) { const i = y * W + x; const f = F[i]; if (f && f.m === 1 && f.b === b && (!best || y > best[1])) best = [x, y]; } return best; };
+    const pt = pick(1), pr = pick(5);
+    let svg = '', html = '';
+    const P1 = PAINT.PAL[1];
+    for (const [p, lab, col, dx, dy] of [[pt, '交界 · B81F45', P1.term, 60, 70], [pr, '反光 · 58E3D9', P1.rim, -150, 50]]) { if (!p) continue;
+      const [x, y] = p; svg += `<circle cx="${x}" cy="${y}" r="5" fill="none" stroke="#fff" stroke-width="1.5"/><polyline points="${x + 4},${y + 4} ${x + dx},${y + dy} ${x + dx + (dx > 0 ? 20 : -20)},${y + dy}" fill="none" stroke="rgba(255,255,255,.7)" stroke-width="1"/>`;
+      html += `<div class="pin mono" style="left:${dx > 0 ? x + dx + 26 : x + dx - 120}px;top:${y + dy - 9}px"><span style="display:inline-block;width:9px;height:9px;background:${col};margin-right:6px;border:1px solid #fff"></span>${lab}</div>`; }
+    document.getElementById('heroOv').innerHTML = svg; document.getElementById('pins').innerHTML = html;
+    // 釉色色块：一笔刷出来的色块
+    const glz = document.getElementById('glz');
+    [['zhu', '朱泥'], ['qing', '青瓷'], ['lan', '霁蓝'], ['xiang', '象牙']].forEach(([k, n], j) => {
+      const d = document.createElement('div'); d.className = 'g' + (j === 0 ? ' on' : ''); glz.appendChild(d);
+      const c = document.createElement('canvas'); c.width = 76 * DPR; c.height = 40 * DPR; d.appendChild(c); d.appendChild(document.createTextNode(n));
+      const g = c.getContext('2d'); g.scale(DPR, DPR); const R = PAINT.rng(40 + j); const P = GLAZE[k];
+      for (const [col, y0, w] of [[P.sh, 30, 16], [P.term, 25, 13], [P.mid, 18, 15], [P.lit, 11, 11], [P.hi, 8, 4]]) {
+        const pts = []; for (let t = 0; t <= 12; t++) pts.push([6 + t * 5.4, y0 + Math.sin(t * 0.5 + j) * 1.5 - t * 0.3]);
+        PAINT.brush(g, pts, w, PAINT.hex(col), R, { alpha: 0.97 }); }
+    });
+  }
+
+  // —— 手机 ——
+  const PW = 216, PH = 500;
+  const phoneCam = (rot, extra = {}) => Object.assign({ ro: [0.2, 2.1, 5.5], ta: [0.1, 0.62, 0], fov: 2.05, rot, light: L, cup: false }, extra);
+  // 01：拖着转
+  {
+    const scr = document.getElementById('p1'); const ctx = pane(scr, PW, PH, 0, 0, 0);
+    const cam = phoneCam(num('r1', 0.95), { ta: [0.05, 0.25, 0] });
+    const B = await PAINT.gbuffer(gl, PW, PH, cam);
+    await PAINT.paintPanel(gl, ctx, cam, { B, k: 0.42, bgColor: bgFn(PW, PH, 170, 120, horizonOf(B), 0.45), pool: [0.2, 0.5, 3.6], seed: 8, lw0: 0.7, lw1: 2.2 });
+    PAINT.canvasTexture(ctx, PW, PH, { alpha: 0.12 });
+    // 拖动手势：一条弧 + 指尖
+    ctx.save(); ctx.strokeStyle = '#f7ead6'; ctx.lineWidth = 2.2; ctx.setLineDash([5, 5]); ctx.beginPath(); ctx.ellipse(108, 372, 78, 18, 0, 0.15 * Math.PI, 0.85 * Math.PI); ctx.stroke(); ctx.setLineDash([]);
+    const ax = 108 + 78 * Math.cos(0.15 * Math.PI), ay = 372 + 18 * Math.sin(0.15 * Math.PI);
+    ctx.fillStyle = '#f7ead6'; ctx.beginPath(); ctx.moveTo(ax + 8, ay - 9); ctx.lineTo(ax - 4, ay + 1); ctx.lineTo(ax + 10, ay + 5); ctx.closePath(); ctx.fill();
+    const fx = 108 + 78 * Math.cos(0.62 * Math.PI), fy = 372 + 18 * Math.sin(0.62 * Math.PI);
+    ctx.fillStyle = 'rgba(247,234,214,.35)'; ctx.beginPath(); ctx.arc(fx, fy, 16, 0, 7); ctx.fill(); ctx.fillStyle = '#f7ead6'; ctx.beginPath(); ctx.arc(fx, fy, 8, 0, 7); ctx.fill();
+    ctx.font = '600 11px GeistMono'; ctx.fillStyle = '#f7ead6'; ctx.fillText('↻ 37°', 150, 410); ctx.restore();
+  }
+  // 02：换釉色——青瓷从左往右刷过朱泥
+  {
+    const scr = document.getElementById('p2'); const ctx = pane(scr, PW, PH, 0, 0, 0);
+    const cam = phoneCam(num('r2', 0.2), { ta: [0.05, 0.25, 0] });
+    const B = await PAINT.gbuffer(gl, PW, PH, cam);
+    const opt = { B, k: 0.42, bgColor: bgFn(PW, PH, 170, 120, horizonOf(B), 0.45), pool: [0.2, 0.5, 3.6], seed: 9, lw0: 0.7, lw1: 2.2 };
+    await PAINT.paintPanel(gl, ctx, cam, opt);
+    const nz = PAINT.vnoise(12), Rr = PAINT.rng(13), wipe = new Path2D(); wipe.moveTo(-10, -10);
+    const edge = y => 116 + 10 * Math.sin(y / 70) + (nz(y / 1.6, 3) - 0.5) * 16 + (nz(y / 14, 5) - 0.5) * 10;
+    for (let y = -10; y <= PH + 10; y += 1.6) wipe.lineTo(edge(y) - (Rr() < 0.08 ? Rr() * 30 : 0), y);
+    wipe.lineTo(-10, PH + 10); wipe.closePath();
+    await PAINT.paintPanel(gl, ctx, cam, Object.assign({}, opt, { pal: PALx(GLAZE.qing), clip: wipe, only: [1], seed: 10, lines: true }));
+    PAINT.canvasTexture(ctx, PW, PH, { alpha: 0.12 });
+    ctx.font = '600 10.5px GeistMono'; ctx.fillStyle = '#f7ead6'; ctx.fillText('青瓷 · 刷到 58%', 18, 420);
+    document.getElementById('sw2').innerHTML = ['zhu', 'qing', 'lan', 'xiang'].map(k => `<span class="${k === 'qing' ? 'on' : ''}" style="background:linear-gradient(135deg, ${GLAZE[k].lit} 0 35%, ${GLAZE[k].mid} 35% 70%, ${GLAZE[k].term} 70%)"></span>`).join('');
+  }
+  // 03：加入购物车——一团 2D 的烟
+  {
+    const scr = document.getElementById('p3'); const ctx = pane(scr, PW, PH, 0, 0, 0);
+    const cam = phoneCam(num('r3', -0.35), { ta: [0.05, 0.25, 0], ro: [0.2, 2.3, 7.4] });
+    const B = await PAINT.gbuffer(gl, PW, PH, cam);
+    await PAINT.paintPanel(gl, ctx, cam, { B, k: 0.38, bgColor: bgFn(PW, PH, 170, 120, horizonOf(B), 0.45), pool: [0.2, 0.5, 3.6], seed: 11, lw0: 0.7, lw1: 2.0 });
+    PAINT.canvasTexture(ctx, PW, PH, { alpha: 0.12 });
+    // 按钮周围炸开的烟团（平涂两色 + 墨线），每团是一个圆，阴影是挪开的同一个圆
+    const R = PAINT.rng(77);
+    const puff = (x, y, r) => { const p = new Path2D(); for (let k = 0; k <= 36; k++) { const a = k / 36 * Math.PI * 2, rr = r * (1 + 0.1 * Math.sin(a * 4 + x)); k ? p.lineTo(x + Math.cos(a) * rr, y + Math.sin(a) * rr) : p.moveTo(x + Math.cos(a) * rr, y + Math.sin(a) * rr); } p.closePath();
+      ctx.save(); ctx.clip(p); ctx.fillStyle = '#a6cfcc'; ctx.fill(p); ctx.translate(-r * 0.28, -r * 0.3); ctx.fillStyle = '#f7ead6'; ctx.fill(p); ctx.restore();
+      ctx.strokeStyle = '#1b0f2e'; ctx.lineWidth = 2; ctx.stroke(p); };
+    const by = 462;
+    for (const [dx, dy, r] of [[-86, -6, 15], [-96, -30, 10], [-70, -32, 12], [88, -4, 14], [98, -28, 9], [74, -34, 11], [-40, -40, 8], [44, -42, 7], [-104, 8, 7], [106, 10, 6]]) puff(108 + dx, by + dy, r);
+    // 速度线（2D）
+    ctx.strokeStyle = '#f7ead6'; ctx.lineWidth = 2.4; ctx.lineCap = 'round';
+    for (let a = -150; a <= -30; a += 24) { const r = a * Math.PI / 180, cx = 108, cy = 474; ctx.beginPath(); ctx.moveTo(cx + Math.cos(r) * 58, cy + Math.sin(r) * 42); ctx.lineTo(cx + Math.cos(r) * 74, cy + Math.sin(r) * 56); ctx.stroke(); }
+    // 购物车图标 + 角标
+    ctx.save(); ctx.translate(176, 64); ctx.strokeStyle = '#f7ead6'; ctx.lineWidth = 2; ctx.lineJoin = 'round';
+    ctx.beginPath(); ctx.moveTo(-12, -8); ctx.lineTo(-8, -8); ctx.lineTo(-4, 6); ctx.lineTo(10, 6); ctx.lineTo(13, -3); ctx.lineTo(-6, -3); ctx.stroke();
+    ctx.fillStyle = '#f7ead6'; ctx.beginPath(); ctx.arc(-2, 11, 2, 0, 7); ctx.arc(8, 11, 2, 0, 7); ctx.fill();
+    ctx.fillStyle = '#ff5a6e'; ctx.strokeStyle = '#1b0f2e'; ctx.beginPath(); ctx.arc(13, -12, 9, 0, 7); ctx.fill(); ctx.stroke();
+    ctx.fillStyle = '#fff'; ctx.font = '800 11px Geist'; ctx.textAlign = 'center'; ctx.fillText('1', 13, -8); ctx.restore();
+    PAINT.sparkle(ctx, 150, 46, 9); PAINT.sparkle(ctx, 200, 92, 6);
+  }
+
+  // —— 配方卡 ——
+  const sphere = { ro: [0, 1, 3.5], ta: [0, 1, 0], fov: 2.75, light: [1.0, 0.95, 0.55], scene: 1, table: false };
+  const T = 112;
+  const tileBg = '#1a1424';
+  // A：渲出来 / 分三档 / 画上去
+  {
+    const v = document.getElementById('vA');
+    const Bh = await PAINT.gbuffer(gl, T * 2, T * 2, sphere);
+    const tmp = document.createElement('canvas'); tmp.width = tmp.height = T * 2;
+    const c0 = pane(v, T, T, 0, 0); const clay = PAINT.clayImage(Bh); tmp.getContext('2d').putImageData(clay, 0, 0); c0.drawImage(tmp, 0, 0, T, T);
+    const c1 = pane(v, T, T, 132, 0); tmp.getContext('2d').putImageData(PAINT.flatImage(Bh, PAINT.PAL, { bg: PAINT.hex(tileBg), bgA: 255, bands: [0.08, 0.2, 0.68] }), 0, 0); c1.drawImage(tmp, 0, 0, T, T);
+    const c2 = pane(v, T, T, 264, 0); c2.fillStyle = tileBg; c2.fillRect(0, 0, T, T);
+    await PAINT.paintPanel(gl, c2, sphere, { w: T, h: T, k: 0.3, seed: 21, lw0: 0.6, lw1: 1.6 });
+    for (const [x, t] of [[0, '渲出来'], [132, '分三档'], [264, '画上去']]) { const l = document.createElement('div'); l.className = 'lab mono'; l.style.left = x + 'px'; l.style.top = (T + 4) + 'px'; l.textContent = t; v.appendChild(l); }
+  }
+  // B：方向场 + 粗到细
+  {
+    const v = document.getElementById('vB');
+    const B = await PAINT.gbuffer(gl, T, T, sphere);
+    const Bh = await PAINT.gbuffer(gl, T * 2, T * 2, sphere);
+    const tmp = document.createElement('canvas'); tmp.width = tmp.height = T * 2; tmp.getContext('2d').putImageData(PAINT.flatImage(Bh, PAINT.PAL, { bg: PAINT.hex(tileBg), bgA: 255, bands: [0.08, 0.2, 0.68] }), 0, 0);
+    const c0 = pane(v, T, T, 0, 0); c0.globalAlpha = 0.55; c0.drawImage(tmp, 0, 0, T, T); c0.globalAlpha = 1;
+    const ang = PAINT.directionField(B, { dirBlur: 3 });
+    c0.strokeStyle = '#fff'; c0.lineWidth = 1.3; c0.lineCap = 'round';
+    for (let y = 5; y < T; y += 8) for (let x = 5; x < T; x += 8) { const i = y * T + x; if (B.id[i] <= 0) continue; const a = ang[i]; c0.beginPath(); c0.moveTo(x - Math.cos(a) * 3.2, y - Math.sin(a) * 3.2); c0.lineTo(x + Math.cos(a) * 3.2, y + Math.sin(a) * 3.2); c0.stroke(); }
+    // 只画第一层 / 画完四层
+    const c1 = pane(v, T, T, 132, 0); c1.fillStyle = tileBg; c1.fillRect(0, 0, T, T);
+    const F = PAINT.targetField(B, PAINT.PAL, { bands: [0.08, 0.2, 0.68] }); const R = PAINT.rng(4);
+    PAINT.paintLayer(c1, B, F, ang, Object.assign({}, PAINT.LAYERS[0], { size: 12, grid: 7, base: true, filter: (i, f) => f.m !== 0 }), R, {});
+    const c2 = pane(v, T, T, 264, 0); c2.fillStyle = tileBg; c2.fillRect(0, 0, T, T);
+    await PAINT.paintPanel(gl, c2, sphere, { B, k: 0.3, seed: 22, lines: false });
+    for (const [x, t] of [[0, '方向场'], [132, '第 1 层'], [264, '第 4 层']]) { const l = document.createElement('div'); l.className = 'lab mono'; l.style.left = x + 'px'; l.style.top = (T + 4) + 'px'; l.textContent = t; v.appendChild(l); }
+  }
+  // C：轮廓——整圈一样粗 vs 亮处丢边 + 曲线
+  {
+    const v = document.getElementById('vC');
+    const B = await PAINT.gbuffer(gl, T, T, sphere);
+    const lines = PAINT.traceEdges(PAINT.edgeMap(B), T, T);
+    const c0 = pane(v, T, T, 0, 0); c0.fillStyle = tileBg; c0.fillRect(0, 0, T, T);
+    await PAINT.paintPanel(gl, c0, sphere, { B, k: 0.3, seed: 23, lines: false });
+    c0.strokeStyle = '#1b0f2e'; c0.lineWidth = 1.8; for (const l of lines) { c0.beginPath(); l.forEach((p, k) => k ? c0.lineTo(p[0], p[1]) : c0.moveTo(p[0], p[1])); c0.stroke(); }
+    const c1 = pane(v, T, T, 132, 0); c1.fillStyle = tileBg; c1.fillRect(0, 0, T, T);
+    await PAINT.paintPanel(gl, c1, sphere, { B, k: 0.3, seed: 23, lines: false });
+    PAINT.drawLines(c1, B, lines, PAINT.rng(5), { w0: 0.7, w1: 3.0, color: '#14091f' });
+    // w(L) 曲线
+    const g = pane(v, 120, T, 266, 0);
+    g.strokeStyle = 'rgba(255,255,255,.25)'; g.lineWidth = 1; g.beginPath(); g.moveTo(8, 6); g.lineTo(8, 96); g.lineTo(116, 96); g.stroke();
+    g.strokeStyle = '#ffb36b'; g.lineWidth = 2; g.beginPath();
+    for (let k = 0; k <= 50; k++) { const Lv = k / 50; const w = (0.9 + 3.2 * Math.pow(1 - Lv, 1.4)) * Math.max(0, Math.min(1, (0.78 - Lv) / 0.3)); const x = 8 + Lv * 104, y = 96 - w * 21; k ? g.lineTo(x, y) : g.moveTo(x, y); }
+    g.stroke(); g.fillStyle = 'rgba(255,255,255,.55)'; g.font = '10px GeistMono'; g.fillText('w', 12, 12); g.fillText('L', 108, 108); g.fillText('0.78', 80, 108);
+    for (const [x, t] of [[0, '一样粗'], [132, '亮处丢边']]) { const l = document.createElement('div'); l.className = 'lab mono'; l.style.left = x + 'px'; l.style.top = (T + 4) + 'px'; l.textContent = t; v.appendChild(l); }
+  }
+  // D：一拍一 vs 一拍二
+  {
+    const v = document.getElementById('vD'); const g = pane(v, 386, T, 0, 0);
+    const N = 16, x0 = 70, dx = 19.5;
+    g.font = '10.5px GeistMono'; g.fillStyle = 'rgba(255,255,255,.65)'; g.fillText('3D 壶', 0, 26); g.fillText('2D 烟', 0, 78);
+    for (let f = 0; f < N; f++) {
+      const x = x0 + f * dx;
+      // 壶：每帧都转一点
+      g.save(); g.translate(x + 8, 22); g.rotate(f * 0.22); g.fillStyle = '#d4472f'; g.strokeStyle = '#1b0f2e'; g.lineWidth = 1.2;
+      g.beginPath(); g.ellipse(0, 0, 7, 5.5, 0, 0, 7); g.fill(); g.stroke(); g.fillStyle = '#f28a4a'; g.beginPath(); g.arc(-2, -2, 2.2, 0, 7); g.fill(); g.restore();
+      // 烟：每两帧换一张
+      const k = Math.floor(f / 2); const hold = f % 2 === 1;
+      g.fillStyle = hold ? 'rgba(247,234,214,.35)' : '#f7ead6'; g.strokeStyle = '#1b0f2e'; g.lineWidth = 1.2;
+      g.beginPath(); g.arc(x + 8, 76 - (k % 4) * 3, 3 + (k % 4) * 1.6, 0, 7); g.fill(); if (!hold) g.stroke();
+    }
+    g.strokeStyle = 'rgba(255,255,255,.18)'; g.lineWidth = 1;
+    for (let f = 0; f <= N; f++) { const x = x0 + f * dx - 2; g.beginPath(); g.moveTo(x, 40); g.lineTo(x, 46); g.stroke(); g.beginPath(); g.moveTo(x, 92); g.lineTo(x, 98); g.stroke(); }
+    g.fillStyle = 'rgba(255,255,255,.55)'; g.fillText('每帧一张 · 丝滑', x0, 58); g.fillText('每张停两帧 · 手绘', x0, 110);
+  }
+  window.__done = true;
+})().catch(e => { console.log('ERR', e.stack.slice(0, 3000)); window.__done = true; });
+</script>
+</body>
+</html>
