@@ -23,7 +23,7 @@ END = TL['end']
 
 # 和弦：(起始帧, 低音, 和弦音)。一小节 4 拍 = 160 帧
 DM7, BM9, GM7, A6, FS, GM7S, DM9 = [62, 66, 69, 73], [59, 62, 66, 69, 73], [55, 59, 62, 66], [57, 61, 64, 66], [54, 57, 62, 66], [55, 59, 62, 66, 73], [62, 66, 69, 73, 76]
-CH = [(0, 38, DM7), (160, 35, BM9), (320, 43, GM7), (400, 45, A6), (520, 38, DM7), (640, 42, FS), (720, 43, GM7S), (852, 45, A6), (TL['label'], 38, DM9)]
+CH = [(0, 38, DM7), (TL['whip'][1], 35, BM9), (320, 43, GM7), (TL['rise'][1], 45, A6), (560, 38, DM7), (640, 42, FS), (720, 43, GM7S), (TL['dip'][1], 45, A6), (TL['dip'][3], 47, BM9), (TL['label'], 38, DM9)]
 
 
 class FilmSong(Song, SoftFX):
@@ -72,7 +72,7 @@ for i, (s, root, ns) in enumerate(CH):
 
 # —— 竖琴分解和弦（八分音符，上去下来），推进 ×20 那一段停下来让泛音出来 ——
 for k, fm in enumerate(np.arange(0, END, B / 2)):
-    if TL['dive'][0] + 10 <= fm < TL['dive'][2] - 10 or TL['peel1'][0] <= fm < TL['drop1'][0]:
+    if TL['dive'][0] + 10 <= fm < TL['dive'][2] - 10 or TL['whip'][0] <= fm < TL['drop1'][0]:
         continue
     ns = chord_at(fm)[2]
     pat = [0, 1, 2, 3, 4, 3, 2, 1]
@@ -85,7 +85,7 @@ for fm in np.arange(TL['drop1'][0], TL['dive'][0], B):
     S.place(S.kick(0.45), fr(fm), 0.5); S.kicks.append(fm)
 for fm in np.arange(TL['drop1'][0] + B / 2, TL['dive'][0], B):
     S.place(S.shaker(0.6), fr(fm), 0.35, 0.3)
-for fm in np.arange(TL['dive'][2], TL['label'], B):
+for fm in np.arange(TL['dip'][3], TL['label'], B):
     S.place(S.kick(0.4), fr(fm), 0.45); S.kicks.append(fm)
 
 # —— 每一滴：卡林巴（音高跟大小：面积越大越低）+ 水滴声 ——
@@ -128,11 +128,21 @@ for i, (a, b) in enumerate(TL['rake']):
 ctip = lambda f: -1100 + 2350 * (0.5 - 0.5 * np.cos(np.pi * min(1, max(0, (f - TL['comb'][0]) / (TL['comb'][1] - TL['comb'][0])))))
 gliss(ctip, TL['comb'][0], TL['comb'][1], -950, 1000, SCALE[3:18], 0.5)
 
-# —— 纸：盖下去一声低的“唰”，揭起来一声亮的“唰” ——
-S.sfx(S.swish(fr(TL['lay1'][1] - TL['lay1'][0]), 1.0, 0.7), fr(TL['lay1'][0]), 0.8, -0.3, send=0.2)
-S.sfx(S.swish(fr(TL['peel1'][1] - TL['peel1'][0]) * 0.8, 1.0, 1.3), fr(TL['peel1'][0] + 6), 1.0, 0.3, send=0.3)
-S.sfx(S.swish(fr(TL['lay2'][1] - TL['lay2'][0]), 1.0, 0.7), fr(TL['lay2'][0]), 0.8, -0.3, send=0.2)
-S.sfx(S.swish(fr(TL['peel2'][1] - TL['peel2'][0]) * 0.8, 1.0, 1.3), fr(TL['peel2'][0] + 4), 1.0, 0.4, send=0.3)
+# —— 镜头：放倒到低机位时一层弦乐往上走，甩到 B 盘是一声风 ——
+S.sfx(S.swell([62, 69, 74], fr(TL['tilt'][1] - TL['tilt'][0]), 1.0), fr(TL['tilt'][0]), 0.6, 0.0, send=0.4)
+S.sfx(S.whoosh(fr(TL['whip'][1] - TL['whip'][0]) + 0.1, 300, 6000, 1.0, 0.55), fr(TL['whip'][0]), 1.1, 0.0, send=0.2)
+S.place(S.crash(0.5), fr(TL['whip'][1]), 0.35, 0.3, send=0.3)
+S.sfx(S.swish(fr(TL['rise'][1] - TL['rise'][0]), 0.7, 1.0), fr(TL['rise'][0]), 0.6, 0.0, send=0.2)
+
+# —— 浸：蛋落下来一声风，碰到水面一声闷的“咕”，膜往里流是一个往下的滑音；提起来一声“唰”，滴回去几声水滴 ——
+f0, f1, f2, f3, f4 = TL['dip']
+S.sfx(S.whoosh(fr(f1 - f0), 200, 3000, 0.8, 0.8), fr(f0), 0.7, 0.2, send=0.2)
+S.sfx(S.boom(0.7, 140, 50, 0.6), fr(f1), 0.8, 0.0, send=0.3)
+S.sfx(S.poof(1.0, 0.5, 900), fr(f1), 0.9, 0.0, send=0.3)
+S.sfx(S.glide(81, 62, fr(f2 - f1) + 0.2, 1.0), fr(f1), 1.2, 0.0, send=0.5)
+S.sfx(S.swish(fr(f4 - f3) * 0.8, 1.0, 1.4), fr(f3 + 2), 1.0, 0.0, send=0.3)
+for k, fd in enumerate(EV.get('drips', [])):
+    S.sfx(S.plip(86 + (k % 3) * 2, 1.0), fr(fd), 0.45, 0.2 - 0.1 * k, send=0.4)
 
 # —— 针拉卷：每一道一个滑音（正转往上、反转往下）+ 一声钢片琴 ——
 for k, t0 in enumerate(TL['curls']):
