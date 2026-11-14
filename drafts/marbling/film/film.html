@@ -31,12 +31,12 @@ const Q = new URLSearchParams(location.search), PREVIEW = Q.has('preview');
   const glc = document.getElementById('c');
   if (PREVIEW) { glc.width = 960; glc.height = 540; }
   const M = MARBLE.create(glc);
-  M.setLabel(0, LABELS.front()); M.setLabel(1, LABELS.back());
+  M.setLabel(LABELS.front()); LABEL_BACK = LABELS.back();
   for (let f = 0; f < TL.end; f++) HUDM.draw(f, stateAt(f));          // 空跑一遍：把所有出字的时间登记给配乐
-  window.events = () => ({ cues: TFX.list(), drops: B.drops.map(d => [d.f, d.a, d.col, d.small ? 1 : 0, d.x]) });
+  window.events = () => ({ cues: TFX.list(), drops: B.drops.map(d => [d.f, d.a, d.col, d.small ? 1 : 0, d.x]), drips: DRIPS.map(d => d.f), speed: Array.from({ length: TL.end }, (_, f) => +camSpeed(f).toFixed(1)) });
   window.frame = async f => {
     const s = stateAt(f);
-    const g = Object.assign({}, s, { cam: PREVIEW ? [s.cam[0], s.cam[1], s.cam[2] * 0.5, s.cam[3]] : s.cam, ss: PREVIEW ? 1 : 4, time: f });
+    const g = Object.assign({}, s, { ss: PREVIEW ? 1 : 4, time: f, cams: PREVIEW && s.cams ? s.cams.filter((_, i, a) => i % 2 === 0 || a.length < 3) : s.cams });
     await M.render(g);
     TOOLS.draw(document.getElementById('tools'), f, s);
     HUDM.draw(f, s);

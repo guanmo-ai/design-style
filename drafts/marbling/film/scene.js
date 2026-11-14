@@ -75,78 +75,85 @@ const B = (() => {
   return { ops, drops, c1, cc, th, combTip, rakeTip };
 })();
 
-// —— 镜头：关键帧之间用三次 Hermite（切线 = 两边邻居的斜率），位置和速度都连续；缩放按对数走 ——
-const CURL_R = 120, SHEET = [960, 540], WPAPER = 1920;
-const FINAL_X = WPAPER + Math.PI * CURL_R;
-// 第一张纸从左上角斜着盖、斜着揭
-const ND = (() => { const l = Math.hypot(1, 0.55); return [1 / l, 0.55 / l]; })(), S0D = -(SHEET[0] * ND[0] + SHEET[1] * ND[1]), WD = -2 * S0D;
-const DIVE = [-564, -24];          // 用 JS 版的倒查在全盘找出来的：96×54 px 的窗里颜色变化最多的一处
+// —— 场景：两只盘子放在桌上，A 盘在原点（第 0 帧），B 盘在右边 3600 ——
+const TRAY_A = [0, 0, 1150, 680], TRAY_B = [3600, 0, 1150, 680], TB = TRAY_B[0];
+const DEG = Math.PI / 180, TOP = 90 * DEG;
+
+// —— 蛋：浸在 B 盘里，从它下面包上来的就是那一圈膜 ——
+const EGG = { a: 230, b: 300, dip: [-560, 0], deep: -120 };   // 浸在推进去的那一处（全盘最花的地方：用 JS 版倒查搜出来的）
+function eggAt(f) {
+  const [f0, f1, f2, f3, f4] = TL.dip;
+  let y;
+  if (f < f1) y = lerp(1900, EGG.b, ease.in2(prog(f, f0 - 20, f1)));            // 落下来，越落越快
+  else if (f < f2) y = lerp(EGG.b, EGG.deep, ease.out3(prog(f, f1, f2)));               // 碰到水面，减速沉下去
+  else if (f < f3) y = EGG.deep - 6 * Math.sin(Math.PI * prog(f, f2, f3));              // 在最深处轻轻一沉
+  else y = lerp(EGG.deep, 560, ease.inOut3(prog(f, f3, f4))) + 10 * Math.sin((f - f4) / 40 * Math.PI) * prog(f, f4, f4 + 30);   // 提起来，悬在半空轻轻浮
+  const spin = 1.6 * Math.pow(prog(f, f3 + 10, 1080), 1.4) * 4.2;                  // 提起来以后开始转
+  return { x: TB + EGG.dip[0], z: EGG.dip[1], y, spin, show: f >= f0 - 20 };
+}
+// 浸：沉下去吃掉的膜面积（r² 单位）A = 2a·(b − y)，水线截面 H = a²(1 − (y/b)²)；提起来以后洞留着
+function sinkOp(f) {
+  const [f0, f1, f2] = TL.dip; if (f < f1) return null;
+  const yy = Math.max(eggAt(Math.min(f, f2)).y, EGG.deep), A = 2 * EGG.a * (EGG.b - yy);
+  const Hs = EGG.a * EGG.a * Math.max(0, 1 - Math.pow(clamp(eggAt(f).y, -EGG.b, EGG.b) / EGG.b, 2)), Hmax = EGG.a * EGG.a * (1 - Math.pow(EGG.deep / EGG.b, 2));
+  const H = f < f2 ? Hs : Hmax;
+  return [4, EGG.dip[0], EGG.dip[1], A, H, 0, 0, 0, 0, 0, 0, 0];
+}
+
+// —— 镜头：[帧, 注视点 x, z, 缩放, 滚转/朝向, 俯仰, 注视点高度]。关键帧之间用三次 Hermite（切线 = 两边邻居的斜率）；缩放按对数走 ——
+const DIVE = [TB - 564, -24];          // 用 JS 版的倒查在 B 盘里找出来的：96×54 px 的窗里颜色变化最多的一处
+const EX = TB + EGG.dip[0], EZ = EGG.dip[1];
 const CAMK = [
-  [-60, -20, 5, 1.06, -0.035], [0, 0, 0, 1.08, -0.03], [60, 70, 8, 1.05, -0.02], [128, 0, 0, 1.0, 0], [180, -390, -30, 1.45, 0.02],
-  [212, -380, -32, 1.5, 0.025], [320, -110, -5, 1.12, 0.01], [400, 0, 0, 1.0, 0], [520, 0, 0, 1.03, 0.0], [620, 60, 0, 1.12, -0.03],
-  [700, DIVE[0] - 80, DIVE[1] + 20, 1.3, -0.05], [TL.dive[1], DIVE[0], DIVE[1], 21, -0.42], [TL.dive[2], 0, 0, 1.0, 0], [886, 0, 0, 1.0, 0],
-  [TL.peel2[1], FINAL_X, 0, 0.93, 0], [1000, FINAL_X + 10, 0, 0.9, 0],
+  [-60, -60, -20, 1.06, -0.035, TOP, 0], [0, 0, 0, 1.08, -0.03, TOP, 0], [TL.tilt[0], 40, 5, 1.05, -0.02, 86 * DEG, 0],
+  [TL.tilt[1], 260, -120, 0.82, 0.05, 27 * DEG, 0],
+  [TL.whip[1], TB - 360, -40, 1.0, 0.22, 24 * DEG, 0],
+  [200, TB - 420, -30, 1.3, 0.24, 25 * DEG, 0], [262, TB - 360, -20, 1.38, 0.3, 22 * DEG, 0],
+  [340, TB - 80, 0, 0.88, 0.14, 32 * DEG, 0], [TL.rise[1], TB, 0, 1.0, 0, TOP, 0],
+  [560, TB, 0, 1.03, 0.0, TOP, 0], [640, TB + 60, 0, 1.12, -0.03, TOP, 0],
+  [710, DIVE[0] - 80, DIVE[1] + 20, 1.3, -0.05, TOP, 0], [TL.dive[1], DIVE[0], DIVE[1], 21, -0.42, TOP, 0],
+  [TL.dive[2], EX - 40, EZ - 40, 0.82, 0.55, 34 * DEG, 160], [884, EX, EZ, 0.95, 0.62, 28 * DEG, 80],
+  [TL.dip[4], EX, EZ, 1.0, 0.8, 13 * DEG, 520], [1080, EX, EZ, 1.1, 1.25, 7 * DEG, 560], [1140, EX, EZ, 1.12, 1.4, 6 * DEG, 560],
 ];
 function camAt(f) {
-  const K = CAMK, val = k => [K[k][1], K[k][2], Math.log(K[k][3]), K[k][4]];
+  const K = CAMK, val = k => [K[k][1], K[k][2], Math.log(K[k][3]), K[k][4], K[k][5], K[k][6]];
   let i = 0; while (i < K.length - 2 && f > K[i + 1][0]) i++;
   const t0 = K[i][0], t1 = K[i + 1][0], u = clamp((f - t0) / (t1 - t0)), h = t1 - t0;
   const p0 = val(i), p1 = val(i + 1);
   const tan = k => { const a = Math.max(0, k - 1), b = Math.min(K.length - 1, k + 1); const va = val(a), vb = val(b); return va.map((v, j) => (vb[j] - v) / (K[b][0] - K[a][0])); };
   let m0 = tan(i), m1 = tan(i + 1);
-  // 推进 ×20 的顶点和每段的起止：速度为 0 的关键帧（停一下再走）
-  const still = [TL.dive[1], TL.dive[2], 886];
+  const still = [TL.dive[1]];                 // 推进 ×21 的顶点停一下
   if (still.includes(K[i][0])) m0 = m0.map(() => 0);
   if (still.includes(K[i + 1][0])) m1 = m1.map(() => 0);
-  if (K[i][0] === TL.peel2[1]) m0 = m0.map((v, j) => j === 2 ? v : 0);      // 纸落定：停住，只剩一点点推近
-  if (K[i + 1][0] === TL.peel2[1]) m1 = m1.map((v, j) => j === 2 ? v : 0);
   const u2 = u * u, u3 = u2 * u, h00 = 2 * u3 - 3 * u2 + 1, h10 = u3 - 2 * u2 + u, h01 = -2 * u3 + 3 * u2, h11 = u3 - u2;
   const v = p0.map((a, j) => h00 * a + h10 * h * m0[j] + h01 * p1[j] + h11 * h * m1[j]);
-  return [v[0], v[1], Math.exp(v[2]), v[3]];
+  return [v[0], v[1], Math.exp(v[2]), v[3], v[4], v[5]];
 }
-// 水面坐标 → 屏幕像素（左上原点）
-function toScreen(cam, x, y) { const c = Math.cos(-cam[3]), s = Math.sin(-cam[3]), dx = (x - cam[0]) * cam[2], dy = (y - cam[1]) * cam[2]; return [960 + c * dx - s * dy, 540 + s * dx + c * dy]; }
+// 镜头在屏幕上走得多快（像素 / 帧，粗估）：快的帧开运动模糊
+function camSpeed(f) {
+  const a = camAt(f - 0.5), b = camAt(f + 0.5);
+  return Math.hypot(b[0] - a[0], b[1] - a[1]) * a[2] + Math.abs(Math.log(b[2] / a[2])) * 900 + (Math.abs(b[3] - a[3]) + Math.abs(b[4] - a[4])) * 1500;
+}
+// 世界点（x, z 是桌面坐标，h 是高度）→ 屏幕像素
+function toScreen(cam, x, z, h = 0) { return MARBLE.project(cam, x, z, h); }
 
 function stateAt(f) {
-  const cam = camAt(f);
-  const st = { cam, ops0: [], ops1: [], rip: [], sheet: [SHEET[0], SHEET[1], 0, 0], paper: [0, 0, 0, 0], curl: [1, 0, -1e5, CURL_R], f };
-  const A = [...SET_A, COMB_A];
-  if (f < TL.peel1[0]) st.ops0 = A.map(o => o(f)).filter(Boolean);
-  else if (f < TL.peel2[0]) st.ops0 = B.ops.map(o => o(f)).filter(Boolean);
-  const printA = () => A.map(o => o(TL.lay1[1])).filter(Boolean), printB = () => B.ops.map(o => o(TL.lay2[0])).filter(Boolean);
-  // 第一张纸
-  if (f >= TL.lay1[0] && f < TL.peel1[0]) {
-    const q = (WD + 300) * ease.inOut2(prog(f, TL.lay1[0], TL.lay1[1]));
-    st.paper = [1, S0D, q, 0.8 * prog(f, TL.lay1[0] + 8, TL.lay1[1])]; st.curl = [ND[0], ND[1], 0, CURL_R];
-    st.ops1 = [];
+  const cam = camAt(f), sp = camSpeed(f);
+  const st = { cam, trayA: TRAY_A, trayB: TRAY_B, f, speed: sp };
+  if (sp > 45) { const n = Math.min(5, Math.ceil(sp / 22)); st.cams = Array.from({ length: n }, (_, k) => camAt(f - 0.25 + 0.5 * (k + 0.5) / n)); }
+  st.ops1 = [...SET_A, COMB_A].map(o => o(f)).filter(Boolean);
+  st.ops0 = B.ops.map(o => o(f)).filter(Boolean);
+  const sk = sinkOp(f); if (sk) st.ops0.push(sk);
+  const e = eggAt(f);
+  if (e.show) {
+    st.ops2 = B.ops.map(o => o(TL.dip[1])).filter(Boolean);
+    st.egg = [e.x, e.y, e.z, e.spin]; st.egg2 = [EGG.a, EGG.b, -EGG.deep, 1];
+    st.egg3 = [EGG.dip[0], EGG.dip[1], f > TL.dip[3] ? 1 - 0.4 * prog(f, TL.dip[4], 1080) : 0, 0];
   }
-  if (f >= TL.peel1[0] && f < 300) {
-    st.ops1 = printA();
-    const p = (WD + Math.PI * CURL_R + 60) * sine(prog(f, TL.peel1[0], TL.peel1[1]));
-    if (f < TL.peel1[1] + 2) { st.paper = [2, S0D, 0, 0.8]; st.curl = [ND[0], ND[1], p, CURL_R]; }
-    st.sheet[2] = 0.06 * (1 - prog(f, TL.peel1[1] - 20, 260));      // 揭完的水里，残一点点颜色，慢慢散掉
-    if (st.sheet[2] <= 0) st.ops1 = [];
-  }
-  // 最后一张纸
-  if (f >= TL.lay2[0] && f < TL.peel2[0]) {
-    const q = (WPAPER + 260) * ease.inOut2(prog(f, TL.lay2[0], TL.lay2[1]));
-    st.paper = [1, -SHEET[0], q, 0.8 * prog(f, TL.lay2[0] + 6, TL.lay2[1])]; st.curl = [1, 0, 0, CURL_R];
-  }
-  if (f >= TL.peel2[0]) {
-    st.ops0 = []; st.ops1 = printB();
-    const p = (WPAPER + Math.PI * CURL_R) * ease.inOut2(prog(f, TL.peel2[0], TL.peel2[1]));
-    st.paper = [2, -SHEET[0], 0, 0.8]; st.curl = [1, 0, p, CURL_R];
-    st.sheet[2] = 0.05;
-    // 成品上的签条（纸坐标：翻过来是镜像，所以按最终位置反算）
-    const xs = FINAL_X + 0, ys = 150, pf = WPAPER + Math.PI * CURL_R;
-    const sig = 2 * pf - Math.PI * CURL_R - (xs + SHEET[0]);
-    const k = prog(f, TL.label - 8, TL.label), lift = 1 - ease.out3(k);
-    st.lab2 = [sig - SHEET[0], ys, -360 * (1 + 0.25 * lift), 160 * (1 + 0.25 * lift)];
-    st.lab3 = [0.025, f >= TL.label - 8 ? Math.min(1, k * 3) : 0, lift * 12, 1];
-  }
-  // 第 0 帧的签条：贴在水面上，纸盖过去就被带走
-  st.lab = [-500, 235, 300, 152]; st.lab1 = [-0.04, f < TL.peel1[0] ? 1 : 0, 0, 0];
-  // 涟漪：最近的几滴
-  st.rip = B.drops.filter(d => f >= d.f && f < d.f + 80).slice(-8).map(d => [d.x, d.y, f - d.f, Math.sqrt(d.a) * 0.6]);
+  // 第 0 帧的签条：漂在 A 盘上
+  st.lab = [-500, 235, 300, 152]; st.lab1 = [-0.04, 1, 0, 0];
+  // 涟漪：最近的几滴 + 蛋提起来时滴回去的水
+  st.rip = [...B.drops, ...DRIPS].filter(d => f >= d.f && f < d.f + 80).sort((p, q) => p.f - q.f).slice(-8).map(d => [d.x, d.y, f - d.f, Math.sqrt(d.a) * 0.6]);
   return st;
 }
+// 蛋提起来时从底上滴回盘里的几滴水（B 盘局部坐标）
+const DRIPS = [0, 1, 2, 3, 4].map(k => ({ f: TL.dip[3] + 26 + k * 9 + (k * k) % 5, x: EGG.dip[0] + [-20, 30, 5, -35, 18][k], y: EGG.dip[1] + [10, -15, 25, 0, -30][k], a: 120 + 40 * k, drip: true }));
