@@ -33,7 +33,7 @@ const LABELS = (() => {
     ctx.font = '900 300px SerifSC'; ctx.fillText('湿拓', 86, 360);
     ctx.font = 'italic 120px Instrument'; ctx.fillText('MARBLING', 690, 230);
     ctx.font = '500 34px GeistMono'; ctx.fillStyle = 'rgba(23,20,15,0.8)';
-    ctx.fillText('滴 → 耙 → 梳 → 卷', 696, 330);
+    ctx.fillText('滴 → 耙 → 梳 → 卷 → 浸', 696, 330);
     ctx.font = '500 27px GeistMono'; ctx.fillText('P′ = C + (P−C)·√(1 + r²/|P−C|²)', 92, 470);
     ctx.fillText('P′ = P + z·u^d·M', 92, 520);
     const P = ['#1F3FD8', '#F0452B', '#F6B81A', '#19B5A5', '#FF7AA8', '#17140F'];
@@ -44,6 +44,7 @@ const LABELS = (() => {
   return { front, back };
 })();
 
+let LABEL_BACK = null;
 const TOOLS = (() => {
   const PALH = MARBLE.ORDER.map(k => MARBLE.PAL[k]);
   // 一根齿碰水：一圈亮的弯月面 + 一圈暗
@@ -52,14 +53,15 @@ const TOOLS = (() => {
     ctx.strokeStyle = 'rgba(23,20,15,0.18)'; ctx.lineWidth = Math.max(1, r * 0.4); ctx.beginPath(); ctx.arc(x, y, r * 2.0, 0, 7); ctx.stroke();
   }
   // 梳子 / 耙：齿尖排成一条线（齿尖 = 公式里的 tip），木头梳背斜在后面，地上有影子
-  function comb(ctx, cam, M, N, tip, n0, s, back, pinR, alpha = 1) {
-    const z = cam[2], pts = [];
+  function comb(ctx, cam, M, N, tip, n0, s, back, pinW, ox = 0, alpha = 1) {
+    const pts = [];
     for (let k = -80; k <= 80; k++) {
-      const n = n0 + k * s, x = M[0] * tip + N[0] * n, y = M[1] * tip + N[1] * n;
-      const p = toScreen(cam, x, y); if (p[0] < -200 || p[0] > 2120 || p[1] < -200 || p[1] > 1280) continue;
-      const q = toScreen(cam, x - M[0] * back, y - M[1] * back); pts.push([p, q]);
+      const n = n0 + k * s, x = M[0] * tip + N[0] * n + ox, y = M[1] * tip + N[1] * n;
+      const p = toScreen(cam, x, y); if (!(p[0] > -200 && p[0] < 2120 && p[1] > -200 && p[1] < 1280)) continue;
+      const q = toScreen(cam, x - M[0] * back, y - M[1] * back, 30); pts.push([p, q]);
     }
     if (pts.length < 2) return;
+    const z = pts[pts.length >> 1][0][2], pinR = pinW * z;
     ctx.save(); ctx.globalAlpha = alpha;
     const a = pts[0][1], b = pts[pts.length - 1][1], sh = [16 * z, 22 * z];
     const bw = Math.max(14, 44 * z);
@@ -74,15 +76,15 @@ const TOOLS = (() => {
       meniscus(ctx, p[0], p[1], pinR * 0.9);
     }
     // 梳背（胡桃木）
-    const nx = -(b[1] - a[1]), ny = b[0] - a[0], nl = Math.hypot(nx, ny), ox = nx / nl * bw * 0.5, oy = ny / nl * bw * 0.5;
-    const g = ctx.createLinearGradient(a[0] - ox, a[1] - oy, a[0] + ox, a[1] + oy);
+    const nx = -(b[1] - a[1]), ny = b[0] - a[0], nl = Math.hypot(nx, ny), wx = nx / nl * bw * 0.5, wy = ny / nl * bw * 0.5;
+    const g = ctx.createLinearGradient(a[0] - wx, a[1] - wy, a[0] + wx, a[1] + wy);
     g.addColorStop(0, '#3b2416'); g.addColorStop(0.35, '#7a4f2e'); g.addColorStop(0.55, '#8e6038'); g.addColorStop(1, '#2e1c11');
     ctx.strokeStyle = g; ctx.lineWidth = bw; ctx.lineCap = 'round';
     ctx.beginPath(); ctx.moveTo(a[0], a[1]); ctx.lineTo(b[0], b[1]); ctx.stroke();
     ctx.restore();
   }
   function needle(ctx, cam, x, y, lift = 0) {
-    const p = toScreen(cam, x, y), z = cam[2], L = 120 * Math.min(z, 2), hx = p[0] - L * 0.55, hy = p[1] - L * 0.85 - lift * 40;
+    const p = toScreen(cam, x + TB, y), z = p[2], L = 120 * Math.min(z, 2), hx = p[0] - L * 0.55, hy = p[1] - L * 0.85 - lift * 40;
     ctx.save();
     ctx.strokeStyle = 'rgba(23,20,15,0.25)'; ctx.lineWidth = 6; ctx.filter = 'blur(4px)'; ctx.beginPath(); ctx.moveTo(p[0] + 4, p[1] + 5); ctx.lineTo(hx + 50, hy + 70); ctx.stroke(); ctx.filter = 'none';
     const g = ctx.createLinearGradient(p[0], p[1], hx, hy); g.addColorStop(0, '#6f6b64'); g.addColorStop(1, '#f2ede2');
@@ -93,12 +95,17 @@ const TOOLS = (() => {
     ctx.restore();
   }
   // 落下来的那一滴：越近越大，影子从旁边收到落点
-  function bead(ctx, cam, d, u) {
-    const p = toScreen(cam, d.x, d.y), z = cam[2], r0 = (d.small ? 6 : 13) * Math.min(z, 1.8), k = 1 - u;
-    const r = r0 * (1 + 2.2 * k * k), sx = p[0] + 70 * k * z, sy = p[1] + 90 * k * z;
+  // 一滴从高处落下来（真的 3D：重力加速、近大远小），身后拖一道短短的残影，影子在落点慢慢收拢
+  function bead(ctx, cam, d, u, h0 = 900, color = null) {
+    const hh = h0 * (1 - u * u), hp = h0 * (1 - Math.max(0, u - 0.12) ** 2);
+    const p = toScreen(cam, TB + d.x, d.y, hh), q = toScreen(cam, TB + d.x, d.y, hp), g0 = toScreen(cam, TB + d.x, d.y, 0);
+    if (!(p[2] > 0)) return;
+    const r = (d.small ? 7 : 15) * p[2], rg = (d.small ? 7 : 15) * g0[2];
     ctx.save();
-    ctx.fillStyle = `rgba(23,20,15,${0.12 + 0.2 * u})`; ctx.filter = `blur(${2 + 8 * k}px)`; ctx.beginPath(); ctx.ellipse(sx, sy, r0 * (1 + k), r0 * (1 + k) * 0.8, 0, 0, 7); ctx.fill(); ctx.filter = 'none';
-    const c = PALH[d.col], g = ctx.createRadialGradient(p[0] - r * 0.35, p[1] - r * 0.4, r * 0.1, p[0], p[1], r);
+    ctx.fillStyle = `rgba(23,20,15,${0.08 + 0.25 * u * u})`; ctx.filter = `blur(${2 + 10 * (1 - u)}px)`; ctx.beginPath(); ctx.ellipse(g0[0], g0[1], rg * (1.6 - 0.6 * u), rg * (1.6 - 0.6 * u) * 0.75, 0, 0, 7); ctx.fill(); ctx.filter = 'none';
+    const c = color || PALH[d.col];
+    ctx.strokeStyle = c; ctx.globalAlpha = 0.35; ctx.lineWidth = r * 1.6; ctx.lineCap = 'round'; ctx.beginPath(); ctx.moveTo(q[0], q[1]); ctx.lineTo(p[0], p[1]); ctx.stroke(); ctx.globalAlpha = 1;
+    const g = ctx.createRadialGradient(p[0] - r * 0.35, p[1] - r * 0.4, r * 0.1, p[0], p[1], r);
     g.addColorStop(0, '#ffffff'); g.addColorStop(0.18, c); g.addColorStop(1, c);
     ctx.fillStyle = g; ctx.beginPath(); ctx.arc(p[0], p[1], r, 0, 7); ctx.fill();
     ctx.restore();
@@ -124,17 +131,27 @@ const TOOLS = (() => {
     const ctx = cv.getContext('2d'), cam = s.cam;
     ctx.clearRect(0, 0, cv.width, cv.height);
     // 第一把梳子（第 0 帧正拉到画面中间）
-    if (f < 80) comb(ctx, cam, [1, 0], [0, 1], TL.combA.x0 + TL.combA.v * f, 0, 26, 64, 3.6 * cam[2]);
+    if (f < 80) comb(ctx, cam, [1, 0], [0, 1], TL.combA.x0 + TL.combA.v * f, 0, 26, 64, 3.6, 0);
     // 耙：三道
     TL.rake.forEach(([a, b], i) => {
       if (f < a - 2 || f > b + 2) return;
       const down = i === 0, tip = B.rakeTip(f, [a, b]);
       const M = down ? [0, 1] : [0, -1], N = down ? [-1, 0] : [1, 0], n0 = [0, 150][i];
-      comb(ctx, cam, M, N, tip, n0, 300, 60, 5 * cam[2]);
+      comb(ctx, cam, M, N, tip, n0, 300, 60, 5, TB);
     });
-    if (f >= TL.comb[0] - 2 && f <= TL.comb[1] + 2) comb(ctx, cam, [1, 0], [0, 1], B.combTip(f), 6, 28, 64, 3.6 * cam[2]);
+    if (f >= TL.comb[0] - 2 && f <= TL.comb[1] + 2) comb(ctx, cam, [1, 0], [0, 1], B.combTip(f), 6, 28, 64, 3.6, TB);
     const nd = needleAt(f); if (nd) needle(ctx, cam, nd[0], nd[1], nd[2]);
-    for (const d of B.drops) { const u = (f - (d.f - 10)) / 10; if (u >= 0 && u < 1) bead(ctx, cam, d, u); }
+    for (const d of B.drops) { const u = (f - (d.f - 14)) / 14; if (u >= 0 && u < 1) bead(ctx, cam, d, u); }
+    // 蛋提起来，底上滴回去的水
+    for (const d of DRIPS) { const u = (f - (d.f - 16)) / 16; if (u >= 0 && u < 1) bead(ctx, cam, { x: d.x, y: d.y, small: true }, u, Math.max(60, eggAt(d.f - 16).y - EGG.b), 'rgba(235,240,245,0.85)'); }
+    // 片尾：签条落在蛋旁边
+    if (f >= TL.label - 10) {
+      const k = prog(f, TL.label - 10, TL.label), sc = 1 + 0.35 * (1 - ease.out3(k)) - 0.03 * Math.sin(Math.PI * prog(f, TL.label, TL.label + 12));
+      const w = 540 * sc, h = w * 640 / 1440, cx = 1530, cy = 440;
+      ctx.save(); ctx.globalAlpha = Math.min(1, k * 2.5); ctx.translate(cx, cy); ctx.rotate(-0.03);
+      ctx.fillStyle = 'rgba(0,0,0,0.45)'; ctx.filter = `blur(${8 + 20 * (sc - 1)}px)`; ctx.fillRect(-w / 2 + 14 * sc * 2, -h / 2 + 22 * sc * 2, w, h); ctx.filter = 'none';
+      ctx.drawImage(LABEL_BACK, -w / 2, -h / 2, w, h); ctx.restore();
+    }
     HUDM.lines(ctx, f, s);
   }
   return { draw, needleAt };
