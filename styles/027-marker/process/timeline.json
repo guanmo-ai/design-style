@@ -1,0 +1,50 @@
+{
+  "fps": 60,
+  "bpm": 144,
+  "frames": 1160,
+  "title": "马克笔手绘",
+  "segments": [
+    {
+      "start": 0,
+      "dur": 50,
+      "label": "封面与拔帽",
+      "color": "#F0642E"
+    },
+    {
+      "start": 50,
+      "dur": 200,
+      "label": "汽车 · 设计草图",
+      "color": "#2A2C31"
+    },
+    {
+      "start": 250,
+      "dur": 150,
+      "label": "球鞋 · 翻转落地",
+      "color": "#11A086"
+    },
+    {
+      "start": 400,
+      "dur": 150,
+      "label": "建筑 · 亮灯",
+      "color": "#D8CBAE"
+    },
+    {
+      "start": 550,
+      "dur": 200,
+      "label": "官网 · 产品卡片",
+      "color": "#6E52D8"
+    },
+    {
+      "start": 750,
+      "dur": 150,
+      "label": "App · 换色配置",
+      "color": "#F2B01E"
+    },
+    {
+      "start": 900,
+      "dur": 260,
+      "label": "海报 · 大字与扣帽",
+      "color": "#F0642E"
+    }
+  ]
+}
