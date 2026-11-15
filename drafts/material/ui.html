@@ -1,0 +1,97 @@
+<!doctype html><meta charset="utf-8">
+<!-- Material Design · 落到网页和手机 App（1920×1080）。node ../_lib/shot.cjs ui.html png/ui.png
+     规则：一切都是纸（有厚度、有高度、投影由高度决定）；颜色只用一个主色 + 一个强调色；FAB 骑在两张纸的接缝上；
+     文字对齐 16dp / 72dp 两条关键线；点哪里，波纹就从哪里扩开。 -->
+<link rel="stylesheet" href="../_lib/cand_fonts.css">
+<style>
+body{background:#CFD8DC;font-family:Roboto,NotoSC,sans-serif;color:#212121;position:relative}
+.abs{position:absolute}
+.z1{box-shadow:0 1px 3px rgba(0,0,0,.2),0 1px 8px rgba(0,0,0,.1)}
+.z2{box-shadow:0 3px 6px rgba(0,0,0,.22),0 3px 14px rgba(0,0,0,.12)}
+.z3{box-shadow:0 8px 14px rgba(0,0,0,.26),0 10px 30px rgba(0,0,0,.16)}
+.z5{box-shadow:0 24px 30px rgba(0,0,0,.3),0 30px 70px rgba(0,0,0,.22)}
+.win{position:absolute;left:50px;top:50px;width:1320px;height:980px;border-radius:6px;overflow:hidden;background:#FAFAFA}
+.chrome{height:46px;background:#E0E0E0;display:flex;align-items:center;gap:10px;padding:0 18px}
+.chrome i{width:13px;height:13px;border-radius:50%;background:#BDBDBD}
+.chrome span{margin-left:20px;background:#fff;border-radius:4px;padding:5px 16px;font-size:15px;color:#616161;width:440px}
+.appbar{height:250px;background:#009688;color:#fff;position:relative;padding:0 40px}
+.tb{display:flex;align-items:center;gap:30px;height:84px;font-size:26px;font-weight:500}
+.ham{display:flex;flex-direction:column;gap:6px}.ham i{display:block;width:28px;height:4px;background:#fff}
+.search{margin-left:auto;width:420px;height:50px;border-radius:3px;background:rgba(255,255,255,.18);display:flex;align-items:center;padding:0 18px;font-size:19px;font-weight:400;color:rgba(255,255,255,.8)}
+.fab{position:absolute;border-radius:50%;display:flex;align-items:center;justify-content:center}
+.grid{position:absolute;left:300px;top:226px;right:40px;display:grid;grid-template-columns:1fr 1fr 1fr;gap:24px}
+.card{background:#fff;border-radius:3px;overflow:hidden}
+.card .img{height:190px;position:relative;overflow:hidden}
+.card .tx{padding:18px 20px 16px}
+.card b{display:block;font-size:22px;font-weight:500}.card span{font-size:16px;color:#757575}
+.card .act{display:flex;gap:26px;padding:0 20px 16px;font-size:15px;font-weight:500;letter-spacing:.6px;color:#FF4081}
+.drawer{position:absolute;left:40px;top:226px;width:236px;background:#fff;border-radius:3px;padding:10px 0}
+.drawer div{padding:14px 24px;font-size:18px;font-weight:500;color:#424242;display:flex;gap:22px;align-items:center}
+.drawer div i{width:22px;height:22px;border-radius:4px;background:#9E9E9E;display:block}
+.drawer .on{background:#EEEEEE;color:#009688}.drawer .on i{background:#009688}
+.snack{position:absolute;left:300px;bottom:0;width:560px;height:64px;background:#323232;color:#fff;display:flex;align-items:center;padding:0 26px;font-size:18px;border-radius:3px 3px 0 0}
+.snack b{margin-left:auto;color:#FF4081;font-weight:500;letter-spacing:.8px}
+/* 手机 */
+.phone{position:absolute;left:1450px;top:40px;width:430px;height:1000px;border-radius:44px;background:#263238;padding:56px 14px 70px}
+.scr{width:100%;height:100%;background:#FAFAFA;position:relative;overflow:hidden}
+.sb{height:28px;background:#00796B;color:#fff;font-size:14px;display:flex;justify-content:flex-end;align-items:center;padding:0 12px;gap:8px}
+.ptb{background:#009688;color:#fff;position:relative}
+.tabs{display:flex;font-size:15px;font-weight:500;letter-spacing:.6px;height:50px;align-items:center}
+.tabs span{flex:1;text-align:center;opacity:.7}.tabs .on{opacity:1}
+.li{display:flex;align-items:center;height:82px;position:relative;overflow:hidden}
+.li .av{position:absolute;left:16px;width:44px;height:44px;border-radius:50%}
+.li .t{position:absolute;left:78px;font-size:18px}.li .t small{display:block;font-size:14px;color:#757575;margin-top:3px}
+.key{position:absolute;top:0;bottom:0;width:0;border-left:2px dashed #FF4081;opacity:.9}
+.kl{position:absolute;background:#FF4081;color:#fff;font-size:13px;font-weight:700;padding:3px 7px;border-radius:2px}
+.lab{position:absolute;font-family:NotoSC;font-size:16px;font-weight:700;color:#37474F;background:#fff;padding:6px 12px;border-radius:3px}
+</style>
+<div class="win z5">
+  <div class="chrome"><i></i><i></i><i></i><span>trips.app/plan</span></div>
+  <div class="appbar">
+    <div class="tb"><div class="ham"><i></i><i></i><i></i></div>Trips<div class="search">⌕&nbsp;&nbsp;Search places</div></div>
+    <div style="position:absolute;left:300px;top:110px;font-size:46px;font-weight:400">Summer in the Alps</div>
+  </div>
+  <!-- FAB 骑在应用栏和内容的接缝上 -->
+  <div class="fab z3" style="left:1214px;top:860px;width:76px;height:76px;background:#FF4081;z-index:2"><svg width="28" height="28"><rect x="12" width="4" height="28" fill="#fff"/><rect y="12" width="28" height="4" fill="#fff"/></svg></div>
+  <div class="drawer z1">
+    <div class="on"><i></i>Itinerary</div><div><i></i>Places</div><div><i></i>Bookings</div><div><i></i>Budget</div><div><i></i>Photos</div><div><i></i>Settings</div>
+  </div>
+  <div class="grid">
+    <div class="card z2"><div class="img" style="background:#80CBC4"><svg width="100%" height="190" viewBox="0 0 300 190" preserveAspectRatio="xMidYMid slice"><circle cx="230" cy="50" r="26" fill="#FFEB3B"/><path d="M0,190 L90,70 L150,140 L200,90 L300,190Z" fill="#00695C"/><path d="M90,70 L110,96 L70,96Z" fill="#fff"/><path d="M0,190 L60,150 L130,190Z" fill="#004D40"/></svg></div>
+      <div class="tx"><b>Zermatt</b><span>3 nights · Jul 12</span></div><div class="act"><span>SHARE</span><span>EXPLORE</span></div></div>
+    <div class="card z3" style="position:relative;transform:translateY(-6px)"><div class="img" style="background:#FFCC80"><svg width="100%" height="190" viewBox="0 0 300 190" preserveAspectRatio="xMidYMid slice"><rect y="120" width="300" height="70" fill="#4FC3F7"/><path d="M0,120 L70,40 L130,120Z" fill="#EF6C00"/><path d="M90,120 L170,20 L250,120Z" fill="#E65100"/><path d="M170,20 L190,46 L150,46Z" fill="#fff"/></svg>
+        <svg class="abs" style="left:0;top:0" width="100%" height="190"><circle cx="170" cy="120" r="150" fill="#fff" opacity=".18"/><circle cx="170" cy="120" r="28" fill="#fff" opacity=".35"/></svg></div>
+      <div class="tx"><b>Lake Como</b><span>2 nights · Jul 15</span></div><div class="act"><span>SHARE</span><span>EXPLORE</span></div></div>
+    <div class="card z2"><div class="img" style="background:#9FA8DA"><svg width="100%" height="190" viewBox="0 0 300 190" preserveAspectRatio="xMidYMid slice"><circle cx="70" cy="60" r="22" fill="#fff"/><path d="M0,190 L120,60 L190,130 L230,100 L300,160 L300,190Z" fill="#303F9F"/><path d="M120,60 L140,82 L100,82Z" fill="#fff"/></svg></div>
+      <div class="tx"><b>Chamonix</b><span>4 nights · Jul 17</span></div><div class="act"><span>SHARE</span><span>EXPLORE</span></div></div>
+    <div class="card z2" style="grid-column:span 2;display:flex;align-items:center;gap:24px;padding:22px 24px">
+      <div style="width:64px;height:64px;border-radius:50%;background:#FFC107;flex:none"></div>
+      <div style="flex:1"><b style="font-size:22px;font-weight:500">Budget so far</b><div style="margin-top:12px;height:8px;background:#E0E0E0;border-radius:4px"><div style="width:62%;height:8px;background:#009688;border-radius:4px"></div></div></div>
+      <div style="font-size:34px;font-weight:300">€1,860</div></div>
+    <div class="card z2" style="padding:22px 24px"><b style="font-size:22px;font-weight:500">Weather</b><div style="font-size:44px;font-weight:300;margin-top:6px">24°<span style="font-size:18px;color:#757575;margin-left:10px">Sunny</span></div></div>
+  </div>
+  <div style="position:absolute;left:300px;top:740px;width:880px;border:2px dashed #FF4081;border-radius:4px;padding:16px 22px;background:rgba(255,64,129,.04);font-size:17px;line-height:1.75;color:#37474F">
+  <b style="font-family:NotoSC;color:#FF4081;font-size:18px">高度 · Elevation</b>&nbsp;&nbsp;卡片 2dp → 按下 8dp &nbsp;·&nbsp; 应用栏 4dp &nbsp;·&nbsp; FAB 6dp → 按下 12dp &nbsp;·&nbsp; 侧栏 16dp<br>
+  <b style="font-family:NotoSC;color:#FF4081;font-size:18px">动效 · Motion</b>&nbsp;&nbsp;300ms &nbsp;·&nbsp; cubic-bezier(.4, 0, .2, 1) &nbsp;·&nbsp; 波纹从触点扩开 &nbsp;·&nbsp; 颜色 = 1 主色 + 1 强调色</div>
+  <div class="snack z2">Zermatt moved to Day 1<b>UNDO</b></div>
+</div>
+<div class="lab z1" style="left:520px;top:1036px;display:none"></div>
+
+<div class="phone z5"><div class="scr">
+  <div class="sb">▾ ▴ ▮ 12:30</div>
+  <div class="ptb z2"><div style="height:64px;display:flex;align-items:center;gap:26px;padding:0 16px;font-size:22px;font-weight:500"><div class="ham"><i></i><i></i><i></i></div>Contacts</div>
+    <div class="tabs"><span class="on">ALL</span><span>FAVORITES</span><span>GROUPS</span></div>
+    <div style="position:absolute;left:0;bottom:0;width:33.3%;height:3px;background:#FFEB3B"></div></div>
+  <div class="li"><div class="av" style="background:#E91E63"></div><div class="t">Ada Park<small>Mobile · 555-0141</small></div></div>
+  <div class="li" style="background:#ECECEC"><svg class="abs" style="left:0;top:0" width="402" height="82"><circle cx="250" cy="40" r="210" fill="#000" opacity=".07"/><circle cx="250" cy="40" r="24" fill="#000" opacity=".1"/></svg>
+    <div class="av" style="background:#3F51B5"></div><div class="t">Ben Okafor<small>Work · 555-0178</small></div></div>
+  <div class="li"><div class="av" style="background:#FF9800"></div><div class="t">Chloe Martin<small>Home · 555-0102</small></div></div>
+  <div class="li"><div class="av" style="background:#4CAF50"></div><div class="t">Diego Ruiz<small>Mobile · 555-0190</small></div></div>
+  <div class="li"><div class="av" style="background:#9C27B0"></div><div class="t">Emma Lind<small>Mobile · 555-0123</small></div></div>
+  <div class="li"><div class="av" style="background:#00BCD4"></div><div class="t">Farah Nasser<small>Work · 555-0166</small></div></div>
+  <div class="key" style="left:16px"></div><div class="key" style="left:78px"></div>
+  <div class="kl" style="left:20px;top:820px">16dp</div><div class="kl" style="left:82px;top:820px">72dp</div>
+  <div class="fab z3" style="right:16px;bottom:16px;width:64px;height:64px;background:#FF4081"><svg width="26" height="26"><rect x="11" width="4" height="26" fill="#fff"/><rect y="11" width="26" height="4" fill="#fff"/></svg></div>
+</div>
+<div style="position:absolute;left:0;right:0;bottom:16px;display:flex;justify-content:space-around;padding:0 70px"><svg width="26" height="26"><path d="M20,2 L4,13 L20,24Z" fill="none" stroke="#fff" stroke-width="2.5"/></svg><svg width="26" height="26"><circle cx="13" cy="13" r="10" fill="none" stroke="#fff" stroke-width="2.5"/></svg><svg width="26" height="26"><rect x="3" y="3" width="20" height="20" fill="none" stroke="#fff" stroke-width="2.5"/></svg></div>
+</div>

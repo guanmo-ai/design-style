@@ -80,6 +80,8 @@ fi
 # 布局 02 Masonry：Instrument Serif（标题衬线，正体 + 斜体）
 get InstrumentSerif-Regular.ttf "$GF/instrumentserif/InstrumentSerif-Regular.ttf"
 get InstrumentSerif-Italic.ttf  "$GF/instrumentserif/InstrumentSerif-Italic.ttf"
+# 候选 Material Design：Roboto（2014 年 Material 的默认字体，可变字重 / 字宽；OFL）
+get Roboto.ttf "$GF/roboto/Roboto%5Bwdth,wght%5D.ttf"
 rm -rf "$TMP"
 ls -lh
 if [ ${#FAILED[@]} -gt 0 ]; then echo "✗ 有 ${#FAILED[@]} 个文件没下到：${FAILED[*]}（重跑一次，或换个网络）"; exit 1; fi
