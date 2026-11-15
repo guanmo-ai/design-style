@@ -19,6 +19,11 @@ By Guanmo [@guanmo_ai](https://x.com/guanmo_ai)
 <table>
   <tr>
     <td align="center" valign="top" width="33%">
+      <a href="https://guanmo-ai.github.io/design-style/?lang=en#work-027-marker"><img src="styles/027-marker/video/cover.jpg" width="240" alt="Marker Illustration film cover" /></a><br />
+      <a href="https://guanmo-ai.github.io/design-style/?lang=en#work-027-marker"><b>Marker Illustration</b></a><br />
+      <sub>19.333333333333332 seconds</sub>
+    </td>
+    <td align="center" valign="top" width="33%">
       <a href="https://guanmo-ai.github.io/design-style/?lang=en#work-026-art-nouveau"><img src="styles/026-art-nouveau/video/cover.jpg" width="240" alt="Art Nouveau film cover" /></a><br />
       <a href="https://guanmo-ai.github.io/design-style/?lang=en#work-026-art-nouveau"><b>Art Nouveau</b></a><br />
       <sub>21 seconds</sub>
@@ -28,13 +33,13 @@ By Guanmo [@guanmo_ai](https://x.com/guanmo_ai)
       <a href="https://guanmo-ai.github.io/design-style/?lang=en#work-025-plush"><b>Plush</b></a><br />
       <sub>20 seconds</sub>
     </td>
+  </tr>
+  <tr>
     <td align="center" valign="top" width="33%">
       <a href="https://guanmo-ai.github.io/design-style/?lang=en#work-999-style-overview"><img src="promo/cover.jpg" width="240" alt="Style Overview film cover" /></a><br />
       <a href="https://guanmo-ai.github.io/design-style/?lang=en#work-999-style-overview"><b>Style Overview</b></a><br />
       <sub>15 seconds</sub>
     </td>
-  </tr>
-  <tr>
     <td align="center" valign="top" width="33%">
       <a href="https://guanmo-ai.github.io/design-style/?lang=en#work-024-ink-wash"><img src="styles/024-ink-wash/video/cover.jpg" width="240" alt="Ink Wash film cover" /></a><br />
       <a href="https://guanmo-ai.github.io/design-style/?lang=en#work-024-ink-wash"><b>Ink Wash</b></a><br />
@@ -45,13 +50,13 @@ By Guanmo [@guanmo_ai](https://x.com/guanmo_ai)
       <a href="https://guanmo-ai.github.io/design-style/?lang=en#work-023-liquid-chrome"><b>Liquid Chrome</b></a><br />
       <sub>18 seconds</sub>
     </td>
+  </tr>
+  <tr>
     <td align="center" valign="top" width="33%">
       <a href="https://guanmo-ai.github.io/design-style/?lang=en#work-022-point-cloud"><img src="styles/022-point-cloud/video/cover.jpg" width="240" alt="Point Cloud film cover" /></a><br />
       <a href="https://guanmo-ai.github.io/design-style/?lang=en#work-022-point-cloud"><b>Point Cloud</b></a><br />
       <sub>19.5 seconds</sub>
     </td>
-  </tr>
-  <tr>
     <td align="center" valign="top" width="33%">
       <a href="https://guanmo-ai.github.io/design-style/?lang=en#work-021-generative-art"><img src="styles/021-generative-art/video/cover.jpg" width="240" alt="Generative Art film cover" /></a><br />
       <a href="https://guanmo-ai.github.io/design-style/?lang=en#work-021-generative-art"><b>Generative Art</b></a><br />
@@ -62,13 +67,13 @@ By Guanmo [@guanmo_ai](https://x.com/guanmo_ai)
       <a href="https://guanmo-ai.github.io/design-style/?lang=en#work-020-ascii-art"><b>ASCII Art</b></a><br />
       <sub>18 seconds</sub>
     </td>
+  </tr>
+  <tr>
     <td align="center" valign="top" width="33%">
       <a href="https://guanmo-ai.github.io/design-style/?lang=en#work-017-mid-century-modern"><img src="styles/017-mid-century-modern/video/cover.jpg" width="240" alt="Mid-Century Modern film cover" /></a><br />
       <a href="https://guanmo-ai.github.io/design-style/?lang=en#work-017-mid-century-modern"><b>Mid-Century Modern</b></a><br />
       <sub>15 seconds</sub>
     </td>
-  </tr>
-  <tr>
     <td align="center" valign="top" width="33%">
       <a href="https://guanmo-ai.github.io/design-style/?lang=en#work-018-diorama"><img src="styles/018-diorama/video/cover.jpg" width="240" alt="Diorama film cover" /></a><br />
       <a href="https://guanmo-ai.github.io/design-style/?lang=en#work-018-diorama"><b>Diorama</b></a><br />
@@ -79,13 +84,13 @@ By Guanmo [@guanmo_ai](https://x.com/guanmo_ai)
       <a href="https://guanmo-ai.github.io/design-style/?lang=en#work-019-low-poly"><b>Low Poly</b></a><br />
       <sub>20 seconds</sub>
     </td>
+  </tr>
+  <tr>
     <td align="center" valign="top" width="33%">
       <a href="https://guanmo-ai.github.io/design-style/?lang=en#work-014-liquid-glass"><img src="styles/014-liquid-glass/video/cover.jpg" width="240" alt="Liquid Glass film cover" /></a><br />
       <a href="https://guanmo-ai.github.io/design-style/?lang=en#work-014-liquid-glass"><b>Liquid Glass</b></a><br />
       <sub>20 seconds</sub>
     </td>
-  </tr>
-  <tr>
     <td align="center" valign="top" width="33%">
       <a href="https://guanmo-ai.github.io/design-style/?lang=en#work-013-art-deco"><img src="styles/013-art-deco/video/cover.jpg" width="240" alt="Art Deco film cover" /></a><br />
       <a href="https://guanmo-ai.github.io/design-style/?lang=en#work-013-art-deco"><b>Art Deco</b></a><br />
@@ -96,13 +101,13 @@ By Guanmo [@guanmo_ai](https://x.com/guanmo_ai)
       <a href="https://guanmo-ai.github.io/design-style/?lang=en#work-009-neo-brutalism"><b>Neo-Brutalism</b></a><br />
       <sub>20 seconds</sub>
     </td>
+  </tr>
+  <tr>
     <td align="center" valign="top" width="33%">
       <a href="https://guanmo-ai.github.io/design-style/?lang=en#work-008-risograph"><img src="styles/008-risograph/video/cover.jpg" width="240" alt="Risograph film cover" /></a><br />
       <a href="https://guanmo-ai.github.io/design-style/?lang=en#work-008-risograph"><b>Risograph</b></a><br />
       <sub>15 seconds</sub>
     </td>
-  </tr>
-  <tr>
     <td align="center" valign="top" width="33%">
       <a href="https://guanmo-ai.github.io/design-style/?lang=en#work-005-pop-art"><img src="styles/005-pop-art/video/cover.jpg" width="240" alt="Pop Art film cover" /></a><br />
       <a href="https://guanmo-ai.github.io/design-style/?lang=en#work-005-pop-art"><b>Pop Art</b></a><br />
@@ -113,13 +118,13 @@ By Guanmo [@guanmo_ai](https://x.com/guanmo_ai)
       <a href="https://guanmo-ai.github.io/design-style/?lang=en#work-004-memphis"><b>Memphis</b></a><br />
       <sub>15 seconds</sub>
     </td>
+  </tr>
+  <tr>
     <td align="center" valign="top" width="33%">
       <a href="https://guanmo-ai.github.io/design-style/?lang=en#work-003-constructivism"><img src="styles/003-constructivism/video/cover.jpg" width="240" alt="Constructivism film cover" /></a><br />
       <a href="https://guanmo-ai.github.io/design-style/?lang=en#work-003-constructivism"><b>Constructivism</b></a><br />
       <sub>15 seconds</sub>
     </td>
-  </tr>
-  <tr>
     <td align="center" valign="top" width="33%">
       <a href="https://guanmo-ai.github.io/design-style/?lang=en#work-02-masonry"><img src="layouts/02-masonry/video/cover.jpg" width="240" alt="Masonry film cover" /></a><br />
       <a href="https://guanmo-ai.github.io/design-style/?lang=en#work-02-masonry"><b>Masonry</b></a><br />
@@ -130,13 +135,13 @@ By Guanmo [@guanmo_ai](https://x.com/guanmo_ai)
       <a href="https://guanmo-ai.github.io/design-style/?lang=en#work-002-swiss-style"><b>Swiss Style</b></a><br />
       <sub>15 seconds</sub>
     </td>
+  </tr>
+  <tr>
     <td align="center" valign="top" width="33%">
       <a href="https://guanmo-ai.github.io/design-style/?lang=en#work-01-bento-grid"><img src="layouts/01-bento-grid/video/cover.jpg" width="240" alt="Bento Grid film cover" /></a><br />
       <a href="https://guanmo-ai.github.io/design-style/?lang=en#work-01-bento-grid"><b>Bento Grid</b></a><br />
       <sub>15 seconds</sub>
     </td>
-  </tr>
-  <tr>
     <td align="center" valign="top" width="33%">
       <a href="https://guanmo-ai.github.io/design-style/?lang=en#work-001-bauhaus"><img src="styles/001-bauhaus/video/cover.jpg" width="240" alt="Bauhaus film cover" /></a><br />
       <a href="https://guanmo-ai.github.io/design-style/?lang=en#work-001-bauhaus"><b>Bauhaus</b></a><br />
@@ -184,6 +189,7 @@ The gallery interface, descriptions, search, and reading pages support **Chinese
 | 021 | [Generative Art](styles/021-generative-art/README.en.md) — Flow fields and seeds become avatars, covers and tickets. [Film](https://github.com/guanmo-ai/design-style/releases/tag/day-21) | [Production overview](styles/021-generative-art/PROCESS.en.md) | 1960s–today |
 | 025 | [Plush](styles/025-plush/README.en.md) — The same strands relay from objects to interface feedback. [Film](https://github.com/guanmo-ai/design-style/releases/tag/day-25) | [Production overview](styles/025-plush/PROCESS.en.md) | 2026 |
 | 026 | [Art Nouveau](styles/026-art-nouveau/README.en.md) — One whiplash grows into a halo, a Métro entrance, a lamp and a phone, then curls home. [Film](https://github.com/guanmo-ai/design-style/releases/tag/day-26) | [Production overview](styles/026-art-nouveau/PROCESS.en.md) | 1890–1910 |
+| 027 | [Marker Illustration](styles/027-marker/README.en.md) — Chisel-tip strokes connect six scenes, from moving sketches to a website, a phone and a poster. [Film](https://github.com/guanmo-ai/design-style/releases/tag/day-27) | [Production overview](styles/027-marker/PROCESS.en.md) | Contemporary |
 
 This table uses production directory numbers; gallery episode numbers follow first publication order.
 
@@ -263,4 +269,4 @@ public/                   Fonts and generated audio
 
 Code is shared for learning and adaptation. When sharing videos or artwork, credit **Guanmo / @guanmo_ai**.
 
-Fonts retain their own licenses. Jost, JetBrains Mono, Inter, Geist Mono, Selawik, Instrument Serif, Noto Sans SC, Oswald, Fredoka, Bangers, Unbounded, Michroma, Silkscreen, Archivo, Space Mono, and Space Grotesk use the SIL Open Font License; TeX Gyre Heros uses the GUST Font License; Tinos uses the Apache License 2.0. The gallery's adapted visual foundations have separate [license](gallery/LICENSE) and [attribution](gallery/NOTICE.md) files.
+Fonts retain their own licenses. Jost, JetBrains Mono, Inter, Geist Mono, Selawik, Instrument Serif, Noto Sans SC, Oswald, Fredoka, Bangers, Unbounded, Michroma, Silkscreen, Archivo, Space Mono, Space Grotesk, Caveat, and Long Cang use the SIL Open Font License; TeX Gyre Heros uses the GUST Font License; Tinos and Permanent Marker use the Apache License 2.0. The gallery's adapted visual foundations have separate [license](gallery/LICENSE) and [attribution](gallery/NOTICE.md) files.

@@ -20,4 +20,7 @@
 
 ## 发布状态
 
-发布准备完成，条目暂存在 pending；待 Release 的真实发布时间生成后移入正式目录，并登记部署结果。
+- [Release day-27](https://github.com/guanmo-ai/design-style/releases/tag/day-27) 已于 `2026-11-15T14:33:50Z` 发布；标签源码为 `cc32c8ed9fe85ce402fc1f17270bda39c4cc78e4`。
+- 远端附件大小与 SHA-256 digest 与原片一致；附件包括 `027-marker.mp4` 与 `SHA256SUMS`。
+- 条目从 pending 移入 `works.json`，记录真实 Release 发布时间；网站期号「风格 020」。
+- 本地完整播放结束、语言切换与英文指南已检查；主干部署结果待补记。
