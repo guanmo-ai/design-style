@@ -1,0 +1,73 @@
+<!doctype html><meta charset="utf-8">
+<!-- 新拟态 Neumorphism · 第 0 帧（1920×1080）：整张画面是同一张灰蓝的面，所有东西都从里面鼓出来；
+     光从左上来。中间那颗按钮正被按下去（凸 → 凹的半路），右边的旋钮正转到 22°。node ../_lib/shot.cjs cover.html png/cover.png -->
+<link rel="stylesheet" href="../_lib/cand_fonts.css">
+<style>
+:root{--bg:#E3E8EF;--lt:#FFFFFF;--dk:#A6B4C8;--ink:#2F3650;--mut:#7A86A0;--acc1:#7B6CFF;--acc2:#FF7AC6}
+body{background:var(--bg);font-family:Inter,NotoSC,sans-serif;color:var(--ink);position:relative}
+.abs{position:absolute}
+.up{background:var(--bg);box-shadow:-14px -14px 28px var(--lt),14px 14px 28px var(--dk)}
+.up-s{background:var(--bg);box-shadow:-8px -8px 16px var(--lt),8px 8px 16px var(--dk)}
+.half{background:var(--bg);box-shadow:-3px -3px 6px var(--lt),3px 3px 6px var(--dk),inset 3px 3px 6px var(--dk),inset -3px -3px 6px var(--lt)}
+.in{background:var(--bg);box-shadow:inset 10px 10px 20px var(--dk),inset -10px -10px 20px var(--lt)}
+.cap{font:500 20px Inter;color:var(--mut);text-align:center;margin-top:30px}
+.code{font:15px SpaceMono;color:var(--mut);line-height:1.6}
+.code b{color:var(--ink);font-weight:700}
+</style>
+<!-- 光源 -->
+<div class="abs up-s" style="left:70px;top:60px;width:86px;height:86px;border-radius:50%;display:flex;align-items:center;justify-content:center">
+  <svg width="40" height="40"><circle cx="20" cy="20" r="8" fill="#FFC86B"/><g stroke="#FFC86B" stroke-width="3" stroke-linecap="round"><line x1="20" y1="2" x2="20" y2="7"/><line x1="20" y1="33" x2="20" y2="38"/><line x1="2" y1="20" x2="7" y2="20"/><line x1="33" y1="20" x2="38" y2="20"/><line x1="7" y1="7" x2="10" y2="10"/><line x1="30" y1="30" x2="33" y2="33"/><line x1="7" y1="33" x2="10" y2="30"/><line x1="30" y1="10" x2="33" y2="7"/></g></svg></div>
+<div class="abs" style="left:178px;top:84px;font-family:NotoSC;font-weight:500;font-size:22px;color:var(--mut)">光从左上 135° 照下来</div>
+<svg class="abs" style="left:150px;top:140px" width="200" height="140"><path d="M8,8 L150,110" stroke="#FFC86B" stroke-width="3" stroke-dasharray="2 10" stroke-linecap="round"/><path d="M150,110 l-18,-2 l10,-14z" fill="#FFC86B"/></svg>
+
+<!-- 标题 -->
+<div class="abs" style="left:120px;top:250px;font-weight:600;font-size:24px;letter-spacing:6px;color:var(--acc1)">2019 — 2020</div>
+<div class="abs" style="left:110px;top:290px;font-weight:800;font-size:150px;letter-spacing:-5px;line-height:1;color:#DCE2EA;
+  text-shadow:-6px -6px 10px #FFFFFF,7px 7px 12px #94A3BA">Neumorphism</div>
+<div class="abs" style="left:122px;top:470px;font-family:NotoSC;font-weight:900;font-size:50px;color:var(--ink)">新拟态：一切从同一张面里鼓出来</div>
+
+<!-- 凸 · 半 · 凹 -->
+<div class="abs" style="left:122px;top:610px;display:flex;gap:64px">
+  <div><div class="up" style="width:200px;height:200px;border-radius:44px;display:flex;align-items:center;justify-content:center"><svg width="60" height="60"><path d="M30,8 L36,24 L54,24 L40,35 L45,52 L30,42 L15,52 L20,35 L6,24 L24,24Z" fill="none" stroke="#7A86A0" stroke-width="4" stroke-linejoin="round"/></svg></div><div class="cap">凸 · Raised</div></div>
+  <div><div class="half" style="width:200px;height:200px;border-radius:44px;display:flex;align-items:center;justify-content:center;transform:scale(.97)"><svg width="60" height="60"><defs><linearGradient id="a" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#7B6CFF"/><stop offset="1" stop-color="#FF7AC6"/></linearGradient></defs><path d="M30,8 L36,24 L54,24 L40,35 L45,52 L30,42 L15,52 L20,35 L6,24 L24,24Z" fill="url(#a)" opacity=".55" stroke="url(#a)" stroke-width="4" stroke-linejoin="round"/></svg></div><div class="cap" style="color:var(--acc1)">按下中…</div></div>
+  <div><div class="in" style="width:200px;height:200px;border-radius:44px;display:flex;align-items:center;justify-content:center"><svg width="60" height="60"><path d="M30,8 L36,24 L54,24 L40,35 L45,52 L30,42 L15,52 L20,35 L6,24 L24,24Z" fill="url(#a)" stroke="url(#a)" stroke-width="4" stroke-linejoin="round"/></svg></div><div class="cap">凹 · Pressed</div></div>
+</div>
+<div class="abs code" style="left:122px;top:920px"><b>box-shadow:</b> -14px -14px 28px <b>#FFFFFF</b>, 14px 14px 28px <b>#A6B4C8</b>;&nbsp;&nbsp;<b>background:</b> #E3E8EF</div>
+
+<!-- 旋钮 -->
+<div class="abs up" style="left:1150px;top:170px;width:640px;height:640px;border-radius:50%"></div>
+<div class="abs in" style="left:1210px;top:230px;width:520px;height:520px;border-radius:50%"></div>
+<svg class="abs" style="left:1150px;top:170px" width="640" height="640">
+  <defs><linearGradient id="arc" x1="0" y1="1" x2="1" y2="0"><stop offset="0" stop-color="#7B6CFF"/><stop offset="1" stop-color="#FF7AC6"/></linearGradient>
+  <filter id="gl"><feGaussianBlur stdDeviation="6"/></filter></defs>
+  <!-- 刻度 -->
+  <g stroke="#B5C1D3" stroke-width="3" stroke-linecap="round">
+  </g>
+  <path id="trk" d="" fill="none"/>
+  <g id="ticks"></g>
+  <path id="glow" fill="none" stroke="url(#arc)" stroke-width="16" stroke-linecap="round" filter="url(#gl)" opacity=".6"/>
+  <path id="val" fill="none" stroke="url(#arc)" stroke-width="12" stroke-linecap="round"/>
+</svg>
+<div class="abs up-s" style="left:1310px;top:330px;width:320px;height:320px;border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center">
+  <div style="font-size:18px;letter-spacing:4px;color:var(--mut);font-weight:600">HEATING</div>
+  <div style="font-size:112px;font-weight:300;letter-spacing:-4px;line-height:1.05">22<span style="font-size:52px;vertical-align:top;line-height:1.6">°</span></div>
+  <div style="font-family:NotoSC;font-size:20px;color:var(--mut)">客厅 · 自动</div></div>
+<!-- 旋钮上的指示点 -->
+<div id="dot" class="abs" style="width:26px;height:26px;border-radius:50%;background:linear-gradient(135deg,#7B6CFF,#FF7AC6);box-shadow:0 0 16px rgba(255,122,198,.7)"></div>
+<!-- 开关 + 滑条 -->
+<div class="abs in" style="left:1190px;top:880px;width:150px;height:72px;border-radius:36px"><div class="up-s" style="position:absolute;left:84px;top:8px;width:56px;height:56px;border-radius:50%;background:linear-gradient(135deg,#8F82FF,#FF8ACD)"></div></div>
+<div class="abs in" style="left:1390px;top:902px;width:400px;height:28px;border-radius:14px"><div style="width:62%;height:28px;border-radius:14px;background:linear-gradient(90deg,#7B6CFF,#FF7AC6)"></div>
+  <div class="up-s" style="position:absolute;left:226px;top:-12px;width:52px;height:52px;border-radius:50%"></div></div>
+<script>
+const cx=320,cy=320,R=290,a0=135,a1=405,v=.58;
+const P=a=>{const r=a*Math.PI/180;return[cx+R*Math.cos(r),cy+R*Math.sin(r)]};
+const arc=(f,t)=>{const[x0,y0]=P(f),[x1,y1]=P(t);return`M${x0},${y0} A${R},${R} 0 ${t-f>180?1:0} 1 ${x1},${y1}`};
+const d=arc(a0,a0+(a1-a0)*v);document.getElementById('val').setAttribute('d',d);document.getElementById('glow').setAttribute('d',d);
+const tk=document.getElementById('ticks');
+for(let i=0;i<=40;i++){const a=a0+(a1-a0)*i/40,r=a*Math.PI/180,r1=272,r2=i%5?262:252;
+  const l=document.createElementNS('http://www.w3.org/2000/svg','line');
+  l.setAttribute('x1',cx+r1*Math.cos(r));l.setAttribute('y1',cy+r1*Math.sin(r));l.setAttribute('x2',cx+r2*Math.cos(r));l.setAttribute('y2',cy+r2*Math.sin(r));
+  l.setAttribute('stroke',i/40<=v?'#9C8BFF':'#B9C4D6');l.setAttribute('stroke-width',i%5?2:3);l.setAttribute('stroke-linecap','round');tk.appendChild(l);}
+const av=(a0+(a1-a0)*v)*Math.PI/180,dr=200;
+const dot=document.getElementById('dot');dot.style.left=(1150+cx+dr*Math.cos(av)-13)+'px';dot.style.top=(170+cy+dr*Math.sin(av)-13)+'px';
+</script>

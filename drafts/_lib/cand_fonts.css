@@ -1,0 +1,16 @@
+/* 候选图共用字体（路径相对 drafts/<风格>/），全部可免费商用：Selawik OFL、Roboto OFL、Noto Sans SC OFL、Space Mono OFL、Inter OFL */
+@font-face{font-family:Selawik;src:url(../../public/fonts/Selawik.ttf);font-weight:400}
+@font-face{font-family:Selawik;src:url(../../public/fonts/Selawik-Light.ttf);font-weight:300}
+@font-face{font-family:Selawik;src:url(../../public/fonts/Selawik-Semibold.ttf);font-weight:600}
+@font-face{font-family:Selawik;src:url(../../public/fonts/Selawik-Bold.ttf);font-weight:700}
+@font-face{font-family:Roboto;src:url(../../public/fonts/Roboto.ttf);font-weight:100 900;font-stretch:75% 100%}
+@font-face{font-family:NotoSC;src:url(../../public/fonts/NotoSansSC-Regular.otf);font-weight:400}
+@font-face{font-family:NotoSC;src:url(../../public/fonts/NotoSansSC-Medium.otf);font-weight:500}
+@font-face{font-family:NotoSC;src:url(../../public/fonts/NotoSansSC-Bold.otf);font-weight:700}
+@font-face{font-family:NotoSC;src:url(../../public/fonts/NotoSansSC-Black.otf);font-weight:900}
+@font-face{font-family:SpaceMono;src:url(../../public/fonts/SpaceMono-Regular.ttf)}
+@font-face{font-family:SpaceMono;src:url(../../public/fonts/SpaceMono-Bold.ttf);font-weight:700}
+@font-face{font-family:Inter;src:url(../../public/fonts/Inter.ttf);font-weight:100 900}
+@font-face{font-family:Silkscreen;src:url(../../public/fonts/Silkscreen-Regular.ttf)}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{width:1920px;height:1080px;overflow:hidden}

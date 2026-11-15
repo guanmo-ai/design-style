@@ -1,0 +1,94 @@
+<!doctype html><meta charset="utf-8">
+<!-- 新拟态 · 落到网页和手机 App（1920×1080）。node ../_lib/shot.cjs ui.html png/ui.png
+     规则：背景和元素同一个色；凸 = 左上白影 + 右下暗影，凹 = 两道影子放进 inset；被选中的状态除了“凹”，还要加一点颜色（只靠影子分不清）。 -->
+<link rel="stylesheet" href="../_lib/cand_fonts.css">
+<style>
+:root{--bg:#E3E8EF;--lt:#FFFFFF;--dk:#A6B4C8;--ink:#2F3650;--mut:#6F7B95;--a1:#7B6CFF;--a2:#FF7AC6}
+body{background:var(--bg);font-family:Inter,NotoSC,sans-serif;color:var(--ink);position:relative}
+.abs{position:absolute}
+.up{background:var(--bg);box-shadow:-12px -12px 24px var(--lt),12px 12px 24px var(--dk)}
+.up-s{background:var(--bg);box-shadow:-6px -6px 12px var(--lt),6px 6px 12px var(--dk)}
+.in{background:var(--bg);box-shadow:inset 7px 7px 14px var(--dk),inset -7px -7px 14px var(--lt)}
+.in-s{background:var(--bg);box-shadow:inset 4px 4px 8px var(--dk),inset -4px -4px 8px var(--lt)}
+.gr{background:linear-gradient(135deg,var(--a1),var(--a2))}
+.ico{width:64px;height:64px;border-radius:20px;display:flex;align-items:center;justify-content:center}
+.room{border-radius:32px;padding:26px;position:relative}
+.room b{display:block;font-size:24px;font-weight:600;margin-top:18px}.room span{font-size:17px;color:var(--mut)}
+.tg{position:absolute;right:24px;top:30px;width:76px;height:40px;border-radius:20px}
+.tg i{position:absolute;top:5px;width:30px;height:30px;border-radius:50%}
+.lbl{font:600 15px Inter;letter-spacing:3px;color:var(--mut)}
+</style>
+<!-- 网页：智能家居面板 -->
+<div class="abs up" style="left:50px;top:46px;width:1290px;height:930px;border-radius:44px"></div>
+<!-- 侧栏 -->
+<div class="abs" style="left:92px;top:90px;display:flex;flex-direction:column;gap:34px;align-items:center">
+  <div class="ico gr" style="box-shadow:6px 6px 12px var(--dk),-6px -6px 12px var(--lt)"><svg width="30" height="30"><path d="M4,14 L15,4 L26,14 L26,26 L4,26Z" fill="none" stroke="#fff" stroke-width="3" stroke-linejoin="round"/></svg></div>
+  <div class="ico in-s"><svg width="30" height="30"><rect x="4" y="4" width="9" height="9" rx="2" fill="#7B6CFF"/><rect x="17" y="4" width="9" height="9" rx="2" fill="#7B6CFF"/><rect x="4" y="17" width="9" height="9" rx="2" fill="#7B6CFF"/><rect x="17" y="17" width="9" height="9" rx="2" fill="#7B6CFF"/></svg></div>
+  <div class="ico up-s"><svg width="30" height="30"><path d="M6,24 L6,14 M13,24 L13,6 M20,24 L20,11 M27,24 L27,18" stroke="#6F7B95" stroke-width="3" stroke-linecap="round"/></svg></div>
+  <div class="ico up-s"><svg width="30" height="30"><circle cx="15" cy="15" r="10" fill="none" stroke="#6F7B95" stroke-width="3"/><path d="M15,9 L15,15 L19,18" stroke="#6F7B95" stroke-width="3" stroke-linecap="round" fill="none"/></svg></div>
+  <div class="ico up-s"><svg width="30" height="30"><circle cx="15" cy="15" r="4" fill="none" stroke="#6F7B95" stroke-width="3"/><circle cx="15" cy="15" r="11" fill="none" stroke="#6F7B95" stroke-width="3" stroke-dasharray="4 4"/></svg></div>
+</div>
+<!-- 顶部 -->
+<div class="abs" style="left:220px;top:96px"><div class="lbl">SATURDAY · 7:42 PM</div><div style="font-size:50px;font-weight:700;letter-spacing:-1.5px;margin-top:6px">Good evening, Lin</div></div>
+<div class="abs in" style="left:860px;top:104px;width:430px;height:64px;border-radius:32px;display:flex;align-items:center;padding:0 26px;gap:14px;color:var(--mut);font-size:18px">
+  <svg width="22" height="22"><circle cx="9" cy="9" r="7" fill="none" stroke="#6F7B95" stroke-width="2.5"/><path d="M14,14 L20,20" stroke="#6F7B95" stroke-width="2.5" stroke-linecap="round"/></svg>Search devices</div>
+<!-- 房间卡 -->
+<div class="abs" style="left:220px;top:226px;display:grid;grid-template-columns:repeat(3,320px);gap:34px">
+  <div class="room up"><div class="ico in-s" style="width:58px;height:58px;border-radius:18px"><svg width="28" height="28"><path d="M14,3 C8,3 5,8 5,12 C5,16 9,18 10,22 L18,22 C19,18 23,16 23,12 C23,8 20,3 14,3Z" fill="url(#g1)"/><rect x="10" y="24" width="8" height="3" rx="1.5" fill="#7B6CFF"/><defs><linearGradient id="g1" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#7B6CFF"/><stop offset="1" stop-color="#FF7AC6"/></linearGradient></defs></svg></div>
+    <b>Living room</b><span>4 lights · 80%</span><div class="tg in-s"><i class="gr" style="left:41px;box-shadow:2px 2px 5px var(--dk)"></i></div></div>
+  <div class="room up"><div class="ico up-s" style="width:58px;height:58px;border-radius:18px"><svg width="28" height="28"><rect x="4" y="6" width="20" height="14" rx="3" fill="none" stroke="#6F7B95" stroke-width="2.5"/><path d="M10,24 L18,24" stroke="#6F7B95" stroke-width="2.5" stroke-linecap="round"/></svg></div>
+    <b>TV</b><span>Off</span><div class="tg in-s"><i class="up-s" style="left:5px"></i></div></div>
+  <div class="room up"><div class="ico in-s" style="width:58px;height:58px;border-radius:18px"><svg width="28" height="28"><path d="M14,4 L14,24 M6,8 L22,20 M22,8 L6,20" stroke="url(#g1)" stroke-width="3" stroke-linecap="round"/></svg></div>
+    <b>Air purifier</b><span>Auto · quiet</span><div class="tg in-s"><i class="gr" style="left:41px;box-shadow:2px 2px 5px var(--dk)"></i></div></div>
+</div>
+<!-- 用电图：放在凹槽里 -->
+<div class="abs in" style="left:220px;top:470px;width:700px;height:330px;border-radius:32px;padding:26px 30px">
+  <div style="display:flex;justify-content:space-between;align-items:baseline"><div style="font-size:24px;font-weight:600">Energy this week</div><div style="font-size:36px;font-weight:300">48.2 <span style="font-size:18px;color:var(--mut)">kWh</span></div></div>
+  <div style="display:flex;align-items:flex-end;justify-content:space-between;height:200px;margin-top:20px;padding:0 10px">
+    <div style="text-align:center"><div class="up-s" style="width:46px;height:110px;border-radius:14px"></div><div style="margin-top:12px;color:var(--mut)">M</div></div>
+    <div style="text-align:center"><div class="up-s" style="width:46px;height:140px;border-radius:14px"></div><div style="margin-top:12px;color:var(--mut)">T</div></div>
+    <div style="text-align:center"><div class="up-s" style="width:46px;height:90px;border-radius:14px"></div><div style="margin-top:12px;color:var(--mut)">W</div></div>
+    <div style="text-align:center"><div class="up-s" style="width:46px;height:160px;border-radius:14px"></div><div style="margin-top:12px;color:var(--mut)">T</div></div>
+    <div style="text-align:center"><div class="gr" style="width:46px;height:170px;border-radius:14px;box-shadow:6px 6px 12px var(--dk),-6px -6px 12px var(--lt)"></div><div style="margin-top:12px;color:var(--a1);font-weight:700">F</div></div>
+    <div style="text-align:center"><div class="up-s" style="width:46px;height:120px;border-radius:14px"></div><div style="margin-top:12px;color:var(--mut)">S</div></div>
+    <div style="text-align:center"><div class="up-s" style="width:46px;height:70px;border-radius:14px"></div><div style="margin-top:12px;color:var(--mut)">S</div></div>
+  </div></div>
+<!-- 小旋钮 -->
+<div class="abs up" style="left:970px;top:470px;width:330px;height:330px;border-radius:50%"></div>
+<div class="abs in" style="left:1010px;top:510px;width:250px;height:250px;border-radius:50%"></div>
+<svg class="abs" style="left:970px;top:470px" width="330" height="330"><defs><linearGradient id="g2" x1="0" y1="1" x2="1" y2="0"><stop offset="0" stop-color="#7B6CFF"/><stop offset="1" stop-color="#FF7AC6"/></linearGradient></defs>
+  <path d="M91.5,238.5 A104,104 0 0,1 203.3,68.3" fill="none" stroke="url(#g2)" stroke-width="10" stroke-linecap="round"/></svg>
+<div class="abs up-s" style="left:1055px;top:555px;width:160px;height:160px;border-radius:50%;display:flex;flex-direction:column;align-items:center;justify-content:center">
+  <div style="font-size:58px;font-weight:300;letter-spacing:-2px;line-height:1">22°</div><div style="font-size:14px;letter-spacing:3px;color:var(--mut);font-weight:600;margin-top:4px">HEAT</div></div>
+<!-- 底部注意 -->
+<div class="abs" style="left:220px;top:850px;width:1080px;display:flex;gap:16px;align-items:center;font-family:NotoSC;font-size:19px;color:var(--ink)">
+  <div class="in-s" style="flex:none;width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:#FF5C8A;font:800 22px Inter">!</div>
+  <div><b>新拟态最容易犯的错：</b>只靠影子区分“开 / 关”。选中态要加颜色，正文字色至少 #2F3650（对比度 ≥ 4.5:1）。</div></div>
+
+<!-- 手机：音乐播放器 -->
+<div class="abs up" style="left:1440px;top:40px;width:430px;height:1000px;border-radius:60px"></div>
+<div class="abs" style="left:1440px;top:40px;width:430px;height:1000px;border-radius:60px;overflow:hidden">
+  <div class="abs" style="left:34px;right:34px;top:26px;display:flex;justify-content:space-between;font-weight:600;font-size:16px"><span>9:41</span><span>●●● 100%</span></div>
+  <div class="abs up-s" style="left:34px;top:76px;width:60px;height:60px;border-radius:50%;display:flex;align-items:center;justify-content:center"><svg width="22" height="22"><path d="M14,4 L6,11 L14,18" fill="none" stroke="#6F7B95" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+  <div class="abs lbl" style="left:0;right:0;top:96px;text-align:center">PLAYING NOW</div>
+  <div class="abs up-s" style="right:34px;top:76px;width:60px;height:60px;border-radius:50%;display:flex;align-items:center;justify-content:center;gap:4px"><i style="width:5px;height:5px;border-radius:50%;background:#6F7B95"></i><i style="width:5px;height:5px;border-radius:50%;background:#6F7B95"></i><i style="width:5px;height:5px;border-radius:50%;background:#6F7B95"></i></div>
+  <!-- 唱片 -->
+  <div class="abs up" style="left:65px;top:190px;width:300px;height:300px;border-radius:50%"></div>
+  <div class="abs" style="left:85px;top:210px;width:260px;height:260px;border-radius:50%;background:conic-gradient(from 200deg,#7B6CFF,#B98BFF,#FF7AC6,#FFB38A,#7B6CFF);box-shadow:inset 6px 6px 14px rgba(40,30,90,.35)"></div>
+  <div class="abs in-s" style="left:185px;top:310px;width:60px;height:60px;border-radius:50%"></div>
+  <div class="abs" style="left:0;right:0;top:540px;text-align:center"><div style="font-size:30px;font-weight:700">Soft Light</div><div style="font-size:18px;color:var(--mut);margin-top:6px">Mira Sol · Clay Rooms</div></div>
+  <!-- 进度 -->
+  <div class="abs in-s" style="left:44px;right:44px;top:650px;height:16px;border-radius:8px"><div class="gr" style="width:44%;height:16px;border-radius:8px"></div></div>
+  <div class="abs up-s" style="left:172px;top:642px;width:32px;height:32px;border-radius:50%"></div>
+  <div class="abs" style="left:44px;right:44px;top:684px;display:flex;justify-content:space-between;color:var(--mut);font-size:15px"><span>1:32</span><span>3:28</span></div>
+  <!-- 控制 -->
+  <div class="abs up-s" style="left:52px;top:760px;width:80px;height:80px;border-radius:50%;display:flex;align-items:center;justify-content:center"><svg width="30" height="24"><path d="M14,2 L2,12 L14,22Z M28,2 L16,12 L28,22Z" fill="#6F7B95"/></svg></div>
+  <div class="abs in" style="left:155px;top:740px;width:120px;height:120px;border-radius:50%;display:flex;align-items:center;justify-content:center">
+    <div class="gr" style="width:84px;height:84px;border-radius:50%;display:flex;align-items:center;justify-content:center;gap:8px;box-shadow:4px 4px 10px rgba(120,80,200,.4)"><i style="width:8px;height:28px;border-radius:3px;background:#fff"></i><i style="width:8px;height:28px;border-radius:3px;background:#fff"></i></div></div>
+  <div class="abs up-s" style="left:298px;top:760px;width:80px;height:80px;border-radius:50%;display:flex;align-items:center;justify-content:center"><svg width="30" height="24"><path d="M2,2 L14,12 L2,22Z M16,2 L28,12 L16,22Z" fill="#6F7B95"/></svg></div>
+  <div class="abs" style="left:60px;right:60px;top:900px;display:flex;justify-content:space-between">
+    <div class="up-s" style="width:56px;height:56px;border-radius:18px;display:flex;align-items:center;justify-content:center"><svg width="24" height="24"><path d="M4,12 C4,6 8,4 12,4 L20,4 M16,0 L20,4 L16,8" fill="none" stroke="#6F7B95" stroke-width="2.5" stroke-linecap="round"/></svg></div>
+    <div class="in-s" style="width:56px;height:56px;border-radius:18px;display:flex;align-items:center;justify-content:center"><svg width="24" height="22"><path d="M12,20 C4,14 2,10 2,7 C2,4 4,2 7,2 C9,2 11,3 12,5 C13,3 15,2 17,2 C20,2 22,4 22,7 C22,10 20,14 12,20Z" fill="#FF7AC6"/></svg></div>
+    <div class="up-s" style="width:56px;height:56px;border-radius:18px;display:flex;align-items:center;justify-content:center"><svg width="24" height="24"><path d="M3,6 L21,6 M3,12 L21,12 M3,18 L14,18" stroke="#6F7B95" stroke-width="2.5" stroke-linecap="round"/></svg></div>
+  </div>
+</div>

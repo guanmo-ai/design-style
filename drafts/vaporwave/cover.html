@@ -1,0 +1,109 @@
+<!doctype html><meta charset="utf-8">
+<!-- 蒸汽波 Vaporwave · 第 0 帧（1920×1080）：网格地面正往镜头滚，夕阳被横条一刀刀切开，
+     一个 Win95 对话框刚弹出来（身后还拖着三层残影），整张画面带着录像带的扫描线和色差。node ../_lib/shot.cjs cover.html png/cover.png -->
+<link rel="stylesheet" href="../_lib/cand_fonts.css">
+<style>
+body{background:#14002b;font-family:Inter,NotoSC,sans-serif;position:relative;color:#fff}
+.abs{position:absolute}
+.w95{position:absolute;background:#c0c0c0;border:2px solid;border-color:#fff #404040 #404040 #fff;box-shadow:inset -2px -2px 0 #808080,inset 2px 2px 0 #dfdfdf;font-family:Inter;color:#000}
+.w95 .tt{height:36px;margin:4px;background:linear-gradient(90deg,#000080,#1084d0);color:#fff;font-weight:700;font-size:19px;display:flex;align-items:center;padding:0 8px;gap:10px}
+.w95 .tt .x{margin-left:auto;display:flex;gap:4px}
+.w95 .tt .x i{width:26px;height:24px;background:#c0c0c0;border:2px solid;border-color:#fff #404040 #404040 #fff;display:flex;align-items:center;justify-content:center;font-style:normal;color:#000;font-size:15px;font-weight:700}
+.btn{display:inline-flex;align-items:center;justify-content:center;width:150px;height:46px;background:#c0c0c0;border:2px solid;border-color:#fff #404040 #404040 #fff;box-shadow:inset -2px -2px 0 #808080;font-size:19px}
+.ghost{position:absolute;border:2px solid rgba(0,255,255,.55);}
+.osd{position:absolute;font-family:SpaceMono;font-weight:700;color:#fff;font-size:38px;text-shadow:3px 0 0 rgba(255,0,140,.8),-3px 0 0 rgba(0,240,255,.8)}
+.scan{position:absolute;inset:0;background:repeating-linear-gradient(rgba(0,0,0,0) 0 3px,rgba(0,0,0,.22) 3px 4px);pointer-events:none}
+</style>
+<svg class="abs" width="1920" height="1080" style="left:0;top:0">
+  <defs>
+    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#12002a"/><stop offset=".35" stop-color="#3b0a6b"/><stop offset=".62" stop-color="#b3127a"/><stop offset=".72" stop-color="#ff5f8f"/></linearGradient>
+    <linearGradient id="sun" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff35c"/><stop offset=".45" stop-color="#ffa63d"/><stop offset="1" stop-color="#ff2a8a"/></linearGradient>
+    <linearGradient id="floor" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2a0050"/><stop offset="1" stop-color="#0a0018"/></linearGradient>
+    <linearGradient id="haze" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ff4fd8" stop-opacity=".7"/><stop offset="1" stop-color="#ff4fd8" stop-opacity="0"/></linearGradient>
+    <linearGradient id="marble" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#b9a7c9"/><stop offset=".35" stop-color="#fff4fb"/><stop offset=".6" stop-color="#f3dcef"/><stop offset="1" stop-color="#8d6fa8"/></linearGradient>
+    <filter id="glow"><feGaussianBlur stdDeviation="4" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+    <filter id="veins" x="0" y="0" width="1" height="1"><feTurbulence type="fractalNoise" baseFrequency=".02 .006" numOctaves="4" seed="3"/>
+      <feColorMatrix type="matrix" values="0 0 0 0 .55  0 0 0 0 .45  0 0 0 0 .65  0 0 0 -14 6.4"/></filter>
+    <clipPath id="sunclip"><circle cx="960" cy="440" r="300"/></clipPath>
+    <clipPath id="col"><path id="colp" d="M0,0"/></clipPath>
+  </defs>
+  <rect width="1920" height="640" fill="url(#sky)"/>
+  <!-- 星 -->
+  <g fill="#fff" opacity=".8"><circle cx="140" cy="90" r="2"/><circle cx="420" cy="160" r="1.5"/><circle cx="700" cy="60" r="2"/><circle cx="1250" cy="120" r="1.5"/><circle cx="1500" cy="70" r="2.2"/><circle cx="1780" cy="180" r="1.6"/><circle cx="300" cy="260" r="1.3"/><circle cx="1640" cy="300" r="1.3"/></g>
+  <!-- 被切开的夕阳：越往下缝越宽 -->
+  <g clip-path="url(#sunclip)"><rect x="660" y="140" width="600" height="600" fill="url(#sun)"/>
+    <g fill="url(#sky)"><rect x="660" y="430" width="600" height="6"/><rect x="660" y="466" width="600" height="9"/><rect x="660" y="502" width="600" height="13"/><rect x="660" y="540" width="600" height="17"/><rect x="660" y="580" width="600" height="22"/></g></g>
+  <!-- 远山 -->
+  <path d="M0,640 L180,560 L300,600 L470,520 L640,610 L780,640Z" fill="#1d0640" stroke="#00f0ff" stroke-width="2" filter="url(#glow)"/>
+  <path d="M1140,640 L1300,540 L1430,600 L1600,500 L1760,590 L1920,540 L1920,640Z" fill="#1d0640" stroke="#00f0ff" stroke-width="2" filter="url(#glow)"/>
+  <!-- 网格地面 -->
+  <rect y="640" width="1920" height="440" fill="url(#floor)"/>
+  <rect y="630" width="1920" height="90" fill="url(#haze)"/>
+  <g id="grid" stroke="#ff36d8" stroke-width="2.5" filter="url(#glow)"></g>
+</svg>
+<!-- 大理石柱（左一根完整、右一根断的） -->
+<svg class="abs" width="1920" height="1080" style="left:0;top:0">
+  <g id="cols"></g>
+  <!-- 棕榈剪影 -->
+  <g fill="#0a0018" stroke="#00f0ff" stroke-width="2" stroke-opacity=".5">
+    <path d="M1790,1080 C1780,900 1760,760 1730,640 L1744,636 C1776,760 1798,900 1812,1080Z"/>
+    <path d="M1736,640 C1680,600 1600,600 1540,640 C1610,614 1680,618 1730,646Z"/>
+    <path d="M1736,640 C1700,570 1640,540 1580,540 C1650,560 1700,600 1730,646Z"/>
+    <path d="M1738,640 C1760,570 1820,540 1890,550 C1820,570 1780,600 1744,646Z"/>
+    <path d="M1740,642 C1800,620 1880,640 1920,690 C1870,660 1800,646 1744,650Z"/>
+    <path d="M1736,644 C1700,660 1660,700 1650,760 C1680,710 1710,676 1740,652Z"/>
+  </g>
+</svg>
+<!-- 标题：全角字 + 色差 -->
+<div class="abs" style="left:0;right:0;top:300px;text-align:center;font-family:NotoSC;font-weight:900;font-size:150px;letter-spacing:6px;line-height:1;
+  background:linear-gradient(#ffffff 0%,#c8f7ff 46%,#ff6ad5 52%,#ffe1f7 100%);-webkit-background-clip:text;color:transparent;
+  filter:drop-shadow(6px 0 0 rgba(255,0,150,.75)) drop-shadow(-6px 0 0 rgba(0,240,255,.75)) drop-shadow(0 10px 18px rgba(20,0,40,.6))">ＶＡＰＯＲＷＡＶＥ</div>
+<div class="abs" style="left:0;right:0;top:478px;text-align:center;font-family:NotoSC;font-weight:700;font-size:44px;letter-spacing:22px;color:#00f0ff;text-shadow:0 0 14px #00f0ff">ヴェイパーウェイヴ · 2010—2016</div>
+<!-- 刚弹出的 Win95 对话框 + 残影 -->
+<div class="ghost" style="left:1080px;top:790px;width:400px;height:200px;opacity:.35"></div>
+<div class="ghost" style="left:1130px;top:730px;width:480px;height:240px;opacity:.6;border-color:rgba(255,54,216,.8)"></div>
+<div class="w95" style="left:1190px;top:672px;width:560px;height:280px">
+  <div class="tt"><span>⌧</span>PARADISE.EXE<div class="x"><i>_</i><i>□</i><i>×</i></div></div>
+  <div style="display:flex;gap:22px;padding:18px 22px">
+    <svg width="64" height="64"><circle cx="32" cy="32" r="28" fill="#ffd400" stroke="#000" stroke-width="2"/><rect x="29" y="14" width="6" height="24" fill="#000"/><rect x="29" y="44" width="6" height="6" fill="#000"/></svg>
+    <div style="font-size:21px;line-height:1.5">Welcome to the future.<br><span style="font-family:NotoSC">永遠に 午前 3 時</span></div></div>
+  <div style="margin:0 22px;height:30px;border:2px solid;border-color:#808080 #fff #fff #808080;padding:3px;display:flex;gap:4px">
+    <i style="display:block;width:22px;background:#000080"></i><i style="display:block;width:22px;background:#000080"></i><i style="display:block;width:22px;background:#000080"></i><i style="display:block;width:22px;background:#000080"></i><i style="display:block;width:22px;background:#000080"></i><i style="display:block;width:22px;background:#000080"></i><i style="display:block;width:22px;background:#000080"></i><i style="display:block;width:22px;background:#000080"></i><i style="display:block;width:22px;background:#000080"></i><i style="display:block;width:22px;background:#000080"></i><i style="display:block;width:22px;background:#000080"></i><i style="display:block;width:22px;background:#000080"></i></div>
+  <div style="display:flex;justify-content:flex-end;gap:14px;padding:16px 22px"><span class="btn" style="outline:1px dotted #000;outline-offset:-6px">OK</span><span class="btn">Cancel</span></div>
+</div>
+<!-- 录像带 OSD -->
+<div class="osd" style="left:70px;top:56px">PLAY ▶</div>
+<div class="osd" style="left:70px;top:980px;font-size:32px">SP&nbsp;&nbsp;0:00:00</div>
+<div class="osd" style="right:70px;top:980px;font-size:32px">AM 3:14&nbsp;&nbsp;JUL.17.1995</div>
+<div class="scan"></div>
+<script>
+// 透视网格：竖线收进灭点，横线越近越疏
+const g=document.getElementById('grid'),NS='http://www.w3.org/2000/svg',H=640,VX=960;
+const L=(x1,y1,x2,y2,o)=>{const l=document.createElementNS(NS,'line');l.setAttribute('x1',x1);l.setAttribute('y1',y1);l.setAttribute('x2',x2);l.setAttribute('y2',y2);if(o!=null)l.setAttribute('stroke-opacity',o);g.appendChild(l)};
+for(let i=-30;i<=30;i++){L(VX+i*14,H,VX+i*230,1080)}
+const phase=.62; // 地面滚到一半
+for(let k=0;k<26;k++){const z=k+phase;const y=H+440*(1/(1+ (26-z)*.18))*1.0;}
+for(let k=1;k<30;k++){const z=(k+phase);const y=H+ 3200/( 40/z +0) ;}
+// 用简单的 1/z 投影
+for(let k=0;k<40;k++){const d=0.6+k*1.0-phase;const y=H+380/d; if(y>H+2&&y<1080) L(0,y,1920,y, Math.min(1,(y-H)/60))}
+// 大理石柱
+const cols=document.getElementById('cols');
+function column(x,top,w,h,broken){
+  let s='';const cap=top, sh=top+70;
+  // 柱头（爱奥尼涡卷）
+  if(!broken){s+=`<rect x="${x-w*.75}" y="${cap}" width="${w*1.5}" height="26" fill="url(#marble)" stroke="#5a3d7a" stroke-width="2"/>`;
+  for(const sx of [-1,1]){const cx=x+sx*w*.62,cy=cap+44;
+    s+=`<circle cx="${cx}" cy="${cy}" r="26" fill="url(#marble)" stroke="#5a3d7a" stroke-width="2"/><path d="M${cx},${cy} m-4,0 a4,4 0 1,1 8,0 a9,9 0 1,1 -18,0 a14,14 0 1,1 28,0 a19,19 0 1,1 -38,0" fill="none" stroke="#5a3d7a" stroke-width="2"/>`;}
+  s+=`<rect x="${x-w*.55}" y="${cap+26}" width="${w*1.1}" height="40" fill="url(#marble)" stroke="#5a3d7a" stroke-width="2"/>`;}
+  // 柱身 + 凹槽
+  const top2=broken?top:sh;
+  const brk=broken?`L${x+w/2},${top2+30} L${x+w*.2},${top2} L${x-w*.05},${top2+40} L${x-w*.3},${top2+8}`:'';
+  s+=`<path d="M${x-w/2},${h} L${x-w/2},${top2+ (broken?20:0)} ${broken?'L'+(x-w*.3)+','+(top2+8)+' L'+(x-w*.05)+','+(top2+40)+' L'+(x+w*.2)+','+top2+' L'+(x+w/2)+','+(top2+30):'L'+(x+w/2)+','+top2} L${x+w/2},${h}Z" fill="url(#marble)" stroke="#5a3d7a" stroke-width="2"/>`;
+  for(let f=1;f<7;f++){const fx=x-w/2+f*w/7;s+=`<line x1="${fx}" y1="${top2+(broken?44:6)}" x2="${fx}" y2="${h-50}" stroke="#7d5f9c" stroke-opacity=".45" stroke-width="3"/>`}
+  s+=`<rect x="${x-w/2}" y="${top2}" width="${w}" height="${h-top2}" filter="url(#veins)" opacity=".5" style="mix-blend-mode:multiply"/>`;
+  s+=`<rect x="${x-w*.7}" y="${h-50}" width="${w*1.4}" height="24" fill="url(#marble)" stroke="#5a3d7a" stroke-width="2"/><rect x="${x-w*.8}" y="${h-26}" width="${w*1.6}" height="26" fill="url(#marble)" stroke="#5a3d7a" stroke-width="2"/>`;
+  cols.insertAdjacentHTML('beforeend',s);
+}
+column(250,250,150,1000,false);
+column(520,560,110,960,true);
+</script>

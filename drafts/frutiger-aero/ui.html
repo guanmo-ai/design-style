@@ -1,0 +1,127 @@
+<!doctype html><meta charset="utf-8">
+<!-- Frutiger Aero · 落到网页和手机 App（1920×1080）。node ../_lib/shot.cjs ui.html png/ui.png
+     规则：玻璃窗 = 半透明 + 背景模糊 + 1px 白内描边；光泽按钮 = 渐变 + 上半部 50% 白高光；图标是会反光的球；背景永远是天、草、水。 -->
+<link rel="stylesheet" href="../_lib/cand_fonts.css">
+<style>
+body{font-family:Selawik,NotoSC,sans-serif;color:#0b3a66;position:relative;
+  background:linear-gradient(#0b63c9 0%,#2f97ef 40%,#9ddcff 62%,#dff6ff 66%)}
+.hill{position:absolute;left:0;right:0;bottom:0;height:420px}
+.abs{position:absolute}
+/* 玻璃窗（Vista Aero 的标题栏） */
+.win{position:absolute;border-radius:12px;padding:0 10px 10px;background:rgba(170,215,245,.38);backdrop-filter:blur(14px) saturate(1.4);
+  border:1px solid rgba(255,255,255,.75);box-shadow:0 0 0 1px rgba(0,40,90,.45),0 24px 60px rgba(0,30,80,.45),inset 0 1px 0 rgba(255,255,255,.9)}
+.win:before{content:"";position:absolute;left:0;right:0;top:0;height:44px;border-radius:12px 12px 0 0;background:linear-gradient(rgba(255,255,255,.55),rgba(255,255,255,.08))}
+.bar{height:44px;display:flex;align-items:center;gap:12px;color:#fff;font-size:17px;text-shadow:0 0 8px rgba(0,30,80,.8);position:relative}
+.ctl{margin-left:auto;display:flex;gap:2px}
+.ctl i{display:block;width:34px;height:20px;border-radius:4px;border:1px solid rgba(0,30,80,.6);background:linear-gradient(rgba(255,255,255,.6),rgba(255,255,255,.1) 50%,rgba(140,190,230,.3) 51%)}
+.ctl i:last-child{width:46px;background:linear-gradient(#f3a08e,#d8452b 50%,#b72a10 51%,#e2603f);}
+.page{background:linear-gradient(#ffffff,#eef8ff);border-radius:4px;height:calc(100% - 44px);overflow:hidden;position:relative;box-shadow:0 0 0 1px rgba(0,40,90,.35)}
+/* 光泽按钮 */
+.gl{position:relative;display:inline-flex;align-items:center;justify-content:center;border-radius:999px;color:#fff;font-weight:600;
+  text-shadow:0 1px 2px rgba(0,40,90,.5);border:1px solid rgba(0,70,130,.6);
+  box-shadow:0 6px 14px rgba(0,60,130,.35),inset 0 -6px 12px rgba(0,30,90,.25),inset 0 0 0 1px rgba(255,255,255,.35)}
+.gl:before{content:"";position:absolute;left:5%;right:5%;top:2px;height:50%;border-radius:999px 999px 60% 60%/999px 999px 30% 30%;
+  background:linear-gradient(rgba(255,255,255,.95),rgba(255,255,255,.25))}
+.gl span{position:relative}
+.aqua{background:linear-gradient(#7fe6ff,#14a6ea 55%,#0a74c4)}
+.lime{background:linear-gradient(#c8ff7a,#5bcc1e 55%,#2f9a10)}
+/* 会反光的球形图标 */
+.orb{position:relative;border-radius:50%;box-shadow:0 8px 16px rgba(0,50,110,.35),inset 0 -8px 16px rgba(0,0,0,.18)}
+.orb:before{content:"";position:absolute;left:16%;right:16%;top:6%;height:44%;border-radius:50%;background:linear-gradient(rgba(255,255,255,.95),rgba(255,255,255,.1))}
+.orb:after{content:"";position:absolute;left:30%;right:30%;bottom:8%;height:18%;border-radius:50%;background:radial-gradient(closest-side,rgba(255,255,255,.7),transparent)}
+.o-blue{background:radial-gradient(circle at 50% 70%,#7ff0ff,#0f8fe0 60%,#0458a8)}
+.o-green{background:radial-gradient(circle at 50% 70%,#d4ff8a,#4cc21a 60%,#1f7a0c)}
+.o-orange{background:radial-gradient(circle at 50% 70%,#ffe08a,#ff9a1a 60%,#c25a00)}
+.o-pink{background:radial-gradient(circle at 50% 70%,#ffc2ec,#f25bbd 60%,#a3127a)}
+.nav{display:flex;align-items:center;gap:34px;padding:22px 40px;font-size:19px;color:#2a5f8f;background:linear-gradient(#f9fdff,#dff0fb);border-bottom:1px solid #b9dcf2}
+.nav b{font-size:26px;color:#0b4f8f;display:flex;align-items:center;gap:12px;margin-right:30px}
+.hero{display:flex;padding:46px 54px 0;gap:30px;position:relative}
+h1{font-weight:300;font-size:76px;line-height:1.02;letter-spacing:-1.5px;color:#0b4a8a}
+h1 em{font-style:normal;font-weight:600;color:#1aa0e8}
+.lead{font-size:22px;line-height:1.5;color:#3f6f99;margin:22px 0 32px;max-width:540px}
+.tiles{display:flex;gap:22px;padding:34px 54px}
+.tile{flex:1;border-radius:14px;padding:22px;background:linear-gradient(#ffffff,#e4f4ff);border:1px solid #bfe0f5;box-shadow:inset 0 1px 0 #fff,0 6px 16px rgba(30,100,170,.12);display:flex;gap:16px;align-items:center}
+.tile b{display:block;font-size:20px;color:#0b4a8a}.tile span{font-size:15px;color:#5a85a8}
+.recipe{position:absolute;left:122px;top:832px;width:1168px;border-radius:14px;padding:18px 22px;background:rgba(5,40,80,.82);color:#cfefff;font:15px/1.65 SpaceMono,monospace;box-shadow:0 14px 30px rgba(0,20,50,.4)}
+.recipe b{color:#fff;font-family:NotoSC;font-weight:700;font-size:17px}
+.recipe i{font-style:normal;color:#8ff0a0}
+/* 手机 */
+.phone{position:absolute;left:1430px;top:52px;width:430px;height:980px;border-radius:64px;padding:16px;
+  background:linear-gradient(135deg,#3d4a57,#0e141b 40%,#2b3540);box-shadow:0 30px 70px rgba(0,30,70,.5),inset 0 0 0 2px rgba(255,255,255,.35)}
+.scr{position:relative;width:100%;height:100%;border-radius:50px;overflow:hidden;background:linear-gradient(#1679da 0%,#4fb5f5 45%,#bfeaff 70%,#e8f8ff)}
+.scr .grass{position:absolute;left:0;right:0;bottom:0;height:200px}
+.st{display:flex;justify-content:space-between;padding:20px 34px 0;color:#fff;font-weight:600;font-size:17px}
+.big{position:absolute;left:0;right:0;top:92px;text-align:center;color:#fff;text-shadow:0 3px 14px rgba(0,40,100,.45)}
+.big .t{font-weight:300;font-size:150px;line-height:1;letter-spacing:-6px}
+.glass{position:absolute;left:22px;right:22px;border-radius:24px;background:rgba(255,255,255,.28);backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,.8);
+  box-shadow:inset 0 1px 0 #fff,0 10px 24px rgba(0,50,110,.25);overflow:hidden}
+.glass:before{content:"";position:absolute;left:0;right:0;top:0;height:48%;background:linear-gradient(rgba(255,255,255,.5),rgba(255,255,255,.05))}
+.fc{display:flex;justify-content:space-around;padding:18px 6px;color:#fff;font-size:16px;text-align:center;position:relative;text-shadow:0 1px 4px rgba(0,40,90,.5)}
+.fc div{display:flex;flex-direction:column;align-items:center;gap:8px}
+.dock{position:absolute;left:22px;right:22px;bottom:22px;height:104px;border-radius:30px;background:rgba(255,255,255,.35);backdrop-filter:blur(10px);border:1px solid rgba(255,255,255,.85);display:flex;justify-content:space-around;align-items:center}
+.lbl{position:absolute;font:600 15px NotoSC;color:#fff;background:rgba(5,40,80,.78);padding:6px 12px;border-radius:999px;white-space:nowrap}
+.lbl:before{content:"";position:absolute;width:10px;height:10px;border-radius:50%;background:#8ff0a0;left:-18px;top:11px;box-shadow:0 0 0 3px rgba(143,240,160,.35)}
+</style>
+<svg class="hill" viewBox="0 0 1920 420" preserveAspectRatio="none">
+  <defs><linearGradient id="h" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#b6f75a"/><stop offset=".3" stop-color="#5fd02c"/><stop offset="1" stop-color="#16781a"/></linearGradient>
+  <linearGradient id="hs" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".7"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient></defs>
+  <path d="M0,170 C420,40 900,60 1300,150 C1560,210 1760,120 1920,90 L1920,420 L0,420Z" fill="url(#h)"/>
+  <path d="M60,160 C420,60 860,70 1240,140 C860,90 440,90 80,170Z" fill="url(#hs)"/>
+</svg>
+<svg class="abs" style="left:0;top:0" width="1920" height="700"><path d="M-40,250 C420,90 820,360 1260,220 S1800,60 1980,120" stroke="#fff" stroke-opacity=".5" stroke-width="3" fill="none"/>
+  <path d="M-40,280 C420,120 820,390 1260,250 S1800,90 1980,150" stroke="#9ff6ff" stroke-opacity=".5" stroke-width="10" fill="none" style="filter:blur(5px)"/></svg>
+
+<div class="win" style="left:56px;top:46px;width:1300px;height:990px">
+  <div class="bar"><div class="orb o-blue" style="width:22px;height:22px"></div>clearwater.org — Welcome<div class="ctl"><i></i><i></i><i></i></div></div>
+  <div class="page">
+    <div class="nav"><b><div class="orb o-blue" style="width:40px;height:40px"></div>Clearwater</b><span>Forecast</span><span>Oceans</span><span>Green Living</span><span>Community</span>
+      <div class="gl aqua" style="margin-left:auto;height:44px;padding:0 26px;font-size:17px"><span>Sign in</span></div></div>
+    <div class="hero">
+      <div style="flex:1.15">
+        <div style="font-size:16px;letter-spacing:4px;color:#3aa0dd;font-weight:600">A CLEANER TOMORROW · 2008</div>
+        <h1 style="margin-top:14px">The sky is<br><em>wide open.</em></h1>
+        <p class="lead">Live forecasts, clean-water maps and a community of 2 million people planting one tree at a time.</p>
+        <div style="display:flex;gap:18px">
+          <div class="gl lime" style="height:66px;padding:0 40px;font-size:23px"><span>Get started — it’s free</span></div>
+          <div class="gl aqua" style="height:66px;padding:0 32px;font-size:23px"><span>▶ Watch tour</span></div>
+        </div>
+      </div>
+      <div style="flex:1;position:relative;height:430px">
+        <div class="orb o-blue" style="position:absolute;left:70px;top:10px;width:380px;height:380px"></div>
+        <svg style="position:absolute;left:70px;top:10px" width="380" height="380"><g fill="#c4ff7a" opacity=".9"><path d="M110,120 C150,90 210,100 220,140 C230,190 170,200 150,240 C130,280 90,250 92,210 C94,170 80,140 110,120Z"/><path d="M250,210 C290,200 320,230 300,270 C280,300 240,300 236,262 C232,236 236,214 250,210Z"/></g></svg>
+        <div class="orb o-green" style="position:absolute;left:400px;top:250px;width:120px;height:120px"></div>
+        <div class="orb o-pink" style="position:absolute;left:30px;top:300px;width:70px;height:70px"></div>
+        <div class="orb o-orange" style="position:absolute;left:420px;top:40px;width:56px;height:56px"></div>
+      </div>
+    </div>
+    <div class="tiles">
+      <div class="tile"><div class="orb o-blue" style="width:58px;height:58px;flex:none"></div><div><b>Rain radar</b><span>Updated every 5 min</span></div></div>
+      <div class="tile"><div class="orb o-green" style="width:58px;height:58px;flex:none"></div><div><b>Plant a tree</b><span>1,204,880 so far</span></div></div>
+      <div class="tile"><div class="orb o-orange" style="width:58px;height:58px;flex:none"></div><div><b>UV index</b><span>Moderate · 5</span></div></div>
+    </div>
+  </div>
+</div>
+<div class="recipe"><b>光泽按钮的配方</b><br>
+background: linear-gradient(<i>#7FE6FF</i>, <i>#14A6EA</i> 55%, <i>#0A74C4</i>);<br>
+::before { top:2px; height:<i>50%</i>;<br>&nbsp;&nbsp;background: linear-gradient(<i>#FFF 95%</i>, <i>#FFF 25%</i>) }<br>
+box-shadow: inset 0 -6px 12px <i>rgba(0,30,90,.25)</i>;</div>
+
+<div class="phone"><div class="scr">
+  <svg class="grass" viewBox="0 0 400 200" preserveAspectRatio="none"><path d="M0,70 C120,10 260,20 400,60 L400,200 L0,200Z" fill="url(#h)"/><path d="M20,66 C120,20 250,26 380,56 C250,40 120,40 30,72Z" fill="url(#hs)"/></svg>
+  <div class="st"><span>9:41</span><span>●●● 100%</span></div>
+  <div class="big"><div style="font-size:24px;font-weight:600;letter-spacing:1px">Seattle</div><div class="t">72°</div><div style="font-size:22px">Clear · H 76° L 58°</div></div>
+  <div class="orb o-orange" style="position:absolute;left:300px;top:96px;width:86px;height:86px"></div>
+  <div class="glass" style="top:420px"><div class="fc">
+    <div>Now<div class="orb o-orange" style="width:40px;height:40px"></div>72°</div>
+    <div>1PM<div class="orb o-orange" style="width:40px;height:40px"></div>74°</div>
+    <div>3PM<div class="orb o-blue" style="width:40px;height:40px"></div>73°</div>
+    <div>5PM<div class="orb o-blue" style="width:40px;height:40px"></div>69°</div>
+    <div>7PM<div class="orb o-pink" style="width:40px;height:40px"></div>64°</div></div></div>
+  <div class="glass" style="top:572px;padding:20px 24px;color:#fff;text-shadow:0 1px 4px rgba(0,40,90,.5)">
+    <div style="font-size:18px;font-weight:600;position:relative">Air quality</div>
+    <div style="font-size:34px;font-weight:600;position:relative">Good · 24</div>
+    <div style="position:relative;margin-top:12px;height:16px;border-radius:9px;background:rgba(0,40,90,.25);box-shadow:inset 0 2px 4px rgba(0,30,70,.4)">
+      <div class="gl lime" style="width:34%;height:16px;border:none;box-shadow:none"></div></div></div>
+  <div class="gl aqua" style="position:absolute;left:22px;right:22px;top:736px;height:64px;font-size:21px"><span>Share the sunshine ☀</span></div>
+  <div class="dock"><div class="orb o-blue" style="width:62px;height:62px"></div><div class="orb o-green" style="width:62px;height:62px"></div><div class="orb o-orange" style="width:62px;height:62px"></div><div class="orb o-pink" style="width:62px;height:62px"></div></div>
+</div></div>

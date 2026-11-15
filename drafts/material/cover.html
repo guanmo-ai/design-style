@@ -1,0 +1,73 @@
+<!doctype html><meta charset="utf-8">
+<!-- Material Design · 第 0 帧（1920×1080）：一块界面被拆成几张悬浮的纸，正在升起——
+     卡片刚被按下，波纹从指尖扩开；FAB 升到 24dp，影子最大；左边是 1→24dp 的阴影阶梯。node ../_lib/shot.cjs cover.html png/cover.png -->
+<link rel="stylesheet" href="../_lib/cand_fonts.css">
+<style>
+body{background:#3F51B5;font-family:Roboto,NotoSC,sans-serif;color:#fff;position:relative}
+.abs{position:absolute}
+/* Material 2014 的 z-depth：一层近光（key）+ 一层环境光（ambient），在靛蓝底上加深 */
+.z1{box-shadow:0 2px 4px rgba(0,0,0,.3),0 1px 10px rgba(0,0,0,.18)}
+.z2{box-shadow:0 4px 8px rgba(0,0,0,.32),0 3px 16px rgba(0,0,0,.2)}
+.z3{box-shadow:0 8px 14px rgba(0,0,0,.34),0 10px 30px rgba(0,0,0,.22)}
+.z4{box-shadow:0 14px 22px rgba(0,0,0,.36),0 20px 50px rgba(0,0,0,.26)}
+.z5{box-shadow:0 24px 30px rgba(0,0,0,.38),0 36px 80px rgba(0,0,0,.3)}
+.sheet{position:absolute;border-radius:4px;overflow:hidden}
+.lab{position:absolute;font:500 20px Roboto;color:#C5CAE9;display:flex;align-items:center;gap:12px;white-space:nowrap}
+.lab b{font-weight:700;color:#fff;font-size:26px}
+.lab:before{content:"";display:block;width:34px;height:2px;background:#C5CAE9}
+.row{display:flex;align-items:center;height:92px;padding:0 32px;gap:28px;border-bottom:1px solid #eee;color:#212121;font-size:28px}
+.av{width:56px;height:56px;border-radius:50%;flex:none}
+.ln{height:14px;border-radius:7px;background:#E0E0E0}
+</style>
+<!-- 左：标题 + 阴影阶梯 -->
+<div class="abs" style="left:120px;top:150px;font-weight:500;font-size:26px;letter-spacing:6px;color:#FF80AB">2014 — 今天</div>
+<div class="abs" style="left:112px;top:196px;font-weight:300;font-size:158px;line-height:.98;letter-spacing:-4px">Material<br><span style="font-weight:500">Design</span></div>
+<div class="abs" style="left:122px;top:540px;font-family:NotoSC;font-weight:700;font-size:46px">纸与墨：高度决定阴影</div>
+<div class="abs" style="left:122px;top:610px;font-size:24px;color:#C5CAE9;letter-spacing:.5px">Higher paper, bigger and softer shadow.</div>
+<div class="abs" style="left:122px;top:730px;display:flex;gap:46px;align-items:flex-end">
+  <div style="text-align:center"><div class="z1" style="width:110px;height:110px;background:#fff;border-radius:4px"></div><div style="margin-top:22px;font-size:24px;font-weight:500">1dp</div></div>
+  <div style="text-align:center"><div class="z2" style="width:110px;height:110px;background:#fff;border-radius:4px;transform:translateY(-8px)"></div><div style="margin-top:22px;font-size:24px;font-weight:500">2dp</div></div>
+  <div style="text-align:center"><div class="z3" style="width:110px;height:110px;background:#fff;border-radius:4px;transform:translateY(-18px)"></div><div style="margin-top:22px;font-size:24px;font-weight:500">6dp</div></div>
+  <div style="text-align:center"><div class="z4" style="width:110px;height:110px;background:#fff;border-radius:4px;transform:translateY(-30px)"></div><div style="margin-top:22px;font-size:24px;font-weight:500">12dp</div></div>
+  <div style="text-align:center"><div class="z5" style="width:110px;height:110px;background:#fff;border-radius:4px;transform:translateY(-46px)"></div><div style="margin-top:22px;font-size:24px;font-weight:500">24dp</div></div>
+</div>
+
+<!-- 右：拆开悬浮的界面 -->
+<!-- 0dp：底纸 -->
+<div class="sheet z1" style="left:1010px;top:150px;width:640px;height:820px;background:#FAFAFA">
+  <div style="height:520px"></div>
+  <div class="row"><div class="av" style="background:#4CAF50"></div><div style="flex:1"><div class="ln" style="width:60%"></div><div class="ln" style="width:50%;margin-top:12px;background:#EEE"></div></div></div>
+  <div class="row"><div class="av" style="background:#03A9F4"></div><div style="flex:1"><div class="ln" style="width:76%"></div><div class="ln" style="width:38%;margin-top:12px;background:#EEE"></div></div></div>
+  <div class="row"><div class="av" style="background:#FF5722"></div><div style="flex:1"><div class="ln" style="width:52%"></div><div class="ln" style="width:42%;margin-top:12px;background:#EEE"></div></div></div>
+</div>
+<!-- 4dp：应用栏（往上抬了一点，露出影子） -->
+<div class="sheet z3" style="left:990px;top:110px;width:680px;height:200px;background:#E91E63">
+  <div style="display:flex;align-items:center;gap:30px;padding:34px 36px 0">
+    <svg width="34" height="28"><rect y="0" width="34" height="4" fill="#fff"/><rect y="12" width="34" height="4" fill="#fff"/><rect y="24" width="34" height="4" fill="#fff"/></svg>
+    <div style="font-size:36px;font-weight:500">Inbox</div></div>
+  <div style="position:absolute;left:36px;bottom:24px;font-size:22px;letter-spacing:1px;display:flex;gap:56px;font-weight:500"><span>PRIMARY</span><span style="opacity:.7">SOCIAL</span><span style="opacity:.7">UPDATES</span></div>
+  <div style="position:absolute;left:24px;bottom:0;width:150px;height:6px;background:#FFEB3B"></div>
+</div>
+<!-- 8dp：被按下的卡片，波纹正在扩开 -->
+<div class="sheet z4" style="left:950px;top:400px;width:740px;height:260px;background:#fff">
+  <svg class="abs" style="left:0;top:0" width="780" height="260">
+    <circle cx="470" cy="140" r="330" fill="#3F51B5" opacity=".08"/>
+    <circle cx="470" cy="140" r="200" fill="#3F51B5" opacity=".1"/>
+    <circle cx="470" cy="140" r="38" fill="#3F51B5" opacity=".22"/>
+  </svg>
+  <div style="position:relative;display:flex;gap:30px;padding:36px 40px">
+    <div class="av" style="width:96px;height:96px;background:#7E57C2"></div>
+    <div style="flex:1;color:#212121"><div style="font-size:34px;font-weight:500">Weekend in the hills</div>
+      <div style="font-size:24px;color:#757575;margin-top:10px">Bring a coat — it gets cold after sunset.</div>
+      <div style="display:flex;gap:34px;margin-top:30px;font-size:22px;font-weight:500;color:#E91E63;letter-spacing:1px"><span>REPLY</span><span>ARCHIVE</span></div></div>
+  </div>
+</div>
+<!-- 24dp：FAB -->
+<div class="abs z5" style="left:1500px;top:770px;width:160px;height:160px;border-radius:50%;background:#FFC107;display:flex;align-items:center;justify-content:center">
+  <svg width="64" height="64"><rect x="28" width="8" height="64" fill="#212121"/><rect y="28" width="64" height="8" fill="#212121"/></svg></div>
+<!-- 标注 -->
+<div class="lab" style="left:1684px;top:192px"><b>4dp</b>app bar</div>
+<div class="lab" style="left:1700px;top:512px"><b>8dp</b>pressed</div>
+<div class="lab" style="left:1670px;top:830px;display:none"></div>
+<div class="lab" style="left:1670px;top:836px"><b>24dp</b>FAB</div>
+<div class="lab" style="left:1662px;top:940px"><b>0dp</b>sheet</div>

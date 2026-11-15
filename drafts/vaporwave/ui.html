@@ -1,0 +1,113 @@
+<!doctype html><meta charset="utf-8">
+<!-- 蒸汽波 · 落到网页和手机 App（1920×1080）。node ../_lib/shot.cjs ui.html png/ui.png
+     规则：界面骨架是 Win95（灰、斜面按钮、深蓝渐变标题栏），里面装的是粉紫青的夕阳；英文用全角、配一行日文；
+     透视网格当地面；所有亮色字都带 2—3px 的红青色差。 -->
+<link rel="stylesheet" href="../_lib/cand_fonts.css">
+<style>
+body{font-family:Inter,NotoSC,sans-serif;position:relative;background:linear-gradient(#2b0a57 0%,#7a1fa2 45%,#ff5fae 75%,#ffb36b 100%)}
+.abs{position:absolute}
+.w95{position:absolute;background:#c0c0c0;border:2px solid;border-color:#fff #404040 #404040 #fff;box-shadow:inset -2px -2px 0 #808080,inset 2px 2px 0 #dfdfdf,8px 10px 0 rgba(30,0,60,.35);color:#000}
+.tt{height:34px;margin:4px;background:linear-gradient(90deg,#000080,#1084d0);color:#fff;font-weight:700;font-size:18px;display:flex;align-items:center;padding:0 8px;gap:10px}
+.tt .x{margin-left:auto;display:flex;gap:4px}
+.tt .x i{width:24px;height:22px;background:#c0c0c0;border:2px solid;border-color:#fff #404040 #404040 #fff;display:flex;align-items:center;justify-content:center;font-style:normal;color:#000;font-size:14px;font-weight:700}
+.bev{background:#c0c0c0;border:2px solid;border-color:#fff #404040 #404040 #fff;box-shadow:inset -2px -2px 0 #808080}
+.sunk{border:2px solid;border-color:#808080 #fff #fff #808080;box-shadow:inset 2px 2px 0 #404040}
+.ca{text-shadow:2px 0 0 rgba(255,0,150,.85),-2px 0 0 rgba(0,240,255,.85)}
+.menu{display:flex;gap:22px;padding:4px 14px;font-size:17px}
+.menu span:first-letter{text-decoration:underline}
+.trk{display:flex;align-items:center;gap:16px;padding:10px 16px;font-size:18px;border-bottom:1px solid #d8d8d8}
+.trk.on{background:#000080;color:#fff}
+.trk b{width:36px;font-family:SpaceMono;font-weight:400;opacity:.7}
+.trk em{margin-left:auto;font-style:normal;font-family:SpaceMono}
+.sw{display:flex;flex-direction:column;gap:6px;align-items:center;font:13px SpaceMono}
+.sw i{display:block;width:74px;height:74px;border:2px solid;border-color:#808080 #fff #fff #808080}
+</style>
+<svg class="abs" width="1920" height="1080" style="left:0;top:0">
+  <g stroke="#ff7ce8" stroke-opacity=".55" stroke-width="2" id="g"></g>
+</svg>
+
+<!-- 浏览器窗口 -->
+<div class="w95" style="left:46px;top:38px;width:1290px;height:880px">
+  <div class="tt"><span>◈</span>ｍａｌｌ ｒａｄｉｏ — Web Navigator<div class="x"><i>_</i><i>□</i><i>×</i></div></div>
+  <div class="menu"><span>File</span><span>Edit</span><span>View</span><span>Go</span><span>Bookmarks</span><span>Help</span></div>
+  <div style="display:flex;gap:10px;align-items:center;padding:4px 10px 8px">
+    <span class="bev" style="padding:4px 14px;font-size:16px">◀ Back</span><span class="bev" style="padding:4px 14px;font-size:16px">Fwd ▶</span>
+    <div class="sunk" style="flex:1;background:#fff;padding:5px 10px;font:16px SpaceMono">http://www.mall-radio.net/~aesthetic/index.htm</div></div>
+  <div class="sunk" style="margin:0 8px;height:760px;position:relative;overflow:hidden;background:linear-gradient(#1a0436,#4b0f7a 45%,#ff4fa8 78%,#ffa25e)">
+    <!-- 夕阳 + 网格 -->
+    <svg class="abs" style="left:0;top:0" width="1268" height="760">
+      <defs><linearGradient id="s" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff35c"/><stop offset="1" stop-color="#ff2a8a"/></linearGradient>
+      <clipPath id="sc"><circle cx="940" cy="300" r="210"/></clipPath></defs>
+      <g clip-path="url(#sc)"><rect x="700" y="80" width="480" height="440" fill="url(#s)"/>
+        <g fill="#c4307f"><rect x="700" y="330" width="480" height="7"/><rect x="700" y="365" width="480" height="11"/><rect x="700" y="402" width="480" height="15"/><rect x="700" y="442" width="480" height="20"/></g></g>
+      <rect y="470" width="1268" height="290" fill="#1a0436"/>
+      <g stroke="#00f0ff" stroke-width="2" id="g2"></g>
+    </svg>
+    <div class="abs" style="left:60px;top:70px;font:700 20px SpaceMono;color:#00f0ff;letter-spacing:4px" >ＮＯＷ ＢＲＯＡＤＣＡＳＴＩＮＧ · 24/7</div>
+    <div class="abs ca" style="left:52px;top:110px;font-family:NotoSC;font-weight:900;font-size:108px;line-height:1;color:#fff">ＭＡＬＬ<br>ＲＡＤＩＯ</div>
+    <div class="abs" style="left:60px;top:345px;font-family:NotoSC;font-weight:700;font-size:34px;color:#ffd6f3;letter-spacing:10px">モール・ラジオ　永遠の午後</div>
+    <div class="abs" style="left:60px;top:410px;display:flex;gap:16px">
+      <span class="bev" style="padding:14px 34px;font-size:21px;font-weight:700;outline:1px dotted #000;outline-offset:-7px">▶ Tune in</span>
+      <span class="bev" style="padding:14px 34px;font-size:21px">Guestbook</span></div>
+    <!-- 曲目窗口 -->
+    <div class="w95" style="left:60px;top:500px;width:640px;height:236px;box-shadow:inset -2px -2px 0 #808080,inset 2px 2px 0 #dfdfdf,6px 8px 0 rgba(0,0,0,.35)">
+      <div class="tt" style="height:30px;font-size:16px"><span>♫</span>playlist.m3u<div class="x"><i>×</i></div></div>
+      <div class="sunk" style="margin:2px 8px;background:#fff">
+        <div class="trk"><b>01</b>Ｆｏｏｄ Ｃｏｕｒｔ ９０<em>3:14</em></div>
+        <div class="trk on"><b>02</b>Ｅｓｃａｌａｔｏｒ Ｄｒｅａｍｓ<em>4:02</em></div>
+        <div class="trk"><b>03</b>ｒａｉｎ ｏｎ ｔｈｅ ａｔｒｉｕｍ<em>5:47</em></div>
+        <div class="trk" style="border:none"><b>04</b>ａｆｔｅｒ ｈｏｕｒｓ<em>2:59</em></div></div>
+    </div>
+    <div class="abs" style="right:40px;bottom:30px;font:13px SpaceMono;color:#ffd6f3;text-align:right">Best viewed in 800×600 · <span style="color:#00f0ff">visitors: 0019951</span></div>
+  </div>
+</div>
+
+<!-- 色板窗口（给设计师） -->
+<div class="w95" style="left:46px;top:936px;width:1290px;height:122px;display:flex;align-items:center;gap:22px;padding:0 20px">
+  <div style="font-family:NotoSC;font-weight:900;font-size:22px;line-height:1.3;width:180px">色板<br><span style="font:400 14px SpaceMono">palette.bmp</span></div>
+  <div class="sw"><i style="background:#1A0436"></i></div><div class="sw" style="font-size:14px"><span>#1A0436</span></div>
+  <div class="sw"><i style="background:#7A1FA2"></i></div><div class="sw"><span>#7A1FA2</span></div>
+  <div class="sw"><i style="background:#FF4FA8"></i></div><div class="sw"><span>#FF4FA8</span></div>
+  <div class="sw"><i style="background:#FFF35C"></i></div><div class="sw"><span>#FFF35C</span></div>
+  <div class="sw"><i style="background:#00F0FF"></i></div><div class="sw"><span>#00F0FF</span></div>
+  <div class="sw"><i style="background:#C0C0C0"></i></div><div class="sw"><span>#C0C0C0</span></div>
+</div>
+
+<!-- 手机：磁带播放器 -->
+<div class="abs" style="left:1440px;top:40px;width:430px;height:1000px;border-radius:52px;background:#e8e2f0;padding:14px;box-shadow:10px 14px 0 rgba(30,0,60,.4),inset 0 0 0 3px #b9a7c9">
+ <div style="position:relative;width:100%;height:100%;border-radius:40px;overflow:hidden;background:linear-gradient(#24064a 0%,#6d1a9c 40%,#ff4fa8 72%,#ff9e63 100%)">
+  <svg class="abs" style="left:0;top:0" width="402" height="972"><g stroke="#00f0ff" stroke-opacity=".7" stroke-width="1.6" id="g3"></g></svg>
+  <div class="abs" style="left:30px;right:30px;top:22px;display:flex;justify-content:space-between;color:#fff;font:700 16px SpaceMono"><span>3:14 AM</span><span>▮▮▮</span></div>
+  <div class="abs ca" style="left:0;right:0;top:88px;text-align:center;font-family:NotoSC;font-weight:900;font-size:30px;color:#fff;letter-spacing:1px">ＮＯＷ ＰＬＡＹＩＮＧ</div>
+  <!-- 磁带 -->
+  <div class="bev abs" style="left:34px;top:160px;width:334px;height:220px;border-radius:6px">
+    <div style="margin:14px;height:110px;background:linear-gradient(90deg,#ff4fa8,#ffd35c);border:2px solid #404040;position:relative">
+      <div style="position:absolute;left:12px;top:8px;font:700 15px SpaceMono">SIDE A · 90min</div>
+      <div style="position:absolute;left:54px;right:54px;top:42px;height:52px;background:#1a0436;border-radius:26px;display:flex;justify-content:space-between;align-items:center;padding:0 12px">
+        <i style="width:34px;height:34px;border-radius:50%;background:#fff;border:8px dotted #1a0436;display:block"></i><i style="width:34px;height:34px;border-radius:50%;background:#fff;border:8px dotted #1a0436;display:block"></i></div></div>
+    <div style="margin:0 50px;height:56px;background:#9a9a9a;clip-path:polygon(8% 0,92% 0,100% 100%,0 100%)"></div>
+  </div>
+  <div class="abs" style="left:34px;right:34px;top:396px;color:#fff"><div class="ca" style="font-family:NotoSC;font-weight:900;font-size:30px;line-height:1.2">Ｅｓｃａｌａｔｏｒ<br>Ｄｒｅａｍｓ</div>
+    <div style="font-family:NotoSC;font-size:18px;color:#ffd6f3;margin-top:6px">エスカレーターの夢</div></div>
+  <div class="abs sunk" style="left:34px;right:34px;top:510px;height:26px;background:#fff;padding:3px;display:flex;gap:3px">
+    <i style="width:18px;background:#000080"></i><i style="width:18px;background:#000080"></i><i style="width:18px;background:#000080"></i><i style="width:18px;background:#000080"></i><i style="width:18px;background:#000080"></i><i style="width:18px;background:#000080"></i><i style="width:18px;background:#000080"></i><i style="width:18px;background:#000080"></i></div>
+  <div class="abs" style="left:34px;right:34px;top:546px;display:flex;justify-content:space-between;color:#fff;font:15px SpaceMono"><span>1:53</span><span>4:02</span></div>
+  <div class="abs" style="left:34px;right:34px;top:600px;display:flex;justify-content:space-between">
+    <span class="bev" style="width:96px;height:72px;display:flex;align-items:center;justify-content:center;font-size:26px">◀◀</span>
+    <span class="bev" style="width:96px;height:72px;display:flex;align-items:center;justify-content:center;font-size:26px;outline:1px dotted #000;outline-offset:-8px">▮▮</span>
+    <span class="bev" style="width:96px;height:72px;display:flex;align-items:center;justify-content:center;font-size:26px">▶▶</span></div>
+  <div class="w95 abs" style="left:34px;right:34px;top:712px;height:150px;box-shadow:inset -2px -2px 0 #808080,inset 2px 2px 0 #dfdfdf">
+    <div class="tt" style="height:28px;font-size:15px">EQ.exe<div class="x"><i>×</i></div></div>
+    <div style="display:flex;align-items:flex-end;justify-content:space-around;height:96px;padding:6px 14px">
+      <i style="width:22px;height:40%;background:linear-gradient(#00f0ff,#ff4fa8)"></i><i style="width:22px;height:70%;background:linear-gradient(#00f0ff,#ff4fa8)"></i><i style="width:22px;height:92%;background:linear-gradient(#00f0ff,#ff4fa8)"></i><i style="width:22px;height:60%;background:linear-gradient(#00f0ff,#ff4fa8)"></i><i style="width:22px;height:78%;background:linear-gradient(#00f0ff,#ff4fa8)"></i><i style="width:22px;height:45%;background:linear-gradient(#00f0ff,#ff4fa8)"></i><i style="width:22px;height:30%;background:linear-gradient(#00f0ff,#ff4fa8)"></i><i style="width:22px;height:55%;background:linear-gradient(#00f0ff,#ff4fa8)"></i></div></div>
+ </div>
+</div>
+<script>
+const NS='http://www.w3.org/2000/svg';
+function grid(id,W,top,bottom,vx,n,sp,rows,phase){const g=document.getElementById(id);const L=(a,b,c,d,o)=>{const l=document.createElementNS(NS,'line');l.setAttribute('x1',a);l.setAttribute('y1',b);l.setAttribute('x2',c);l.setAttribute('y2',d);if(o!=null)l.setAttribute('stroke-opacity',o);g.appendChild(l)};
+ for(let i=-n;i<=n;i++)L(vx+i*sp*.06,top,vx+i*sp,bottom);
+ for(let k=0;k<rows;k++){const d=.6+k-phase;const y=top+(bottom-top)*.86/d;if(y>top+2&&y<bottom)L(0,y,W,y,Math.min(1,(y-top)/40))}}
+grid('g',1920,760,1080,960,26,140,20,.4);
+grid('g2',1268,470,760,940,20,120,16,.3);
+grid('g3',402,860,972,201,10,70,10,.5);
+</script>
