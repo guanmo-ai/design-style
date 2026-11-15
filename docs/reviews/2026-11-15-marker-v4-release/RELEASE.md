@@ -23,4 +23,16 @@
 - [Release day-27](https://github.com/guanmo-ai/design-style/releases/tag/day-27) 已于 `2026-11-15T14:33:50Z` 发布；标签源码为 `cc32c8ed9fe85ce402fc1f17270bda39c4cc78e4`。
 - 远端附件大小与 SHA-256 digest 与原片一致；附件包括 `027-marker.mp4` 与 `SHA256SUMS`。
 - 条目从 pending 移入 `works.json`，记录真实 Release 发布时间；网站期号「风格 020」。
-- 本地完整播放结束、语言切换与英文指南已检查；主干部署结果待补记。
+- 本地完整播放结束、语言切换与英文指南已检查；主干部署结果见下。
+
+
+## 主干与线上验收
+
+- 上架提交：`0c1ccc230dc0e5f2ae7b6d4e0992ba46f45289d5`，已推送 `main`。
+- [Pages 构建与部署](https://github.com/guanmo-ai/design-style/actions/runs/43725194920)成功；[主干 CI](https://github.com/guanmo-ai/design-style/actions/runs/43725194952)成功。
+- [正式画廊](https://guanmo-ai.github.io/design-style/?lang=zh#work-027-marker)显示 23 项作品，马克笔为「风格 020」。
+- 完整读取线上视频并计算 SHA-256，21,575,438 字节，与已审 v4、Release digest、本地构建一致。HTTP Range 返回 `206`，64 字节的范围读取正常。
+- 四个中英文阅读页、四张 SVG、封面均 HTTP 200，字节与已通过检查的构建一致。
+- 独立内置浏览器实际播放到 19.333 秒结束，1920×1080，无媒体错误；四张图解加载完成，中英文切换保留当前影片。浏览器检查时没有控制台错误或警告。
+- 原主工作区已同步上架提交；其原有 7 个修改文件与全部未跟踪文件保留，README 拼图和 Cormorant Garamond 字体下载的本地改动与上游新增内容合并后保留。没有将这些其他改动发布。
+- 线上核验播放行为、成片规格与画廊资源。
