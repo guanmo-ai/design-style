@@ -7,6 +7,11 @@
 <table>
   <tr>
     <td align="center" valign="top" width="33%">
+      <a href="https://guanmo-ai.github.io/design-style/?lang=zh#work-027-marker"><img src="styles/027-marker/video/cover.jpg" width="240" alt="马克笔手绘 视频封面" /></a><br />
+      <a href="https://guanmo-ai.github.io/design-style/?lang=zh#work-027-marker"><b>马克笔手绘</b></a><br />
+      <sub>Marker Illustration · 19.333333333333332 秒</sub>
+    </td>
+    <td align="center" valign="top" width="33%">
       <a href="https://guanmo-ai.github.io/design-style/?lang=zh#work-026-art-nouveau"><img src="styles/026-art-nouveau/video/cover.jpg" width="240" alt="新艺术运动 视频封面" /></a><br />
       <a href="https://guanmo-ai.github.io/design-style/?lang=zh#work-026-art-nouveau"><b>新艺术运动</b></a><br />
       <sub>Art Nouveau · 21 秒</sub>
@@ -16,13 +21,13 @@
       <a href="https://guanmo-ai.github.io/design-style/?lang=zh#work-025-plush"><b>毛绒</b></a><br />
       <sub>Plush · 20 秒</sub>
     </td>
+  </tr>
+  <tr>
     <td align="center" valign="top" width="33%">
       <a href="https://guanmo-ai.github.io/design-style/?lang=zh#work-999-style-overview"><img src="promo/cover.jpg" width="240" alt="风格汇总 视频封面" /></a><br />
       <a href="https://guanmo-ai.github.io/design-style/?lang=zh#work-999-style-overview"><b>风格汇总</b></a><br />
       <sub>Style Overview · 15 秒</sub>
     </td>
-  </tr>
-  <tr>
     <td align="center" valign="top" width="33%">
       <a href="https://guanmo-ai.github.io/design-style/?lang=zh#work-024-ink-wash"><img src="styles/024-ink-wash/video/cover.jpg" width="240" alt="水墨 视频封面" /></a><br />
       <a href="https://guanmo-ai.github.io/design-style/?lang=zh#work-024-ink-wash"><b>水墨</b></a><br />
@@ -33,13 +38,13 @@
       <a href="https://guanmo-ai.github.io/design-style/?lang=zh#work-023-liquid-chrome"><b>液态金属</b></a><br />
       <sub>Liquid Chrome · 18 秒</sub>
     </td>
+  </tr>
+  <tr>
     <td align="center" valign="top" width="33%">
       <a href="https://guanmo-ai.github.io/design-style/?lang=zh#work-022-point-cloud"><img src="styles/022-point-cloud/video/cover.jpg" width="240" alt="点云 视频封面" /></a><br />
       <a href="https://guanmo-ai.github.io/design-style/?lang=zh#work-022-point-cloud"><b>点云</b></a><br />
       <sub>Point Cloud · 19.5 秒</sub>
     </td>
-  </tr>
-  <tr>
     <td align="center" valign="top" width="33%">
       <a href="https://guanmo-ai.github.io/design-style/?lang=zh#work-021-generative-art"><img src="styles/021-generative-art/video/cover.jpg" width="240" alt="生成艺术 视频封面" /></a><br />
       <a href="https://guanmo-ai.github.io/design-style/?lang=zh#work-021-generative-art"><b>生成艺术</b></a><br />
@@ -50,13 +55,13 @@
       <a href="https://guanmo-ai.github.io/design-style/?lang=zh#work-020-ascii-art"><b>字符画</b></a><br />
       <sub>ASCII Art · 18 秒</sub>
     </td>
+  </tr>
+  <tr>
     <td align="center" valign="top" width="33%">
       <a href="https://guanmo-ai.github.io/design-style/?lang=zh#work-017-mid-century-modern"><img src="styles/017-mid-century-modern/video/cover.jpg" width="240" alt="中世纪现代 视频封面" /></a><br />
       <a href="https://guanmo-ai.github.io/design-style/?lang=zh#work-017-mid-century-modern"><b>中世纪现代</b></a><br />
       <sub>Mid-Century Modern · 15 秒</sub>
     </td>
-  </tr>
-  <tr>
     <td align="center" valign="top" width="33%">
       <a href="https://guanmo-ai.github.io/design-style/?lang=zh#work-018-diorama"><img src="styles/018-diorama/video/cover.jpg" width="240" alt="微缩景观 视频封面" /></a><br />
       <a href="https://guanmo-ai.github.io/design-style/?lang=zh#work-018-diorama"><b>微缩景观</b></a><br />
@@ -67,13 +72,13 @@
       <a href="https://guanmo-ai.github.io/design-style/?lang=zh#work-019-low-poly"><b>低多边形</b></a><br />
       <sub>Low Poly · 20 秒</sub>
     </td>
+  </tr>
+  <tr>
     <td align="center" valign="top" width="33%">
       <a href="https://guanmo-ai.github.io/design-style/?lang=zh#work-014-liquid-glass"><img src="styles/014-liquid-glass/video/cover.jpg" width="240" alt="液态玻璃 视频封面" /></a><br />
       <a href="https://guanmo-ai.github.io/design-style/?lang=zh#work-014-liquid-glass"><b>液态玻璃</b></a><br />
       <sub>Liquid Glass · 20 秒</sub>
     </td>
-  </tr>
-  <tr>
     <td align="center" valign="top" width="33%">
       <a href="https://guanmo-ai.github.io/design-style/?lang=zh#work-013-art-deco"><img src="styles/013-art-deco/video/cover.jpg" width="240" alt="装饰艺术 视频封面" /></a><br />
       <a href="https://guanmo-ai.github.io/design-style/?lang=zh#work-013-art-deco"><b>装饰艺术</b></a><br />
@@ -84,13 +89,13 @@
       <a href="https://guanmo-ai.github.io/design-style/?lang=zh#work-009-neo-brutalism"><b>新粗野主义</b></a><br />
       <sub>Neo-Brutalism · 20 秒</sub>
     </td>
+  </tr>
+  <tr>
     <td align="center" valign="top" width="33%">
       <a href="https://guanmo-ai.github.io/design-style/?lang=zh#work-008-risograph"><img src="styles/008-risograph/video/cover.jpg" width="240" alt="孔版印刷 视频封面" /></a><br />
       <a href="https://guanmo-ai.github.io/design-style/?lang=zh#work-008-risograph"><b>孔版印刷</b></a><br />
       <sub>Risograph · 15 秒</sub>
     </td>
-  </tr>
-  <tr>
     <td align="center" valign="top" width="33%">
       <a href="https://guanmo-ai.github.io/design-style/?lang=zh#work-005-pop-art"><img src="styles/005-pop-art/video/cover.jpg" width="240" alt="波普艺术 视频封面" /></a><br />
       <a href="https://guanmo-ai.github.io/design-style/?lang=zh#work-005-pop-art"><b>波普艺术</b></a><br />
@@ -101,13 +106,13 @@
       <a href="https://guanmo-ai.github.io/design-style/?lang=zh#work-004-memphis"><b>孟菲斯</b></a><br />
       <sub>Memphis · 15 秒</sub>
     </td>
+  </tr>
+  <tr>
     <td align="center" valign="top" width="33%">
       <a href="https://guanmo-ai.github.io/design-style/?lang=zh#work-003-constructivism"><img src="styles/003-constructivism/video/cover.jpg" width="240" alt="构成主义 视频封面" /></a><br />
       <a href="https://guanmo-ai.github.io/design-style/?lang=zh#work-003-constructivism"><b>构成主义</b></a><br />
       <sub>Constructivism · 15 秒</sub>
     </td>
-  </tr>
-  <tr>
     <td align="center" valign="top" width="33%">
       <a href="https://guanmo-ai.github.io/design-style/?lang=zh#work-02-masonry"><img src="layouts/02-masonry/video/cover.jpg" width="240" alt="瀑布流布局 视频封面" /></a><br />
       <a href="https://guanmo-ai.github.io/design-style/?lang=zh#work-02-masonry"><b>瀑布流布局</b></a><br />
@@ -118,13 +123,13 @@
       <a href="https://guanmo-ai.github.io/design-style/?lang=zh#work-002-swiss-style"><b>瑞士国际主义</b></a><br />
       <sub>Swiss Style · 15 秒</sub>
     </td>
+  </tr>
+  <tr>
     <td align="center" valign="top" width="33%">
       <a href="https://guanmo-ai.github.io/design-style/?lang=zh#work-01-bento-grid"><img src="layouts/01-bento-grid/video/cover.jpg" width="240" alt="便当盒布局 视频封面" /></a><br />
       <a href="https://guanmo-ai.github.io/design-style/?lang=zh#work-01-bento-grid"><b>便当盒布局</b></a><br />
       <sub>Bento Grid · 15 秒</sub>
     </td>
-  </tr>
-  <tr>
     <td align="center" valign="top" width="33%">
       <a href="https://guanmo-ai.github.io/design-style/?lang=zh#work-001-bauhaus"><img src="styles/001-bauhaus/video/cover.jpg" width="240" alt="包豪斯 视频封面" /></a><br />
       <a href="https://guanmo-ai.github.io/design-style/?lang=zh#work-001-bauhaus"><b>包豪斯</b></a><br />
@@ -191,6 +196,7 @@ by 观默 [@guanmo_ai](https://x.com/guanmo_ai)
 | **021** | [**生成艺术 Generative Art**](styles/021-generative-art) | 1960s—今天 | 不画画，写规则：从流场与种子，到手机上的头像、封面和票券 | [🎬 视频](https://github.com/guanmo-ai/design-style/releases/tag/day-21) · [🛠 过程](styles/021-generative-art/PROCESS.md) |
 | **025** | [**毛绒 Plush**](styles/025-plush) | 2026 | 同一批四十万根毛，从毛球接力到泰迪熊与界面，身体先动、毛晚半拍 | [🎬 视频](https://github.com/guanmo-ai/design-style/releases/tag/day-25) · [🛠 过程](styles/025-plush/PROCESS.md) |
 | **026** | [**新艺术运动 Art Nouveau**](styles/026-art-nouveau) | 1890—1910 | 一根鞭线长成光环、地铁口、台灯与手机界面，21 秒绕回原点 | [🎬 视频](https://github.com/guanmo-ai/design-style/releases/tag/day-26) · [🛠 过程](styles/026-art-nouveau/PROCESS.md) |
+| **027** | [**马克笔手绘 Marker**](styles/027-marker) | 当代 | 六个场景用巨笔接力，汽车开走、球鞋翻转、建筑亮灯，手绘走进官网、App 与海报 | [🎬 视频](https://github.com/guanmo-ai/design-style/releases/tag/day-27) · [🛠 过程](styles/027-marker/PROCESS.md) |
 
 ### 布局方式 · Layout
 
@@ -313,4 +319,4 @@ design-style/
 ## 授权
 
 代码欢迎学习和改造；转发视频和图片请注明出处 **观默 @guanmo_ai**。
-字体 Jost、JetBrains Mono、Inter、Geist Mono、Selawik、Instrument Serif、Noto Sans SC、Oswald、Fredoka、Bangers、Unbounded、Michroma、Silkscreen、Archivo、Space Mono、Space Grotesk 均为 SIL Open Font License 1.1；TeX Gyre Heros 为 GUST Font License；Tinos 为 Apache License 2.0。
+字体 Jost、JetBrains Mono、Inter、Geist Mono、Selawik、Instrument Serif、Noto Sans SC、Oswald、Fredoka、Bangers、Unbounded、Michroma、Silkscreen、Archivo、Space Mono、Space Grotesk、Caveat、Long Cang 均为 SIL Open Font License 1.1；TeX Gyre Heros 为 GUST Font License；Tinos、Permanent Marker 为 Apache License 2.0。
