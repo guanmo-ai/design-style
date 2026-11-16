@@ -8,7 +8,7 @@ html,body{margin:0;width:1920px;height:1080px;overflow:hidden;background:#000;co
 img{position:absolute;inset:0;width:1920px;height:1080px}
 .a{position:absolute}
 </style>
-<img src="png/light.png">
+<img src="png/" id="im"><script>document.getElementById("im").src = "png/" + (new URLSearchParams(location.search).get("img") || "light.png");</script>
 <div class="a" style="left:96px;top:58px;font-family:GM;font-size:14px;letter-spacing:.42em;opacity:.5">STUDY Nº 01</div>
 <div class="a" style="right:96px;top:58px;font-family:GM;font-size:14px;letter-spacing:.42em;opacity:.5">GLASS · DISPERSION · 28°</div>
 <div class="a" style="left:0;right:0;bottom:44px;text-align:center">
