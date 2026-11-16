@@ -1,0 +1,145 @@
+<!doctype html>
+<!-- 工业功能主义 · 第 0 帧（1920×1080）
+     一台原创的小机器（俯视）。大旋钮正转过一格：指针拖着残影，冲过头 4%，下一帧会“咔”地回到刻度上。
+     这一期的物理：档位（detent）——任何东西停下来，都停在一格上。
+     node ../_lib/shot-gl.cjs cover.html png/cover.png 1920 1080 2 -->
+<html><head><meta charset="utf-8">
+<style>
+@font-face{font-family:NSB;src:url(../../public/fonts/NotoSansSC-Black.otf)}
+@font-face{font-family:NSM;src:url(../../public/fonts/NotoSansSC-Medium.otf)}
+@font-face{font-family:Int;src:url(../../public/fonts/InterDisplay-SemiBold.ttf)}
+@font-face{font-family:IntM;src:url(../../public/fonts/Inter-Medium.ttf)}
+@font-face{font-family:GM;src:url(../../public/fonts/GeistMono.ttf)}
+@font-face{font-family:Pix;src:url(../../public/fonts/Silkscreen-Regular.ttf)}
+html,body{margin:0;width:1920px;height:1080px;overflow:hidden;background:#C8CCD0}
+canvas{position:absolute;left:0;top:0;width:1920px;height:1080px}
+</style></head><body><canvas id="c" width="3840" height="2160"></canvas>
+<script>
+(async()=>{
+await Promise.all(['40px NSB','20px NSM','20px Int','20px IntM','20px GM','20px Pix'].map(f=>document.fonts.load(f)));
+const cv=document.getElementById('c'), x=cv.getContext('2d'); x.scale(2,2);
+const W=1920,H=1080;
+const ORA='#FF5B14', INK='#1A1A1A', PANEL='#E6E3DC';
+const lg=(x0,y0,x1,y1,st)=>{const g=x.createLinearGradient(x0,y0,x1,y1);st.forEach(([o,c])=>g.addColorStop(o,c));return g};
+const rg=(x0,y0,r0,x1,y1,r1,st)=>{const g=x.createRadialGradient(x0,y0,r0,x1,y1,r1);st.forEach(([o,c])=>g.addColorStop(o,c));return g};
+const rr=(X,Y,w,h,r)=>{x.beginPath();x.roundRect(X,Y,w,h,r)};
+
+// 台面
+x.fillStyle=lg(0,0,0,H,[[0,'#D3D6D9'],[1,'#B9BDC2']]); x.fillRect(0,0,W,H);
+// 机身
+const DX=150,DY=190,DW=1620,DH=740;
+x.save(); x.shadowColor='rgba(40,45,55,.38)'; x.shadowBlur=70; x.shadowOffsetY=36; rr(DX,DY,DW,DH,34); x.fillStyle=PANEL; x.fill(); x.restore();
+x.save(); rr(DX,DY,DW,DH,34); x.clip();
+x.fillStyle=lg(DX,DY,DX,DY+DH,[[0,'#EEECE6'],[1,'#DCD8D0']]); x.fillRect(DX,DY,DW,DH);
+// 拉丝：细横线噪声
+for(let i=0;i<1400;i++){const yy=DY+Math.random()*DH, xx=DX+Math.random()*DW, l=60+Math.random()*260; x.strokeStyle=`rgba(${Math.random()<.5?255:120},${Math.random()<.5?255:120},${Math.random()<.5?255:120},.05)`; x.lineWidth=.6; x.beginPath(); x.moveTo(xx,yy); x.lineTo(xx+l,yy); x.stroke();}
+x.restore();
+// 顶边高光、底边暗线
+x.strokeStyle='rgba(255,255,255,.9)'; x.lineWidth=2; x.beginPath(); x.moveTo(DX+30,DY+1.5); x.lineTo(DX+DW-30,DY+1.5); x.stroke();
+x.strokeStyle='rgba(0,0,0,.18)'; x.beginPath(); x.moveTo(DX+30,DY+DH-1); x.lineTo(DX+DW-30,DY+DH-1); x.stroke();
+// 螺丝
+const screw=(sx,sy)=>{x.fillStyle=rg(sx-2,sy-2,0,sx,sy,9,[[0,'#F4F2EE'],[1,'#A9A59D']]); x.beginPath(); x.arc(sx,sy,9,0,7); x.fill();
+  x.strokeStyle='rgba(0,0,0,.35)'; x.lineWidth=1.6; x.beginPath(); x.moveTo(sx-5,sy+3); x.lineTo(sx+5,sy-3); x.stroke();};
+[[DX+30,DY+30],[DX+DW-30,DY+30],[DX+30,DY+DH-30],[DX+DW-30,DY+DH-30]].forEach(p=>screw(...p));
+// 丝印小字
+const silk=(t,X,Y,al='left',sz=13,c='#55524C')=>{x.font=`${sz}px IntM`; x.fillStyle=c; x.textAlign=al; x.letterSpacing='1.5px'; x.fillText(t,X,Y); x.letterSpacing='0px';};
+
+// ---------- 点阵屏 ----------
+const SX=DX+70, SY=DY+70, SW=820, SH=330;
+x.save(); x.shadowColor='rgba(255,255,255,.8)'; x.shadowOffsetY=2; rr(SX-6,SY-6,SW+12,SH+12,16); x.fillStyle='#BDB9B1'; x.fill(); x.restore();
+rr(SX,SY,SW,SH,12); x.fillStyle=lg(SX,SY,SX,SY+SH,[[0,'#151515'],[1,'#0B0B0B']]); x.fill();
+// 文字 → 点阵：先在小画布上写字，再按格子取样
+function dots(text,font,ox,oy,cols,rows,pitch,color,dim){
+  const c=document.createElement('canvas'); c.width=cols; c.height=rows; const g=c.getContext('2d');
+  g.fillStyle='#000'; g.fillRect(0,0,cols,rows); g.fillStyle='#fff'; g.font=font; g.textBaseline='middle'; g.fillText(text,0,rows/2+1);
+  const d=g.getImageData(0,0,cols,rows).data;
+  for(let j=0;j<rows;j++)for(let i=0;i<cols;i++){
+    const on=d[(j*cols+i)*4]>110, cx=ox+i*pitch+pitch/2, cy=oy+j*pitch+pitch/2;
+    if(on){ x.save(); x.shadowColor=color; x.shadowBlur=pitch*1.4; x.fillStyle=color; x.beginPath(); x.arc(cx,cy,pitch*.36,0,7); x.fill(); x.restore(); }
+    else if(dim){ x.fillStyle='rgba(255,255,255,.045)'; x.beginPath(); x.arc(cx,cy,pitch*.3,0,7); x.fill(); }
+  }
+}
+dots('工业功能主义','bold 30px NSB',SX+26,SY+26,190,36,4,ORA,true);
+dots('LESS, BUT BETTER','8px Pix',SX+26,SY+192,128,11,6,'#FFD9C2',true);
+// 屏右下：一排电平（也是一格一格）
+for(let i=0;i<24;i++){const on=i<15; x.fillStyle=on?(i>11?ORA:'#FFD9C2'):'rgba(255,255,255,.06)'; x.fillRect(SX+26+i*32,SY+282,24,14);}
+silk('DISPLAY · 192 × 48',SX,SY+SH+32);
+silk('A',SX+SW-60,SY+SH+32); silk('B',SX+SW-30,SY+SH+32);
+
+// ---------- 键盘：4 × 2 ----------
+function key(kx,ky,s,col,label,pressed,lab2){
+  const d=pressed?2:7;
+  x.save(); x.shadowColor='rgba(40,35,30,.35)'; x.shadowBlur=pressed?6:16; x.shadowOffsetY=pressed?2:8;
+  rr(kx,ky+(pressed?5:0),s,s,s*.5); x.fillStyle=col; x.fill(); x.restore();
+  rr(kx,ky+(pressed?5:0),s,s,s*.5); x.fillStyle=rg(kx+s*.35,ky+s*.3,0,kx+s*.5,ky+s*.5,s*.75,[[0,'rgba(255,255,255,.28)'],[.6,'rgba(255,255,255,0)'],[1,'rgba(0,0,0,.12)']]); x.fill();
+  if(label){x.font=`${s*.26}px Int`; x.fillStyle=col===PANEL||col==='#F2F0EB'?INK:'#fff'; x.textAlign='center'; x.textBaseline='middle'; x.fillText(label,kx+s/2,ky+s/2+(pressed?5:0)); x.textBaseline='alphabetic';}
+  if(lab2) silk(lab2,kx+s/2,ky+s+30,'center',12);
+}
+const KX=SX, KY=SY+SH+70, KS=104, KG=34;
+const keys=[['#F2F0EB','1'],['#F2F0EB','2'],['#F2F0EB','3'],[INK,'●'],['#F2F0EB','4'],['#F2F0EB','5'],[ORA,'▶',1],['#9A968E','■']];
+keys.forEach(([c,l,p],i)=>key(KX+(i%4)*(KS+KG)+ (i>=4?0:0),KY+Math.floor(i/4)*(KS+KG),KS,c,l,!!p));
+
+// ---------- 推子 ----------
+const FX=KX+4*(KS+KG)+40, FY=KY-4, FH=KS*2+KG+8;
+rr(FX-5,FY,10,FH,5); x.fillStyle='#1E1E1E'; x.fill();
+for(let i=0;i<=10;i++){const yy=FY+i*FH/10; x.fillStyle='#6E6A63'; x.fillRect(FX+18,yy-1,i%5?10:18,2);} 
+const FP=FY+FH*.3;
+x.save(); x.shadowColor='rgba(0,0,0,.35)'; x.shadowBlur=12; x.shadowOffsetY=6; rr(FX-30,FP-18,60,36,8); x.fillStyle='#F2F0EB'; x.fill(); x.restore();
+x.fillStyle=ORA; x.fillRect(FX-24,FP-1.5,48,3);
+silk('LEVEL',FX,FY+FH+34,'center',12);
+
+// ---------- 大旋钮 ----------
+const KCX=DX+DW-300, KCY=DY+DH/2+10, KR=170;
+// 刻度环：0—11，30° 一格（只在 -135°..+135° 之间）
+const N=12, A0=-225*Math.PI/180, A1=45*Math.PI/180; // 从左下到右下，顺时针
+const angOf=i=>A0+(A1-A0)*i/(N-1);
+for(let i=0;i<N;i++){const a=angOf(i), r1=KR+30, r2=KR+(i%5==0?62:50);
+  x.strokeStyle=i===7?ORA:'#55524C'; x.lineWidth=i===7?5:3; x.lineCap='round';
+  x.beginPath(); x.moveTo(KCX+Math.cos(a)*r1,KCY+Math.sin(a)*r1); x.lineTo(KCX+Math.cos(a)*r2,KCY+Math.sin(a)*r2); x.stroke();
+  x.font='16px IntM'; x.fillStyle=i===7?ORA:'#55524C'; x.textAlign='center'; x.textBaseline='middle';
+  x.fillText(String(i),KCX+Math.cos(a)*(KR+88),KCY+Math.sin(a)*(KR+88));}
+x.textBaseline='alphabetic';
+// 底座阴影 + 本体
+x.save(); x.shadowColor='rgba(60,25,5,.45)'; x.shadowBlur=50; x.shadowOffsetY=28; x.beginPath(); x.arc(KCX,KCY,KR,0,7); x.fillStyle=ORA; x.fill(); x.restore();
+x.fillStyle=rg(KCX-KR*.35,KCY-KR*.4,KR*.05,KCX,KCY,KR,[[0,'#FF9A5C'],[.55,'#FF5B14'],[1,'#D63E05']]); x.beginPath(); x.arc(KCX,KCY,KR,0,7); x.fill();
+// 侧面滚花：一圈细槽
+for(let i=0;i<120;i++){const a=i/120*Math.PI*2; x.strokeStyle=`rgba(${i%2?'120,30,0,.28':'255,190,150,.25'})`; x.lineWidth=2;
+  x.beginPath(); x.moveTo(KCX+Math.cos(a)*(KR-14),KCY+Math.sin(a)*(KR-14)); x.lineTo(KCX+Math.cos(a)*KR,KCY+Math.sin(a)*KR); x.stroke();}
+// 顶面（略小的平面，带一点凹）
+x.fillStyle=rg(KCX+30,KCY+40,10,KCX,KCY,KR-18,[[0,'#FF6A26'],[.8,'#FF5B14'],[1,'#F0520F']]); x.beginPath(); x.arc(KCX,KCY,KR-18,0,7); x.fill();
+x.fillStyle=lg(0,KCY-KR,0,KCY+KR,[[0,'rgba(255,255,255,.22)'],[.5,'rgba(255,255,255,0)']]); x.beginPath(); x.arc(KCX,KCY,KR-18,0,7); x.fill();
+// 指针：从第 6 格转到第 7 格，冲过头 4%（残影 = 运动模糊）
+const aFrom=angOf(6), aTo=angOf(7), aNow=aTo+(aTo-aFrom)*.04*4; // 画面里把过冲放大一点，看得见
+for(let k=10;k>=0;k--){const a=aNow-(aNow-aFrom)*k/10*.85; const al=k===0?1:.1*(1-k/11);
+  x.strokeStyle=`rgba(255,255,255,${al})`; x.lineWidth=14; x.lineCap='round';
+  x.beginPath(); x.moveTo(KCX+Math.cos(a)*(KR*.38),KCY+Math.sin(a)*(KR*.38)); x.lineTo(KCX+Math.cos(a)*(KR-44),KCY+Math.sin(a)*(KR-44)); x.stroke();}
+// 档位“咔”：刻度外的一圈小冲击线
+x.strokeStyle=ORA; x.lineWidth=3; x.lineCap='round';
+for(const da of [-.14,0,.14]){const a=aTo+da, r1=KR+108, r2=KR+(da?124:132); x.beginPath(); x.moveTo(KCX+Math.cos(a)*r1,KCY+Math.sin(a)*r1); x.lineTo(KCX+Math.cos(a)*r2,KCY+Math.sin(a)*r2); x.stroke();}
+silk('TEMPO',KCX,KCY+KR+100,'center',13);
+
+// 喇叭孔（左上角那块屏旁边的小网格）
+const GX=SX+SW+44, GY=SY+SH+70;
+for(let j=0;j<10;j++)for(let i=0;i<6;i++){x.fillStyle='#2A2825'; x.beginPath(); x.arc(GX+i*22,GY+j*22,5.2,0,7); x.fill();
+  x.fillStyle='rgba(255,255,255,.55)'; x.beginPath(); x.arc(GX+i*22,GY+j*22+5.6,3,0,Math.PI); x.fill();}
+// 拨动开关（放在屏的右上角外侧）
+const TX=SX+SW+66, TY=SY+30;
+rr(TX,TY,130,46,23); x.fillStyle='#2A2825'; x.fill();
+x.save(); x.shadowColor='rgba(0,0,0,.4)'; x.shadowBlur=8; x.shadowOffsetY=3; x.beginPath(); x.arc(TX+107,TY+23,19,0,7); x.fillStyle='#F2F0EB'; x.fill(); x.restore();
+silk('OFF',TX,TY+74,'left',12); silk('ON',TX+130,TY+74,'right',12,ORA); silk('POWER',TX,TY-14,'left',12);
+
+// ---------- 文字层 ----------
+x.textAlign='left'; x.font='22px GM'; x.fillStyle=INK; x.letterSpacing='2px';
+x.fillText('风格 · FUNCTIONALISM',56,62); x.textAlign='right'; x.fillText('1955 — 今天',1864,62); x.letterSpacing='0px';
+x.fillStyle='rgba(0,0,0,.15)'; x.fillRect(1644,80,220,4); x.fillStyle=ORA; x.fillRect(1644,80,9,4);
+x.textAlign='left'; x.font='40px NSB'; x.fillStyle=INK; x.fillText('少，但更好：每个动作都停在一格上',56,140);
+// 标注
+const tag=(ax,ay,tx,ty,t1,t2,al='left')=>{x.strokeStyle=INK; x.lineWidth=1.3; x.beginPath(); x.moveTo(ax,ay); x.lineTo(tx,ty); x.stroke();
+  x.fillStyle=INK; x.beginPath(); x.arc(ax,ay,3.5,0,7); x.fill(); x.textAlign=al; const o=al==='left'?8:-8;
+  x.font='19px NSM'; x.fillText(t1,tx+o,ty-6); x.font='15px GM'; x.fillStyle='#4A4741'; x.fillText(t2,tx+o,ty+16);};
+tag(KCX+Math.cos(aNow)*(KR+136),KCY+Math.sin(aNow)*(KR+136),1864,150,'一格 24.5° · 冲过头 4% · 再咔回来','detent spring k=900 · ζ=0.55','right');
+tag(KX+2*(KS+KG)+KS/2,KY+KS+KG+KS+12,700,1000,'按下 5px · 60ms · 一声','press = one sound','left');
+tag(KCX-KR*.62,KCY-KR*.62,1180,160,'全机只有一个强调色','#FF5B14 · 其余全是灰','right');
+window.__done=true;
+})();
+</script></body></html>
