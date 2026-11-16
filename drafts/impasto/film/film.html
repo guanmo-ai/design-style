@@ -7,21 +7,21 @@
 <script>
 // 厚涂 · 一笔一笔画出来。window.frame(f) 画第 f 帧（帧号的纯函数；按帧号递增渲染时缓存已画完的笔）。
 const Q = new URLSearchParams(location.search), MS = +(Q.get('ms') || 3);
-const W = 1920, H = 1080, END = 1080, { clamp, lerp, smr, keys, rise, rng } = FK;
+const W = 1920, H = 1080, END = 840, { clamp, lerp, smr, keys, rise, rng } = FK;
 const cv = document.getElementById('c'), sc = cv.getContext('2d');
 const shC = HD.canvas(W, H), sh = shC.getContext('2d');
 const FOCAL = [890, 560];
 const PAL = [['夜青', '#0E3442'], ['雾橙', '#B07A4C'], ['灯黄', '#FFC478'], ['霓虹红', '#FF465A'], ['霓虹青', '#46EBD7'], ['伞红', '#B8231F']];
-const TL = { flow: [165, 300], push: [430, 620], alive: 640, palette: 700, glaze: 860, title: 905, sign: 990, under: 1012 };
-const CAPS = [[-40, '01', '大笔铺色', '22 px 的刷子，先把明暗和冷暖站住', 150], [165, '02', '笔顺着形走', '方向 = 边的切线；湿地面一律竖着拖', 270],
-  [285, '03', '小笔只给焦点', '11 → 5.5 → 2.8 px，越小越靠近红伞', 420], [440, '04', '亮处厚，暗处薄', '每一笔都有厚度，侧光一扫就看见', 640],
-  [690, '05', '暖光，冷影', '影子用青，光用橙黄；整张画只有一块纯红', 860]];
+const TL = { flow: [60, 170], push: [270, 380], alive: 420, palette: 470, glaze: 580, title: 604, sign: 676, under: 708 };
+const CAPS = [[-40, '01', '大笔铺色', '22 px 的刷子，先把明暗和冷暖站住', 52], [58, '02', '笔顺着形走', '方向 = 边的切线；湿地面一律竖着拖', 150],
+  [158, '03', '小笔只给焦点', '11 → 5.5 → 2.8 px，越小越靠近红伞', 262], [282, '04', '亮处厚，暗处薄', '每一笔都有厚度，侧光一扫就看见', 420],
+  [436, '05', '暖光，冷影', '影子用青，光用橙黄；整张画只有一块纯红', 570]];
 
 let REF, REFD, FL, LIST, BYEND, BYSTART, master, cacheF = -1e9, ci = 0, UNDER;
-const cam = f => ({ cx: keys([[0, 960], [400, 905], [620, 886], [660, 886], [860, 960]], f), cy: keys([[0, 540], [400, 552], [620, 522], [660, 522], [860, 540]], f),
-  z: keys([[0, 1.0], [400, 1.1], [620, 3.0], [660, 3.06], [860, 1.0], [1080, 1.035]], f) });
-const lightAt = f => { const a = keys([[0, -128.7], [430, -128.7], [440, -165], [640, -18], [760, -128.7]], f) * Math.PI / 180; return [Math.cos(a) * .96, Math.sin(a) * .96]; };
-const ampAt = f => keys([[0, 1], [430, 1], [530, 1.7], [640, 1.55], [760, 1.0]], f);
+const cam = f => ({ cx: keys([[0, 960], [262, 905], [372, 886], [404, 886], [540, 960]], f), cy: keys([[0, 540], [262, 552], [372, 522], [404, 522], [540, 540]], f),
+  z: keys([[0, 1.0], [262, 1.1], [372, 3.0], [404, 3.06], [540, 1.0], [840, 1.035]], f) });
+const lightAt = f => { const a = keys([[0, -128.7], [272, -128.7], [282, -165], [420, -18], [520, -128.7]], f) * Math.PI / 180; return [Math.cos(a) * .96, Math.sin(a) * .96]; };
+const ampAt = f => keys([[0, 1], [272, 1], [360, 1.7], [420, 1.55], [520, 1.0]], f);
 
 function build() {
   REF = PAINT.ref(1); FL = PAINT.flow(REF); REFD = REF.getContext('2d').getImageData(0, 0, W, H).data;
@@ -30,26 +30,26 @@ function build() {
   const len = s => { let L = 0; for (let i = 1; i < s.path.length; i++) L += Math.hypot(s.path[i][0] - s.path[i - 1][0], s.path[i][1] - s.path[i - 1][1]); return L + s.R; };
   for (const s of LIST) {
     const [x, y] = s.path[0], dist = Math.hypot((x - FOCAL[0]) / 1.3, y - FOCAL[1]), nn = n(x * .004, y * .004);
-    if (s.pass === 0) { s.t0 = -105 + (x / W * .85 + y / H * .15 + nn * .2) * 190; s.d = clamp(len(s) / 16, 5, 11); }
-    else if (s.pass === 1) { s.t0 = 135 + (x / W * .6 + y / H * .4 + nn * .08) * 125; s.d = clamp(len(s) / 12, 4, 10); }
-    else if (s.pass === 2) { s.t0 = 255 + clamp(dist / 1100 + nn * .06) * 115; s.d = clamp(len(s) / 9, 4, 9); }
-    else if (s.pass === 3) { s.t0 = 300 + clamp(dist / 900 + nn * .05) * 90; s.d = clamp(len(s) / 8, 4, 8); }
-    else { s.t0 = 362 + clamp(dist / 1000) * 50 + r() * 16; s.d = 4; }
+    if (s.pass === 0) { s.t0 = -92 + (x / W * .85 + y / H * .15 + nn * .2) * 140; s.d = clamp(len(s) / 18, 4, 9); }
+    else if (s.pass === 1) { s.t0 = 48 + (x / W * .6 + y / H * .4 + nn * .08) * 90; s.d = clamp(len(s) / 14, 4, 8); }
+    else if (s.pass === 2) { s.t0 = 128 + clamp(dist / 1100 + nn * .06) * 80; s.d = clamp(len(s) / 10, 3, 7); }
+    else if (s.pass === 3) { s.t0 = 165 + clamp(dist / 900 + nn * .05) * 62; s.d = clamp(len(s) / 9, 3, 6); }
+    else { s.t0 = 222 + clamp(dist / 1000) * 34 + r() * 10; s.d = 3; }
   }
   // 片尾：左下先刷一层暗（原色压暗），再写字，最后一笔红
   for (let y = 740; y < H + 20; y += 15) for (let x = -20; x < 1000; x += 17) {
     const e = (x / 980) ** 2 + ((H - y) / 330) ** 2; if (e > 1 - r() * .25) continue;
     const rc = REF.getContext('2d').getImageData(clamp(x, 0, W - 1), clamp(y, 0, H - 1), 1, 1).data, k = .78 + r() * .1;
-    LIST.push({ path: [[x, y], [x + 18, y + (r() - .5) * 4], [x + 36, y + (r() - .5) * 6]], R: 14 + r() * 6, col: [lerp(rc[0], 10, k), lerp(rc[1], 22, k), lerp(rc[2], 28, k)], pass: 6, imp: .8, seed: (r() * 1e9) | 0, t0: TL.glaze + x / 980 * 34 + r() * 8, d: 7 });
+    LIST.push({ path: [[x, y], [x + 18, y + (r() - .5) * 4], [x + 36, y + (r() - .5) * 6]], R: 14 + r() * 6, col: [lerp(rc[0], 10, k), lerp(rc[1], 22, k), lerp(rc[2], 28, k)], pass: 6, imp: .8, seed: (r() * 1e9) | 0, t0: TL.glaze + x / 980 * 22 + r() * 5, d: 6 });
   }
   const tc = HD.canvas(W, H), tg = tc.getContext('2d');
   tg.font = '900 210px SerifSC'; tg.fillStyle = '#F4E8D2'; tg.fillText('厚涂', 84, 984);
   const tfl = PAINT.flow(tc, { def: (X, Y, nz) => HD.fbm(nz, X * .01, Y * .01, 2) * .5, edge: () => 1.2 });
   const tl = PAINT.plan(tc, tfl, { passes: [{ R: 8, step: 5.5, len: 6, thr: 90, p: 1 }, { R: 3.4, step: 2.6, len: 5, thr: 90, p: 1 }], hi: 0, rain: 0, jv: .06, jw: 8, seed: 21 });
-  for (const s of tl) { s.pass = 7; s.imp = 1.3; s.t0 = TL.title + (s.path[0][0] - 84) / 440 * 52 + (s.R < 5 ? 22 : 0) + r() * 6; s.d = 6; LIST.push(s); }
+  for (const s of tl) { s.pass = 7; s.imp = 1.3; s.t0 = TL.title + (s.path[0][0] - 84) / 440 * 40 + (s.R < 5 ? 16 : 0) + r() * 5; s.d = 5; LIST.push(s); }
   PAL.forEach(([nm, hex], i) => { const x = W - 70 - (PAL.length - i) * 114 + 18, y = 968, col = HD.hex(hex);
-    for (let k = 0; k < 3; k++) LIST.push({ path: [[x + 4, y - 8 + k * 9 + r() * 3], [x + 40, y - 12 + k * 9], [x + 88, y - 6 + k * 9 + r() * 3]], R: 8 + r() * 2, col: col.map(v => v * (1 + (r() - .5) * .12)), pass: 8, imp: 1.2, seed: (r() * 1e9) | 0, t0: TL.palette + i * 14 + k * 3, d: 7 }); });
-  { const P = []; for (let k = 0; k <= 12; k++) { const u = k / 12; P.push([92 + u * 470, 1014 + Math.sin(u * 3) * 4 - u * 6]); } LIST.push({ path: P, R: 7.5, col: [196, 42, 36], pass: 9, imp: 1.6, seed: 77, t0: TL.under, d: 14 }); }
+    for (let k = 0; k < 3; k++) LIST.push({ path: [[x + 4, y - 8 + k * 9 + r() * 3], [x + 40, y - 12 + k * 9], [x + 88, y - 6 + k * 9 + r() * 3]], R: 8 + r() * 2, col: col.map(v => v * (1 + (r() - .5) * .12)), pass: 8, imp: 1.2, seed: (r() * 1e9) | 0, t0: TL.palette + i * 10 + k * 3, d: 6 }); });
+  { const P = []; for (let k = 0; k <= 12; k++) { const u = k / 12; P.push([92 + u * 470, 1014 + Math.sin(u * 3) * 4 - u * 6]); } LIST.push({ path: P, R: 7.5, col: [196, 42, 36], pass: 9, imp: 1.6, seed: 77, t0: TL.under, d: 12 }); }
   BYEND = LIST.slice().sort((a, b) => (a.t0 + a.d) - (b.t0 + b.d));
   BYSTART = LIST.slice().sort((a, b) => a.t0 - b.t0);
   // 底布：赭色、有一点深浅；炭笔起稿 = 不带雨的参考帧的边（先模糊再求梯度，线是一条不是两条）
@@ -91,7 +91,7 @@ function draw(f) {
   const SF = { g: sc, hg: sh };
   sc.setTransform(z, 0, 0, z, ox, oy); sh.setTransform(z, 0, 0, z, ox, oy); sc.lineCap = sh.lineCap = 'round'; sc.lineJoin = sh.lineJoin = 'round';
   for (const s of wet(f)) PAINT.draw1(SF, s, (f - s.t0) / s.d, 1);
-  const alive = smr(TL.alive, TL.alive + 120, f);
+  const alive = smr(TL.alive, TL.alive + 90, f);
   if (alive > 0) {
     // 雨：也是笔，斜着落
     const rd = REF.getContext('2d');
@@ -145,19 +145,19 @@ function hud(ctx, f) {
   }
   { const g = ctx.createRadialGradient(1760, 96, 0, 1760, 96, 260); g.addColorStop(0, 'rgba(4,9,12,.5)'); g.addColorStop(1, 'rgba(4,9,12,0)'); ctx.fillStyle = g; ctx.fillRect(1400, 0, 520, 360); }
   // 右上：笔数
-  const done = ci + wet(f).length, brush = f < 140 ? 22 : f < 255 ? 11 : f < 300 ? 5.5 : 2.8;
+  const done = ci + wet(f).length, brush = f < 50 ? 22 : f < 128 ? 11 : f < 165 ? 5.5 : 2.8;
   if (f >= 4) {
     rise(ctx, 'STROKES', 1848, 66, f, 4, { font: '500 16px Mono', size: 16, color: 'rgba(255,236,214,.7)', align: 'right', kind: 'small', ls: 3 });
     ctx.save(); ctx.font = '600 34px Mono'; ctx.textAlign = 'right'; ctx.fillStyle = `rgba(255,244,230,${smr(6, 20, f)})`; ctx.shadowColor = 'rgba(0,0,0,.6)'; ctx.shadowBlur = 12;
     ctx.fillText(Math.min(done, LIST.length).toLocaleString('en'), 1848, 108);
-    ctx.font = '500 16px Mono'; ctx.fillStyle = `rgba(255,236,214,${.7 * smr(10, 24, f)})`; ctx.fillText(f < 430 ? `BRUSH ${brush} PX` : 'OIL ON CANVAS', 1848, 136); ctx.restore();
+    ctx.font = '500 16px Mono'; ctx.fillStyle = `rgba(255,236,214,${.7 * smr(10, 24, f)})`; ctx.fillText(f < 272 ? `BRUSH ${brush} PX` : 'OIL ON CANVAS', 1848, 136); ctx.restore();
   }
   // 色板的字
-  PAL.forEach(([nm, hex], i) => { const x = W - 70 - (PAL.length - i) * 114 + 18, t = TL.palette + i * 14 + 8;
+  PAL.forEach(([nm, hex], i) => { const x = W - 70 - (PAL.length - i) * 114 + 18, t = TL.palette + i * 10 + 6;
     rise(ctx, nm, x, 1012, f, t, { font: '500 15px SansSC', size: 15, color: '#FFF4E6', kind: 'small', shadow: 'rgba(0,0,0,.8)', shadowBlur: 8 });
     rise(ctx, hex, x, 1032, f, t + 4, { font: '500 13px Mono', size: 13, color: 'rgba(255,236,214,.75)', kind: 'none', shadow: 'rgba(0,0,0,.8)', shadowBlur: 8 }); });
   // 片尾的小字
-  rise(ctx, 'PAINTERLY · IMPASTO', 96, 1056, f, TL.title + 50, { font: '500 22px Corm', size: 22, color: 'rgba(255,232,205,.92)', kind: 'small', ls: 9, rate: .7 });
+  rise(ctx, 'PAINTERLY · IMPASTO', 96, 1056, f, TL.title + 40, { font: '500 22px Corm', size: 22, color: 'rgba(255,232,205,.92)', kind: 'small', ls: 9, rate: .7 });
   rise(ctx, '观默', 560, 984, f, TL.sign, { font: '700 44px SerifSC', size: 44, color: '#FFF4E6', kind: 'title', rate: 5, shadow: 'rgba(0,0,0,.6)' });
   rise(ctx, `${LIST.length.toLocaleString('en')} 笔 · 全部由代码画成`, 560, 1024, f, TL.sign + 10, { font: '400 20px SansSC', size: 20, color: 'rgba(255,240,225,.8)', kind: 'small', rate: .7 });
   // 暗角
@@ -171,7 +171,7 @@ window.events = () => {
   const starts = k => { const a = new Array(END).fill(0); for (const s of LIST) if (k(s) && s.t0 >= 0 && s.t0 < END) a[Math.floor(s.t0)]++; return a; };
   return { cues: [...FK.cues.values()].filter(c => c[3] !== 'none').sort((a, b) => a[0] - b[0]),
     big: starts(s => s.pass === 0 || s.pass === 6), mid: starts(s => s.pass === 1), small: starts(s => s.pass === 2 || s.pass === 3), hi: starts(s => s.pass === 4), title: starts(s => s.pass === 7),
-    palette: PAL.map((_, i) => TL.palette + i * 14), TL, end: END };
+    palette: PAL.map((_, i) => TL.palette + i * 10), TL, end: END };
 };
 (async () => {
   await FK.fonts([['SerifSC', 'NotoSerifSC.ttf', '200 900'], ['SansSC', 'NotoSansSC-Regular.otf', '400'], ['Mono', 'GeistMono.ttf', '100 900'], ['Corm', 'Cormorant.ttf', '300 700']]);
