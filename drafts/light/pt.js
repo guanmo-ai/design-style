@@ -259,7 +259,8 @@ gl.useProgram(php); gl.activeTexture(gl.TEXTURE0); gl.bindTexture(gl.TEXTURE_2D,
 gl.enable(gl.BLEND); gl.blendFunc(gl.ONE, gl.ONE);
 const vao = gl.createVertexArray(); gl.bindVertexArray(vao);
 const nPhot = PN * PN; let t0 = performance.now();
-for (let i = 0; i < PHOTON_PASSES; i++) { common(php, i + 1); gl.drawArrays(gl.POINTS, 0, nPhot); gl.finish(); }
+const yieldNow = () => new Promise(r => setTimeout(r, 0));   // 交回事件循环：长时间渲染时截图工具才不会超时
+for (let i = 0; i < PHOTON_PASSES; i++) { common(php, i + 1); gl.drawArrays(gl.POINTS, 0, nPhot); gl.finish(); await yieldNow(); }
 gl.disable(gl.BLEND);
 log('photons', PHOTON_PASSES * nPhot, ((performance.now() - t0) / 1000).toFixed(1) + 's');
 // 焦散图模糊一下（核密度估计）
@@ -289,7 +290,7 @@ for (let s = 0; s < SPP; s++) {
   common(ptp, s); gl.uniform1i(U(ptp, 'uAcc'), 1); gl.uniform1i(U(ptp, 'uCaus'), 2);
   gl.uniform2f(U(ptp, 'uRes'), W, H); gl.uniform1f(U(ptp, 'uCausScale'), causScale); gl.uniform1f(U(ptp, 'uFrame'), s);
   gl.uniform3fv(U(ptp, 'uCamPos'), CAM.pos); gl.uniform3fv(U(ptp, 'uCamTgt'), CAM.tgt); gl.uniform1f(U(ptp, 'uFov'), CAM.fov); gl.uniform1f(U(ptp, 'uAperture'), CAM.aperture); gl.uniform1f(U(ptp, 'uFocus'), CAM.focus); gl.uniform1f(U(ptp, 'uBeamR'), +(Q.get('beam') || 2.5)); gl.uniform1f(U(ptp, 'uDbg'), +(Q.get('dbg') || 0));
-  drawQuad(ptp); gl.finish();
+  drawQuad(ptp); gl.finish(); await yieldNow();
   if (s % 8 === 7) log('spp', s + 1, ((performance.now() - t0) / 1000 / (s + 1)).toFixed(2) + ' s/spp');
 }
 const final = acc[SPP % 2];
