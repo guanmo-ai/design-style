@@ -1,0 +1,110 @@
+<!doctype html><meta charset="utf-8">
+<!-- 立体书 · 用起来：三张打开成 90° 的卡，各演示一种最基本的机关（平行折 / V 折 / 拉片）。折线画在卡上，数值写在下面。
+     cd drafts/_3d && node shoot.cjs ../popup/ui.html ../popup/png/ui.png -->
+<style>
+@font-face{font-family:GM;src:url(/public/fonts/GeistMono.ttf)}
+@font-face{font-family:NSB;src:url(/public/fonts/NotoSansSC-Bold.otf)}
+@font-face{font-family:NSK;src:url(/public/fonts/NotoSansSC-Black.otf)}
+@font-face{font-family:Fre;src:url(/public/fonts/Fredoka.ttf)}
+html,body{margin:0;overflow:hidden;background:#000}
+#hud{position:absolute;inset:0;pointer-events:none;color:#FFF6E6;font-family:GM}
+.tl{position:absolute;left:64px;top:52px;font-size:22px;letter-spacing:.06em}
+.tr{position:absolute;right:64px;top:52px;font-size:22px;letter-spacing:.06em}
+.title{position:absolute;left:64px;top:104px;font-family:NSK;font-size:68px}
+.title small{font-family:Fre;font-weight:600;font-size:24px;letter-spacing:.16em;opacity:.8;margin-left:18px}
+.col{position:absolute;bottom:64px;width:470px}
+.col b{display:inline-block;font-family:Fre;font-weight:700;font-size:22px;background:#FFF6E6;color:#E2462E;border-radius:20px;padding:3px 12px;margin-bottom:10px}
+.col h3{margin:0;font-family:NSK;font-size:40px;font-weight:900}
+.col p{margin:6px 0 0;font-family:NSB;font-size:22px;opacity:.92;line-height:1.35}
+.col i{display:block;font-style:normal;font-family:GM;font-size:17px;opacity:.8;margin-top:8px}
+</style>
+<div id="hud"><div class="tl">风格 · POP-UP · 怎么做</div><div class="tr">PAPER ENGINEERING</div>
+<div class="title">三种机关<small>THREE MECHANISMS</small></div>
+<div class="col" style="left:150px"><b>01</b><h3>平行折</h3><p>在中缝上切两刀，往里折——<br>打开时，中间那块变成台阶</p><i>两刀平行 · 深度 d = 高度 h</i></div>
+<div class="col" style="left:730px"><b>02</b><h3>V 折</h3><p>一块纸跨过中缝贴两边，<br>打开时被拉成 V，自己站起来</p><i>贴角 &lt; 书页的开角 · 夹角越小站得越高</i></div>
+<div class="col" style="left:1330px"><b>03</b><h3>拉片</h3><p>抽一下纸条，<br>藏在页里的转盘转出来</p><i>拉 2 cm → 转 60° · 一拉一个画面</i></div>
+</div>
+<script type="importmap">{"imports":{"three":"/drafts/_3d/node_modules/three/build/three.module.js","three/addons/":"/drafts/_3d/node_modules/three/examples/jsm/"}}</script>
+<script type="module">
+import { THREE, setup, finish, sun, rng } from '/drafts/_3d/lib.js';
+import { envMap, cyc } from '/drafts/_3d/craft.js';
+const Q = new URLSearchParams(location.search), PR = +(Q.get('pr') || 2);
+const BG = '#E2462E';
+const ctx = setup({ pr: PR, bg: BG, tone: 'neutral' });
+const { renderer, scene } = ctx;
+scene.environment = envMap(renderer); scene.environmentIntensity = 0.35;
+{ const c = cyc(BG, { w: 120, d: 80, r: 14, h: 60 }); c.position.z = -8; scene.add(c); }
+const key = sun(scene, { color: '#FFF2DE', intensity: 3.2, pos: [-14, 16, 12], target: [0, 1, 0], size: 14, map: 4096, bias: -0.0002 });
+key.shadow.radius = 4; key.shadow.blurSamples = 16;
+const fill = new THREE.DirectionalLight('#FFE1D6', 0.8); fill.position.set(14, 6, 10); scene.add(fill);
+scene.add(new THREE.HemisphereLight('#FFFFFF', '#E2462E', 0.45));
+function paperTex(base, seed = 1, n = 512) {
+  const c = document.createElement('canvas'); c.width = c.height = n; const x = c.getContext('2d'); const r = rng(seed);
+  x.fillStyle = base; x.fillRect(0, 0, n, n);
+  for (let i = 0; i < 2400; i++) { x.fillStyle = `rgba(${r() < .5 ? 255 : 0},${r() < .5 ? 255 : 0},${r() < .5 ? 255 : 0},${.02 + r() * .03})`; x.fillRect(r() * n, r() * n, 1 + r() * 2, 1 + r() * 2); }
+  const t = new THREE.CanvasTexture(c); t.wrapS = t.wrapT = THREE.RepeatWrapping; t.colorSpace = THREE.SRGBColorSpace; return t;
+}
+const EDGE = new THREE.MeshStandardMaterial({ color: '#F6F0E4', roughness: .95 });
+const mat = (col, seed = 1) => { const t = paperTex(col, seed); t.repeat.set(.4, .4); return new THREE.MeshStandardMaterial({ map: t, roughness: .88 }); };
+const WHITE = mat('#FBF6EC', 3);
+const TH = .05;
+const ext = (shape, m) => { const g = new THREE.ExtrudeGeometry(shape, { depth: TH, bevelEnabled: false, curveSegments: 24 }); const o = new THREE.Mesh(g, [m, EDGE]); o.castShadow = o.receiveShadow = true; return o; };
+const rect = (w, h, x0 = 0, y0 = 0) => { const s = new THREE.Shape(); s.moveTo(x0, y0); s.lineTo(x0 + w, y0); s.lineTo(x0 + w, y0 + h); s.lineTo(x0, y0 + h); s.closePath(); return s; };
+// 折线：一串小短划（虚线）
+function dashes(a, b, col = '#2B2350', n = 18) { const g = new THREE.Group(); const A = new THREE.Vector3(...a), B = new THREE.Vector3(...b);
+  for (let i = 0; i < n; i++) { const t0 = i / n, t1 = (i + .55) / n; const p0 = A.clone().lerp(B, t0), p1 = A.clone().lerp(B, t1); const len = p0.distanceTo(p1);
+    const m = new THREE.Mesh(new THREE.BoxGeometry(.035, .035, len), new THREE.MeshBasicMaterial({ color: col })); m.position.copy(p0.clone().add(p1).multiplyScalar(.5)); m.lookAt(p1); g.add(m); }
+  scene.add(g); return g; }
+// 一张打开成 90° 的卡：底页平躺（y=0，z 从 0 到 D），背页立着（z=0，y 从 0 到 H）
+const CW = 4.0, CD = 3.3, CH = 3.4;
+function cardBase(x0) {
+  const g = new THREE.Group(); g.position.x = x0; scene.add(g);
+  const base = ext(rect(CW, CD), WHITE); base.rotation.x = -Math.PI / 2; base.position.set(-CW / 2, 0, CD); g.add(base);   // 底页
+  const back = ext(rect(CW, CH), WHITE); back.position.set(-CW / 2, 0, -TH); g.add(back);                                   // 背页
+  return g;
+}
+// ① 平行折：中缝处切出一块，折成台阶（顶面 + 正面）；正面印成一栋小楼
+{ const g = cardBase(-5.5); const w = 1.7, h = 1.4, d = 1.4;
+  const top = ext(rect(w, d), mat('#3B6FE0', 11)); top.rotation.x = -Math.PI / 2; top.position.set(-w / 2, h, d); g.add(top);
+  const face = ext(rect(w, h), mat('#5B8CFF', 12)); face.position.set(-w / 2, 0, d); g.add(face);
+  // 窗户（贴在正面上的小方块）
+  for (let i = 0; i < 3; i++) for (let j = 0; j < 2; j++) { const wn = ext(rect(.32, .3), mat('#FFD23F', 13 + i)); wn.position.set(-w / 2 + .22 + i * .53, .35 + j * .55, d + TH); g.add(wn); }
+  // 切出来留下的洞（背页和底页上各一块暗色）
+  const holeM = new THREE.MeshStandardMaterial({ color: '#B9AE9B', roughness: 1 }); const holeB = new THREE.Mesh(new THREE.PlaneGeometry(w, h), holeM); holeB.position.set(0, h / 2, .002); g.add(holeB);
+  const holeF = new THREE.Mesh(new THREE.PlaneGeometry(w, d), holeM); holeF.rotation.x = -Math.PI / 2; holeF.position.set(0, .052, d / 2); g.add(holeF);
+  dashes([-CW / 2 + .1, .02, .02], [CW / 2 - .1, .02, .02]); // 中缝
+  [[-w / 2, h, d], [w / 2, h, d]].forEach(() => {});
+  const dx = -5.5; dashes([dx - w / 2, h + .03, .02], [dx + w / 2, h + .03, .02], '#FFFFFF', 10); dashes([dx - w / 2, h + .03, d], [dx + w / 2, h + .03, d], '#FFFFFF', 10); dashes([dx - w / 2, .04, d + .03], [dx + w / 2, .04, d + .03], '#2B2350', 10);
+}
+// ② V 折：一颗心沿中线对折，两半张开站在中缝前
+{ const g = cardBase(0);
+  const half = new THREE.Shape(); const N = 60; half.moveTo(0, 0);
+  for (let i = 0; i <= N; i++) { const t = i / N * Math.PI; const x = 16 * Math.sin(t) ** 3, y = 13 * Math.cos(t) - 5 * Math.cos(2 * t) - 2 * Math.cos(3 * t) - Math.cos(4 * t); half.lineTo(x * .085, y * .085 + 1.45); }
+  half.closePath();
+  const open = .55;   // 每一半转开的角度（弧度）
+  for (const s of [1, -1]) { const p = new THREE.Group(); p.position.set(0, 0, .9); p.rotation.y = s * (Math.PI / 2 - open) * (s > 0 ? 1 : 1) * 0 + (s > 0 ? -open : Math.PI + open); g.add(p);
+    const o = ext(half, mat(s > 0 ? '#FF4D6D' : '#E0234A', 20)); o.position.z = -TH / 2; p.add(o); }
+  // 两个贴角（贴在底页上的小三角）
+  for (const s of [1, -1]) { const tb = new THREE.Shape(); tb.moveTo(0, 0); tb.lineTo(.9, 0); tb.lineTo(.45, .5); tb.closePath(); const o = ext(tb, mat('#FFB3C1', 21)); o.rotation.x = -Math.PI / 2; o.rotation.z = s > 0 ? -open : Math.PI + open; o.position.set(0, .01, .9); g.add(o); }
+  dashes([0, .03, .9], [0, 2.9, .9], '#2B2350', 16);
+  dashes([-CW / 2 + .1, .02, .02], [CW / 2 - .1, .02, .02]);
+}
+// ③ 拉片：背页上开一扇窗，里面是一个转盘；底页边上伸出一条带箭头的纸条
+{ const g = cardBase(5.5);
+  // 转盘（六色扇形）露在窗口后面
+  const wheel = new THREE.Group(); wheel.position.set(0, 1.8, .06); wheel.rotation.z = .5; g.add(wheel);
+  const cols = ['#FFD23F', '#3DBE5A', '#5B8CFF', '#9B7BFF', '#FF5DA2', '#FF8A3D'];
+  cols.forEach((c, i) => { const s = new THREE.Shape(); s.moveTo(0, 0); for (let k = 0; k <= 24; k++) { const a = (i + k / 24) / 6 * Math.PI * 2; s.lineTo(Math.cos(a) * 1.25, Math.sin(a) * 1.25); } s.closePath(); const o = ext(s, mat(c, 30 + i)); o.position.z = -TH; wheel.add(o); });
+  // 背页上的窗：一块带圆洞的白卡盖在前面
+  const cover = rect(CW, CH, -CW / 2, 0); const hole = new THREE.Path(); hole.absarc(.0, 1.8, .95, 0, Math.PI * 2, true); cover.holes.push(hole);
+  const cv = ext(cover, WHITE); cv.position.z = .075; if (!Q.has('nocover')) g.add(cv);
+  // 拉片：从底页右边伸出来
+  const tab = ext(rect(2.0, .55), mat('#2B2350', 40)); tab.rotation.x = -Math.PI / 2; tab.position.set(CW / 2 - 1.0, .06, 2.0); g.add(tab);
+  const arrow = new THREE.Shape(); arrow.moveTo(0, 0); arrow.lineTo(.45, .32); arrow.lineTo(0, .64); arrow.closePath(); const ar = ext(arrow, mat('#FFD23F', 41)); ar.rotation.x = -Math.PI / 2; ar.position.set(CW / 2 + .6, .12, 2.0 - .05); g.add(ar);
+  dashes([-CW / 2 + .1, .02, .02], [CW / 2 - .1, .02, .02]);
+}
+const cam = new THREE.PerspectiveCamera(30, 1920 / 1080, 0.1, 200);
+cam.position.set(0, 8.0, 18.5); cam.lookAt(0, 1.2, .4);
+await document.fonts.ready;
+finish(ctx, cam, { ao: true, aoRadius: 0.35, aoDist: 0.3, bloom: 0, vig: 0.3, grain: 0.025 });
+</script>

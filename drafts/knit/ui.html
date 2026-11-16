@@ -1,0 +1,82 @@
+<!doctype html><meta charset="utf-8">
+<!-- 毛线针织 · 用起来：左边是图表（一格 = 一针，格子 4 : 3），右边是照着它织出来的一块布。
+     cd drafts/_3d && node shoot.cjs ../knit/ui.html ../knit/png/ui.png -->
+<style>
+@font-face{font-family:GM;src:url(/public/fonts/GeistMono.ttf)}
+@font-face{font-family:NSB;src:url(/public/fonts/NotoSansSC-Bold.otf)}
+@font-face{font-family:NSK;src:url(/public/fonts/NotoSansSC-Black.otf)}
+@font-face{font-family:Fre;src:url(/public/fonts/Fredoka.ttf)}
+html,body{margin:0;overflow:hidden;background:#000}
+#hud{position:absolute;inset:0;pointer-events:none;color:#2B1B12;font-family:GM}
+.tl{position:absolute;left:64px;top:52px;font-size:22px;letter-spacing:.06em}
+.tr{position:absolute;right:64px;top:52px;font-size:22px;letter-spacing:.06em}
+.title{position:absolute;left:64px;top:104px;font-family:NSK;font-size:68px}
+.title small{font-family:Fre;font-weight:600;font-size:24px;letter-spacing:.16em;opacity:.7;margin-left:18px}
+#chart{position:absolute;left:96px;top:250px;box-shadow:0 18px 40px rgba(80,40,20,.25);border-radius:6px;background:#fffaf0}
+.arrow{position:absolute;left:770px;top:520px;font-family:Fre;font-size:84px;font-weight:700;color:#E2462E}
+.cap{position:absolute;left:96px;top:226px;font-family:GM;font-size:18px;opacity:.75}
+.rules{position:absolute;left:96px;bottom:56px;display:flex;gap:48px}
+.r b{font-family:Fre;font-weight:700;font-size:20px;background:#2B1B12;color:#FFE9C7;border-radius:18px;padding:3px 11px}
+.r div{font-family:NSB;font-size:30px;margin-top:10px}
+.r i{display:block;font-style:normal;font-family:GM;font-size:17px;opacity:.75;margin-top:6px}
+</style>
+<div id="hud"><div class="tl">风格 · KNIT · 怎么画</div><div class="tr">CHART → FABRIC</div>
+<div class="title">一格 = 一针<small>ONE CELL · ONE STITCH</small></div>
+<div class="cap">CHART · 30 × 26 · 格子 4 : 3</div>
+<canvas id="chart" width="640" height="500"></canvas>
+<div class="arrow">→</div>
+<div class="rules">
+<div class="r"><b>01</b><div>格子画成 4 : 3</div><i>针比行宽 1.3 倍 · 22 针 × 30 行 / 10 cm</i></div>
+<div class="r"><b>02</b><div>一行只换 2—3 色</div><i>费尔岛：背后拖着走的线不超过 5 针</i></div>
+<div class="r"><b>03</b><div>描边一针宽</div><i>图案外面围一圈对比色，织出来才清楚</i></div>
+</div></div>
+<script type="importmap">{"imports":{"three":"/drafts/_3d/node_modules/three/build/three.module.js","three/addons/":"/drafts/_3d/node_modules/three/examples/jsm/"}}</script>
+<script type="module">
+import { THREE, setup, finish, sun } from '/drafts/_3d/lib.js';
+import { envMap, cyc } from '/drafts/_3d/craft.js';
+import { knitPanel, yarnMaterial } from '/drafts/_3d/knit.js';
+const Q = new URLSearchParams(location.search), PR = +(Q.get('pr') || 2);
+const BG = '#FFD98A';
+const ctx = setup({ pr: PR, bg: BG, tone: 'neutral' });
+const { renderer, scene } = ctx;
+scene.environment = envMap(renderer); scene.environmentIntensity = 0.3;
+{ const c = cyc(BG, { w: 120, d: 80, r: 14, h: 60 }); c.position.z = -4; scene.add(c); }
+const key = sun(scene, { color: '#FFF1E0', intensity: 3.6, pos: [-14, 9, 7], target: [3, 2.5, 0], size: 16, map: 4096, bias: -0.0004 });
+key.shadow.radius = 5;
+const fill = new THREE.DirectionalLight('#FFE6C0', 1.0); fill.position.set(12, 5, 10); scene.add(fill);
+scene.add(new THREE.HemisphereLight('#FFFFFF', '#F2B04A', 0.4));
+// ---- 图案：30 × 26 ----
+const C = 30, R = 26, CREAM = '#FFF4DE', RED = '#E83A3A', PINK = '#FF9BB0', GREEN = '#2E9E5B', DARK = '#2B1B12';
+function pat(c, r) {          // r = 0 在最上面
+  if (r < 3 || r >= R - 3) { const rr = r < 3 ? r : R - 1 - r; const m = (c % 6), k = Math.abs(m - 3); if (rr === 0) return GREEN; if (rr === 1) return k <= 1 ? CREAM : GREEN; return k === 0 ? GREEN : CREAM; }
+  const x = (c - 14.5) / 9.5, y = -(r - 13.2) / 9.5 * 1.18;      // 心形（按 4 : 3 的格子校正过）
+  const f = (x * x + y * y - 1) ** 3 - x * x * y ** 3;
+  const g = (x2, y2) => (x2 * x2 + y2 * y2 - 1) ** 3 - x2 * x2 * y2 ** 3;
+  const inside = f < 0;
+  if (inside) { const hx = (c - 10.5) / 3.2, hy = (r - 9) / 2.6; return hx * hx + hy * hy < 1 - .25 * Math.abs(hx * hy) ? PINK : RED; }
+  const near = [[1, 0], [-1, 0], [0, 1], [0, -1]].some(([a, b]) => g((c + a - 14.5) / 9.5, -(r + b - 13.2) / 9.5 * 1.18) < 0);
+  return near ? DARK : CREAM;
+}
+// 图表（平面，格子 4 : 3）
+{ const cv = document.getElementById('chart'), x = cv.getContext('2d'); const cw = 20, ch = 15, ox = 20, oy = 40;
+  x.font = '13px GM'; x.fillStyle = '#8A6F5A'; x.textAlign = 'center';
+  for (let c = 0; c < C; c += 5) x.fillText(String(C - c), ox + c * cw + cw / 2, oy - 12);
+  for (let r = 0; r < R; r++) for (let c = 0; c < C; c++) { x.fillStyle = pat(c, r); x.fillRect(ox + c * cw, oy + r * ch, cw, ch); }
+  x.strokeStyle = 'rgba(43,27,18,.18)'; x.lineWidth = 1;
+  for (let c = 0; c <= C; c++) { x.lineWidth = c % 5 ? 1 : 2; x.beginPath(); x.moveTo(ox + c * cw + .5, oy); x.lineTo(ox + c * cw + .5, oy + R * ch); x.stroke(); }
+  for (let r = 0; r <= R; r++) { x.lineWidth = r % 5 ? 1 : 2; x.beginPath(); x.moveTo(ox, oy + r * ch + .5); x.lineTo(ox + C * cw, oy + r * ch + .5); x.stroke(); }
+  // 色板
+  [CREAM, RED, PINK, GREEN, DARK].forEach((c, i) => { x.fillStyle = c; x.beginPath(); x.arc(ox + 14 + i * 40, oy + R * ch + 34, 13, 0, 7); x.fill(); x.strokeStyle = 'rgba(0,0,0,.2)'; x.stroke(); });
+  x.textAlign = 'left'; x.fillStyle = '#8A6F5A'; x.fillText('5 色 · 每行 ≤ 3 色', ox + 220, oy + R * ch + 39);
+}
+// 织出来的布
+const DX = .2, DY = .154;
+const mat = yarnMaterial();
+const panel = knitPanel({ cols: C, rows: R, colorAt: (c, r) => pat(c, R - 1 - r), dx: DX, dy: DY, mat,
+  surf: (c, r) => { const u = r / R; return [(c - C / 2) * DX, r * DY, Math.sin(c * .2 + r * .1) * .08 + Math.sin(c * .07 - r * .15) * .14 + (1 - u) ** 3 * .5]; } });
+const grp = new THREE.Group(); grp.add(panel); grp.position.set(3.4, .6, 0); grp.rotation.set(-.1, -.28, .04); scene.add(grp);
+const cam = new THREE.PerspectiveCamera(30, 1920 / 1080, 0.1, 200);
+cam.position.set(0, 3.6, 15.5); cam.lookAt(0, 2.7, 0);
+await document.fonts.ready;
+finish(ctx, cam, { ao: true, aoRadius: 0.12, aoDist: 0.35, bloom: 0, vig: 0.26, grain: 0.02 });
+</script>
