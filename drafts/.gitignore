@@ -16,3 +16,7 @@ candidates-5.html
 !supergraphics/*.html
 !frutiger-aero/*.html
 !functional/*.html
+# 第十一轮候选同理：手写源码
+!popup/*.html
+!gummy/*.html
+!knit/*.html

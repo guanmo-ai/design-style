@@ -1,0 +1,96 @@
+<!doctype html><meta charset="utf-8">
+<!-- 果冻软糖 · 用起来：一组果冻图标（3/4 俯视），中间那颗正被按下去压扁。右边三条能直接拿走的做法。
+     cd drafts/_3d && node shoot.cjs ../gummy/ui.html ../gummy/png/ui.png -->
+<style>
+@font-face{font-family:GM;src:url(/public/fonts/GeistMono.ttf)}
+@font-face{font-family:NSB;src:url(/public/fonts/NotoSansSC-Bold.otf)}
+@font-face{font-family:NSK;src:url(/public/fonts/NotoSansSC-Black.otf)}
+@font-face{font-family:Fre;src:url(/public/fonts/Fredoka.ttf)}
+html,body{margin:0;overflow:hidden;background:#000}
+#hud{position:absolute;inset:0;pointer-events:none;color:#0E3B3A;font-family:GM}
+.tl{position:absolute;left:64px;top:52px;font-size:22px;letter-spacing:.06em}
+.tr{position:absolute;right:64px;top:52px;font-size:22px;letter-spacing:.06em}
+.title{position:absolute;left:64px;top:118px;font-family:NSK;font-size:76px;letter-spacing:.02em}
+.title small{display:block;font-family:Fre;font-weight:600;font-size:24px;letter-spacing:.16em;opacity:.7;margin-top:4px}
+.rules{position:absolute;right:64px;bottom:64px;width:520px}
+.r{display:flex;gap:18px;align-items:flex-start;margin-top:26px}
+.r b{font-family:Fre;font-weight:700;font-size:22px;background:#0E3B3A;color:#BFF5E2;border-radius:20px;padding:4px 12px;flex:none}
+.r div{font-family:NSB;font-size:30px;line-height:1.25}
+.r div i{display:block;font-family:GM;font-style:normal;font-size:18px;opacity:.75;margin-top:6px}
+</style>
+<div id="hud"><div class="tl">风格 · GUMMY · 用在界面</div><div class="tr">ICON SET · 8</div>
+<div class="title">果冻图标<small>JELLY ICONS</small></div>
+<div class="rules">
+<div class="r"><b>01</b><div>越厚越深<i>颜色 = 衰减色 × 厚度 · 边缘最亮</i></div></div>
+<div class="r"><b>02</b><div>光从后面打<i>逆光让糖透亮，地上落下彩色的光</i></div></div>
+<div class="r"><b>03</b><div>按下压扁 14%，晃三下<i>scaleY .86 → 1.04 → .98 → 1 · 体积守恒</i></div></div>
+</div></div>
+<script type="importmap">{"imports":{"three":"/drafts/_3d/node_modules/three/build/three.module.js","three/addons/":"/drafts/_3d/node_modules/three/examples/jsm/"}}</script>
+<script type="module">
+import { THREE, setup, finish, sun } from '/drafts/_3d/lib.js';
+import { envMap, cyc, glowSpot } from '/drafts/_3d/craft.js';
+import { meshSDF, smin } from '/drafts/_3d/sdf.js';
+const Q = new URLSearchParams(location.search), PR = +(Q.get('pr') || 2), RES = +(Q.get('res') || 96);
+const BG = '#8FE6C9';
+const ctx = setup({ pr: PR, bg: BG, tone: 'neutral' });
+const { renderer, scene } = ctx;
+scene.environment = envMap(renderer); scene.environmentIntensity = 0.55;
+{ const c = cyc(BG, { w: 90, d: 60, r: 12, h: 50 }); c.material.roughness = 0.5; c.material.envMapIntensity = 0.1; scene.add(c); }
+const key = sun(scene, { color: '#FFF4E8', intensity: 3.2, pos: [-8, 16, -12], target: [0, 0, 0], size: 12, map: 4096, bias: -0.0003 });
+key.shadow.radius = 9; key.shadow.blurSamples = 20;
+const rim = new THREE.DirectionalLight('#FFF0F8', 2.0); rim.position.set(12, 8, -10); scene.add(rim);
+const fill = new THREE.DirectionalLight('#FFFFFF', 1.2); fill.position.set(2, 10, 16); scene.add(fill);
+scene.add(new THREE.HemisphereLight('#FFFFFF', '#3FB894', 0.35));
+const gummy = (col, deep, ad = 1.3) => new THREE.MeshPhysicalMaterial({ color: col, transmission: 1, thickness: 1.0, roughness: .1, ior: 1.45, attenuationColor: deep, attenuationDistance: ad, clearcoat: 1, clearcoatRoughness: .08 });
+
+// 二维图形的距离函数
+const box2 = (x, y, b, r) => { const qx = Math.abs(x) - b + r, qy = Math.abs(y) - b + r; return Math.hypot(Math.max(qx, 0), Math.max(qy, 0)) + Math.min(Math.max(qx, qy), 0) - r; };
+const circ = (x, y, r) => Math.hypot(x, y) - r;
+function heart(x, y) { x = Math.abs(x); y += .55; y *= 1; const s = 1.15; x /= s; y /= s;
+  if (x + y > 1) return (Math.hypot(x - .25, y - .75) - Math.SQRT2 / 4) * s;
+  return Math.min(Math.hypot(x, y - 1), Math.hypot(x - Math.max(x + y, 0) * .5, y - Math.max(x + y, 0) * .5)) * Math.sign(x - y) * s; }
+const star = (x, y) => { const a = Math.atan2(x, y), R = Math.hypot(x, y); const rr = .44 + .2 * Math.cos(5 * a); return (R - rr) * .8; };
+const tri = (x, y) => { x += .1; return Math.max(-x - .32, Math.abs(y) * 1.05 + x * .62 - .36) * .85; };
+const plus = (x, y) => Math.min(box2(x, y * 3.4, .52, .14), box2(x * 3.4, y, .52, .14));
+const ring2 = (x, y) => Math.abs(circ(x, y, .42)) - .13;
+const check = (x, y) => { const s1 = Math.max(Math.abs((x + .22) * .7071 + (y + .1) * .7071) - .13, Math.abs(-(x + .22) * .7071 + (y + .1) * .7071) - .26);
+  const s2 = Math.max(Math.abs((x - .08) * .7071 - (y - .02) * .7071) - .13, Math.abs((x - .08) * .7071 + (y - .02) * .7071) - .5); return Math.min(s1, s2); };
+const house = (x, y) => Math.min(box2(x, y + .22, .36, .06), Math.max(Math.abs(x) * .9 + y - .5, -(y - .02)));
+const moon = (x, y) => Math.max(circ(x, y, .52), -circ(x - .25, y - .18, .42));
+const ICONS = [['#FF8A92', '#E5002B', heart], ['#FFE98A', '#FFB000', star], ['#A6E9FF', '#0090FF', tri], ['#C9B0FF', '#7A2CFF', moon],
+               ['#B8FF9C', '#22C000', plus], ['#FFC09A', '#FF5200', check], ['#FFB8E0', '#FF1C8C', ring2], ['#EDE6FF', '#B9A4FF', house]];
+// 图标 = 圆角方块的枕头 + 凸起的图形
+// 图标 = 等厚的圆角软垫（3D 圆角盒）+ 平顶圆边的凸起图形
+const rbox = (x, y, z, bx, by, bz, r) => { const qx = Math.abs(x) - bx + r, qy = Math.abs(y) - by + r, qz = Math.abs(z) - bz + r; return Math.hypot(Math.max(qx, 0), Math.max(qy, 0), Math.max(qz, 0)) + Math.min(Math.max(qx, qy, qz), 0) - r; };
+function iconSDF(g) {
+  return (x, y, z) => {
+    const base = Math.max(rbox(x, y, z, 1, 1, .36, .34), box2(x, y, 1, .46) );
+    const gd = g(x, y), r = .07, qx = gd + r, qy = Math.abs(z - .36) - .13 + r;
+    const gl = Math.hypot(Math.max(qx, 0), Math.max(qy, 0)) + Math.min(Math.max(qx, qy), 0) - r;
+    return smin(base, gl, .08);
+  };
+}
+const SP = 2.75;
+ICONS.forEach(([c, d, g], i) => {
+  const col = i % 4, row = Math.floor(i / 4);
+  const m = gummy(c, d, c === '#EDE6FF' ? 2.2 : 1.4);
+  const o = meshSDF(iconSDF(g), [0, 0, 0.1, 1.25], RES, m);
+  const grp = new THREE.Group(); grp.add(o);
+  o.rotation.x = -Math.PI / 2;                     // 平躺：图形朝上
+  const pressed = i === 5;
+  const sy = pressed ? .86 : 1;
+  grp.scale.set(1 / Math.sqrt(sy), sy, 1 / Math.sqrt(sy));
+  grp.position.set((col - 1.5) * SP - 1.2, .42 * sy, (row - .5) * SP + .3);
+  grp.rotation.y = (Math.sin(i * 2.3) * .06);
+  scene.add(grp);
+  const s = glowSpot(d, [2.0, 1.3], .45); s.position.set(grp.position.x + .1, .01, grp.position.z + 1.75); scene.add(s);
+});
+// 手指：一个按下去的圆点（简化成白色的指示圈 + 涟漪）
+{ const r1 = new THREE.Mesh(new THREE.TorusGeometry(1.55, .025, 8, 120), new THREE.MeshBasicMaterial({ color: '#0E3B3A', transparent: true, opacity: .55 }));
+  r1.rotation.x = -Math.PI / 2; r1.position.set((1 - 1.5) * SP - 1.2 + 0, .02, (1 - .5) * SP + .3); scene.add(r1);
+}
+const cam = new THREE.PerspectiveCamera(30, 1920 / 1080, 0.1, 200);
+cam.position.set(-0.4, 11.6, 12.6); cam.lookAt(-0.6, 0, .2);
+await document.fonts.ready;
+finish(ctx, cam, { ao: true, aoRadius: 0.45, aoDist: 0.25, bloom: 0.15, bloomRadius: 0.5, bloomThreshold: 0.95, vig: 0.28, grain: 0.02 });
+</script>

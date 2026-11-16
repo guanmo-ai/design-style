@@ -1,0 +1,87 @@
+<!doctype html><meta charset="utf-8">
+<!-- 毛线针织 · 第 0 帧：一块正在织的布。蓝底、奶白的“毛线”两个字、上下两条费尔岛花纹带；
+     最上面一行只织到一半，棒针穿在那一行上，一根线从最后一针拉到右下的毛线团。
+     cd drafts/_3d && node shoot.cjs ../knit/cover.html ../knit/png/cover.png -->
+<style>
+@font-face{font-family:GM;src:url(/public/fonts/GeistMono.ttf)}
+@font-face{font-family:NSB;src:url(/public/fonts/NotoSansSC-Bold.otf)}
+@font-face{font-family:NSK;src:url(/public/fonts/NotoSansSC-Black.otf)}
+@font-face{font-family:Fre;src:url(/public/fonts/Fredoka.ttf)}
+html,body{margin:0;overflow:hidden;background:#000}
+#hud{position:absolute;inset:0;pointer-events:none;color:#5A1430;font-family:GM}
+.tl{position:absolute;left:64px;top:52px;font-size:22px;letter-spacing:.06em}
+.tr{position:absolute;right:64px;top:52px;font-size:22px;letter-spacing:.06em}
+.sub{position:absolute;left:64px;bottom:58px;font-family:NSB;font-size:42px}
+.sub small{display:block;font-family:Fre;font-weight:600;font-size:24px;letter-spacing:.14em;opacity:.75;margin-bottom:6px}
+</style>
+<div id="hud"><div class="tl">风格 · KNIT</div><div class="tr">STITCH 6,958 / 7,000</div>
+<div class="sub"><small>ONE STITCH · ONE PIXEL</small>一针一格：图是一行一行织出来的</div></div>
+<script type="importmap">{"imports":{"three":"/drafts/_3d/node_modules/three/build/three.module.js","three/addons/":"/drafts/_3d/node_modules/three/examples/jsm/"}}</script>
+<script type="module">
+import { THREE, setup, finish, sun } from '/drafts/_3d/lib.js';
+import { envMap, cyc } from '/drafts/_3d/craft.js';
+import { knitPanel, yarnMaterial, yarnBall } from '/drafts/_3d/knit.js';
+const Q = new URLSearchParams(location.search), PR = +(Q.get('pr') || 2);
+const BG = '#FFB0C4';
+const ctx = setup({ pr: PR, bg: BG, tone: 'neutral' });
+const { renderer, scene } = ctx;
+scene.environment = envMap(renderer); scene.environmentIntensity = 0.3;
+{ const c = cyc(BG, { w: 120, d: 80, r: 14, h: 60 }); c.position.z = -4; scene.add(c); }
+const key = sun(scene, { color: '#FFF1E0', intensity: 3.6, pos: [-14, 9, 6], target: [0, 3, 0], size: 10, map: 4096, bias: -0.0004 });   // 低一点的侧光：擦出针脚的起伏
+key.shadow.radius = 5; key.shadow.blurSamples = 16;
+const fill = new THREE.DirectionalLight('#FFD6E2', 1.0); fill.position.set(10, 4, 10); scene.add(fill);
+const rim = new THREE.DirectionalLight('#FFFFFF', 1.4); rim.position.set(4, 10, -10); scene.add(rim);
+scene.add(new THREE.HemisphereLight('#FFFFFF', '#FF8FAE', 0.4));
+await document.fonts.load('200px NSK');
+
+// ---- 图案：先画在 cols × rows 的格子上 ----
+const COLS = 100, ROWS = 70, DONE = 58;    // 最上面一行织到第几针
+const cv = document.createElement('canvas'); cv.width = COLS; cv.height = ROWS; const g = cv.getContext('2d');
+g.fillStyle = '#000'; g.fillRect(0, 0, COLS, ROWS);
+g.fillStyle = '#fff'; g.font = `900 ${ROWS * 0.54}px NSK`; g.textAlign = 'center'; g.textBaseline = 'middle';
+g.save(); g.scale(1, 1.3); g.fillText('毛线', COLS / 2, ROWS * .5 / 1.3 + 1); g.restore();   // 针比行宽：字在格子里要拉高 1.3 倍，织出来才不扁
+const TXT = g.getImageData(0, 0, COLS, ROWS).data;
+const BLUE = '#2F4FD6', CREAM = '#FFF2DA', RED = '#F0384F', YEL = '#FFC93C';
+// 费尔岛花纹带：菱形 + 小点
+const band = (c, rr) => { const m = (c % 8 + 8) % 8, k = Math.abs(m - 4); if (rr === 0 || rr === 6) return RED; if (rr === 3) return (k <= 1) ? YEL : RED; if (rr === 1 || rr === 5) return k === 0 ? CREAM : BLUE; return k <= 1 ? CREAM : BLUE; };
+function colorAt(c, r) {          // r = 0 在最下面
+  if (r === ROWS - 1 && c > DONE) return null;
+  if (r >= 2 && r < 9) return band(c, r - 2);
+  if (r >= ROWS - 9 && r < ROWS - 2) return band(c + 4, r - (ROWS - 9));
+  const tr = ROWS - 1 - r; const at = (cc, rr) => cc >= 0 && cc < COLS && rr >= 0 && rr < ROWS && TXT[(rr * COLS + cc) * 4] > 120;
+  if (at(c, tr)) return CREAM;
+  if (at(c - 1, tr) || at(c + 1, tr) || at(c, tr - 1) || at(c, tr + 1)) return RED;     // 字外一圈红：一针宽的描边
+  return BLUE;
+}
+const DX = 0.118, DY = 0.091;
+// 布的形状：轻轻起伏（布是软的），底下往前垂一点
+function surf(c, r) {
+  const x = (c - COLS / 2) * DX, y = r * DY + 0.4;
+  const u = r / ROWS, curl = Math.max(0, .12 - u) / .12;   // 下摆往前卷一点
+  const z = Math.sin(c * .08 + r * .06) * .16 + Math.sin(c * .027 - r * .09) * .26 + (1 - u) ** 2 * .7 + curl * curl * .5;
+  return [x, y - (1 - u) ** 2 * .2 + curl * curl * .25, z];
+}
+const mat = yarnMaterial();
+const panel = knitPanel({ cols: COLS, rows: ROWS, colorAt, surf, dx: DX, dy: DY, mat });
+const grp = new THREE.Group(); grp.add(panel); grp.rotation.x = -0.12; scene.add(grp);
+// ---- 棒针：穿过最上面一行 ----
+const needleMat = new THREE.MeshPhysicalMaterial({ color: '#E9C38E', roughness: .35, clearcoat: .6 });
+const topY = (ROWS - 1) * DY + 0.4 + .04;
+for (const [x0, x1, zz] of [[-6.4, 2.2, .06], [-1.2, 6.8, -.14]]) {
+  const len = x1 - x0; const n = new THREE.Mesh(new THREE.CylinderGeometry(.055, .055, len, 24), needleMat); n.rotation.z = Math.PI / 2; n.position.set((x0 + x1) / 2, topY, zz); n.castShadow = true; grp.add(n);
+  const tip = new THREE.Mesh(new THREE.ConeGeometry(.055, .3, 24), needleMat); tip.rotation.z = x0 < -6 ? -Math.PI / 2 : Math.PI / 2; tip.position.set(x0 < -6 ? x1 + .15 : x0 - .15, topY, zz); grp.add(tip);
+  const cap = new THREE.Mesh(new THREE.SphereGeometry(.13, 24, 16), new THREE.MeshPhysicalMaterial({ color: '#F0384F', roughness: .3, clearcoat: 1 })); cap.position.set(x0 < -6 ? x0 : x1, topY, zz); cap.castShadow = true; grp.add(cap);
+}
+// ---- 毛线团 + 一根线拉到最后一针 ----
+const ball = yarnBall(CREAM, 1.0, mat, 7); ball.position.set(6.2, 1.0, 2.4); scene.add(ball);
+{ const [sx, sy, sz] = surf(DONE, ROWS - 1);
+  const p0 = new THREE.Vector3(sx, sy, sz).applyMatrix4(new THREE.Matrix4().makeRotationX(-0.12));
+  const curve = new THREE.CatmullRomCurve3([p0, new THREE.Vector3(p0.x + .5, p0.y + .3, p0.z + .3), new THREE.Vector3(3.6, p0.y + .45, .7), new THREE.Vector3(6.2, p0.y - .2, 1.3), new THREE.Vector3(6.7, 3.6, 1.9), new THREE.Vector3(6.4, 2.3, 2.4), new THREE.Vector3(6.2, 2.0, 2.4)]);
+  const m = mat.clone(); m.color = new THREE.Color(CREAM); m.map = mat.map.clone(); m.map.repeat.set(1, 60); m.map.needsUpdate = true;
+  const t = new THREE.Mesh(new THREE.TubeGeometry(curve, 200, .028, 8), m); t.castShadow = true; scene.add(t); }
+
+const cam = new THREE.PerspectiveCamera(30, 1920 / 1080, 0.1, 200);
+cam.position.set(0, 4.6, 17.5); cam.lookAt(0, 3.4, 0);
+await document.fonts.ready;
+finish(ctx, cam, { ao: true, aoRadius: 0.12, aoDist: 0.35, bloom: 0, vig: 0.3, grain: 0.02 });
+</script>
