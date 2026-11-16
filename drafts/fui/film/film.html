@@ -1,0 +1,13 @@
+<!doctype html><meta charset="utf-8">
+<!-- 电影界面 FUI · 开头 5 秒小样。window.frame(f) 画第 f 帧（帧号的纯函数）。
+     签名动作：启动序列——每个元素都是 先画线 → 再长面 → 最后出字；锁定框冲过头再咔住。
+     接力：锁定框 = 下一层的取景框。镜头钻进框里，框撑满屏幕，变成地形扫描的画面。 -->
+<style>
+@font-face{font-family:GM;src:url(../../../public/fonts/GeistMono.ttf)}
+@font-face{font-family:Mic;src:url(../../../public/fonts/Michroma-Regular.ttf)}
+@font-face{font-family:NS;src:url(../../../public/fonts/NotoSansSC-Medium.otf)}
+@font-face{font-family:NSB;src:url(../../../public/fonts/NotoSansSC-Bold.otf)}
+html,body{margin:0;background:#000;overflow:hidden}canvas{display:block}
+</style>
+<canvas id="c" width="1920" height="1080"></canvas>
+<script src="fui.js"></script>

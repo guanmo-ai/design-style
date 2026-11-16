@@ -1,0 +1,16 @@
+<!doctype html><meta charset="utf-8">
+<!-- 滚动叙事 · 开头 5 秒小样（布局风格）。window.frame(f) 画第 f 帧（帧号的纯函数）。
+     签名：动画不自己计时，全部挂在滚动位置上——所以整页的手感 = 滚动的惯性（甩一下，指数地停）。
+     右边是整页的缩略图：哪一段被钉住（sticky）、视口现在在哪；左下是滚动速度曲线。 -->
+<style>
+@font-face{font-family:ID;src:url(../../../public/fonts/InterDisplay-Bold.ttf)}
+@font-face{font-family:IDS;src:url(../../../public/fonts/InterDisplay-SemiBold.ttf)}
+@font-face{font-family:IM;src:url(../../../public/fonts/Inter-Medium.ttf)}
+@font-face{font-family:GM;src:url(../../../public/fonts/GeistMono.ttf)}
+@font-face{font-family:NSK;src:url(../../../public/fonts/NotoSansSC-Black.otf)}
+@font-face{font-family:NSB;src:url(../../../public/fonts/NotoSansSC-Bold.otf)}
+@font-face{font-family:NSM;src:url(../../../public/fonts/NotoSansSC-Medium.otf)}
+html,body{margin:0;background:#000;overflow:hidden}canvas{display:block}
+</style>
+<canvas id="c" width="1920" height="1080"></canvas>
+<script src="scroll.js"></script>
