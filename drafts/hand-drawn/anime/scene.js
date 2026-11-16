@@ -104,7 +104,7 @@ const ANIME = (() => {
       for (let x = 0; x < bw; x++) { let acc = 0; for (let i = -rad; i <= rad; i++) acc += T[cl(i, bh) * bw + x]; for (let y = 0; y < bh; y++) { A[y * bw + x] = acc * inv; acc += T[cl(y + rad + 1, bh) * bw + x] - T[cl(y - rad, bh) * bw + x]; } }
     };
     const Hb = Hf.slice(), Hs = Hf.slice();
-    const R1 = Math.round(20 * S), R2 = Math.round(3 * S);
+    const R1 = Math.round(24 * S), R2 = Math.round(7 * S);
     blur(Hb, R1); blur(Hb, R1); blur(Hs, R2); blur(Hs, R2);
     const im = g.createImageData(bw, bh), d = im.data;
     const L = [-.62, -.68, .34], Lm = Math.hypot(...L); L[0] /= Lm; L[1] /= Lm; L[2] /= Lm;
@@ -113,12 +113,12 @@ const ANIME = (() => {
       const p = sph[id], X = (x + bx0) / S, Y = (y + by0) / S;
       // 大形体法线（模糊高度场）+ 一点小包的起伏
       let gx = (Hb[k + 1] - Hb[k - 1]) * .5 / S, gy = (Hb[k + bw] - Hb[k - bw]) * .5 / S;
-      gx += (Hs[k + 1] - Hs[k - 1]) * .5 / S * .4; gy += (Hs[k + bw] - Hs[k - bw]) * .5 / S * .4;
+      gx += (Hs[k + 1] - Hs[k - 1]) * .5 / S * 1.1; gy += (Hs[k + bw] - Hs[k - bw]) * .5 / S * 1.1;
       let nx = -gx * 2.4, ny = -gy * 2.4, nz = .8; const m = Math.hypot(nx, ny, nz); nx /= m; ny /= m; nz /= m;
       let ndl = nx * L[0] + ny * L[1] + nz * L[2];
       const h = clamp((base - Y) / (base - top));
-      ndl += fbm(n, X * .02, Y * .02, 3) * .05 - Math.pow(1 - h, 1.6) * .42 + .03;
-      const lit = smooth(.16, .21, ndl);
+      ndl += fbm(n, X * .03, Y * .03, 2) * .02 - Math.pow(1 - h, 1.6) * .4 + .05;
+      const lit = smooth(.15, .23, ndl);
       const sh = mix(shadowBot, shadowTop, Math.pow(h, .8));
       const li = mix(mix('#e4eaf8', '#ffffff', smooth(.21, .6, ndl)), '#fff3dc', (1 - h) * .3 + .1);
       let c = mix(sh, li, lit);

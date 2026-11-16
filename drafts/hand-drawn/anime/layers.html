@@ -36,16 +36,17 @@ body{background:#0b1220}
 </div>
 <script src="../lib.js"></script>
 <script src="scene.js"></script>
+<script src="../painterly/paint.js"></script><script src="ghibli.js"></script>
 <script>
 const S = +(new URLSearchParams(location.search).get('s') || 2);
-document.fonts.ready.then(() => {
+document.fonts.ready.then(() => setTimeout(() => {
   const c = document.getElementById('c'); c.width = 1920 * S; c.height = 1080 * S;
   const g = c.getContext('2d'); g.scale(S, S);
   // 背景：暗的摄影棚，顶上一盏灯
   let bg = g.createRadialGradient(1100, 380, 50, 1100, 420, 1300);
   bg.addColorStop(0, '#1d2a44'); bg.addColorStop(.55, '#0f1729'); bg.addColorStop(1, '#070b14');
   g.fillStyle = bg; g.fillRect(0, 0, 1920, 1080);
-  const L = ANIME.renderLayers(S);
+  const L = GHIBLI.paintLayers(ANIME.renderLayers(S), S);
   const order = ['sky', 'clouds', 'mountains', 'field', 'poles', 'cel', 'fg'];
   const A0 = .30, B0 = -.04, D0 = .28, ox0 = 140, oy0 = 296, dx = 182, dy = 40, grow = .025;
   const M = i => { const k = 1 + i * grow; return [A0 * k, B0 * k, D0 * k, ox0 + i * dx, oy0 + i * dy - i * 6]; };
@@ -81,5 +82,5 @@ document.fonts.ready.then(() => {
   document.getElementById('tags').innerHTML = tags.join('');
   HD.grain(g, 5, 9);
   window.__done = true;
-});
+}, 30));
 </script>
