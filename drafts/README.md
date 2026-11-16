@@ -45,6 +45,17 @@
 | ~~拟物 Skeuomorphism~~ | **不做**（图已删） |
 
 
+## 光 · Study Nº 01（2026-11-16，作品，不是一期风格）
+
+
+一块切割水晶雕成的“光”字，黑色摄影棚里只有一束硬光打在字上；地面没有直射光，只有穿过玻璃的光——被切面拆成彩虹，一道道铺在暗色的抛光石面上。
+
+![光](light/png/light-poster.png)
+
+- 渲染：`light/pt.js`，WebGL2 着色器里的光谱路径追踪（玻璃按波长折射，柯西色散）+ 光子投射算焦散（太阳 → 玻璃 → 地面，6700 万个光子，点精灵累加）；1920×1080、每像素 640 次采样，云端软件渲染约 8 分钟。
+- 字：二维距离场 → 屋脊形截面（每一笔是两面斜切的棱镜），所以能把白光拆开。
+- 出图：`node drafts/light/render.cjs drafts/light/png/light.png "spp=640&pp=64&pn=1024&exp=1.8"`，再 `node drafts/_lib/shot.cjs drafts/light/poster.html drafts/light/png/light-poster.png 1920 1080 1` 叠排版。
+
 ## 第十一轮：立体书 / 果冻软糖 / 毛线针织，各两张图（2026-11-16，未占期号）
 
 
