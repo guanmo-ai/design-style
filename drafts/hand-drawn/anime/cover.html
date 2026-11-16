@@ -1,0 +1,48 @@
+<!doctype html><meta charset="utf-8">
+<link rel="stylesheet" href="../fonts.css">
+<style>
+.lbl{position:absolute;font:500 15px/1.5 Mono;letter-spacing:.14em;color:rgba(255,255,255,.92);text-shadow:0 1px 8px rgba(10,40,90,.35)}
+.title{position:absolute;left:72px;bottom:118px;font:900 112px/1 SerifSC;color:#fff;letter-spacing:.06em;text-shadow:0 4px 30px rgba(0,20,10,.45)}
+.sub{position:absolute;left:76px;bottom:62px;font:500 22px/1.4 SansSC;color:rgba(255,255,255,.9);letter-spacing:.08em}
+.sub i{font:italic 26px InstrSerif;letter-spacing:.02em;margin-right:16px;color:#fff}
+.note{position:absolute;font:500 15px/1.45 SansSC;color:#fff;letter-spacing:.04em;text-shadow:0 1px 10px rgba(10,40,90,.45)}
+.note b{display:block;font:600 12px Mono;letter-spacing:.16em;opacity:.8;margin-bottom:3px}
+svg{position:absolute;inset:0}
+.chips{position:absolute;right:70px;bottom:64px;display:flex;gap:10px}
+.chip{width:74px;font:500 11px/1.4 Mono;color:rgba(255,255,255,.85);letter-spacing:.06em}
+.chip div{height:46px;border-radius:3px;margin-bottom:7px;box-shadow:0 0 0 1px rgba(255,255,255,.35) inset}
+.chip span{display:block;font:500 12px SansSC;color:#fff}
+</style>
+<canvas class="bg" id="c"></canvas>
+<div class="ov">
+  <div class="lbl" style="left:72px;top:56px">CUT 024 · BG + A · 6+00 · 夏</div>
+  <div class="lbl" style="right:72px;top:56px;text-align:right">HAND-PAINTED BACKGROUND<br><span style="opacity:.7">POSTER COLOR · 1 BG / 1 CEL / 2 BOOK</span></div>
+  <svg style="display:none" width="1920" height="1080" fill="none" stroke="rgba(255,255,255,.85)" stroke-width="1.3">
+    <path d="M1222 196 L1080 140 L960 140"/><circle cx="1222" cy="196" r="4" fill="#fff"/>
+    <path d="M780 300 L860 232 L960 232"/><circle cx="780" cy="300" r="4" fill="#fff"/>
+    <path d="M1240 860 L1290 820 L1380 820"/><circle cx="1240" cy="860" r="4" fill="#fff"/>
+  </svg>
+  <div class="note" hidden style="left:972px;top:112px"><b>01 · 云</b>一团一个包，亮面是硬边的白<br>影子不是灰，是带紫的蓝</div>
+  <div class="note" hidden style="left:972px;top:204px"><b>02 · 赛璐璐</b>色线 + 一层影 + 一块高光<br>平涂的帽子放在画出来的天上</div>
+  <div class="note" hidden style="left:1392px;top:792px"><b>03 · 风</b>稻田不动，一块偏黄的亮滑过去</div>
+  <div class="title">手绘动画</div>
+  <div class="sub"><i>Hand-painted animation</i>背景是画出来的 · 云是一团一团亮起来的</div>
+  <div class="chips" id="chips"></div>
+</div>
+<script src="../lib.js"></script>
+<script src="scene.js"></script>
+<script>
+const S = +(new URLSearchParams(location.search).get('s') || 2);
+const chips = [['天顶', '#1648A6'], ['天际', '#A9D9F0'], ['云影', '#7F8CBF'], ['稻田', '#5AA646'], ['风', '#D8EE8A'], ['帽 · 影', '#C99B55']];
+document.getElementById('chips').innerHTML = chips.map(([n, c]) => `<div class="chip"><div style="background:${c}"></div><span>${n}</span>${c}</div>`).join('');
+document.fonts.ready.then(() => {
+  const c = document.getElementById('c'); c.width = 1920 * S; c.height = 1080 * S;
+  const g = c.getContext('2d');
+  const t = performance.now();
+  const L = ANIME.renderLayers(S);
+  for (const l of L) g.drawImage(l.canvas, 0, 0);
+  ANIME.finish(c, S);
+  console.log('anime cover', ((performance.now() - t) / 1000).toFixed(1) + 's');
+  window.__done = true;
+});
+</script>

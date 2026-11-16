@@ -1,0 +1,87 @@
+<!doctype html><meta charset="utf-8">
+<link rel="stylesheet" href="../fonts.css">
+<canvas class="bg" id="c"></canvas>
+<script src="../lib.js"></script><script src="pencil.js"></script>
+<script>
+const S = +(new URLSearchParams(location.search).get('s') || 2);
+const W = 1920, H = 1080, { GRAPH, BLUE, RED, line, catmull, roughEllipse, write, hatchText } = PEN;
+const { rng, makeNoise, fbm, clamp, lerp, smooth, mix, css, canvas } = HD;
+// cubic-bezier(x1,y1,x2,y2) → 给 x 求 y
+const bez = (x1, y1, x2, y2) => x => { const B = (t, a, b) => 3 * a * t * (1 - t) ** 2 + 3 * b * t * t * (1 - t) + t ** 3; let lo = 0, hi = 1; for (let i = 0; i < 40; i++) { const m = (lo + hi) / 2; (B(m, x1, x2) < x ? lo = m : hi = m); } return B((lo + hi) / 2, y1, y2); };
+const ROWS = [
+  { n: '01', zh: '线性', en: 'linear', note: '每格一样远 = 机器在动', css: 'linear', p: [0, 0, 1, 1], keys: [1, 9] },
+  { n: '02', zh: '慢入慢出', en: 'slow in · slow out', note: '两头挤、中间稀 = 有重量', css: 'cubic-bezier(.42, 0, .58, 1)', p: [.42, 0, .58, 1], keys: [1, 9], bds: [5] },
+  { n: '03', zh: '冲过头', en: 'overshoot · back', note: '画过终点一格 = UI 的弹簧', css: 'cubic-bezier(.34, 1.56, .64, 1)', p: [.34, 1.56, .64, 1], keys: [1, 9], bds: [6] },
+];
+Promise.all([document.fonts.load('600 30px Caveat'), document.fonts.load('30px LongCang'), document.fonts.load('900 100px SerifSC'), document.fonts.load('500 20px Mono')]).then(() => setTimeout(() => {
+  const c = document.getElementById('c'); c.width = W * S; c.height = H * S; const g = c.getContext('2d'); g.scale(S, S);
+  // 纸：整张满版，底下透光
+  const rg = g.createRadialGradient(960, 520, 100, 960, 540, 1200); rg.addColorStop(0, '#fffcf3'); rg.addColorStop(.6, '#f7eedb'); rg.addColorStop(1, '#e2d0ad');
+  g.fillStyle = rg; g.fillRect(0, 0, W, H);
+  const [L, lg] = PEN.layer(W, H, S);
+  // 标题
+  hatchText(lg, '间距表，就是缓动曲线', 90, 170, { size: 92, gap: 4 });
+  write(lg, "the animator's spacing chart = your easing curve", 94, 222, { size: 34, a: .7 });
+  write(lg, '格子之间的距离就是速度：近 = 慢，远 = 快', 1280, 120, { size: 30, font: 'LongCang', weight: 400, col: RED, a: .85, rot: -.02 });
+  // 表头
+  [['SPACING', 400], ['CURVE', 1290], ['COPY', 1600]].forEach(([t, x]) => write(lg, t, x, 292, { size: 24, a: .55 }));
+  line(lg, [[90, 306], [1830, 300]], { w: 1.2, col: BLUE, a: .45, seed: 5, taper: .03 });
+  ROWS.forEach((R, ri) => {
+    const y0 = 400 + ri * 212, f = bez(...R.p), N = 9, X0 = 450, X1 = 1130;
+    // 行名
+    roughEllipse(lg, 112, y0 - 12, 22, 20, 0, { col: RED, a: .85, w: 1.8, seed: 10 + ri, loops: 1 });
+    write(lg, R.n, 99, y0 - 2, { size: 24, col: RED, a: .9 });
+    write(lg, R.zh, 148, y0 + 4, { size: 44, font: 'LongCang', weight: 400, a: .92 });
+    write(lg, R.en, 150, y0 + 42, { size: 26, a: .65 });
+    write(lg, R.note, 150, y0 + 82, { size: 22, font: 'LongCang', weight: 400, col: BLUE, a: .85 });
+    // 球：每一张一格，洋葱皮
+    const xs = [...Array(N)].map((_, i) => lerp(X0, X1, f(i / (N - 1))));
+    line(lg, [[X0 - 40, y0 + 28], [X1 + 90, y0 + 28]], { w: 1.1, col: BLUE, a: .45, seed: 20 + ri, taper: .03 });
+    xs.forEach((x, i) => {
+      const key = R.keys.includes(i + 1);
+      roughEllipse(lg, x, y0, 26, 26, 0, { col: key ? GRAPH : GRAPH, a: key ? .9 : .42, w: key ? 2.4 : 1.4, seed: 30 + ri * 20 + i, loops: key ? 2 : 1 });
+      if (key) { // 关键张：加影
+        const rr = rng(i); for (let t = -26; t < 26; t += 4.5) { const hh = Math.sqrt(Math.max(0, 26 * 26 - t * t)); if (t > -6) line(lg, [[x + t, y0 - hh * .9], [x + t - 6, y0 + hh * .9]], { w: 1, col: GRAPH, a: .5 * smooth(-6, 16, t), seed: 300 + t | 0, taper: .2 }); }
+      }
+      if (i === 0 || Math.abs(x - xs[i - 1]) > 18 || i === N - 1) write(lg, String(i + 1), x - 5, y0 - 38, { size: 20, col: BLUE, a: .7 });
+    });
+    // 下面的时间表：一根横线，刻度和球对齐
+    const ty = y0 + 66;
+    line(lg, [[X0, ty], [Math.max(X1, ...xs), ty]], { w: 1.6, a: .85, seed: 40 + ri, taper: .03 });
+    xs.forEach((x, i) => { const key = R.keys.includes(i + 1), bd = (R.bds || []).includes(i + 1), L2 = key ? 20 : 12;
+      line(lg, [[x, ty - L2 / 2], [x, ty + L2 / 2]], { w: 1.5, a: .85, seed: 50 + ri * 20 + i, taper: .2 });
+      if (key) roughEllipse(lg, x, ty + 22, 11, 11, 0, { col: RED, a: .8, w: 1.4, seed: 60 + ri * 20 + i, loops: 1 });
+      if (bd) line(lg, [[x - 10, ty + 30], [x, ty + 13], [x + 10, ty + 30], [x - 11, ty + 30]], { w: 1.3, col: RED, a: .8, seed: 70 + ri * 20 + i, taper: .05 }); });
+    if (ri === 2) { const xm = Math.max(...xs); write(lg, '过头 ↶', xm + 14, y0 - 30, { size: 24, col: RED, a: .85 }); }
+    // 曲线：坐标轴 + 曲线 + 贝塞尔手柄
+    const gx = 1290, gy = y0 + 70, gw = 230, gh = 120;
+    line(lg, [[gx, gy - gh - 30], [gx, gy], [gx + gw + 20, gy]], { w: 1.5, a: .8, seed: 80 + ri, taper: .05 });
+    line(lg, [[gx, gy - gh], [gx + gw, gy - gh]], { w: 1, col: BLUE, a: .35, seed: 81 + ri, taper: .05 });
+    const pts = []; for (let k = 0; k <= 40; k++) { const t = k / 40; pts.push([gx + t * gw, gy - f(t) * gh]); }
+    line(lg, pts, { w: 2.6, a: .92, passes: 2, seed: 90 + ri, taper: .08 });
+    const [x1, y1, x2, y2] = R.p, h1 = [gx + x1 * gw, gy - y1 * gh], h2 = [gx + x2 * gw, gy - y2 * gh];
+    if (R.css !== 'linear') {
+      line(lg, [[gx, gy], h1], { w: 1.2, col: BLUE, a: .7, seed: 95 + ri, taper: .05 }); line(lg, [[gx + gw, gy - gh], h2], { w: 1.2, col: BLUE, a: .7, seed: 96 + ri, taper: .05 });
+      [h1, h2].forEach((h, k) => roughEllipse(lg, h[0], h[1], 6, 6, 0, { col: BLUE, a: .9, w: 1.6, seed: 97 + ri * 3 + k, loops: 2 }));
+    }
+    // 球在曲线上对应的点
+    for (let i = 0; i < N; i++) { const t = i / (N - 1); line(lg, [[gx + t * gw, gy - f(t) * gh - 3], [gx + t * gw, gy - f(t) * gh + 3]], { w: 3, col: RED, a: .7, seed: 400 + ri * 9 + i }); }
+    write(lg, 'time →', gx + gw - 60, gy + 30, { size: 20, a: .55 });
+    // 可以抄的值
+    const parts = R.css === 'linear' ? ['linear'] : ['cubic-bezier(', R.css.slice(13)];
+    parts.forEach((t, k) => write(lg, t, 1590, y0 - 8 + k * 38, { size: 29, font: 'Mono', weight: 500, a: .9 }));
+    const ul = y0 + 6 + (parts.length - 1) * 38; line(lg, catmull([[1584, ul], [1680, ul + 4], [1590 + parts[parts.length - 1].length * 17.5, ul - 2]], false), { w: 1.3, col: RED, a: .55, seed: 110 + ri });
+    write(lg, 'transition: transform 400ms', 1590, ul + 40, { size: 17, font: 'Mono', weight: 400, a: .5 });
+  });
+  // 页脚：一拍二
+  write(lg, '1 拍 2：一张画停两格 = 每秒 12 张。镜头 1 拍 1，人物 1 拍 2——顿挫感就是从这里来的', 90, 1022, { size: 28, font: 'LongCang', weight: 400, a: .8 });
+  write(lg, 'w × h = 1  ·  ears 2 fr late  ·  arcs, not lines', 1300, 1024, { size: 28, a: .6 });
+  PEN.grain(L, PEN.tooth(512, 512, 7), 512);
+  g.save(); g.setTransform(1, 0, 0, 1, 0, 0); g.globalCompositeOperation = 'multiply'; g.drawImage(L, 0, 0); g.restore();
+  // 定位孔（上沿）
+  [[-330, 74], [0, 22], [330, 74]].forEach(([dx, wd]) => { g.fillStyle = 'rgba(70,55,40,.85)'; g.beginPath(); g.roundRect(960 + dx - wd / 2, 22, wd, 22, 11); g.fill(); });
+  const vg = g.createRadialGradient(960, 540, 500, 960, 540, 1250); vg.addColorStop(0, 'rgba(0,0,0,0)'); vg.addColorStop(1, 'rgba(60,40,20,.25)'); g.fillStyle = vg; g.fillRect(0, 0, W, H);
+  HD.grain(g, 6, 5);
+  window.__done = true;
+}, 50));
+</script>

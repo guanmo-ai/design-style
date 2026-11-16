@@ -1,0 +1,15 @@
+@font-face{font-family:SerifSC;src:url(../../public/fonts/NotoSerifSC.ttf);font-weight:200 900}
+@font-face{font-family:SansSC;src:url(../../public/fonts/NotoSansSC-Regular.otf);font-weight:400}
+@font-face{font-family:SansSC;src:url(../../public/fonts/NotoSansSC-Medium.otf);font-weight:500}
+@font-face{font-family:SansSC;src:url(../../public/fonts/NotoSansSC-Bold.otf);font-weight:700}
+@font-face{font-family:SansSC;src:url(../../public/fonts/NotoSansSC-Black.otf);font-weight:900}
+@font-face{font-family:Mono;src:url(../../public/fonts/GeistMono.ttf);font-weight:100 900}
+@font-face{font-family:Corm;src:url(../../public/fonts/Cormorant.ttf);font-weight:300 700}
+@font-face{font-family:InstrSerif;src:url(../../public/fonts/InstrumentSerif-Regular.ttf)}
+@font-face{font-family:InstrSerif;src:url(../../public/fonts/InstrumentSerif-Italic.ttf);font-style:italic}
+@font-face{font-family:Caveat;src:url(../../public/fonts/Caveat.ttf);font-weight:400 700}
+@font-face{font-family:LongCang;src:url(../../public/fonts/LongCang-Regular.ttf)}
+@font-face{font-family:Anton;src:url(../../public/fonts/Anton-Regular.ttf)}
+html,body{margin:0;width:1920px;height:1080px;overflow:hidden;background:#000}
+canvas.bg{position:absolute;left:0;top:0;width:1920px;height:1080px}
+.ov{position:absolute;inset:0}
