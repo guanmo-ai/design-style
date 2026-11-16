@@ -1,0 +1,27 @@
+<!doctype html><meta charset="utf-8">
+<!-- 光 · Study Nº 01
+     一块光学玻璃雕成的“光”字，立在抛光的浅色石面上；黄金时刻的太阳从斜后方穿过它，在石面上投下被拆开的彩虹。
+     渲染：WebGL2 光谱路径追踪（玻璃按波长折射）+ 光子投射算焦散（太阳 → 玻璃 → 地面），逐帧累积。
+     node ../_lib/shot-gl.cjs light.html png/light.png 1920 1080 1 "spp=256" -->
+<style>
+@font-face{font-family:IS;src:url(../../public/fonts/InstrumentSerif-Regular.ttf)}
+@font-face{font-family:ISI;src:url(../../public/fonts/InstrumentSerif-Italic.ttf)}
+@font-face{font-family:NSC;src:url(../../public/fonts/NotoSerifSC.ttf)}
+@font-face{font-family:NSK;src:url(../../public/fonts/NotoSansSC-Black.otf)}
+@font-face{font-family:GM;src:url(../../public/fonts/GeistMono.ttf)}
+html,body{margin:0;background:#000;overflow:hidden}
+canvas{display:block;position:absolute;left:0;top:0}
+#ui{position:absolute;inset:0;pointer-events:none;color:#F6EADC;opacity:0}
+</style>
+<canvas id="c"></canvas>
+<div id="ui">
+  <div style="position:absolute;left:72px;top:58px;font-family:GM;font-size:15px;letter-spacing:.32em;opacity:.55">STUDY Nº 01</div>
+  <div style="position:absolute;right:72px;top:58px;font-family:GM;font-size:15px;letter-spacing:.32em;opacity:.55">GLASS · DISPERSION · 28°</div>
+  <div style="position:absolute;left:72px;top:118px">
+    <div style="font-family:NSC;font-weight:300;font-size:30px;letter-spacing:.5em;opacity:.92">光</div>
+    <div style="font-family:ISI;font-size:44px;line-height:1.05;margin-top:14px;opacity:.95">Light, taken apart.</div>
+    <div style="font-family:NSC;font-size:17px;letter-spacing:.18em;margin-top:14px;opacity:.6">一块玻璃，把一束白光拆成七种颜色</div>
+  </div>
+  <div style="position:absolute;right:72px;bottom:72px;text-align:right;font-family:NSC;font-size:16px;letter-spacing:.4em;opacity:.6">观默</div>
+</div>
+<script src="desert.js"></script>
