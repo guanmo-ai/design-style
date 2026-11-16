@@ -54,7 +54,8 @@ const float SLOPE = 1.15;  // 切面斜率：每一笔的截面是屋脊形（�
 const float WCAP = 0.14;
 const float RB = 0.012;    // 很小的倒角：切面锋利
 const vec3 OBJ = vec3(0.0, 0.0, 0.0);
-const float ROT = -0.30;   // 字绕 y 转
+uniform float uRot;
+#define ROT uRot   // 字绕 y 转
 vec3 toObj(vec3 p){ p -= OBJ; float c = cos(ROT), s = sin(ROT); return vec3(c*p.x + s*p.z, p.y, -s*p.x + c*p.z); }
 vec3 toWorldDir(vec3 d){ float c = cos(ROT), s = sin(ROT); return vec3(c*d.x - s*d.z, d.y, s*d.x + c*d.z); }
 float g2(vec2 p){ vec2 c = clamp(p, uGMin, uGMax); vec2 uv = (c - uGMin) / (uGMax - uGMin); return texture(uGlyph, uv).r + length(p - c); }
@@ -73,6 +74,23 @@ float marchOut(vec3 ro, vec3 rd, float tmax){
   for (int i = 0; i < 160; i++){ float d = sdObj(ro + rd*t); if (d < 2e-4) return t; t += d * .92; if (t > b) break; } return -1.; }
 // 在玻璃里面走到出口
 float marchIn(vec3 ro, vec3 rd){ float t = 1e-3; for (int i = 0; i < 160; i++){ float d = -sdObj(ro + rd*t); if (d < 2e-4) return t; t += max(d * .92, 2e-4); if (t > 4.) break; } return t; }
+// 小人（比例尺）：身体 + 头 + 两条腿，站在地上
+uniform vec3 uPerson;
+float sdCap(vec3 p, vec3 a, vec3 b, float r){ vec3 pa = p - a, ba = b - a; float h = clamp(dot(pa, ba) / dot(ba, ba), 0., 1.); return length(pa - ba*h) - r; }
+float sdPerson(vec3 p){ p -= uPerson; float s = .2;   // 身高约 0.2（字高 1.7 → 字有八层楼那么高）
+  float d = sdCap(p, vec3(0., .105*s/.2, 0.), vec3(0., .155*s/.2, 0.), .022*s/.2);
+  d = min(d, length(p - vec3(0., .183*s/.2, 0.)) - .0135*s/.2);
+  d = min(d, sdCap(p, vec3(-.008, .0, 0.)*s/.2, vec3(-.007, .105, 0.)*s/.2, .0095*s/.2));
+  d = min(d, sdCap(p, vec3(.009, .0, .004)*s/.2, vec3(.007, .105, 0.)*s/.2, .0095*s/.2));
+  d = min(d, sdCap(p, vec3(-.026, .15, 0.)*s/.2, vec3(-.03, .085, .006)*s/.2, .0075*s/.2));
+  d = min(d, sdCap(p, vec3(.026, .15, 0.)*s/.2, vec3(.03, .085, -.004)*s/.2, .0075*s/.2));
+  return d; }
+float marchPerson(vec3 ro, vec3 rd, float tmax){
+  // 包围球
+  vec3 oc = ro - (uPerson + vec3(0., .1, 0.)); float b = dot(oc, rd), c = dot(oc, oc) - .13*.13, h = b*b - c; if (h < 0.) return -1.;
+  float t = max(-b - sqrt(h), 0.), t1 = min(-b + sqrt(h), tmax);
+  for (int i = 0; i < 64; i++){ float d = sdPerson(ro + rd*t); if (d < 1e-4) return t; t += d; if (t > t1) break; } return -1.; }
+vec3 nPerson(vec3 p){ const vec2 e = vec2(.0005, 0.); return normalize(vec3(sdPerson(p+e.xyy)-sdPerson(p-e.xyy), sdPerson(p+e.yxy)-sdPerson(p-e.yxy), sdPerson(p+e.yyx)-sdPerson(p-e.yyx))); }
 // 随机数
 uint hs; float rnd(){ hs ^= hs << 13u; hs ^= hs >> 17u; hs ^= hs << 5u; return float(hs) / 4294967296.; }
 uint wang(uint s){ s = (s ^ 61u) ^ (s >> 16u); s *= 9u; s = s ^ (s >> 4u); s *= 0x27d4eb2du; s = s ^ (s >> 15u); return s; }
@@ -156,9 +174,24 @@ float floorTex(vec2 p){ // 石面上极淡的纹理
   return .94 + .06 * (sin(p.x*3.1 + sin(p.y*1.7)*2.) * .5 + .5) * (sin(p.y*2.3 + p.x*.4) * .5 + .5); }
 vec3 albedoFloor(vec2 p){ return vec3(.24, .225, .215) * floorTex(p); }
 vec3 caustic(vec3 p){ vec2 uv = (p.xz - CMIN)/(CMAX - CMIN); if (any(lessThan(uv, vec2(0))) || any(greaterThan(uv, vec2(1)))) return vec3(0); return texture(uCaus, uv).rgb * uCausScale; }
-bool sunVisible(vec3 p){ return marchOut(p, uSun, 20.) < 0.; }
+bool sunVisible(vec3 p){ return marchOut(p, uSun, 20.) < 0. && marchPerson(p, uSun, 20.) < 0.; }
 uniform float uBeamR, uDbg;
-float beam(vec3 p){ vec3 v = p - vec3(.0, .8, 0.); v -= uSun * dot(v, uSun); return smoothstep(uBeamR, uBeamR * .55, length(v)); }
+float beam(vec3 p){ vec3 v = p - vec3(.0, .8, 0.); v -= uSun * dot(v, uSun); return smoothstep(uBeamR, uBeamR * .8, length(v)); }
+uniform float uFog, uCausVol;
+float hg(float c, float g){ return (1. - g*g) / (4.*PI*pow(1. + g*g - 2.*g*c, 1.5)); }
+// 光束圆柱（轴过字的中心、沿太阳方向）和射线的交段
+bool beamSpan(vec3 ro, vec3 rd, float tmax, out float a, out float b){
+  vec3 C = vec3(0., .8, 0.), oc = ro - C; vec3 d = rd - uSun*dot(rd, uSun), o = oc - uSun*dot(oc, uSun);
+  float A = dot(d, d), B = dot(o, d), Cc = dot(o, o) - uBeamR*uBeamR, h = B*B - A*Cc; if (h < 0. || A < 1e-8) return false;
+  h = sqrt(h); a = max((-B - h)/A, 0.); b = min((-B + h)/A, tmax); return b > a; }
+vec3 inscatter(vec3 ro, vec3 rd, float tmax){
+  float a, b; if (!beamSpan(ro, rd, tmax, a, b)) return vec3(0);
+  float t = a + rnd()*(b - a); vec3 p = ro + rd*t; if (p.y < 0.) return vec3(0);
+  vec3 Li = vec3(0);
+  if (uDbg > 2.5) return (sunVisible(p) ? vec3(0., 3., 0.) : vec3(30., 0., 0.)) * uFog * (b - a);
+  if (sunVisible(p)) Li += SUNL * (PI * SUNA * SUNA) * beam(p);
+  else { vec3 q = p - uSun * (p.y / uSun.y); Li += uDbg > 1.5 ? vec3(20., 0., 0.) : caustic(q) * uCausVol; }     // 在玻璃后面：穿过玻璃的光沿光线落到地上，读那一点的焦散 = 这一点有多少彩虹光
+  return Li * uFog * hg(dot(rd, uSun), .62) * exp(-uFog * 1.4 * t) * (b - a); }
 vec3 cosHemi(vec3 n){ float r1 = rnd(), r2 = rnd(); float r = sqrt(r1), a = 2.*PI*r2; vec3 t = normalize(abs(n.y) < .99 ? cross(n, vec3(0,1,0)) : cross(n, vec3(1,0,0))), b = cross(n, t); return normalize(t*cos(a)*r + b*sin(a)*r + n*sqrt(1.-r1)); }
 void main(){
   hs = wang(uint(gl_FragCoord.x) * 1973u + uint(gl_FragCoord.y) * 9277u + uint(uFrame) * 26699u + 7u);
@@ -182,6 +215,14 @@ void main(){
     }
     float tf = rd.y < -1e-5 ? -ro.y / rd.y : 1e9;
     float tg = marchOut(ro, rd, min(tf, 30.));
+    float tp = marchPerson(ro, rd, min(tf, 30.));
+    { float th = min(tf, 30.); if (tg > 0.) th = min(th, tg); if (tp > 0.) th = min(th, tp);
+      if (spec_ && uFog > 0.) { L += thr * inscatter(ro, rd, min(th, 14.)); thr *= exp(-uFog * 1.4 * min(th, 14.)); } }
+    if (tp > 0. && (tg < 0. || tp < tg) && tp < tf){
+      ro += rd*tp; vec3 N = nPerson(ro); vec3 A = vec3(.035, .033, .032);
+      vec3 Ld = vec3(0); float nl = dot(N, uSun); if (nl > 0. && sunVisible(ro + N*1e-3)) Ld += A / PI * SUNL * (PI*SUNA*SUNA) * nl * beam(ro);
+      vec3 q = ro - uSun * (ro.y / uSun.y); Ld += A / PI * caustic(q) * max(dot(N, -normalize(vec3(uSun.x, 0., uSun.z))*-1.), .2);
+      L += thr * Ld; thr *= A; rd = cosHemi(N); ro += N*1e-3; spec_ = false; continue; }
     if (tg > 0. && tg < tf){
       ro += rd*tg; vec3 N = nObj(ro); float ci = -dot(rd, N);
       if (!waveSet){ float lam = 400. + 300.*rnd(); thr *= spec(lam); n = ior(lam); waveSet = true; }
@@ -224,15 +265,22 @@ const BLF = `#version 300 es
 precision highp float; uniform sampler2D uT; uniform vec2 uDir; in vec2 vUv; out vec4 o;
 void main(){ vec3 s = vec3(0); float w = 0.; for (int i = -12; i <= 12; i++){ float k = exp(-float(i*i)/50.); s += texture(uT, vUv + uDir*float(i)).rgb*k; w += k; } o = vec4(s/w, 1.); }`;
 const DSF = `#version 300 es
-precision highp float; uniform sampler2D uAcc, uBloom; uniform float uExp; uniform vec2 uRes; in vec2 vUv; out vec4 o;
+precision highp float; uniform sampler2D uAcc, uBloom, uStreak; uniform float uExp; uniform vec2 uRes; in vec2 vUv; out vec4 o;
 vec3 aces(vec3 x){ return clamp((x*(2.51*x+.03))/(x*(2.43*x+.59)+.14), 0., 1.); }
 float h(vec2 p){ return fract(sin(dot(p, vec2(12.9898,78.233))) * 43758.5453); }
 void main(){ vec4 a = texture(uAcc, vUv); vec3 c = a.rgb / max(a.a, 1.);
   c += texture(uBloom, vUv).rgb * .32;
-  c *= uExp; c = aces(c);
+  c += texture(uStreak, vUv).rgb * vec3(.55, .75, 1.25) * .5;     // 变形镜头的横向光晕（偏蓝）
+  c *= uExp;
+  float lum = dot(c, vec3(.2126, .7152, .0722));
+  c = mix(c, c * vec3(.86, 1.02, 1.12), smoothstep(.5, 0., lum));   // 暗部偏青
+  c = mix(c, c * vec3(1.1, 1., .86), smoothstep(.3, 2., lum));      // 亮部偏橙
+  c = aces(c);
   vec2 q = vUv - .5; c *= 1. - .42*dot(q,q)*1.6;
   c = pow(c, vec3(1./2.2));
-  c += (h(gl_FragCoord.xy) - .5) * .018;
+  c += (h(gl_FragCoord.xy) - .5) * .026;
+  float bar = (uRes.y - uRes.x / 2.39) * .5;   // 2.39 : 1 宽银幕
+  if (gl_FragCoord.y < bar || gl_FragCoord.y > uRes.y - bar) c = vec3(0.);
   o = vec4(c, 1.); }`;
 
 function sh(type, src){ const s = gl.createShader(type); gl.shaderSource(s, src); gl.compileShader(s); if (!gl.getShaderParameter(s, gl.COMPILE_STATUS)) { log(gl.getShaderInfoLog(s)); throw new Error('shader'); } return s; }
@@ -248,8 +296,8 @@ function drawQuad(p){ const l = gl.getAttribLocation(p, 'p'); gl.bindBuffer(gl.A
 // 场景参数
 const sunEl = +(Q.get('el') || 28) * Math.PI / 180, sunPhi = +(Q.get('phi') || 52) * Math.PI / 180;     // 低太阳，从右后方来（画外）
 const SUN = [Math.cos(sunEl) * Math.sin(sunPhi), Math.sin(sunEl), -Math.cos(sunEl) * Math.cos(sunPhi)];
-const CAM = { pos: [-0.75, 1.15, 5.3], tgt: [-0.45, 0.5, -0.1], fov: 38 * Math.PI / 180, aperture: +(Q.get('ap') || 0.035), focus: 5.3 };
-const common = (p, seed) => { gl.uniform1i(U(p, 'uGlyph'), 0); gl.uniform2fv(U(p, 'uGMin'), G.min); gl.uniform2fv(U(p, 'uGMax'), G.max); gl.uniform3fv(U(p, 'uSun'), SUN); gl.uniform1f(U(p, 'uSeed'), seed); };
+const CAM = { pos: JSON.parse(Q.get('cam') || '[-3.3,0.2,2.75]'), tgt: JSON.parse(Q.get('tgt') || '[0,0.9,0]'), fov: 44 * Math.PI / 180, aperture: +(Q.get('ap') || 0.035), focus: +(Q.get('focus') || 4.2) };
+const common = (p, seed) => { gl.uniform1f(U(p, 'uRot'), +(Q.get('rot') || 0.87)); gl.uniform1i(U(p, 'uGlyph'), 0); gl.uniform2fv(U(p, 'uGMin'), G.min); gl.uniform2fv(U(p, 'uGMax'), G.max); gl.uniform3fv(U(p, 'uSun'), SUN); gl.uniform1f(U(p, 'uSeed'), seed); };
 
 // ---- 1. 光子 ----
 const CS = +(Q.get('cs') || 2048), causT = tex(CS, CS, gl.RGBA32F), causF = fbo(causT);
@@ -289,7 +337,7 @@ for (let s = 0; s < SPP; s++) {
   gl.activeTexture(gl.TEXTURE2); gl.bindTexture(gl.TEXTURE_2D, causC);
   common(ptp, s); gl.uniform1i(U(ptp, 'uAcc'), 1); gl.uniform1i(U(ptp, 'uCaus'), 2);
   gl.uniform2f(U(ptp, 'uRes'), W, H); gl.uniform1f(U(ptp, 'uCausScale'), causScale); gl.uniform1f(U(ptp, 'uFrame'), s);
-  gl.uniform3fv(U(ptp, 'uCamPos'), CAM.pos); gl.uniform3fv(U(ptp, 'uCamTgt'), CAM.tgt); gl.uniform1f(U(ptp, 'uFov'), CAM.fov); gl.uniform1f(U(ptp, 'uAperture'), CAM.aperture); gl.uniform1f(U(ptp, 'uFocus'), CAM.focus); gl.uniform1f(U(ptp, 'uBeamR'), +(Q.get('beam') || 2.5)); gl.uniform1f(U(ptp, 'uDbg'), +(Q.get('dbg') || 0));
+  gl.uniform3fv(U(ptp, 'uCamPos'), CAM.pos); gl.uniform3fv(U(ptp, 'uCamTgt'), CAM.tgt); gl.uniform1f(U(ptp, 'uFov'), CAM.fov); gl.uniform1f(U(ptp, 'uAperture'), CAM.aperture); gl.uniform1f(U(ptp, 'uFocus'), CAM.focus); gl.uniform1f(U(ptp, 'uBeamR'), +(Q.get('beam') || 1.3)); gl.uniform1f(U(ptp, 'uDbg'), +(Q.get('dbg') || 0)); gl.uniform1f(U(ptp, 'uFog'), +(Q.get('fog') || 0.007)); gl.uniform1f(U(ptp, 'uCausVol'), +(Q.get('cv') || 3)); gl.uniform3fv(U(ptp, 'uPerson'), JSON.parse(Q.get('person') || '[-1.35,0,1.25]'));
   drawQuad(ptp); gl.finish(); await yieldNow();
   if (s % 8 === 7) log('spp', s + 1, ((performance.now() - t0) / 1000 / (s + 1)).toFixed(2) + ' s/spp');
 }
@@ -304,9 +352,14 @@ for (let i = 0; i < 2; i++) {
   gl.bindFramebuffer(gl.FRAMEBUFFER, b2F); gl.bindTexture(gl.TEXTURE_2D, b1); gl.uniform1i(U(blurP, 'uT'), 0); gl.uniform2f(U(blurP, 'uDir'), 1.5 / bw, 0); drawQuad(blurP);
   gl.bindFramebuffer(gl.FRAMEBUFFER, b1F); gl.bindTexture(gl.TEXTURE_2D, b2); gl.uniform2f(U(blurP, 'uDir'), 0, 1.5 / bh); drawQuad(blurP);
 }
+const s1 = tex(bw, bh, gl.RGBA16F), s1F = fbo(s1), s2 = tex(bw, bh, gl.RGBA16F), s2F = fbo(s2);
+gl.useProgram(brp); gl.viewport(0, 0, bw, bh); gl.bindFramebuffer(gl.FRAMEBUFFER, s1F); gl.activeTexture(gl.TEXTURE0); gl.bindTexture(gl.TEXTURE_2D, final); gl.uniform1i(U(brp, 'uAcc'), 0); drawQuad(brp);
+gl.useProgram(blurP);
+for (let i = 0; i < 4; i++) { const k = [3, 7, 14, 24][i];
+  gl.bindFramebuffer(gl.FRAMEBUFFER, i % 2 ? s1F : s2F); gl.bindTexture(gl.TEXTURE_2D, i % 2 ? s2 : s1); gl.uniform1i(U(blurP, 'uT'), 0); gl.uniform2f(U(blurP, 'uDir'), k / bw, 0); drawQuad(blurP); }
 const dsp = prog(QV, DSF); gl.useProgram(dsp); gl.bindFramebuffer(gl.FRAMEBUFFER, null); gl.viewport(0, 0, W, H);
 gl.activeTexture(gl.TEXTURE0); gl.bindTexture(gl.TEXTURE_2D, final); gl.activeTexture(gl.TEXTURE1); gl.bindTexture(gl.TEXTURE_2D, b1);
-gl.uniform1i(U(dsp, 'uAcc'), 0); gl.uniform1i(U(dsp, 'uBloom'), 1); gl.uniform1f(U(dsp, 'uExp'), +(Q.get('exp') || 0.9)); gl.uniform2f(U(dsp, 'uRes'), W, H);
+gl.activeTexture(gl.TEXTURE2); gl.bindTexture(gl.TEXTURE_2D, s1); gl.uniform1i(U(dsp, 'uAcc'), 0); gl.uniform1i(U(dsp, 'uBloom'), 1); gl.uniform1i(U(dsp, 'uStreak'), 2); gl.uniform1f(U(dsp, 'uExp'), +(Q.get('exp') || 0.9)); gl.uniform2f(U(dsp, 'uRes'), W, H);
 drawQuad(dsp); gl.finish();
 if (!Q.has('notext')) { await document.fonts.load('44px ISI'); await document.fonts.load('30px NSC'); document.getElementById('ui').style.opacity = 1; }
 window.__done = true;
