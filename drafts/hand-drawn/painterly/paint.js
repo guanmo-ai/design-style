@@ -1,5 +1,6 @@
 // 厚涂 Painterly：先搭一张“参考”（雨夜的街、路灯、红伞），再用几万笔有方向、有厚度的笔触把它重画一遍。
 // 笔触顺着形状走（结构张量），湿地面一律竖着拖；每一笔同时画在颜色层和“厚度”层，最后用厚度层打一次侧光 = 油彩的起伏。
+var PAINT_BRISTLE = { v: .22, a: .55 };
 const PAINT = (() => {
   const { rng, makeNoise, fbm, clamp, lerp, smooth, mix, css, canvas } = HD;
   const W = 1920, H = 1080, HOR = 548, VPX = 1010, F = 880, CAMH = 1.7;
@@ -51,7 +52,7 @@ const PAINT = (() => {
     }
     gg.restore();
   }
-  function ref(S) {
+  function ref(S, o = {}) {
     const c = canvas(W * S, H * S), g = c.getContext('2d'); g.scale(S, S);
     const U = canvas(W * S, H * S), u = U.getContext('2d'); u.scale(S, S);
     const r = rng(8), n = makeNoise(4);
@@ -175,11 +176,11 @@ const PAINT = (() => {
     person(g, fx, fy, fs, false);
     // 雨
     g.globalCompositeOperation = 'lighter';
-    for (let i = 0; i < 1100; i++) {
+    for (let i = 0; i < (o.norain ? 0 : 1100); i++) {
       const x = r() * W, y = r() * H, L = 14 + r() * 46, a = .04 + r() * .1;
       g.strokeStyle = `rgba(200,225,235,${a})`; g.lineWidth = .8 + r() * 1.3; g.beginPath(); g.moveTo(x, y); g.lineTo(x - L * .16, y + L); g.stroke();
     }
-    for (let i = 0; i < 380; i++) {
+    for (let i = 0; i < (o.norain ? 0 : 380); i++) {
       const y = HOR + 30 + Math.pow(r(), .7) * (H - HOR - 30), x = r() * W, s2 = (y - HOR) / (H - HOR);
       g.strokeStyle = `rgba(255,215,170,${.06 + r() * .14})`; g.lineWidth = 1; g.beginPath(); g.ellipse(x, y, 3 + s2 * 12, 1 + s2 * 3, 0, 0, 7); g.stroke();
     }
@@ -190,7 +191,7 @@ const PAINT = (() => {
   }
 
   // ───────── 笔触方向：结构张量（顺着边走）+ 区域的默认方向 ─────────
-  function flow(refC) {
+  function flow(refC, fo = {}) {
     const w = 480, h = 270, c = canvas(w, h), g = c.getContext('2d');
     g.drawImage(refC, 0, 0, w, h);
     const d = g.getImageData(0, 0, w, h).data, Lm = new Float32Array(w * h);
@@ -213,11 +214,12 @@ const PAINT = (() => {
       let th = .5 * Math.atan2(2 * b, a - c2) + Math.PI / 2; // 顺着边
       const X = x * 4, Y = y * 4;
       // 默认方向：天 = 横着、带一点卷；地 = 竖着拖（湿地倒影）；楼 = 竖
-      let def;
-      if (Y < HOR - 30) def = fbm(nz, X * .0015, Y * .002, 3) * .55 + (X < VPX ? .18 : -.18) * smooth(HOR - 300, HOR, Y);
+      let def = fo.def ? fo.def(X, Y, nz) : null;
+      if (def !== null) {}
+      else if (Y < HOR - 30) def = fbm(nz, X * .0015, Y * .002, 3) * .55 + (X < VPX ? .18 : -.18) * smooth(HOR - 300, HOR, Y);
       else if (Y > HOR + 12) def = Math.PI / 2 + (X - VPX) * .00012;
       else def = 0;
-      const wgt = smooth(.25, .7, C) * smooth(.002, .02, tr) * (Y > HOR + 12 ? .35 : 1);
+      const wgt = smooth(.25, .7, C) * smooth(.002, .02, tr) * (fo.edge ? fo.edge(X, Y) : (Y > HOR + 12 ? .35 : 1));
       // 角度按倍角混合（方向没有正负）
       const vx = lerp(Math.cos(2 * def), Math.cos(2 * th), wgt), vy = lerp(Math.sin(2 * def), Math.sin(2 * th), wgt);
       ang[i] = .5 * Math.atan2(vy, vx); coh[i] = C; mag[i] = Math.sqrt(tr);
@@ -226,29 +228,19 @@ const PAINT = (() => {
   }
 
   // ───────── 画：粗 → 细，每一笔两份（颜色 + 厚度） ─────────
-  function paint(refC, fl, S, opt = {}) {
-    const { seed = 3, light = [-.6, -.75], impasto = 1 } = opt;
-    const out = canvas(W * S, H * S), g = out.getContext('2d');
-    const hc = canvas(W * S, H * S), hg = hc.getContext('2d');
-    // 底：糊一层很粗的底色（不留白）
-    g.filter = `blur(${10 * S}px)`; g.drawImage(refC, 0, 0); g.filter = 'none';
-    { // 画布的纹：经纬交织
-      const im = hg.createImageData(hc.width, hc.height), d = im.data, per = 5 * S;
-      for (let y = 0; y < hc.height; y++) for (let x = 0; x < hc.width; x++) { const a = Math.sin(x / per * Math.PI * 2), b = Math.sin(y / per * Math.PI * 2), v = 128 + 22 * (((Math.floor(x / per) + Math.floor(y / per)) & 1) ? a * a : b * b) - 11; const k = (y * hc.width + x) * 4; d[k] = d[k + 1] = d[k + 2] = v; d[k + 3] = 255; }
-      hg.putImageData(im, 0, 0);
-    }
-    g.scale(S, S); hg.scale(S, S); g.lineCap = hg.lineCap = 'round'; g.lineJoin = hg.lineJoin = 'round';
+  const PASSES = [
+    { R: 22, step: 16, len: 10, thr: 60, p: 1 },
+    { R: 11, step: 8.5, len: 11, thr: 34, p: .95, detail: .012 },
+    { R: 5.5, step: 4.6, len: 9, thr: 22, p: 1, detail: .045, focus: .3 },
+    { R: 2.8, step: 2.8, len: 7, thr: 16, p: 1, detail: .12, focus: -.15 },
+  ];
+  // 算出全部笔触（不画）：{ path, R, col, pass, imp, seed }
+  function plan(refC, fl, opt = {}) {
+    const { seed = 3 } = opt, S = refC.width / W;
     const rd = refC.getContext('2d').getImageData(0, 0, refC.width, refC.height).data, RW = refC.width;
-    const px = (X, Y) => { const x = clamp(Math.round(X * S), 0, RW - 1), y = clamp(Math.round(Y * S), 0, refC.height - 1), k = (y * RW + x) * 4; return [rd[k], rd[k + 1], rd[k + 2]]; };
-    const r = rng(seed), n = makeNoise(seed + 5);
-    const passes = [
-      { R: 22, step: 16, len: 10, thr: 60, p: 1 },
-      { R: 11, step: 8.5, len: 11, thr: 34, p: .95, detail: .012 },
-      { R: 5.5, step: 4.6, len: 9, thr: 22, p: 1, detail: .045, focus: .3 },
-      { R: 2.8, step: 2.8, len: 7, thr: 16, p: 1, detail: .12, focus: -.15 },
-    ];
-    let count = 0;
-    for (const P of passes.slice(0, opt.maxPass ?? 4)) {
+    const px = (X, Y) => { const x = clamp(Math.round(X * S), 0, RW - 1), y = clamp(Math.round(Y * S), 0, refC.height - 1), k = (y * RW + x) * 4; return [rd[k], rd[k + 1], rd[k + 2], rd[k + 3]]; };
+    const r = rng(seed), list = [], passes = opt.passes || PASSES, jv = opt.jv ?? .14, jw = opt.jw ?? 14;
+    passes.slice(0, opt.maxPass ?? passes.length).forEach((P, pi) => {
       const pts = [];
       for (let y = 0; y < H; y += P.step) for (let x = 0; x < W; x += P.step) pts.push([x + (r() - .5) * P.step, y + (r() - .5) * P.step]);
       for (let i = pts.length - 1; i > 0; i--) { const j = Math.floor(r() * (i + 1)); [pts[i], pts[j]] = [pts[j], pts[i]]; }
@@ -258,46 +250,64 @@ const PAINT = (() => {
         if (P.detail && fl.mag[k0] < P.detail * (.6 + r() * .8)) continue;
         if (P.focus !== undefined) { const f = Math.exp(-(((x0 - (opt.fx ?? 900)) / 1.4) ** 2 + (y0 - (opt.fy ?? 600)) ** 2) / (2 * 260 ** 2)); if (r() > P.focus + f * 1.1) continue; }
         const c0 = px(x0, y0);
-        // 顺着方向场走几步，颜色差太多就停
+        if (c0[3] < 140) continue;
         const path = [[x0, y0]];
         let x = x0, y = y0, dx = 0, dy = 0;
-        for (let s = 0; s < P.len; s++) {
+        for (let s2 = 0; s2 < P.len; s2++) {
           const a = fl.ang[fl.at(x, y)];
           let ux = Math.cos(a), uy = Math.sin(a);
-          if (s && ux * dx + uy * dy < 0) { ux = -ux; uy = -uy; }
+          if (s2 && ux * dx + uy * dy < 0) { ux = -ux; uy = -uy; }
           dx = ux; dy = uy; x += ux * P.R * .9; y += uy * P.R * .9;
           const c = px(x, y);
-          if (Math.abs(c[0] - c0[0]) + Math.abs(c[1] - c0[1]) + Math.abs(c[2] - c0[2]) > P.thr * 3 && s > 0) break;
+          if ((Math.abs(c[0] - c0[0]) + Math.abs(c[1] - c0[1]) + Math.abs(c[2] - c0[2]) > P.thr * 3 || c[3] < 140) && s2 > 0) break;
           path.push([x, y]);
-          if (s >= 2 && r() < .07) break;
+          if (s2 >= 2 && r() < .07) break;
         }
-        // 颜色：取参考色，亮度和冷暖各抖一点（同一块颜色里有好几种颜色）
-        const v = 1 + (r() - .5) * .14, wt = (r() - .5) * 14;
-        const col = [clamp(c0[0] * v + wt, 0, 255), clamp(c0[1] * v, 0, 255), clamp(c0[2] * v - wt, 0, 255)];
-        stroke(g, hg, path, P.R * (.8 + r() * .4), col, r, impasto);
-        count++;
+        const v = 1 + (r() - .5) * jv, wt = (r() - .5) * jw;
+        list.push({ path, R: P.R * (.8 + r() * .4), col: [clamp(c0[0] * v + wt, 0, 255), clamp(c0[1] * v, 0, 255), clamp(c0[2] * v - wt, 0, 255)], pass: pi, imp: 1, seed: (r() * 1e9) | 0 });
       }
-    }
-    // 高光：最亮的地方再堆一层厚的、更亮的短笔
-    for (let i = 0, N = (opt.maxPass ?? 4) < 4 ? 0 : 26000; i < N; i++) {
+    });
+    // 高光
+    for (let i = 0; i < (opt.hi ?? 26000); i++) {
       const x0 = r() * W, y0 = r() * H, c0 = px(x0, y0), lum = (c0[0] * .3 + c0[1] * .59 + c0[2] * .11) / 255;
-      if (lum < .62 + r() * .2) continue;
+      if (lum < .62 + r() * .2 || c0[3] < 140) continue;
       const a = fl.ang[fl.at(x0, y0)], L = 3 + r() * 7, R = 2 + r() * 3.2;
-      const col = [Math.min(255, c0[0] * 1.12 + 14), Math.min(255, c0[1] * 1.1 + 10), Math.min(255, c0[2] * 1.05 + 4)];
-      stroke(g, hg, [[x0 - Math.cos(a) * L, y0 - Math.sin(a) * L], [x0 + Math.cos(a) * L, y0 + Math.sin(a) * L]], R, col, r, impasto * 1.4); count++;
+      list.push({ path: [[x0 - Math.cos(a) * L, y0 - Math.sin(a) * L], [x0 + Math.cos(a) * L, y0 + Math.sin(a) * L]], R, col: [Math.min(255, c0[0] * 1.12 + 14), Math.min(255, c0[1] * 1.1 + 10), Math.min(255, c0[2] * 1.05 + 4)], pass: 4, imp: 1.4, seed: (r() * 1e9) | 0 });
     }
-    // 雨：几道斜着的细笔，亮的地方前面更显
-    for (let i = 0; i < ((opt.maxPass ?? 4) < 4 ? 0 : (opt.rain ?? 320)); i++) {
+    // 雨
+    for (let i = 0; i < (opt.rain ?? 320); i++) {
       const x0 = r() * W, y0 = r() * H, c0 = px(x0, y0), L = 10 + r() * 26, lum = (c0[0] + c0[1] + c0[2]) / 765;
-      const col = [Math.min(255, c0[0] * .7 + 70), Math.min(255, c0[1] * .7 + 78), Math.min(255, c0[2] * .7 + 84)];
       if (r() > .2 + lum * 1.4) continue;
-      stroke(g, hg, [[x0, y0], [x0 - L * .16, y0 + L]], .9 + r() * .9, col, r, impasto); count++;
+      list.push({ path: [[x0, y0], [x0 - L * .16, y0 + L]], R: .9 + r() * .9, col: [Math.min(255, c0[0] * .7 + 70), Math.min(255, c0[1] * .7 + 78), Math.min(255, c0[2] * .7 + 84)], pass: 5, imp: 1, seed: (r() * 1e9) | 0 });
     }
-    if (opt.extra) opt.extra(g, hg, (path, R, col) => stroke(g, hg, path, R, col, r, impasto), r);
-    // 厚度层 → 侧光
-    if (impasto > 0) relight(out, hc, light, impasto);
-    out.count = count;
-    return out;
+    return list;
+  }
+  // 一张空画布（颜色层 + 厚度层），可选先糊一层底色
+  function surface(S, refC, o = {}) {
+    const out = canvas(W * S, H * S), g = out.getContext('2d'), hc = canvas(W * S, H * S), hg = hc.getContext('2d');
+    if (refC && o.under !== false) { g.filter = `blur(${(o.underBlur ?? 10) * S}px)`; g.drawImage(refC, 0, 0, W * S, H * S); g.filter = 'none'; }
+    const im = hg.createImageData(hc.width, hc.height), d = im.data, per = (o.weave ?? 5) * S, amp = o.weaveAmp ?? 22;
+    for (let y = 0; y < hc.height; y++) for (let x = 0; x < hc.width; x++) { const a = Math.sin(x / per * Math.PI * 2), b = Math.sin(y / per * Math.PI * 2), v = 128 + amp * (((Math.floor(x / per) + Math.floor(y / per)) & 1) ? a * a : b * b) - amp / 2; const k = (y * hc.width + x) * 4; d[k] = d[k + 1] = d[k + 2] = v; d[k + 3] = 255; }
+    hg.putImageData(im, 0, 0);
+    g.scale(S, S); hg.scale(S, S); g.lineCap = hg.lineCap = 'round'; g.lineJoin = hg.lineJoin = 'round';
+    return { out, g, hc, hg, S };
+  }
+  // 画一笔（可以只画前 prog 那一段：笔正在走）
+  function draw1(sf, s, prog = 1, impasto = 1) {
+    let path = s.path;
+    if (prog < 1) { const n = path.length; if (n < 2) { path = path; } else { const t = prog * (n - 1), i = Math.floor(t), u = t - i; path = path.slice(0, i + 1); if (i < n - 1) path.push([lerp(s.path[i][0], s.path[i + 1][0], u), lerp(s.path[i][1], s.path[i + 1][1], u)]); } }
+    stroke(sf.g, sf.hg, path, s.R * (prog < 1 ? .6 + .4 * prog : 1), s.col, rng(s.seed), impasto * s.imp);
+  }
+  function paint(refC, fl, S, opt = {}) {
+    const { light = [-.6, -.75], impasto = 1 } = opt;
+    const list = plan(refC, fl, { ...opt, hi: (opt.maxPass ?? 4) < 4 ? 0 : opt.hi, rain: (opt.maxPass ?? 4) < 4 ? 0 : opt.rain });
+    const sf = surface(S, refC, opt);
+    for (const s of list) draw1(sf, s, 1, impasto);
+    if (opt.extra) { const r = rng(99); opt.extra(sf.g, sf.hg, (path, R, col) => stroke(sf.g, sf.hg, path, R, col, r, impasto), r); }
+    if (impasto > 0) relight(sf.out, sf.hc, light, impasto);
+    if (opt.mask) { const g = sf.out.getContext('2d'); g.setTransform(1, 0, 0, 1, 0, 0); g.globalCompositeOperation = 'destination-in'; g.drawImage(refC, 0, 0, W * S, H * S); g.globalCompositeOperation = 'source-over'; }
+    sf.out.count = list.length;
+    return sf.out;
   }
   function ribbon(path, R, taper = true) {
     const L = [], Rt = [], n = path.length;
@@ -318,8 +328,8 @@ const PAINT = (() => {
     // 刷毛：几道细线，深浅各不同
     const nb = Math.max(3, Math.min(9, Math.round(R * .7)));
     for (let k = 0; k < nb; k++) {
-      const t = (k + .5) / nb * 2 - 1, v = 1 + (r() - .5) * .22;
-      g.strokeStyle = css([col[0] * v, col[1] * v, col[2] * v], .55); g.lineWidth = R * 2 / nb * .75;
+      const t = (k + .5) / nb * 2 - 1, v = 1 + (r() - .5) * (PAINT_BRISTLE.v);
+      g.strokeStyle = css([col[0] * v, col[1] * v, col[2] * v], PAINT_BRISTLE.a); g.lineWidth = R * 2 / nb * .75;
       g.beginPath(); path.forEach(([x, y], i) => { const a = path[Math.max(0, i - 1)], b = path[Math.min(path.length - 1, i + 1)]; let tx = b[0] - a[0], ty = b[1] - a[1]; const m = Math.hypot(tx, ty) || 1; const ox = -ty / m * t * R * .85, oy = tx / m * t * R * .85; i ? g.lineTo(x + ox, y + oy) : g.moveTo(x + ox, y + oy); }); g.stroke();
     }
     if (!impasto) return;
@@ -332,21 +342,21 @@ const PAINT = (() => {
     }
     const e = path[path.length - 1];
     const eg = hg.createRadialGradient(e[0], e[1], 0, e[0], e[1], R);
-    eg.addColorStop(0, 'rgba(210,210,210,.8)'); eg.addColorStop(1, 'rgba(128,128,128,0)');
+    eg.addColorStop(0, 'rgba(200,200,200,.45)'); eg.addColorStop(1, 'rgba(128,128,128,0)');
     hg.fillStyle = eg; hg.beginPath(); hg.arc(e[0], e[1], R, 0, 7); hg.fill();
-    hg.strokeStyle = 'rgba(180,180,180,.6)'; hg.lineWidth = Math.max(.8, R * .18); shape(hg); hg.stroke();
+    hg.strokeStyle = 'rgba(170,170,170,.38)'; hg.lineWidth = Math.max(.8, R * .16); shape(hg); hg.stroke();
   }
-  function relight(out, hc, light, amt) {
+  function relight(out, hc, light, amt, gs = 1) {
     const w = out.width, h = out.height, g = out.getContext('2d');
     const im = g.getImageData(0, 0, w, h), d = im.data, hd = hc.getContext('2d').getImageData(0, 0, w, h).data;
     const [lx, ly] = light, lz = .55, m = Math.hypot(lx, ly, lz);
     for (let y = 1; y < h - 1; y++) for (let x = 1; x < w - 1; x++) {
       const i = y * w + x;
       const gx = (hd[(i + 1) * 4] - hd[(i - 1) * 4]) / 255, gy = (hd[(i + w) * 4] - hd[(i - w) * 4]) / 255;
-      const nx = -gx * 2.2, ny = -gy * 2.2, nz = 1, nm = Math.hypot(nx, ny, nz);
+      const nx = -gx * 2.2 * gs, ny = -gy * 2.2 * gs, nz = 1, nm = Math.hypot(nx, ny, nz);
       const ndl = (nx * lx + ny * ly + nz * lz) / (nm * m), base = lz / m;
       const sh = 1 + (ndl - base) * 1.1 * amt;
-      const spec = Math.pow(Math.max(0, ndl), 40) * 40 * amt;
+      const spec = Math.pow(Math.max(0, ndl), 34) * 26 * amt;
       const k = i * 4; d[k] = d[k] * sh + spec; d[k + 1] = d[k + 1] * sh + spec; d[k + 2] = d[k + 2] * sh + spec * .9;
     }
     g.putImageData(im, 0, 0);
@@ -359,5 +369,5 @@ const PAINT = (() => {
     const r = rng(2); list.forEach(([path, R, col]) => stroke(g, hg, path, R, col, r, 1));
     relight(c, hc, [-.6, -.75], 1.3); return c;
   }
-  return { W, H, HOR, VPX, ref, flow, paint, samples };
+  return { W, H, HOR, VPX, ref, flow, paint, plan, surface, draw1, stroke, relight, samples, PASSES };
 })();

@@ -31,18 +31,19 @@ svg{position:absolute;inset:0}
 </div>
 <script src="../lib.js"></script>
 <script src="scene.js"></script>
+<script src="../painterly/paint.js"></script><script src="ghibli.js"></script>
 <script>
-const S = +(new URLSearchParams(location.search).get('s') || 2);
+const S = +(new URLSearchParams(location.search).get("s") || 2);
 const chips = [['天顶', '#1648A6'], ['天际', '#A9D9F0'], ['云影', '#7F8CBF'], ['稻田', '#5AA646'], ['风', '#D8EE8A'], ['帽 · 影', '#C99B55']];
 document.getElementById('chips').innerHTML = chips.map(([n, c]) => `<div class="chip"><div style="background:${c}"></div><span>${n}</span>${c}</div>`).join('');
-document.fonts.ready.then(() => {
+document.fonts.ready.then(() => setTimeout(() => {
   const c = document.getElementById('c'); c.width = 1920 * S; c.height = 1080 * S;
   const g = c.getContext('2d');
   const t = performance.now();
-  const L = ANIME.renderLayers(S);
+  const L = GHIBLI.paintLayers(ANIME.renderLayers(S), S);
   for (const l of L) g.drawImage(l.canvas, 0, 0);
   ANIME.finish(c, S);
   console.log('anime cover', ((performance.now() - t) / 1000).toFixed(1) + 's');
   window.__done = true;
-});
+}, 30));
 </script>
