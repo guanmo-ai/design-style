@@ -1,0 +1,143 @@
+<!doctype html>
+<!-- 超级图形 · 第 0 帧（1920×1080）
+     一个白房间的墙角。三条色带从地板爬上左墙、拐 90° 横穿墙角、再拐上天花板——
+     画是画在“展开图”上的（墙、地、顶摊成一张纸），每个面只取自己那一块，所以色带过折线永远是连续的。
+     最外一条跑得最远、里面两条还在追：它们正在被“刷”出来。
+     node ../_lib/shot.cjs cover.html png/cover.png 1920 1080 2 -->
+<html><head><meta charset="utf-8">
+<style>
+@font-face{font-family:NS;src:url(../../public/fonts/NotoSansSC-Black.otf)}
+@font-face{font-family:NSB;src:url(../../public/fonts/NotoSansSC-Bold.otf)}
+@font-face{font-family:Arc;src:url(../../public/fonts/Archivo.ttf)}
+@font-face{font-family:GM;src:url(../../public/fonts/GeistMono.ttf)}
+html,body{margin:0;width:1920px;height:1080px;overflow:hidden;background:#EDE8DF}
+#vp{position:absolute;inset:0;perspective:1180px;perspective-origin:50% 50%}
+#scene{position:absolute;left:960px;top:540px;width:0;height:0;transform-style:preserve-3d}
+.face{position:absolute;left:0;top:0;transform-origin:0 0;backface-visibility:hidden}
+.face svg{display:block}
+#hud{position:absolute;inset:0;pointer-events:none;font-family:GM;color:#141414}
+.tl{position:absolute;left:56px;top:44px;font-size:22px;letter-spacing:.08em}
+.tr{position:absolute;right:56px;top:44px;font-size:22px;letter-spacing:.08em;text-align:right}
+.bar{position:absolute;right:56px;top:80px;width:220px;height:4px;background:#14141422}
+.bar i{position:absolute;left:0;top:0;height:4px;width:4%;background:#E5352B}
+.sub{position:absolute;left:56px;top:118px;font-family:NSB;font-size:40px;letter-spacing:.02em;color:#141414}
+.sub b{font-family:Arc;font-weight:800;font-stretch:125%;font-size:22px;letter-spacing:.12em;display:block;margin-bottom:10px;color:#141414b0}
+</style></head><body>
+<div id="vp"><div id="scene"></div></div>
+<div id="hud">
+  <div class="tl">风格 · SUPERGRAPHICS</div>
+  <div class="tr">1966 — 今天</div><div class="bar"><i></i></div>
+  <div class="sub"><b>WALL · CORNER · CEILING = ONE SHEET</b>墙、墙角、天花板，都是同一张纸</div>
+</div>
+<script>
+// ---------- 房间（米）----------
+const S = 100;                    // 1 米 = 100px
+const H = 3.4, LZ = 11, RX = 13; // 层高、左墙进深、右墙长
+// 展开图坐标 (X, Y)：Y 向下。右墙 X∈[0,RX]，左墙 X∈[-LZ,0]，Y∈[-H,0]；
+// 地板挂在左墙下沿（Y>0），天花板挂在右墙上沿（Y<-H）。
+const C = {red:'#E5352B', ora:'#F39A1E', blu:'#2347C2', ink:'#141414', pnk:'#F4A9C4'};
+
+// 色带中心线：地板 → 左墙 → 拐弯 → 横穿墙角 → 右墙 → 拐上天花板
+function centerline(){
+  const P = [];
+  const seg = (x0,y0,x1,y1)=>{const n=Math.ceil(Math.hypot(x1-x0,y1-y0)/4);for(let i=0;i<=n;i++)P.push([x0+(x1-x0)*i/n,y0+(y1-y0)*i/n]);};
+  const arc = (cx,cy,r,a0,a1)=>{const n=Math.ceil(Math.abs(a1-a0)*r/4);for(let i=0;i<=n;i++){const a=a0+(a1-a0)*i/n;P.push([cx+r*Math.cos(a),cy+r*Math.sin(a)]);}};
+  const x0 = -470, R1 = 200, yh = -150, R2 = 210, x2 = 600;
+  seg(x0, 640, x0, yh + R1);                     // 地板上往墙走，上左墙
+  arc(x0 + R1, yh + R1, R1, Math.PI, Math.PI*1.5); // 向右拐 90°
+  seg(x0 + R1, yh, x2 - R2, yh);                 // 横穿墙角
+  arc(x2 - R2, yh - R2, R2, Math.PI*.5, 0);      // 向上拐 90°
+  seg(x2, yh - R2, x2, -1700);                   // 上天花板
+  return P;
+}
+const CL = centerline();
+const len = [0]; for(let i=1;i<CL.length;i++) len.push(len[i-1]+Math.hypot(CL[i][0]-CL[i-1][0],CL[i][1]-CL[i-1][1]));
+// 一条带 = 中心线往外偏 off，跑到 L 截止
+function band(off, w, L, col){
+  const L0=[],R0=[];
+  for(let i=1;i<CL.length;i++){
+    if(len[i]>L) break;
+    const [x,y]=CL[i], [px,py]=CL[i-1], dx=x-px, dy=y-py, d=Math.hypot(dx,dy); if(d<1e-6) continue; const nx=dy/d, ny=-dx/d;
+    L0.push([x+nx*(off-w/2), y+ny*(off-w/2)]); R0.push([x+nx*(off+w/2), y+ny*(off+w/2)]);
+  }
+  const pts=L0.concat(R0.reverse());
+  return `<path d="M${pts.map(p=>p[0].toFixed(1)+','+p[1].toFixed(1)).join('L')}Z" fill="${col}"/>`;
+}
+const total = len[len.length-1];
+// 由外到内：外圈跑得最远，里面的还在追
+const W = 44;
+let art = '';
+// 天花板从中心线长度 ceil0 开始；四条带的头停在天花板上不同的深度
+const ceil0 = len[CL.findIndex(p=>p[1] < -H*S)];
+art += band(-1.5*W-8, 10, ceil0+430, C.ink);
+art += band(-W, W, ceil0+400, C.red);
+art += band(0,  W, ceil0+300, C.ora);
+art += band(W,  W, ceil0+190, C.blu);
+art += band(1.5*W+8, 10, ceil0+150, C.ink);
+
+// 标题：横跨墙角（“超级”在左墙，“图形”在右墙）
+art += `<text x="-30" y="-12" text-anchor="end" font-family="NS" font-size="118" fill="${C.ink}" letter-spacing="-4">超级</text>`;
+art += `<text x="30" y="-12" font-family="NS" font-size="118" fill="${C.ink}" letter-spacing="-4">图形</text>`;
+// 英文：沿右墙踢脚线
+art += `<text x="300" y="-20" font-family="Arc" font-weight="900" font-stretch="125%" font-size="31" fill="${C.ink}" letter-spacing="2">SUPERGRAPHICS</text>`;
+// 标注：像施工图一样写在墙上
+const note = (x,y,t,a='start')=>`<text x="${x}" y="${y}" text-anchor="${a}" font-family="GM" font-size="13" fill="${C.ink}" opacity=".75">${t}</text>`;
+art += `<g stroke="${C.ink}" stroke-width="1.2" fill="none" opacity=".6">
+  <path d="M${-470+200},${-150+200} L${-470+200-141},${-150+200-141}"/>
+  <path d="M660,-150 L660,-60 M652,-150 L668,-150 M652,-60 L668,-60" />
+  <path d="M0,-340 L0,0" stroke-dasharray="4 6"/>
+</g>`;
+art += note(-470+200-150,-150+200-150,'R 2000','end');
+art += note(642,-100,'3 × 440','end');
+art += note(8,-326,'90° · 不停');
+// 地板上的阳光（从右边的窗进来）
+const sun = `<path d="M-700,120 L-260,40 L-120,520 L-700,700Z" fill="#fff" opacity=".22"/>`;
+
+function svg(vb, inner, shade){
+  return `<svg xmlns="http://www.w3.org/2000/svg" width="${vb[2]}" height="${vb[3]}" viewBox="${vb.join(' ')}">${inner}${shade}</svg>`;
+}
+const scene = document.getElementById('scene');
+function face(w,h,transform,base,content,shade){
+  const d=document.createElement('div'); d.className='face';
+  d.style.width=w+'px'; d.style.height=h+'px'; d.style.transform=transform;
+  d.innerHTML=svg([0,0,w,h], `<rect width="${w}" height="${h}" fill="${base}"/>${content}`, shade);
+  scene.appendChild(d);
+}
+const g = (id,stops,x1,y1,x2,y2)=>`<defs><linearGradient id="${id}" gradientUnits="objectBoundingBox" x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}">${stops.map(([o,c,a])=>`<stop offset="${o}" stop-color="${c}" stop-opacity="${a}"/>`).join('')}</linearGradient></defs>`;
+const shadeRect = (w,h,id)=>`<rect width="${w}" height="${h}" fill="url(#${id})" style="mix-blend-mode:multiply"/>`;
+
+// 右墙：local (px,py) = (X, Y+H*S)
+face(RX*S, H*S, `translate3d(0px,${-H*S}px,0px)`, '#F4F0E8',
+  `<g transform="translate(0,${H*S})">${art}</g>`,
+  g('sr',[[0,'#8a7f70',.38],[.12,'#8a7f70',.08],[.6,'#8a7f70',0],[1,'#8a7f70',.06]],0,0,1,0)+shadeRect(RX*S,H*S,'sr')
+  + g('sr2',[[0,'#8a7f70',.10],[.15,'#8a7f70',0],[.85,'#8a7f70',0],[1,'#8a7f70',.22]],0,0,0,1)+shadeRect(RX*S,H*S,'sr2'));
+// 左墙：local px = X + LZ*S
+face(LZ*S, H*S, `translate3d(0px,${-H*S}px,${LZ*S}px) rotateY(90deg)`, '#E9E3D8',
+  `<g transform="translate(${LZ*S},${H*S})">${art}</g>`,
+  g('sl',[[0,'#7d7264',.05],[.88,'#7d7264',.12],[1,'#7d7264',.42]],0,0,1,0)+shadeRect(LZ*S,H*S,'sl')
+  + g('sl2',[[0,'#7d7264',.10],[.15,'#7d7264',0],[.85,'#7d7264',0],[1,'#7d7264',.25]],0,0,0,1)+shadeRect(LZ*S,H*S,'sl2'));
+// 地板：local (px,py) = (Y, -X)
+face(RX*S, LZ*S, `translate3d(0px,0px,0px) rotateX(90deg)`, '#D8D0C3',
+  `<g transform="matrix(0,-1,1,0,0,0)">${art}</g>`,
+  g('sf',[[0,'#6e6355',.42],[.1,'#6e6355',.1],[1,'#6e6355',0]],0,0,1,0)+shadeRect(RX*S,LZ*S,'sf')
+  + g('sf2',[[0,'#6e6355',.30],[.12,'#6e6355',.05],[1,'#6e6355',0]],0,0,0,1)+shadeRect(RX*S,LZ*S,'sf2'));
+// 天花板：local (px,py) = (X, Y + (LZ+H)*S)
+face(RX*S, LZ*S, `translate3d(0px,${-H*S}px,${LZ*S}px) rotateX(-90deg)`, '#F7F4EE',
+  `<g transform="translate(0,${(LZ+H)*S})">${art}</g>`,
+  g('sc',[[0,'#8a7f70',.18],[.1,'#8a7f70',.03],[1,'#8a7f70',0]],0,0,1,0)+shadeRect(RX*S,LZ*S,'sc')
+  + g('sc2',[[0,'#8a7f70',0],[.88,'#8a7f70',.06],[1,'#8a7f70',.3]],0,0,0,1)+shadeRect(RX*S,LZ*S,'sc2'));
+
+// 人：一张平涂剪影（1.75 米），站在地板上看墙——比例尺
+{
+  const d=document.createElement('div'); d.className='face';
+  d.style.width='60px'; d.style.height='175px';
+  d.style.transform=`translate3d(${0.8*S}px,${-1.75*S}px,${5.6*S}px) rotateY(40deg) translateX(-30px)`;
+  d.innerHTML=`<svg width="60" height="175" viewBox="0 0 60 175"><g fill="#141414">
+    <circle cx="30" cy="13" r="11"/><rect x="13" y="28" width="34" height="68" rx="15"/>
+    <rect x="15" y="80" width="13" height="95" rx="6"/><rect x="32" y="80" width="13" height="95" rx="6"/></g></svg>`;
+  scene.appendChild(d);
+}
+// 镜头：站在 (cx, cy, cz) 米，朝墙角偏右看
+const cam = {x:7.4, y:1.45, z:8.6, yaw:-40, pitch:12};
+scene.style.transform = `translateZ(1180px) rotateX(${cam.pitch}deg) rotateY(${cam.yaw}deg) translate3d(${-cam.x*S}px,${cam.y*S}px,${-cam.z*S}px)`;
+</script></body></html>
