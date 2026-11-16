@@ -1,0 +1,178 @@
+<!doctype html><meta charset="utf-8">
+<link rel="stylesheet" href="../fonts.css">
+<style>
+.lbl{position:absolute;font:500 14px/1.6 Mono;letter-spacing:.16em;color:rgba(255,238,214,.78)}
+.sub{position:absolute;left:72px;bottom:46px;font:400 20px/1.5 SansSC;color:rgba(255,240,222,.82);letter-spacing:.06em}
+.sub i{font:italic 24px InstrSerif;color:#fff2e0;margin-right:12px}
+</style>
+<canvas class="bg" id="c"></canvas>
+<div class="lbl" style="left:72px;top:46px">PENCIL TEST · KEY 07 / 13 · ON TWOS · 12 FPS</div>
+<div class="lbl" style="right:72px;top:46px;text-align:right">BLUE PENCIL → GRAPHITE → RED<br><span style="opacity:.65">16 FIELD · ACME PEGS</span></div>
+<div class="sub"><i>Pencil test.</i>蓝铅笔找动势，石墨定线，红铅笔记节奏——透光台下面那一张，就是上一帧</div>
+<script src="../lib.js"></script><script src="pencil.js"></script>
+<script>
+const S = +(new URLSearchParams(location.search).get('s') || 2);
+const W = 1920, H = 1080, { GRAPH, BLUE, RED, line, catmull, roughEllipse, drawSack, write, chart, hatchText } = PEN;
+const { rng, makeNoise, fbm, clamp, lerp, smooth, mix, css, canvas } = HD;
+const PX = 905, PY = 530, PR = -.05, PW = 1250, PH = 815; // 纸：中心、转角、大小
+const toPaper = g => { g.translate(PX, PY); g.rotate(PR); };
+
+// 一次跳跃：1 蹲 → 2—12 空中（抛物线）→ 13 落地
+const GROUND = 300;
+function pose(f) {
+  if (f === 1) return { x: -420, y: GROUND - 64, w: 232, h: 128, rot: 0, earL: -2.6, earR: -.55, lean: -.06 };
+  if (f === 13) return { x: 400, y: GROUND - 62, w: 236, h: 124, rot: 0, earL: -3.0, earR: -.2, lean: .08 };
+  const t = (f - 2) / 10, x = lerp(-350, 330, t), Hh = 300, y = GROUND - 4 * Hh * t * (1 - t);
+  const vy = -4 * Hh * (1 - 2 * t), vx = 680, th = Math.atan2(vy, vx), sp = Math.hypot(vx, vy) / Math.hypot(680, 4 * Hh);
+  const st = 1 + .45 * sp ** 1.4, w = 190 / Math.sqrt(st), h = 210 * Math.sqrt(st);
+  const rot = -th * .5;
+  // 耳朵：比身体晚两帧——上升时往下拖，到顶还在往上甩，下落时往上飘
+  const lag = Math.max(-1, Math.min(1, -vy / (4 * Hh)));
+  return { x, y: y - h / 2, w, h, rot, earL: -2.2 - lag * .9 + (t > .5 ? -.5 : 0), earR: -.95 + lag * .9 + (t > .5 ? .5 : 0), lean: 0 };
+}
+
+Promise.all([document.fonts.load('600 30px Caveat'), document.fonts.load('30px LongCang'), document.fonts.load('900 100px SerifSC')]).then(() => setTimeout(() => {
+  const c = document.getElementById('c'); c.width = W * S; c.height = H * S; const g = c.getContext('2d'); g.scale(S, S);
+  const r = rng(7), n = makeNoise(3);
+  // ── 桌面：暗的木头
+  { const im = g.getImageData(0, 0, W * S, H * S), d = im.data;
+    for (let y = 0; y < H * S; y++) for (let x = 0; x < W * S; x++) { const X = x / S, Y = y / S, gr = fbm(n, X * .002, Y * .03, 4) * .5 + n(X * .004, Y * .12) * .2;
+      const v = 1 - Math.hypot(X - PX, (Y - PY) * 1.3) / 1500, k = (y * W * S + x) * 4; const c0 = mix('#1a130f', '#3a2a1e', clamp(.35 + gr * .6)); d[k] = c0[0] * (.3 + v * .8); d[k + 1] = c0[1] * (.3 + v * .75); d[k + 2] = c0[2] * (.3 + v * .7); d[k + 3] = 255; }
+    g.putImageData(im, 0, 0); }
+  // ── 转台：铝圈 + 磨砂玻璃，底下的灯
+  const DR = 660;
+  g.save(); g.shadowColor = 'rgba(0,0,0,.6)'; g.shadowBlur = 40; g.shadowOffsetY = 14;
+  g.fillStyle = '#8f8a84'; g.beginPath(); g.arc(PX, PY, DR, 0, 7); g.fill(); g.restore();
+  { const cg = g.createConicGradient(0.6, PX, PY); [[0, '#d9d6d0'], [.12, '#7b7772'], [.25, '#c9c5be'], [.4, '#6e6a65'], [.55, '#e3e0da'], [.7, '#77736d'], [.85, '#cfcbc4'], [1, '#d9d6d0']].forEach(([t, c2]) => cg.addColorStop(t, c2));
+    g.fillStyle = cg; g.beginPath(); g.arc(PX, PY, DR, 0, 7); g.arc(PX, PY, DR - 54, 0, 7, true); g.fill();
+    for (let a = 0; a < 360; a += 5) { const A = a * Math.PI / 180 + PR, r1 = DR - 6, r2 = DR - (a % 30 ? 16 : 28); g.strokeStyle = 'rgba(40,38,36,.55)'; g.lineWidth = a % 30 ? 1 : 1.8; g.beginPath(); g.moveTo(PX + Math.cos(A) * r1, PY + Math.sin(A) * r1); g.lineTo(PX + Math.cos(A) * r2, PY + Math.sin(A) * r2); g.stroke(); }
+    const rg = g.createRadialGradient(PX, PY, 50, PX, PY, DR - 54); rg.addColorStop(0, '#fffaf0'); rg.addColorStop(.7, '#f4ead6'); rg.addColorStop(1, '#cdbfa6');
+    g.fillStyle = rg; g.beginPath(); g.arc(PX, PY, DR - 54, 0, 7); g.fill(); }
+  // ── 定位尺（peg bar）：纸下沿
+  g.save(); toPaper(g);
+  const bar = (x0, x1, y0) => { const lg = g.createLinearGradient(0, y0 - 22, 0, y0 + 22); lg.addColorStop(0, '#e6e2dc'); lg.addColorStop(.35, '#a19c95'); lg.addColorStop(.6, '#cfcac3'); lg.addColorStop(1, '#6d6862'); g.fillStyle = lg; g.fillRect(x0, y0 - 22, x1 - x0, 44); g.fillStyle = 'rgba(0,0,0,.35)'; g.fillRect(x0, y0 + 22, x1 - x0, 6); };
+  bar(-560, 560, PH / 2 - 36);
+  // ── 纸：底下两张露一点边，上面一张
+  const paperFill = (dx, dy, rot, tint) => { g.save(); g.translate(dx, dy); g.rotate(rot); g.shadowColor = 'rgba(40,25,10,.35)'; g.shadowBlur = 18; g.shadowOffsetY = 6; g.fillStyle = tint; g.fillRect(-PW / 2, -PH / 2, PW, PH); g.restore(); };
+  paperFill(14, -10, .012, '#efe6d2'); paperFill(-10, 8, -.008, '#f3ebd9');
+  g.restore();
+  // 纸面：被底下的灯照透，中间亮
+  const PAPER = canvas(W * S, H * S), pg = PAPER.getContext('2d'); pg.scale(S, S);
+  pg.save(); toPaper(pg); pg.beginPath(); pg.rect(-PW / 2, -PH / 2, PW, PH); pg.restore(); pg.save(); pg.clip();
+  { const rg = pg.createRadialGradient(PX, PY - 20, 60, PX, PY, 820); rg.addColorStop(0, '#fffdf6'); rg.addColorStop(.45, '#f9f1df'); rg.addColorStop(.85, '#e7d6b6'); rg.addColorStop(1, '#d6c19c'); pg.fillStyle = rg; pg.fillRect(0, 0, W, H); }
+  pg.restore();
+  // 底下那几张的线：隔着一张纸，淡、糊
+  const [UND, ug] = PEN.layer(W, H, S); ug.save(); toPaper(ug);
+  [1, 2, 3, 4, 5, 9, 10, 11, 12, 13].forEach((f, i) => drawSack(ug, pose(f), { seed: 20 + f, w: [1, 4, 10, 13].includes(f) ? 2.8 : 2, a: [1, 4, 10, 13].includes(f) ? .95 : .7, detail: [1, 4, 10, 13].includes(f) }));
+  [4, 10].forEach(f => { const p = pose(f); write(ug, String(f), p.x + 70, p.y - p.h * .62, { size: 30, a: .8 }); });
+  ug.restore();
+  pg.save(); pg.setTransform(1, 0, 0, 1, 0, 0); pg.globalAlpha = .3; pg.filter = `blur(${1.1 * S}px)`; pg.globalCompositeOperation = 'multiply'; pg.drawImage(UND, 0, 0); pg.restore();
+  // ── 这一张：铅笔层
+  const [PEL, lg] = PEN.layer(W, H, S); lg.save(); toPaper(lg);
+  // 地面线 + 弧线 + 每一帧的位置刻度（顶上挤在一起 = 慢）
+  line(lg, [[-590, GROUND + 2], [590, GROUND - 2]], { w: 1.3, col: BLUE, a: .5, seed: 2, taper: .05 });
+  const arc = []; for (let t = 0; t <= 1.0001; t += .02) arc.push([lerp(-350, 330, t), GROUND - 4 * 300 * t * (1 - t) - 90]);
+  line(lg, [[-420, GROUND - 90], ...arc, [400, GROUND - 90]], { w: 1.4, col: BLUE, a: .55, seed: 3, taper: .05 });
+  for (let f = 1; f <= 13; f++) { const p = pose(f), y = f === 1 || f === 13 ? GROUND - 90 : p.y + p.h / 2 - 90;
+    line(lg, [[p.x, y - 9], [p.x, y + 9]], { w: 1.4, col: BLUE, a: .7, seed: 80 + f });
+    write(lg, String(f), p.x - 7, y - 16, { size: 21, col: BLUE, a: .75 }); }
+  // 前后两张的洋葱皮（蓝）
+  drawSack(lg, pose(6), { col: RED, a: .42, w: 1.7, passes: 1, detail: false, seed: 36 });
+  drawSack(lg, pose(8), { col: BLUE, a: .45, w: 1.7, passes: 1, detail: false, seed: 38 });
+  write(lg, 'prev', pose(6).x - 150, pose(6).y + 20, { size: 22, col: RED, a: .7, rot: -.2 });
+  write(lg, 'next', pose(8).x + 110, pose(8).y + 40, { size: 22, col: BLUE, a: .75, rot: .15 });
+  // 关键张 07：蓝铅笔起稿 + 石墨定线 + 排线
+  const k7 = pose(7);
+  drawSack(lg, k7, { construct: true, shade: true, seed: 7, w: 3.8, passes: 3 });
+  // 地上的影子：排线的椭圆，离地越高越小越淡
+  { const cx = k7.x, cy = GROUND + 4, rx = 70, ry = 13, rr = rng(4);
+    for (let t = -rx; t < rx; t += 6) { const hh = ry * Math.sqrt(Math.max(0, 1 - (t / rx) ** 2)); line(lg, [[cx + t + 4, cy - hh], [cx + t - 4, cy + hh]], { w: 1.2, col: GRAPH, a: .45 + rr() * .15, seed: 200 + t | 0, taper: .3 }); }
+    roughEllipse(lg, cx, cy, rx, ry, 0, { col: GRAPH, a: .5, w: 1.2, seed: 210, loops: 1 });
+    line(lg, [[cx, k7.y + k7.h / 2 + 14], [cx, cy - 18]], { w: 1, col: BLUE, a: .45, seed: 211 });
+    write(lg, 'H = 300', cx + 10, (k7.y + k7.h / 2 + cy) / 2 + 40, { size: 22, col: BLUE, a: .7 }); }
+  // 动势线（速度线）
+  [-.3, 0, .3].forEach((o, i) => line(lg, catmull([[k7.x - 120 + o * 40, k7.y + 120 + o * 60], [k7.x - 200 + o * 30, k7.y + 175 + o * 70], [k7.x - 250, k7.y + 260 + o * 50]], false), { w: 1.2, col: GRAPH, a: .35, seed: 90 + i }));
+  // 注：红铅笔
+  write(lg, 'hang!', k7.x + 128, k7.y - 82, { size: 40, col: RED, a: .85, rot: -.08 });
+  write(lg, '6 · 7 · 8 挤一起 = 慢', k7.x + 122, k7.y - 44, { size: 24, font: 'LongCang', weight: 400, col: RED, a: .8, rot: -.05 });
+  line(lg, catmull([[k7.x + 118, k7.y - 70], [k7.x + 96, k7.y - 62], [k7.x + 84, k7.y - 46]], false), { w: 1.5, col: RED, a: .7, seed: 95 });
+  const p1 = pose(1), p13 = pose(13), p4 = pose(4);
+  write(lg, 'squash', p1.x - 40, p1.y - 96, { size: 34, col: GRAPH, a: .7 });
+  write(lg, 'stretch', p4.x - 175, p4.y + 60, { size: 32, col: GRAPH, a: .6, rot: -1.0 });
+  write(lg, '← ears: 2 fr late', k7.x + 108, k7.y - 140, { size: 27, col: GRAPH, a: .62, rot: -.04 });
+  // 面积不变的小图：三个同面积的方块
+  [[1, 1], [1.5, .667], [.72, 1.39]].forEach(([sx, sy], i) => { const s0 = 30, x = -585 + i * 62, y = 372; line(lg, [[x, y], [x + s0 * sx, y], [x + s0 * sx, y - s0 * sy], [x, y - s0 * sy], [x, y]], { w: 1.4, col: GRAPH, a: .7, seed: 100 + i, taper: .05 }); });
+  write(lg, 'w × h = 1', -585, 404, { size: 26, col: GRAPH, a: .7 });
+  // 右边：时间表
+  const ticks = [0, .2, .36, .5, .6, .68, .73, .78, .86, .96, 1.06, 1.18, 1.3].map(t => t / 1.3);
+  write(lg, 'TIMING', 470, -300, { size: 26, col: GRAPH, a: .75 });
+  chart(lg, 520, -262, 400, ticks, { keys: [1, 7, 13], bds: [4, 10] });
+  // 右上：张号 + 场次
+  roughEllipse(lg, 548, -350, 34, 30, 0, { col: RED, a: .85, w: 2, seed: 120, loops: 2 });
+  write(lg, '7', 536, -336, { size: 46, col: RED, a: .9 });
+  write(lg, 'SC 12 · CUT 03', 290, -342, { size: 28, col: GRAPH, a: .7 });
+  // 左上：标题，排线写出来
+  hatchText(lg, '铅笔原画', -585, -262, { size: 104, gap: 4.2 });
+  write(lg, 'pencil test — flour sack jump', -582, -222, { size: 30, col: GRAPH, a: .65 });
+  lg.restore();
+  PEN.grain(PEL, PEN.tooth(512, 512, 5), 512);
+  pg.save(); pg.setTransform(1, 0, 0, 1, 0, 0); pg.globalCompositeOperation = 'multiply'; pg.drawImage(PEL, 0, 0); pg.restore();
+  // 纸面纤维（整张纸一点点颗粒）
+  { const im = pg.getImageData(0, 0, W * S, H * S), d = im.data, rr = rng(3); for (let i = 0; i < d.length; i += 4) { if (!d[i + 3]) continue; const v = (rr() - .5) * 7; d[i] += v; d[i + 1] += v; d[i + 2] += v; } pg.putImageData(im, 0, 0); }
+  // 右下角翻起来一角：先把这一角从上面这张挖掉，露出下面那张（和它上面的下一帧）
+  const FA = [PW / 2 - 300, PH / 2], FB = [PW / 2, PH / 2 - 210];
+  pg.save(); toPaper(pg); pg.globalCompositeOperation = 'destination-out'; pg.beginPath(); pg.moveTo(...FA); pg.lineTo(PW / 2 + 5, PH / 2 + 5); pg.lineTo(...FB); pg.closePath(); pg.fill(); pg.restore();
+  g.save(); toPaper(g);
+  g.fillStyle = '#efe4cc'; g.beginPath(); g.moveTo(...FA); g.lineTo(PW / 2, PH / 2); g.lineTo(...FB); g.closePath(); g.fill();
+  // 下一张纸上的第 8 帧（只露出一点点）
+  g.save(); g.beginPath(); g.moveTo(...FA); g.lineTo(PW / 2, PH / 2); g.lineTo(...FB); g.closePath(); g.clip();
+  const [NX, nxg] = PEN.layer(W, H, S); g.restore(); g.restore();
+  g.save(); g.setTransform(1, 0, 0, 1, 0, 0); g.drawImage(PAPER, 0, 0); g.restore();
+  g.save(); toPaper(g);
+  // 翻起来的那一片：背面，有一点卷
+  const mx = (FA[0] + FB[0]) / 2, my = (FA[1] + FB[1]) / 2, ux = FB[0] - FA[0], uy = FB[1] - FA[1], L = Math.hypot(ux, uy), nx = uy / L, ny = -ux / L;
+  const tipX = PW / 2 - 2 * ((PW / 2 - FA[0]) * nx + (PH / 2 - FA[1]) * ny) * nx * .92, tipY = PH / 2 - 2 * ((PW / 2 - FA[0]) * nx + (PH / 2 - FA[1]) * ny) * ny * .92;
+  g.save(); g.shadowColor = 'rgba(40,25,10,.45)'; g.shadowBlur = 26; g.shadowOffsetX = 10; g.shadowOffsetY = 14;
+  g.beginPath(); g.moveTo(...FA); g.quadraticCurveTo(mx - nx * 30 + ux * -.1, my - ny * 30, tipX, tipY); g.quadraticCurveTo(mx - nx * 60 + ux * .15, my - ny * 60 + uy * .15, ...FB); g.closePath();
+  const fl = g.createLinearGradient(mx, my, tipX, tipY); fl.addColorStop(0, '#d7c7a6'); fl.addColorStop(.35, '#f6eedb'); fl.addColorStop(.8, '#fbf5e6'); fl.addColorStop(1, '#e9dcc0');
+  g.fillStyle = fl; g.fill(); g.restore();
+  g.strokeStyle = 'rgba(120,95,60,.35)'; g.lineWidth = 1; g.beginPath(); g.moveTo(...FA); g.lineTo(...FB); g.stroke();
+  g.restore();
+  // 定位孔：露出底下的定位钉
+  g.save(); toPaper(g);
+  const yh = PH / 2 - 36;
+  const peg = (x, wd) => { g.fillStyle = '#fff6e4'; g.beginPath(); g.roundRect(x - wd / 2 - 3, yh - 13, wd + 6, 26, 13); g.fill();
+    const lg2 = g.createLinearGradient(0, yh - 10, 0, yh + 10); lg2.addColorStop(0, '#f2efea'); lg2.addColorStop(.5, '#a8a39c'); lg2.addColorStop(1, '#5e5a55'); g.fillStyle = lg2; g.beginPath(); g.roundRect(x - wd / 2, yh - 10, wd, 20, 10); g.fill();
+    g.strokeStyle = 'rgba(80,60,40,.35)'; g.lineWidth = 1; g.beginPath(); g.roundRect(x - wd / 2 - 3, yh - 13, wd + 6, 26, 13); g.stroke(); };
+  peg(0, 22); peg(-330, 74); peg(330, 74);
+  g.restore();
+  // ── 道具：一支黄铅笔、一支蓝铅笔、橡皮屑
+  const pencil = (x0, y0, x1, y1, body, dark, lead, wd) => {
+    const a = Math.atan2(y1 - y0, x1 - x0), L = Math.hypot(x1 - x0, y1 - y0);
+    g.save(); g.translate(x0, y0); g.rotate(a);
+    g.fillStyle = 'rgba(0,0,0,.35)'; g.filter = `blur(${6 * S}px)`; g.beginPath(); g.roundRect(30, wd * .9, L - 30, wd * .8, 6); g.fill(); g.filter = 'none';
+    const tip = 70, ferr = 46, er = 40, bodyL = L - tip - ferr - er;
+    // 笔身三个面
+    const bg = g.createLinearGradient(0, -wd / 2, 0, wd / 2); bg.addColorStop(0, mix(body, '#ffffff', .35).map(Math.round).join() && css(mix(body, '#fff', .35))); bg.addColorStop(.33, css(HD.hex(body))); bg.addColorStop(.36, css(mix(body, dark, .35))); bg.addColorStop(.66, css(mix(body, dark, .5))); bg.addColorStop(.69, css(mix(body, dark, .8))); bg.addColorStop(1, css(HD.hex(dark)));
+    g.fillStyle = bg; g.fillRect(er + ferr, -wd / 2, bodyL, wd);
+    // 削出来的木头 + 笔芯
+    g.fillStyle = '#e2c49a'; g.beginPath(); g.moveTo(L - tip, -wd / 2); g.lineTo(L - 16, -wd * .14); g.lineTo(L - 16, wd * .14); g.lineTo(L - tip, wd / 2);
+    for (let k = 5; k >= 0; k--) g.lineTo(L - tip - 6 * Math.sin(k / 5 * Math.PI), wd / 2 - k / 5 * wd); g.fill();
+    g.fillStyle = 'rgba(150,110,60,.35)'; g.beginPath(); g.moveTo(L - tip, wd * .1); g.lineTo(L - 16, wd * .14); g.lineTo(L - tip, wd / 2); g.fill();
+    g.fillStyle = lead; g.beginPath(); g.moveTo(L - 18, -wd * .16); g.lineTo(L, 0); g.lineTo(L - 18, wd * .16); g.fill();
+    g.fillStyle = 'rgba(255,255,255,.35)'; g.beginPath(); g.moveTo(L - 18, -wd * .16); g.lineTo(L, 0); g.lineTo(L - 18, -wd * .02); g.fill();
+    // 铁箍 + 橡皮
+    const fg = g.createLinearGradient(0, -wd / 2, 0, wd / 2); fg.addColorStop(0, '#f4f1ea'); fg.addColorStop(.4, '#b8b2a8'); fg.addColorStop(1, '#6d6860'); g.fillStyle = fg; g.fillRect(er, -wd / 2 - 1, ferr, wd + 2);
+    g.strokeStyle = 'rgba(70,65,60,.5)'; g.lineWidth = 1.2; for (let k = 8; k < ferr; k += 8) { g.beginPath(); g.moveTo(er + k, -wd / 2); g.lineTo(er + k, wd / 2); g.stroke(); }
+    const eg = g.createLinearGradient(0, -wd / 2, 0, wd / 2); eg.addColorStop(0, '#f6a7a0'); eg.addColorStop(.5, '#e0786f'); eg.addColorStop(1, '#a8483f'); g.fillStyle = eg; g.beginPath(); g.roundRect(0, -wd / 2 + 1, er + 4, wd - 2, [8, 0, 0, 8]); g.fill();
+    g.restore();
+  };
+  pencil(1420, 1075, 1880, 840, '#f0b81e', '#9a6a08', '#3a3a40', 30);
+  pencil(-60, 330, 250, 150, '#3f86d8', '#1c4c8c', '#2f6fc8', 26);
+  for (let i = 0; i < 14; i++) { const x = 1100 + r() * 120, y = 925 + r() * 60, s2 = 2.5 + r() * 4; g.save(); g.translate(x, y); g.rotate(r() * 6); g.fillStyle = `rgba(${170 + r() * 30},${120 + r() * 20},${115 + r() * 20},.85)`; g.beginPath(); g.ellipse(0, 0, s2 * 1.6, s2 * .6, 0, 0, 7); g.fill(); g.fillStyle = 'rgba(60,60,64,.35)'; g.beginPath(); g.ellipse(s2 * .3, 0, s2 * .5, s2 * .3, 0, 0, 7); g.fill(); g.restore(); }
+  // 灯光：右上一点暖的环境光 + 暗角
+  let rg = g.createRadialGradient(PX, PY - 60, 300, PX, PY, 1250); rg.addColorStop(0, 'rgba(0,0,0,0)'); rg.addColorStop(1, 'rgba(8,5,3,.55)'); g.fillStyle = rg; g.fillRect(0, 0, W, H);
+  HD.grain(g, 5, 11);
+  window.__done = true;
+}, 50));
+</script>

@@ -1,0 +1,50 @@
+<!doctype html><meta charset="utf-8">
+<link rel="stylesheet" href="../fonts.css">
+<style>
+.lbl{position:absolute;font:500 14px/1.6 Mono;letter-spacing:.16em;color:rgba(255,236,214,.85);text-shadow:0 1px 8px rgba(0,0,0,.6)}
+.title{position:absolute;left:70px;bottom:132px;font:900 150px/1 SerifSC;color:#fff4e6;letter-spacing:.04em;text-shadow:0 6px 40px rgba(0,0,0,.6)}
+.en{position:absolute;left:78px;bottom:96px;font:500 20px/1 Corm;letter-spacing:.62em;color:rgba(255,232,205,.9)}
+.sub{position:absolute;left:78px;bottom:52px;font:400 21px/1.4 SansSC;color:rgba(255,240,225,.85);letter-spacing:.08em}
+.chips{position:absolute;right:70px;bottom:46px;display:flex;gap:18px}
+.chip{width:96px;font:500 11px/1.4 Mono;color:rgba(255,236,214,.7);letter-spacing:.06em}
+.chip span{display:block;font:500 13px SansSC;color:#fff4e6}
+.note{position:absolute;font:400 15px/1.5 SansSC;color:rgba(255,240,225,.9);text-shadow:0 1px 10px rgba(0,0,0,.8);letter-spacing:.04em}
+.note b{display:block;font:600 12px Mono;letter-spacing:.18em;color:#ffc478;margin-bottom:3px}
+svg{position:absolute;inset:0}
+</style>
+<canvas class="bg" id="c"></canvas>
+<div class="lbl" style="left:72px;top:54px">EXT. STREET — NIGHT — RAIN · SC 12 / SHOT 04</div>
+<div class="lbl" style="right:72px;top:54px;text-align:right" id="cnt">OIL ON CANVAS</div>
+<div class="title">厚涂</div>
+<div class="en">PAINTERLY · IMPASTO</div>
+<div class="sub">每一笔都顺着形状走 · 亮处厚，暗处薄 · 暖光冷影</div>
+<div class="chips" id="chips"></div>
+<script src="../lib.js"></script><script src="paint.js"></script>
+<script>
+const S = +(new URLSearchParams(location.search).get('s') || 2);
+const PAL = [['夜青', '#0E3442'], ['雾橙', '#B07A4C'], ['灯黄', '#FFC478'], ['霓虹红', '#FF465A'], ['霓虹青', '#46EBD7'], ['伞红', '#B8231F']];
+document.getElementById('chips').innerHTML = PAL.map(([n, c]) => `<div class="chip"><div style="height:58px"></div><span>${n}</span>${c}</div>`).join('');
+document.fonts.ready.then(() => setTimeout(() => {
+  const c = document.getElementById('c'); c.width = 1920 * S; c.height = 1080 * S; const g = c.getContext('2d');
+  const t = performance.now();
+  const R = PAINT.ref(S);
+  // 文字底下压暗一点（在画之前压，笔触照样盖过去）
+  const rg = R.getContext('2d'); rg.save(); rg.scale(S, S);
+  let gr = rg.createLinearGradient(0, 760, 0, 1080); gr.addColorStop(0, 'rgba(4,10,14,0)'); gr.addColorStop(1, 'rgba(4,10,14,.55)'); rg.fillStyle = gr; rg.fillRect(0, 760, 1920, 320); rg.restore();
+  const F = PAINT.flow(R);
+  const P = PAINT.paint(R, F, S, {
+    fx: 890, fy: 600,
+    extra: (pg, hg, stroke, r) => {
+      // 色板：真的用笔刷出来
+      PAL.forEach(([n, hex], i) => {
+        const x = 1920 - 70 - (PAL.length - i) * 114 + 18, y = 1080 - 46 - 92 + 26, col = HD.hex(hex);
+        for (let k = 0; k < 3; k++) stroke([[x + 4, y - 8 + k * 9 + r() * 3], [x + 40, y - 12 + k * 9], [x + 88, y - 6 + k * 9 + r() * 3]], 8 + r() * 2, col.map(v => v * (1 + (r() - .5) * .12)));
+      });
+    }
+  });
+  g.drawImage(P, 0, 0);
+  document.getElementById('cnt').innerHTML = `${P.count.toLocaleString('en')} STROKES<br><span style="opacity:.7">OIL ON CANVAS</span>`;
+  console.log('painterly cover', ((performance.now() - t) / 1000).toFixed(1) + 's');
+  window.__done = true;
+}, 50));
+</script>

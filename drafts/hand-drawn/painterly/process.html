@@ -1,0 +1,80 @@
+<!doctype html><meta charset="utf-8">
+<link rel="stylesheet" href="../fonts.css">
+<style>
+.title{position:absolute;left:70px;top:52px;font:900 64px/1 SerifSC;color:#fff4e6;letter-spacing:.04em;text-shadow:0 4px 30px rgba(0,0,0,.7)}
+.kick{position:absolute;left:74px;top:132px;font:400 20px/1.5 SansSC;color:rgba(255,240,225,.8);letter-spacing:.06em;text-shadow:0 1px 10px rgba(0,0,0,.8)}
+.kick i{font:italic 24px InstrSerif;color:#fff;margin-right:10px}
+.st{position:absolute;top:212px;font:600 13px/1.5 Mono;letter-spacing:.18em;color:#ffc478;text-shadow:0 1px 8px rgba(0,0,0,.9)}
+.st b{display:block;font:700 26px/1.2 SansSC;letter-spacing:.04em;color:#fff4e6}
+.st span{display:block;font:400 15px/1.5 SansSC;letter-spacing:.03em;color:rgba(255,240,225,.82);margin-top:4px;width:330px}
+.cards{position:absolute;left:70px;right:70px;bottom:40px;display:grid;grid-template-columns:1.3fr 1fr 1fr 1fr;gap:22px}
+.card{border-top:1px solid rgba(255,220,180,.4);padding-top:13px;color:#fff4e6}
+.card h4{margin:0 0 7px;font:700 20px/1.2 SansSC;letter-spacing:.03em}
+.card h4 span{font:600 12px Mono;letter-spacing:.16em;color:#ffc478;margin-right:10px;vertical-align:3px}
+.card p{margin:0;font:400 14.5px/1.6 SansSC;color:rgba(255,240,225,.78)}
+.card code{font:500 13px Mono;color:#fff;background:rgba(255,255,255,.1);padding:1px 6px;border-radius:3px}
+.mag{position:absolute;font:600 12px Mono;letter-spacing:.16em;color:#ffc478;text-shadow:0 1px 8px #000}
+.bl{position:absolute;font:500 11px Mono;color:rgba(255,236,214,.75);letter-spacing:.08em}
+</style>
+<canvas class="bg" id="c"></canvas>
+<div class="title">从色块到笔触</div>
+<div class="kick"><i>Block-in → flow → impasto.</i>同一帧，画三遍：先铺大色，再定方向，最后用厚的小笔点亮焦点</div>
+<div class="st" style="left:72px">01 · BLOCK-IN<b>大笔铺色</b><span>只用 22 px 的大刷子。先把明暗和冷暖站住，不管细节。</span></div>
+<div class="st" style="left:712px">02 · FLOW<b>笔触的方向</b><span>每一笔顺着边缘的切线走；湿地面上一律竖着拖——那就是倒影。</span></div>
+<div class="st" style="left:1352px">03 · IMPASTO<b>厚涂成画</b><span>四种刷子 121k 笔。小笔只给焦点，亮处最后堆一层厚的。</span></div>
+<div class="mag" id="mag"></div>
+<div class="cards">
+  <div class="card"><h4><span>01</span>四把刷子，先大后小</h4><p>22 → 11 → 5.5 → 2.8 px，每一遍减半。<br>越小的刷子，越只出现在离焦点近的地方。</p><div style="height:44px"></div></div>
+  <div class="card"><h4><span>02</span>笔顺着形走</h4><p>方向 = 边的切线（结构张量）；没有边的地方：天横扫、地竖拖、楼竖立。</p></div>
+  <div class="card"><h4><span>03</span>亮处厚，暗处薄</h4><p>每一笔同时画一份“厚度”，最后从左上打一次侧光——刷毛的沟和收笔的堆就出来了。</p></div>
+  <div class="card"><h4><span>04</span>暖光，冷影</h4><p>影子用青 <code>#0E3442</code>，光用橙黄 <code>#FFC478</code>；整张画只有一块纯红，给伞。</p></div>
+</div>
+<script src="../lib.js"></script><script src="paint.js"></script>
+<script>
+const S = +(new URLSearchParams(location.search).get('s') || 2);
+document.fonts.ready.then(() => setTimeout(() => {
+  const W = 1920, H = 1080;
+  const c = document.getElementById('c'); c.width = W * S; c.height = H * S; const g = c.getContext('2d');
+  const R = PAINT.ref(S), F = PAINT.flow(R);
+  const P1 = PAINT.paint(R, F, S, { maxPass: 1, fx: 890, fy: 600 });
+  const P4 = PAINT.paint(R, F, S, { fx: 890, fy: 600 });
+  const SM = PAINT.samples(S, [22, 11, 5.5, 2.8].map((rad, i) => { const x = 82 + i * 118 + (i === 0 ? 8 : 0), y = 1080 - 66; return [[[x, y], [x + 38, y - 3], [x + 80, y + 1]], rad * .55, [255, 196, 120]]; }));
+  document.getElementById('c').dataset.count = P4.count;
+  const cut = [[0, 640, 0], [640, 1280, 1], [1280, 1920, 2]], sl = 70;
+  const clipSlice = (x0, x1) => { g.beginPath(); g.moveTo(x0 + (x0 ? sl : 0), 0); g.lineTo(x1 + (x1 < W ? sl : 0), 0); g.lineTo(x1 - (x1 < W ? sl : 0), H); g.lineTo(x0 - (x0 ? sl : 0), H); g.closePath(); };
+  g.save(); g.scale(S, S);
+  // 01：只有大笔
+  g.save(); clipSlice(0, 640); g.clip(); g.drawImage(P1, 0, 0, W, H); g.restore();
+  // 02：大笔压暗 + 方向场
+  g.save(); clipSlice(640, 1280); g.clip(); g.drawImage(P4, 0, 0, W, H); g.fillStyle = 'rgba(6,12,16,.62)'; g.fillRect(0, 0, W, H);
+  for (let y = 6; y < H; y += 13) for (let x = 560 + (y % 26 ? 6 : 0); x < 1400; x += 13) {
+    const k = F.at(x, y), a = F.ang[k], L = 5.2, rr = R.getContext('2d').getImageData(Math.min(W * S - 1, x * S), Math.min(H * S - 1, y * S), 1, 1).data;
+    g.strokeStyle = `rgba(${Math.min(255, rr[0] + 90)},${Math.min(255, rr[1] + 80)},${Math.min(255, rr[2] + 60)},.9)`; g.lineWidth = 1.5;
+    g.beginPath(); g.moveTo(x - Math.cos(a) * L, y - Math.sin(a) * L); g.lineTo(x + Math.cos(a) * L, y + Math.sin(a) * L); g.stroke();
+  }
+  g.restore();
+  // 03：成画
+  g.save(); clipSlice(1280, 1920); g.clip(); g.drawImage(P4, 0, 0, W, H); g.restore();
+  // 分割线
+  g.strokeStyle = 'rgba(255,220,180,.75)'; g.lineWidth = 2;
+  [640, 1280].forEach(x => { g.beginPath(); g.moveTo(x + sl, 0); g.lineTo(x - sl, H); g.stroke(); });
+  // 顶部、底部压暗，给字
+  let gr = g.createLinearGradient(0, 0, 0, 380); gr.addColorStop(0, 'rgba(4,8,12,.8)'); gr.addColorStop(1, 'rgba(4,8,12,0)'); g.fillStyle = gr; g.fillRect(0, 0, W, 380);
+  gr = g.createLinearGradient(0, 780, 0, H); gr.addColorStop(0, 'rgba(4,8,12,0)'); gr.addColorStop(.45, 'rgba(4,8,12,.82)'); gr.addColorStop(1, 'rgba(4,8,12,.95)'); g.fillStyle = gr; g.fillRect(0, 780, W, 300);
+  // 放大镜：伞，3 倍
+  const mx = 1690, my = 560, mr = 165, src = [890, 520], z = 3;
+  g.save(); g.beginPath(); g.arc(mx, my, mr, 0, 7); g.clip();
+  g.drawImage(P4, (src[0] - mr / z) * S, (src[1] - mr / z) * S, (2 * mr / z) * S, (2 * mr / z) * S, mx - mr, my - mr, 2 * mr, 2 * mr);
+  g.restore();
+  g.strokeStyle = 'rgba(255,220,180,.95)'; g.lineWidth = 2.5; g.beginPath(); g.arc(mx, my, mr, 0, 7); g.stroke();
+  g.lineWidth = 1.2; g.setLineDash([5, 5]); g.beginPath(); g.arc(src[0], src[1], mr / z, 0, 7); g.stroke();
+  g.beginPath(); g.moveTo(src[0] + mr / z, src[1]); g.lineTo(mx - mr, my); g.stroke(); g.setLineDash([]);
+  g.restore();
+  g.drawImage(SM, 0, 0);
+  // 放大镜下面那一行字放到最后画的 canvas 之上
+  const m = document.getElementById('mag'); m.style.left = (mx - mr) + 'px'; m.style.top = (my + mr + 12) + 'px'; m.textContent = '× 3 · 每一笔都有厚度';
+  // 刷子标签
+  [22, 11, 5.5, 2.8].forEach((rad, i) => { const d = document.createElement('div'); d.className = 'bl'; d.style.left = (82 + i * 118) + 'px'; d.style.top = (1080 - 40) + 'px'; d.textContent = rad + ' px'; document.body.appendChild(d); });
+  window.__done = true;
+}, 50));
+</script>

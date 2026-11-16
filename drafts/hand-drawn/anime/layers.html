@@ -1,0 +1,85 @@
+<!doctype html><meta charset="utf-8">
+<link rel="stylesheet" href="../fonts.css">
+<style>
+body{background:#0b1220}
+.t{position:absolute;color:#fff}
+.tag{position:absolute;text-shadow:0 1px 3px rgba(0,0,0,.9),0 0 14px rgba(0,0,0,.6);font:500 13px/1.35 Mono;letter-spacing:.12em;color:rgba(255,255,255,.88);white-space:nowrap}
+.tag b{display:block;font:700 19px/1.2 SansSC;letter-spacing:.04em;color:#fff;margin-bottom:2px}
+.tag em{font-style:normal;color:#ffd36e}
+.title{left:72px;top:58px;font:900 76px/1 SerifSC;letter-spacing:.04em}
+.kick{left:76px;top:150px;font:500 21px/1.5 SansSC;color:rgba(255,255,255,.78);letter-spacing:.06em}
+.kick i{font:italic 25px InstrSerif;color:#fff;margin-right:12px}
+.cards{position:absolute;left:72px;right:72px;bottom:40px;display:grid;grid-template-columns:1.25fr 1fr 1fr 1fr;gap:18px}
+.card{border-top:1px solid rgba(255,255,255,.35);padding-top:14px;color:#fff}
+.card h4{margin:0 0 8px;font:700 21px/1.2 SansSC;letter-spacing:.03em}
+.card h4 span{font:600 12px Mono;letter-spacing:.16em;color:#ffd36e;margin-right:10px;vertical-align:3px}
+.card p{margin:0;font:400 15px/1.6 SansSC;color:rgba(255,255,255,.75)}
+.card code{font:500 14px Mono;color:#fff;background:rgba(255,255,255,.08);padding:1px 6px;border-radius:3px}
+.bars{display:flex;align-items:flex-end;gap:5px;height:44px;margin-top:8px}
+.bars div{flex:1;background:linear-gradient(#ffd36e,#f09a4a);border-radius:2px 2px 0 0;position:relative}
+.bars div span{position:absolute;bottom:-18px;left:0;right:0;text-align:center;font:500 10px Mono;color:rgba(255,255,255,.6)}
+.sw{display:flex;gap:6px;margin-top:10px}.sw div{flex:1;height:26px;border-radius:2px}
+.cam{position:absolute;font:600 12px Mono;letter-spacing:.18em;color:rgba(255,255,255,.7)}
+</style>
+<canvas class="bg" id="c"></canvas>
+<div id="tags"></div>
+<div class="t title">一个镜头，七层纸</div>
+<div class="t kick"><i>The multiplane, exploded.</i>背景、云、远山、电线杆、帽子、前景草——各画在一张纸上，叠起来才是一帧</div>
+<div class="cards">
+  <div class="card"><h4><span>01</span>视差：越远走得越慢</h4><p>镜头横摇时每层的速度。天几乎不动，前景草跑得比镜头还快。</p>
+    <div class="bars"><div style="height:6%"><span>天</span></div><div style="height:12%"><span>云</span></div><div style="height:22%"><span>远</span></div><div style="height:40%"><span>中</span></div><div style="height:62%"><span>杆</span></div><div style="height:100%"><span>草</span></div></div></div>
+  <div class="card"><h4><span>02</span>镜头 1 拍 1，人物 1 拍 2</h4><p>背景推拉每秒 24 格是丝滑的；帽子和人物每秒 12 张画——“手绘感”就在这一顿一顿里。</p></div>
+  <div class="card"><h4><span>03</span>赛璐璐：线 + 1 影 + 1 光</h4><p>线不用黑，用比底色深的棕 <code>#5B3B22</code>；影是硬边，不渐变。</p>
+    <div class="sw"><div style="background:#F1D38E"></div><div style="background:#C99B55"></div><div style="background:#FFFCEC"></div><div style="background:#E0483A"></div><div style="background:#A92F2E"></div></div></div>
+  <div class="card"><h4><span>04</span>天是画的，云的影带紫</h4><p>天上深下浅四段色；云影不是灰而是 <code>#7380BF</code>，越往下越深、越蓝。</p>
+    <div class="sw"><div style="background:#1648A6"></div><div style="background:#5EA3E0"></div><div style="background:#A9D9F0"></div><div style="background:#A9B6E4"></div><div style="background:#7380BF"></div></div></div>
+</div>
+<script src="../lib.js"></script>
+<script src="scene.js"></script>
+<script>
+const S = +(new URLSearchParams(location.search).get('s') || 2);
+document.fonts.ready.then(() => {
+  const c = document.getElementById('c'); c.width = 1920 * S; c.height = 1080 * S;
+  const g = c.getContext('2d'); g.scale(S, S);
+  // 背景：暗的摄影棚，顶上一盏灯
+  let bg = g.createRadialGradient(1100, 380, 50, 1100, 420, 1300);
+  bg.addColorStop(0, '#1d2a44'); bg.addColorStop(.55, '#0f1729'); bg.addColorStop(1, '#070b14');
+  g.fillStyle = bg; g.fillRect(0, 0, 1920, 1080);
+  const L = ANIME.renderLayers(S);
+  const order = ['sky', 'clouds', 'mountains', 'field', 'poles', 'cel', 'fg'];
+  const A0 = .30, B0 = -.04, D0 = .28, ox0 = 140, oy0 = 296, dx = 182, dy = 40, grow = .025;
+  const M = i => { const k = 1 + i * grow; return [A0 * k, B0 * k, D0 * k, ox0 + i * dx, oy0 + i * dy - i * 6]; };
+  const P = (i, x, y) => { const [a, b, d, ox, oy] = M(i); return [ox + x * a, oy + x * b + y * d]; };
+  const tags = [], anchors = { sky: [160, 110], clouds: [1180, 330], mountains: [560, 700], field: [1500, 860], poles: [330, 150], cel: [830, 175], fg: [1720, 830] };
+  order.forEach((key, i) => {
+    const l = L.find(q => q.key === key);
+    g.save();
+    const [a, b, d, ox, oy] = M(i); g.setTransform(a * S, b * S, 0, d * S, ox * S, oy * S);
+    // 投影：纸后面的一点暗
+    if (i) { g.fillStyle = 'rgba(0,0,0,.18)'; g.fillRect(-30, 40, 1920, 1080); }
+    // 玻璃：透明层下面一层很淡的蓝
+    if (!l.opaque) { g.fillStyle = 'rgba(160,200,255,.05)'; g.fillRect(0, 0, 1920, 1080); }
+    g.drawImage(l.canvas, 0, 0, 1920, 1080);
+    g.lineWidth = 2.6; g.strokeStyle = 'rgba(255,255,255,.55)'; g.strokeRect(0, 0, 1920, 1080);
+    // 定位孔（动画纸的三孔）
+    g.fillStyle = 'rgba(255,255,255,.6)';
+    [-110, 0, 110].forEach(u => { g.beginPath(); g.ellipse(960 + u, 1050, u ? 18 : 28, 12, 0, 0, 7); g.fill(); });
+    g.restore();
+    const [ax, ay] = P(i, ...anchors[key]);
+    g.fillStyle = '#ffd36e'; g.beginPath(); g.arc(ax, ay, 4, 0, 7); g.fill();
+    g.strokeStyle = 'rgba(255,211,110,.8)'; g.lineWidth = 1.2; g.beginPath(); g.moveTo(ax, ay); g.lineTo(ax, ay - 34); g.stroke();
+    tags.push(`<div class="tag" style="left:${ax - 6}px;top:${ay - 86}px"><b>${l.name.split(' ')[0]}</b>${String(i + 1).padStart(2, '0')} · ${l.name.split(' ').slice(1).join(' ')} · <em>${l.speed}</em></div>`);
+  });
+  // 四个角的连线：一摞玻璃
+  g.strokeStyle = 'rgba(255,255,255,.22)'; g.lineWidth = 1; g.setLineDash([4, 6]);
+  [[0, 0], [1920, 0], [0, 1080], [1920, 1080]].forEach(([x, y]) => { const [x0, y0] = P(0, x, y), [x1, y1] = P(order.length - 1, x, y); g.beginPath(); g.moveTo(x0, y0); g.lineTo(x1 + (x1 - x0) * .12, y1 + (y1 - y0) * .12); g.stroke(); });
+  g.setLineDash([]);
+  // 顶上的灯光
+  g.globalCompositeOperation = 'screen';
+  const lg = g.createRadialGradient(1150, 120, 0, 1150, 120, 900); lg.addColorStop(0, 'rgba(255,230,180,.16)'); lg.addColorStop(1, 'rgba(255,230,180,0)');
+  g.fillStyle = lg; g.fillRect(0, 0, 1920, 1080); g.globalCompositeOperation = 'source-over';
+  document.getElementById('tags').innerHTML = tags.join('');
+  HD.grain(g, 5, 9);
+  window.__done = true;
+});
+</script>
