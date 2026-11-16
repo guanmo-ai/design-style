@@ -4,8 +4,8 @@
 set -euo pipefail
 cd "$(dirname "$0")"
 NAME=pencil-test
-END=1080
-OUT=${TMPDIR:-/tmp}/$NAME-frames${PREVIEW:+-preview}
+END=900
+OUT=${TMPDIR:-/tmp}/$NAME-frames-$(md5sum film.html | cut -c1-8)${PREVIEW:+-preview}
 EVQ=nodraw node ../../_lib/events.cjs film.html events.json
 python3 audio.py "$OUT.wav"
 if [ -n "${PREVIEW:-}" ]; then
