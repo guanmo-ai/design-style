@@ -1,0 +1,77 @@
+<!doctype html><meta charset="utf-8"><title>软构成 · 用在 App</title>
+<!-- 风格图 03 · 用在 App 1080×1350（毛只画在手机屏幕里）。node ../../_lib/shot-gl.cjs app.html png/app.png 1080 1350 1 -->
+<link rel="stylesheet" href="sheet.css">
+<style>
+  html, body { background: var(--red); }
+  #stage { background: var(--red); }
+  #phone { position: absolute; left: 76px; top: 168px; width: 480px; height: 1040px; border-radius: 58px; box-shadow: 0 0 0 16px #161412, 30px 30px 0 16px #161412; overflow: hidden; background: var(--paper); }
+  #phone canvas { position: absolute; left: 0; top: 0; }
+  #scr { position: absolute; inset: 0; color: var(--ink); font-family: 'NotoSC'; font-weight: 500; }
+  #scr > div { position: absolute; white-space: nowrap; }
+  #ov { color: var(--paper); }
+  .note { font-size: 22px; line-height: 1.5; }
+  .note b { display: block; font-size: 25px; font-weight: 900; color: #fff; }
+  .note em { font-style: normal; font-family: 'GeistMono'; font-size: 19px; color: var(--ink); background: var(--paper); padding: 0 6px; }
+  .lead { position: absolute; height: 3px; background: var(--ink); transform-origin: 0 50%; }
+  .dot { position: absolute; width: 14px; height: 14px; border-radius: 50%; background: var(--paper); box-shadow: 0 0 0 3px var(--ink); transform: translate(-50%, -50%); }
+</style>
+<div id="stage" style="width:1080px;height:1350px">
+<div id="phone"><canvas id="c" width="480" height="1040"></canvas>
+  <div id="scr">
+    <div class="mono" style="left:40px;top:22px;font-size:19px;font-weight:700">9:41</div>
+    <div class="mono" style="right:40px;top:22px;font-size:17px">● ● ●</div>
+    <div class="cn" style="left:38px;top:62px;font-size:46px">软电台</div>
+    <div class="mono" style="right:40px;top:80px;font-size:18px;letter-spacing:.12em">SOFT FM</div>
+    <div style="left:40px;top:588px;font-size:34px;font-weight:900">今天也要软着陆</div>
+    <div class="mono" style="left:40px;top:640px;font-size:18px;letter-spacing:.06em">观默 · 第 12 首 · 128 BPM</div>
+    <div style="left:284px;top:708px;width:156px;height:4px;background:#161412"></div>
+    <div class="mono" style="left:40px;top:732px;font-size:17px">1:24</div><div class="mono" style="right:40px;top:732px;font-size:17px">3:07</div>
+    <svg style="position:absolute;left:58px;top:828px" width="64" height="32" viewBox="0 0 64 32"><path d="M30 0 L4 16 L30 32 Z M60 0 L34 16 L60 32 Z" fill="#161412"/></svg>
+    <svg style="position:absolute;left:358px;top:828px" width="64" height="32" viewBox="0 0 64 32"><path d="M4 0 L30 16 L4 32 Z M34 0 L60 16 L34 32 Z" fill="#161412"/></svg>
+    <svg style="position:absolute;left:226px;top:822px" width="40" height="44" viewBox="0 0 40 44"><path d="M4 2 L38 22 L4 42 Z" fill="#F1E8D6"/></svg>
+    <div style="left:0;right:0;top:960px;height:3px;background:#161412"></div>
+    <div style="left:52px;top:982px;font-size:22px;font-weight:900">电台</div><div style="left:206px;top:982px;font-size:22px">收藏</div><div style="left:364px;top:982px;font-size:22px">我的</div>
+  </div>
+</div>
+<div id="ov">
+  <div class="mono" style="left:60px;top:58px;font-size:24px;letter-spacing:.12em">SOFT CONSTRUCTIVISM · 用在 App</div>
+  <div class="mono" style="right:60px;top:58px;font-size:24px;letter-spacing:.12em">软构成</div>
+  <div class="rule" style="left:60px;right:60px;top:100px;background:var(--paper)"></div>
+  <div class="note" style="left:654px;top:236px"><b>封面 · 楔子砸圆</b>沿主轴 −30° 构图<br>圆以接触点为原点压扁 <em>0.86</em></div>
+  <div class="note" style="left:654px;top:560px"><b>进度条在 0° 信息轴上</b>已经播放的部分才长毛<br>拖动的钮：粉色毛球 <em>r 18</em></div>
+  <div class="note" style="left:654px;top:842px"><b>播放键 · 一按就软</b>红圆 <em>r 62</em> 按下压扁 <em>0.86</em><br>毛晚 <em>5 帧</em>，冲过头 <em>30%</em><br>图标和字是平的，不长毛</div>
+  <div class="note" style="left:654px;top:1132px"><b>投影 · 孟菲斯</b>右下 <em>毛长 + 20 px</em>，不模糊<br>贴在纸上，不跟着东西弹</div>
+  <div id="leads"></div>
+</div></div>
+<script src="../../_lib/glkit.js"></script><script src="../../_lib/kit/motion.js"></script><script src="../../_lib/kit/director.js"></script>
+<script src="../../_lib/kit/stage.js"></script><script src="../../_lib/kit/shapes.js"></script><script src="../../_lib/fur/fur.js"></script><script src="../softc.js"></script>
+<script src="still.js"></script>
+<script>
+const W = 480, H = 1040, C = SC.cam(W, H), { path, dye, at, AX } = SC, U = AX.U, SH = 24, sh = (p, k = 1) => [p[0] + SH * k, p[1] + SH * k];
+const parts = [], pose = {}; let id = 0;
+const add = (draw, dyeFn, o = {}, shDraw) => { const i = id++; parts.push({ part: i, draw, dye: dyeFn, depth: 0.12, edge: 24, ...o });
+  if (shDraw) parts.push({ part: id++, draw: shDraw, dye: dye.solid('shadow'), depth: 0.004, edge: 3, z: -0.015, density: 0.5 }); return i; };
+// 封面：一张纸卡上，楔子沿 −30° 砸中一颗蓝球；左上一颗黄球、一根沿 60° 的黑条
+const ball = { c: [300, 300], r: 112 }, hit = [ball.c[0] - U[0] * ball.r, ball.c[1] - U[1] * ball.r], tip = at(hit, 8), base = at(tip, -270);
+const bBall = add(path.circle(ball.c, ball.r), dye.zebra('blue', 'ink', 26, [0.5, 0.866]), { depth: 0.2, edge: 50 }, path.circle(sh(ball.c), ball.r));
+const bWedge = add(path.wedge(base, tip, 52), dye.solid('red'), { depth: 0.12, edge: 18, z: 0.18 }, path.wedge(sh(base), sh(tip), 52));
+add(path.circle([112, 214], 40), dye.solid('yellow'), { depth: 0.12, edge: 26 }, path.circle(sh([112, 214], 0.7), 40));
+add(path.bar([380, 520], [380 + 0.5 * 130, 520 - 0.866 * 130], 16), dye.solid('ink'), { depth: 0.06, edge: 8 });
+add(path.squiggle([60, 470], [200, 470], 9, 2.5, 13), dye.solid('teal'), { depth: 0.05, edge: 6 });
+const sqA = SC.squashAt(C, hit, U, 0.86); pose[bBall] = [sqA, M.mul(SC.shift(C, -U[0] * 14, -U[1] * 14), sqA)]; pose[bBall + 1] = [SC.squashAt(C, sh(hit), U, 0.86)];
+pose[bWedge] = [ID, SC.shift(C, U[0] * 12, U[1] * 12)];
+// 进度条：已播放的一段长毛（红），钮是粉色毛球
+add(path.bar([40, 710], [262, 710], 16), dye.solid('red'), { depth: 0.05, edge: 8 });
+add(path.circle([262, 710], 18), dye.solid('pink'), { depth: 0.08, edge: 12 }, path.circle(sh([262, 710], 0.5), 18));
+// 播放键：被按下的那一刻（以底边为原点压扁 0.86，毛往下甩）；两边是两对小楔子
+const play = [240, 844], pr = 62;
+const bPlay = add(path.circle(play, pr), dye.solid('red'), { depth: 0.16, edge: 40 }, path.circle(sh(play), pr));
+const pq = SC.squashAt(C, [play[0], play[1] + pr], [0, -1], 0.88); pose[bPlay] = [pq, M.mul(SC.shift(C, 0, 22), pq)];
+// 底栏：当前那一格下面一颗黄色小毛球
+add(path.circle([36, 997], 8), dye.solid('yellow'), { depth: 0.05, edge: 6 });
+// 标注线：从说明指到屏幕上的东西（页面坐标 = 屏幕坐标 + 手机左上角）
+const PH = [76, 168], lead = (x1, y1, x2, y2) => { const l = Math.hypot(x2 - x1, y2 - y1), a = Math.atan2(y2 - y1, x2 - x1) * 180 / Math.PI;
+  return `<div class="lead" style="left:${x1}px;top:${y1}px;width:${l}px;transform:rotate(${a}deg)"></div><div class="dot" style="left:${x2}px;top:${y2 + 1}px"></div>`; };
+document.getElementById('leads').innerHTML = lead(640, 254, PH[0] + 392, PH[1] + 236) + lead(640, 578, PH[0] + 262, PH[1] + 710) + lead(640, 860, PH[0] + 296, PH[1] + 812) + lead(640, 1150, PH[0] + 330, PH[1] + 928);
+STILL.run({ W, H, C, parts, pose, s: { len: 0.06, width: 0.0042, base: 0.012 } });
+</script>

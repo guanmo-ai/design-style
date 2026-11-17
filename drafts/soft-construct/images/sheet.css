@@ -1,0 +1,18 @@
+/* 风格图的字：字是硬的、平的（印刷黑 / 构成红），东西是软的（毛）。 */
+@font-face { font-family: 'Oswald'; src: url(../../../public/fonts/Oswald.ttf); font-weight: 200 700; }
+@font-face { font-family: 'NotoSC'; src: url(../../../public/fonts/NotoSansSC-Black.otf); font-weight: 900; }
+@font-face { font-family: 'NotoSC'; src: url(../../../public/fonts/NotoSansSC-Bold.otf); font-weight: 700; }
+@font-face { font-family: 'NotoSC'; src: url(../../../public/fonts/NotoSansSC-Medium.otf); font-weight: 500; }
+@font-face { font-family: 'GeistMono'; src: url(../../../public/fonts/GeistMono.ttf); font-weight: 100 900; }
+:root { --ink: #161412; --red: #D3261C; --paper: #F1E8D6; --pink: #FF7EB6; --yellow: #FFD23F; --teal: #22C3B5; --blue: #2D4BFF; }
+html, body { margin: 0; background: var(--paper); overflow: hidden; }
+#stage { position: relative; overflow: hidden; }
+canvas { position: absolute; left: 0; top: 0; }
+#ov { position: absolute; inset: 0; color: var(--ink); font-family: 'NotoSC'; font-weight: 500; }
+#ov > div { position: absolute; white-space: nowrap; }
+.mono { font-family: 'GeistMono', 'NotoSC'; font-weight: 500; }
+.cn { font-family: 'NotoSC'; font-weight: 900; letter-spacing: -.02em; }
+.en { font-family: 'Oswald'; font-weight: 700; text-transform: uppercase; line-height: 1; }
+.axis { transform-origin: 0 100%; }
+.axis > div { transform: translateY(-100%); }
+.rule { height: 3px; background: var(--ink); }

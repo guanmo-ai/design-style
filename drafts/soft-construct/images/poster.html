@@ -1,0 +1,50 @@
+<!doctype html><meta charset="utf-8"><title>软构成 · 海报</title>
+<!-- 风格图 01 · 海报 1080×1350。node ../../_lib/shot-gl.cjs poster.html png/poster.png 1080 1350 1 -->
+<link rel="stylesheet" href="sheet.css">
+<div id="stage" style="width:1080px;height:1350px"><canvas id="c" width="1080" height="1350"></canvas>
+<div id="ov">
+  <div class="mono" style="left:60px;top:58px;font-size:24px;letter-spacing:.12em">SOFT CONSTRUCTIVISM · 软构成</div>
+  <div class="mono" style="right:60px;top:58px;font-size:24px;letter-spacing:.12em;text-align:right">−30° / 60° / 0°</div>
+  <div class="rule" style="left:60px;right:60px;top:100px"></div>
+  <div class="axis" style="left:250px;top:1150px;transform:rotate(-30deg)">
+    <div class="cn" style="font-size:212px;line-height:1">软构成</div>
+  </div>
+  <div class="axis" style="left:300px;top:1214px;transform:rotate(-30deg)">
+    <div class="en" style="font-size:58px;letter-spacing:.04em;color:var(--red)">SOFT CONSTRUCTIVISM</div>
+  </div>
+  <div style="left:60px;bottom:92px;font-size:34px;font-weight:900">构图是硬的，落地是软的。</div>
+  <div class="mono" style="left:60px;bottom:48px;font-size:22px;letter-spacing:.1em">构成主义 × 孟菲斯 × 毛绒 · 观默</div>
+</div></div>
+<script src="../../_lib/glkit.js"></script><script src="../../_lib/kit/motion.js"></script><script src="../../_lib/kit/director.js"></script>
+<script src="../../_lib/kit/stage.js"></script><script src="../../_lib/kit/shapes.js"></script><script src="../../_lib/fur/fur.js"></script><script src="../softc.js"></script>
+<script src="still.js"></script>
+<script>
+const W = 1080, H = 1350, C = SC.cam(W, H), { path, dye, at, AX } = SC, U = AX.U;
+// 构图：楔子沿主轴 −30° 砸中圆（圆以接触点为原点被压扁），斑马条沿主轴、黑细条沿副轴 60°，左上一颗黄球 + 青色波浪线
+const ball = { c: [724, 468], r: 272 }, hit = [ball.c[0] - U[0] * ball.r, ball.c[1] - U[1] * ball.r];
+const tipIn = at(hit, 26), wedgeB = at(tipIn, -620), SH = [62, 62], sh = (p, k = 1) => [p[0] + SH[0] * k, p[1] + SH[1] * k];          // 孟菲斯的硬投影：右下 62 px（要比毛长），不模糊
+const P = { ball: 0, wedge: 1, zebra: 2, bar: 3, sun: 4, wave: 5, shBall: 6, shWedge: 7, shSun: 8, shZebra: 9, shWave: 10 };
+const zebraA = [560, 1365], zebraB = at(zebraA, 640), barA = [820, 1370], barB = [820 + 0.5 * 460, 1370 - 0.866 * 460];
+const parts = [
+  { part: P.ball, draw: path.circle(ball.c, ball.r), dye: dye.dots('pink', 'ink', 96, 27, [20, 30]), depth: 0.42, edge: 120 },
+  { part: P.wedge, draw: path.wedge(wedgeB, tipIn, 132), dye: dye.solid('red'), depth: 0.22, edge: 30, z: 0.34 },
+  { part: P.zebra, draw: path.bar(zebraA, zebraB, 112), dye: dye.zebra('cream', 'ink', 34, U), depth: 0.2, edge: 40 },
+  { part: P.bar, draw: path.bar(barA, barB, 36), dye: dye.solid('ink'), depth: 0.12, edge: 16 },
+  { part: P.sun, draw: path.circle([214, 292], 82), dye: dye.solid('yellow'), depth: 0.2, edge: 50 },
+  { part: P.wave, draw: path.squiggle([70, 600], at([70, 600], 420), 24, 3.5, 30), dye: dye.solid('teal'), depth: 0.1, edge: 14 },
+  { part: P.shBall, draw: path.circle(sh(ball.c), ball.r), dye: dye.solid('shadow'), depth: 0.004, edge: 4, z: -0.015, density: 0.4 },
+  { part: P.shWedge, draw: path.wedge(sh(wedgeB), sh(tipIn), 132), dye: dye.solid('shadow'), depth: 0.004, edge: 4, z: -0.015, density: 0.4 },
+  { part: P.shSun, draw: path.circle(sh([214, 292], 0.7), 82), dye: dye.solid('shadow'), depth: 0.004, edge: 4, z: -0.015, density: 0.4 },
+  { part: P.shWave, draw: path.squiggle(sh([70, 600], 0.55), sh(at([70, 600], 420), 0.55), 24, 3.5, 30), dye: dye.solid('shadow'), depth: 0.004, edge: 4, z: -0.015, density: 0.4 },
+  { part: P.shZebra, draw: path.bar(sh(zebraA), sh(zebraB), 112), dye: dye.solid('shadow'), depth: 0.004, edge: 4, z: -0.015, density: 0.4 },
+];
+// 砸中的那一刻：圆沿主轴压到 0.86；楔子的毛往前甩，圆的毛往回甩（身体停了，毛还在走）
+const sqB = SC.squashAt(C, hit, U, 0.86);
+const pose = {
+  [P.ball]: [sqB, M.mul(SC.shift(C, -U[0] * 34, -U[1] * 34), sqB)],
+  [P.shBall]: [SC.squashAt(C, sh(hit), U, 0.86)],
+  [P.wedge]: [ID, SC.shift(C, U[0] * 28, U[1] * 28)],
+  [P.zebra]: [ID, SC.shift(C, U[0] * 18, U[1] * 18)],
+};
+STILL.run({ W, H, C, parts, pose, s: { len: 0.1, width: 0.0052 } });
+</script>

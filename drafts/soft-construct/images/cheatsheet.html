@@ -1,0 +1,83 @@
+<!doctype html><meta charset="utf-8"><title>软构成 · 速查卡</title>
+<!-- 风格图 02 · 速查卡 1080×1350。node ../../_lib/shot-gl.cjs cheatsheet.html png/cheatsheet.png 1080 1350 1 -->
+<link rel="stylesheet" href="sheet.css">
+<style>
+  .h2 { font-size: 26px; font-weight: 900; }
+  .h2 b { font-family: 'GeistMono'; font-weight: 500; font-size: 20px; color: var(--red); margin-right: 14px; letter-spacing: .08em; }
+  .lab { font-size: 22px; line-height: 1.5; text-align: center; transform: translateX(-50%); }
+  .lab b { display: block; font-size: 25px; font-weight: 900; }
+  .hex { font-family: 'GeistMono'; font-size: 17px; text-align: center; transform: translateX(-50%); line-height: 1.45; }
+  .plus { font-family: 'Oswald'; font-weight: 700; font-size: 44px; color: var(--red); transform: translate(-50%, -50%); }
+  .body { font-size: 22px; line-height: 1.62; white-space: normal !important; }
+  .body em { font-style: normal; font-family: 'GeistMono'; font-size: 19px; color: var(--red); }
+</style>
+<div id="stage" style="width:1080px;height:1350px"><canvas id="c" width="1080" height="1350"></canvas>
+<div id="ov">
+  <div class="mono" style="left:60px;top:58px;font-size:24px;letter-spacing:.12em">SOFT CONSTRUCTIVISM · 速查卡</div>
+  <div class="mono" style="right:60px;top:58px;font-size:24px;letter-spacing:.12em">软构成</div>
+  <div class="rule" style="left:60px;right:60px;top:100px"></div>
+  <div class="cn" style="left:60px;top:126px;font-size:58px">构图是硬的，落地是软的。</div>
+  <div style="left:62px;top:204px;font-size:23px">构成主义给骨架，孟菲斯给颜色和脾气，毛绒给手感。三步，每步只加一件事：</div>
+
+  <div class="lab" style="left:190px;top:508px"><b>① 构成主义</b>斜 −30° · 红黑 · 楔 / 圆 / 条</div>
+  <div class="lab" style="left:540px;top:508px"><b>② + 孟菲斯</b>糖果色 · 图案 · 硬投影 · 压扁</div>
+  <div class="lab" style="left:890px;top:508px"><b>③ + 毛绒</b>根深尖浅 · 毛晚 5 帧</div>
+  <div class="plus" style="left:365px;top:360px">+</div><div class="plus" style="left:715px;top:360px">+</div>
+
+  <div class="rule" style="left:60px;right:60px;top:610px;height:2px"></div>
+  <div class="h2" style="left:60px;top:630px"><b>01</b>色板：纸 45% · 黑 15% · 红 15% · 糖果色 25%</div>
+  <div id="sw"></div>
+
+  <div class="rule" style="left:60px;right:60px;top:902px;height:2px"></div>
+  <div class="h2" style="left:60px;top:922px"><b>02</b>三条轴</div>
+  <svg style="position:absolute;left:60px;top:972px" width="440" height="320" viewBox="0 0 440 320">
+    <g stroke="#161412" fill="none" stroke-width="2"><circle cx="150" cy="170" r="108" stroke-dasharray="3 7"/></g>
+    <line x1="150" y1="170" x2="402" y2="25" stroke="#D3261C" stroke-width="14"/>
+    <line x1="150" y1="170" x2="225" y2="40" stroke="#161412" stroke-width="5"/>
+    <line x1="150" y1="170" x2="420" y2="170" stroke="#161412" stroke-width="2" stroke-dasharray="10 8"/>
+    <g font-family="GeistMono" font-size="19" fill="#161412">
+      <text x="300" y="118" fill="#D3261C">主轴 −30°</text><text x="300" y="140" font-size="16">楔子、条、大字</text>
+      <text x="160" y="16">副轴 60°</text>
+      <text x="300" y="200">信息 0°</text><text x="300" y="222" font-size="16">小字、数字、界面</text></g>
+    <text x="0" y="312" font-family="NotoSC" font-weight="700" font-size="19" fill="#161412">斜的是主角，平的是信息。</text>
+  </svg>
+  <div class="h2" style="left:560px;top:922px"><b>03</b>东西怎么动 · 字怎么排</div>
+  <div class="body" style="left:560px;top:966px;width:470px">
+    ① 沿主轴砸进来，<em>7 帧</em>，不减速<br>
+    ② 以接触面为原点压扁到 <em>0.86</em><br>　 再弹回：<em>3.2 Hz · ζ 0.3</em><br>
+    ③ 身体停了，毛还在走：<em>晚 5 帧 · 冲过头 30%</em><br>
+    ④ 投影贴在纸上不动，比毛长 <em>+20 px</em><br>
+    ⑤ 字是硬的：平涂黑 / 红，<b>从不长毛</b><br>
+    <span style="font-family:'GeistMono';font-size:17px;line-height:1.4;display:block;margin-top:6px">Noto Sans SC Black<br>Oswald 700 · Geist Mono</span>
+  </div>
+</div></div>
+<script src="../../_lib/glkit.js"></script><script src="../../_lib/kit/motion.js"></script><script src="../../_lib/kit/director.js"></script>
+<script src="../../_lib/kit/stage.js"></script><script src="../../_lib/kit/shapes.js"></script><script src="../../_lib/fur/fur.js"></script><script src="../softc.js"></script>
+<script src="still.js"></script>
+<script>
+const W = 1080, H = 1350, C = SC.cam(W, H), { path, dye, at, AX, TI } = SC, U = AX.U;
+// 三格：同一组“楔子砸圆”，每格多加一件事
+const parts = [], pose = {}; let id = 0;
+const cell = (cx, cy, step) => {
+  const c = [cx + 52, cy - 34], r = 64, hit = [c[0] - U[0] * r, c[1] - U[1] * r], tip = at(hit, step ? 10 : -6), base = at(tip, -176);
+  const flat = step < 2, shOff = step === 1 ? 14 : 30, sh = p => [p[0] + shOff, p[1] + shOff];
+  const ballDye = step === 0 ? dye.solid('inkF') : dye.dots(flat ? 'pinkF' : 'pink', flat ? 'inkF' : 'ink', 30, 8, [c[0], c[1]]);
+  const b = id++, w = id++;
+  parts.push({ part: b, draw: path.circle(c, r), dye: ballDye, depth: flat ? 0.01 : 0.16, edge: flat ? 3 : 40, density: flat ? 0.6 : 1 });
+  parts.push({ part: w, draw: path.wedge(base, tip, 36), dye: dye.solid(flat ? 'redF' : 'red'), depth: flat ? 0.01 : 0.12, edge: flat ? 3 : 18, z: 0.05, density: flat ? 0.6 : 1 });
+  if (step) { const sb = id++, sw = id++;
+    parts.push({ part: sb, draw: path.circle(sh(c), r), dye: dye.solid('shadow'), depth: 0.004, edge: 3, z: -0.015, density: 0.5 });
+    parts.push({ part: sw, draw: path.wedge(sh(base), sh(tip), 36), dye: dye.solid('shadow'), depth: 0.004, edge: 3, z: -0.015, density: 0.5 });
+    pose[b] = [SC.squashAt(C, hit, U, 0.84)]; pose[sb] = [SC.squashAt(C, sh(hit), U, 0.84)];
+    if (step === 2) { pose[b][1] = M.mul(SC.shift(C, -U[0] * 16, -U[1] * 16), pose[b][0]); pose[w] = [ID, SC.shift(C, U[0] * 14, U[1] * 14)]; } }
+};
+cell(190, 374, 0); cell(540, 374, 1); cell(890, 374, 2);
+// 色板：七颗毛球 + 一块纸
+const SW = [['ink', '#161412', '印刷黑'], ['red', '#D3261C', '构成红'], ['pink', '#FF7EB6', '糖果粉'], ['yellow', '#FFD23F', '柠檬黄'], ['teal', '#22C3B5', '薄荷'], ['blue', '#2D4BFF', '电光蓝'], ['cream', '#FFF6E4', '奶白']];
+let sw = `<div style="left:${60}px;top:${704}px;width:96px;height:96px;background:var(--paper);box-shadow:inset 0 0 0 2px #161412"></div><div class="hex" style="left:108px;top:812px">#F1E8D6<br>纸</div>`;
+SW.forEach(([t, hex, name], i) => { const x = 245 + i * 128, y = 752;
+  parts.push({ part: id++, draw: path.circle([x, y], 34), dye: dye.solid(t), depth: 0.12, edge: 26 });
+  sw += `<div class="hex" style="left:${x}px;top:812px">${hex}<br>${name}</div>`; });
+document.getElementById('ov').insertAdjacentHTML('beforeend', sw);
+STILL.run({ W, H, C, parts, pose, s: { len: 0.06, width: 0.0042, base: 0.012 } });
+</script>
