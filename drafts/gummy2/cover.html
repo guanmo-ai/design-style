@@ -1,0 +1,19 @@
+<!doctype html><html><head><meta charset="utf-8"><style>
+html,body{margin:0;background:#000;overflow:hidden}
+canvas{position:absolute;left:0;top:0;width:100vw;height:100vh}
+</style></head><body><canvas id="c"></canvas>
+<script src="../_lib/glkit.js"></script><script src="shader.js"></script><script src="gummy.js"></script><script src="scene.js"></script>
+<script>
+(async () => {
+  const q = new URLSearchParams(location.search);
+  const W = +(q.get('w') || 1920), H = +(q.get('h') || 1080), spp = +(q.get('spp') || 1);
+  const R = await GummyRenderer(document.getElementById('c'), { W, H, nobj: 8 });
+  const sc = coverScene(); for (const k of ['aper','bloom','streak','exposure','thr']) if (q.has(k)) sc.post[k] = +q.get(k);
+  sc.dbg = +(q.get('dbg')||0);
+  const ov = s2 => { for (const k of ['aper','bloom','streak','exposure','thr']) if (q.has(k)) s2.post[k] = +q.get(k); s2.dbg = sc.dbg; return s2; };
+  if (q.has('warm')) { const tw = await R.render(sc, { spp: 1, tiles: 6 }); console.log('warm', JSON.stringify(tw)); }
+  const t = await R.render(sc, { spp, frameAt: spp > 1 ? (u => ov(coverScene(u))) : null, tiles: +(q.get('tiles') || 4) });
+  console.log('render', JSON.stringify(t));
+  window.__done = true;
+})().catch(e => { console.log('ERR', e.message.slice(0, 3000)); window.__done = true; });
+</script></body></html>
