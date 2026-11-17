@@ -1,0 +1,312 @@
+<!doctype html><meta charset="utf-8">
+<style>html,body{margin:0;background:#000;overflow:hidden}canvas{display:block;width:1920px;height:1080px}</style>
+<canvas id="c" width="1920" height="1080"></canvas>
+<script src="vendor/core.js"></script>
+<script src="vendor/paint.js"></script>
+<script src="vendor/moss-art.js"></script>
+<script src="../../hand-drawn/filmkit.js"></script>
+<script>
+// 手绘动画 v4 · 一顶草帽从夜里飞到天亮：银河下的终点站（拆开五层纸）→ 黎明云海 → 午后树林，落在一丛灌木上。全片同一套画风（vibe-vedio 的分色平涂）。
+// 120 BPM，一拍 30 帧，一小节 120 帧，共 960 帧（16 秒）。window.frame(f) 画第 f 帧（帧号的纯函数）。
+// 背景是 bake.cjs 预先画好的分层 PNG（layers/），这里只合成：镜头一拍一（每帧都动，按深度视差），帽子、叶子、萤火一拍二（每 5 帧一张）。
+// 换场景不硬切：前景的一整片东西（树冠 / 云团）扫过画面，盖满的那一帧底下换景；帽子始终在最前面，接力到底。
+const END = 960, BEAT = 30, Qs = new URLSearchParams(location.search);
+const F = FK, q5 = f => Math.floor(f / 5) * 5;
+const cv = document.getElementById('c'), ctx = cv.getContext('2d');
+const IMG = {};
+const NAMES = { forest: ['far', 'mid', 'front', 'canopy'], clouds: ['sky', 'towers', 'sea1', 'sea2', 'wisp'], night: ['sky', 'far', 'mid', 'fg'] };
+const load = src => new Promise((ok, no) => { const i = new Image(); i.onload = () => ok(i); i.onerror = no; i.src = src; });
+
+// ───── 时间轴（帧）
+const TL = {
+  explode: [96, 140, 196, 236],       // 夜景五层：开始拆 · 拆开 · 开始合 · 合上
+  a: [244, 296],                       // 夜 → 云海：往上摇，云团从上往下扫过（中点换景）
+  b: [514, 566],                       // 云海 → 树林：往下扎，云团从下往上扫过
+  lamp: -100, star: [40, 84], land: 750, strip: 786, title: 804, sign: 840,
+};
+const SW = { a: (TL.a[0] + TL.a[1]) / 2, b: (TL.b[0] + TL.b[1]) / 2 };
+const sceneAt = f => f < SW.a ? 'night' : f < SW.b ? 'clouds' : 'forest';
+const CAPS = [
+  [100, '01 · 一个镜头，五层纸', '天、远山、中景、帽子、前景，各画一张，叠起来才是一帧', 232],
+  [304, '02 · 一天换一套色，影子从不用灰', '夜里整张是蓝，黎明的影是紫；暖色只留给灯和太阳', 500],
+  [574, '03 · 镜头 1 拍 1，帽子 1 拍 2', '背景每秒 60 格滑过去，帽子每秒 12 张：手绘的“顿挫”就在这里', 760],
+];
+const PALS = {
+  forest: { name: '午后 · 树林', cut: 'CUT 031', c: ['#F6EAD0', '#BCD0AD', '#93B449', '#4F7D35', '#1F3D2B', '#FFF2C8'] },
+  clouds: { name: '黎明 · 云海', cut: 'CUT 047', c: ['#1D2A64', '#7C5AA0', '#EE8F7C', '#FFD79C', '#A983B6', '#5F548F'] },
+  night: { name: '夜 · 终点站', cut: 'CUT 012', c: ['#070E2A', '#1F3470', '#6A6FA6', '#3F6488', '#2F6AA8', '#FFD27A'] },
+};
+
+// ───── 各场景的世界大小、层的深度、镜头
+const SC = {
+  forest: { LW: 2300, LH: 1240, C0: [1150, 620], D: { far: .45, mid: 1, front: 1.35 } },
+  clouds: { LW: 2400, LH: 1350, C0: [1200, 675], D: { sky: .1, towers: .3, sea1: .6, sea2: 1.1 } },
+  night: { LW: 2300, LH: 1294, C0: [1150, 647], D: { sky: .08, far: .3, mid: 1, fg: 1.5 } },
+};
+// 镜头：场景世界里的中心点 + 推近倍数。每段都是五次缓动（起停速度为 0），换景的那一段和扫过去的东西同向。
+const CAM = {
+  night: f => ({ x: F.keys([[0, 1250], [96, 1200], [236, 1200], [296, 1150]], f), y: F.keys([[0, 600], [96, 620], [236, 620], [296, 260]], f), z: F.keys([[0, 1.3], [96, 1.18], [236, 1.18], [296, 1.35]], f) }),
+  clouds: f => ({ x: F.keys([[244, 1000], [296, 1040], [514, 1380], [566, 1380]], f), y: F.keys([[244, 1300], [296, 940], [460, 760], [514, 760], [566, 1000]], f), z: F.keys([[244, 1.35], [296, 1.28], [514, 1.04], [566, 1.3]], f) }),
+  forest: f => ({ x: F.keys([[514, 900], [566, 1000], [780, 1180], [960, 1190]], f), y: F.keys([[514, 260], [566, 560], [700, 640], [960, 650]], f), z: F.keys([[514, 1.32], [566, 1.2], [780, 1.08], [960, 1.1]], f) }),
+};
+// 某一层（深度 d）在当前镜头下：源图里取哪一块（世界坐标）
+function viewOf(s, c, d) {
+  const S = SC[s], z = 1 + (c.z - 1) * d, x = S.C0[0] + (c.x - S.C0[0]) * d, y = S.C0[1] + (c.y - S.C0[1]) * d, w = 1920 / z, h = 1080 / z;
+  return { sx: F.clamp(x - w / 2, 0, S.LW - w), sy: F.clamp(y - h / 2, 0, S.LH - h), w, h, z };
+}
+function drawLayer(g, s, name, c, o = {}) {
+  const img = IMG[s + '-' + name], S = SC[s], k = img.width / S.LW, v = viewOf(s, c, o.d ?? S.D[name]);
+  g.drawImage(img, v.sx * k, v.sy * k, v.w * k, v.h * k, o.dx || 0, o.dy || 0, 1920, 1080);
+  return v;
+}
+// 世界坐标 → 屏幕（给活的东西用：灯、萤火、帽子落点）
+const toScreen = (s, c, d, X, Y) => { const v = viewOf(s, c, d); return [(X - v.sx) * v.z, (Y - v.sy) * v.z, v.z]; };
+
+// ───── 帽子（赛璐璐：色线 + 一层影 + 一块高光；拷自第二版）
+function hat(g, x, y, rot, sc, spin, flut) {
+  const LINE = '#5b3b22';
+  g.save(); g.translate(x, y); g.rotate(rot); g.scale(sc * Math.max(.18, Math.abs(Math.cos(spin))) * (Math.cos(spin) < 0 ? -1 : 1), sc);
+  const tail = (ox, oy, len, amp, ph, wd) => { const P = []; for (let s = 0; s <= 1; s += .05) P.push([ox - len * s, oy + Math.sin(s * 5.2 + ph) * amp * s + s * 26, wd * (1 - s * .55) * (.55 + .45 * Math.abs(Math.cos(s * 5.2 + ph)))]);
+    for (let i = 0; i < P.length - 1; i++) { const [a, b, w0] = P[i], [c2, d2, w1] = P[i + 1]; g.fillStyle = Math.cos(i / P.length * 5.2 + ph) > 0 ? '#e0483a' : '#a92f2e'; g.beginPath(); g.moveTo(a, b - w0 / 2); g.lineTo(c2, d2 - w1 / 2); g.lineTo(c2, d2 + w1 / 2); g.lineTo(a, b + w0 / 2); g.closePath(); g.fill(); }
+    g.strokeStyle = LINE; g.lineWidth = 2; g.beginPath(); P.forEach(([a, b, w], i) => i ? g.lineTo(a, b - w / 2) : g.moveTo(a, b - w / 2)); g.stroke(); g.beginPath(); P.forEach(([a, b, w], i) => i ? g.lineTo(a, b + w / 2) : g.moveTo(a, b + w / 2)); g.stroke(); };
+  tail(-40, -18, 230, 26, .4 + flut, 22); tail(-46, -8, 190, 30, 2.2 + flut * 1.3, 18);
+  g.fillStyle = '#f1d38e'; g.beginPath(); g.ellipse(0, 0, 142, 56, 0, 0, 7); g.fill();
+  g.save(); g.beginPath(); g.ellipse(0, 0, 142, 56, 0, 0, 7); g.clip(); g.fillStyle = '#c99b55'; g.beginPath(); g.ellipse(18, 16, 132, 44, 0, 0, 7); g.fill(); g.fillStyle = '#b5853f'; g.beginPath(); g.ellipse(10, -6, 70, 26, 0, 0, 7); g.fill();
+  g.strokeStyle = 'rgba(140,100,40,.35)'; g.lineWidth = 1; for (let k = 1; k < 9; k++) { g.beginPath(); g.ellipse(0, 0, 70 + k * 9, 26 + k * 3.7, 0, 0, 7); g.stroke(); } g.restore();
+  g.strokeStyle = LINE; g.lineWidth = 2.6; g.beginPath(); g.ellipse(0, 0, 142, 56, 0, 0, 7); g.stroke();
+  const crownP = () => { g.beginPath(); g.moveTo(-66, -8); g.bezierCurveTo(-70, -78, 66, -82, 64, -8); g.ellipse(0, -8, 65, 24, 0, 0, Math.PI); g.closePath(); };
+  crownP(); g.fillStyle = '#f5da98'; g.fill();
+  g.save(); crownP(); g.clip(); g.fillStyle = '#d4a65e'; g.beginPath(); g.moveTo(20, -90); g.bezierCurveTo(46, -60, 52, -30, 40, 20); g.lineTo(90, 20); g.lineTo(90, -90); g.fill();
+  g.fillStyle = 'rgba(255,252,236,.95)'; g.beginPath(); g.moveTo(-40, -52); g.bezierCurveTo(-30, -66, -6, -70, 8, -66); g.bezierCurveTo(-8, -62, -26, -56, -34, -44); g.closePath(); g.fill();
+  g.fillStyle = '#e0483a'; g.beginPath(); g.ellipse(0, -10, 70, 26, 0, 0, Math.PI); g.lineTo(-70, -30); g.ellipse(0, -30, 70, 24, Math.PI, Math.PI, 0, true); g.closePath(); g.fill(); g.fillStyle = '#a92f2e'; g.fillRect(30, -60, 60, 60); g.restore();
+  g.strokeStyle = LINE; g.lineWidth = 2.6; g.beginPath(); g.moveTo(-66, -8); g.bezierCurveTo(-70, -78, 66, -82, 64, -8); g.stroke(); g.beginPath(); g.ellipse(0, -8, 65, 24, 0, .05, Math.PI - .05); g.stroke();
+  g.lineWidth = 1.8; g.beginPath(); g.ellipse(0, -30, 67, 22, 0, .15, Math.PI - .15); g.stroke();
+  g.fillStyle = '#e0483a'; g.beginPath(); g.moveTo(-52, -22); g.quadraticCurveTo(-84, -48, -78, -14); g.quadraticCurveTo(-74, 2, -52, -14); g.fill(); g.lineWidth = 2; g.stroke();
+  g.restore();
+}
+// 帽子的路线（屏幕坐标，和动画里一样：赛璐璐不动、背景在动）。关键点之间用 Catmull-Rom，按帧号取 → 每 5 帧取一次 = 一拍二
+// [帧, x, y, 大小, 翻转圈数（累计）, 倾角]
+const HK = [
+  [-40, 420, 300, 1.12, -.6, -.3], [0, 760, 380, 1.05, 0, -.25], [60, 1100, 300, .9, 1.0, .2], [96, 1240, 340, .75, 1.6, -.15],
+  [140, 1240, 340, .62, 2.1, -.1], [196, 1200, 360, .62, 2.6, -.15], [236, 1160, 380, .7, 3.1, .1], [270, 960, 200, .85, 4.2, -.3],
+  [330, 760, 420, .8, 5.0, .2], [400, 1180, 330, .74, 6.0, -.15], [470, 1100, 460, .76, 6.8, .1], [540, 900, 220, .86, 7.8, -.3],
+  [600, 1040, 520, .9, 8.7, .3], [660, 880, 640, .82, 9.6, -.25], [710, 1080, 560, .7, 10.4, .15], [750, 0, 0, .6, 11, 0],
+];
+function hatAt(f) {
+  if (f > TL.land + 60) f = TL.land + 60;
+  const fq = q5(f);
+  // 落点：树林里那一丛灌木顶上（跟着中景层走）
+  const land = toScreen('forest', CAM.forest(TL.land), 1, 1170, 860 - 92 * 1.05 - 20);
+  const K = HK.map(k => k[0] === TL.land ? [k[0], land[0], land[1], .52 * land[2], k[4], k[5]] : k);
+  let i = 0; while (i < K.length - 2 && K[i + 1][0] <= fq) i++;
+  const a = K[Math.max(0, i - 1)], b = K[i], c = K[i + 1], d = K[Math.min(K.length - 1, i + 2)], t = F.clamp((fq - b[0]) / (c[0] - b[0]));
+  const cr = j => { const t2 = t * t, t3 = t2 * t; return .5 * (2 * b[j] + (-a[j] + c[j]) * t + (2 * a[j] - 5 * b[j] + 4 * c[j] - d[j]) * t2 + (-a[j] + 3 * b[j] - 3 * c[j] + d[j]) * t3); };
+  let x = cr(1), y = cr(2), sc = cr(3), spin = cr(4) * Math.PI * 2 / 2, rot = cr(5);
+  if (fq >= TL.land) { const u = (fq - TL.land) / 60; spin = 11 * Math.PI; rot = -.05 + Math.exp(-u * 5) * Math.sin(u * 20) * .25; y -= Math.abs(Math.exp(-u * 6) * Math.sin(u * 16)) * 26; }
+  return { x, y, sc, spin, rot, flut: fq * .16 };
+}
+
+// ───── 拆开的多层摄影台（夜景那五层）：每层一个仿射矩阵（世界坐标 → 屏幕），从“这一层平常的镜头”插值到“斜着排开”
+const EXO = ['sky', 'far', 'mid', 'cel', 'fg'];
+const EXN = { sky: ['天', 'SKY', '×0.08'], far: ['远山', 'FAR BG', '×0.3'], mid: ['中景', 'BG · 站牌 · 路灯', '×1.0'], cel: ['赛璐璐', 'A-CEL', '1 拍 2'], fg: ['前景', 'FG BOOK', '×1.5'] };
+const EXA = { sky: [420, 200], far: [700, 840], mid: [1480, 740], cel: [1240, 520], fg: [2060, 1160] };
+function exMatrix(i, u, c) {
+  const S = SC.night, d = EXO[i] === 'cel' ? 1 : S.D[EXO[i]], v = viewOf('night', c, d);
+  const A = [v.z, 0, 0, v.z, -v.sx * v.z, -v.sy * v.z];
+  const k = (1 + i * .03) * 1920 / S.LW, B = [.30 * k, -.04 * k, 0, .28 * k, 170 + i * 268, 300 + i * 48];
+  return A.map((a, j) => F.lerp(a, B[j], u));
+}
+const exU = f => { const [a, b, c, d] = TL.explode; return f <= a || f >= d ? 0 : f < b ? F.quint((f - a) / (b - a)) : f < c ? 1 : F.quint(1 - (f - c) / (d - c)); };
+
+// ───── 各场景里活的东西
+const birdsAt = (g, t, seed, n, x0, y0, sp, col, s) => { const r = RNG(seed); for (let i = 0; i < n; i++) { const ox = r.range(-160, 160), oy = r.range(-60, 60), ph = r() * 6; bird(g, x0 + ox + t * sp, y0 + oy + Math.sin(t * 1.3 + ph) * 8, s * r.range(.8, 1.2), twos(t) * 9 + ph, col); } };
+function leafFall(g, t, seed, n, x0, x1, y0, y1, sz = 1, wind = 0) {
+  const r = RNG(seed), tt = twos(t), cols = ['#6f9a3f', '#a7c055', '#c9a24a', '#8a6a3a', '#4f7d35', '#d8c26a'];
+  for (let i = 0; i < n; i++) {
+    const x = r.range(x0, x1), sp = r.range(40, 110), ph = r() * TAU, w = r.range(0.8, 1.8), A = r.range(20, 70), c = r.pick(cols), s = r.range(5, 11) * sz, off = r() * (y1 - y0);
+    const yy = y0 + ((off + tt * sp) % (y1 - y0)), xx = x + Math.sin(tt * w + ph) * A + wind * tt, flip = Math.cos(tt * w * 2 + ph);
+    g.save(); g.translate(xx, yy); g.rotate(Math.sin(tt * w + ph) * 0.9); g.scale(1, Math.max(0.15, Math.abs(flip))); qd(g, 0, 0, s, 0, flip > 0 ? c : mixc(c, '#2a3a20', 0.35)); g.restore();
+  }
+}
+function motes(g, t, seed, n, col = '#fff6d0') { const r = RNG(seed), tt = twos(t); for (let i = 0; i < n; i++) { const x = r.range(0, 1920) + Math.sin(tt * .4 + i) * 30, y = r.range(80, 1000) + Math.sin(tt * .6 + i * 1.7) * 20 - tt * 6; const a = .5 + .5 * Math.sin(tt * 2 + i); dab(g, x, y, 2, 2, 0, rgba(col, .6 * a)); } }
+let GRAIN = [], VIG, OCC = {}, NOHUD = false;
+
+function exTags(g, f, u, c) {
+  const a = F.smr(.75, 1, u);
+  EXO.forEach((name, i) => {
+    const M = exMatrix(i, u, c), [X, Y] = EXA[name], ax = M[0] * X + M[2] * Y + M[4], ay = M[1] * X + M[3] * Y + M[5];
+    const t0 = TL.explode[1] - 16 + i * 5, p = F.easeOut((f - t0) / 10) * a; if (p <= 0) return;
+    g.save(); g.globalAlpha = p; g.fillStyle = '#ffd36e'; g.beginPath(); g.arc(ax, ay, 4.5, 0, 7); g.fill();
+    g.strokeStyle = 'rgba(255,211,110,.85)'; g.lineWidth = 1.4; g.beginPath(); g.moveTo(ax, ay); g.lineTo(ax, ay - 40 * p); g.stroke(); g.restore();
+    const [zh, en, sp] = EXN[name];
+    F.rise(g, zh, ax - 6, ay - 74, f, t0, { font: '700 26px SansSC', size: 26, color: '#fff', out: TL.explode[2] + 4, rate: .8, dur: 10, kind: 'tick', shadow: 'rgba(0,0,0,.8)', shadowBlur: 10 });
+    F.rise(g, `${String(i + 1).padStart(2, '0')} · ${en} · ${sp}`, ax - 6, ay - 46, f, t0 + 2, { font: '500 15px Mono', size: 15, color: '#ffd36e', out: TL.explode[2] + 4, rate: .2, dur: 10, kind: 'none', shadow: 'rgba(0,0,0,.8)', shadowBlur: 8 });
+  });
+}
+function drawForest(g, f, c) {
+  const t = f / 60;
+  drawLayer(g, 'forest', 'far', c);
+  drawLayer(g, 'forest', 'mid', c);
+  const v = viewOf('forest', c, 1);
+  g.save(); g.setTransform(v.z, 0, 0, v.z, -v.sx * v.z, -v.sy * v.z);
+  beams(g, 1380, 110, [[2.02, 120, 1100, 1], [2.14, 70, 1000, .7], [1.9, 60, 1000, .6], [2.28, 90, 900, .5]], .62 + .15 * Math.sin(t * .8));
+  butterflies(g, t, 163, 3, 600, 1700, 720, 880);
+  g.restore();
+  motes(g, t, 161, 70);
+  leafFall(g, t, 162, 22, -100, 2000, -40, 1100, 1.3, 50);
+  drawLayer(g, 'forest', 'front', c);
+}
+function drawClouds(g, f, c) {
+  const t = f / 60, set = F.smr(560, 760, f);
+  drawLayer(g, 'clouds', 'sky', c);
+  // 太阳慢慢沉下去：天顶一点点变暗（多一层冷色）
+  g.save(); g.globalCompositeOperation = 'multiply'; g.fillStyle = `rgba(90,80,150,${.32 * set})`; g.fillRect(0, 0, 1920, 1080); g.restore();
+  const k = SC.clouds; let v = viewOf('clouds', c, .1);
+  const sun = [(1620 - v.sx) * v.z, (820 + set * 40 - v.sy) * v.z];
+  drawLayer(g, 'clouds', 'towers', c);
+  birdsAt(g, t, 91, 6, 600, 420, 60, '#3a2c5a', 1.6);
+  for (const [name, sp] of [['sea1', 14], ['sea2', 34]]) drawLayer(g, 'clouds', name, { ...c, x: c.x + (f - 480) / 60 * sp / k.D[name] }); // 云海在自己流（各层速度不同）
+  // 逆光：太阳的光晕和一道横向的镜头光斑
+  g.save(); g.globalCompositeOperation = 'screen';
+  glow(g, sun[0], sun[1], 700, '#ffb46a', .45 * (1 - set * .5), 'screen'); glow(g, sun[0], sun[1], 160, '#fff4d8', .8 * (1 - set * .4), 'screen');
+  const lf = g.createLinearGradient(0, sun[1], 1920, sun[1]); lf.addColorStop(0, 'rgba(255,190,140,0)'); lf.addColorStop(sun[0] / 1920, 'rgba(255,214,170,.35)'); lf.addColorStop(1, 'rgba(255,190,140,0)');
+  g.fillStyle = lf; g.fillRect(0, sun[1] - 3, 1920, 6); g.restore();
+}
+function drawNight(g, f, c) {
+  const t = f / 60, tt = twos(t), u = exU(f), S = SC.night, live = 1 - F.smr(0, .3, u);
+  if (u > 0) { g.fillStyle = '#0b1220'; g.fillRect(0, 0, 1920, 1080); const bg = g.createRadialGradient(1100, 380, 50, 1100, 420, 1300); bg.addColorStop(0, `rgba(40,58,92,${u})`); bg.addColorStop(1, 'rgba(7,11,20,0)'); g.fillStyle = bg; g.fillRect(0, 0, 1920, 1080); }
+  EXO.forEach((name, i) => {
+    const M = exMatrix(i, u, c); g.save(); g.setTransform(M[0], M[1], M[2], M[3], M[4], M[5]);
+    if (u > 0 && i) { g.globalAlpha = u; g.fillStyle = 'rgba(0,0,0,.22)'; g.fillRect(-30, 40, S.LW, S.LH); g.globalAlpha = 1; }
+    if (name === 'cel') { if (u > .01) { g.globalAlpha = u; g.fillStyle = 'rgba(160,200,255,.06)'; g.fillRect(0, 0, S.LW, S.LH); g.globalAlpha = 1; } }
+    else g.drawImage(IMG['night-' + name], 0, 0, S.LW, S.LH);
+    if (name === 'sky') { // 星星一闪一闪（一拍二）
+      const r = RNG(501); for (let k = 0; k < 70; k++) { const X = r() * 2300, Y = r() * 800, a = Math.max(0, Math.sin(tt * r.range(2, 5) + k * 1.7)); if (a < .4) continue; dab(g, X, Y, 1.6, 1.6, 0, `rgba(255,255,255,${a})`); g.strokeStyle = `rgba(220,230,255,${a * .5})`; g.lineWidth = .7; g.beginPath(); g.moveTo(X - 6, Y); g.lineTo(X + 6, Y); g.moveTo(X, Y - 6); g.lineTo(X, Y + 6); g.stroke(); } }
+    if (name === 'mid') { // 路灯 + 萤火：暖色只给它们
+      lampLight(g, LAMP, 1); glow(g, LAMP.cx, LAMP.cy + 460, 360, '#ffcf7a', .22, 'lighter');
+      const r = RNG(511); for (let k = 0; k < 30; k++) { const X = r.range(200, 2100), Y = r.range(880, 1230), ph = r() * 6, x0 = X + Math.sin(tt * .9 + ph) * 60, y0 = Y + Math.sin(tt * 1.3 + ph * 2) * 30 - tt * 8, a = .5 + .5 * Math.sin(tt * 3 + ph); glow(g, x0, y0, 22, '#ffe08a', .55 * a); dab(g, x0, y0, 2.2, 2.2, 0, `rgba(255,248,200,${a})`); } }
+    if (name === 'fg') { g.globalAlpha = Math.max(live, u); liveGrass(g, t, { seed: 520, n: 190, x0: -40, x1: S.LW + 40, y: S.LH + 10, dy: 10, h0: 60, h1: 190, cols: ['#0a1422', '#0f1c30', '#16263e', '#1d3150'], wind: 1.2 }); g.globalAlpha = 1; }
+    if (u > 0) { g.globalAlpha = u; g.lineWidth = 2.6 / M[0] * .3; g.strokeStyle = 'rgba(255,255,255,.55)'; g.lineWidth = 3 / Math.max(.2, M[3]); g.strokeRect(0, 0, S.LW, S.LH); g.fillStyle = 'rgba(255,255,255,.6)'; [-130, 0, 130].forEach(q => { g.beginPath(); g.ellipse(S.LW / 2 + q, S.LH - 36, q ? 22 : 34, 14, 0, 0, 7); g.fill(); }); g.globalAlpha = 1; }
+    if (name === 'cel' && u > 0) { const hp = hatAt(f), M0 = exMatrix(i, 0, c), px = (hp.x - M0[4]) / M0[0], py = (hp.y - M0[5]) / M0[3]; hat(g, px, py, hp.rot, hp.sc / M0[0], hp.spin, hp.flut); }
+    g.restore();
+  });
+  // 流星（屏幕坐标）
+  if (f > TL.star[0] && f < TL.star[1] && live > 0) { const p = (f - TL.star[0]) / (TL.star[1] - TL.star[0]), x = 1500 - p * 700, y = 120 + p * 260, a = Math.sin(p * Math.PI) * live;
+    const gr = g.createLinearGradient(x, y, x + 260, y - 100); gr.addColorStop(0, `rgba(255,250,235,${a})`); gr.addColorStop(1, 'rgba(255,250,235,0)'); g.strokeStyle = gr; g.lineWidth = 2.4; g.beginPath(); g.moveTo(x, y); g.lineTo(x + 260, y - 100); g.stroke(); glow(g, x, y, 22, '#ffffff', a); }
+  if (u > .02) exTags(g, f, u, c);
+}
+const DRAW = { forest: drawForest, clouds: drawClouds, night: drawNight };
+let LAMP;
+
+// ───── 扫过画面的东西（转场）：树冠墙 / 云团，带一点运动模糊；中间那一段保证盖满
+function sweep(g, f, [a, b], O, dir, fill) {
+  if (f < a || f > b) return;
+  const E = u => { u = F.clamp(u); return u < .5 ? 4 * u * u * u : 1 - Math.pow(-2 * u + 2, 3) / 2; };
+  const u = (f - a) / (b - a), img = O.c;
+  // 不透明的那一块（opaque）至少要比屏幕大 40%，整块按它来放大
+  const ow = img.width * (O.right - O.left), oh = img.height * (O.bot - O.top);
+  const k = dir === 'h' ? Math.max(1080 * 1.35 / oh, 1920 * 1.1 / ow) : Math.max(1080 * 1.4 / oh, 1920 * 1.15 / ow);
+  const ww = img.width * k, hh = img.height * k, oL = O.left * ww, oR = O.right * ww, oT = O.top * hh, oB = O.bot * hh;
+  const M = .4, pos = e0 => { const e = F.lerp(-M, 1 + M, e0); return dir === 'h' ? [F.lerp(1920 - oL, -oR, e), 540 - (oT + oB) / 2] : dir === 'down' ? [960 - (oL + oR) / 2, F.lerp(-oB, 1080 - oT, e)] : [960 - (oL + oR) / 2, F.lerp(1080 - oT, -oB, e)]; };
+  const [x, y] = pos(E(u)), [x1, y1] = pos(E(u - 1 / (b - a))), vel = Math.hypot(x - x1, y - y1), blur = Math.min(46, vel * .45), N = blur > 6 ? 5 : 1;
+  g.save(); g.fillStyle = fill; g.fillRect(x + oL + (oR - oL) * .12, y + oT + (oB - oT) * .12, (oR - oL) * .76, (oB - oT) * .76); g.restore();
+  for (let i = 0; i < N; i++) {
+    const t = N > 1 ? i / (N - 1) - .5 : 0, ox = (x - x1) / (vel || 1) * blur * t, oy = (y - y1) / (vel || 1) * blur * t;
+    g.save(); g.globalAlpha = N > 1 ? (i === (N - 1) / 2 ? 1 : .5) : 1;
+    g.drawImage(img, x + ox, y + oy, ww, hh); g.restore();
+  }
+}
+
+function draw(f) {
+  const g = ctx; g.setTransform(1, 0, 0, 1, 0, 0); g.globalAlpha = 1; g.globalCompositeOperation = 'source-over'; g.filter = 'none';
+  const s = sceneAt(f), c = CAM[s](f);
+  DRAW[s](g, f, c);
+  sweep(g, f, TL.a, OCC.cloud, 'down', '#e8b8a6');
+  sweep(g, f, TL.b, OCC.cloud, 'up', '#e8b8a6');
+  // 帽子：一直在最前面（夜景拆开的那一段，它画在赛璐璐那一层里，跟着拆开）
+  if (!(s === 'night' && exU(f) > 0)) { const hp = hatAt(f); hat(g, hp.x, hp.y, hp.rot, hp.sc, hp.spin, hp.flut); }
+  grade(g, f, s);
+  if (!NOHUD) hud(g, f, s);
+}
+function grade(g, f, s) {
+  // 每个场景一点点自己的调色（正午暖亮、林子暖、黄昏粉、夜冷），用重叠的权重渐变，不在某一帧跳
+  const w = { night: 1 - F.smr(SW.a - 20, SW.a + 20, f) };
+  g.save();
+  g.globalCompositeOperation = 'soft-light'; g.fillStyle = 'rgba(248,214,158,.22)'; g.fillRect(0, 0, 1920, 1080);
+  if (w.night > 0) { g.globalCompositeOperation = 'multiply'; g.fillStyle = `rgba(150,170,230,${.12 * w.night})`; g.fillRect(0, 0, 1920, 1080); }
+  g.globalCompositeOperation = 'source-over'; g.drawImage(VIG, 0, 0);
+  g.globalCompositeOperation = 'overlay'; g.globalAlpha = .07; g.fillStyle = g.createPattern(GRAIN[Math.floor(f / 5) % 4], 'repeat'); g.fillRect(0, 0, 1920, 1080);
+  g.restore();
+}
+function hud(g, f, s) {
+  // 上沿：左边是这个镜头的编号和时间，右边是两种帧率
+  const P = PALS[s], a = 1 - F.smr(TL.strip - 10, TL.strip + 10, f);
+  if (a > 0) { g.save(); g.globalAlpha = a; g.font = '500 16px Mono'; g.fillStyle = 'rgba(255,255,255,.9)'; g.shadowColor = 'rgba(10,20,40,.55)'; g.shadowBlur = 8;
+    g.textAlign = 'left'; g.fillText(`${P.cut} · BG + A · ${P.name}`, 64, 58);
+    g.textAlign = 'right'; g.fillText(`BG 60 FPS · CEL 12 FPS · ${String(Math.floor(f / 60)).padStart(2, '0')}+${String(f % 60).padStart(2, '0')}`, 1856, 58); g.restore(); }
+  // 封面的大标题（第 0 帧就在）
+  if (f < 110) {
+    const out = 70;
+    F.rise(g, '手绘动画', 72, 960, f, -40, { font: '900 132px SerifSC', size: 132, color: '#fff', out, kind: 'title', rate: 3, ls: 10, shadow: 'rgba(0,20,10,.45)', shadowBlur: 30 });
+    F.rise(g, '一顶草帽，从夜里飞到天亮', 78, 1022, f, -40, { font: '500 30px SansSC', size: 30, color: 'rgba(255,255,255,.94)', out, kind: 'small', rate: .6, shadow: 'rgba(0,20,10,.5)' });
+  }
+  // 每章一条字幕 + 底部的暗带
+  const band = g.createLinearGradient(0, 860, 0, 1080); band.addColorStop(0, 'rgba(10,14,24,0)'); band.addColorStop(.55, 'rgba(10,14,24,.5)'); band.addColorStop(1, 'rgba(10,14,24,.7)');
+  const capA = Math.max(0, ...CAPS.map(([t0, , , t1]) => F.smr(t0 - 6, t0 + 10, f) * (1 - F.smr(t1, t1 + 22, f))));
+  if (capA > 0) { g.save(); g.globalAlpha = capA; g.fillStyle = band; g.fillRect(0, 860, 1920, 220); g.restore(); }
+  for (const [t0, title, sub, t1] of CAPS) { if (f < t0 || f > t1 + 30) continue;
+    F.rise(g, title, 72, 990, f, t0, { font: '700 50px SerifSC', size: 50, color: '#fff', out: t1, rate: .9, dur: 12, shadow: 'rgba(10,14,24,.6)' });
+    F.rise(g, sub, 75, 1038, f, t0 + 5, { font: '500 26px SansSC', size: 26, color: 'rgba(255,255,255,.88)', out: t1, kind: 'small', rate: .45, dur: 12, shadow: 'rgba(10,14,24,.6)' }); }
+  // 03 章：这一场景的色板一格格弹出来
+  if (f >= 380 && f < 520) chips(g, f, PALS.clouds.c, 1220, 940, 380, 500);
+  if (f >= TL.strip) strip(g, f);
+}
+function chips(g, f, cols, x, y, t0, t1) {
+  cols.forEach((c, i) => { const p = F.spring((f - t0 - i * 3) / 14, .55, 9), q = 1 - F.easeOut((f - t1 - i * 2) / 12); if (p <= 0 || q <= 0) return;
+    g.save(); g.globalAlpha = F.clamp(q); g.fillStyle = c; g.shadowColor = 'rgba(0,0,0,.35)'; g.shadowBlur = 10; const w = 92, h = 54 * p; g.fillRect(x + i * 104, y + 54 - h, w, h); g.restore();
+    if (p > .5) F.rise(g, c, x + i * 104, y + 84, f, t0 + i * 3 + 6, { font: '500 15px Mono', size: 15, color: 'rgba(255,255,255,.9)', out: t1, kind: i === 0 ? 'small' : 'none', rate: .1, dur: 8, shadow: 'rgba(0,0,0,.6)' }); });
+}
+// 片尾：一天的色彩剧本——四个场景的缩略帧 + 各自的六个颜色，排成一条；标题和署名
+let THUMBS = null;
+function strip(g, f) {
+  const a = F.smr(TL.strip, TL.strip + 24, f);
+  g.save(); g.globalAlpha = a * .62; g.fillStyle = '#060a16'; g.fillRect(0, 0, 1920, 1080); g.restore();
+  const keys = ['night', 'clouds', 'forest'], W0 = 480, H0 = 270, gap = 40, x0 = (1920 - (W0 * 3 + gap * 2)) / 2, y0 = 540;
+  keys.forEach((k, i) => {
+    const p = F.spring((f - TL.strip - 4 - i * 5) / 16, .6, 9); if (p <= 0) return;
+    const x = x0 + i * (W0 + gap), y = y0 + (1 - p) * 60;
+    g.save(); g.globalAlpha = F.clamp(p * 1.4); g.shadowColor = 'rgba(0,0,0,.5)'; g.shadowBlur = 24; g.drawImage(THUMBS[k], x, y, W0, H0); g.shadowBlur = 0;
+    g.strokeStyle = 'rgba(255,255,255,.35)'; g.lineWidth = 1.5; g.strokeRect(x, y, W0, H0);
+    PALS[k].c.forEach((c, j) => { g.fillStyle = c; g.fillRect(x + j * (W0 / 6), y + H0 + 12, W0 / 6 - 5, 34); });
+    g.restore();
+    F.rise(g, PALS[k].name, x, y + H0 + 82, f, TL.strip + 10 + i * 5, { font: '500 22px SansSC', size: 22, color: 'rgba(255,255,255,.92)', kind: 'small', rate: .5, dur: 10 });
+  });
+  F.rise(g, '手绘动画', 960, 330, f, TL.title, { font: '900 128px SerifSC', size: 128, color: '#fff', align: 'center', kind: 'title', rate: 3, ls: 14, shadow: 'rgba(0,0,0,.5)', shadowBlur: 30 });
+  F.rise(g, 'HAND-PAINTED ANIMATION · 从夜到天亮的色彩剧本', 960, 400, f, TL.title + 12, { font: '500 22px Mono', size: 22, color: 'rgba(255,255,255,.75)', align: 'center', kind: 'small', rate: .3, ls: 3 });
+  F.rise(g, '观默', 960, 490, f, TL.sign, { font: '700 48px SerifSC', size: 48, color: '#ffd27a', align: 'center', kind: 'title', rate: 5, shadow: 'rgba(0,0,0,.5)' });
+}
+
+window.frame = async f => { draw(f); };
+window.events = () => {
+  const dummy = document.createElement('canvas').getContext('2d'); for (let f = 0; f < END; f++) { const s = sceneAt(f); hud(dummy, f, s); if (s === 'night' && exU(f) > .02) exTags(dummy, f, exU(f), CAM.night(f)); }
+  const hatFlips = []; for (let f = 0; f < TL.land; f += 5) hatFlips.push(f);
+  return { cues: [...F.cues.values()].filter(c => c[3] !== 'none').sort((a, b) => a[0] - b[0]), TL, SW, end: END, beat: BEAT, hatFlips };
+};
+(async () => {
+  await F.fonts([['SerifSC', 'NotoSerifSC.ttf', '200 900'], ['SansSC', 'NotoSansSC-Medium.otf', '500'], ['SansSC', 'NotoSansSC-Bold.otf', '700'], ['Mono', 'GeistMono.ttf', '100 900']]);
+  await document.fonts.load('900 132px SerifSC', '手绘动画一顶草帽观默'); await document.fonts.load('500 26px SansSC', '天云'); await document.fonts.load('700 26px SansSC', '天云');
+  await Promise.all(Object.entries(NAMES).flatMap(([s, ls]) => ls.map(async l => { IMG[s + '-' + l] = await load(`layers/${s}-${l}.png`); })));
+  LAMP = (() => { const s = 1.0, x = 1700, gy = 860 + 230; return { x: x - 20 * s, y: gy - 556 * s, w: 40 * s, h: 66 * s, cx: x, cy: gy - 523 * s, s }; })();
+  // 扫过画面的东西：树冠（四边都碎）；云团 = 原图 + 上下翻过来的一份，上下两条边都是云顶
+  OCC.canopy = { c: IMG['forest-canopy'], top: .19, bot: .81, left: .12, right: .88 };
+  OCC.cloud = { c: IMG['clouds-wisp'], top: .3, bot: .84, left: 0, right: 1 };
+  VIG = mk(1920, 1080); { const vg = VIG.g.createRadialGradient(960, 540, 400, 960, 540, 1150); vg.addColorStop(0, 'rgba(10,14,24,0)'); vg.addColorStop(1, 'rgba(10,14,24,.42)'); VIG.g.fillStyle = vg; VIG.g.fillRect(0, 0, 1920, 1080); }
+  for (let k = 0; k < 4; k++) { const c = document.createElement('canvas'); c.width = c.height = 256; const gg = c.getContext('2d'), im = gg.createImageData(256, 256), rr = RNG(500 + k); for (let i = 0; i < im.data.length; i += 4) { const v = 128 + (rr() - .5) * 130; im.data[i] = im.data[i + 1] = im.data[i + 2] = v; im.data[i + 3] = 255; } gg.putImageData(im, 0, 0); GRAIN.push(c); }
+  // 片尾的缩略帧：直接用各场景中段的一帧
+  NOHUD = true; THUMBS = {}; const keep = document.createElement('canvas'); keep.width = 1920; keep.height = 1080;
+  for (const [k, fr] of [['night', 30], ['clouds', 420], ['forest', 700]]) { draw(fr); const t = document.createElement('canvas'); t.width = 800; t.height = 450; t.getContext('2d').drawImage(cv, 0, 0, 800, 450); THUMBS[k] = t; }
+  NOHUD = false; F.cues.clear();
+  if (!Qs.has('nodraw')) draw(+(Qs.get('f') || 0));
+  window.ready = true;
+})();
+</script>
