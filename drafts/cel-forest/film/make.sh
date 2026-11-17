@@ -6,7 +6,7 @@ cd "$(dirname "$0")"
 NAME=cel-forest
 END=3052
 OUT=${TMPDIR:-/tmp}/$NAME-frames-$(cat film.html scenes.js | md5sum | cut -c1-8)${PREVIEW:+-preview}
-[ -f layers/night-fg.png ] || node bake.cjs
+[ -f layers/branch-leaves.png ] || node bake.cjs
 EVQ=nodraw node ../../_lib/events.cjs film.html events.json
 python3 audio.py "$OUT.wav"
 if [ -n "${PREVIEW:-}" ]; then

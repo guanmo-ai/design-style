@@ -205,3 +205,48 @@ SCENES.hill = async () => {
   sceneQ(1);
   return [{ name: 'sky', c: SKY }, { name: 'far', c: FAR }, { name: 'mid', c: MID }, { name: 'fg', c: FG }];
 };
+
+// ⑥ 树林追逐用的前景树干条：很宽的透明画布，几根深色的近景树干（带苔藓、墨线），镜头横移时整条快速扫过。世界 4200 × 1240
+SCENES.trunks = async () => {
+  sceneQ(1.2);
+  const LW = 4200, LH = 1240, T = mk(LW, LH), g = T.g;
+  for (const [x, w, s] of [[300, 170, 1], [1150, 120, 2], [1900, 210, 3], [2750, 140, 4], [3500, 190, 5]]) {
+    trunk(g, { x, top: -40, bot: LH + 20, w, seed: 900 + s, P: MZ.bark, ink: 2.4, roots: true, flare: 0.6, res: 0.4, moss: true });
+    dabClump(g, x + (s % 2 ? 80 : -80), LH - 60, 170, 80, 950 + s, MZ.leaf, { ds: 4 });
+    vine(g, x + 30, -20, 300 + s * 60, 960 + s, MZ.moss, 1.4);
+  }
+  paperize(T, 0.3);
+  sceneQ(1);
+  return [{ name: 'strip', c: T }];
+};
+
+// ⑦ 树杈特写：蓝天、远处虚掉的云，一根大树枝从左下伸进来分成两叉，上面和右边是一团团分色的叶子（帽子最后落在叉里）。世界 1920 × 1080
+SCENES.branch = async () => {
+  sceneQ(1.6);
+  const LW = 1920, LH = 1080, SKY = mk(LW, LH), BR = mk(LW, LH), LV = mk(LW, LH);
+  let g = SKY.g;
+  paintSky(g, LW, LH, [[0, '#2a64b8'], [0.45, '#5a9ede'], [0.8, '#9ccdee'], [1, '#c6e4f2']], 701, 900);
+  cumulus(g, { x: 500, y: 980, w: 900, h: 380, seed: 702, sh: '#9cb6dc', mid: '#d4e4f4', lit: '#ffffff', rim: '#ffffff', lx: -0.4, ly: -0.9, flat: false });
+  cumulus(g, { x: 1600, y: 1000, w: 700, h: 300, seed: 703, sh: '#9cb6dc', mid: '#d4e4f4', lit: '#ffffff', rim: '#ffffff', lx: -0.4, ly: -0.9, flat: false });
+  paperize(SKY, 0.2);
+  // 树枝：从左下伸进来，在 (1020, 600) 分叉
+  g = BR.g;
+  const limb = (pts, w0, w1, seed) => { const P = new Path2D(), L = [], R = []; for (let i = 0; i < pts.length; i++) { const a = pts[Math.max(0, i - 1)], b = pts[Math.min(pts.length - 1, i + 1)], tx = b[0] - a[0], ty = b[1] - a[1], m = Math.hypot(tx, ty) || 1, w = lerp(w0, w1, i / (pts.length - 1)); L.push([pts[i][0] - ty / m * w, pts[i][1] + tx / m * w]); R.push([pts[i][0] + ty / m * w, pts[i][1] - tx / m * w]); }
+    P.moveTo(...L[0]); L.forEach(p => P.lineTo(...p)); for (let i = R.length - 1; i >= 0; i--) P.lineTo(...R[i]); P.closePath();
+    g.fillStyle = '#6b4f3a'; g.fill(P); g.save(); g.clip(P); g.fillStyle = '#4a3428'; g.beginPath(); R.forEach((p, i) => i ? g.lineTo(...p) : g.moveTo(...p)); for (let i = R.length - 1; i >= 0; i--) g.lineTo(pts[i][0] + (R[i][0] - pts[i][0]) * .1, pts[i][1] + (R[i][1] - pts[i][1]) * .1); g.fill();
+    g.fillStyle = rgba('#c99a6a', .8); g.beginPath(); L.forEach((p, i) => i ? g.lineTo(...p) : g.moveTo(...p)); for (let i = L.length - 1; i >= 0; i--) g.lineTo(pts[i][0] + (L[i][0] - pts[i][0]) * .45, pts[i][1] + (L[i][1] - pts[i][1]) * .45); g.fill();
+    const r = RNG(seed); for (let i = 0; i < 60; i++) { const k = Math.floor(r() * (pts.length - 1)), u = r(), x = lerp(pts[k][0], pts[k + 1][0], u), y = lerp(pts[k][1], pts[k + 1][1], u); g.strokeStyle = rgba('#3a2a22', .5); g.lineWidth = r.range(1.5, 3); g.beginPath(); g.moveTo(x, y); g.lineTo(x + r.range(-8, 8), y + r.range(-14, 14)); g.stroke(); }
+    patches(g, P, 0, 0, LW, LH, { sx: 50, sy: 30, seed: seed + 1, oct: 3, bands: [{ lo: 0.6, hi: 0.68, c: '#557f38' }, { lo: 0.68, c: '#86ab45' }] });
+    g.restore(); ink(g, resample(L, 8, 0.6, seed + 2), 2.4, INK, seed + 2); ink(g, resample(R, 8, 0.6, seed + 3), 2.4, INK, seed + 3); };
+  limb([[-60, 1180], [300, 980], [700, 760], [1020, 610]], 120, 70, 711);
+  limb([[1000, 625], [1180, 470], [1330, 300], [1420, 120], [1470, -60]], 70, 34, 712);
+  limb([[1010, 615], [1250, 590], [1520, 520], [1800, 470], [2000, 450]], 62, 26, 713);
+  mossBed(g, [[640, 770, 120, 30], [920, 640, 90, 24], [1240, 586, 80, 20]], 714, 1.6);
+  paperize(BR, 0.25);
+  // 叶子：上面、右边、左上一团团（分色）
+  g = LV.g;
+  for (const [x, y, w, h, s] of [[300, 40, 700, 360, 1], [1500, -20, 900, 420, 2], [1820, 300, 420, 360, 3], [900, -60, 520, 260, 4], [1700, 640, 380, 300, 5]]) crown(g, x, y, w, h, 720 + s * 31, MZ.leafSun, { ds: 5, n: 7, lx: -0.4, ly: -0.85 });
+  paperize(LV, 0.25);
+  sceneQ(1);
+  return [{ name: 'sky', c: SKY }, { name: 'limb', c: BR }, { name: 'leaves', c: LV }];
+};
