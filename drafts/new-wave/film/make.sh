@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # 出片：文字 cue → 配乐 → 逐帧渲染（Canvas 2D，三页并行，已渲的帧会跳过，断了重跑就接着渲）→ 合成 mp4。在本目录运行：bash make.sh
-# 云端（4 核、无显卡）约 0.1 秒 / 帧，1200 帧几分钟。预览：PREVIEW=1 bash make.sh（每 2 帧一张、半分辨率）
+# 音乐：music/minimalist-design-pulse.m4a（audio.py 在上面加音效）。云端（4 核、无显卡）约 0.05 秒 / 帧，1200 帧几分钟。预览：PREVIEW=1 bash make.sh（每 2 帧一张、半分辨率）
 set -euo pipefail
 cd "$(dirname "$0")"
 NAME=new-wave

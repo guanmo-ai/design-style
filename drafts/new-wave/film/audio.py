@@ -1,10 +1,14 @@
-"""新浪潮全片配乐（一整首歌，20 秒）。128.57 BPM（一拍 = 28 帧）· A 小调 · 80 年代新浪潮合成器流行：
-鼓机四拍 + 门限混响的军鼓（80 年代那一声“啪——”突然断掉）、十六分音符的八度贝斯、方波琶音、锯齿和弦、一句主旋律。
-和弦 Am – F – C – G 每两拍换一个，从第一拍到最后一拍是同一首歌，换场只换力度和配器。
-招牌声音：胶片滑过去的“唰”（扫频噪声）；叠出新颜色时一个和弦音；字落台阶一级一个下行音；印版对准的“咔”。
-时间取自 timeline.js；文字的声音取自 events.json（node ../../_lib/events.cjs film.html events.json）。python3 audio.py out.wav"""
+"""新浪潮全片配乐（第二版）。主体是主人用 AI 生成的 Minimalist Design Pulse（music/minimalist-design-pulse.m4a）：
+D 大调、130.07 BPM、两架钢琴交错的极简脉冲 + 干净的电子节拍——本身就是“叠”和“错位”做成的音乐。
+量出来的骨架：一拍 0.4613 秒（27.678 帧），第 0 拍在 0.066 秒；第 8 拍节拍整个进来，第 24 拍换段，第 39 拍最后一击、余音到 20 秒。
+画面的时间轴（timeline.js）整个排在这张拍子网格上，所以这里不剪、不拉伸音乐，只在上面加很轻的音效。
+
+主人说第一版“好像有噪音”（白噪声的镲、门限混响尾巴、扫频的“唰”），所以这一版的音效全是调好音的短音（D 大调），几乎不用噪声，
+整体压在音乐下面：出字一声轻点、字落台阶一级一个木琴音、叠出颜色一个钟琴和弦、砸下时一记低频。
+python3 audio.py out.wav"""
 import json
 import re
+import subprocess
 import sys
 from pathlib import Path
 
@@ -14,192 +18,148 @@ HERE = Path(__file__).resolve().parent
 sys.path.insert(0, str(HERE.parents[1] / '_lib'))
 from song import Song  # noqa: E402
 
-TL = json.loads(re.sub(r'//[^\n]*', '', re.search(r'const TL = (\{.*?\});', (HERE / 'timeline.js').read_text(), re.S).group(1)))
-B, END = TL['beat'], TL['end']
-AM, FM, CM, GM = (33, [57, 60, 64]), (29, [57, 60, 65]), (36, [55, 60, 64]), (31, [55, 59, 62])
-PROG = [AM, FM, CM, GM]
-CH = [(b * B, *PROG[(b // 2) % 4]) for b in range(0, 42, 2)] + [(TL['snap'], *AM)]
-
-
-class NewWave(Song):
-    def gated_snare(self, level=1.0):
-        """80 年代的门限混响军鼓：干的一下 + 一团很亮的混响尾巴，0.2 秒处突然被门切断"""
-        t = self.tt(0.32)
-        body = np.sin(2 * np.pi * np.cumsum(190 + 70 * np.exp(-t / 0.015)) / self.SR) * np.exp(-t / 0.045)
-        crack = self.fft_filter(self.rng.standard_normal(len(t)), lo=1800, hi=9000) * np.exp(-t / 0.03)
-        tail = self.fft_filter(self.rng.standard_normal(len(t)), lo=500, hi=7000) * (0.55 + 0.45 * np.exp(-t / 0.08))
-        gate = np.where(t < 0.19, 1.0, np.exp(-(t - 0.19) / 0.012))
-        return (body * 0.9 + crack * 0.7 + tail * 0.55 * gate) * np.minimum(1, t / 0.0005) * level * 0.42
-
-    def tom(self, m, level=1.0):
-        t = self.tt(0.4)
-        f = self.midi(m) * (1 + 0.6 * np.exp(-t / 0.03))
-        y = np.sin(2 * np.pi * np.cumsum(f) / self.SR) * np.exp(-t / 0.16)
-        y += self.fft_filter(self.rng.standard_normal(len(t)), lo=300, hi=4000) * np.exp(-t / 0.02) * 0.3
-        return np.tanh(y * 1.4) * level * 0.4
-
-    def lead(self, m, d):
-        """主旋律：两层失谐锯齿 + 低八度方波，带一点颤音——80 年代的合成器铜管"""
-        a = self.synth(m, d, 'saw', 5200, 1800, 0.25, att=0.008, rel=0.12, det=0.007, vib=0.22)
-        b = self.synth(m - 12, d, 'square', 2600, 1400, 0.3, att=0.008, rel=0.1)
-        n = min(len(a), len(b))
-        return a[:n] * 0.8 + b[:n] * 0.35
-
-    def stab(self, ms, d=0.35, level=1.0):
-        """和弦重拍（铜管齐奏的一下）"""
-        y = sum(self.synth(m, d, 'saw', 6000, 900, 0.09, att=0.003, rel=0.18, det=0.008) for m in ms)
-        return np.tanh(y * 0.9) * level
-
-    def zip(self, m0, m1, d=0.18, level=1.0):
-        """字距一开一合：滑音的“咻”"""
-        t = self.tt(d)
-        f = self.midi(m0) * (self.midi(m1) / self.midi(m0)) ** (t / d)
-        y = np.sign(np.sin(2 * np.pi * np.cumsum(f) / self.SR)) * 0.5 + np.sin(2 * np.pi * np.cumsum(f) / self.SR)
-        return self.fft_filter(y, hi=5000) * np.sin(np.pi * t / d) ** 0.6 * level * 0.18
-
-    def clack(self, level=1.0):
-        """印版 / 块吸到栏线上：很短的“咔”"""
-        t = self.tt(0.06)
-        y = self.fft_filter(self.rng.standard_normal(len(t)), lo=1500, hi=9000) * np.exp(-t / 0.006)
-        y += np.sin(2 * np.pi * 1900 * t) * np.exp(-t / 0.01) * 0.4
-        return y * level * 0.6
-
-
-S = NewWave(END, CH, beat=B, seed=31)
+TL = json.loads(re.search(r'const TL = (\{.*?\});', (HERE / 'timeline.js').read_text(), re.S).group(1))
+END = TL['end']
+FB = lambda b: TL['off'] + b * TL['beat']          # noqa: E731  第 b 拍在第几帧
+D, E, FS, G, A, B, CS = 62, 64, 66, 67, 69, 71, 73   # D 大调
+DMAJ = [D, FS, A]
+S = Song(END, [(0, 38, DMAJ)], beat=TL['beat'], seed=41, tail=0.5)
 fr = S.fr
 
-# —— 结构：b0 整个乐队就在（X 静音自动播放，第一帧就要有劲）；b24 一拍空（黑屏的“落”），b35 起势，b36 砸；b41 最后一个和弦 ——
-DROP = [(24 * B, 25 * B)]
-BUILD = (35 * B, 36 * B)
-FIN = TL['snap']
 
-# 鼓：底鼓四拍；二四拍门限军鼓；十六分闭镲、反拍开镲
-for b in range(0, FIN // B + 1):
-    fm = b * B
-    if any(a <= fm < z for a, z in DROP) or fm >= FIN:
-        continue
-    if BUILD[0] <= fm < BUILD[1]:
-        continue
-    S.place(S.kick(1.0), fr(fm), 1.0); S.kicks.append(fm)
-    if b % 2 == 1:
-        S.place(S.gated_snare(1.0), fr(fm), 0.85, 0.05, send=0.35)
-        S.place(S.clap(1.0), fr(fm), 0.5, -0.05, send=0.2)
-    S.place(S.hat(1.0, open_=True), fr(fm + B / 2), 1.1, 0.25)
-    for s in (0, 0.25, 0.75):
-        S.place(S.hat(1.0), fr(fm + s * B), 0.9 + (0.3 if s == 0.75 else 0), -0.3)
-# 军鼓滚奏：换大场前一拍（钻进 O、落进网点、砸 NEW 之前），十六分越来越响
-for at in (TL['zoomO'][1] - B, TL['dots4'][1] - B, TL['slam'] - B):
-    for k in range(4):
-        S.place(S.gated_snare(0.5 + 0.17 * k), fr(at + k * B / 4), 0.55, 0.2 * (k - 1.5), send=0.3)
-for at in (TL['push1'][0] + 4, TL['push7'][0] + 4):   # 推场之前三声通鼓，往下走
-    for k, m in enumerate((50, 45, 40)):
-        S.place(S.tom(m, 1.0), fr(at - 21 + k * 7), 0.6, -0.4 + 0.4 * k, send=0.2)
+def music():
+    raw = subprocess.run(['ffmpeg', '-loglevel', 'error', '-i', str(HERE / 'music' / 'minimalist-design-pulse.m4a'),
+                          '-f', 'f32le', '-ac', '2', '-ar', str(S.SR), '-'], capture_output=True, check=True).stdout
+    return np.frombuffer(raw, np.float32).reshape(-1, 2).T.copy()
 
-# 贝斯：十六分音符，根音和高八度交替（新浪潮最典型的那条）
-st = B / 4
-for k, fm in enumerate(np.arange(0, FIN, st)):
-    if any(a <= fm < z for a, z in DROP):
-        continue
-    r = S.chord(fm)[1]
-    S.place(S.sbass(r + (12 if k % 2 else 0), 0.085, 1.0), fr(fm), 0.34 * (1.0 if k % 4 == 0 else 0.8), bus=S.PUMP)
-# 铺底：锯齿和弦，每两拍一个；琶音：方波十六分，开头四拍滤波慢慢打开
-S.pad(1.0, wave='saw', fc=2200)
-for k, fm in enumerate(np.arange(0, FIN, st)):
-    if any(a <= fm < z for a, z in DROP):
-        continue
-    m = S.tone(fm, (0, 1, 2, 3, 2, 1, 3, 4)[k % 8], 1)
-    open_ = min(1.0, 0.35 + fm / (4 * B) * 0.65)
-    sig = S.synth(m, 0.07, 'square', 1200 + 4800 * open_, 700, 0.04, dec=0.08, rel=0.03)
-    S.place(sig, fr(fm), 0.05 * (1.0 if k % 4 == 0 else 0.7), 0.4 * (-1) ** k, send=0.2, bus=S.PUMP)
 
-# 主旋律：八拍一句（E E D C · A C D E · G G D），后半句往上走；01—03 场、06、07 场唱，04—05 场让给音效
-HOOK_A = [(0, 76, 2), (2, 76, 1), (3, 74, 1), (4, 72, 2), (6, 69, 1), (7, 72, 1), (8, 74, 2), (10, 76, 1), (11, 79, 1), (12, 79, 2), (14, 74, 2)]
-HOOK_B = [(0, 81, 2), (2, 79, 1), (3, 76, 1), (4, 77, 2), (6, 76, 1), (7, 72, 1), (8, 74, 2), (10, 76, 1), (11, 79, 1), (12, 83, 3), (15, 81, 1)]
-for b0, h in ((4, HOOK_A), (12, HOOK_B), (29, HOOK_A), (36, HOOK_B)):
-    S.hook(b0 * B, [n for n in h if b0 * B + n[0] * B / 2 < FIN], 1.0, inst=S.lead)
-S.hook(FIN, [(0, 81, 6)], 1.0, inst=S.lead)
+# —— 音色：都是短的、调好音的 ——
+def tick(m, level=1.0):
+    """出字：一下很轻的“嗒”（正弦 + 二次泛音，1 毫秒起音，25 毫秒衰减），没有噪声"""
+    t = S.tt(0.06)
+    f = S.midi(m)
+    y = (np.sin(2 * np.pi * f * t) + 0.3 * np.sin(4 * np.pi * f * t)) * np.exp(-t / 0.022) * np.minimum(1, t / 0.001)
+    return y * level * 0.5
 
-# —— 00 封面：第一帧一记和弦重拍；四拍滤波打开；冲进青色圆片（风声往上 + 滑音）——
-S.sfx(S.stab([57, 60, 64, 69], 0.4), 0, 0.55, send=0.3)
-S.place(S.crash(1.0), 0, 0.7, 0.2, send=0.2)
-S.sfx(S.riser(fr(TL['iris'][1] - TL['iris'][0]), 0.9, 300, 9000), fr(TL['iris'][0]), 0.5)
-S.sfx(S.whistle(76, 88, 0.3), fr(TL['iris'][1] - 18), 0.16, 0.2)
-S.place(S.crash(0.9), fr(TL['s1']), 0.75, -0.2, send=0.2)
 
-# —— 01 叠：三张片子甩进来三声“唰”；每叠出一种颜色一个和弦音（钟琴，走和弦往上）——
+def mallet(m, level=1.0, dec=0.18):
+    """木琴：基音 + 4 倍泛音（很快消失）"""
+    t = S.tt(dec * 4)
+    f = S.midi(m)
+    y = np.sin(2 * np.pi * f * t) * np.exp(-t / dec) + 0.35 * np.sin(2 * np.pi * 3.93 * f * t) * np.exp(-t / (dec / 6))
+    return y * np.minimum(1, t / 0.0015) * level * 0.5
+
+
+def air(d=0.22, level=1.0, up=True):
+    """胶片滑过去：一团很窄的低通气声 + 一个往上（或往下）滑的正弦，没有高频嘶声"""
+    t = S.tt(d)
+    e = np.sin(np.pi * t / d) ** 2
+    n = S.fft_filter(S.rng.standard_normal(len(t)), lo=180, hi=1200) * 0.12
+    f = 300 * (3 ** (t / d if up else 1 - t / d))
+    g = np.sin(2 * np.pi * np.cumsum(f) / S.SR) * 0.25
+    return (n + g) * e * level
+
+
+def glide(m0, m1, d=0.16, level=1.0):
+    t = S.tt(d)
+    f = S.midi(m0) * (S.midi(m1) / S.midi(m0)) ** (t / d)
+    return np.sin(2 * np.pi * np.cumsum(f) / S.SR) * np.sin(np.pi * t / d) ** 0.7 * level * 0.35
+
+
+def sub(level=1.0, f0=110, f1=40, d=0.7):
+    t = S.tt(d)
+    f = f1 + (f0 - f1) * np.exp(-t / 0.05)
+    return np.sin(2 * np.pi * np.cumsum(f) / S.SR) * np.exp(-t / 0.28) * np.minimum(1, t / 0.002) * level * 0.7
+
+
+SFX = []   # (信号, 帧, 增益, 声像, 混响)
+add = lambda sig, f, g, pan=0.0, send=0.15: SFX.append((sig, f, g, pan, send))   # noqa: E731
+
+# 00 封面 → 冲进青色圆片
+add(air(0.5, 1.0, True), TL['iris'][0] + 8, 0.5)
+# 01 叠：三张片子三声气，每叠出一种颜色一个钟琴和弦（往上走）
 for k, at in enumerate(TL['films']):
-    S.sfx(S.whoosh(0.28, 400, 8000, 1.0, 0.6), fr(at - 8), 0.55, [-0.6, 0.6, 0.0][k], send=0.2)
-    S.sfx(S.clack(0.8), fr(at + 10), 0.35, [-0.6, 0.6, 0.0][k])
+    add(air(0.2, 1.0, True), at - 6, 0.45, [-0.6, 0.6, 0.0][k])
 for k, at in enumerate(TL['labels']):
-    for j, m in enumerate(S.chord(at)[2]):
-        S.sfx(S.bell(m + 12 + 12 * (k // 2), 0.9, 0.5), fr(at + j * 1.5), 0.32, -0.3 + 0.2 * k, send=0.4)
-S.transition(TL['push1'][1] - 12, True, 0.8)
-
-# —— 02 台阶：十个字落十级台阶，一级一个下行音（A 小调音阶往下走）+ 木块“咚”；最后全体一跳 ——
-SCALE = [88, 86, 84, 83, 81, 79, 77, 76, 74, 72]
+    for j, m in enumerate(DMAJ):
+        add(S.bell(m + 12 + 5 * (k % 2) + 12 * (k // 3), 0.9, 0.45), at + j * 1.5, 0.22, -0.3 + 0.2 * k, 0.35)
+add(air(0.3, 1.0, True), TL['push1'][0], 0.5)
+# 02 台阶：十个字一级一个木琴音（D 大调音阶往下走）
+SCALE = [86, 85, 83, 81, 79, 78, 76, 74, 73, 71]
 for i in range(10):
-    at = TL['stairs0'] + i * TL['stairStep']
-    S.sfx(S.thock(SCALE[i] - 12, 1.0), fr(at), 0.55, -0.6 + 0.13 * i, send=0.15)
-    S.sfx(S.tink(SCALE[i], 0.8, 0.12), fr(at), 0.3, -0.6 + 0.13 * i, send=0.3)
-S.sfx(S.whistle(84, 72, 0.22), fr(TL['stairWave']), 0.12)
-S.sfx(S.riser(fr(TL['zoomO'][1] - TL['zoomO'][0]), 0.8, 500, 10000), fr(TL['zoomO'][0]), 0.5)
-S.place(S.crash(1.0), fr(TL['zoomO'][1]), 0.8, 0.2, send=0.25)
-S.sfx(S.stab([57, 60, 64, 69], 0.3), fr(TL['zoomO'][1]), 0.4, send=0.3)
-
-# —— 03 字距：每一拍一开一合（撑开往上滑，挤紧往下滑）——
+    add(mallet(SCALE[i] - 12, 1.0), TL['stairs0'] + i * TL['stairStep'], 0.42, -0.6 + 0.13 * i, 0.2)
+add(air(0.6, 1.0, True), TL['zoomO'][0] + 6, 0.5)
+# 03 字距：一开一合的滑音
 prev = -150
 for at, v in zip(TL['track'], [0, 300, -150, 700]):
-    up = v > prev
-    S.sfx(S.zip(60 if up else 84, 84 if up else 60, 0.16), fr(at - 2), 0.7, 0.0)
-    S.sfx(S.clack(0.6), fr(at + 8), 0.3, 0.3 if up else -0.3)
+    add(glide(A, A + 12, 0.15) if v > prev else glide(A + 12, A, 0.15), at - 2, 0.45)
     prev = v
-S.sfx(S.whoosh(0.4, 6000, 300, 0.9, 0.3), fr(TL['toGrid'][0]), 0.45)
-
-# —— 04 网格：块一个个落进格子（咔咔咔）；打碎那一拍一记重拍 + 每块吸到栏线一声“咔”——
+add(air(0.4, 1.0, False), TL['toGrid'][0], 0.4)
+# 04 网格：块落进格子、打碎后吸到栏线，都是很轻的木块声
 for i in range(8):
-    S.sfx(S.clack(0.7), fr(TL['blocks0'] + i * 3 + 6), 0.35, -0.5 + 0.14 * i)
+    add(mallet(DMAJ[i % 3] + 24, 0.8, 0.05), TL['blocks0'] + i * 3 + 6, 0.25, -0.5 + 0.14 * i)
 for t0 in (TL['break'], TL['break2']):
-    S.sfx(S.stab(S.chord(t0)[2] + [S.chord(t0)[2][0] + 12], 0.25), fr(t0), 0.45, send=0.3)
-    S.sfx(S.whoosh(0.2, 800, 6000, 0.8, 0.4), fr(t0 - 4), 0.35)
+    add(air(0.18, 1.0, True), t0 - 4, 0.35)
     for i in range(8):
-        S.sfx(S.clack(0.9), fr(t0 + i * 2 + 9), 0.4, -0.6 + 0.17 * i)
-# 网点长大连成黑：往上冲的风 → 一拍全空（只有低频的“嗡”）
-S.sfx(S.riser(fr(TL['dots4'][1] - TL['dots4'][0]), 1.0, 300, 11000), fr(TL['dots4'][0]), 0.55)
-S.sfx(S.boom(1.0, 90, 33, 1.2), fr(TL['s5']), 0.8, send=0.3)
-
-# —— 05 网点：从一颗点里退出来（风声往下）；色阶一格一个音；光转过去一声长和弦 ——
-S.sfx(S.whoosh(0.9, 9000, 200, 1.0, 0.15), fr(TL['s5']), 0.5)
+        add(mallet([86, 90, 93][i % 3], 0.8, 0.04), t0 + i * 2 + 9, 0.22, -0.6 + 0.17 * i)
+# 网点连成黑（第 24 拍音乐换段）：一记低频；从一颗点里退出来：往下的气；色阶一格一个钟琴音
+add(sub(1.0, 100, 36, 0.9), TL['s5'], 0.7, 0.0, 0.1)
+add(air(0.8, 1.0, False), TL['s5'] + 2, 0.4)
 for i in range(6):
-    S.sfx(S.tink(69 + [0, 3, 7, 12, 15, 19][i], 0.8, 0.2), fr(TL['s5'] + 50 + i * 3), 0.35, -0.3 + 0.12 * i, send=0.35)
-S.sfx(S.swell([57, 64, 69, 72], 1.2, 0.6), fr(TL['light'][0]), 0.25, send=0.5)
-# 品红线网扫过去
-S.sfx(S.whoosh(0.4, 300, 9000, 1.0, 0.7), fr(TL['lines'][0] - 6), 0.55)
-S.place(S.crash(1.0), fr(TL['s6']), 0.8, 0.0, send=0.25)
-
-# —— 06 用起来：一拍一推，每推一张一声“唰” + 一下和弦重拍 ——
+    add(S.bell([D, E, FS, A, B, D + 12][i] + 12, 0.8, 0.3), TL['s5'] + 50 + i * 3, 0.22, -0.3 + 0.12 * i, 0.35)
+add(air(0.35, 1.0, True), TL['lines'][0], 0.45)
+# 06 用起来：一拍一推，每推一张一声气
 for k, at in enumerate(TL['layouts'][1:]):
-    S.sfx(S.whoosh(0.24, 500, 9000, 1.0, 0.7), fr(at - 12), 0.45, [-0.5, 0.0, 0.5, 0.0, -0.5][k])
-    S.sfx(S.stab(S.chord(at)[2], 0.18), fr(at), 0.28, send=0.2)
-
-# —— 07 收束：起势一拍（倒放的镲 + 风）→ NEW 砸下 → WAVE 走台阶 → 印版“咔”地对准 → 最后一砸 ——
-S.sfx(S.whoosh(0.3, 400, 9000, 1.0, 0.7), fr(TL['push7'][0]), 0.55)
-S.sfx(S.riser(fr(B), 0.9, 400, 12000), fr(BUILD[0]), 0.55)
+    add(air(0.22, 1.0, k % 2 == 0), at - 10, 0.38, [-0.5, 0.0, 0.5, 0.0, -0.5][k])
+# 07 收束：片子飞回来 → NEW 砸下（第 36 拍）→ WAVE 走台阶 → 印版对准 → 第 39 拍和音乐最后一击一起砸
+add(air(0.3, 1.0, True), TL['push7'][0], 0.45)
 for k in range(3):
-    S.sfx(S.whoosh(0.22, 500, 7000, 0.8, 0.6), fr(TL['s7'] + 2 + 6 * k), 0.4, [-0.6, 0.6, 0.0][k])
-S.place(S.crash(1.0), fr(TL['slam']), 0.9, 0.0, send=0.3)
-S.sfx(S.stab([45, 57, 60, 64, 69], 0.5), fr(TL['slam']), 0.6, send=0.35)
+    add(air(0.2, 0.8, True), TL['s7'] + 2 + 6 * k, 0.3, [-0.6, 0.6, 0.0][k])
+add(sub(1.0, 120, 40, 0.8), TL['slam'], 0.75, 0.0, 0.15)
+add(mallet(D, 1.0, 0.3), TL['slam'], 0.4)
 for i in range(4):
-    S.sfx(S.thock([81, 79, 76, 72][i] - 12, 1.0), fr(TL['wave'] + i * 7), 0.5, -0.5 + 0.33 * i)
-S.sfx(S.clack(1.0), fr(TL['register']), 0.7)
-S.sfx(S.stab([57, 60, 64], 0.2), fr(TL['register']), 0.35, send=0.3)
-S.sfx(S.whoosh(0.25, 600, 8000, 0.8, 0.6), fr(TL['card'] + 4), 0.35, 0.6)
-S.sfx(S.rev_cymbal(0.3, 1.0), fr(FIN) - 0.3, 0.6, send=0.3)
-S.sfx(S.slam(33, 1.0), fr(FIN), 0.85, send=0.35)
-S.sfx(S.stab([45, 57, 60, 64, 69, 76], 1.4), fr(FIN), 0.65, send=0.45)
-S.place(S.crash(1.0), fr(FIN), 1.0, 0.0, send=0.4)
-S.place(S.kick(1.2), fr(FIN), 1.0)
+    add(mallet([81, 78, 74, 69][i], 1.0), TL['wave'] + i * 7, 0.38, -0.5 + 0.33 * i, 0.2)
+add(mallet(D + 24, 1.0, 0.05), TL['register'], 0.45)
+add(air(0.25, 0.8, False), TL['card'] + 4, 0.3, 0.6)
+add(sub(1.0, 110, 36, 1.2), TL['snap'], 0.8, 0.0, 0.2)
 
-# —— 屏幕上每次出字一声（来自页面登记的 cue；第 0 帧之前已经在的字不出声）——
+# 出字：每落定一个字一声轻点；同一时间最多每 3 帧一声，免得像机关枪
 cues = [c for c in json.loads((HERE / 'events.json').read_text())['cues'] if c[0] >= 0]
-S.text_cues(cues, 0.6)
-S.master(sys.argv[1] if len(sys.argv) > 1 else str(HERE / 'new-wave.wav'), loop=False)
+last = -99
+for f0, n, rate, kind in cues:
+    step = max(rate, 3.0 if kind != 'title' else 2.5)
+    for j in range(int(np.ceil(n * rate / step))):
+        at = f0 + j * step
+        if at - last < 2.5:
+            continue
+        last = at
+        m = [D, FS, A, B][int(S.rng.integers(0, 4))] + (24 if kind != 'title' else 12)
+        add(tick(m, 1.0) if kind != 'title' else mallet(m, 0.9, 0.06), at, 0.16 if kind == 'small' else 0.22 if kind == 'type' else 0.3, 0.4 * np.sin(j * 0.9 + f0), 0.08)
+
+# —— 混音：音乐原样 + 音效（一点点混响）→ 响度 −14 LUFS，限幅，不做饱和 ——
+mus = music()
+n = int(round(END / 60 * S.SR))
+mix = np.zeros((2, n))
+mix[:, :min(n, mus.shape[1])] = mus[:, :n]
+fx, send = np.zeros((2, n + S.SR)), np.zeros((2, n + S.SR))
+for sig, f, g, pan, sd in SFX:
+    i = int(fr(f) * S.SR)
+    if i < 0 or i >= n:
+        continue
+    seg = sig[:n + S.SR - i]
+    L, R = np.cos((pan + 1) * np.pi / 4), np.sin((pan + 1) * np.pi / 4)
+    fx[0, i:i + len(seg)] += seg * g * L * 1.41; fx[1, i:i + len(seg)] += seg * g * R * 1.41
+    send[0, i:i + len(seg)] += seg * g * sd; send[1, i:i + len(seg)] += seg * g * sd
+fx[0] += S.reverb(send[0], 1, dec=0.5, length=1.6)[:fx.shape[1]] * 0.5
+fx[1] += S.reverb(send[1], 2, dec=0.5, length=1.6)[:fx.shape[1]] * 0.5
+mrms = np.sqrt((mus ** 2).mean())
+mix += fx[:, :n] * mrms / 0.12 * 0.5          # 音效按音乐的响度定，整体低于音乐
+mix[:, -int(0.15 * S.SR):] *= np.linspace(1, 0, int(0.15 * S.SR)) ** 2
+out = sys.argv[1] if len(sys.argv) > 1 else str(HERE / 'new-wave.wav')
+S.final = out
+y = mix.T * (0.5 / (np.abs(mix).max() + 1e-9))
+for _ in range(3):
+    y = S.limit(y * 10 ** ((-14.0 - S.loudness(y)) / 20))
+print('loudness %.2f LUFS · peak %.3f' % (S.loudness(y), np.abs(y).max()))
+S.write(out, y)
+print('wrote', out)
