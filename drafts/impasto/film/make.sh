@@ -4,7 +4,7 @@
 set -euo pipefail
 cd "$(dirname "$0")"
 NAME=impasto
-END=1080
+END=3065
 OUT=${TMPDIR:-/tmp}/$NAME-frames-$(cat film.html refs.js | md5sum | cut -c1-8)${PREVIEW:+-preview}
 EVQ=nodraw node ../../_lib/events.cjs film.html events.json
 python3 audio.py "$OUT.wav"

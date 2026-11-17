@@ -101,5 +101,44 @@ const REFS = (() => {
     const def = (X, Y, nz) => Y < 300 || (Y < ridge(X) - 4) ? fbm(nz, X * .002, Y * .003, 2) * .3 : Y > 900 ? Math.PI / 2 : X < 820 ? 1.15 : 2.0;
     return { c, def, edge: (X, Y) => Y < 900 ? .9 : .6, focus: [960, 380], name: 'peak' };
   }
-  return { wheat, wave, peak };
+  // ⑤ 风暴 · 灯塔：铅灰的天在打旋，右边礁石上一座白灯塔，光柱扫过雨幕；巨浪砸在礁石上炸成白沫
+  function lighthouse() {
+    const [c, g] = mk(), r = rng(41), n = makeNoise(42), HZ = 640, LX = 1430, LY = 300;
+    g.fillStyle = lg(g, 0, 0, 0, HZ, [[0, '#0e1a22'], [.45, '#1f3440'], [.8, '#3e5560'], [1, '#56707a']]); g.fillRect(0, 0, W, HZ + 10);
+    // 打旋的云：一圈圈深浅
+    for (let i = 0; i < 90; i++) { const a = r() * 6.28, d = 120 + r() * 900, x = LX - 500 + Math.cos(a) * d * 1.4, y = 200 + Math.sin(a) * d * .35, w = 120 + r() * 300, h = 20 + r() * 40, lt = r();
+      g.save(); g.translate(x, y); g.rotate(a + 1.57); blob(g, 0, 0, w, h, `rgba(${lerp(20, 120, lt)},${lerp(36, 140, lt)},${lerp(44, 148, lt)},.55)`); g.restore(); }
+    // 光柱：从灯往左下扫出去，雨幕里亮
+    g.save(); g.globalCompositeOperation = 'lighter';
+    const bm = g.createLinearGradient(LX, LY, 300, 520); bm.addColorStop(0, 'rgba(255,236,170,.95)'); bm.addColorStop(1, 'rgba(255,236,170,0)');
+    g.fillStyle = bm; g.beginPath(); g.moveTo(LX, LY - 6); g.lineTo(100, 330); g.lineTo(160, 720); g.lineTo(LX, LY + 8); g.fill();
+    g.fillStyle = rg(g, LX, LY, 0, 260, [[0, 'rgba(255,246,200,1)'], [.2, 'rgba(255,220,140,.6)'], [1, 'rgba(255,200,120,0)']]); g.fillRect(LX - 300, LY - 300, 600, 600);
+    g.restore();
+    // 远海
+    g.fillStyle = lg(g, 0, HZ, 0, H, [[0, '#2b4a52'], [.4, '#16303a'], [1, '#0a1a20']]); g.fillRect(0, HZ, W, H - HZ);
+    for (let i = 0; i < 200; i++) { const y = HZ + Math.pow(r(), 1.4) * (H - HZ), x = r() * W, w = 30 + (y - HZ) * .5; g.fillStyle = `rgba(150,190,190,${.15 + r() * .25})`; g.fillRect(x, y, w, 2 + (y - HZ) * .012); }
+    // 礁石
+    g.fillStyle = '#121a1c'; g.beginPath(); g.moveTo(1180, H); g.lineTo(1220, 720); g.lineTo(1300, 640); g.lineTo(1380, 600); g.lineTo(1520, 590); g.lineTo(1640, 640); g.lineTo(1760, 700); g.lineTo(1920, 760); g.lineTo(1920, H); g.fill();
+    g.fillStyle = '#2a3436'; g.beginPath(); g.moveTo(1300, 640); g.lineTo(1380, 600); g.lineTo(1450, 610); g.lineTo(1400, 700); g.fill();
+    // 灯塔：白身红条，灯室亮
+    const tw = (y) => lerp(54, 36, (700 - y) / 400);
+    g.fillStyle = '#d8d4c6'; g.beginPath(); g.moveTo(LX - 58, 610); g.lineTo(LX - 38, 330); g.lineTo(LX + 38, 330); g.lineTo(LX + 58, 610); g.fill();
+    g.fillStyle = '#a82a22'; for (const [y0, y1] of [[560, 500], [440, 390]]) { g.beginPath(); g.moveTo(LX - tw(y0 + 120), y0); g.lineTo(LX - tw(y1 + 120), y1); g.lineTo(LX + tw(y1 + 120), y1); g.lineTo(LX + tw(y0 + 120), y0); g.fill(); }
+    g.fillStyle = 'rgba(30,40,50,.7)'; g.beginPath(); g.moveTo(LX + 6, 610); g.lineTo(LX + 6, 330); g.lineTo(LX + 38, 330); g.lineTo(LX + 58, 610); g.fill();
+    g.fillStyle = '#1e2224'; g.fillRect(LX - 48, 318, 96, 14); g.fillRect(LX - 30, 262, 60, 8);
+    g.fillStyle = '#fff4c8'; g.fillRect(LX - 28, 270, 56, 48); g.fillStyle = '#2a2a2a'; g.beginPath(); g.moveTo(LX - 34, 262); g.lineTo(LX, 232); g.lineTo(LX + 34, 262); g.fill();
+    // 巨浪砸在礁石上：白沫往上炸
+    for (let i = 0; i < 300; i++) { const a = -1.9 + (r() - .5) * 1.4, d = r() ** .7 * 300, x = 1170 + Math.cos(a) * d * .8 + (r() - .5) * 80, y = 740 + Math.sin(a) * d, s = 6 + r() * 22;
+      blob(g, x, y, s, s * .8, r() < .35 ? '#9fb8b8' : '#eef6f4'); }
+    // 前景的浪：深青的身、白沫的顶
+    const wv = new Path2D(); wv.moveTo(-20, 1100); wv.lineTo(-20, 860); for (let x = -20; x <= 1300; x += 20) wv.lineTo(x, 860 - Math.sin(x * .006) * 60 - Math.max(0, Math.sin((x - 700) * .004)) * 120); wv.lineTo(1300, 1100); wv.closePath();
+    g.fillStyle = lg(g, 0, 700, 0, 1080, [[0, '#2f6a70'], [.4, '#17414a'], [1, '#08202a']]); g.fill(wv);
+    for (let i = 0; i < 260; i++) { const x = r() * 1300, y = 860 - Math.sin(x * .006) * 60 - Math.max(0, Math.sin((x - 700) * .004)) * 120 + (r() - .3) * 40, s = 10 + r() * 28; blob(g, x, y, s * 1.4, s * .6, r() < .3 ? '#a8c4c2' : '#f2f8f6'); }
+    for (let i = 0; i < 70; i++) { const t = r(), x0 = t * 1250, y0 = 900 + r() * 150; g.strokeStyle = `rgba(220,240,240,${.3 + r() * .4})`; g.lineWidth = 2 + r() * 4; g.beginPath(); g.moveTo(x0, y0); g.quadraticCurveTo(x0 + 60, y0 + 40, x0 + 140, y0 + 30); g.stroke(); }
+    // 斜着的雨
+    for (let i = 0; i < 500; i++) { const x = r() * W, y = r() * H, L = 30 + r() * 50; g.strokeStyle = `rgba(200,215,220,${.12 + r() * .2})`; g.lineWidth = 1.2; g.beginPath(); g.moveTo(x, y); g.lineTo(x - L * .35, y + L); g.stroke(); }
+    const def = (X, Y, nz) => Y < HZ ? Math.atan2(Y - 200, X - (LX - 500)) + 1.57 + fbm(nz, X * .002, Y * .002, 2) * .5 : Y > 820 ? fbm(nz, X * .003, Y * .006, 2) * .8 - .2 : fbm(nz, X * .003, Y * .01, 2) * .3;
+    return { c, def, edge: (X, Y) => .7, focus: [LX, 360], name: 'lighthouse' };
+  }
+  return { wheat, wave, peak, lighthouse };
 })();
