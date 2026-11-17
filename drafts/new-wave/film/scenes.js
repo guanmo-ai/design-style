@@ -1,6 +1,6 @@
 // 新浪潮 · 全片的画法。每一帧是帧号的纯函数：render(ctx, f)（f 可以是小数，运动模糊用）。
 // 物理只有一条：所有东西都是灯箱上的一张片子——被推（带惯性的弹簧）、被叠（乘法）、被错开（套印 / 台阶 / 字距）。
-const W = 1920, H = 1080, BT = TL.beat;
+const W = 1920, H = 1080;
 const BG = '#E6E2DA', INK = '#141414', MG = '#EC1C8C', CY = '#12A8D8', YE = '#FFD21F', WH = '#F4F1EA', GR = '#9C988F';
 const PI = Math.PI;
 const sp = (f, f0, fr = 2.4, z = 0.42) => pop(f, f0, fr, z);                    // 0 → 1，冲过头再回来
@@ -154,21 +154,21 @@ const hopSq = (f, t0) => squash(f, t0 + 14, 0.16, 3, 3.4, 0.32);
 const regWob = (f, t0, amp = 26) => { const s = Math.max(0, (f - t0) / 60); return amp * Math.exp(-s * 5) * Math.cos(s * 2 * PI * 4.2); };
 
 // 跟着拍子的一下轻推（冲激响应：推出去、回来、抖一下）。from..to 之间每拍一次
-function kick(f, from, to, every = 1) {
+function kick(f, from, to, every = 1) {   // from / to 是拍数
   let v = 0;
-  for (let b = Math.ceil(from / BT); b * BT < to; b += every) { const t = f - b * BT; if (t >= 0 && t < 40) v += Math.exp(-t / 7) * Math.sin(t * 0.42); }
+  for (let b = from; b < to; b += every) { const t = f - FB(b); if (t >= 0 && t < 40) v += Math.exp(-t / 7) * Math.sin(t * 0.42); }
   return v;
 }
 function S0(c, f) {
-  const k1 = kick(f, 28, 84, 2), k2 = kick(f, 42, 84, 2);
+  const k1 = kick(f, 1, 3, 2), k2 = kick(f, 2, 3, 2);
   const m = 1 - sp(f, -6, 1.6, 0.55), cc = 1 - sp(f, -4, 1.5, 0.5), yy = 1 - sp(f, -2, 1.4, 0.55);
-  const lsBump = sp(f, 56, 2.2, 0.4) - sp(f, 84, 2.2, 0.45);
+  const lsBump = sp(f, FB(2), 2.2, 0.4) - sp(f, FB(3), 2.2, 0.45);
   coverComp(c, f, {
     t0: -60, stepT0: -40, cS: 1 + 0.05 * k2, mx: 120 * m + 22 * k1, my: 0, cx: 0, cy: 90 * cc, yx: 160 * yy, yy: 0, c2x: -60 * m, spx: 40 * cc, spy: -30 * cc, spR: 0.08 * cc,
     dPh: 0.14 * Math.sin(f / 16), lPh: 0.08 * Math.sin(f / 20), lFlow: f * 0.5,
     newLs: -14 + 26 * lsBump,
-    wave: k => hop(f, -5 + 7 * k) + hop(f, 56 + 4 * k, 30), waveSq: k => hopSq(f, -5 + 7 * k) * hopSq(f, 56 + 4 * k),
-    regX: 10 + regWob(f, -3, 22) + regWob(f, 56, 14), regY: 10 + regWob(f, -1, 14) * 0.6,
+    wave: k => hop(f, -5 + 7 * k) + hop(f, FB(2) + 4 * k, 30), waveSq: k => hopSq(f, -5 + 7 * k) * hopSq(f, FB(2) + 4 * k),
+    regX: 10 + regWob(f, -3, 22) + regWob(f, FB(2), 14), regY: 10 + regWob(f, -1, 14) * 0.6,
     crossR: f * 0.02, arX: 30 * (1 - sp(f, 0, 2, 0.5)), hPh: f * 0.4,
   });
 }
@@ -176,11 +176,11 @@ function S0(c, f) {
 // ============ 01 叠 ============
 function filmsS1(f) {
   const e = (t0, fr = 2.1, z = 0.52) => 1 - sp(f, t0, fr, z);
-  const drift = sstep(prog(f, 190, 240));
+  const drift = sstep(prog(f, TL.labels[1], TL.push1[0])), d0 = TL.labels[1];
   return {
-    m: { x: 200 - 1900 * e(TL.films[0]) + 70 * drift * Math.sin((f - 190) / 30), y: 250, w: 660, h: 500 },
-    c: { x: 900 + 2000 * e(TL.films[1]) - 60 * drift * Math.sin((f - 190) / 26), y: 520 + 30 * drift * Math.sin((f - 190) / 22), r: 300 },
-    y: { x: 0, y: 1300 * e(TL.films[2]) - 40 * drift * Math.sin((f - 190) / 34), pts: [[560, 1000], [1460, 1000], [1010, 450]] },
+    m: { x: 200 - 1900 * e(TL.films[0]) + 70 * drift * Math.sin((f - d0) / 30), y: 250, w: 660, h: 500 },
+    c: { x: 900 + 2000 * e(TL.films[1]) - 60 * drift * Math.sin((f - d0) / 26), y: 520 + 30 * drift * Math.sin((f - d0) / 22), r: 300 },
+    y: { x: 0, y: 1300 * e(TL.films[2]) - 40 * drift * Math.sin((f - d0) / 34), pts: [[560, 1000], [1460, 1000], [1010, 450]] },
   };
 }
 function inTri(px, py, P) {
@@ -189,7 +189,7 @@ function inTri(px, py, P) {
   return !((d1 < 0 || d2 < 0 || d3 < 0) && (d1 > 0 || d2 > 0 || d3 > 0));
 }
 function S1(c, f) {
-  const k = lerp(0.6, 1, ease.out3(prog(f, 98, 150)));
+  const k = lerp(0.6, 1, ease.out3(prog(f, TL.s1 - 17, TL.s1 + 35)));
   paper(c);
   c.save(); c.translate(960, 540); c.scale(k, k); c.translate(-960, -540);
   paper(c); grid(c);
@@ -563,7 +563,11 @@ function plates(c, src, amp, ang) {
   c.restore();
 }
 function S7(c, f) {
-  const o = OFF[0].getContext('2d'); o.setTransform(1, 0, 0, 1, 0, 0); S7comp(o, f);
+  const o = OFF[0].getContext('2d'); o.setTransform(1, 0, 0, 1, 0, 0);
+  // 最后的余音里，镜头很慢地推近一点（不停住）
+  const z = 1 + 0.035 * ease.inOut2(prog(f, TL.snap + 10, TL.end + 20));
+  if (z > 1) { paper(o); o.translate(960, 560); o.scale(z, z); o.translate(-960, -560); }
+  S7comp(o, f); o.setTransform(1, 0, 0, 1, 0, 0);
   let amp = 9 + 3 * Math.sin(f / 4);
   if (f >= TL.slam) amp += 34 * Math.exp(-(f - TL.slam) / 9);
   if (f >= TL.register) amp *= 1 - sp(f, TL.register, 2.6, 0.35);
@@ -581,8 +585,8 @@ function S7comp(c, f) {
   const shake = f >= TL.snap ? Math.exp(-(f - TL.snap) / 6) * Math.sin((f - TL.snap) * 1.6) * 10 : 0;
   c.save(); c.translate(0, shake);
   coverComp(c, f, {
-    cS: 1 + 0.04 * kick(f, 1064, 1148, 2), c2x: -900 * e(s0 + 16) + 18 * kick(f, 1078, 1148, 2),
-    t0: s0 + 20, mx: 1500 * e(s0 + 4) + 16 * kick(f, 1064, 1148, 2) + (f >= TL.snap ? -14 * (1 - sp(f, TL.snap, 3, 0.4)) : 0), my: 0, cx: 0, cy: -1100 * e(s0 + 8), yx: 1200 * e(s0 + 12), yy: 400 * e(s0 + 12),
+    cS: 1 + 0.04 * kick(f, 37, 39, 1), c2x: -900 * e(s0 + 16) + 18 * kick(f, 37.5, 39, 1),
+    t0: s0 + 20, mx: 1500 * e(s0 + 4) + 16 * kick(f, 37, 39, 1) + (f >= TL.snap ? -14 * (1 - sp(f, TL.snap, 3, 0.4)) : 0), my: 0, cx: 0, cy: -1100 * e(s0 + 8), yx: 1200 * e(s0 + 12), yy: 400 * e(s0 + 12),
     spx: 600 * e(s0 + 20), spy: -600 * e(s0 + 20), spR: 0.6 * e(s0 + 20),
     dPh: 0.1 * Math.sin(f / 18), dG: ease.out3(prog(f, s0 + 10, s0 + 40)), lPh: 0.06 * Math.sin(f / 22), lFlow: f * 0.5, lA: ease.out2(prog(f, s0 + 6, s0 + 20)),
     newA: f < TL.slam - 8 ? 0 : clamp(slamP * 3), newS, newLs: -14,
