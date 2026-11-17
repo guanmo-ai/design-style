@@ -1,0 +1,41 @@
+<!doctype html><meta charset="utf-8"><title>新浪潮 New Wave · 全片</title>
+<!-- 逐帧渲染：node ../../_lib/film-gl.cjs film.html <帧目录> 0 1200 -->
+<style>
+@font-face{font-family:Heros;src:url(../../../public/fonts/TeXGyreHeros-Bold.otf);font-weight:700}
+@font-face{font-family:Silk;src:url(../../../public/fonts/Silkscreen-Regular.ttf)}
+@font-face{font-family:NotoSC;src:url(../../../public/fonts/NotoSansSC-Black.otf);font-weight:900}
+@font-face{font-family:NotoSC;src:url(../../../public/fonts/NotoSansSC-Bold.otf);font-weight:700}
+html,body{margin:0;width:1920px;height:1080px;overflow:hidden;background:#E6E2DA}
+canvas{position:absolute;left:0;top:0}
+</style>
+<canvas id="c" width="1920" height="1080"></canvas>
+<script src="../../_lib/typefx.js"></script><script src="../../_lib/kit/motion.js"></script>
+<script src="timeline.js"></script><script src="scenes.js"></script>
+<script>
+const cv = document.getElementById('c'), X = cv.getContext('2d');
+const tmp = document.createElement('canvas'); tmp.width = W; tmp.height = H; const TX = tmp.getContext('2d');
+// 纸的颗粒：一张固定的噪声，最后叠一层（不随帧变，压缩友好）
+const grain = document.createElement('canvas'); grain.width = W; grain.height = H;
+{ const g = grain.getContext('2d'), im = g.createImageData(W, H); let s = 7;
+  for (let i = 0; i < W * H; i++) { s = (s * 1103515245 + 12345) & 0x7fffffff; const v = (s >> 8) & 255; im.data[i * 4] = im.data[i * 4 + 1] = im.data[i * 4 + 2] = v; im.data[i * 4 + 3] = 255; }
+  g.putImageData(im, 0, 0); }
+window.frame = f => {
+  const b = blurAt(f);
+  if (!b) render(X, f);
+  else {
+    const [, , n, sh] = b;
+    for (let i = 0; i < n; i++) {
+      const t = f + sh * (i / (n - 1) - 0.5);
+      if (i === 0) render(X, t);
+      else { TX.setTransform(1, 0, 0, 1, 0, 0); render(TX, t); X.globalAlpha = 1 / (i + 1); X.drawImage(tmp, 0, 0); X.globalAlpha = 1; }
+    }
+  }
+  X.save(); X.globalCompositeOperation = 'overlay'; X.globalAlpha = 0.07; X.drawImage(grain, 0, 0); X.restore();
+};
+window.events = () => { for (let f = 0; f < TL.end; f++) render(TX, f); return { cues: TFX.list() }; };
+(async () => {
+  await Promise.all(['700 40px Heros', '40px Silk', '900 40px NotoSC', '700 40px NotoSC'].map(s => document.fonts.load(s, '新浪潮叠台阶字距网格网点用起来观默ABC')));
+  window.frame(+(new URLSearchParams(location.search).get('f') || 0));
+  window.ready = true;
+})();
+</script>
