@@ -166,3 +166,42 @@ SCENES.dawn = async () => {
   sceneQ(1);
   return [{ name: 'sky', c: SKY }, { name: 'far', c: FAR }, { name: 'sea1', c: SEA1 }, { name: 'sea2', c: SEA2 }, { name: 'wisp', c: WISP }];
 };
+
+// ⑤ 正午 · 山坡上的大树（和夜景、树林同一套分色平涂）：蓝天、横的流云、远山、一棵大树、花坡、电线杆一路远去。世界 2400 × 1350
+SCENES.hill = async () => {
+  sceneQ(1.4);
+  const LW = 2400, LH = 1350, SKY = mk(LW, LH), FAR = mk(LW, LH), MID = mk(LW, LH), FG = mk(LW, LH);
+  const HOR = 760;
+  let g = SKY.g;
+  paintSky(g, LW, LH, [[0, '#2a64b8'], [0.3, '#4a8fd6'], [0.55, '#8cc4ec'], [0.7, '#c6e4f2'], [1, '#eef6f2']], 601, 1400);
+  glow(g, 300, 120, 900, '#fff6dc', 0.55, 'screen');
+  [[700, 200, 900, 22], [1700, 150, 1000, 26], [1200, 320, 700, 18], [400, 380, 600, 16], [2100, 360, 640, 18], [1500, 470, 800, 14]].forEach(([x, y, w, h], i) => streak(g, { x, y, w, h, seed: 611 + i, sh: '#8fb0d8', mid: '#c4dcf0', lit: '#ffffff', rim: '#ffffff', lx: -0.3, ly: -0.95, soft: 0.1 }));
+  cumulus(g, { x: 560, y: 700, w: 760, h: 300, seed: 620, sh: '#9cb6dc', mid: '#d4e4f4', lit: '#ffffff', rim: '#ffffff', lx: -0.4, ly: -0.9, flat: false });
+  cumulus(g, { x: 1980, y: 690, w: 620, h: 240, seed: 621, sh: '#9cb6dc', mid: '#d4e4f4', lit: '#ffffff', rim: '#ffffff', lx: -0.4, ly: -0.9, flat: false });
+  paperize(SKY, 0.22);
+  g = FAR.g;
+  peak(g, { cx: 500, hw: 900, h: 160, base: HOR + 20, seed: 631, sh: '#6e98b8', lit: '#9cc0d6', hz: '#c6e4f2', hzA: 0.7, lightSide: -1 });
+  peak(g, { cx: 1800, hw: 1000, h: 200, base: HOR + 30, seed: 632, sh: '#6a92b0', lit: '#98bcd2', hz: '#c6e4f2', hzA: 0.7, lightSide: -1 });
+  { const rr = RNG(633); for (let x = -40; x < LW + 40; x += rr.range(50, 90)) dabClump(g, x, HOR + 10 + rr.range(-6, 10), rr.range(60, 110), rr.range(26, 44), 640 + x, { dark: '#4f7a6a', mid: '#6c9a78', light: '#9cc08a', hi: '#cfdc9e' }, { cs: 2.4, leaf: 18 }); }
+  paperize(FAR, 0.25);
+  // 中景：一面山坡（从右下鼓起来），坡顶一棵大树，电线杆沿坡一路远去，花
+  g = MID.g;
+  const hill = new Path2D(); hill.moveTo(-20, HOR + 40); for (let x = -20; x <= LW + 20; x += 30) hill.lineTo(x, HOR + 40 - Math.max(0, Math.sin((x - 900) / 1700 * Math.PI)) * 220 - fbm(x * 0.004, 3, 6) * 20); hill.lineTo(LW + 20, LH + 20); hill.lineTo(-20, LH + 20); hill.closePath();
+  const hg = g.createLinearGradient(0, HOR - 200, 0, LH); hg.addColorStop(0, '#9cc75a'); hg.addColorStop(0.35, '#6faa44'); hg.addColorStop(1, '#3f7a34'); g.fillStyle = hg; g.fill(hill);
+  clover(g, RNG(651), 26000, (rr) => { const x = rr.range(-20, LW + 20), y = rr.range(HOR - 120, LH); return g.isPointInPath(hill, x * Q, y * Q) ? [x, y, 0.4 + (y - HOR + 120) / 300] : null; }, { dark: '#3f7a34', mid: '#5f9a3e', light: '#97c454', hi: '#d8e488' });
+  grassArea(MID, { path: hill, bbox: [-20, HOR - 240, LW + 20, LH + 10], seed: 652, density: 0.4, hAt: (y) => 3 + Math.pow(clamp((y - HOR + 200) / 600), 1.4) * 60, litAt: (x, y) => clamp(0.9 - (y - HOR) / 500), cols: { dark: '#2f5a2a', mid: '#5a9038', light: '#a6cc5a', tip: '#eee08a' } });
+  starFlowers(g, RNG(653), 600, (rr) => { const x = rr.range(0, LW), y = rr.range(HOR - 100, LH); return g.isPointInPath(hill, x * Q, y * Q) ? [x, y, 0.5 + (y - HOR) / 260] : null; }, 1);
+  flowers(g, RNG(654), 260, (rr) => { const x = rr.range(0, LW), y = rr.range(HOR, LH); return g.isPointInPath(hill, x * Q, y * Q) ? [x, y, 0.6 + (y - HOR) / 220] : null; }, ['#f6d24a', '#f6f3ea', '#e98ab0', '#b9a2ee'], 5);
+  const PP = { wood: '#6a5340', woodLit: '#a88a62', insul: '#e8eef4' };
+  const poles = [[260, HOR + 300, 560, 1.3], [700, HOR + 120, 330, .8], [1000, HOR + 30, 200, .5], [1180, HOR - 10, 130, .34]].map(([x, gy, h, s]) => pole(g, x, gy, h, s, PP));
+  for (let i = 0; i < poles.length - 1; i++) for (let k = 0; k < 4; k++) wire(g, poles[i][k], poles[i + 1][k], 26 - i * 6, 'rgba(40,40,50,.8)', 1.6 - i * .3);
+  drawTree(g, 1640, 612, 1.4, TREE_DAY, -0.6, -0.8);
+  paperize(MID, 0.25);
+  g = FG.g;
+  const rr = RNG(661);
+  for (let i = 0; i < 520; i++) { const side = rr() < 0.55, x = side ? rr.range(-40, 640) : rr.range(1900, LW + 40), h = rr.range(90, 330); blade(g, x, LH + 10, h, rr.range(-0.35, 0.35) * h, Math.max(3, h * 0.06), jit(rr.pick(['#2c5a2c', '#3f7a34', '#5a9a3e', '#7cb64a']), rr, 12)); }
+  flowers(g, RNG(662), 60, (r2) => { const side = r2() < 0.55, x = side ? r2.range(0, 600) : r2.range(1900, LW); return [x, LH - r2.range(20, 240), 2.2]; }, ['#f6d24a', '#ffffff', '#e98ab0'], 5);
+  paperize(FG, 0.2);
+  sceneQ(1);
+  return [{ name: 'sky', c: SKY }, { name: 'far', c: FAR }, { name: 'mid', c: MID }, { name: 'fg', c: FG }];
+};
