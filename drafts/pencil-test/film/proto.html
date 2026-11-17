@@ -1,0 +1,43 @@
+<!doctype html><meta charset="utf-8">
+<style>html,body{margin:0;background:#000;overflow:hidden}canvas{display:block}</style>
+<canvas id="c" width="1920" height="1080"></canvas>
+<script src="../../hand-drawn/lib.js"></script>
+<script src="../../hand-drawn/pencil/pencil.js"></script>
+<script src="../../hand-drawn/filmkit.js"></script>
+<script src="graphite.js"></script>
+<script>
+// 铅笔原画 v4 · 原型：石膏几何体（球、立方、圆锥、圆柱）用排线画出来；3 秒小样：画到一半 → 球滚起来、镜头推进
+const Qs = new URLSearchParams(location.search), W = 1920, H = 1080, RW = +(Qs.get('rw') || 480), RH = RW * 9 / 16;
+const cv = document.getElementById('c'), g = cv.getContext('2d');
+let SETS, PAPER, TOOTH;
+const still = f => {
+  const roll = FK.smr(40, 180, f), sx = -1.5 - roll * 1.0, sz = .4 - roll * 1.4;
+  return { lpos: [-3.2, 5.2, -2.6], fall: .018, lgain: 1.7, amb: .06, soft: 14, sky: .2, rim: .04, shapes: [
+    { t: 'plane', p: [0, 0, 0], alb: .8 }, { t: 'wall', p: [0, 0, 3.6], alb: .42 },
+    { t: 'sphere', p: [sx, .9, sz], r: .9, alb: .95 },
+    { t: 'box', p: [.75, .8, 1.3], b: [.8, .8, .8], ry: .55, alb: .95 },
+    { t: 'cone', p: [2.2, 0, .1], r: .72, h: 2.1, alb: .95 },
+    { t: 'cyl', p: [-.6, 1.05, 2.3], r: .55, h: 1.05, alb: .95 } ] };
+};
+const camAt = f => { const z = FK.keys([[0, -5.6], [180, -4.6]], f); return { from: [.9 + FK.keys([[0, 0], [180, -.5]], f), 2.4, z], to: [.5, .9, 1.0], fov: 40 }; };
+function drawFrame(f) {
+  g.setTransform(1, 0, 0, 1, 0, 0); g.globalCompositeOperation = 'source-over'; g.drawImage(PAPER, 0, 0);
+  const R = GRAPHITE.shade(still(f), camAt(f), RW, RH);
+  const off = document.createElement('canvas'); off.width = W; off.height = H; const og = off.getContext('2d');
+  // 画到一半：先轮廓、再浅层、再深层，从左上往右下推（第 0 帧已经画了大半）
+  const p = (f + 90) / 120;
+  GRAPHITE.draw(og, R, SETS, Math.floor(f / 5), { tooth: TOOTH, reveal: (x, y, li) => FK.clamp((p * 1.6 - (x * .6 + y * .4) - [0, .15, .3, .45, .55, -.1][li] * .9) * 4) });
+  g.globalCompositeOperation = 'multiply'; g.drawImage(off, 0, 0); g.globalCompositeOperation = 'source-over';
+  PEN.hatchText(g, '铅笔原画', 90, 210, { size: 150, gap: 3.4 });
+}
+window.frame = async f => drawFrame(f);
+(async () => {
+  await FK.fonts([['SerifSC', 'NotoSerifSC.ttf', '200 900']]); await document.fonts.load('900 150px SerifSC', '铅笔原画');
+  const t = performance.now();
+  SETS = [0, 1, 2].map(k => GRAPHITE.hatchSet(W, H, 11 + k * 7, 6.2));
+  PAPER = HD.canvas(W, H); { const x = PAPER.getContext('2d'), n = HD.makeNoise(3), im = x.createImageData(W, H), d = im.data; for (let y = 0; y < H; y++) for (let i = 0; i < W; i++) { const k = (y * W + i) * 4, v = .985 + HD.fbm(n, i * .004, y * .004, 3) * .025 - Math.hypot(i - 960, y - 540) / 9000; d[k] = 250 * v; d[k + 1] = 246 * v; d[k + 2] = 236 * v; d[k + 3] = 255; } x.putImageData(im, 0, 0); }
+  const T = PEN.tooth(256, 256, 5); TOOTH = HD.canvas(256, 256); { const tg = TOOTH.getContext('2d'), ti = tg.createImageData(256, 256); for (let i = 0; i < T.length; i++) ti.data[i * 4 + 3] = 255 * FK.clamp(.55 + 1.2 * (T[i] - .45)); tg.putImageData(ti, 0, 0); }
+  console.log('build', ((performance.now() - t) / 1000).toFixed(1));
+  window.ready = true;
+})();
+</script>

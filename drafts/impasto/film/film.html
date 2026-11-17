@@ -9,34 +9,36 @@
 // 厚涂 v3 · 同一张画布，湿上加湿，一口气画完四幅：雨夜红伞 → 金色麦田 → 正午的浪 → 黎明雪山。
 // 换画不切：下一幅的笔一浪一浪盖过上一幅（大笔先走、小笔跟上、高光最后点）。120 BPM，一拍 30 帧，1080 帧（18 秒）。
 // window.frame(f) 画第 f 帧：帧号的纯函数（每一笔的起止帧预先算好）；按帧号递增渲染时把画完的笔缓存进 2 倍母版。
-const Q = new URLSearchParams(location.search), MS = +(Q.get('ms') || 2);
-const W = 1920, H = 1080, END = 1080, BEAT = 30, { clamp, lerp, smr, keys, rise, rng } = FK;
+const Q = new URLSearchParams(location.search), MS = +(Q.get('ms') || 3);
+const W = 1920, H = 1080, END = 3065, BEAT = 30, { clamp, lerp, smr, keys, rise, rng } = FK;
 const cv = document.getElementById('c'), sc = cv.getContext('2d');
 const shC = HD.canvas(W, H), sh = shC.getContext('2d');
 // 四幅画：开始盖上去的帧、扫过去的方向、焦点
 const SCN = [
   { key: 'rain', name: '雨夜 · 红伞', t: -270, focus: [890, 560], pal: [['夜青', '#0E3442'], ['雾橙', '#B07A4C'], ['灯黄', '#FFC478'], ['伞红', '#B8231F']] },
-  { key: 'wheat', name: '傍晚 · 麦田', t: 180, focus: [1330, 530], dir: 'lr', pal: [['天蓝', '#2F6FA4'], ['云粉', '#F2C9A6'], ['麦金', '#E2A63A'], ['虞美人', '#D8321F']] },
-  { key: 'wave', name: '正午 · 浪', t: 420, focus: [1400, 430], dir: 'rl', pal: [['深海', '#0F3552'], ['浪青', '#1F9AA4'], ['透光', '#4FD2C4'], ['白沫', '#F2FBFA']] },
-  { key: 'peak', name: '黎明 · 雪山', t: 660, focus: [960, 380], dir: 'depth', pal: [['影紫', '#4A5C9E'], ['亮粉', '#F6A98A'], ['朝霞', '#FFC9A0'], ['松青', '#16323A']] },
+  { key: 'wheat', name: '傍晚 · 麦田', t: 480, focus: [1330, 530], dir: 'lr', pal: [['天蓝', '#2F6FA4'], ['云粉', '#F2C9A6'], ['麦金', '#E2A63A'], ['虞美人', '#D8321F']] },
+  { key: 'wave', name: '正午 · 浪', t: 960, focus: [1400, 430], dir: 'rl', pal: [['深海', '#0F3552'], ['浪青', '#1F9AA4'], ['透光', '#4FD2C4'], ['白沫', '#F2FBFA']] },
+  { key: 'lighthouse', name: '风暴 · 灯塔', t: 1440, focus: [1430, 380], dir: 'rl', pal: [['风暴', '#1F3440'], ['灯光', '#FFECAA'], ['塔红', '#A82A22'], ['浪沫', '#EEF6F4']] },
+  { key: 'peak', name: '黎明 · 雪山', t: 1920, focus: [960, 380], dir: 'depth', pal: [['影紫', '#4A5C9E'], ['亮粉', '#F6A98A'], ['朝霞', '#FFC9A0'], ['松青', '#16323A']] },
 ];
-const TL = { flow: [265, 360], rake: [500, 600], palette: [930, 990], glaze: 870, title: 900, sign: 960, under: 990 };
-const SWAP = [SCN[1].t + 40, SCN[2].t + 40, SCN[3].t + 40];                 // 大概“换成下一幅”的时刻（字和调色用）
-const sceneIdx = f => f < SWAP[0] ? 0 : f < SWAP[1] ? 1 : f < SWAP[2] ? 2 : 3;
-const CAPS = [[56, '01', '大笔铺色，小笔只给焦点', '22 → 11 → 5.5 → 2.8 px：越小的笔越靠近红伞', 150],
-  [247, '02', '笔顺着形走', '天上打旋，麦子竖着拖：方向 = 边的切线', 402],
-  [482, '03', '亮处厚，暗处薄', '每一笔都有厚度：侧光一扫，浪尖的白是堆出来的', 620],
-  [721, '04', '暖光，冷影', '亮面粉橙，影子蓝紫——影子从不加黑', 858]];
+const TL = { flow: [560, 700], palette: [2790, 2850], glaze: 2700, title: 2730, sign: 2760, under: 2880, bolts: [1560, 1680, 1800] };
+const SWAP = SCN.slice(1).map(S => S.t + 40);                              // 大概“换成下一幅”的时刻（字和调色用）
+const sceneIdx = f => SWAP.filter(t => f >= t).length;
+const CAPS = [[80, '01', '大笔铺色，小笔只给焦点', '22 → 11 → 5.5 → 2.8 px：越小的笔越靠近红伞', 400],
+  [540, '02', '笔顺着形走', '天上打旋，麦子竖着拖：方向 = 边的切线', 720],
+  [1030, '03', '亮处厚，暗处薄', '每一笔都有厚度：侧光一扫，浪尖的白是堆出来的', 1260],
+  [1980, '04', '暖光，冷影', '亮面粉橙，影子蓝紫——影子从不加黑', 2200],
+  [2430, '05', '凑近看，全是颜料', '五幅画、五十多万笔，每一笔都有自己的厚度和刷毛纹', 2640]];
 
-let LIST, BYEND, BYSTART, master, cacheF = -1e9, ci = 0, UNDER, REFS_, FLS = [];
+let LIST, BYEND, BYSTART, master, cacheF = -1e9, ci = 0, UNDER;
 // 镜头：中心点 + 推近倍数；五次缓动，推拉最快的一刻落在拍点
 const cam = f => ({
-  cx: keys([[0, 930], [165, 890], [230, 960], [402, 1010], [470, 1360], [590, 1360], [657, 960], [785, 960], [870, 990], [1080, 960]], f),
-  cy: keys([[0, 545], [165, 560], [230, 540], [402, 540], [470, 450], [590, 450], [657, 540], [785, 500], [870, 540], [1080, 540]], f),
-  z: keys([[0, 1.1], [165, 1.6], [230, 1.0], [402, 1.06], [470, 1.95], [590, 2.0], [657, 1.0], [785, 1.12], [870, 1.0], [1080, 1.03]], f) });
-// 侧光：平时从左上，03 章那一段从左扫到右、厚度放大
-const lightAt = f => { const a = keys([[0, -128], [60, -150], [160, -110], [500, -128], [510, -175], [600, -10], [650, -128]], f) * Math.PI / 180; return [Math.cos(a) * .96, Math.sin(a) * .96]; };
-const ampAt = f => keys([[0, 1], [60, 1.25], [160, 1], [500, 1], [550, 1.9], [600, 1.7], [650, 1.0]], f);
+  cx: keys([[0, 900], [420, 940], [480, 960], [700, 1000], [960, 1000], [1060, 1380], [1250, 1380], [1400, 980], [1440, 960], [1880, 1320], [1920, 960], [2380, 990], [2400, 990], [2650, 1120], [2720, 960], [3065, 960]], f),
+  cy: keys([[0, 520], [420, 540], [480, 540], [960, 540], [1060, 430], [1250, 430], [1400, 540], [1880, 430], [1920, 540], [2380, 520], [2400, 520], [2650, 420], [2720, 540], [3065, 540]], f),
+  z: keys([[0, 3.2], [420, 1.05], [480, 1.0], [940, 1.08], [960, 1.0], [1060, 2.0], [1250, 2.1], [1400, 1.0], [1440, 1.0], [1880, 1.3], [1920, 1.0], [2380, 1.1], [2400, 1.1], [2650, 3.0], [2720, 1.0], [3065, 1.04]], f) });
+// 侧光：平时从左上；开场、浪、凑近看三段从左扫到右、厚度放大
+const lightAt = f => { const a = keys([[0, -160], [300, -110], [480, -128], [1080, -128], [1090, -175], [1240, -10], [1300, -128], [2400, -128], [2420, -175], [2640, -15], [2700, -128]], f) * Math.PI / 180; return [Math.cos(a) * .96, Math.sin(a) * .96]; };
+const ampAt = f => keys([[0, 1.6], [300, 1.2], [480, 1], [1080, 1], [1140, 1.9], [1240, 1.7], [1300, 1], [2400, 1], [2460, 2.0], [2640, 1.8], [2700, 1]], f);
 
 function timing(S, s, i) {
   const [x, y] = s.path[0], nn = (s.seed % 1000) / 1000;
@@ -54,7 +56,8 @@ function timing(S, s, i) {
   else { s.t0 = T + 96 + clamp(dist / 1000) * 24 + nn * 10; s.d = 3; }
   if (S.key === 'rain') { // 第一幅在第 0 帧之前就铺好了，只有小笔和高光还在落：封面那一刻笔还在走
     if (s.pass === 0) s.t0 = -270 + key * 70 + nn * 8; else if (s.pass === 1) s.t0 = -190 + key * 80 + nn * 10;
-    else if (s.pass === 2) s.t0 = -110 + clamp(dist / 1100) * 100 + nn * 8; else if (s.pass === 3) s.t0 = -60 + clamp(dist / 900) * 90 + nn * 8; else s.t0 = 4 + clamp(dist / 1000) * 50 + nn * 10;
+    else if (s.pass === 2) s.t0 = -50 + clamp(dist / 1100) * 220 + nn * 8; else if (s.pass === 3) s.t0 = -10 + clamp(dist / 900) * 220 + nn * 8; else s.t0 = 60 + clamp(dist / 1000) * 160 + nn * 10;
+    if (s.pass >= 2) s.d *= 1.6;                                                // 开场是微距：小笔走得慢一点，看得清
   }
 }
 function build() {
@@ -82,8 +85,8 @@ function build() {
   const tfl = PAINT.flow(tc, { def: (X, Y, nz) => HD.fbm(nz, X * .01, Y * .01, 2) * .5, edge: () => 1.2 });
   const tl = PAINT.plan(tc, tfl, { passes: [{ R: 8, step: 5.5, len: 6, thr: 90, p: 1 }, { R: 3.4, step: 2.6, len: 5, thr: 90, p: 1 }], hi: 0, rain: 0, jv: .06, jw: 8, seed: 21 });
   for (const s of tl) { s.pass = 7; s.imp = 1.3; s.t0 = TL.title + (s.path[0][0] - 84) / 440 * 36 + (s.R < 5 ? 14 : 0) + r() * 5; s.d = 5; LIST.push(s); }
-  SCN.forEach((S, i) => S.pal.forEach(([nm, hex], j) => { const x = 1100 + i * 196 + j * 44, y = 958, col = HD.hex(hex);
-    for (let k = 0; k < 3; k++) LIST.push({ path: [[x + 2, y - 30 + k * 22 + r() * 3], [x + 18, y - 34 + k * 22], [x + 36, y - 28 + k * 22 + r() * 3]], R: 9 + r() * 2, col: col.map(v => v * (1 + (r() - .5) * .1)), pass: 8, imp: 1.3, seed: (r() * 1e9) | 0, t0: TL.palette[0] + i * 12 + j * 3 + k, d: 5 }); }));
+  SCN.forEach((S, i) => S.pal.forEach(([nm, hex], j) => { const x = 1010 + i * 176 + j * 40, y = 958, col = HD.hex(hex);
+    for (let k = 0; k < 3; k++) LIST.push({ path: [[x + 2, y - 30 + k * 22 + r() * 3], [x + 16, y - 34 + k * 22], [x + 32, y - 28 + k * 22 + r() * 3]], R: 9 + r() * 2, col: col.map(v => v * (1 + (r() - .5) * .1)), pass: 8, imp: 1.3, seed: (r() * 1e9) | 0, t0: TL.palette[0] + i * 12 + j * 3 + k, d: 5 }); }));
   { const Pp = []; for (let k = 0; k <= 12; k++) { const u = k / 12; Pp.push([92 + u * 470, 1004 + Math.sin(u * 3) * 4 - u * 6]); } LIST.push({ path: Pp, R: 7.5, col: [196, 42, 36], pass: 9, imp: 1.6, seed: 77, t0: TL.under, d: 12 }); }
   BYEND = LIST.slice().sort((a, b) => (a.t0 + a.d) - (b.t0 + b.d));
   BYSTART = LIST.slice().sort((a, b) => a.t0 - b.t0);
@@ -140,13 +143,26 @@ function draw(f) {
   // ② 麦浪：麦田一条条横着晃
   const wind = smr(SCN[1].t + 70, SCN[1].t + 110, f) * (1 - smr(SCN[2].t + 10, SCN[2].t + 50, f));
   if (wind > 0) shimmer(f, z, cx, cy, 600, 2.2 * wind, 1.3);
+  // ④ 风暴：斜雨（也是笔）+ 海面晃
+  const storm = smr(SCN[3].t + 60, SCN[3].t + 100, f) * (1 - smr(SCN[4].t + 10, SCN[4].t + 50, f));
+  if (storm > 0) { sc.setTransform(z, 0, 0, z, ox, oy); sh.setTransform(z, 0, 0, z, ox, oy); sc.globalAlpha = sh.globalAlpha = storm * .8;
+    for (const d of RAIN) { const t = f, yy = ((d.y + d.v * 1.4 * t) % 1240) - 80, xx = d.x - .35 * (yy - d.y); PAINT.stroke(sc, sh, [[xx, yy], [xx - d.L * .35, yy + d.L]], d.R, [196, 212, 218], rng(d.seed), 1); }
+    sc.globalAlpha = sh.globalAlpha = 1; shimmer(f, z, cx, cy, 660, 2.4 * storm, 1.2); }
   sc.setTransform(1, 0, 0, 1, 0, 0);
   PAINT.relight(cv, shC, lightAt(f), ampAt(f), .95 * Math.pow(z, .25));
   sc.globalCompositeOperation = 'lighter';
   if (rain > 0) LAMPS.forEach(([x, y, lz], i) => { const X = ox + x * z, Y = oy + y * z, R = 3.4 * 880 / lz * z, a = .16 * rain * (.55 + .45 * Math.sin(f * .045 + i * 1.7)) * (1 - clamp(lz / 150)); const g = sc.createRadialGradient(X, Y, 0, X, Y, R); g.addColorStop(0, `rgba(255,200,130,${a})`); g.addColorStop(1, 'rgba(255,200,130,0)'); sc.fillStyle = g; sc.beginPath(); sc.arc(X, Y, R, 0, 7); sc.fill(); });
-  const sunA = [[1, 1330, 470, '255,214,140', .32], [3, 1760, 600, '255,196,150', .3]];
-  for (const [si, x, y, col, a0] of sunA) { const a = a0 * smr(SCN[si].t + 30, SCN[si].t + 90, f) * (si === 1 ? 1 - smr(SCN[2].t + 10, SCN[2].t + 50, f) : 1) * (.8 + .2 * Math.sin(f * .05)); if (a <= 0) continue;
+  const sunA = [[1, 1330, 470, '255,214,140', .32], [4, 1760, 600, '255,196,150', .3]];
+  for (const [si, x, y, col, a0] of sunA) { const a = a0 * smr(SCN[si].t + 30, SCN[si].t + 90, f) * (si === 1 ? 1 - smr(SCN[2].t + 10, SCN[2].t + 50, f) : 1 - smr(TL.glaze, TL.glaze + 60, f) * .5) * (.8 + .2 * Math.sin(f * .05)); if (a <= 0) continue;
     const X = ox + x * z, Y = oy + y * z, R = 520 * z, g = sc.createRadialGradient(X, Y, 0, X, Y, R); g.addColorStop(0, `rgba(${col},${a})`); g.addColorStop(1, `rgba(${col},0)`); sc.fillStyle = g; sc.fillRect(0, 0, W, H); }
+  if (storm > 0) { // 灯塔的光柱扫来扫去
+    const a = Math.PI + .28 + .22 * Math.sin((f - SCN[3].t) * .03), X = ox + 1430 * z, Y = oy + 300 * z, L = 1900 * z, wd = .09;
+    const gr = sc.createRadialGradient(X, Y, 0, X, Y, L); gr.addColorStop(0, `rgba(255,236,170,${.2 * storm})`); gr.addColorStop(1, 'rgba(255,236,170,0)');
+    sc.fillStyle = gr; sc.beginPath(); sc.moveTo(X, Y); sc.lineTo(X + Math.cos(a - wd) * L, Y + Math.sin(a - wd) * L); sc.lineTo(X + Math.cos(a + wd) * L, Y + Math.sin(a + wd) * L); sc.fill();
+    const lg = sc.createRadialGradient(X, Y, 0, X, Y, 160 * z); lg.addColorStop(0, `rgba(255,248,210,${.45 * storm})`); lg.addColorStop(1, 'rgba(255,248,210,0)'); sc.fillStyle = lg; sc.fillRect(X - 200 * z, Y - 200 * z, 400 * z, 400 * z);
+    for (const b of TL.bolts) { const u = f - b; if (u < 0 || u > 24) continue; const e = Math.exp(-u / 4) * (u < 2 || (u > 5 && u < 8) ? 1 : .55) * storm; sc.fillStyle = `rgba(220,235,255,${.5 * e})`; sc.fillRect(0, 0, W, H);
+      const r2 = rng(b), P = [[ox + (380 + (b % 7) * 60) * z, 0]]; for (let k = 0; k < 9; k++) { const p0 = P[P.length - 1]; P.push([p0[0] + (r2() - .45) * 90 * z, p0[1] + 70 * z]); }
+      sc.strokeStyle = `rgba(255,255,255,${e})`; sc.lineWidth = 4; sc.beginPath(); P.forEach(([x, y], i) => i ? sc.lineTo(x, y) : sc.moveTo(x, y)); sc.stroke(); } }
   sc.globalCompositeOperation = 'source-over';
   // 02 章：方向场一条条亮出来再淡掉（就是麦田那张图的笔触方向）
   const fe = smr(TL.flow[0], TL.flow[0] + 26, f) * (1 - smr(TL.flow[1] - 34, TL.flow[1], f));
@@ -170,17 +186,17 @@ function hud(ctx, f) {
   // 封面的大字（第 0 帧就在，1.4 秒后让给 01 章）
   if (f < 120) {
     rise(ctx, '厚涂', 72, 1000, f, -40, { font: '900 200px SerifSC', size: 200, color: '#FFF4E6', out: 52, kind: 'title', rate: 4, shadow: 'rgba(0,0,0,.55)', shadowBlur: 30 });
-    rise(ctx, '一张画布，湿上加湿，画完四幅', 486, 990, f, -40, { font: '500 32px SansSC', size: 32, color: 'rgba(255,240,225,.95)', out: 52, kind: 'small', rate: .6, shadow: 'rgba(0,0,0,.7)' });
+    rise(ctx, '一张画布，湿上加湿，画完五幅', 486, 990, f, -40, { font: '500 32px SansSC', size: 32, color: 'rgba(255,240,225,.95)', out: 52, kind: 'small', rate: .6, shadow: 'rgba(0,0,0,.7)' });
   }
   { const g = ctx.createRadialGradient(1760, 96, 0, 1760, 96, 280); g.addColorStop(0, 'rgba(4,9,12,.5)'); g.addColorStop(1, 'rgba(4,9,12,0)'); ctx.fillStyle = g; ctx.fillRect(1400, 0, 520, 360); }
   // 右上：画到第几幅 + 笔数（一直在涨）
   const si = sceneIdx(f), done = ci + wet(f).length;
   ctx.save(); ctx.textAlign = 'right'; ctx.shadowColor = 'rgba(0,0,0,.6)'; ctx.shadowBlur = 12;
-  ctx.font = '500 16px Mono'; ctx.fillStyle = 'rgba(255,236,214,.75)'; ctx.fillText(`STROKES · ${si + 1} / 4 · ${SCN[si].name}`, 1848, 66);
+  ctx.font = '500 16px Mono'; ctx.fillStyle = 'rgba(255,236,214,.75)'; ctx.fillText(`STROKES · ${si + 1} / ${SCN.length} · ${SCN[si].name}`, 1848, 66);
   ctx.font = '600 36px Mono'; ctx.fillStyle = '#FFF4E6'; ctx.fillText(Math.min(done, LIST.length).toLocaleString('en'), 1848, 110);
   ctx.font = '500 16px Mono'; ctx.fillStyle = 'rgba(255,236,214,.7)'; ctx.fillText('OIL ON CANVAS · WET ON WET', 1848, 138); ctx.restore();
   // 片尾：四幅画的色板标签、署名
-  if (f >= TL.palette[0]) SCN.forEach((S, i) => rise(ctx, S.name, 1100 + i * 196, 1010, f, TL.palette[0] + i * 12 + 4, { font: '500 17px SansSC', size: 17, color: '#FFF4E6', kind: 'small', rate: .5, shadow: 'rgba(0,0,0,.8)', shadowBlur: 8 }));
+  if (f >= TL.palette[0]) SCN.forEach((S, i) => rise(ctx, S.name, 1010 + i * 176, 1010, f, TL.palette[0] + i * 12 + 4, { font: '500 17px SansSC', size: 17, color: '#FFF4E6', kind: 'small', rate: .5, shadow: 'rgba(0,0,0,.8)', shadowBlur: 8 }));
   rise(ctx, 'PAINTERLY · IMPASTO', 96, 1048, f, TL.title + 36, { font: '500 22px Corm', size: 22, color: 'rgba(255,232,205,.92)', kind: 'small', ls: 9, rate: .7 });
   rise(ctx, '观默', 560, 960, f, TL.sign, { font: '700 46px SerifSC', size: 46, color: '#FFF4E6', kind: 'title', rate: 5, shadow: 'rgba(0,0,0,.6)' });
   rise(ctx, `${LIST.length.toLocaleString('en')} 笔 · 全部由代码画成`, 560, 1000, f, TL.sign + 10, { font: '400 20px SansSC', size: 20, color: 'rgba(255,240,225,.82)', kind: 'small', rate: .7 });

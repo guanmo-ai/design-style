@@ -1,0 +1,104 @@
+<!doctype html><meta charset="utf-8">
+<style>html,body{margin:0;background:#000;overflow:hidden}canvas{display:block}</style>
+<canvas id="c" width="1920" height="1080"></canvas>
+<script src="../../hand-drawn/lib.js"></script>
+<script src="../../hand-drawn/pencil/pencil.js"></script>
+<script src="../../hand-drawn/filmkit.js"></script>
+<script src="graphite.js"></script>
+<script>
+// 铅笔原画 v4 · 一张素描活过来：石膏几何体（封面）→ 钻进球里 → 铅笔画的城市 → 柱廊 → 白纸里悬着的形体 → 拉出来：都画在桌上那张纸上。
+// 三维明暗每帧都算（镜头丝滑），排线一拍二换一套（线在沸腾）。配乐：Sketch Awakening 从 11.0 秒起 48.6 秒，150 BPM，一小节 96 帧，8 小节一段。
+const Qs = new URLSearchParams(location.search), W = 1920, H = 1080, END = 2916, BEAT = 24, RW = +(Qs.get('rw') || 480), RH = RW * 9 / 16;
+const { clamp, lerp, smr, keys, rise } = FK;
+const cv = document.getElementById('c'), g = cv.getContext('2d');
+let SETS, PAPER, TOOTH, DESK, OFF, OG;
+// 段落（帧）：8 小节一段，对上音乐
+const SEC = { b: 961, c: 1730, d: 2114, e: 2498 }, HIT = 2820;
+const sceneAt = f => f < SEC.b ? 'still' : f < SEC.c ? 'city' : f < SEC.d ? 'cols' : 'void';
+const CAPS = [
+  [240, '01 · 明暗五级 = 排线层数', '亮处一层 45° 的排线，越暗叠得越多：四层排线 + 一层擦开的灰', 860],
+  [1010, '02 · 镜头 1 拍 1，线 1 拍 2', '明暗每帧都在算，排线每秒只换 12 次：线一直在“沸腾”', 1640],
+  [1790, '03 · 明暗交界线、反光、投影', '亮暗分界最实；暗部里有一圈反光；投影比暗部更深', 2440],
+];
+// ───── 四个场景（三维）
+const SCN = {
+  still: f => { const roll = smr(193, 860, f), sx = -1.5 - roll * 1.2, sz = .4 - roll * 2.6;
+    return { lpos: [-3.2, 5.2, -2.6], fall: .018, lgain: 1.7, amb: .06, soft: 14, sky: .2, rim: .04, shapes: [
+      { t: 'plane', p: [0, 0, 0], alb: .8 }, { t: 'wall', p: [0, 0, 3.6], alb: .42 },
+      { t: 'sphere', p: [sx, .9, sz], r: .9, alb: .95 }, { t: 'box', p: [.75, .8, 1.3], b: [.8, .8, .8], ry: .55 + smr(300, 900, f) * .6, alb: .95 },
+      { t: 'cone', p: [2.2, 0, .1], r: .72, h: 2.1, alb: .95 }, { t: 'cyl', p: [-.6, 1.05, 2.3], r: .55, h: 1.05, alb: .95 }] }; },
+  city: f => ({ light: [-.85, .42, .25], amb: .14, soft: 16, sky: .97, fog: 70, far: 120, step: .6, maxStep: 1.0, shapes: [
+      { t: 'plane', p: [0, 0, 0], alb: .82 }, { t: 'city', p: [0, 0, 0], cell: 4, w: 1.35, h0: 2, h1: 10, alb: .92 }, { t: 'sphere', p: [0, 14, 75], r: 7, emit: true }] }),
+  cols: f => ({ light: [-.75, .85, .35], amb: .16, soft: 16, sky: .97, fog: 40, far: 70, step: .8, shapes: [
+      { t: 'plane', p: [0, 0, 0], alb: .82 }, { t: 'cols', p: [0, 0, 0], x: 3, gap: 2.6, r: .42, h: 2.4, alb: .95 }, { t: 'beams', p: [0, 5, 0], gap: 2.6, w: 4.3, t: .18, d: .55, alb: .9 }] }),
+  void: f => { const a = (f - SEC.d) * .01;
+    return { light: [-.6, .75, -.45], amb: .22, soft: 18, sky: 1, rim: .18, far: 60, shapes: [
+      { t: 'sphere', p: [0, 0, 0], r: 2.4, alb: .95 }, { t: 'torus', p: [0, 0, 0], R: 4.1, r: .15, rx: .45, rz: .25, alb: .95 },
+      { t: 'sphere', p: [Math.cos(a) * 5.4, Math.sin(a * .7) * 1.2, Math.sin(a) * 5.4], r: .55, alb: .95 }, { t: 'sphere', p: [Math.cos(a + 2.4) * 6.4, 1.6, Math.sin(a + 2.4) * 6.4], r: .35, alb: .95 },
+      { t: 'box', p: [-4.2, 2.2, -1.5], b: [.55, .55, .55], ry: a * 1.3, rx: a * .9, alb: .95 }, { t: 'cone', p: [4.3, -2.8, 1.8], r: .5, h: 1.3, rz: .6 + a * .4, alb: .95 }] }; },
+};
+// ───── 镜头（每段五次缓动）
+const CAM = {
+  still: f => { const ang = keys([[0, 0], [193, 0], [860, -.62]], f), R = keys([[0, 6.0], [193, 5.8], [860, 5.2]], f), c = [.5, .9, 1.0];
+    const from = [c[0] + Math.sin(ang) * R + .4, keys([[0, 2.4], [860, 2.1]], f), c[2] - Math.cos(ang) * R];
+    if (f < 860) return { from, to: c, fov: 40 };
+    const s = SCN.still(f).shapes[2].p, u = FK.quint((f - 860) / 101); return { from: [lerp(from[0], s[0] - .2, u), lerp(from[1], s[1] + .05, u), lerp(from[2], s[2] - 1.0, u)], to: [lerp(c[0], s[0], u), lerp(c[1], s[1], u), lerp(c[2], s[2], u)], fov: 40 }; },
+  city: f => ({ from: [keys([[961, 0], [1100, 0], [1650, .6]], f), keys([[961, 14], [1100, 2.6], [1600, 2.2], [1730, 6]], f), keys([[961, 60], [1100, 6], [1650, 36], [1730, 40]], f)],
+    to: [keys([[961, 0], [1650, -.4]], f), keys([[961, 14], [1100, 5], [1600, 4], [1730, 0]], f), keys([[961, 75], [1100, 70], [1650, 75], [1730, 41]], f)], fov: keys([[961, 40], [1100, 52], [1730, 52]], f) }),
+  cols: f => ({ from: [keys([[1730, 0], [1800, -1], [2060, .8]], f), keys([[1730, 4.5], [1800, 1.7], [2030, 1.9], [2114, 3.5]], f), keys([[1730, 0], [1800, 0], [2114, 14]], f)],
+    to: [keys([[1730, 0], [1800, 1.5], [2060, 0]], f), keys([[1730, 0], [1800, 2.2], [2030, 3], [2114, 30]], f), keys([[1730, 1.2], [1800, 8], [2114, 18]], f)], fov: 50 }),
+  void: f => { const ang = keys([[2114, .3], [2498, -.5], [2916, -.7]], f), R = keys([[2114, 2.7], [2190, 10], [2498, 11], [2916, 11.5]], f), y = keys([[2114, .4], [2190, 2.2], [2916, 2.8]], f);
+    return { from: [Math.sin(ang) * R, y, -Math.cos(ang) * R], to: [0, 0, 0], fov: 44 }; },
+};
+// ───── 一帧
+function renderScene(name, f, dst) {
+  const R = GRAPHITE.shade(SCN[name](f), CAM[name](f), RW, RH);
+  OG.setTransform(1, 0, 0, 1, 0, 0); OG.globalCompositeOperation = 'source-over'; OG.clearRect(0, 0, W, H);
+  GRAPHITE.draw(OG, R, SETS, Math.floor(f / 5), { tooth: TOOTH });
+  dst.setTransform(1, 0, 0, 1, 0, 0); dst.globalCompositeOperation = 'source-over'; dst.drawImage(PAPER, 0, 0);
+  dst.globalCompositeOperation = 'multiply'; dst.drawImage(OFF, 0, 0); dst.globalCompositeOperation = 'source-over';
+}
+let PG;
+function drawFrame(f) {
+  const name = sceneAt(f);
+  if (f < SEC.e) renderScene(name, f, g);
+  else { // 拉出来：这一切画在桌上那张纸上
+    renderScene('void', f, PG.getContext('2d'));
+    const u = FK.quint((f - SEC.e) / 260), sc = lerp(1, .6, u), rot = lerp(0, -.035, u);
+    g.setTransform(1, 0, 0, 1, 0, 0); g.globalAlpha = 1; g.drawImage(DESK, 0, 0);
+    g.save(); g.translate(960, 520 + u * 10); g.rotate(rot); g.scale(sc, sc); g.shadowColor = 'rgba(0,0,0,.55)'; g.shadowBlur = 40 * u; g.shadowOffsetY = 14 * u; g.drawImage(PG, -960, -540); g.restore();
+    if (u > .6) { const p = clamp((f - 2780) / 40); g.save(); g.translate(960, 520 + u * 10); g.rotate(rot); g.scale(sc, sc); g.beginPath(); g.rect(-900, 200, 1800 * p, 340); g.clip(); PEN.write(g, '观默', 560, 470, { size: 130, font: 'LongCang', weight: 400, col: PEN.RED, a: .92, rot: -.04 }); g.restore(); }
+  }
+  // 段落之间：白闪接（推进球 / 升进天里，画面已经是白的，再用 14 帧叠过去）
+  for (const s of [SEC.b, SEC.c, SEC.d]) { const a = 1 - smr(s, s + 14, f); if (f >= s && a > 0) { g.save(); g.globalAlpha = a * (s === SEC.c ? .6 : .85); g.fillStyle = '#f6f2e8'; g.fillRect(0, 0, W, H); g.restore(); } const b = smr(s - 10, s, f); if (f < s && b > 0) { g.save(); g.globalAlpha = b * (s === SEC.c ? .6 : .85); g.fillStyle = '#f6f2e8'; g.fillRect(0, 0, W, H); g.restore(); } }
+  hud(g, f);
+}
+function hud(ctx, f) {
+  ctx.setTransform(1, 0, 0, 1, 0, 0);
+  if (f < 170) { ctx.save(); ctx.globalAlpha = 1 - smr(120, 170, f); PEN.hatchText(ctx, '铅笔原画', 90, 210, { size: 150, gap: 3.4 }); ctx.restore(); rise(ctx, '铅笔原画', 0, -999, f, -40, { font: '900 10px SerifSC', size: 10, color: '#000', kind: 'title', rate: 3 }); }
+  const capA = Math.max(0, ...CAPS.map(([t0, , , t1]) => smr(t0 - 6, t0 + 10, f) * (1 - smr(t1, t1 + 20, f))));
+  if (capA > 0) { const band = ctx.createLinearGradient(0, 880, 0, H); band.addColorStop(0, 'rgba(20,18,16,0)'); band.addColorStop(.55, 'rgba(20,18,16,.62)'); band.addColorStop(1, 'rgba(20,18,16,.8)'); ctx.save(); ctx.globalAlpha = capA; ctx.fillStyle = band; ctx.fillRect(0, 870, W, 210); ctx.restore(); }
+  for (const [t0, title, sub, t1] of CAPS) { if (f < t0 || f > t1 + 30) continue;
+    rise(ctx, title, 72, 1000, f, t0, { font: '900 52px SerifSC', size: 52, color: '#FFF6EA', out: t1, rate: .8, dur: 10 });
+    rise(ctx, sub, 75, 1046, f, t0 + 4, { font: '500 27px SansSC', size: 27, color: 'rgba(255,244,230,.9)', out: t1, kind: 'small', rate: .4, dur: 10 }); }
+  if (f >= SEC.e + 120) { rise(ctx, '铅笔原画', 960, 150, f, SEC.e + 120, { font: '900 96px SerifSC', size: 96, color: '#F4EEE2', align: 'center', kind: 'title', rate: 3, ls: 12, shadow: 'rgba(0,0,0,.6)', shadowBlur: 20 });
+    rise(ctx, 'PENCIL TEST · 一张素描活过来 · 观默', 960, 1040, f, SEC.e + 150, { font: '500 24px Mono', size: 24, color: 'rgba(244,238,226,.85)', align: 'center', kind: 'small', rate: .3, ls: 2 }); }
+  ctx.save(); ctx.font = '500 16px Mono'; ctx.textAlign = 'right'; ctx.fillStyle = f < SEC.e ? 'rgba(40,36,32,.7)' : 'rgba(244,238,226,.7)';
+  ctx.fillText(`GRAPHITE · DRAWING ${String(Math.floor(f / 5) + 1).padStart(3, '0')} · LINES ON TWOS`, 1856, 52); ctx.restore();
+  const v = ctx.createRadialGradient(960, 520, 600, 960, 520, 1300); v.addColorStop(0, 'rgba(0,0,0,0)'); v.addColorStop(1, 'rgba(20,16,12,.28)'); ctx.fillStyle = v; ctx.fillRect(0, 0, W, H);
+}
+window.frame = async f => drawFrame(f);
+window.events = () => { const d = HD.canvas(W, H).getContext('2d'); for (let f = 0; f < END; f++) hud(d, f); return { cues: [...FK.cues.values()].filter(c => c[3] !== 'none').sort((a, b) => a[0] - b[0]), SEC, HIT, end: END, beat: BEAT }; };
+(async () => {
+  await FK.fonts([['SerifSC', 'NotoSerifSC.ttf', '200 900'], ['SansSC', 'NotoSansSC-Medium.otf', '500'], ['Mono', 'GeistMono.ttf', '100 900'], ['LongCang', 'LongCang-Regular.ttf', '400']]);
+  await document.fonts.load('900 150px SerifSC', '铅笔原画'); await document.fonts.load('500 27px SansSC', '亮处一层'); await document.fonts.load('400 130px LongCang', '观默');
+  SETS = [0, 1, 2].map(k => GRAPHITE.hatchSet(W, H, 11 + k * 7, 6.2));
+  PAPER = HD.canvas(W, H); { const x = PAPER.getContext('2d'), n = HD.makeNoise(3), im = x.createImageData(W, H), d = im.data; for (let y = 0; y < H; y++) for (let i = 0; i < W; i++) { const k = (y * W + i) * 4, v = .985 + HD.fbm(n, i * .004, y * .004, 3) * .025 - Math.hypot(i - 960, y - 540) / 9000; d[k] = 250 * v; d[k + 1] = 246 * v; d[k + 2] = 236 * v; d[k + 3] = 255; } x.putImageData(im, 0, 0); }
+  const T = PEN.tooth(256, 256, 5); TOOTH = HD.canvas(256, 256); { const tg = TOOTH.getContext('2d'), ti = tg.createImageData(256, 256); for (let i = 0; i < T.length; i++) ti.data[i * 4 + 3] = 255 * FK.clamp(.55 + 1.2 * (T[i] - .45)); tg.putImageData(ti, 0, 0); }
+  DESK = HD.canvas(W, H); { const x = DESK.getContext('2d'), n = HD.makeNoise(7), im = x.createImageData(W, H), d = im.data; for (let y = 0; y < H; y++) for (let i = 0; i < W; i++) { const k = (y * W + i) * 4, gr = HD.fbm(n, i * .002, y * .03, 4) * .5, v = 1 - Math.hypot(i - 960, (y - 540) * 1.3) / 1500, c0 = HD.mix('#1a130f', '#3a2a1e', clamp(.35 + gr * .6)); d[k] = c0[0] * (.3 + v * .8); d[k + 1] = c0[1] * (.3 + v * .75); d[k + 2] = c0[2] * (.3 + v * .7); d[k + 3] = 255; } x.putImageData(im, 0, 0); }
+  OFF = HD.canvas(W, H); OG = OFF.getContext('2d'); PG = HD.canvas(W, H);
+  FK.cues.clear();
+  if (!Qs.has('nodraw')) drawFrame(+(Qs.get('f') || 0));
+  window.ready = true;
+})();
+</script>
