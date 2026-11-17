@@ -4,8 +4,9 @@
 set -euo pipefail
 cd "$(dirname "$0")"
 NAME=cel-forest
-END=960
-OUT=${TMPDIR:-/tmp}/$NAME-frames-$(md5sum film.html | cut -c1-8)${PREVIEW:+-preview}
+END=1080
+OUT=${TMPDIR:-/tmp}/$NAME-frames-$(cat film.html scenes.js | md5sum | cut -c1-8)${PREVIEW:+-preview}
+[ -f layers/night-fg.png ] || node bake.cjs
 EVQ=nodraw node ../../_lib/events.cjs film.html events.json
 python3 audio.py "$OUT.wav"
 if [ -n "${PREVIEW:-}" ]; then

@@ -80,9 +80,10 @@ const ANIME = (() => {
     return out;
   }
   function drawCloud(g, S, sph, o) {
-    const { base, top, x0 = 0, x1 = W, y0 = 0, shadowTop = '#a9b6e4', shadowBot = '#7380bf', haze = '#cfe9f3', hazeH = 240, nseed = 3 } = o;
+    const { base, top, x0 = 0, x1 = W, y0 = 0, shadowTop = '#a9b6e4', shadowBot = '#7380bf', haze = '#cfe9f3', hazeH = 240, nseed = 3,
+      lit0 = '#e4eaf8', lit1 = '#ffffff', warm = '#fff3dc', rimC = '#c9dcf6', bandC = '#c8c4e4', light = [-.62, -.68, .34], Wmax = W } = o;
     const n = makeNoise(nseed);
-    const bx0 = Math.max(0, Math.floor(x0 * S)), bx1 = Math.min(W * S, Math.ceil(x1 * S)), by0 = Math.max(0, Math.floor(y0 * S)), by1 = Math.ceil(base * S);
+    const bx0 = Math.max(0, Math.floor(x0 * S)), bx1 = Math.min(Wmax * S, Math.ceil(x1 * S)), by0 = Math.max(0, Math.floor(y0 * S)), by1 = Math.ceil(base * S);
     const bw = bx1 - bx0, bh = by1 - by0;
     const Z = new Float32Array(bw * bh).fill(-1e9), Z2 = new Float32Array(bw * bh).fill(-1e9), ID = new Int32Array(bw * bh).fill(-1);
     sph.forEach((p, id) => {
@@ -107,7 +108,7 @@ const ANIME = (() => {
     const R1 = Math.round(24 * S), R2 = Math.round(7 * S);
     blur(Hb, R1); blur(Hb, R1); blur(Hs, R2); blur(Hs, R2);
     const im = g.createImageData(bw, bh), d = im.data;
-    const L = [-.62, -.68, .34], Lm = Math.hypot(...L); L[0] /= Lm; L[1] /= Lm; L[2] /= Lm;
+    const L = [...light], Lm = Math.hypot(...L); L[0] /= Lm; L[1] /= Lm; L[2] /= Lm;
     for (let y = 1; y < bh - 1; y++) for (let x = 1; x < bw - 1; x++) {
       const k = y * bw + x, id = ID[k]; if (id < 0) continue;
       const p = sph[id], X = (x + bx0) / S, Y = (y + by0) / S;
@@ -120,13 +121,13 @@ const ANIME = (() => {
       ndl += fbm(n, X * .03, Y * .03, 2) * .02 - Math.pow(1 - h, 1.6) * .4 + .05;
       const lit = smooth(.15, .23, ndl);
       const sh = mix(shadowBot, shadowTop, Math.pow(h, .8));
-      const li = mix(mix('#e4eaf8', '#ffffff', smooth(.21, .6, ndl)), '#fff3dc', (1 - h) * .3 + .1);
+      const li = mix(mix(lit0, lit1, smooth(.21, .6, ndl)), warm, (1 - h) * .3 + .1);
       let c = mix(sh, li, lit);
       // 影里背光的轮廓：一圈天光；亮面和影之间：一道偏暖的二影
       const rim = Math.pow(1 - nz, 2.2) * (1 - lit) * .55;
-      c = mix(c, '#c9dcf6', rim);
+      c = mix(c, rimC, rim);
       const band = smooth(.1, .16, ndl) * (1 - lit);
-      c = mix(c, '#c8c4e4', band * .55);
+      c = mix(c, bandC, band * .55);
       const edge = clamp((Z[k] / S - p.z) / 1.2);
       c = mix(c, haze, smooth(base - hazeH, base, Y) * .9);
       const j = k * 4; d[j] = c[0]; d[j + 1] = c[1]; d[j + 2] = c[2]; d[j + 3] = 255 * Math.min(1, edge);
@@ -466,5 +467,5 @@ const ANIME = (() => {
   function renderLayers(S) {
     return LAYERS.map(L => { const [c, g] = layer(S); L.fn(g, S); return { ...L, canvas: c }; });
   }
-  return { W, H, layer, renderLayers, finish, LAYERS };
+  return { W, H, layer, renderLayers, finish, LAYERS, cloudSpheres, drawCloud };
 })();
