@@ -1,0 +1,319 @@
+<!doctype html><meta charset="utf-8">
+<style>html,body{margin:0;background:#000;overflow:hidden}canvas{display:block}</style>
+<canvas id="c" width="1920" height="1080"></canvas>
+<script src="../../hand-drawn/lib.js"></script>
+<script src="../../hand-drawn/pencil/pencil.js"></script>
+<script src="../../hand-drawn/filmkit.js"></script>
+<script>
+// 铅笔原画 v3 · 一只面粉袋，一页跳到下一页：透光台 → 纸上的原野（横着跑）→ 拖影帧 → 间距表 = 缓动曲线 → 一墙 24 张 → 回到透光台签名。
+// 144 BPM，一拍 25 帧，一小节 100 帧，共 1000 帧（16.7 秒）。window.frame(f) 画第 f 帧（帧号的纯函数）。
+// 袋子一秒 12 张（每 5 帧换一张，每张重画 → 线在抖）；背景、镜头、翻页一拍一（每帧都动）。每一次落地都踩在拍子上。
+// 换场景 = 翻页：这一页从下往上卷起来（圆柱卷曲，背面是纸的反面），下面那一页露出来。
+const Qs = new URLSearchParams(location.search), W = 1920, H = 1080, END = 1000, BEAT = 25;
+const { clamp, lerp, sm, smr, keys, quint, easeOut, rise, rng, spring } = FK, { GRAPH, BLUE, RED, line, catmull, roughEllipse, drawSack, write, hatchText } = PEN;
+const cv = document.getElementById('c'), g = cv.getContext('2d');
+const mkC = () => { const c = HD.canvas(W, H); return [c, c.getContext('2d')]; };
+const [PG, pg] = mkC(), [PG2, pg2] = mkC(), [GL, gl] = mkC();
+const q5 = f => Math.floor(f / 5) * 5;
+
+// ───── 时间轴
+const FLIP = { a: [92, 132], b: [300, 338], c: [432, 468], d: [672, 708] };   // 翻页（中点之前是上一页）
+const ZOOM = [800, 846];                                                   // 墙上第 24 张推满屏 → 回到透光台
+const SC = f => f < FLIP.a[1] ? 'desk1' : f < FLIP.b[1] ? 'run' : f < FLIP.c[1] ? 'smear' : f < FLIP.d[1] ? 'chart' : f < ZOOM[1] ? 'wall' : 'desk2';
+const NEXT = { desk1: 'run', run: 'smear', smear: 'chart', chart: 'wall' };
+const CAPS = [
+  [150, '01 · 镜头 1 拍 1，人物 1 拍 2', '背景每秒 60 格往后跑，袋子每秒只有 12 张——两种速度叠在一起', 296],
+  [348, '02 · 拖影帧 smear', '快到一张里画好几个，眼睛会把它读成速度', 430],
+  [478, '03 · 间距表 = 缓动曲线', '格子挤 = 慢，格子稀 = 快；这串数直接抄进 CSS', 668],
+  [716, '04 · 一秒 12 张，每张都重画', '所以线一直在轻轻地抖：line boil', 836],
+];
+
+// ───── 面粉袋的一跳：蹲（start→take）→ 空中抛物线（take→land）→ 落地压扁再弹回。耳朵晚 2 张（看的是 10 帧以前的速度）
+const W0 = 210, H0 = 232;
+function jumpPose(J, f) {
+  const air = J.land - J.take, dir = Math.sign(J.X1 - J.X0) || 0, G = J.G;
+  const traj = ff => { if (ff < J.take) return [J.X0, G, 0, 0]; if (ff >= J.land) return [J.X1, J.G1 ?? G, 0, 0]; const u = (ff - J.take) / air, G1 = J.G1 ?? G; return [lerp(J.X0, J.X1, u), lerp(G, G1, u) - 4 * J.H * u * (1 - u), (J.X1 - J.X0) / air, (G1 - G) / air - 4 * J.H * (1 - 2 * u) / air]; };
+  const [x, yb, vx, vy] = traj(f), vmax = Math.hypot((J.X1 - J.X0) / air, 4 * J.H / air) + 1e-6, sz = J.s0 ? lerp(J.s0, J.s, clamp((f - J.take) / air)) : (J.s || 1);
+  let s = 1, rot = 0;
+  if (f >= J.start && f < J.take) s = 1 + .3 * easeOut((f - J.start) / (J.take - J.start));
+  else if (f >= J.take && f < J.land) { const sp = Math.hypot(vx, vy) / vmax, st = 1 + .55 * sp ** 1.4 * clamp(J.H / 200); s = 1 / Math.sqrt(st); rot = -Math.atan2(vy, Math.abs(vx) + 1e-6) * .45 * dir * clamp(Math.abs(vx) / 4); }
+  else if (f >= J.land) { const u = (f - J.land) / 60; s = 1 + (.34 * clamp(J.H / 250) + .1) * Math.exp(-u * 6) * Math.cos(u * 17); }
+  const lagV = traj(f - 10)[3]; let e = clamp(-lagV / (4 * J.H / air + 1e-6), -1, 1);
+  if (f > J.land + 6) { const u = (f - J.land - 6) / 60; e += -1.1 * Math.exp(-u * 5) * Math.cos(u * 13) * clamp(J.H / 150); }
+  if (f > J.start && f < J.take + 10) e += -.4 * Math.sin(clamp((f - J.start) / (J.take - J.start + 10)) * Math.PI);
+  const w = W0 * s * sz, h = H0 / s * sz;
+  return { x, y: yb - h / 2, w, h, rot, earL: -2.2 - e * .9, earR: -.95 + e * .9, lean: 0, vx, vy };
+}
+const poseIn = (L, f) => { let J = L[0]; for (const j of L) if (f >= j.start) J = j; return jumpPose(J, f); };
+// 各页的跳（纸面坐标，1920 × 1080）
+const J1 = [{ start: -45, take: -25, land: 25, X0: 1000, X1: 1420, H: 300, G: 800, s: 1.35 }, { start: 32, take: 50, land: 160, X0: 1420, X1: 1800, H: 500, G: 800, G1: -400, s: 1.35 }];
+const RUN = (() => { const L = [{ start: 90, take: 95, land: 125, X0: 760, X1: 760, H: 420, G: -200, G1: 860, s: 1.45 }]; for (let k = 0; k < 6; k++) { const l = 125 + k * 25; L.push({ start: l + 1, take: l + 6, land: l + 25, X0: 760, X1: 760, H: 150 + (k % 2) * 50, G: 860, s: 1.45 }); } L.push({ start: 276, take: 282, land: 350, X0: 760, X1: 980, H: 800, G: 860, G1: 200, s: 1.45 }); return L; })();
+const JW = { start: 0, take: 10, land: 115, X0: 330, X1: 1600, H: 420, G: 960, s: 2.3 };          // 墙上那 24 张：一整跳
+const J6 = [{ start: 846, take: 852, land: 900, X0: 1600, X1: 1060, H: 320, G: 960, s: 1.6, s0: 2.3 }];
+const BEZ = (x1, y1, x2, y2) => xx => { const B = (t, a, b) => 3 * a * t * (1 - t) ** 2 + 3 * b * t * t * (1 - t) + t ** 3; let lo = 0, hi = 1; for (let i = 0; i < 30; i++) { const m = (lo + hi) / 2; B(m, x1, x2) < xx ? lo = m : hi = m; } return B((lo + hi) / 2, y1, y2); };
+const F_IO = BEZ(.42, 0, .58, 1), F_OV = BEZ(.34, 1.56, .64, 1);
+const sackDraw = (c, p, k, o = {}) => drawSack(c, p, { construct: o.construct ?? true, shade: o.shade ?? true, seed: 7 + k * 13, w: o.w || 4.4, passes: o.passes || 3, col: o.col, a: o.a, detail: o.detail });
+const ghost = (c, p, k, a = .3) => drawSack(c, p, { col: [125, 120, 112], a, w: 1.8, passes: 1, detail: false, seed: 900 + k });
+
+// ───── 纸（满屏的动画纸）、桌面、透光台、软木墙
+let PAPER, BACK, DESK, CORK, TOOTH, WALLP = [];
+function buildStatic() {
+  const n = HD.makeNoise(3), n2 = HD.makeNoise(4);
+  // 动画纸：暖白、有纤维、边上稍暗；上沿三个定位孔
+  [PAPER] = mkC(); { const c = PAPER.getContext('2d'), im = c.createImageData(W, H), d = im.data;
+    for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) { const k = (y * W + x) * 4, f = HD.fbm(n, x * .004, y * .004, 3) * .03 + n2(x * .6, y * .15) * .012, e = Math.min(x, y, W - x, H - y), v = .99 + f - (1 - clamp(e / 160)) * .04;
+      d[k] = 252 * v; d[k + 1] = 246 * v; d[k + 2] = 232 * v; d[k + 3] = 255; }
+    c.putImageData(im, 0, 0);
+    c.fillStyle = 'rgba(60,50,40,.16)'; [[960, 38, 30], [600, 38, 52], [1320, 38, 52]].forEach(([x, y, w]) => { c.beginPath(); c.roundRect(x - w / 2, y - 12, w, 24, 12); c.fill(); }); }
+  [BACK] = mkC(); { const c = BACK.getContext('2d'); c.fillStyle = '#d9c9a8'; c.fillRect(0, 0, W, H); c.globalAlpha = .35; c.drawImage(PAPER, 0, 0); }
+  // 桌面：深色木纹，透光台在中间发光
+  [DESK] = mkC(); { const c = DESK.getContext('2d'), im = c.createImageData(W, H), d = im.data;
+    for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) { const k = (y * W + x) * 4, gr = HD.fbm(n, x * .002, y * .03, 4) * .5 + n(x * .004, y * .12) * .2, v = 1 - Math.hypot(x - 960, (y - 540) * 1.3) / 1500, c0 = HD.mix('#1a130f', '#3a2a1e', clamp(.35 + gr * .6));
+      d[k] = c0[0] * (.3 + v * .8); d[k + 1] = c0[1] * (.3 + v * .75); d[k + 2] = c0[2] * (.3 + v * .7); d[k + 3] = 255; }
+    c.putImageData(im, 0, 0);
+    c.save(); c.shadowColor = 'rgba(0,0,0,.7)'; c.shadowBlur = 50; c.shadowOffsetY = 18; c.fillStyle = '#9b958c'; c.beginPath(); c.roundRect(960 - 820, 540 - 470, 1640, 940, 26); c.fill(); c.restore();
+    const lg = c.createRadialGradient(960, 520, 100, 960, 540, 900); lg.addColorStop(0, '#fffef6'); lg.addColorStop(.6, '#f6edd8'); lg.addColorStop(1, '#cdbf9f'); c.fillStyle = lg; c.beginPath(); c.roundRect(960 - 790, 540 - 440, 1580, 880, 14); c.fill(); }
+  // 软木墙
+  [CORK] = mkC(); { const c = CORK.getContext('2d'), im = c.createImageData(W, H), d = im.data;
+    for (let y = 0; y < H; y++) for (let x = 0; x < W; x++) { const k = (y * W + x) * 4, t = n(x * .35, y * .35) * .5 + n2(x * .08, y * .08) * .3, v = 1 - Math.hypot(x - 960, y - 520) / 1700;
+      d[k] = (150 + t * 40) * v; d[k + 1] = (108 + t * 30) * v; d[k + 2] = (70 + t * 22) * v; d[k + 3] = 255; }
+    c.putImageData(im, 0, 0); }
+  const T = PEN.tooth(256, 256, 5); TOOTH = HD.canvas(256, 256); const tg = TOOTH.getContext('2d'), ti = tg.createImageData(256, 256);
+  for (let i = 0; i < T.length; i++) ti.data[i * 4 + 3] = 255 * clamp(.62 + 1.0 * (T[i] - .45)); tg.putImageData(ti, 0, 0);
+  // 墙上 24 张：每张一个姿势（两套线，轮着用 → 墙上的画也在抖）
+  for (let v = 0; v < 2; v++) { const L = []; for (let i = 0; i < 24; i++) { const [c, x] = mkC(); x.drawImage(PAPER, 0, 0); x.lineCap = x.lineJoin = 'round'; const p = jumpPose(JW, i * 5);
+      line(x, [[60, 962], [1860, 958]], { w: 6, col: BLUE, a: .6, seed: 2, taper: .05 }); drawSack(x, p, { construct: true, shade: true, seed: 7 + i * 13 + v * 500, w: 9, passes: 2 });
+      write(x, `#${String(i + 1).padStart(2, '0')}`, 1620, 170, { size: 110, a: .75, col: i === 0 || i === 23 || i === 11 ? RED : GRAPH }); const s = HD.canvas(480, 270); s.getContext('2d').drawImage(c, 0, 0, 480, 270); L.push(s); } WALLP.push(L); }
+}
+
+// ───── 各页的内容（画在 c 上，纸面坐标）。BG 一拍一（固定种子，不抖），袋子一拍二（种子随张数变 → 抖）
+function pageFrame(c, f, cut) {
+  write(c, `SC 12 · CUT ${cut}`, 70, 110, { size: 34, a: .62 });
+  write(c, `#${String(Math.floor(f / 5) + 1).padStart(3, '0')}`, 1840, 112, { size: 40, a: .7, align: 'right' });
+}
+function pageRun(c, f) {
+  const t = f - 100, sp = 15, X = t * sp;                                      // 镜头往右跑：背景往左
+  const wrap = (x0, period, par) => ((x0 - X * par) % period + period) % period - 300;
+  line(c, [[0, 860], [W, 860]], { w: 2, col: BLUE, a: .45, seed: 5, taper: .02 });
+  // 远山（蓝铅笔，慢）
+  for (let k = -1; k < 4; k++) { const ox = wrap(k * 900, 3600, .22) - 600; const P = []; for (let i = 0; i <= 12; i++) { const u = i / 12; P.push([ox + u * 1100, 860 - Math.sin(u * Math.PI) * (210 + (k & 1) * 90) - Math.sin(u * 9 + k) * 18]); } line(c, catmull(P, false, 6), { w: 2.2, col: BLUE, a: .55, seed: 100 + k, taper: .1 }); }
+  // 云（几圈松的线）
+  for (let k = 0; k < 3; k++) { const ox = wrap(400 + k * 800, 2400, .12); roughEllipse(c, ox, 240 + k * 50, 150, 44, 0, { col: BLUE, a: .35, w: 1.8, seed: 200 + k, loops: 2 }); roughEllipse(c, ox + 90, 210 + k * 50, 90, 40, 0, { col: BLUE, a: .3, w: 1.6, seed: 210 + k, loops: 1 }); }
+  // 电线杆 + 电线（石墨，一拍一）
+  const poles = []; for (let k = 0; k < 6; k++) poles.push(wrap(k * 520, 3120, 1));
+  poles.sort((a, b) => a - b);
+  for (const px of poles) { line(c, [[px, 860], [px + 6, 330]], { w: 4, a: .85, seed: 300, taper: .05 }); line(c, [[px - 70, 370], [px + 76, 368]], { w: 3, a: .8, seed: 301, taper: .05 }); line(c, [[px - 50, 410], [px + 56, 409]], { w: 2.4, a: .7, seed: 302, taper: .05 }); }
+  for (let i = 0; i < poles.length - 1; i++) { const a = poles[i], b = poles[i + 1]; if (b - a > 700) continue; for (const [dy, s] of [[370, 0], [410, 1]]) line(c, catmull([[a + 70, dy], [(a + b) / 2, dy + 46], [b - 70, dy]], false, 8), { w: 1.5, a: .6, seed: 310 + s, taper: .05 }); }
+  // 地上的草（快，前景）
+  for (let k = 0; k < 26; k++) { const gx = wrap(k * 97, 2522, 1.25); line(c, [[gx, 862], [gx + 8, 836]], { w: 2, a: .6, seed: 400 + k }); line(c, [[gx + 10, 862], [gx + 24, 842]], { w: 1.6, a: .5, seed: 430 + k }); }
+  // 前景的篱笆桩（更快，偶尔扫过）
+  for (let k = 0; k < 2; k++) { const fx = wrap(k * 1700 + 300, 3400, 2.1); line(c, [[fx, H + 20], [fx + 10, 760]], { w: 16, a: .7, seed: 500 + k, taper: .02 }); line(c, [[fx - 40, 820], [fx + 60, 812]], { w: 9, a: .6, seed: 510 + k, taper: .05 }); }
+  const fq = q5(f), p = poseIn(RUN, fq), k = fq / 5;
+  // 速度线 + 落地的土
+  if (f > 128 && f < 290) for (let i = 0; i < 6; i++) { const y = p.y - 60 + i * 34, x0 = p.x - 150 - (i % 3) * 40, L = 160 + (i * 37) % 90; line(c, [[x0 - L, y], [x0, y]], { w: 1.8, a: .45, seed: 600 + i + k * 7 }); }
+  for (const J of RUN) { const u = (f - J.land) / 20; if (u < 0 || u > 1 || J.G1 === 200) continue; for (let s of [-1, 1]) roughEllipse(c, J.X1 + s * (110 + u * 60), 856 - u * 10, 26 * (1 - u * .5), 14, 0, { col: GRAPH, a: .5 * (1 - u), w: 1.6, seed: 700 + J.land + s, loops: 1 }); }
+  const prev = poseIn(RUN, Math.max(0, fq - 5)); ghost(c, prev, k - 1, .22);
+  sackDraw(c, p, k);
+}
+function pageSmear(c, f) {
+  const t0 = 312, tl = 425, fq = f, k = q5(f) / 5;                          // 冲着镜头掉下来那一下太快：改一拍一（线还是每 5 帧重画一次）
+  // 放射的速度线（拍点之前越来越密）
+  const dens = smr(t0, tl, f) * (1 - smr(tl + 4, tl + 30, f));
+  for (let i = 0; i < 60; i++) { const a = i / 60 * Math.PI * 2 + (i % 3) * .02, r0 = 260 + ((i * 53 + (f - 300) * (10 + (i % 4) * 3)) % 640), r1 = r0 + 260 + (i * 31) % 420; if ((i * 7) % 10 > dens * 10) continue; line(c, [[960 + Math.cos(a) * r0, 600 + Math.sin(a) * r0], [960 + Math.cos(a) * r1, 600 + Math.sin(a) * r1]], { w: 2.2, a: .5 * clamp((r0 - 260) / 120) * clamp((900 - r0) / 200), seed: 800 + i }); } // 速度线一拍一：每帧往外流
+  if (fq < tl) { // 冲着镜头掉下来：越来越大；身后拖着几个自己（拖影帧）
+    const u = clamp((fq - t0) / (tl - t0)), sc = lerp(.55, 2.3, u ** 2.2), y = lerp(80, 640, u ** 1.6);
+    const base = { x: 960, y, w: W0 * sc * .8, h: H0 * sc * 1.25, rot: Math.sin(fq * .3) * .08, earL: -1.2, earR: -1.9, lean: 0 };
+    for (let s = 3; s >= 1; s--) { const uu = clamp(u - s * .07), ss = lerp(.55, 2.3, uu ** 2.2), yy = lerp(80, 640, uu ** 1.6); ghost(c, { ...base, y: yy, w: W0 * ss * .8, h: H0 * ss * 1.25 }, k + s, .16 + .06 * (3 - s)); }
+    line(c, [[960 - base.w * .4, base.y - base.h * .5], [960 - base.w * .25, base.y - base.h * 1.6]], { w: 3, a: .5, seed: 880 + k }); line(c, [[960 + base.w * .4, base.y - base.h * .5], [960 + base.w * .25, base.y - base.h * 1.6]], { w: 3, a: .5, seed: 881 + k });
+    sackDraw(c, base, k, { w: 3 + sc * 1.6 });
+  } else { // 啪：拍扁，耳朵甩，一圈土
+    const u = (fq - tl) / 60, s = 1 + .9 * Math.exp(-u * 5) * Math.cos(u * 15), sc = 2.3;
+    sackDraw(c, { x: 960, y: 900 - H0 * sc / s / 2, w: W0 * sc * s, h: H0 * sc / s, rot: 0, earL: -2.2 + Math.sin(u * 20) * Math.exp(-u * 4), earR: -.95 - Math.sin(u * 20) * Math.exp(-u * 4), lean: 0 }, k, { w: 6 });
+    const d = clamp((f - tl) / 26); for (let i = 0; i < 9; i++) { const a = Math.PI + i / 8 * Math.PI, r = 300 + d * 420; roughEllipse(c, 960 + Math.cos(a) * r, 900 + Math.sin(a) * r * .3, 40 * (1 - d * .6), 26 * (1 - d * .6), 0, { col: GRAPH, a: .55 * (1 - d), w: 2, seed: 900 + i, loops: 1 }); }
+    line(c, [[200, 902], [1720, 898]], { w: 2.4, col: BLUE, a: .5, seed: 950, taper: .05 });
+  }
+}
+// 间距表：上面一排是袋子的 9 张（按缓动排开）；刻度掉下来变成曲线上的点；曲线、手柄、代码；手柄一拉 → 冲过头
+const GX = 420, GY = 900, GW = 1080, GH = 420, NT = 9;
+const TC = { slide: [478, 540], drop: [544, 572], curve: [572, 598], handles: [598, 608], code: [604, 628], drag: [622, 646], ride: [648, 668] };
+const ovAt = f => quint(clamp((f - TC.drag[0]) / (TC.drag[1] - TC.drag[0])));
+function pageChart(c, f) {
+  // 蓝色方格纸
+  for (let x = 0; x <= W; x += 60) line(c, [[x, 150], [x, 1000]], { w: x % 300 ? .8 : 1.3, col: BLUE, a: x % 300 ? .16 : .28, seed: 1000 + x, taper: .02, wob: .2 });
+  for (let y = 180; y <= 1000; y += 60) line(c, [[40, y], [W - 40, y]], { w: y % 300 ? .8 : 1.3, col: BLUE, a: y % 300 ? .16 : .28, seed: 2000 + y, taper: .02, wob: .2 });
+  const ov = ovAt(f), E = x => lerp(F_IO(x), F_OV(x), ov), Y0 = 300, xs = i => GX + E(i / (NT - 1)) * GW;
+  // 上面一排：袋子一张张滑过去（一拍二），留下小的洋葱皮和刻度
+  const ts = TC.slide, fq = q5(f), k = fq / 5;
+  const nShown = clamp(Math.floor((f - ts[0]) / ((ts[1] - ts[0]) / NT)) + 1, 0, NT);
+  line(c, [[GX - 40, Y0 + 100], [GX + GW + 40, Y0 + 100]], { w: 2, a: .7, seed: 3001, taper: .03 });
+  for (let i = 0; i < NT; i++) { if (i >= nShown && f < TC.drop[0]) continue; const x = f < TC.ride[0] ? GX + F_IO(i / (NT - 1)) * GW : xs(i);
+    line(c, [[x, Y0 + 88], [x, Y0 + 112]], { w: 2.4, col: i === 0 || i === NT - 1 ? RED : GRAPH, a: .9, seed: 3100 + i }); write(c, String(i + 1), x - 8, Y0 + 146, { size: 30, a: .75 });
+    if (f < TC.ride[0] && i < nShown - 1) drawSack(c, { x, y: Y0 + 30, w: 86, h: 96, rot: 0, earL: -2.2, earR: -.95, lean: 0 }, { col: [130, 124, 116], a: .45, w: 1.4, passes: 1, detail: false, seed: 3200 + i }); }
+  if (f >= ts[0] && f < TC.ride[0]) { const i = Math.min(NT - 1, nShown - 1); drawSack(c, { x: GX + F_IO(i / (NT - 1)) * GW, y: Y0 + 30, w: 86, h: 96, rot: 0, earL: -2.2, earR: -.95, lean: 0 }, { seed: 3300 + k, w: 2.6, passes: 2 }); }
+  if (f >= TC.ride[0]) { const u = clamp((fq - TC.ride[0]) / (TC.ride[1] - TC.ride[0])), x = GX + E(u) * GW; drawSack(c, { x, y: Y0 + 30, w: 86, h: 96, rot: (E(u) > 1 ? -.15 : 0), earL: -2.2, earR: -.95, lean: 0 }, { seed: 3300 + k, w: 2.6, passes: 2 }); }
+  write(c, '格子挤 = 慢', GX - 20, Y0 - 70, { size: 66, font: 'LongCang', weight: 400, col: RED, a: .9 * smr(500, 512, f) });
+  write(c, '格子稀 = 快', GX + GW * .5, Y0 - 70, { size: 66, font: 'LongCang', weight: 400, col: RED, a: .9 * smr(512, 524, f) });
+  if (f < TC.drop[0]) return;
+  // 坐标轴
+  const ax = smr(TC.drop[0], TC.drop[0] + 12, f);
+  line(c, [[GX, GY - GH - 40], [GX, GY - GH - 40 + (GH + 40) * ax]], { w: 2.2, a: .85, seed: 3401, taper: .03 }); line(c, [[GX, GY], [GX + (GW + 40) * ax, GY]], { w: 2.2, a: .85, seed: 3402, taper: .03 });
+  write(c, 'time →', GX + GW - 40, GY + 50, { size: 30, a: .7 * ax }); write(c, 'position', GX - 150, GY - GH - 10, { size: 30, a: .7 * ax });
+  // 刻度掉下来：每个刻度落到曲线上（x = 第几张，y = 它在哪）
+  for (let i = 0; i < NT; i++) { const d = clamp((f - TC.drop[0] - i * 2) / 12), px0 = GX + F_IO(i / (NT - 1)) * GW, py0 = Y0 + 100, u = i / (NT - 1), px1 = GX + u * GW, py1 = GY - E(u) * GH, e = quint(d);
+    const x = lerp(px0, px1, e), y = lerp(py0, py1, e) - Math.sin(e * Math.PI) * 60; if (d <= 0) continue;
+    roughEllipse(c, x, y, 10, 10, 0, { col: i === 0 || i === NT - 1 ? RED : GRAPH, a: .85, w: 2.2, seed: 3500 + i, loops: 1 });
+    if (d >= 1) line(c, [[GX, y], [x, y]], { w: 1, col: BLUE, a: .35, seed: 3600 + i, taper: .02 }); }
+  // 曲线：铅笔描出来
+  if (f >= TC.curve[0]) { const pc = clamp((f - TC.curve[0]) / (TC.curve[1] - TC.curve[0])), P = []; for (let s = 0; s <= 60 * pc; s++) { const u = s / 60; P.push([GX + u * GW, GY - E(u) * GH]); } if (P.length > 1) line(c, P, { w: 4, a: .92, seed: 3700, taper: .03 }); }
+  // 手柄
+  if (f >= TC.handles[0]) { const ha = smr(TC.handles[0], TC.handles[1], f), h1 = [GX + lerp(.42, .34, ov) * GW, GY - lerp(0, 1.56, ov) * GH], h2 = [GX + lerp(.58, .64, ov) * GW, GY - GH];
+    c.save(); c.globalAlpha = ha; line(c, [[GX, GY], h1], { w: 1.8, col: BLUE, a: .8, seed: 3801, taper: .05 }); line(c, [[GX + GW, GY - GH], h2], { w: 1.8, col: BLUE, a: .8, seed: 3802, taper: .05 });
+    for (const [x, y] of [h1, h2]) { c.fillStyle = 'rgba(58,128,214,.85)'; c.beginPath(); c.arc(x, y, 12, 0, 7); c.fill(); } c.restore(); }
+  // 代码：一个字一个字写出来；拉完以后换成冲过头那一组
+  if (f >= TC.code[0]) { const s1 = 'cubic-bezier(.42, 0, .58, 1)', s2 = 'cubic-bezier(.34, 1.56, .64, 1)', s = ov > .5 ? s2 : s1, n = ov > .5 ? s.length : Math.floor(clamp((f - TC.code[0]) / (TC.code[1] - TC.code[0])) * s.length);
+    write(c, s.slice(0, n), GX + 40, GY - GH - 90, { size: 62, font: 'Mono', weight: 600, a: .95, col: ov > .5 ? RED : GRAPH });
+    if (ov > .5) write(c, '冲过头 = 弹', GX + GW - 100, GY - GH - 90, { size: 46, font: 'LongCang', weight: 400, col: RED, a: .9 * smr(TC.drag[1] - 6, TC.drag[1] + 6, f) }); }
+}
+function pageDesk(c, f, fin) {
+  // 透光台上的那一页（封面 / 结尾）：洋葱皮、蓝铅笔的弧线、时间表、标题
+  const L = fin ? J6 : J1, fq = q5(f), p = poseIn(L, fq), k = fq / 5;
+  if (fin) line(c, [[60, 962], [1860, 958]], { w: 3, col: BLUE, a: .55, seed: 2, taper: .05 }); else line(c, [[120, 802], [1800, 798]], { w: 2.2, col: BLUE, a: .5, seed: 2, taper: .05 });
+  if (!fin) { // 封面：上一跳留下的洋葱皮 + 弧线 + 刻度
+    const J = J1[0]; for (let ff = J.take; ff < J.land; ff += 5) { if (ff >= fq) break; ghost(c, jumpPose(J, ff), ff, .28); }
+    const P = []; for (let ff = J.take; ff <= J.land; ff += 2.5) { const q = jumpPose(J, ff); P.push([q.x, q.y]); } line(c, catmull(P, false, 4), { w: 2, col: BLUE, a: .6, seed: 3, taper: .04 });
+  }
+  for (const J of L) { const u = (f - J.land) / 20; if (u < 0 || u > 1) continue; for (let s of [-1, 1]) roughEllipse(c, J.X1 + s * (110 + u * 60), (J.G1 ?? J.G) - 4 - u * 10, 26 * (1 - u * .5), 14, 0, { col: GRAPH, a: .5 * (1 - u), w: 1.6, seed: 700 + J.land + s, loops: 1 }); }
+  if (!fin || f >= J6[0].start) { ghost(c, poseIn(L, Math.max(-60, fq - 5)), k - 1, .2); sackDraw(c, p, k); }
+  else sackDraw(c, jumpPose(JW, 115), 23, { w: 9, passes: 2 });
+  // 标题：排线写的“铅笔原画”（封面在，片尾重新写一遍）
+  const ta = fin ? smr(852, 880, f) : 1 - smr(40, 70, f);
+  if (ta > .01) { c.save(); c.globalAlpha = ta; hatchText(c, '铅笔原画', 120, 300, { size: 200, gap: 3.6 }); write(c, 'pencil test — flour sack jump', 128, 380, { size: 44, a: .7 }); c.restore(); }
+  if (fin) { const sp = clamp((f - 904) / 30); if (sp > 0) { c.save(); c.beginPath(); c.rect(1240, 120, 520 * sp, 260); c.clip(); write(c, '观默', 1250, 300, { size: 150, font: 'LongCang', weight: 400, col: RED, a: .92, rot: -.04 }); c.restore(); }
+    if (f > 930) line(c, catmull([[1240, 330], [1450, 342], [1680, 318]], false), { w: 3.4, col: RED, a: .85 * smr(930, 940, f), seed: 9 }); }
+}
+// 一页 = 纸 + 石墨（石墨按纸纹去掉一部分）
+function renderPage(dst, d, name, f) {
+  d.setTransform(1, 0, 0, 1, 0, 0); d.globalCompositeOperation = 'source-over'; d.globalAlpha = 1; d.drawImage(PAPER, 0, 0);
+  gl.setTransform(1, 0, 0, 1, 0, 0); gl.clearRect(0, 0, W, H); gl.lineCap = gl.lineJoin = 'round';
+  const cut = { desk1: '03', run: '04', smear: '05', chart: '06', desk2: '09' }[name];
+  if (name === 'run') pageRun(gl, f); else if (name === 'smear') pageSmear(gl, f); else if (name === 'chart') pageChart(gl, f); else pageDesk(gl, f, name === 'desk2');
+  if (cut) pageFrame(gl, f, cut);
+  gl.globalCompositeOperation = 'destination-in'; const pat = gl.createPattern(TOOTH, 'repeat'); pat.setTransform(new DOMMatrix().scale(.75)); gl.fillStyle = pat; gl.fillRect(0, 0, W, H); gl.globalCompositeOperation = 'source-over';
+  d.globalCompositeOperation = 'multiply'; d.drawImage(GL, 0, 0); d.globalAlpha = .7; d.drawImage(GL, 0, 0); d.globalAlpha = 1; d.globalCompositeOperation = 'source-over';
+}
+// 翻页：折线 yf 从下往上走，折线以下的纸绕一根半径 R 的圆柱卷上去；卷过半圈的是纸背
+function curl(dst, src, yf, R) {
+  const step = 3;
+  // 下面那一页上的影子
+  const sg = dst.createLinearGradient(0, yf - 10, 0, yf + R * 1.4); sg.addColorStop(0, 'rgba(40,28,16,.35)'); sg.addColorStop(1, 'rgba(40,28,16,0)');
+  if (yf < H) { dst.fillStyle = sg; dst.fillRect(0, Math.max(0, yf - 10), W, R * 1.5); }
+  if (yf > 0) dst.drawImage(src, 0, 0, W, Math.min(H, yf), 0, 0, W, Math.min(H, yf));
+  for (let y = Math.max(0, Math.floor(yf)); y < H; y += step) {
+    const d = y - yf, th = d / R;
+    if (th < Math.PI) { const y1 = yf + R * Math.sin(th), y2 = yf + R * Math.sin(th + step / R), top = Math.min(y1, y2), hh = Math.max(1.2, Math.abs(y2 - y1) + .8);
+      if (th < Math.PI / 2) { dst.drawImage(src, 0, y, W, step, 0, top, W, hh); dst.fillStyle = `rgba(30,20,10,${.28 * Math.sin(th) ** 2})`; dst.fillRect(0, top, W, hh); }
+      else { dst.drawImage(BACK, 0, y, W, step, 0, top, W, hh); const sh = Math.sin(th); dst.fillStyle = sh > .9 ? `rgba(255,252,244,${.6 * (sh - .9) * 10})` : `rgba(60,40,20,${.22 * (1 - sh)})`; dst.fillRect(0, top, W, hh); } }
+    else { const y1 = yf - (d - Math.PI * R); if (y1 < -step) continue; dst.drawImage(BACK, 0, y, W, step, 0, y1 - step, W, step + .8); }
+  }
+}
+const flipY = (F, f) => { const u = clamp((f - F[0]) / (F[1] - F[0])), e = u < .5 ? 4 * u * u * u : 1 - Math.pow(-2 * u + 2, 3) / 2; return lerp(H + 40, -520, e); };
+
+// ───── 镜头（只在透光台那两页和墙上用；满屏的页面镜头贴着纸，轻轻呼吸）
+const deskCam = f => f < 200 ? { x: keys([[0, 820], [60, 880], [96, 960]], f), y: keys([[0, 500], [96, 540]], f), z: keys([[0, 1.45], [50, 1.38], [96, 1.27]], f) }
+  : { x: keys([[846, 960], [900, 975], [1000, 965]], f), y: keys([[846, 540], [900, 555], [1000, 550]], f), z: keys([[820, 1 / .78], [846, 1 / .78], [912, 1.02], [1000, 1.06]], f) };
+const deskRot = f => f < 200 ? -1.6 : keys([[846, 0], [912, -1.6]], f);
+const deskM = f => { const c = deskCam(f); return new DOMMatrix().translate(960, 540).scale(c.z).translate(-c.x, -c.y).translate(960, 540).rotate(deskRot(f)).scale(.78).translate(-960, -540); };
+const thud = f => { let y = 0; for (const b of [25, 125, 425, 900]) { const u = (f - b) / 60; if (u >= 0 && u < .5) y += 9 * Math.exp(-u * 14) * Math.sin(Math.min(Math.PI / 2, u * 60)); } return y; };
+const pageCam = (f, name) => { const z = 1 + .02 * Math.sin(f * .02) + (name === 'run' ? .02 : 0) + (name === 'smear' ? .14 * smr(300, 425, f) - .1 * smr(425, 470, f) : 0), y = thud(f); return new DOMMatrix().translate(960, 540 + y).scale(z).translate(-960, name === 'smear' ? -560 : -540); };
+// 墙：6 × 4 张；从第 1 张推出来拉到全景，亮光一张张走过（一秒 12 张），最后推进第 24 张
+const WG = { cols: 6, rows: 4, w: 270, h: 152, gx: 34, gy: 40 };
+const wallPos = i => { const c = i % WG.cols, r = Math.floor(i / WG.cols), x0 = (W - (WG.cols * WG.w + (WG.cols - 1) * WG.gx)) / 2, y0 = (H - (WG.rows * WG.h + (WG.rows - 1) * WG.gy)) / 2 + 10; return [x0 + c * (WG.w + WG.gx), y0 + r * (WG.h + WG.gy)]; };
+function wallCam(f) {
+  const [x24, y24] = wallPos(23), cx24 = x24 + WG.w / 2, cy24 = y24 + WG.h / 2, z24 = W / WG.w;
+  const [x1, y1] = wallPos(0), z = keys([[690, z24 * .9], [740, 1.0], [800, 1.0], [846, z24]], f), cx = keys([[690, x1 + WG.w / 2], [740, 960], [800, 960], [846, cx24]], f), cy = keys([[690, y1 + WG.h / 2], [740, 540], [800, 540], [846, cy24]], f);
+  return new DOMMatrix().translate(960, 540).scale(z).translate(-cx, -cy);
+}
+function drawWall(dst, f) {
+  dst.setTransform(wallCam(f)); dst.drawImage(CORK, -960, -540, W * 2, H * 2);
+  const hot = Math.floor((f - 702) / 5), set = WALLP[Math.floor(f / 5) % 2];
+  for (let i = 0; i < 24; i++) { const [x, y] = wallPos(i), on = i === hot || (f > 822 && i === 23);
+    dst.save(); dst.shadowColor = 'rgba(30,15,5,.5)'; dst.shadowBlur = 14; dst.shadowOffsetY = 5; dst.translate(x + WG.w / 2, y + WG.h / 2); dst.rotate(((i * 37) % 7 - 3) * .004 * (i === 23 ? 0 : 1)); dst.drawImage(set[i], -WG.w / 2, -WG.h / 2, WG.w, WG.h); dst.restore();
+    if (on) { dst.save(); dst.globalCompositeOperation = 'screen'; dst.fillStyle = 'rgba(255,220,150,.32)'; dst.fillRect(x - 6, y - 6, WG.w + 12, WG.h + 12); dst.restore(); dst.strokeStyle = 'rgba(208,66,58,.95)'; dst.lineWidth = 4; dst.strokeRect(x - 5, y - 5, WG.w + 10, WG.h + 10); }
+    dst.fillStyle = '#c0392b'; dst.beginPath(); dst.arc(x + WG.w / 2, y + 8, 7, 0, 7); dst.fill(); }
+}
+// 在屏幕上画一个场景（不含翻页）
+function drawScene(dst, name, f) {
+  dst.setTransform(1, 0, 0, 1, 0, 0);
+  if (name === 'wall') { drawWall(dst, f); return; }
+  if (name === 'desk1' || name === 'desk2') { dst.drawImage(DESK, 0, 0); renderPage(PG2, pg2, name, f); const M = deskM(f).translate(0, thud(f)); dst.setTransform(M); dst.save(); dst.shadowColor = 'rgba(40,25,10,.4)'; dst.shadowBlur = 24; dst.shadowOffsetY = 8; dst.fillStyle = '#efe6d2'; dst.fillRect(14, -10, W, H); dst.restore(); dst.drawImage(PG2, 0, 0); return; }
+  renderPage(PG2, pg2, name, f); dst.setTransform(pageCam(f, name)); dst.drawImage(PG2, 0, 0);
+}
+const [SA, sa] = mkC(), [SB, sb] = mkC();
+function draw(f) {
+  g.setTransform(1, 0, 0, 1, 0, 0); g.globalAlpha = 1; g.globalCompositeOperation = 'source-over';
+  const name = SC(f);
+  // 翻页的那一段：先画下一页，再把这一页卷走
+  const fl = Object.entries(FLIP).find(([, F]) => f >= F[0] && f < F[1]);
+  if (fl) { const F = fl[1], cur = f < F[0] ? name : ({ a: 'desk1', b: 'run', c: 'smear', d: 'chart' })[fl[0]], nxt = NEXT[cur];
+    drawScene(g, nxt, f); g.setTransform(1, 0, 0, 1, 0, 0);
+    drawScene(sa, cur, f); g.setTransform(1, 0, 0, 1, 0, 0); curl(g, SA, flipY(F, f), 150 + 60 * Math.sin(clamp((f - F[0]) / (F[1] - F[0])) * Math.PI));
+  } else drawScene(g, name, f);
+  // 墙 → 透光台：第 24 张推满屏的那几帧，两边交叠（画的是同一张，所以看不出接缝）
+  if (f >= ZOOM[1] - 8 && f < ZOOM[1] + 8 && name === 'desk2') { const a = 1 - smr(ZOOM[1], ZOOM[1] + 8, f); if (a > 0) { sb.setTransform(1, 0, 0, 1, 0, 0); drawWall(sb, Math.min(f, ZOOM[1] - 1)); g.setTransform(1, 0, 0, 1, 0, 0); g.globalAlpha = a; g.drawImage(SB, 0, 0); g.globalAlpha = 1; } }
+  pencilProp(f);
+  hud(g, f);
+}
+// 黄铅笔：画曲线、签名的时候出来
+function pencilProp(f) {
+  let tip = null, lift = 0;
+  if (f >= TC.curve[0] - 12 && f < TC.code[1] + 12 && SC(f) === 'chart') { const pc = clamp((f - TC.curve[0]) / (TC.curve[1] - TC.curve[0])), pcode = clamp((f - TC.code[0]) / (TC.code[1] - TC.code[0]));
+    tip = f < TC.code[0] ? [GX + pc * GW, GY - F_IO(pc) * GH] : [GX + 40 + pcode * 860, GY - GH - 96]; lift = f < TC.curve[0] ? (TC.curve[0] - f) / 12 : f > TC.code[1] ? (f - TC.code[1]) / 12 : 0; g.setTransform(pageCam(f, 'chart')); }
+  if (f >= 892 && f < 960) { const sp = clamp((f - 904) / 30); tip = [1250 + sp * 480, 280 + Math.sin(sp * 16) * 14]; lift = f < 904 ? (904 - f) / 12 : f > 934 ? (f - 934) / 26 : 0; g.setTransform(deskM(f)); }
+  if (!tip) return;
+  drawPencil(g, tip, clamp(lift));
+}
+function drawPencil(ctx, tip, lift) {
+  const L = 560, wd = 28, ang = -2.45 + lift * .05;
+  ctx.save(); ctx.translate(tip[0] + lift * 300, tip[1] + lift * 260);
+  ctx.save(); ctx.translate(18 + lift * 26, 22 + lift * 30); ctx.rotate(ang + Math.PI); ctx.globalAlpha = .28 - lift * .08; ctx.filter = `blur(${4 + lift * 6}px)`; ctx.fillStyle = '#2a1c10'; ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(70, -wd / 2); ctx.lineTo(L, -wd / 2); ctx.lineTo(L, wd / 2); ctx.lineTo(70, wd / 2); ctx.closePath(); ctx.fill(); ctx.restore();
+  ctx.translate(-lift * 6, -lift * 10); ctx.rotate(ang + Math.PI);
+  const tipL = 70, ferr = 44, er = 40, bodyL = L - tipL - ferr - er;
+  const bg = ctx.createLinearGradient(0, -wd / 2, 0, wd / 2); bg.addColorStop(0, '#ffe37a'); bg.addColorStop(.33, '#f0b81e'); bg.addColorStop(.36, '#d39a10'); bg.addColorStop(.66, '#b98408'); bg.addColorStop(.69, '#8e6206'); bg.addColorStop(1, '#6e4a04');
+  ctx.fillStyle = bg; ctx.fillRect(tipL, -wd / 2, bodyL, wd);
+  ctx.fillStyle = '#e2c49a'; ctx.beginPath(); ctx.moveTo(tipL, -wd / 2); ctx.lineTo(16, -wd * .14); ctx.lineTo(16, wd * .14); ctx.lineTo(tipL, wd / 2); ctx.closePath(); ctx.fill();
+  ctx.fillStyle = '#3a3a40'; ctx.beginPath(); ctx.moveTo(18, -wd * .16); ctx.lineTo(0, 0); ctx.lineTo(18, wd * .16); ctx.fill();
+  const fg = ctx.createLinearGradient(0, -wd / 2, 0, wd / 2); fg.addColorStop(0, '#f4f1ea'); fg.addColorStop(.4, '#b8b2a8'); fg.addColorStop(1, '#6d6860'); ctx.fillStyle = fg; ctx.fillRect(tipL + bodyL, -wd / 2 - 1, ferr, wd + 2);
+  const eg = ctx.createLinearGradient(0, -wd / 2, 0, wd / 2); eg.addColorStop(0, '#f6a7a0'); eg.addColorStop(.5, '#e0786f'); eg.addColorStop(1, '#a8483f'); ctx.fillStyle = eg; ctx.beginPath(); ctx.roundRect(tipL + bodyL + ferr - 2, -wd / 2 + 1, er, wd - 2, [0, 8, 8, 0]); ctx.fill();
+  ctx.restore();
+}
+function hud(ctx, f) {
+  ctx.setTransform(1, 0, 0, 1, 0, 0);
+  const capA = Math.max(0, ...CAPS.map(([t0, , , t1]) => smr(t0 - 6, t0 + 10, f) * (1 - smr(t1, t1 + 20, f))));
+  if (capA > 0) { const band = ctx.createLinearGradient(0, 870, 0, H); band.addColorStop(0, 'rgba(14,10,7,0)'); band.addColorStop(.5, 'rgba(14,10,7,.7)'); band.addColorStop(1, 'rgba(14,10,7,.88)'); ctx.save(); ctx.globalAlpha = capA; ctx.fillStyle = band; ctx.fillRect(0, 870, W, 210); ctx.restore(); }
+  for (const [t0, title, sub, t1] of CAPS) { if (f < t0 || f > t1 + 30) continue;
+    rise(ctx, title, 72, 1000, f, t0, { font: '900 52px SerifSC', size: 52, color: '#FFF2E0', out: t1, rate: .8, dur: 10 });
+    rise(ctx, sub, 75, 1046, f, t0 + 4, { font: '500 27px SansSC', size: 27, color: 'rgba(255,240,222,.88)', out: t1, kind: 'small', rate: .4, dur: 10 }); }
+  // 片尾一行小字
+  rise(ctx, 'BLUE PENCIL → GRAPHITE → RED · 12 DRAWINGS / SEC · 观默', 960, 1040, f, 940, { font: '500 22px Mono', size: 22, color: 'rgba(255,238,214,.85)', align: 'center', kind: 'small', rate: .2, ls: 2, shadow: 'rgba(0,0,0,.6)' });
+  ctx.save(); ctx.font = '500 16px Mono'; ctx.textAlign = 'right'; ctx.fillStyle = 'rgba(255,238,214,.85)'; ctx.shadowColor = 'rgba(0,0,0,.6)'; ctx.shadowBlur = 8;
+  ctx.fillText(`PENCIL TEST · DRAWING ${String(Math.floor(f / 5) + 1).padStart(3, '0')} · ON TWOS`, 1856, 1062 - (capA > .05 ? 0 : 0)); ctx.restore();
+  const v = ctx.createRadialGradient(960, 520, 560, 960, 520, 1300); v.addColorStop(0, 'rgba(0,0,0,0)'); v.addColorStop(1, 'rgba(8,5,3,.3)'); ctx.fillStyle = v; ctx.fillRect(0, 0, W, H);
+}
+
+window.frame = async f => { draw(f); };
+window.events = () => {
+  const dummy = HD.canvas(W, H).getContext('2d'); for (let f = 0; f < END; f++) hud(dummy, f);
+  const lands = [...J1, ...RUN, ...J6].map(J => J.land).filter(l => l >= 0 && l < END && l !== 350).concat([425]);
+  const takes = [...J1, ...RUN, ...J6].filter(J => J.H >= 250).map(J => J.take).filter(t => t >= 0 && t < END);
+  const flips = []; for (let f = 0; f < END; f += 5) flips.push(f);
+  return { cues: [...FK.cues.values()].filter(c => c[3] !== 'none').sort((a, b) => a[0] - b[0]), lands: lands.sort((a, b) => a - b), takes, FLIP, ZOOM, TC, wall: Array.from({ length: 24 }, (_, i) => 702 + i * 5), end: END, beat: BEAT, flips };
+};
+(async () => {
+  await FK.fonts([['SerifSC', 'NotoSerifSC.ttf', '200 900'], ['SansSC', 'NotoSansSC-Medium.otf', '500'], ['Mono', 'GeistMono.ttf', '100 900'], ['Caveat', 'Caveat.ttf', '400 700'], ['LongCang', 'LongCang-Regular.ttf', '400']]);
+  await document.fonts.load('900 190px SerifSC', '铅笔原画'); await document.fonts.load('400 64px LongCang', '观默格子挤慢稀快冲过头弹'); await document.fonts.load('600 30px Caveat', 'pencil test SC 12 CUT #0123456789');
+  await document.fonts.load('500 27px SansSC', '背景每秒'); await document.fonts.load('600 54px Mono', 'cubic-bezier(.42, 0, .58, 1)');
+  const t = performance.now(); buildStatic(); console.log('build', ((performance.now() - t) / 1000).toFixed(1));
+  if (!Qs.has('nodraw')) draw(+(Qs.get('f') || 0));
+  window.ready = true;
+})();
+</script>

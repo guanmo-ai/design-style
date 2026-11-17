@@ -1,7 +1,12 @@
-"""铅笔原画 · 第二版配乐：电子摇摆（electro swing），144 BPM，一拍 25 帧，一小节 100 帧，F 大调，9 小节 = 15 秒。
-四拍底鼓 + 二四拍拍手 + 摇摆的镲，立式贝斯走低音线，钢琴和吉他在反拍“切”，单簧管唱主题，铜管齐奏砸在每一次落地上。
-第 4—5 小节（画曲线）乐队撤成电钢琴 + 骑镲 + 钟琴；手柄一拉，滑哨往上冲；第 6 小节鼓回来；最后一跳前军鼓滚奏，落地“嗒—哒！”。
-python3 audio.py out.wav（动作时刻来自 node ../../_lib/events.cjs film.html events.json）"""
+"""铅笔原画 v3 配乐：老卡通片的大乐队摇摆（swing），F 大调，144 BPM（一拍 25 帧），40 拍 + 余音。
+画面上的每个动作都“米老鼠化”（mickey-mousing）——声音和动作一一对上：
+  A 透光台（0—4 拍）：第 0 帧一记铜管，第 1 拍落地
+  B 原野（4—13.5 拍）：整个乐队进来——行走贝斯、刷子 + 骑镲的摇摆、钢琴反拍、单簧管唱主题；袋子每跳一下落在一拍上
+  C 拖影帧（13.5—18 拍）：鼓撤掉，滑哨一路往下掉、军鼓滚奏，第 17 拍“啪”——全乐队齐奏 + 镲
+  D 间距表（18—28 拍）：减半的律动，电钢琴 + 骑镲；刻度落下一个一声木琴，曲线一描一串上行，手柄一拉滑哨往上冲 + 弹簧
+  E 一墙 24 张（28—34 拍）：每亮一张一声木琴（一秒 12 个音，正好是一秒 12 张）
+  F 回到透光台（34—40 拍）：最后一跳第 36 拍落地，签名，“嗒—哒！”收尾
+翻页：一串纸响 + 风声。python3 audio.py out.wav（动作时刻来自 node ../../_lib/events.cjs film.html events.json）"""
 import json
 import sys
 from pathlib import Path
@@ -13,144 +18,159 @@ sys.path.insert(0, str(HERE.parents[1] / '_lib'))
 from band import Band  # noqa: E402
 
 EV = json.loads((HERE / 'events.json').read_text())
-TL, END, BEAT = EV['TL'], EV['end'], EV['beat']
-BAR = BEAT * 4
-F6, D7, Gm7, C7, Am7, F69 = [53, 57, 60, 62], [50, 54, 57, 60], [55, 58, 62, 65], [48, 52, 55, 58], [57, 60, 64, 67], [53, 57, 60, 62, 67]
-HALF = [F6, F6, D7, D7, Gm7, C7, F6, D7, Gm7, Gm7, C7, C7, Am7, D7, Gm7, C7, F69, F69]       # 每两拍一个和弦
-CH = [(i * BEAT * 2, c[0] - 12, c) for i, c in enumerate(HALF)]
-S = Band(END, CH, beat=BEAT, seed=21, tail=3.0, swing=0.34)
+END, BEAT, FLIP, TC = EV['end'], EV['beat'], EV['FLIP'], EV['TC']
+F6, D7, Gm7, C7, Bb6, F69, Am7 = [41, 57, 60, 62, 65], [38, 54, 57, 60, 62], [43, 58, 62, 65, 67], [36, 52, 55, 58, 62], [46, 55, 58, 62, 65], [41, 57, 60, 62, 67], [45, 55, 60, 64, 67]
+# 两拍一个和弦（经典的 I–VI7–ii7–V7 转圈）
+CYCLE = [F6, D7, Gm7, C7]
+PROG = [(b, CYCLE[(b // 2) % 4]) for b in range(0, 40, 2)]
+PROG[17] = (34, Bb6); PROG[18] = (36, F69); PROG[19] = (38, F69)
+CH = [(b * BEAT, c[0], c[1:]) for b, c in PROG]
+S = Band(END, CH, beat=BEAT, seed=27, tail=3.5, swing=.34)
 fr = S.fr
-nbeats = END // BEAT
-BREAK = (16, 24)                          # 第几拍到第几拍：撤掉鼓和贝斯
-FINAL = EV['jumps'][-1]
-beat_of = lambda f: f / BEAT
-chord_at = lambda b: HALF[min(len(HALF) - 1, int(b // 2))]
-in_break = lambda b: BREAK[0] <= b < BREAK[1]
-stop_time = lambda b: b >= 32               # 最后一小节：停顿式
+rng = np.random.default_rng(3)
+chord_at = lambda b: [c for bb, c in PROG if bb <= b + 1e-6][-1]
+B_RUN, B_SMEAR, B_CHART, B_WALL, B_DESK = 4, (FLIP['b'][0] + FLIP['b'][1]) / 2 / BEAT, (FLIP['c'][0] + FLIP['c'][1]) / 2 / BEAT, (FLIP['d'][0] + FLIP['d'][1]) / 2 / BEAT, EV['ZOOM'][1] / BEAT
+SPLAT = 425 / BEAT
+sec = lambda b: 'A' if b < B_RUN else 'B' if b < B_SMEAR else 'C' if b < B_CHART else 'D' if b < B_WALL else 'E' if b < B_DESK else 'F'
+LANDS = [l for l in EV['lands'] if l != 160]
 
-# ───── 鼓 ─────
-for b in range(nbeats):
-    if stop_time(b):
+# ───── 鼓：骑镲的摇摆（叮—叮嗒叮）+ 二四拍的刷子 / 军鼓 + 轻的底鼓
+for b in range(0, 40):
+    s = sec(b)
+    if s == 'C' or b >= 38:
         continue
-    if in_break(b):
-        S.put('drums', S.ride(0.7), beat=b, gain=0.6, pan=0.3)
-        S.put('drums', S.ride(0.45, 0.4), beat=b + .5, gain=0.5, pan=0.3)
-        if b % 2:
-            S.put('drums', S.rim(0.8), beat=b, gain=0.55, pan=-0.1)
-        continue
-    S.kick_at(S.at(b), 0.8)
+    half = s == 'D'
+    S.put('drums', S.ride(.8, .8), beat=b, gain=.18, pan=.35)
+    if not half or b % 2:
+        S.put('drums', S.ride(.55, .5), beat=b + .5, gain=.12, pan=.35)
     if b % 2:
-        S.put('drums', S.clap2(1.0), beat=b, gain=0.55, pan=0.05)
-        S.put('drums', S.snare2(0.7, wire=0.7), beat=b, gain=0.35)
-    S.put('drums', S.hat2(1.0, open_=True), beat=b + .5, gain=0.7, pan=0.45)
-    S.put('drums', S.hat2(0.7), beat=b, gain=0.55, pan=-0.45)
-    S.put('drums', S.shaker2(1.0), beat=b + .25, gain=0.5, pan=0.6)
-    S.put('drums', S.brush(0.8), beat=b + .5, gain=0.35, pan=-0.3)
-for b in (8, 24):                                                          # 进段落的镲
-    S.put('drums', S.crash(1.0), beat=b, gain=0.45, pan=0.2)
+        S.put('drums', S.brush(.8, .2, False), beat=b, gain=.2, pan=-.1)
+        if s in 'BEF':
+            S.put('drums', S.snare2(.6, wire=.5), beat=b, gain=.2)
+    if s in 'BEF' and b % 2 == 0:
+        S.kick_at(b * BEAT, .65)
+    S.put('drums', S.hat2(.5), beat=b + (1 if b % 2 else 0) * 0, gain=.06, pan=-.4)
 
-# ───── 立式贝斯：一拍一个音，走到下一个和弦（根音 → 三度 / 五度 → 半音靠近）─────
-for b in range(nbeats):
-    if stop_time(b):
+# ───── 行走贝斯：一拍一个音（根音 → 和弦音 → 半音靠近下一个根音）
+for b in range(0, 40):
+    s = sec(b)
+    if s == 'C' or b >= 38:
         continue
     ch = chord_at(b)
-    root = ch[0] - 24
-    nxt = chord_at(b + 1)[0] - 24
-    if in_break(b):
-        if b % 2 == 0:
-            S.put('bass', S.upright(root, 0.8, 0.9, 0.35), beat=b, gain=0.8)
-        continue
+    root = ch[0] - 12 if ch[0] > 40 else ch[0]
+    nxt = chord_at(b + 1)[0]
+    nxt = nxt - 12 if nxt > 40 else nxt
     pos = b % 2
-    m = root if pos == 0 else (root + 7 if nxt == root else nxt + (1 if nxt < root else -1))
-    S.put('bass', S.upright(m, 0.42, 1.0, 0.55), beat=b, gain=0.95)
-
-# ───── 反拍切音：钢琴（中音区）+ 吉他 ─────
-for b in range(nbeats):
-    if stop_time(b) or in_break(b):
+    m = root if pos == 0 else (nxt + (1 if nxt < root else -1))
+    if s == 'D' and pos:
         continue
+    S.put('bass', S.upright(m + 12, .38, 1.0, .5), beat=b, gain=1.1)
+    S.put('bass', S.sub(m + 12, .3, .6), beat=b, gain=.5)
+
+# ───── 钢琴：反拍的和弦（Charleston 节奏：1 和 2 的后半拍）；D 段换电钢琴长和弦
+for b in range(0, 40, 2):
+    s = sec(b)
     ch = chord_at(b)
-    S.put('keys', sum(S.grand(m + 12, 0.22, 0.5)[:int(0.3 * S.SR)] for m in ch[1:]), beat=b + .5, gain=0.34, pan=-0.55)
-    if b % 2:
-        S.put('keys', sum(S.pluck(m + 12, 0.14, 1.0) for m in ch[:3]), beat=b + .5, gain=0.32, pan=0.6)
-# 曲线那两小节：电钢琴的长和弦
-for b in range(BREAK[0], BREAK[1], 2):
-    S.put('pad', sum(S.rhodes(m + 12, 1.6, 0.55) for m in chord_at(b)), beat=b, gain=0.45)
-S.put('pad', S.strings([m + 12 for m in Gm7], 3.2, 0.9, att=0.6, rel=0.8), beat=BREAK[0], gain=0.35)
-S.put('pad', S.strings([m + 12 for m in C7], 3.2, 0.9, att=0.6, rel=0.8), beat=BREAK[0] + 4, gain=0.35)
+    if s in 'BEF' and b < 38:
+        S.put('keys', sum(S.grand(m + 12, .5, .55) for m in ch[1:]), beat=b, gain=.55, pan=-.35)
+        S.put('keys', sum(S.grand(m + 12, .4, .45) for m in ch[1:]), beat=b + 1.5, gain=.45, pan=-.35)
+    if s == 'D':
+        S.put('keys', sum(S.rhodes(m + 12, 2.0, .55) for m in ch[1:]), beat=b, gain=.7, pan=-.2)
+    if s in 'BDEF':
+        S.put('pad', S.strings([m + 12 for m in ch[1:]], 2 * BEAT / 60 + .05, .8, att=.15, rel=.4, bright=2400), beat=b, gain=7.0)
 
-# ───── 主题：单簧管 ─────
-MEL = {1: [(0, 69, .5), (.5, 72, .5), (1, 74, 1), (2, 78, .5), (2.5, 76, .5), (3, 74, 1)],
-       2: [(0, 77, .5), (.5, 74, .5), (1, 70, 1), (2, 76, 1.5), (3.5, 72, .5)],
-       3: [(0, 72, 1.5), (1.5, 69, .5), (2, 74, 1), (3, 73, 1)],
-       6: [(0, 76, .5), (.5, 79, .5), (1, 81, 1), (2, 78, .5), (2.5, 81, .5), (3, 84, 1)],
-       7: [(0, 82, .5), (.5, 79, .5), (1, 74, 1), (2, 76, 1), (3, 77, .5), (3.5, 79, .5)]}
-for bar, notes in MEL.items():
-    for o, m, d in notes:
-        S.put('lead', S.clarinet(m, d * BEAT / 60 * 0.92, 1.0), beat=bar * 4 + o, gain=0.75, pan=0.12)
-# 开场的上行拾音
-for k, m in enumerate([60, 62, 64, 65, 67]):
-    S.put('lead', S.clarinet(m + 12, 0.08, 0.8, vib=False), beat=2 + k * 0.4, gain=0.6, pan=0.12)
+# ───── 主题：单簧管（B 段、E 段）
+B_MEL = [(4, 72, .5), (4.5, 74, .5), (5, 77, 1), (6, 81, .5), (6.5, 79, .5), (7, 77, 1), (8, 74, .5), (8.5, 77, .5), (9, 79, 1.5), (10.5, 76, .5),
+         (11, 72, .5), (11.5, 74, .5), (12, 77, 1)]
+E_MEL = [(28, 81, .5), (28.5, 84, .5), (29, 86, 1), (30, 84, .5), (30.5, 81, .5), (31, 79, 1), (32, 77, .5), (32.5, 79, .5), (33, 81, 1)]
+for o, m, d in B_MEL + E_MEL:
+    S.put('lead', S.clarinet(m, d * BEAT / 60 * .92, 1.0), beat=o, gain=.8, pan=.12)
 
-# ───── 铜管：每一次落地砸一下，第 6—7 小节加反拍的小号句子 ─────
-for J in EV['jumps']:
-    lb = beat_of(J['land'])
-    if J['land'] < 0 or J['land'] >= END:
+# ───── 铜管：第 0 帧一记；每次落地砸一下（原野那几下轮流：铜管 / 钢琴）
+S.put('brass', S.brass([m + 12 for m in F6[1:]] + [77], .3, 1.0), frame=0, gain=.85)
+for k, L in enumerate(LANDS):
+    b = L / BEAT
+    ch = chord_at(b)
+    if L in (425, 900):
         continue
-    big = J['H'] >= 250
-    ch = chord_at(lb)
-    if J['land'] == FINAL['land']:
+    if sec(b) == 'B' and k % 2:
+        S.put('keys', S.marimba(ch[2] + 24, 1.0) + S.marimba(ch[-1] + 24, .8), frame=L, gain=.8, pan=.3)
         continue
-    S.put('brass', S.brass([m + 12 for m in ch] + ([ch[0] + 24] if big else []), 0.32 if big else 0.14, 1.0, scoop=True, bright=1.0 if big else 0.7), frame=J['land'], gain=0.9 if big else 0.55)
-S.put('brass', S.brass([m + 12 for m in F6] + [77], 0.3, 1.0), frame=0, gain=0.85)          # 第 0 帧
-for b in (24.5, 26.5, 27.5, 28.5):                                                      # 小号的反拍
-    S.put('brass', S.brass([m + 12 for m in chord_at(b)], 0.12, 0.8, bright=0.8), beat=b, gain=0.45)
-S.put('brass', S.brass([m + 12 for m in C7], 0.5, 1.0, fall=True), frame=TL['ride2'][1] - 4, gain=0.55)  # 冲过头：一声下滑
+    S.put('brass', S.brass([m + 12 for m in ch[1:]], .14 if L != 25 else .3, .9, scoop=True, bright=.8), frame=L, gain=.6 if L != 25 else .8)
+for L in LANDS:
+    S.sfx(S.poof(1.0, .22, 600), fr(L), .35, 0, send=.1)
+# 起跳：木琴往上刷
+for t in EV['takes']:
+    for k, m in enumerate([65, 69, 72, 77, 81, 84]):
+        S.put('keys', S.marimba(m + 12, .7), frame=t + k * 1.2, gain=.35, pan=-.3 + k * .12)
 
-# ───── 最后一小节：滚奏 → 起跳 → “嗒—哒！” ─────
+# ───── C：拖影帧——滑哨往下掉 + 军鼓滚奏 → 第 17 拍“啪”
+c0, L = FLIP['b'][1], 425
+t = S.tt((L - c0) / 60); u = t / t[-1]; fq = 1800 * 2 ** (-2.2 * u ** 1.3)
+S.sfx(np.sin(2 * np.pi * np.cumsum(fq) / S.SR) * np.sin(np.pi * np.minimum(1, u * 1.1)) ** .4 * .25, fr(c0), .5, 0, send=.3)
+for k in range(20):
+    S.put('drums', S.snare2(.3 + .035 * k, wire=1.0), frame=c0 + k * (L - c0) / 20, gain=.22 + .015 * k, pan=-.1)
+S.put('pad', S.strings([48, 55, 58, 64, 70], (L - c0) / 60, 1.2, att=(L - c0) / 60 * .9, rel=.2, bright=3000, swell=True), frame=c0, gain=8.0)
 for k in range(16):
-    t = FINAL['start'] + k * (FINAL['take'] - FINAL['start']) / 16
-    S.put('drums', S.snare2(0.35 + 0.04 * k, wire=1.0), frame=t, gain=0.3 + 0.02 * k, pan=-0.1)
-S.sfx(S.riser2((FINAL['take'] - FINAL['start']) / 60, 0.6), fr(FINAL['start']), 0.35, 0, send=0.2)
-S.put('brass', S.brass([65, 69, 72], 0.1, 0.9), frame=FINAL['take'], gain=0.6)
-L = FINAL['land']
+    S.put('drums', S.timpani(36, .3 + .04 * k, .6), frame=c0 + k * (L - c0) / 16, gain=.35)
 S.kick_at(L, 1.0, 1.4)
-S.put('drums', S.crash(1.2), frame=L, gain=0.6)
-S.put('brass', S.brass([65, 69, 72, 74, 79, 81], 1.4, 1.0, bright=1.1), frame=L, gain=1.0)
-S.put('bass', S.upright(29, 1.6, 1.0, 0.4), frame=L, gain=1.0)
-S.put('keys', sum(S.grand(m, 3.0, 0.75) for m in [41, 53, 57, 60, 62, 67, 72]), frame=L, gain=0.5)
-S.put('lead', S.clarinet(84, 1.2, 1.0), frame=L, gain=0.55)
+S.put('drums', S.crash(1.2), frame=L, gain=.35)
+S.put('brass', S.brass([53, 57, 60, 65, 69, 72], .7, 1.0, bright=1.0), frame=L, gain=1.0)
+S.put('bass', S.upright(29, 1.2, 1.0, .4), frame=L, gain=1.1)
+S.put('keys', sum(S.grand(m, 2.0, .8) for m in [29, 41, 53, 57, 60, 65]), frame=L, gain=.6)
+S.sfx(S.boing(53, .9, .6), fr(L + 6), .35, .2, send=.2)
 
-# ───── 画面里的声音 ─────
-paper = lambda: S.fft_filter(S.rng.standard_normal(int(0.05 * S.SR)), lo=1800, hi=7000) * np.exp(-np.arange(int(0.05 * S.SR)) / (0.012 * S.SR))
-for f in EV['flips']:
-    S.sfx(paper(), fr(f), 0.12, float(np.sin(f * .7)) * 0.4, send=0.03)
-for J in EV['jumps']:
-    if J['H'] >= 200 and 0 <= J['take'] < END:
-        S.sfx(S.whoosh(0.3, 400, 5000, 1.0), fr(J['take']) - 0.05, 0.4, 0.1, send=0.1)
-    if 0 <= J['land'] < END:
-        S.sfx(S.poof(1.0, 0.22, 700), fr(J['land']), 0.45 if J['H'] >= 200 else 0.25, 0, send=0.1)
-n = int(fr(END) * S.SR); tsec = np.arange(n) / S.SR
-scratch = S.fft_filter(S.rng.standard_normal(n), lo=2500, hi=9000) * (1 + 0.7 * np.sin(2 * np.pi * 9 * tsec) ** 2)
-env = np.zeros(n)
-for a, b in EV['pencil']:
-    env += np.clip((tsec * 60 - a) / 3, 0, 1) * np.clip((b - tsec * 60) / 3, 0, 1)
-S.SFX[0, :n] += scratch * env * 0.05; S.SFX[1, :n] += scratch * env * 0.045
-scale = [65, 67, 69, 72, 74, 77, 79, 81, 84, 86, 89, 91]
-for k, f in enumerate(EV['ticks']):
-    S.put('keys', S.glock(scale[k % len(scale)] + 12, 0.8, 1.0), frame=f, gain=0.22, pan=-0.5 + k / 11)
-for k, f in enumerate(EV['fly']):
-    S.sfx(S.bop(scale[k % len(scale)] + 12, 0.6, 0.08), fr(f), 0.18, 0.5, send=0.25)
-for k, f in enumerate(EV['fly2'] + EV['snaps']):
-    S.put('keys', S.glock(scale[k % len(scale)] + 24, 0.5, 0.7), frame=f, gain=0.13, pan=-0.3 + 0.05 * (k % 12))
-for f in EV['keys']:
-    S.sfx(S.brush(0.8, 0.16, True), fr(f), 0.35, 0.3, send=0.1)
-for k, f in enumerate(EV['rides']):
-    S.sfx(S.bop(scale[(k % 12)] + 12, 0.4, 0.06), fr(f), 0.12, -0.3 + 0.05 * (k % 12), send=0.2)
-d0, d1 = TL['drag']                                                        # 手柄一拉：滑哨往上冲
-t = S.tt((d1 - d0) / 60); u = t / t[-1]; fq = 520 * 2 ** (1.3 * u ** .8)
-S.sfx(np.sin(2 * np.pi * np.cumsum(fq) / S.SR) * np.sin(np.pi * u) ** .5 * 0.3, fr(d0), 0.45, 0.2, send=0.35)
-S.sfx(S.brush(0.6, 1.0, False), fr(TL['wipe'][0]), 0.45, 0, send=0.1)     # 橡皮擦
-for i in range(4):                                                          # 标题四个字跳起来
-    S.sfx(S.boing(72 + [0, 4, 7, 12][i], 0.6, 0.3), fr(L + 2 + i * 5), 0.22, -0.4 + 0.25 * i, send=0.2)
-S.text_cues(EV['cues'], 0.45)
-S.mix(sys.argv[1] if len(sys.argv) > 1 else str(HERE / 'music.wav'), levels=dict(drums=0.95, bass=0.95, keys=0.75, lead=0.8, brass=0.85, pad=0.6), room=1.0)
+# ───── D：刻度落下一个一声木琴，曲线一描一串上行，手柄一拉滑哨往上 + 弹簧
+scale = [65, 67, 69, 72, 74, 77, 79, 81, 84]
+for i in range(9):
+    S.put('keys', S.marimba(scale[i] + 12, .9), frame=TC['slide'][0] + i * (TC['slide'][1] - TC['slide'][0]) / 9, gain=.5, pan=-.5 + i * .12)
+    S.put('keys', S.glock(scale[i] + 12, .8, .8), frame=TC['drop'][0] + i * 2 + 10, gain=.25, pan=-.5 + i * .12)
+for k in range(12):
+    S.put('keys', S.glock(scale[k % 9] + 24, .5, .5), frame=TC['curve'][0] + k * 2.2, gain=.18, pan=-.4 + k * .07)
+for k in range(28):
+    S.sfx(S.type_tick(scale[k % 9] + 12, .7, 1.0), fr(TC['code'][0] + k * (TC['code'][1] - TC['code'][0]) / 28), .12, .3, send=.05)
+d0, d1 = TC['drag']
+t = S.tt((d1 - d0) / 60); u = t / t[-1]; fq = 500 * 2 ** (1.4 * u ** .8)
+S.sfx(np.sin(2 * np.pi * np.cumsum(fq) / S.SR) * np.sin(np.pi * u) ** .5 * .25, fr(d0), .45, .2, send=.35)
+S.sfx(S.boing(72, .9, .5), fr(d1), .35, .2, send=.25)
+for k in range(9):
+    S.put('keys', S.marimba(scale[k] + 12, .7), frame=TC['ride'][0] + k * 2.2, gain=.35, pan=-.4 + k * .1)
+
+# ───── E：墙上亮一张一声木琴（一秒 12 个音）
+for k, f in enumerate(EV['wall']):
+    ch = chord_at(f / BEAT)
+    m = [ch[1], ch[2], ch[3], ch[-1]][k % 4] + 24 + (12 if k >= 12 else 0)
+    S.put('keys', S.marimba(m, .9), frame=f, gain=.55, pan=-.6 + 1.2 * (k % 6) / 5)
+
+# ───── 翻页：一串纸响 + 风；墙推进透光台：风
+paper = lambda d=.03: S.fft_filter(S.rng.standard_normal(int(d * S.SR)), lo=1500, hi=6500) * np.exp(-np.arange(int(d * S.SR)) / (.008 * S.SR))
+for F in FLIP.values():
+    a, b = F
+    S.sfx(S.whoosh((b - a) / 60, 300, 4500, 1.0, .5), fr(a), .4, 0, send=.15)
+    for k in range(10):
+        S.sfx(paper(), fr(a + (b - a) * (k / 10) ** .7), .18, -.4 + k * .08, send=.05)
+S.sfx(S.whoosh((EV['ZOOM'][1] - EV['ZOOM'][0]) / 60, 400, 6000, 1.0, .7), fr(EV['ZOOM'][0]), .4, 0, send=.2)
+for f in EV['flips']:                                   # 一拍二：每换一张画，很轻的一声纸
+    S.sfx(paper(.02), fr(f), .03, float(np.sin(f)) * .4, send=.02)
+
+# ───── F：最后一跳，签名（铅笔沙沙），“嗒—哒！”
+L = 900
+S.kick_at(L, 1.0, 1.3)
+S.put('brass', S.brass([53, 57, 60, 62, 67], .5, 1.0), frame=L, gain=.85)
+S.put('drums', S.crash(1.0), frame=L, gain=.25)
+n = int(fr(END) * S.SR); ts = np.arange(n) / S.SR
+scratch = S.fft_filter(S.rng.standard_normal(n), lo=1500, hi=6000) * (1 + .7 * np.sin(2 * np.pi * 9 * ts) ** 2)
+env = np.clip((ts * 60 - 904) / 3, 0, 1) * np.clip((934 - ts * 60) / 3, 0, 1)
+S.SFX[0, :n] += scratch * env * .05; S.SFX[1, :n] += scratch * env * .045
+E = 950
+S.put('drums', S.snare2(.9, wire=.6), frame=E - 12, gain=.4)
+S.kick_at(E, 1.0, 1.3)
+S.put('drums', S.crash(1.2), frame=E, gain=.3)
+S.put('brass', S.brass([53, 57, 60, 62, 67, 72, 77], 1.6, 1.0, bright=1.0), frame=E, gain=1.0)
+S.put('bass', S.upright(29, 1.8, 1.0, .4), frame=E, gain=1.1)
+S.put('keys', sum(S.grand(m, 3.0, .8) for m in [29, 41, 53, 57, 60, 62, 67, 72]), frame=E, gain=.6)
+S.put('lead', S.clarinet(84, 1.4, 1.0), frame=E, gain=.6)
+S.put('pad', S.strings([53, 57, 60, 62, 67, 72], 2.5, 1.2, att=.03, rel=1.4, bright=3000), frame=E, gain=3.5)
+
+S.text_cues(EV['cues'], .4)
+S.mix(sys.argv[1] if len(sys.argv) > 1 else str(HERE / 'music.wav'), levels=dict(drums=.75, bass=.9, keys=.9, lead=.85, brass=.85, pad=.9), room=1.1, plate=.8, air=.6)
