@@ -4,7 +4,7 @@
 set -euo pipefail
 cd "$(dirname "$0")"
 NAME=cel-forest
-END=1080
+END=960
 OUT=${TMPDIR:-/tmp}/$NAME-frames-$(cat film.html scenes.js | md5sum | cut -c1-8)${PREVIEW:+-preview}
 [ -f layers/night-fg.png ] || node bake.cjs
 EVQ=nodraw node ../../_lib/events.cjs film.html events.json

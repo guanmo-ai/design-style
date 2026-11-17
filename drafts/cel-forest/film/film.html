@@ -6,53 +6,48 @@
 <script src="vendor/moss-art.js"></script>
 <script src="../../hand-drawn/filmkit.js"></script>
 <script>
-// 手绘动画 v3 · 一顶草帽被风吹过一整天：正午稻田 → （拆开七层纸）→ 午后树林 → 黄昏云海 → 夜里的终点站。
-// 120 BPM，一拍 30 帧，一小节 120 帧，共 1020 帧（17 秒）。window.frame(f) 画第 f 帧（帧号的纯函数）。
+// 手绘动画 v4 · 一顶草帽从夜里飞到天亮：银河下的终点站（拆开五层纸）→ 黎明云海 → 午后树林，落在一丛灌木上。全片同一套画风（vibe-vedio 的分色平涂）。
+// 120 BPM，一拍 30 帧，一小节 120 帧，共 960 帧（16 秒）。window.frame(f) 画第 f 帧（帧号的纯函数）。
 // 背景是 bake.cjs 预先画好的分层 PNG（layers/），这里只合成：镜头一拍一（每帧都动，按深度视差），帽子、叶子、萤火一拍二（每 5 帧一张）。
 // 换场景不硬切：前景的一整片东西（树冠 / 云团）扫过画面，盖满的那一帧底下换景；帽子始终在最前面，接力到底。
-const END = 1080, BEAT = 30, Qs = new URLSearchParams(location.search);
+const END = 960, BEAT = 30, Qs = new URLSearchParams(location.search);
 const F = FK, q5 = f => Math.floor(f / 5) * 5;
 const cv = document.getElementById('c'), ctx = cv.getContext('2d');
 const IMG = {};
-const NAMES = { field: ['sky', 'clouds', 'mountains', 'field', 'poles', 'fg'], forest: ['far', 'mid', 'front', 'canopy'], clouds: ['sky', 'towers', 'sea1', 'sea2', 'wisp'], night: ['sky', 'far', 'mid', 'fg'] };
+const NAMES = { forest: ['far', 'mid', 'front', 'canopy'], clouds: ['sky', 'towers', 'sea1', 'sea2', 'wisp'], night: ['sky', 'far', 'mid', 'fg'] };
 const load = src => new Promise((ok, no) => { const i = new Image(); i.onload = () => ok(i); i.onerror = no; i.src = src; });
 
 // ───── 时间轴（帧）
 const TL = {
-  explode: [150, 205, 268, 312],      // 开始拆 · 拆开 · 开始合 · 合上
-  whip: [304, 356],                    // 稻田 → 树林：横摇 + 树冠扫过（中点换景）
-  tilt: [482, 538],                    // 树林 → 云海：往上摇，树冠从上往下扫过
-  dive: [694, 746],                    // 云海 → 夜：往下扎，云团从下往上扫过
-  lamp: 784, star: [812, 850], land: 870, strip: 900, title: 918, sign: 950,
+  explode: [96, 140, 196, 236],       // 夜景五层：开始拆 · 拆开 · 开始合 · 合上
+  a: [244, 296],                       // 夜 → 云海：往上摇，云团从上往下扫过（中点换景）
+  b: [514, 566],                       // 云海 → 树林：往下扎，云团从下往上扫过
+  lamp: -100, star: [40, 84], land: 750, strip: 786, title: 804, sign: 840,
 };
-const SW = { whip: (TL.whip[0] + TL.whip[1]) / 2, tilt: (TL.tilt[0] + TL.tilt[1]) / 2, dive: (TL.dive[0] + TL.dive[1]) / 2 };
-const sceneAt = f => f < SW.whip ? 'field' : f < SW.tilt ? 'forest' : f < SW.dive ? 'clouds' : 'night';
+const SW = { a: (TL.a[0] + TL.a[1]) / 2, b: (TL.b[0] + TL.b[1]) / 2 };
+const sceneAt = f => f < SW.a ? 'night' : f < SW.b ? 'clouds' : 'forest';
 const CAPS = [
-  [160, '01 · 一个镜头，七层纸', '天、云、远山、稻田、电线杆、帽子、前景草，各画一张，叠起来才是一帧', 296],
-  [372, '02 · 镜头 1 拍 1，帽子 1 拍 2', '背景每秒 60 格滑过去，帽子每秒 12 张：手绘的“顿挫”就在这里', 486],
-  [556, '03 · 一天换一套色，影子从不用灰', '正午的影是蓝紫，黄昏是紫，夜里整张都是蓝', 704],
-  [772, '04 · 暖色只留给灯', '夜景整张冷下来，路灯和萤火是唯一的暖', 892],
+  [100, '01 · 一个镜头，五层纸', '天、远山、中景、帽子、前景，各画一张，叠起来才是一帧', 232],
+  [304, '02 · 一天换一套色，影子从不用灰', '夜里整张是蓝，黎明的影是紫；暖色只留给灯和太阳', 500],
+  [574, '03 · 镜头 1 拍 1，帽子 1 拍 2', '背景每秒 60 格滑过去，帽子每秒 12 张：手绘的“顿挫”就在这里', 760],
 ];
 const PALS = {
-  field: { name: '正午 · 稻田', cut: 'CUT 024', c: ['#1648A6', '#A9D9F0', '#7F8CBF', '#5AA646', '#D8EE8A', '#F1D38E'] },
   forest: { name: '午后 · 树林', cut: 'CUT 031', c: ['#F6EAD0', '#BCD0AD', '#93B449', '#4F7D35', '#1F3D2B', '#FFF2C8'] },
-  clouds: { name: '黄昏 · 云海', cut: 'CUT 047', c: ['#1D2A64', '#7C5AA0', '#EE8F7C', '#FFD79C', '#A983B6', '#5F548F'] },
-  night: { name: '夜 · 终点站', cut: 'CUT 052', c: ['#070E2A', '#1F3470', '#6A6FA6', '#3F6488', '#2F6AA8', '#FFD27A'] },
+  clouds: { name: '黎明 · 云海', cut: 'CUT 047', c: ['#1D2A64', '#7C5AA0', '#EE8F7C', '#FFD79C', '#A983B6', '#5F548F'] },
+  night: { name: '夜 · 终点站', cut: 'CUT 012', c: ['#070E2A', '#1F3470', '#6A6FA6', '#3F6488', '#2F6AA8', '#FFD27A'] },
 };
 
 // ───── 各场景的世界大小、层的深度、镜头
 const SC = {
-  field: { LW: 1920, LH: 1080, C0: [960, 540], D: { sky: .05, clouds: .15, mountains: .3, field: .6, poles: 1, fg: 1.6 } },
   forest: { LW: 2300, LH: 1240, C0: [1150, 620], D: { far: .45, mid: 1, front: 1.35 } },
   clouds: { LW: 2400, LH: 1350, C0: [1200, 675], D: { sky: .1, towers: .3, sea1: .6, sea2: 1.1 } },
   night: { LW: 2300, LH: 1294, C0: [1150, 647], D: { sky: .08, far: .3, mid: 1, fg: 1.5 } },
 };
 // 镜头：场景世界里的中心点 + 推近倍数。每段都是五次缓动（起停速度为 0），换景的那一段和扫过去的东西同向。
 const CAM = {
-  field: f => ({ x: F.keys([[0, 780], [150, 1080], [304, 1100], [356, 1500]], f), y: F.keys([[0, 600], [150, 540], [356, 520]], f), z: F.keys([[0, 1.34], [150, 1.1], [304, 1.12], [356, 1.4]], f) }),
-  forest: f => ({ x: F.keys([[304, 600], [356, 880], [482, 1300], [538, 1300]], f), y: F.keys([[304, 660], [356, 660], [474, 600], [538, 260]], f), z: F.keys([[304, 1.4], [356, 1.28], [482, 1.05], [538, 1.2]], f) }),
-  clouds: f => ({ x: F.keys([[482, 1000], [538, 1040], [694, 1380], [746, 1380]], f), y: F.keys([[482, 1300], [538, 940], [640, 760], [694, 760], [746, 1000]], f), z: F.keys([[482, 1.35], [538, 1.28], [694, 1.04], [746, 1.3]], f) }),
-  night: f => ({ x: F.keys([[694, 1150], [746, 1180], [880, 1060], [1020, 1040]], f), y: F.keys([[694, 260], [746, 480], [880, 760], [1020, 770]], f), z: F.keys([[700, 1.3], [752, 1.15], [880, 1.18], [1020, 1.2]], f) }),
+  night: f => ({ x: F.keys([[0, 1250], [96, 1200], [236, 1200], [296, 1150]], f), y: F.keys([[0, 600], [96, 620], [236, 620], [296, 260]], f), z: F.keys([[0, 1.3], [96, 1.18], [236, 1.18], [296, 1.35]], f) }),
+  clouds: f => ({ x: F.keys([[244, 1000], [296, 1040], [514, 1380], [566, 1380]], f), y: F.keys([[244, 1300], [296, 940], [460, 760], [514, 760], [566, 1000]], f), z: F.keys([[244, 1.35], [296, 1.28], [514, 1.04], [566, 1.3]], f) }),
+  forest: f => ({ x: F.keys([[514, 900], [566, 1000], [780, 1180], [960, 1190]], f), y: F.keys([[514, 260], [566, 560], [700, 640], [960, 650]], f), z: F.keys([[514, 1.32], [566, 1.2], [780, 1.08], [960, 1.1]], f) }),
 };
 // 某一层（深度 d）在当前镜头下：源图里取哪一块（世界坐标）
 function viewOf(s, c, d) {
@@ -92,34 +87,33 @@ function hat(g, x, y, rot, sc, spin, flut) {
 // 帽子的路线（屏幕坐标，和动画里一样：赛璐璐不动、背景在动）。关键点之间用 Catmull-Rom，按帧号取 → 每 5 帧取一次 = 一拍二
 // [帧, x, y, 大小, 翻转圈数（累计）, 倾角]
 const HK = [
-  [-40, 300, 520, 1.1, -.6, -.4], [0, 640, 360, 1.0, 0, -.3], [60, 980, 250, .86, .9, .15], [150, 1360, 300, .7, 1.8, -.2],
-  [205, 1300, 300, .62, 2.3, -.1], [268, 1240, 330, .62, 2.8, -.15], [312, 1180, 360, .7, 3.3, .1],
-  [352, 820, 430, 1.05, 4.6, -.35], [400, 1040, 560, .9, 5.5, .3], [440, 880, 700, .82, 6.4, -.25], [478, 1000, 560, .8, 7.0, .1], [534, 980, 300, .78, 8.0, -.2],
-  [580, 760, 420, .78, 8.8, .2], [640, 1180, 330, .72, 9.8, -.15], [700, 1100, 460, .74, 10.6, .1], [752, 900, 160, .8, 11.6, -.3],
-  [800, 1160, 420, .72, 12.2, .35], [840, 960, 560, .66, 12.8, -.3], [870, 0, 0, .6, 13, 0],
+  [-40, 420, 300, 1.12, -.6, -.3], [0, 760, 380, 1.05, 0, -.25], [60, 1100, 300, .9, 1.0, .2], [96, 1240, 340, .75, 1.6, -.15],
+  [140, 1240, 340, .62, 2.1, -.1], [196, 1200, 360, .62, 2.6, -.15], [236, 1160, 380, .7, 3.1, .1], [270, 960, 200, .85, 4.2, -.3],
+  [330, 760, 420, .8, 5.0, .2], [400, 1180, 330, .74, 6.0, -.15], [470, 1100, 460, .76, 6.8, .1], [540, 900, 220, .86, 7.8, -.3],
+  [600, 1040, 520, .9, 8.7, .3], [660, 880, 640, .82, 9.6, -.25], [710, 1080, 560, .7, 10.4, .15], [750, 0, 0, .6, 11, 0],
 ];
 function hatAt(f) {
   if (f > TL.land + 60) f = TL.land + 60;
   const fq = q5(f);
-  // 落点：站牌顶上（跟着夜景中景层走）
-  const land = toScreen('night', CAM.night(TL.land), 1, 1480, 1070 - 262 * 1.25 - 26);
+  // 落点：树林里那一丛灌木顶上（跟着中景层走）
+  const land = toScreen('forest', CAM.forest(TL.land), 1, 1170, 860 - 92 * 1.05 - 20);
   const K = HK.map(k => k[0] === TL.land ? [k[0], land[0], land[1], .52 * land[2], k[4], k[5]] : k);
   let i = 0; while (i < K.length - 2 && K[i + 1][0] <= fq) i++;
   const a = K[Math.max(0, i - 1)], b = K[i], c = K[i + 1], d = K[Math.min(K.length - 1, i + 2)], t = F.clamp((fq - b[0]) / (c[0] - b[0]));
   const cr = j => { const t2 = t * t, t3 = t2 * t; return .5 * (2 * b[j] + (-a[j] + c[j]) * t + (2 * a[j] - 5 * b[j] + 4 * c[j] - d[j]) * t2 + (-a[j] + 3 * b[j] - 3 * c[j] + d[j]) * t3); };
   let x = cr(1), y = cr(2), sc = cr(3), spin = cr(4) * Math.PI * 2 / 2, rot = cr(5);
-  if (fq >= TL.land) { const u = (fq - TL.land) / 60; spin = Math.round(13 * Math.PI) / 1; spin = 13 * Math.PI; rot = -.05 + Math.exp(-u * 5) * Math.sin(u * 20) * .25; y -= Math.abs(Math.exp(-u * 6) * Math.sin(u * 16)) * 26; }
+  if (fq >= TL.land) { const u = (fq - TL.land) / 60; spin = 11 * Math.PI; rot = -.05 + Math.exp(-u * 5) * Math.sin(u * 20) * .25; y -= Math.abs(Math.exp(-u * 6) * Math.sin(u * 16)) * 26; }
   return { x, y, sc, spin, rot, flut: fq * .16 };
 }
 
-// ───── 拆开的多层摄影台（稻田那七层）：每层一个仿射矩阵，从“铺满屏幕”插值到“斜着排开”
-const EXO = ['sky', 'clouds', 'mountains', 'field', 'poles', 'cel', 'fg'];
-const EXN = { sky: ['天', 'SKY', '×0.05'], clouds: ['云', 'CLOUD', '×0.15'], mountains: ['远景', 'FAR BG', '×0.3'], field: ['中景', 'BG', '×0.6'], poles: ['电线杆', 'BOOK', '×1.0'], cel: ['赛璐璐', 'A-CEL', '1 拍 2'], fg: ['前景', 'FG BOOK', '×1.6'] };
-const EXA = { sky: [160, 110], clouds: [1180, 330], mountains: [560, 700], field: [1500, 860], poles: [330, 150], cel: [1250, 330], fg: [1720, 830] };
+// ───── 拆开的多层摄影台（夜景那五层）：每层一个仿射矩阵（世界坐标 → 屏幕），从“这一层平常的镜头”插值到“斜着排开”
+const EXO = ['sky', 'far', 'mid', 'cel', 'fg'];
+const EXN = { sky: ['天', 'SKY', '×0.08'], far: ['远山', 'FAR BG', '×0.3'], mid: ['中景', 'BG · 站牌 · 路灯', '×1.0'], cel: ['赛璐璐', 'A-CEL', '1 拍 2'], fg: ['前景', 'FG BOOK', '×1.5'] };
+const EXA = { sky: [420, 200], far: [700, 840], mid: [1480, 740], cel: [1240, 520], fg: [2060, 1160] };
 function exMatrix(i, u, c) {
-  const S = SC.field, d = i === 5 ? 1 : S.D[EXO[i]], v = viewOf('field', c, d);
-  const A = [v.z, 0, 0, v.z, -v.sx * v.z, -v.sy * v.z];                   // 铺满：就是这一层平常的镜头
-  const k = 1 + i * .025, B = [.30 * k, -.04 * k, 0, .28 * k, 140 + i * 182, 296 + i * 34];   // 拆开
+  const S = SC.night, d = EXO[i] === 'cel' ? 1 : S.D[EXO[i]], v = viewOf('night', c, d);
+  const A = [v.z, 0, 0, v.z, -v.sx * v.z, -v.sy * v.z];
+  const k = (1 + i * .03) * 1920 / S.LW, B = [.30 * k, -.04 * k, 0, .28 * k, 170 + i * 268, 300 + i * 48];
   return A.map((a, j) => F.lerp(a, B[j], u));
 }
 const exU = f => { const [a, b, c, d] = TL.explode; return f <= a || f >= d ? 0 : f < b ? F.quint((f - a) / (b - a)) : f < c ? 1 : F.quint(1 - (f - c) / (d - c)); };
@@ -135,50 +129,13 @@ function leafFall(g, t, seed, n, x0, x1, y0, y1, sz = 1, wind = 0) {
   }
 }
 function motes(g, t, seed, n, col = '#fff6d0') { const r = RNG(seed), tt = twos(t); for (let i = 0; i < n; i++) { const x = r.range(0, 1920) + Math.sin(tt * .4 + i) * 30, y = r.range(80, 1000) + Math.sin(tt * .6 + i * 1.7) * 20 - tt * 6; const a = .5 + .5 * Math.sin(tt * 2 + i); dab(g, x, y, 2, 2, 0, rgba(col, .6 * a)); } }
-let FIELD_LIT, FIELD_YEL, GRAIN = [], VIG, OCC = {}, NOHUD = false;
+let GRAIN = [], VIG, OCC = {}, NOHUD = false;
 
-function drawField(g, f, c) {
-  const t = f / 60, u = exU(f);
-  if (u > 0) { // 摄影棚的暗背景
-    g.fillStyle = '#0b1220'; g.fillRect(0, 0, 1920, 1080);
-    const bg = g.createRadialGradient(1100, 380, 50, 1100, 420, 1300); bg.addColorStop(0, `rgba(40,58,92,${u})`); bg.addColorStop(1, 'rgba(7,11,20,0)'); g.fillStyle = bg; g.fillRect(0, 0, 1920, 1080);
-  }
-  EXO.forEach((name, i) => {
-    const M = exMatrix(i, u, c);
-    g.save(); g.setTransform(M[0], M[1], M[2], M[3], M[4], M[5]);
-    if (u > 0 && i) { g.globalAlpha = u; g.fillStyle = 'rgba(0,0,0,.2)'; g.fillRect(-30, 40, 1920, 1080); g.globalAlpha = 1; }
-    if (name === 'cel') { if (u > .01) { g.globalAlpha = u; g.fillStyle = 'rgba(160,200,255,.06)'; g.fillRect(0, 0, 1920, 1080); g.globalAlpha = 1; } }
-    else {
-      let ox = 0;
-      if (name === 'clouds') ox = -t * 6;                                   // 云在自己走
-      if (name === 'fg') { const sw = Math.sin(twos(t) * 2.2) * .012 + Math.sin(twos(t) * 5.1) * .004; g.transform(1, 0, sw, 1, -sw * 1080, 0); }
-      g.drawImage(IMG['field-' + name], ox, 0, 1920, 1080);
-      if (name === 'field') { // 风：一块偏黄的亮从左往右滑过稻田
-        const W2 = FIELD_LIT; const gx = ((t * 520) % 3400) - 900;
-        const m = W2.g; m.save(); m.globalCompositeOperation = 'source-over'; m.clearRect(0, 0, 1920, 1080); m.drawImage(FIELD_YEL, 0, 0, 1920, 1080);
-        m.globalCompositeOperation = 'destination-in'; const gr = m.createLinearGradient(gx - 420, 0, gx + 420, 0); gr.addColorStop(0, 'rgba(0,0,0,0)'); gr.addColorStop(.5, 'rgba(0,0,0,1)'); gr.addColorStop(1, 'rgba(0,0,0,0)'); m.fillStyle = gr; m.fillRect(0, 0, 1920, 1080); m.restore();
-        g.save(); g.globalCompositeOperation = 'screen'; g.globalAlpha = .3; g.drawImage(W2, 0, 0); g.restore();
-      }
-      if (name === 'mountains' && u < .5) birdsAt(g, t, 71, 4, 1500, 470, -40, '#2a3550', 1.3 * (1 - u));
-    }
-    if (u > 0) { g.globalAlpha = u; g.lineWidth = 2.6; g.strokeStyle = 'rgba(255,255,255,.55)'; g.strokeRect(0, 0, 1920, 1080); g.fillStyle = 'rgba(255,255,255,.6)'; [-110, 0, 110].forEach(q => { g.beginPath(); g.ellipse(960 + q, 1050, q ? 18 : 28, 12, 0, 0, 7); g.fill(); }); g.globalAlpha = 1; }
-    if (name === 'cel') { const hp = hatAt(f); if (hp) { // 帽子在赛璐璐层里：拆开时跟着这一层走（屏幕坐标 → 这一层的纸面坐标）
-      const M0 = exMatrix(5, 0, c), px = (hp.x - M0[4]) / M0[0], py = (hp.y - M0[5]) / M0[3]; hat(g, px, py, hp.rot, hp.sc / M0[0], hp.spin, hp.flut); } }
-    g.restore();
-  });
-  if (u < 1) { // 太阳：左上角的暖光 + 光柱（拆开时淡掉）
-    g.save(); g.globalAlpha = 1 - u; g.globalCompositeOperation = 'screen';
-    const rg = g.createRadialGradient(-80, -60, 0, -80, -60, 950); rg.addColorStop(0, 'rgba(255,250,225,.9)'); rg.addColorStop(.2, 'rgba(255,245,215,.42)'); rg.addColorStop(.6, 'rgba(255,240,210,0)'); g.fillStyle = rg; g.fillRect(0, 0, 1920, 1080);
-    const r = RNG(77); for (let i = 0; i < 7; i++) { const a = .5 + i * .085 + r() * .03 + Math.sin(t * .7 + i) * .006, wd = .015 + r() * .03; const lg = g.createLinearGradient(-80, -60, -80 + Math.cos(a) * 1500, -60 + Math.sin(a) * 1500); lg.addColorStop(0, `rgba(255,250,230,${.1 + r() * .08})`); lg.addColorStop(1, 'rgba(255,250,230,0)'); g.fillStyle = lg; g.beginPath(); g.moveTo(-80, -60); g.lineTo(-80 + Math.cos(a - wd) * 1800, -60 + Math.sin(a - wd) * 1800); g.lineTo(-80 + Math.cos(a + wd) * 1800, -60 + Math.sin(a + wd) * 1800); g.fill(); }
-    g.restore();
-  }
-  if (u > .02) exTags(g, f, u, c);
-}
 function exTags(g, f, u, c) {
   const a = F.smr(.75, 1, u);
   EXO.forEach((name, i) => {
     const M = exMatrix(i, u, c), [X, Y] = EXA[name], ax = M[0] * X + M[2] * Y + M[4], ay = M[1] * X + M[3] * Y + M[5];
-    const t0 = TL.explode[1] - 14 + i * 4, p = F.easeOut((f - t0) / 10) * a; if (p <= 0) return;
+    const t0 = TL.explode[1] - 16 + i * 5, p = F.easeOut((f - t0) / 10) * a; if (p <= 0) return;
     g.save(); g.globalAlpha = p; g.fillStyle = '#ffd36e'; g.beginPath(); g.arc(ax, ay, 4.5, 0, 7); g.fill();
     g.strokeStyle = 'rgba(255,211,110,.85)'; g.lineWidth = 1.4; g.beginPath(); g.moveTo(ax, ay); g.lineTo(ax, ay - 40 * p); g.stroke(); g.restore();
     const [zh, en, sp] = EXN[name];
@@ -216,25 +173,29 @@ function drawClouds(g, f, c) {
   g.fillStyle = lf; g.fillRect(0, sun[1] - 3, 1920, 6); g.restore();
 }
 function drawNight(g, f, c) {
-  const t = f / 60, tt = twos(t);
-  drawLayer(g, 'night', 'sky', c);
-  // 星星一闪一闪（一拍二）+ 一颗流星
-  { const v = viewOf('night', c, .08), r = RNG(501); for (let i = 0; i < 70; i++) { const X = r() * 2300, Y = r() * 800, a = Math.max(0, Math.sin(tt * r.range(2, 5) + i * 1.7)); if (a < .4) continue; const [x, y] = [(X - v.sx) * v.z, (Y - v.sy) * v.z]; dab(g, x, y, 1.8, 1.8, 0, `rgba(255,255,255,${a})`); g.strokeStyle = `rgba(220,230,255,${a * .5})`; g.lineWidth = .8; g.beginPath(); g.moveTo(x - 7, y); g.lineTo(x + 7, y); g.moveTo(x, y - 7); g.lineTo(x, y + 7); g.stroke(); } }
-  if (f > TL.star[0] && f < TL.star[1]) { const u = (f - TL.star[0]) / (TL.star[1] - TL.star[0]), x = 1500 - u * 700, y = 120 + u * 260, a = Math.sin(u * Math.PI);
+  const t = f / 60, tt = twos(t), u = exU(f), S = SC.night, live = 1 - F.smr(0, .3, u);
+  if (u > 0) { g.fillStyle = '#0b1220'; g.fillRect(0, 0, 1920, 1080); const bg = g.createRadialGradient(1100, 380, 50, 1100, 420, 1300); bg.addColorStop(0, `rgba(40,58,92,${u})`); bg.addColorStop(1, 'rgba(7,11,20,0)'); g.fillStyle = bg; g.fillRect(0, 0, 1920, 1080); }
+  EXO.forEach((name, i) => {
+    const M = exMatrix(i, u, c); g.save(); g.setTransform(M[0], M[1], M[2], M[3], M[4], M[5]);
+    if (u > 0 && i) { g.globalAlpha = u; g.fillStyle = 'rgba(0,0,0,.22)'; g.fillRect(-30, 40, S.LW, S.LH); g.globalAlpha = 1; }
+    if (name === 'cel') { if (u > .01) { g.globalAlpha = u; g.fillStyle = 'rgba(160,200,255,.06)'; g.fillRect(0, 0, S.LW, S.LH); g.globalAlpha = 1; } }
+    else g.drawImage(IMG['night-' + name], 0, 0, S.LW, S.LH);
+    if (name === 'sky') { // 星星一闪一闪（一拍二）
+      const r = RNG(501); for (let k = 0; k < 70; k++) { const X = r() * 2300, Y = r() * 800, a = Math.max(0, Math.sin(tt * r.range(2, 5) + k * 1.7)); if (a < .4) continue; dab(g, X, Y, 1.6, 1.6, 0, `rgba(255,255,255,${a})`); g.strokeStyle = `rgba(220,230,255,${a * .5})`; g.lineWidth = .7; g.beginPath(); g.moveTo(X - 6, Y); g.lineTo(X + 6, Y); g.moveTo(X, Y - 6); g.lineTo(X, Y + 6); g.stroke(); } }
+    if (name === 'mid') { // 路灯 + 萤火：暖色只给它们
+      lampLight(g, LAMP, 1); glow(g, LAMP.cx, LAMP.cy + 460, 360, '#ffcf7a', .22, 'lighter');
+      const r = RNG(511); for (let k = 0; k < 30; k++) { const X = r.range(200, 2100), Y = r.range(880, 1230), ph = r() * 6, x0 = X + Math.sin(tt * .9 + ph) * 60, y0 = Y + Math.sin(tt * 1.3 + ph * 2) * 30 - tt * 8, a = .5 + .5 * Math.sin(tt * 3 + ph); glow(g, x0, y0, 22, '#ffe08a', .55 * a); dab(g, x0, y0, 2.2, 2.2, 0, `rgba(255,248,200,${a})`); } }
+    if (name === 'fg') { g.globalAlpha = Math.max(live, u); liveGrass(g, t, { seed: 520, n: 190, x0: -40, x1: S.LW + 40, y: S.LH + 10, dy: 10, h0: 60, h1: 190, cols: ['#0a1422', '#0f1c30', '#16263e', '#1d3150'], wind: 1.2 }); g.globalAlpha = 1; }
+    if (u > 0) { g.globalAlpha = u; g.lineWidth = 2.6 / M[0] * .3; g.strokeStyle = 'rgba(255,255,255,.55)'; g.lineWidth = 3 / Math.max(.2, M[3]); g.strokeRect(0, 0, S.LW, S.LH); g.fillStyle = 'rgba(255,255,255,.6)'; [-130, 0, 130].forEach(q => { g.beginPath(); g.ellipse(S.LW / 2 + q, S.LH - 36, q ? 22 : 34, 14, 0, 0, 7); g.fill(); }); g.globalAlpha = 1; }
+    if (name === 'cel' && u > 0) { const hp = hatAt(f), M0 = exMatrix(i, 0, c), px = (hp.x - M0[4]) / M0[0], py = (hp.y - M0[5]) / M0[3]; hat(g, px, py, hp.rot, hp.sc / M0[0], hp.spin, hp.flut); }
+    g.restore();
+  });
+  // 流星（屏幕坐标）
+  if (f > TL.star[0] && f < TL.star[1] && live > 0) { const p = (f - TL.star[0]) / (TL.star[1] - TL.star[0]), x = 1500 - p * 700, y = 120 + p * 260, a = Math.sin(p * Math.PI) * live;
     const gr = g.createLinearGradient(x, y, x + 260, y - 100); gr.addColorStop(0, `rgba(255,250,235,${a})`); gr.addColorStop(1, 'rgba(255,250,235,0)'); g.strokeStyle = gr; g.lineWidth = 2.4; g.beginPath(); g.moveTo(x, y); g.lineTo(x + 260, y - 100); g.stroke(); glow(g, x, y, 22, '#ffffff', a); }
-  drawLayer(g, 'night', 'far', c);
-  const v = drawLayer(g, 'night', 'mid', c);
-  // 路灯：先闪两下再亮稳
-  const L = LAMP, on = f < TL.lamp ? 0 : f < TL.lamp + 4 ? 1 : f < TL.lamp + 9 ? .15 : f < TL.lamp + 13 ? .9 : f < TL.lamp + 16 ? .3 : 1;
-  if (on > 0) { g.save(); g.setTransform(v.z, 0, 0, v.z, -v.sx * v.z, -v.sy * v.z); lampLight(g, L, on); glow(g, L.cx, L.cy + 460, 360, '#ffcf7a', .22 * on, 'lighter'); g.restore(); }
-  // 萤火（一拍二）：暖色只给灯和它们
-  { const r = RNG(511), n = 26, ap = F.smr(TL.lamp - 20, TL.lamp + 40, f); for (let i = 0; i < n; i++) { const X = r.range(200, 2100), Y = r.range(900, 1230), ph = r() * 6; const x0 = X + Math.sin(tt * .9 + ph) * 60, y0 = Y + Math.sin(tt * 1.3 + ph * 2) * 30 - tt * 8;
-    const [x, y] = [(x0 - v.sx) * v.z, (y0 - v.sy) * v.z], a = ap * (.5 + .5 * Math.sin(tt * 3 + ph)); glow(g, x, y, 26, '#ffe08a', .55 * a); dab(g, x, y, 2.6, 2.6, 0, `rgba(255,248,200,${a})`); } }
-  drawLayer(g, 'night', 'fg', c);
-  // 最前面摇的草（一拍二）
-  liveGrass(g, t, { seed: 520, n: 160, x0: -40, x1: 1960, y: 1090, dy: 10, h0: 50, h1: 160, cols: ['#0a1422', '#0f1c30', '#16263e', '#1d3150'], wind: 1.2 });
+  if (u > .02) exTags(g, f, u, c);
 }
-const DRAW = { field: drawField, forest: drawForest, clouds: drawClouds, night: drawNight };
+const DRAW = { forest: drawForest, clouds: drawClouds, night: drawNight };
 let LAMP;
 
 // ───── 扫过画面的东西（转场）：树冠墙 / 云团，带一点运动模糊；中间那一段保证盖满
@@ -260,17 +221,16 @@ function draw(f) {
   const g = ctx; g.setTransform(1, 0, 0, 1, 0, 0); g.globalAlpha = 1; g.globalCompositeOperation = 'source-over'; g.filter = 'none';
   const s = sceneAt(f), c = CAM[s](f);
   DRAW[s](g, f, c);
-  sweep(g, f, TL.whip, OCC.canopy, 'h', '#1f3d2b');
-  sweep(g, f, TL.tilt, OCC.canopy, 'down', '#1f3d2b');
-  sweep(g, f, TL.dive, OCC.cloud, 'up', '#e8b8a6');
-  // 帽子（除了稻田——那里它画在赛璐璐层里，要跟着拆开）
-  if (s !== 'field') { const hp = hatAt(f); hat(g, hp.x, hp.y, hp.rot, hp.sc, hp.spin, hp.flut); }
+  sweep(g, f, TL.a, OCC.cloud, 'down', '#e8b8a6');
+  sweep(g, f, TL.b, OCC.cloud, 'up', '#e8b8a6');
+  // 帽子：一直在最前面（夜景拆开的那一段，它画在赛璐璐那一层里，跟着拆开）
+  if (!(s === 'night' && exU(f) > 0)) { const hp = hatAt(f); hat(g, hp.x, hp.y, hp.rot, hp.sc, hp.spin, hp.flut); }
   grade(g, f, s);
   if (!NOHUD) hud(g, f, s);
 }
 function grade(g, f, s) {
   // 每个场景一点点自己的调色（正午暖亮、林子暖、黄昏粉、夜冷），用重叠的权重渐变，不在某一帧跳
-  const w = { field: 1 - F.smr(SW.whip - 20, SW.whip + 20, f), night: F.smr(SW.dive - 20, SW.dive + 20, f) };
+  const w = { night: 1 - F.smr(SW.a - 20, SW.a + 20, f) };
   g.save();
   g.globalCompositeOperation = 'soft-light'; g.fillStyle = 'rgba(248,214,158,.22)'; g.fillRect(0, 0, 1920, 1080);
   if (w.night > 0) { g.globalCompositeOperation = 'multiply'; g.fillStyle = `rgba(150,170,230,${.12 * w.night})`; g.fillRect(0, 0, 1920, 1080); }
@@ -288,7 +248,7 @@ function hud(g, f, s) {
   if (f < 110) {
     const out = 70;
     F.rise(g, '手绘动画', 72, 960, f, -40, { font: '900 132px SerifSC', size: 132, color: '#fff', out, kind: 'title', rate: 3, ls: 10, shadow: 'rgba(0,20,10,.45)', shadowBlur: 30 });
-    F.rise(g, '一顶草帽，被风吹过一整天', 78, 1022, f, -40, { font: '500 30px SansSC', size: 30, color: 'rgba(255,255,255,.94)', out, kind: 'small', rate: .6, shadow: 'rgba(0,20,10,.5)' });
+    F.rise(g, '一顶草帽，从夜里飞到天亮', 78, 1022, f, -40, { font: '500 30px SansSC', size: 30, color: 'rgba(255,255,255,.94)', out, kind: 'small', rate: .6, shadow: 'rgba(0,20,10,.5)' });
   }
   // 每章一条字幕 + 底部的暗带
   const band = g.createLinearGradient(0, 860, 0, 1080); band.addColorStop(0, 'rgba(10,14,24,0)'); band.addColorStop(.55, 'rgba(10,14,24,.5)'); band.addColorStop(1, 'rgba(10,14,24,.7)');
@@ -298,8 +258,7 @@ function hud(g, f, s) {
     F.rise(g, title, 72, 990, f, t0, { font: '700 50px SerifSC', size: 50, color: '#fff', out: t1, rate: .9, dur: 12, shadow: 'rgba(10,14,24,.6)' });
     F.rise(g, sub, 75, 1038, f, t0 + 5, { font: '500 26px SansSC', size: 26, color: 'rgba(255,255,255,.88)', out: t1, kind: 'small', rate: .45, dur: 12, shadow: 'rgba(10,14,24,.6)' }); }
   // 03 章：这一场景的色板一格格弹出来
-  if (f >= 600 && f < 720) chips(g, f, PALS.clouds.c, 1220, 940, 600, 704);
-  if (f >= 800 && f < 900) chips(g, f, PALS.night.c, 1220, 940, 800, 892);
+  if (f >= 380 && f < 520) chips(g, f, PALS.clouds.c, 1220, 940, 380, 500);
   if (f >= TL.strip) strip(g, f);
 }
 function chips(g, f, cols, x, y, t0, t1) {
@@ -312,24 +271,24 @@ let THUMBS = null;
 function strip(g, f) {
   const a = F.smr(TL.strip, TL.strip + 24, f);
   g.save(); g.globalAlpha = a * .62; g.fillStyle = '#060a16'; g.fillRect(0, 0, 1920, 1080); g.restore();
-  const keys = ['field', 'forest', 'clouds', 'night'], W0 = 400, H0 = 225, gap = 28, x0 = (1920 - (W0 * 4 + gap * 3)) / 2, y0 = 560;
+  const keys = ['night', 'clouds', 'forest'], W0 = 480, H0 = 270, gap = 40, x0 = (1920 - (W0 * 3 + gap * 2)) / 2, y0 = 540;
   keys.forEach((k, i) => {
     const p = F.spring((f - TL.strip - 4 - i * 5) / 16, .6, 9); if (p <= 0) return;
     const x = x0 + i * (W0 + gap), y = y0 + (1 - p) * 60;
     g.save(); g.globalAlpha = F.clamp(p * 1.4); g.shadowColor = 'rgba(0,0,0,.5)'; g.shadowBlur = 24; g.drawImage(THUMBS[k], x, y, W0, H0); g.shadowBlur = 0;
     g.strokeStyle = 'rgba(255,255,255,.35)'; g.lineWidth = 1.5; g.strokeRect(x, y, W0, H0);
-    PALS[k].c.forEach((c, j) => { g.fillStyle = c; g.fillRect(x + j * (W0 / 6), y + H0 + 12, W0 / 6 - 4, 30); });
+    PALS[k].c.forEach((c, j) => { g.fillStyle = c; g.fillRect(x + j * (W0 / 6), y + H0 + 12, W0 / 6 - 5, 34); });
     g.restore();
-    F.rise(g, PALS[k].name, x, y + H0 + 76, f, TL.strip + 10 + i * 5, { font: '500 22px SansSC', size: 22, color: 'rgba(255,255,255,.92)', kind: 'small', rate: .5, dur: 10 });
+    F.rise(g, PALS[k].name, x, y + H0 + 82, f, TL.strip + 10 + i * 5, { font: '500 22px SansSC', size: 22, color: 'rgba(255,255,255,.92)', kind: 'small', rate: .5, dur: 10 });
   });
   F.rise(g, '手绘动画', 960, 330, f, TL.title, { font: '900 128px SerifSC', size: 128, color: '#fff', align: 'center', kind: 'title', rate: 3, ls: 14, shadow: 'rgba(0,0,0,.5)', shadowBlur: 30 });
-  F.rise(g, 'HAND-PAINTED ANIMATION · 一天的色彩剧本', 960, 400, f, TL.title + 12, { font: '500 22px Mono', size: 22, color: 'rgba(255,255,255,.75)', align: 'center', kind: 'small', rate: .3, ls: 3 });
+  F.rise(g, 'HAND-PAINTED ANIMATION · 从夜到天亮的色彩剧本', 960, 400, f, TL.title + 12, { font: '500 22px Mono', size: 22, color: 'rgba(255,255,255,.75)', align: 'center', kind: 'small', rate: .3, ls: 3 });
   F.rise(g, '观默', 960, 490, f, TL.sign, { font: '700 48px SerifSC', size: 48, color: '#ffd27a', align: 'center', kind: 'title', rate: 5, shadow: 'rgba(0,0,0,.5)' });
 }
 
 window.frame = async f => { draw(f); };
 window.events = () => {
-  const dummy = document.createElement('canvas').getContext('2d'); for (let f = 0; f < END; f++) { const s = sceneAt(f); hud(dummy, f, s); if (s === 'field' && exU(f) > .02) exTags(dummy, f, exU(f), CAM.field(f)); }
+  const dummy = document.createElement('canvas').getContext('2d'); for (let f = 0; f < END; f++) { const s = sceneAt(f); hud(dummy, f, s); if (s === 'night' && exU(f) > .02) exTags(dummy, f, exU(f), CAM.night(f)); }
   const hatFlips = []; for (let f = 0; f < TL.land; f += 5) hatFlips.push(f);
   return { cues: [...F.cues.values()].filter(c => c[3] !== 'none').sort((a, b) => a[0] - b[0]), TL, SW, end: END, beat: BEAT, hatFlips };
 };
@@ -338,7 +297,6 @@ window.events = () => {
   await document.fonts.load('900 132px SerifSC', '手绘动画一顶草帽观默'); await document.fonts.load('500 26px SansSC', '天云'); await document.fonts.load('700 26px SansSC', '天云');
   await Promise.all(Object.entries(NAMES).flatMap(([s, ls]) => ls.map(async l => { IMG[s + '-' + l] = await load(`layers/${s}-${l}.png`); })));
   LAMP = (() => { const s = 1.0, x = 1700, gy = 860 + 230; return { x: x - 20 * s, y: gy - 556 * s, w: 40 * s, h: 66 * s, cx: x, cy: gy - 523 * s, s }; })();
-  FIELD_LIT = mk(1920, 1080); FIELD_YEL = mk(1920, 1080); FIELD_YEL.g.filter = 'sepia(.55) saturate(1.8) brightness(1.12)'; FIELD_YEL.g.drawImage(IMG['field-field'], 0, 0, 1920, 1080); FIELD_YEL.g.filter = 'none';
   // 扫过画面的东西：树冠（四边都碎）；云团 = 原图 + 上下翻过来的一份，上下两条边都是云顶
   OCC.canopy = { c: IMG['forest-canopy'], top: .19, bot: .81, left: .12, right: .88 };
   OCC.cloud = { c: IMG['clouds-wisp'], top: .3, bot: .84, left: 0, right: 1 };
@@ -346,7 +304,7 @@ window.events = () => {
   for (let k = 0; k < 4; k++) { const c = document.createElement('canvas'); c.width = c.height = 256; const gg = c.getContext('2d'), im = gg.createImageData(256, 256), rr = RNG(500 + k); for (let i = 0; i < im.data.length; i += 4) { const v = 128 + (rr() - .5) * 130; im.data[i] = im.data[i + 1] = im.data[i + 2] = v; im.data[i + 3] = 255; } gg.putImageData(im, 0, 0); GRAIN.push(c); }
   // 片尾的缩略帧：直接用各场景中段的一帧
   NOHUD = true; THUMBS = {}; const keep = document.createElement('canvas'); keep.width = 1920; keep.height = 1080;
-  for (const [k, fr] of [['field', 60], ['forest', 420], ['clouds', 640], ['night', 880]]) { draw(fr); const t = document.createElement('canvas'); t.width = 800; t.height = 450; t.getContext('2d').drawImage(cv, 0, 0, 800, 450); THUMBS[k] = t; }
+  for (const [k, fr] of [['night', 30], ['clouds', 420], ['forest', 700]]) { draw(fr); const t = document.createElement('canvas'); t.width = 800; t.height = 450; t.getContext('2d').drawImage(cv, 0, 0, 800, 450); THUMBS[k] = t; }
   NOHUD = false; F.cues.clear();
   if (!Qs.has('nodraw')) draw(+(Qs.get('f') || 0));
   window.ready = true;

@@ -82,6 +82,12 @@ SCENES.clouds = async () => {
   { const m = HD.canvas(LW * S, 2400 * S), mg = m.getContext('2d'), rr = RNG(362); mg.scale(S, S); mg.fillStyle = '#000'; mg.fillRect(0, 0, LW, 1900);
     for (let x = -100; x < LW + 100; x += rr.range(90, 160)) { const r0 = rr.range(110, 230); mg.beginPath(); mg.arc(x, 1900 + rr.range(-40, 120), r0, 0, TAU); mg.fill(); }
     wg.save(); wg.setTransform(1, 0, 0, 1, 0, 0); wg.globalCompositeOperation = 'destination-in'; wg.drawImage(m, 0, 0); wg.restore(); }
+  // 分色：和树林、夜景同一套“5 个平色”（按亮度落到 6 级色阶上，边缘保留硬边），再压一层纸纹
+  const RAMP = ['#4f4682', '#7a5f9e', '#b585a8', '#eaa49a', '#ffcfa2', '#fff0d4'].map(hex), TH = [.3, .42, .55, .68, .82];
+  const poster = c => { const g2 = c.getContext('2d'), im = g2.getImageData(0, 0, c.width, c.height), d = im.data;
+    for (let i = 0; i < d.length; i += 4) { if (!d[i + 3]) continue; const L = (d[i] * .3 + d[i + 1] * .55 + d[i + 2] * .15) / 255; let k = 0; while (k < 5 && L > TH[k]) k++; const C = RAMP[k]; d[i] = C[0]; d[i + 1] = C[1]; d[i + 2] = C[2]; d[i + 3] = d[i + 3] > 110 ? 255 : 0; }
+    g2.putImageData(im, 0, 0); c.g = g2; paperize(c, .3); return c; };
+  P.forEach(l => poster(l.canvas));
   sceneQ(1);
   return [{ name: 'sky', c: SKY }, { name: 'towers', c: P[0].canvas }, { name: 'sea1', c: P[1].canvas }, { name: 'sea2', c: P[2].canvas }, { name: 'wisp', c: WISP }];
 };
@@ -128,4 +134,35 @@ SCENES.night = async () => {
   paperize(FG, 0.2);
   sceneQ(1);
   return [{ name: 'sky', c: SKY }, { name: 'far', c: FAR }, { name: 'mid', c: MID, meta: { lamp } }, { name: 'fg', c: FG }];
+};
+
+// ③' 黎明 · 云海（和树林、夜景同一套 vibe-vedio 画风：平涂的分色云、硬边的亮面、山顶露出云海）。世界 2400 × 1350
+SCENES.dawn = async () => {
+  sceneQ(1.4);
+  const LW = 2400, LH = 1350, SKY = mk(LW, LH), FAR = mk(LW, LH), SEA1 = mk(LW, LH), SEA2 = mk(LW, LH), WISP = mk(LW, 2400);
+  const SUN = [1560, 800];
+  let g = SKY.g;
+  paintSky(g, LW, LH, [[0, '#14245a'], [0.25, '#2f3f86'], [0.45, '#6b5aa0'], [0.58, '#c9739a'], [0.66, '#f39a7a'], [0.72, '#ffc98a'], [0.78, '#ffe6b0'], [1, '#fff1d0']], 501, 1400);
+  stars(g, LW, LH * 0.4, 400, 502, (y) => clamp(1 - y / (LH * 0.36)), 0.03);
+  glow(g, SUN[0], SUN[1], 1100, '#ffb06a', 0.7, 'screen'); glow(g, SUN[0], SUN[1], 360, '#fff2cc', 0.95, 'screen');
+  g.fillStyle = '#fff7e2'; g.beginPath(); g.arc(SUN[0], SUN[1], 54, 0, TAU); g.fill();
+  [[600, 520, 900, 16], [1800, 560, 700, 14], [1200, 470, 600, 12], [300, 430, 520, 12], [2100, 450, 500, 11]].forEach(([x, y, w, h], i) => streak(g, { x, y, w, h, seed: 511 + i, sh: '#9a6aa0', mid: '#e48c98', lit: '#ffc596', rim: '#fff0cf', lx: 0.5, ly: 0.85, soft: 0.1 }));
+  paperize(SKY, 0.22);
+  // 远山：几座尖峰露出云海，朝太阳的一面被染成粉橙
+  g = FAR.g;
+  peak(g, { cx: 520, hw: 520, h: 420, base: 900, seed: 521, sh: '#3d3f7e', lit: '#e7a0a0', hz: '#f2b6a6', hzA: 0.7, lightSide: 1 });
+  peak(g, { cx: 1180, hw: 380, h: 260, base: 900, seed: 522, sh: '#4a4a8a', lit: '#f0b0a0', hz: '#f2b6a6', hzA: 0.75, lightSide: 1 });
+  peak(g, { cx: 2000, hw: 560, h: 470, base: 900, seed: 523, sh: '#38386f', lit: '#e09a9c', hz: '#f2b6a6', hzA: 0.7, lightSide: -1 });
+  paperize(FAR, 0.25);
+  const seaC = { sh: '#7a62a0', mid: '#d38ba0', lit: '#ffc8a2', rim: '#fff1d6', hazeC: '#f4b8a4', under: '#5a4a86', lx: 0.55, ly: -0.8 };
+  cloudSea(SEA1.g, { ...seaC, w: LW, y0: 860, y1: 1000, r0: 30, r1: 60, rows: 5, haze: 0.85, seed: 531 });
+  cloudSea(SEA2.g, { ...seaC, w: LW, y0: 1020, y1: 1300, r0: 80, r1: 170, rows: 4, haze: 0.25, seed: 532 });
+  paperize(SEA1, 0.25); paperize(SEA2, 0.3);
+  // 转场用的云团：一摞云海，底边是一圈圆（上下两条边都碎）
+  cloudSea(WISP.g, { ...seaC, w: LW, y0: 700, y1: 1900, r0: 160, r1: 260, rows: 5, haze: 0.1, seed: 541 });
+  { const m = document.createElement('canvas'); m.width = WISP.width; m.height = WISP.height; const mg = m.getContext('2d'), rr = RNG(542); mg.scale(1.4, 1.4); mg.fillStyle = '#000'; mg.fillRect(0, 0, LW, 1950);
+    for (let x = -100; x < LW + 100; x += rr.range(90, 160)) { mg.beginPath(); mg.arc(x, 1950 + rr.range(-40, 120), rr.range(110, 230), 0, TAU); mg.fill(); }
+    const wg = WISP.g; wg.save(); wg.setTransform(1, 0, 0, 1, 0, 0); wg.globalCompositeOperation = 'destination-in'; wg.drawImage(m, 0, 0); wg.restore(); }
+  sceneQ(1);
+  return [{ name: 'sky', c: SKY }, { name: 'far', c: FAR }, { name: 'sea1', c: SEA1 }, { name: 'sea2', c: SEA2 }, { name: 'wisp', c: WISP }];
 };
