@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="zh"><head><meta charset="utf-8"><title>黏土风 · 风格图</title>
+<style>
+@font-face { font-family: Fredoka; src: url(../../public/fonts/Fredoka.ttf); font-weight: 300 700; font-stretch: 75% 125%; }
+@font-face { font-family: NotoSC; src: url(../../public/fonts/NotoSansSC-Black.otf); font-weight: 900; }
+@font-face { font-family: NotoSC; src: url(../../public/fonts/NotoSansSC-Bold.otf); font-weight: 700; }
+@font-face { font-family: NotoSC; src: url(../../public/fonts/NotoSansSC-Medium.otf); font-weight: 500; }
+html, body { margin: 0; width: 1920px; height: 1080px; overflow: hidden; background: #F6EEF6; }
+canvas { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; }
+.t { position: absolute; color: #6A568F; font-family: Fredoka; }
+.k { font: 600 22px Fredoka; letter-spacing: .26em; }
+.spec { font: 500 19px/1.75 NotoSC; color: #7A679E; }
+.spec b { font: 600 19px Fredoka; color: #5C4887; letter-spacing: .04em; }
+</style></head>
+<body>
+<canvas id="c" width="3840" height="2160"></canvas>
+<div class="t k" style="left:64px;top:50px">CLAYMORPHISM · 2021 —</div>
+<div class="t k" style="right:64px;top:50px;color:#9A88C0">SOFT · MATTE · PRESSED</div>
+<svg style="position:absolute;left:0;top:0" width="1920" height="1080"><path d="M832,214 C920,228 978,290 994,384" fill="none" stroke="#6A568F" stroke-width="2" stroke-dasharray="2 7" stroke-linecap="round"/><circle cx="996" cy="394" r="5" fill="#6A568F"/></svg>
+<div class="t spec" style="left:560px;top:168px;text-align:right;width:262px"><b>THUMB · 指纹</b><br>按下去的坑留着，不回弹</div>
+<script src="clay.js"></script>
+<script>
+(async () => {
+  await Promise.all([
+    document.fonts.load('700 100px Fredoka'), document.fonts.load('600 100px Fredoka'),
+    document.fonts.load('900 100px NotoSC'),
+  ]);
+  const S = 2, W = 1920 * S, H = 1080 * S;
+  const sc = f => x => { x.scale(S, S); f(x); };
+  const letter = (ch, X, Y, size, rot) => sc(x => {
+    x.translate(X, Y); x.rotate(rot); x.font = `700 ${size}px Fredoka`; x.fontStretch = 'expanded'; x.fillText(ch, 0, 0);
+  });
+  const objs = [
+    // 散落的小泥团（先画，在后面）
+    { draw: sc(x => { x.beginPath(); x.arc(1642, 236, 76, 0, 7); x.fill(); }), color: '#8CC8FF', R: 76, lift: .8 },
+    { draw: sc(x => { x.beginPath(); x.arc(1486, 136, 34, 0, 7); x.fill(); }), color: '#FFD36E', R: 34, lift: 1 },
+    { draw: sc(x => { x.beginPath(); x.ellipse(1790, 420, 52, 40, .3, 0, 7); x.fill(); }), color: '#FFA9C4', R: 40, lift: .9 },
+    // CLAY
+    { draw: letter('C', 92, 668, 540, -.05), color: '#FF9C85', R: 50, lift: .6,
+      dents: [{ x: 210, y: 560, rx: 26, ry: 22, ang: 0, depth: 7 }] },
+    { draw: letter('L', 520, 650, 540, .04), color: '#76D6B9', R: 50, lift: .6 },
+    { draw: letter('A', 812, 676, 540, -.03), color: '#A893FF', R: 50, lift: .6,
+      dents: [{ x: 1020, y: 470, rx: 64, ry: 86, ang: -.35, depth: 28, print: true, period: 4.6 }] },
+    { draw: letter('Y', 1238, 662, 540, .06), color: '#FFCB5C', R: 50, lift: .6 },
+    // 一根搓出来的泥条
+    { draw: sc(x => { x.lineWidth = 44; x.lineCap = 'round'; x.beginPath(); x.moveTo(1500, 890);
+        for (let t = 0; t <= 1.0001; t += .02) x.lineTo(1500 + t * 330, 890 + Math.sin(t * Math.PI * 2.4) * 46 - t * 40); x.stroke(); }),
+      color: '#FF8FB1', R: 22, lift: .7 },
+    // 按钮：一块泥，字是压进去的
+    { draw: sc(x => { x.beginPath(); x.roundRect(1010, 820, 380, 136, 68); x.fill(); }), color: '#B9A9FF', R: 40, lift: .9, lump: .6,
+      deboss: { draw: sc(x => { x.font = '600 62px Fredoka'; x.textAlign = 'center'; x.fillText('PRESS', 1200, 910); }), depth: 9, r: 4.5 } },
+    // 中文标题
+    { draw: sc(x => { x.font = '900 196px NotoSC'; x.fillText('黏土风', 96, 990); }), color: '#FF7FA5', R: 15, lift: .9, lump: .7 },
+  ];
+  const bg = x => { const g = x.createLinearGradient(0, 0, W, H); g.addColorStop(0, '#FFF2EA'); g.addColorStop(.55, '#F8ECF4'); g.addColorStop(1, '#E9E0FF'); x.fillStyle = g; x.fillRect(0, 0, W, H); };
+  const t0 = performance.now();
+  const img = Clay.render(W, H, bg, objs, { scale: S, shadow: '#7A55A8' });
+  document.getElementById('c').getContext('2d').putImageData(img, 0, 0);
+  console.log('render', ((performance.now() - t0) / 1000).toFixed(1) + 's');
+  window.__done = true;
+})().catch(e => { console.log(e.stack); window.__done = true; });
+</script>
+</body></html>
