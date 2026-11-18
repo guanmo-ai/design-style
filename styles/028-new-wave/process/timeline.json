@@ -1,0 +1,56 @@
+{
+  "fps": 60,
+  "bpm": 130.07,
+  "frames": 1200,
+  "title": "新浪潮",
+  "segments": [
+    {
+      "start": 0,
+      "dur": 115,
+      "label": "封面",
+      "color": "#EC1C8C"
+    },
+    {
+      "start": 115,
+      "dur": 110,
+      "label": "叠色",
+      "color": "#12A8D8"
+    },
+    {
+      "start": 225,
+      "dur": 139,
+      "label": "台阶",
+      "color": "#FFD21F"
+    },
+    {
+      "start": 364,
+      "dur": 138,
+      "label": "字距",
+      "color": "#EC1C8C"
+    },
+    {
+      "start": 502,
+      "dur": 166,
+      "label": "网格",
+      "color": "#141414"
+    },
+    {
+      "start": 668,
+      "dur": 139,
+      "label": "网点",
+      "color": "#12A8D8"
+    },
+    {
+      "start": 807,
+      "dur": 166,
+      "label": "六种版式",
+      "color": "#FFD21F"
+    },
+    {
+      "start": 973,
+      "dur": 227,
+      "label": "套准收束",
+      "color": "#EC1C8C"
+    }
+  ]
+}
