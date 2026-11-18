@@ -1,188 +1,331 @@
 <!doctype html>
 <html><head><meta charset="utf-8">
-<title>粘性滚动 · 开头小样</title>
+<title>粘性滚动 · 开头小样 v3</title>
 <style>
-@font-face{font-family:IDisp;src:url(../../../public/fonts/InterDisplay-Bold.ttf);font-weight:700}
+@font-face{font-family:Jost;src:url(../../../public/fonts/Jost.ttf);font-weight:100 900}
+@font-face{font-family:Fredoka;src:url(../../../public/fonts/Fredoka.ttf);font-weight:300 700}
 @font-face{font-family:IDisp;src:url(../../../public/fonts/InterDisplay-SemiBold.ttf);font-weight:600}
-@font-face{font-family:Inter;src:url(../../../public/fonts/Inter-Medium.ttf);font-weight:500}
+@font-face{font-family:IDisp;src:url(../../../public/fonts/InterDisplay-Bold.ttf);font-weight:700}
 @font-face{font-family:Mono;src:url(../../../public/fonts/GeistMono-Medium.ttf);font-weight:500}
 @font-face{font-family:SC;src:url(../../../public/fonts/NotoSansSC-Black.otf);font-weight:900}
 @font-face{font-family:SC;src:url(../../../public/fonts/NotoSansSC-Bold.otf);font-weight:700}
 @font-face{font-family:SC;src:url(../../../public/fonts/NotoSansSC-Medium.otf);font-weight:500}
-html,body{margin:0;background:#000;overflow:hidden}
-canvas{display:block}
+html,body{margin:0;background:#F0E9DA;overflow:hidden}
+canvas{display:block;position:absolute;left:0;top:0}
 </style></head>
-<body><canvas id="c" width="1920" height="1080"></canvas>
+<body><canvas id="gl" width="1920" height="1080"></canvas><canvas id="ov" width="1920" height="1080"></canvas>
+<script src="assets.js"></script>
 <script>
-/* 粘性滚动 · 开头小样（6 秒 · 60fps）。整支片子 = 在滚一张网页（苹果产品页的质感：纯黑、深灰卡片、超大字、真照片）。
-   材料自己怎么动：页面在走，它不走——滚动带惯性（指数衰减，τ = 0.5 s，≈ iOS 默认减速 0.998/ms），
-   钉住的元素在容器里纹丝不动，容器走完就被“顶走”。渐变 = 此刻钉住的东西。
-   在走的东西按滚动速度带运动模糊（子帧平均），钉住的东西自然是清楚的。
+/* 粘性滚动 · 开头小样 v3（9 秒 · 60fps）
+   整支片子 = 在滚一张长网页；每一节是往期的一种风格（布局 01 的“同一布局，换风格”）：
+   包豪斯一节：左边的海报钉住，黑线就是滚动条，红方块顺着它往下滑，黄半圆像太阳升起来（擦洗）；右栏卡片照常滚。
+   孟菲斯一节：五条规则卡一张张钉住叠上去，压在下面的往后缩（叠卡）。
+   液态玻璃：导航胶囊从头钉到尾，把滚过它下面的内容弯过来（真折射，WebGL）；选中的标签是一滴玻璃，滑过去时被拉长。
+   最后镜头拉远：整张长网页、视口在上面走、钉住的东西在各自的容器里跟着走，到底被顶走。
+   材料自己怎么动：页面在走，它不走。滚动带惯性（τ = 0.5 s ≈ iOS 默认减速），在走的东西按速度运动模糊，钉住的自然清楚。
    每一帧是帧号的纯函数：window.frame(f)。 */
 const W = 1920, H = 1080, FPS = 60;
-const cv = document.getElementById('c'), g = cv.getContext('2d');
-const buf = document.createElement('canvas'); buf.width = W; buf.height = H;
-const b = buf.getContext('2d');
-
-const C = { bg: '#000000', card: '#161618', card2: '#0F0F11', line: 'rgba(255,255,255,.07)',
-  ink: '#F5F5F7', dim: '#86868B', g0: '#2997FF', g1: '#7D5BFF', g2: '#FF4FA3' };
-const grad = (c, x0, y0, x1, y1) => { const q = c.createLinearGradient(x0, y0, x1, y1); q.addColorStop(0, C.g0); q.addColorStop(.55, C.g1); q.addColorStop(1, C.g2); return q; };
-
-// ---------- 照片（往期瀑布流用过的 AI 生成照片）----------
-const PH = {};
-const PHOTOS = ['dunes', 'ocean', 'stairs', 'tokyo', 'lake', 'monstera'];
-const loadPhotos = () => Promise.all(PHOTOS.map(n => new Promise(r => { const im = new Image(); im.onload = () => { PH[n] = im; r(); }; im.src = `../../../public/02-masonry/photos/${n}.jpg`; })));
-function cover(c, im, x, y, w, h, fx = .5, fy = .5) {       // object-fit: cover
-  const s = Math.max(w / im.width, h / im.height), sw = w / s, sh = h / s;
-  c.drawImage(im, (im.width - sw) * fx, (im.height - sh) * fy, sw, sh, x, y, w, h);
-}
-
-// ---------- 滚动：几次“甩”的叠加，每次 = 快速起手 + 指数衰减 ----------
-const TAU = 0.5, RISE = 0.06;
-const X = u => u <= 0 ? 0 : 1 - (TAU * Math.exp(-u / TAU) - RISE * Math.exp(-u / RISE)) / (TAU - RISE);
-const Xv = u => u <= 0 ? 0 : (Math.exp(-u / TAU) - Math.exp(-u / RISE)) / (TAU - RISE);
-const FLICKS = [[-0.12, 1400], [2.3, 2900], [4.55, 520]];
-const scrollAt = t => FLICKS.reduce((s, [t0, A]) => s + A * X(t - t0), 0);
-const velAt = t => FLICKS.reduce((s, [t0, A]) => s + A * Xv(t - t0), 0);
-
-// ---------- 页面（页面坐标，视口高 1080）----------
-const A_END = 2500;
-const TT = 250, TH = 600, T_Y = 250;          // 标题：top 250，块高 600
-const B0 = A_END, B_END = B0 + 3600;          // 第二节：雪崩，整屏钉住
-const PAGE_H = 9200;
-const sticky = (pageY, top, h, end, s) => Math.min(Math.max(pageY - s, top), end - h - s);
-
+const BH = { paper: '#F0E9DA', ink: '#161514', red: '#DB3A26', yel: '#F2B419', blue: '#1F4FA3', gray: '#6E675E' };
+const MP = { paper: '#FDF6EC', ink: '#111111', pink: '#FF7EB6', yel: '#FFD23F', teal: '#22C3B5', blue: '#2D4BFF', red: '#FF5A36' };
 const clamp = (x, a = 0, z = 1) => Math.min(Math.max(x, a), z);
 const sm = x => { x = clamp(x); return x * x * (3 - 2 * x); };
+const smr = x => { x = clamp(x); return x * x * x * (x * (6 * x - 15) + 10); };
 function hash(n) { const s = Math.sin(n * 127.1 + 311.7) * 43758.5453; return s - Math.floor(s); }
+function mk(w, h) { const c = document.createElement('canvas'); c.width = w; c.height = h; return c; }
 function txt(c, s, x, y, font, color, align = 'left', ls = 0) {
   c.font = font; c.fillStyle = color; c.textAlign = align; c.textBaseline = 'alphabetic';
   c.letterSpacing = ls + 'px'; c.fillText(s, x, y); c.letterSpacing = '0px';
 }
 function tw(c, s, font, ls = 0) { c.font = font; c.letterSpacing = ls + 'px'; const w = c.measureText(s).width; c.letterSpacing = '0px'; return w; }
-function rr(c, x, y, w, h, r) { c.beginPath(); c.roundRect(x, y, w, h, r); }
-function cardBg(c, x, y, w, h, r = 32) {
-  const q = c.createLinearGradient(0, y, 0, y + h); q.addColorStop(0, C.card); q.addColorStop(1, C.card2);
-  rr(c, x, y, w, h, r); c.fillStyle = q; c.fill(); c.strokeStyle = C.line; c.lineWidth = 2; c.stroke();
-}
 
-// 右栏：照片卡和大数字卡，跟着页面走
-const CARDS = (() => {
-  const L = [
-    { k: 'photo', h: 470, src: 'dunes', cap: '钉住', en: 'Pin' },
-    { k: 'num', h: 300, big: '1 690', unit: 'px', d: '这一节标题钉住的距离' },
-    { k: 'photo', h: 470, src: 'ocean', cap: '擦洗', en: 'Scrub' },
-    { k: 'num', h: 300, big: '0 → 1', unit: '', d: '进度跟着滚动走' },
-    { k: 'photo', h: 560, src: 'stairs', cap: '顶走', en: 'Push', fy: .35 },
+// ---------- 滚动：几次“甩”的叠加，每次 = 快速起手 + 指数衰减 ----------
+const TAU = 0.5, RISE = 0.06;
+const X = u => u <= 0 ? 0 : 1 - (TAU * Math.exp(-u / TAU) - RISE * Math.exp(-u / RISE)) / (TAU - RISE);
+const Xv = u => u <= 0 ? 0 : (Math.exp(-u / TAU) - Math.exp(-u / RISE)) / (TAU - RISE);
+const FLICKS = [[-0.12, 1250], [2.1, 800], [3.3, 800], [5.9, 736], [6.75, 736], [7.6, 736], [8.45, 736]];
+const scrollAt = t => FLICKS.reduce((s, [t0, A]) => s + A * X(t - t0), 0);
+const velAt = t => FLICKS.reduce((s, [t0, A]) => s + A * Xv(t - t0), 0);
+// 镜头：6.2 s 起拉远到 0.3（按对数走，推拉匀速）
+// 镜头：2.0 s 拉远到 0.27（看到整张长网页、视口在上面走），4.2 s 推回来，正好落在第一张规则卡钉住的时候
+const zoomAt = t => { const z = smr((t - 2.0) / 1.3) * (1 - smr((t - 4.2) / 1.25)); return { k: Math.exp(Math.log(0.3) * z), z }; };
+
+// ---------- 页面（页面坐标；视口 1920×1080）----------
+const sticky = (pageY, top, h, end, s) => Math.min(Math.max(pageY - s, top), end - h - s);   // 屏幕 y
+const NAV = { top: 26, h: 88, w: 1000 };
+// 包豪斯一节
+const A_END = 2700, STG = { x: 96, y: 150, w: 1040, h: 860 };
+const A_PIN = A_END - STG.h - STG.y;            // 1690：海报钉住的最后一个 scrollY
+// 孟菲斯一节
+const B0 = A_END, CARD = { w: 1400, h: 680, gap: 760, top: 150, step: 24 }, NCARD = 5;
+const cardY = i => B0 + 300 + i * CARD.gap, cardTop = i => CARD.top + i * CARD.step, cardPin = i => cardY(i) - cardTop(i);
+const B_END = cardY(NCARD - 1) + CARD.h + 400;   // 叠卡的容器底
+
+// ---------- 预先画好的卡片（位图）----------
+const IMG = {};
+const loadImg = (k, src) => new Promise(r => { const im = new Image(); im.onload = () => { IMG[k] = im; r(); }; im.src = src; });
+const RC = [];   // 右栏：包豪斯卡片
+const MC = [];   // 孟菲斯规则卡
+function bauhausCards() {
+  const L = [];
+  const card = (h, bg, fn) => { const c = mk(650, h), x = c.getContext('2d'); x.fillStyle = bg; x.fillRect(0, 0, 650, h); fn(x); L.push(c); };
+  card(420, BH.red, x => {
+    x.fillStyle = BH.paper; x.beginPath(); x.arc(650, 420, 230, Math.PI, 1.5 * Math.PI); x.lineTo(650, 420); x.fill();
+    txt(x, '01', 48, 86, '500 40px Jost', BH.paper); txt(x, '钉住', 44, 260, '900 132px SC', BH.paper); txt(x, 'Pin', 50, 352, '600 76px Jost', BH.paper);
+  });
+  card(812, BH.paper, x => { x.drawImage(IMG.bh, 0, 0, 650, 812); });
+  card(420, BH.blue, x => {
+    x.fillStyle = BH.yel; x.beginPath(); x.arc(520, 420, 150, Math.PI, 2 * Math.PI); x.fill();
+    txt(x, '02', 48, 86, '500 40px Jost', BH.paper); txt(x, '擦洗', 44, 260, '900 132px SC', BH.paper); txt(x, 'Scrub', 50, 352, '600 76px Jost', BH.paper);
+  });
+  card(360, BH.paper, x => {
+    x.strokeStyle = BH.ink; x.lineWidth = 12; x.strokeRect(6, 6, 638, 348);
+    txt(x, '1 690', 44, 196, '700 168px Jost', BH.ink, 'left', -4); txt(x, 'px', 50 + tw(x, '1 690', '700 168px Jost', -4), 196, '500 60px Jost', BH.gray);
+    txt(x, '左边这张海报钉住的距离', 48, 290, '700 34px SC', BH.ink);
+  });
+  card(420, BH.yel, x => {
+    x.fillStyle = BH.ink; x.fillRect(470, 250, 130, 130);
+    txt(x, '03', 48, 86, '500 40px Jost', BH.ink); txt(x, '顶走', 44, 260, '900 132px SC', BH.ink); txt(x, 'Push', 50, 352, '600 76px Jost', BH.ink);
+  });
+  let y = STG.y; for (const c of L) { RC.push({ c, y }); y += c.height + 28; }
+}
+function memphisCards() {
+  const R = [
+    ['01', '钉在容器里', '父元素有多高，它就能钉多久', MP.pink, MP.ink],
+    ['02', '一次只钉一样', '同一屏只让一个主角停下', MP.teal, MP.ink],
+    ['03', '进度可以倒着走', '擦洗是滚动的函数，往回滚就倒放', MP.yel, MP.ink],
+    ['04', '惯性交给系统', '只改“滚到哪显示什么”，不改滚多快', '#FFFFFF', MP.ink],
+    ['05', '手机上换排法', '左钉右滚，到手机上变成图在上、字盖过去', MP.blue, '#FFFFFF'],
   ];
-  let y = 70; for (const c of L) { c.y = y; y += c.h + 24; } return L;
-})();
-const CX = 1100, CW = 700;
-
-function card(c, cd, sy) {
-  const x = CX, y = cd.y - sy, w = CW, h = cd.h;
-  if (y > H || y + h < 0) return;
-  if (cd.k === 'photo') {
-    c.save(); rr(c, x, y, w, h, 32); c.clip(); cover(c, PH[cd.src], x, y, w, h, .5, cd.fy ?? .5);
-    const q = c.createLinearGradient(0, y + h * .55, 0, y + h); q.addColorStop(0, 'rgba(0,0,0,0)'); q.addColorStop(1, 'rgba(0,0,0,.55)');
-    c.fillStyle = q; c.fillRect(x, y, w, h); c.restore();
-    txt(c, cd.cap, x + 44, y + h - 52, '700 54px SC', '#fff');
-    txt(c, cd.en, x + 50 + tw(c, cd.cap, '700 54px SC'), y + h - 52, '600 40px IDisp', 'rgba(255,255,255,.7)');
-    return;
+  R.forEach(([n, t, d, bg, fg], i) => {
+    const P = 18, c = mk(CARD.w + P, CARD.h + P), x = c.getContext('2d');
+    x.fillStyle = MP.ink; x.beginPath(); x.roundRect(P, P, CARD.w, CARD.h, 36); x.fill();          // 硬阴影
+    x.fillStyle = bg; x.beginPath(); x.roundRect(0, 0, CARD.w, CARD.h, 36); x.fill();
+    x.lineWidth = 6; x.strokeStyle = MP.ink; x.stroke();
+    x.save(); x.beginPath(); x.roundRect(0, 0, CARD.w, CARD.h, 36); x.clip();
+    // 装饰：每张不同
+    const ink = bg === MP.blue ? '#FFFFFF' : MP.ink;
+    if (i === 3) { x.strokeStyle = 'rgba(0,0,0,.14)'; x.lineWidth = 2; for (let g = 0; g < CARD.w; g += 40) { x.beginPath(); x.moveTo(g, 0); x.lineTo(g, CARD.h); x.stroke(); } for (let g = 0; g < CARD.h; g += 40) { x.beginPath(); x.moveTo(0, g); x.lineTo(CARD.w, g); x.stroke(); } }
+    x.fillStyle = ink; for (let a = 0; a < 7; a++) for (let b = 0; b < 5; b++) { x.beginPath(); x.arc(1060 + a * 34, 70 + b * 34, 7, 0, 7); x.fill(); }
+    const deco = [[MP.yel, 'tri'], [MP.pink, 'circ'], [MP.teal, 'half'], [MP.pink, 'tri'], [MP.yel, 'circ']][i];
+    x.fillStyle = deco[0]; x.strokeStyle = MP.ink; x.lineWidth = 6; x.beginPath();
+    if (deco[1] === 'tri') { x.moveTo(1120, 620); x.lineTo(1330, 620); x.lineTo(1225, 420); x.closePath(); }
+    else if (deco[1] === 'circ') x.arc(1230, 500, 120, 0, 7);
+    else { x.arc(1230, 600, 140, Math.PI, 2 * Math.PI); x.closePath(); }
+    x.fill(); x.stroke();
+    x.strokeStyle = ink; x.lineWidth = 10; x.lineCap = 'round'; x.beginPath();
+    for (let k = 0; k <= 40; k++) { const u = k / 40; x.lineTo(70 + u * 330, 600 + Math.sin(u * Math.PI * 4) * 22); } x.stroke();
+    x.restore();
+    txt(x, n, 64, 250, '700 210px Fredoka', fg, 'left', -4);
+    txt(x, t, 64, 400, '900 112px SC', fg, 'left', 2);
+    txt(x, d, 68, 480, '700 40px SC', fg === '#FFFFFF' ? 'rgba(255,255,255,.85)' : 'rgba(17,17,17,.72)');
+    MC.push(c);
+  });
+}
+// 孟菲斯的纸屑：页面坐标里撒，确定性
+const CONF = Array.from({ length: 90 }, (_, i) => ({ x: hash(i * 2.3) * 1920, y: B0 + 80 + hash(i * 5.9) * (B_END - B0 - 160), r: hash(i * 8.1) * 6.28, k: Math.floor(hash(i * 3.7) * 4), c: [MP.pink, MP.yel, MP.teal, MP.blue, MP.ink][i % 5] }));
+function confetti(c, a, z) {
+  for (const p of CONF) {
+    if (p.y < a - 60 || p.y > z + 60) continue;
+    c.save(); c.translate(p.x, p.y); c.rotate(p.r); c.fillStyle = p.c; c.strokeStyle = p.c; c.lineWidth = 7; c.lineCap = 'round';
+    if (p.k === 0) { c.beginPath(); c.moveTo(-18, 12); c.lineTo(18, 12); c.lineTo(0, -18); c.fill(); }
+    else if (p.k === 1) { c.beginPath(); c.arc(0, 0, 11, 0, 7); c.fill(); }
+    else if (p.k === 2) { c.beginPath(); for (let k = 0; k <= 12; k++) c.lineTo(-30 + k * 5, Math.sin(k * 1.4) * 8); c.stroke(); }
+    else c.fillRect(-14, -4, 28, 8);
+    c.restore();
   }
-  cardBg(c, x, y, w, h);
-  txt(c, cd.big, x + 48, y + 186, '700 150px IDisp', C.ink, 'left', -6);
-  if (cd.unit) txt(c, cd.unit, x + 60 + tw(c, cd.big, '700 150px IDisp', -6), y + 186, '600 54px IDisp', C.dim);
-  txt(c, cd.d, x + 50, y + 250, '500 32px SC', C.dim);
 }
 
-// ---------- 第二节：雪崩（整屏钉住；照片卡从中间“撑开”、雪落多少 = 滚动进度）----------
-const FLAKES = Array.from({ length: 420 }, (_, i) => ({ x: hash(i * 3.1), y: hash(i * 7.7), z: .25 + .75 * hash(i * 1.3) ** 2 }));
-function scene(c, s) {
-  const top = sticky(B0, 0, H, B_END, s);
-  if (top > H || top + H < 0) return;
-  const p = clamp((s - B0) / (B_END - H - B0));
-  c.save(); c.beginPath(); c.rect(0, Math.max(0, top), W, H); c.clip(); c.translate(0, top);
-  c.fillStyle = C.bg; c.fillRect(0, 0, W, H);
-  // 标题（这一节钉住的部分）
-  txt(c, '2012', W / 2, 200, '700 150px IDisp', grad(c, W / 2 - 200, 0, W / 2 + 200, 0), 'center', -6);
-  txt(c, '雪崩 · 往下滚，雪就往下落', W / 2, 272, '700 46px SC', C.ink, 'center');
-  // 照片卡：随进度撑开（苹果产品页最常见的擦洗：媒体从卡片长成一整屏）
-  const e = sm(p * 1.6);
-  const cw = 1180 + 560 * e, ch = cw * 407 / 960 * (1 - .08 * e), cx = (W - cw) / 2, cy = 330 + (1 - e) * 20;
-  c.save(); rr(c, cx, cy, cw, ch, 32 - 8 * e); c.clip();
-  const zoom = 1.18 - .18 * p;
-  c.translate(W / 2, cy + ch / 2); c.scale(zoom, zoom); c.translate(-W / 2, -(cy + ch / 2));
-  cover(c, PH.lake, cx, cy, cw, ch);
-  c.setTransform(1, 0, 0, 1, 0, top);
-  // 雪：只跟着滚动走——停下滚动，雪也停
-  c.fillStyle = '#fff';
-  for (const f of FLAKES) {
-    const fy = cy + ((f.y * (ch + 40) + p * 2200 * f.z) % (ch + 40)) - 20;
-    const fx = cx + f.x * cw + Math.sin(fy * .01 + f.x * 20) * 16 * f.z;
-    c.globalAlpha = .45 + .5 * f.z; c.beginPath(); c.arc(fx, fy, 1.3 + 3 * f.z, 0, 7); c.fill();
-  }
-  c.globalAlpha = 1; c.restore();
-  // 进度条
-  const bx = W / 2 - 180, by = cy + ch + 46;
-  rr(c, bx, by, 360, 6, 3); c.fillStyle = 'rgba(255,255,255,.14)'; c.fill();
-  if (p > 0.005) { rr(c, bx, by, 360 * p, 6, 3); c.fillStyle = grad(c, bx, 0, bx + 360, 0); c.fill(); }
+// ---------- 包豪斯海报（钉住；里面的东西只听进度 q）----------
+function stage(c, s) {
+  const sy = sticky(STG.y, STG.y, STG.h, A_END, s), q = clamp(s / A_PIN);
+  const y0 = s + sy;   // 回到页面坐标
+  c.save(); c.translate(STG.x, y0);
+  // 蓝圆：自己滚，白点转一圈半
+  c.fillStyle = BH.blue; c.beginPath(); c.arc(230, 240, 214, 0, 7); c.fill();
+  const a = -Math.PI / 2 + q * Math.PI * 3;
+  c.strokeStyle = BH.ink; c.lineWidth = 14; c.lineCap = 'butt'; c.beginPath(); c.moveTo(230, 240); c.lineTo(230 + Math.cos(a) * 214, 240 + Math.sin(a) * 214); c.stroke();
+  c.fillStyle = BH.ink; c.beginPath(); c.arc(230, 240, 20, 0, 7); c.fill();
+  // 黑竖线 = 滚动条；红方块 = 拇指
+  c.fillStyle = BH.ink; c.fillRect(556, 0, 12, 474);
+  c.fillStyle = BH.red; c.fillRect(568, 6 + q * (474 - 6 - 150), 150, 150);
+  // 黄半圆：太阳升起
+  c.save(); c.beginPath(); c.rect(700, 0, 340, 474); c.clip();
+  c.fillStyle = BH.yel; c.beginPath(); c.arc(900, 474 + 150 - 150 * clamp(0.25 + q * 1.1), 150, 0, 7); c.fill(); c.restore();
+  // 粗线 + 标题
+  c.fillStyle = BH.ink; c.fillRect(0, 474, STG.w, 18);
+  txt(c, 'Sticky Scroll', -6, 650, '700 158px Jost', BH.ink, 'left', -5);
+  txt(c, '粘性滚动', 0, 800, '900 104px SC', BH.ink, 'left', 4);
+  txt(c, '一块钉住，其余滚过去', 470, 790, '700 34px SC', BH.gray);
   c.restore();
 }
-const CAPS = [
-  { y: B0 + 1100, a: '2012 年 12 月 ·《纽约时报》', t: 'Snow Fall', d: '画面钉在原地，文字从上面滑过去' },
-  { y: B0 + 1950, a: '擦洗 Scrub', t: '雪落多少，只看滚了多少', d: '手指停下，雪也停在半空' },
-  { y: B0 + 2800, a: 'Scrollytelling', t: '这种讲法后来叫：滚动叙事', d: '' },
-];
-function caption(c, cp, s) {
-  const y = cp.y - s; if (y > H || y + 240 < 0) return;
-  const w = 720, h = cp.d ? 220 : 170, x = (W - w) / 2;
-  const al = clamp((y - 300) / 160); if (al <= 0) return; c.globalAlpha = al;
-  rr(c, x, y, w, h, 32); c.fillStyle = 'rgba(22,22,24,.86)'; c.fill(); c.strokeStyle = 'rgba(255,255,255,.1)'; c.lineWidth = 2; c.stroke();
-  txt(c, cp.a, x + 44, y + 62, '500 28px SC', C.dim);
-  txt(c, cp.t, x + 44, y + 126, /[a-z]/i.test(cp.t[0]) ? '700 52px IDisp' : '700 46px SC', C.ink);
-  if (cp.d) txt(c, cp.d, x + 44, y + 180, '500 30px SC', C.dim);
-  c.globalAlpha = 1;
-}
 
-// ---------- 一个子帧：整张页面 ----------
-function page(c, s) {
-  c.fillStyle = C.bg; c.fillRect(0, 0, W, H);
-  for (const cd of CARDS) card(c, cd, s);
-  scene(c, s);
-  for (const cp of CAPS) caption(c, cp, s);
-  // 标题：钉住的那个（画在最上层）
-  const ty = sticky(T_Y, TT, TH, A_END, s);
-  if (ty + TH > 0) {
-    txt(c, '一块钉住，其余滚过去', 116, ty + 6, '500 34px SC', C.dim);
-    txt(c, 'Sticky', 104, ty + 228, '700 250px IDisp', grad(c, 104, 0, 840, 0), 'left', -12);
-    txt(c, 'Scroll', 104, ty + 456, '700 250px IDisp', C.ink, 'left', -12);
-    txt(c, '粘性滚动', 114, ty + 572, '900 92px SC', C.ink, 'left', 2);
+// ---------- 整张页面（页面坐标）----------
+function world(c, s, view) {
+  const a = view.top, z = view.top + view.h;
+  // 底色：两节
+  c.fillStyle = BH.paper; c.fillRect(0, a, W, Math.max(0, Math.min(z, B0) - a));
+  if (z > B0) { c.fillStyle = MP.paper; c.fillRect(0, Math.max(a, B0), W, z - Math.max(a, B0)); }
+  // 页面外（左右）在拉远时露出来：画一点页边
+  // 包豪斯：右栏
+  for (const r of RC) if (r.y + r.c.height > a && r.y < z) c.drawImage(r.c, 1180, r.y);
+  stage(c, s);
+  // 两节之间的粗线
+  c.fillStyle = BH.ink; c.fillRect(0, B0 - 9, W, 18);
+  // 孟菲斯：标题、纸屑、叠卡
+  if (z > B0) {
+    confetti(c, a, z);
+    txt(c, '五条规则，一张叠一张', 260, B0 + 170, '900 92px SC', MP.ink, 'left', 2);
+    txt(c, 'Memphis · Stacked Cards', 264, B0 + 236, '600 44px Fredoka', MP.ink);
+    for (let i = 0; i < NCARD; i++) {
+      const top = cardTop(i), sy = sticky(cardY(i), top, CARD.h, B_END, s);
+      const py = s + sy; if (py > z || py + CARD.h + 20 < a) continue;
+      const depth = clamp((s - cardPin(i)) / CARD.gap, 0, NCARD - 1 - i);
+      const sc = 1 - 0.045 * depth;
+      c.save(); c.translate(W / 2, py); c.scale(sc, sc); c.translate(-W / 2, 0);
+      c.drawImage(MC[i], (W - CARD.w) / 2, 0);
+      if (depth > 0.001) { c.fillStyle = `rgba(17,17,17,${0.1 * Math.min(depth, 2)})`; c.beginPath(); c.roundRect((W - CARD.w) / 2, 0, CARD.w, CARD.h, 36); c.fill(); }
+      c.restore();
+    }
   }
 }
 
-// ---------- 浏览器自己的东西：只留期号和一根细滚动条 ----------
-function hud(c, s) {
-  txt(c, 'Design Style', 104, 92, '500 32px Inter', C.dim);
-  txt(c, '布局 03', 104 + tw(c, 'Design Style', '500 32px Inter') + 18, 92, '700 32px SC', C.ink);
-  const tx = 1876, t0 = 150, tl = 800, th = tl * H / PAGE_H, tpos = t0 + (tl - th) * clamp(s / (PAGE_H - H));
-  rr(c, tx, t0, 6, tl, 3); c.fillStyle = 'rgba(255,255,255,.08)'; c.fill();
-  rr(c, tx, tpos, 6, th, 3); c.fillStyle = 'rgba(255,255,255,.55)'; c.fill();
+// ---------- 视图：镜头把页面坐标映射到屏幕 ----------
+function viewAt(t, s) {
+  const { k, z } = zoomAt(t);
+  const fy = s + H / 2 + (2150 - (s + H / 2)) * z;   // 拉远时看两节的交界：上面是包豪斯的容器，下面是还没钉住的规则卡
+  return { k, z, fy, top: fy - H / 2 / k, h: H / k };
+}
+const buf = mk(W, H), b = buf.getContext('2d');
+const acc = mk(W, H), A = acc.getContext('2d');
+function sub(t) {
+  const s = scrollAt(t), v = viewAt(t, s);
+  b.setTransform(1, 0, 0, 1, 0, 0); b.fillStyle = '#121110'; b.fillRect(0, 0, W, H);
+  b.setTransform(v.k, 0, 0, v.k, W / 2 - v.k * W / 2, H / 2 - v.k * v.fy);
+  world(b, s, v);
+  if (v.z > 0.001) {      // 视口以外压暗，视口描边
+    b.fillStyle = `rgba(18,17,16,${0.45 * v.z})`;
+    b.beginPath(); b.rect(0, v.top - 10, W, v.h + 20); b.rect(0, s, W, H); b.fill('evenodd');
+    b.strokeStyle = `rgba(255,255,255,${v.z})`; b.lineWidth = 5 / v.k; b.strokeRect(0, s, W, H);
+  }
+  return { s, v };
 }
 
-const SHUTTER = 0.75;   // 快门（帧），270°
+// ---------- WebGL：液态玻璃（折射量 = 边缘的坡度）----------
+const gl = document.getElementById('gl').getContext('webgl2', { preserveDrawingBuffer: true, antialias: false });
+const VS = `#version 300 es
+in vec2 a; void main(){ gl_Position = vec4(a,0.,1.); }`;
+const FS = `#version 300 es
+precision highp float;
+uniform sampler2D T; uniform vec2 R; uniform vec4 S0; uniform vec4 S1; uniform vec2 RR; uniform float K; uniform float OP;
+out vec4 o;
+float sdb(vec2 p, vec2 b, float r){ vec2 q = abs(p) - b + r; return length(max(q,0.)) + min(max(q.x,q.y),0.) - r; }
+vec3 smp(vec2 p){ return texture(T, clamp(p/R, vec2(0.), vec2(1.))).rgb; }
+vec4 lens(vec2 p, vec4 S, float r, float bev, float mag){
+  vec2 lp = p - S.xy; float d = sdb(lp, S.zw, r);
+  if (d > 0.) return vec4(0.);
+  vec2 g = vec2(sdb(lp+vec2(1.,0.),S.zw,r) - sdb(lp-vec2(1.,0.),S.zw,r), sdb(lp+vec2(0.,1.),S.zw,r) - sdb(lp-vec2(0.,1.),S.zw,r));
+  g = g / (length(g) + 1e-5);
+  float t = clamp(1. + d / bev, 0., 1.);            // 1 = 边上，0 = 中间
+  float bend = pow(t, 2.4) * bev * 1.25;
+  vec2 q = S.xy + lp / mag - g * bend;
+  float ch = bend * .07;
+  vec3 c = vec3(smp(q - g*ch).r, smp(q).g, smp(q + g*ch).b);
+  c = mix(c, vec3(1.), .07);
+  float rim = smoothstep(2.2*K, 0., -d);
+  float light = .5 + .5 * dot(g, normalize(vec2(-.55, -.85)));
+  c += rim * (.25 + .6 * light);
+  c += pow(t, 5.) * max(0., -g.y) * .22;                // 上沿的反光
+  c -= pow(t, 3.) * max(0., g.y) * .07;                 // 下沿暗一点：有厚度
+  return vec4(c, 1.);
+}
+void main(){
+  vec2 p = vec2(gl_FragCoord.x, R.y - gl_FragCoord.y);
+  vec3 col = smp(p);
+  float d0 = sdb(p - S0.xy - vec2(0., 12.*K), S0.zw, RR.x);
+  col *= 1. - OP * .22 * exp(-max(d0, 0.) / (26.*K)) * step(0., d0);
+  vec4 l0 = lens(p, S0, RR.x, 22.*K, 1.04);
+  if (l0.a > 0.) col = mix(col, l0.rgb, OP);
+  vec4 l1 = lens(p, S1, RR.y, 16.*K, 1.10);
+  if (l1.a > 0.) col = mix(col, l1.rgb, OP);
+  o = vec4(col, 1.);
+}`;
+function sh(type, src) { const s = gl.createShader(type); gl.shaderSource(s, src); gl.compileShader(s); if (!gl.getShaderParameter(s, gl.COMPILE_STATUS)) throw gl.getShaderInfoLog(s); return s; }
+const prog = gl.createProgram(); gl.attachShader(prog, sh(gl.VERTEX_SHADER, VS)); gl.attachShader(prog, sh(gl.FRAGMENT_SHADER, FS)); gl.linkProgram(prog); gl.useProgram(prog);
+const vb = gl.createBuffer(); gl.bindBuffer(gl.ARRAY_BUFFER, vb); gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, -1, 3, -1, -1, 3]), gl.STATIC_DRAW);
+const al = gl.getAttribLocation(prog, 'a'); gl.enableVertexAttribArray(al); gl.vertexAttribPointer(al, 2, gl.FLOAT, false, 0, 0);
+const tex = gl.createTexture(); gl.bindTexture(gl.TEXTURE_2D, tex);
+gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MIN_FILTER, gl.LINEAR); gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_MAG_FILTER, gl.LINEAR);
+gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_S, gl.CLAMP_TO_EDGE); gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.CLAMP_TO_EDGE);
+const U = n => gl.getUniformLocation(prog, n);
+gl.viewport(0, 0, W, H);
+
+// ---------- 导航：标签和那滴玻璃 ----------
+const TABS = ['包豪斯', '孟菲斯', '手机'];
+const tabAt = s => smr((s - 2350) / 600);      // 0 = 包豪斯，1 = 孟菲斯（被滚动擦洗）
+function navGeom(t, s, v) {
+  const k = v.k, cy = H / 2 + k * (s + NAV.top + NAV.h / 2 - v.fy), cx = W / 2;
+  const tp = tabAt(s), dtp = (tabAt(scrollAt(t + 1 / 120)) - tabAt(scrollAt(t - 1 / 120))) * 60;   // 每秒走多少个标签
+  const tx0 = cx - 150, gap = 150;                                     // 三个标签的中心：tx0 + i·gap
+  const bx = cx + k * ((tx0 + tp * gap) - cx), stretch = Math.min(70, Math.abs(dtp) * 26);
+  return { cx, cy, hw: k * NAV.w / 2, hh: k * NAV.h / 2, r: k * NAV.h / 2,
+    bx, bhw: k * (62 + stretch), bhh: k * 30 * (1 - Math.min(.18, stretch / 300)), br: k * 30, tp, k, tx0, gap };
+}
+const ov = document.getElementById('ov').getContext('2d');
+function overlay(t, s, v, n) {
+  ov.clearRect(0, 0, W, H);
+  ov.save(); ov.translate(n.cx, n.cy); ov.scale(n.k, n.k);
+  txt(ov, '布局 03', -NAV.w / 2 + 44, 10, '700 26px SC', BH.ink);
+  TABS.forEach((s2, i) => {
+    const on = 1 - Math.min(1, Math.abs(n.tp - i));
+    ov.globalAlpha = .45 + .55 * on;
+    txt(ov, s2, n.tx0 - W / 2 + i * n.gap, 10, '700 26px SC', BH.ink, 'center');
+  });
+  ov.globalAlpha = 1;
+  txt(ov, 'Sticky Scroll', NAV.w / 2 - 44, 9, '600 26px IDisp', BH.ink, 'right');
+  ov.restore();
+  // 拉远后的标注
+  if (v.z > 0.05) {
+    ov.globalAlpha = sm((v.z - .4) / .6);
+    const sx = W / 2 + v.k * (W - W / 2), sy0 = H / 2 + v.k * (s - v.fy), sy1 = sy0 + v.k * H;
+    const L = W / 2 - v.k * W / 2;
+    // 视口
+    ov.strokeStyle = '#fff'; ov.lineWidth = 3; ov.beginPath(); ov.moveTo(sx + 24, sy0); ov.lineTo(sx + 40, sy0); ov.lineTo(sx + 40, sy1); ov.lineTo(sx + 24, sy1); ov.stroke();
+    txt(ov, '视口', sx + 64, sy0 + 44, '900 44px SC', '#fff');
+    txt(ov, '屏幕上看得见的那一截', sx + 64, sy0 + 90, '700 26px SC', 'rgba(255,255,255,.7)');
+    // 包豪斯一节的容器：海报只在这一段里钉住
+    const cy0 = H / 2 + v.k * (0 - v.fy), cy1 = H / 2 + v.k * (A_END - v.fy);
+    ov.strokeStyle = BH.yel; ov.lineWidth = 3; ov.setLineDash([12, 10]); ov.beginPath(); ov.moveTo(L - 24, cy0); ov.lineTo(L - 40, cy0); ov.lineTo(L - 40, cy1); ov.lineTo(L - 24, cy1); ov.stroke(); ov.setLineDash([]);
+    txt(ov, '容器', L - 64, (cy0 + cy1) / 2 - 6, '900 44px SC', BH.yel, 'right');
+    txt(ov, '海报只在这一段里钉住，', L - 64, (cy0 + cy1) / 2 + 40, '700 26px SC', 'rgba(255,255,255,.75)', 'right');
+    txt(ov, '到底就被顶走', L - 64, (cy0 + cy1) / 2 + 76, '700 26px SC', 'rgba(255,255,255,.75)', 'right');
+    // 还没钉住的规则卡
+    const my = Math.max(H / 2 + v.k * (cardY(0) + CARD.h * .75 - v.fy), sy0 + 230);
+    txt(ov, '规则卡', sx + 64, my - 6, '900 44px SC', '#fff');
+    txt(ov, '还在原位，滚到顶才钉住', sx + 64, my + 40, '700 26px SC', 'rgba(255,255,255,.75)');
+    ov.globalAlpha = 1;
+  }
+}
+
+const SHUTTER = 0.75;
 window.frame = f => {
-  const t = f / FPS, v = velAt(t);
-  const N = Math.max(1, Math.min(18, Math.ceil(Math.abs(v) * SHUTTER / FPS / 2.5)));
+  const t = f / FPS, v0 = velAt(t);
+  const zv = Math.abs(zoomAt(t + 1 / 120).k - zoomAt(t - 1 / 120).k) * 60;
+  const N = Math.max(1, Math.min(20, Math.ceil(Math.abs(v0) * zoomAt(t).k * SHUTTER / FPS / 2.5 + zv * 40)));
   for (let k = 0; k < N; k++) {
     const tk = N === 1 ? t : t + (k / (N - 1) - .5) * SHUTTER / FPS;
-    page(b, scrollAt(tk));
-    g.globalAlpha = 1 / (k + 1); g.drawImage(buf, 0, 0);
+    sub(tk);
+    A.globalAlpha = 1 / (k + 1); A.drawImage(buf, 0, 0);
   }
-  g.globalAlpha = 1;
-  hud(g, scrollAt(t));
+  A.globalAlpha = 1;
+  const s = scrollAt(t), v = viewAt(t, s), n = navGeom(t, s, v);
+  gl.bindTexture(gl.TEXTURE_2D, tex); gl.texImage2D(gl.TEXTURE_2D, 0, gl.RGBA, gl.RGBA, gl.UNSIGNED_BYTE, acc);
+  gl.uniform2f(U('R'), W, H); gl.uniform1i(U('T'), 0); gl.uniform1f(U('K'), n.k); gl.uniform1f(U('OP'), 1);
+  gl.uniform4f(U('S0'), n.cx, n.cy, n.hw, n.hh); gl.uniform4f(U('S1'), n.bx, n.cy, n.bhw, n.bhh); gl.uniform2f(U('RR'), n.r, n.br);
+  gl.drawArrays(gl.TRIANGLES, 0, 3); gl.finish();
+  overlay(t, s, v, n);
 };
 const qf = new URLSearchParams(location.search).get('f');
-Promise.all([loadPhotos(), ...['700 10px IDisp', '600 10px IDisp', '500 10px Inter', '500 10px Mono', '900 10px SC', '700 10px SC', '500 10px SC']
-  .map(s => document.fonts.load(s, '粘性滚动钉住擦洗顶走Aa1'))]).then(() => { window.frame(+(qf || 0)); window.ready = true; });
+Promise.all([loadImg('bh', ASSETS.bh),
+  ...['400 10px Jost', '600 10px Jost', '700 10px Jost', '600 10px Fredoka', '700 10px Fredoka', '600 10px IDisp', '900 10px SC', '700 10px SC'].map(s => document.fonts.load(s, '粘性滚动钉住Aa1'))])
+  .then(() => { bauhausCards(); memphisCards(); window.frame(+(qf || 0)); window.ready = true; });
 </script></body></html>
