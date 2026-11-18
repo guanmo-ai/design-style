@@ -1,0 +1,98 @@
+<!doctype html><meta charset="utf-8">
+<!-- 超级平面 · 第五版（照 003 / 004 / 005 的平面语言）：整屏饱和底色上一间切开的等轴测小房间，
+     四条色带和巨大的“SUPER”从左墙爬过墙角、翻到右墙、铺到地上——图形比房间还大。
+     全部是 Canvas 2D 平涂：色带先画在“展开图”上，再按每一面墙的仿射变换贴上去，所以过墙角是连续的。
+     cd drafts/_3d && node shoot.cjs ../supergraphics/flat.html ../supergraphics/png/v5/cover.png -->
+<style>
+@font-face{font-family:NSK;src:url(/public/fonts/NotoSansSC-Black.otf)}
+@font-face{font-family:NSB;src:url(/public/fonts/NotoSansSC-Bold.otf)}
+@font-face{font-family:HB;src:url(/public/fonts/TeXGyreHeros-Bold.otf)}
+@font-face{font-family:AR;src:url(/public/fonts/Archivo.ttf)}
+html,body{margin:0;overflow:hidden;background:#000}
+canvas{width:1920px;height:1080px;display:block}
+</style>
+<canvas id="c" width="3840" height="2160"></canvas>
+<script type="module">
+for (const f of ['900 80px NSK', '700 80px NSB', '700 80px HB', '900 80px AR']) await document.fonts.load(f);
+const c = document.getElementById('c'), x = c.getContext('2d'), W = 3840, H = 2160;
+const P = { bg: '#2A44E8', paper: '#F6F1E7', wallL: '#ECE5D6', wallR: '#F8F4EC', floor: '#DDD3C2', red: '#EE3A2C', yel: '#FFC81E', blu: '#1F3BD6', ink: '#141414', pink: '#FF7BB5' };
+
+// ---------- 底：饱和蓝 + 一层很淡的网点 ----------
+x.fillStyle = P.bg; x.fillRect(0, 0, W, H);
+x.fillStyle = 'rgba(255,255,255,.07)'; for (let j = 0; j < H; j += 28) for (let i = (j / 28) % 2 ? 14 : 0; i < W; i += 28) { x.beginPath(); x.arc(i, j, 4.5, 0, 7); x.fill(); }
+
+// ---------- 等轴测 ----------
+const S = 112, OX = 2600, OY = 900, c30 = Math.cos(Math.PI / 6), s30 = 0.5;
+const iso = (X, Y, Z) => [OX + (X - Y) * c30 * S, OY + (X + Y) * s30 * S - Z * S];
+const L = 9, Hh = 6.2, T = 0.45;   // 房间边长、墙高、墙厚
+const poly = (pts, fill) => { x.beginPath(); pts.forEach((p, i) => { const q = iso(...p); i ? x.lineTo(...q) : x.moveTo(...q); }); x.closePath(); x.fillStyle = fill; x.fill(); };
+
+// ---------- 展开图：s 沿墙走（左墙 s<0，右墙 s>0，墙角 s=0），z 往上；地面接在右墙下面（z<0 往外） ----------
+const U = 220, sMin = -L, sMax = L, zMin = -L - 14, zMax = Hh;   // 每单位 U 像素
+const tex = document.createElement('canvas'); tex.width = (sMax - sMin) * U; tex.height = (zMax - zMin) * U; const t = tex.getContext('2d');
+const tx = s => (s - sMin) * U, ty = z => (zMax - z) * U;
+// 巨大的 SUPER：横跨墙角，字脚压在色带上
+t.fillStyle = P.ink; t.font = `700 ${4.6 * U}px HB`; t.textBaseline = 'alphabetic'; t.textAlign = 'center';
+t.fillText('SUPER', tx(-0.9), ty(1.75));
+// 四条色带：左墙高处水平走过来 → 过墙角 → 在右墙上转一个四分之一圆往下 → 铺到地上一直往外
+const bands = [P.red, P.yel, P.ink, P.pink], bw = 0.62, gap = 0.12, z0 = 1.15, s1 = 2.6, R = 1.4;
+const Cz = z0 - 3.4;   // 所有色带共用一个圆心 (s1, Cz)：转弯是同心的
+bands.forEach((col, i) => { const zc = z0 - i * (bw + gap) - bw / 2, r = zc - Cz;
+  t.strokeStyle = col; t.lineWidth = bw * U; t.lineCap = 'butt'; t.beginPath();
+  t.moveTo(tx(sMin - 1), ty(zc)); t.lineTo(tx(s1), ty(zc));
+  t.arc(tx(s1), ty(Cz), r * U, -Math.PI / 2, 0, false);
+  t.lineTo(tx(s1 + r), ty(zMin - 1)); t.stroke(); });
+// 地上一颗大黑圆点 + 右墙一个箭头
+t.save(); t.translate(tx(7.2), ty(-0.0 + 0.9)); t.fillStyle = P.red; t.beginPath(); t.moveTo(-1.3 * U, -0.35 * U); t.lineTo(0.2 * U, -0.35 * U); t.lineTo(0.2 * U, -0.9 * U); t.lineTo(1.3 * U, 0); t.lineTo(0.2 * U, 0.9 * U); t.lineTo(0.2 * U, 0.35 * U); t.lineTo(-1.3 * U, 0.35 * U); t.closePath(); t.fill(); t.restore();
+
+// 把展开图的一块按仿射贴到一面墙上：face(s, z) → 屏幕
+function face(corners, map, base, shade) {
+  x.save(); x.beginPath(); corners.forEach((p, i) => { const q = iso(...p); i ? x.lineTo(...q) : x.moveTo(...q); }); x.closePath(); x.clip();
+  x.fillStyle = base; x.fillRect(0, 0, W, H);
+  // map(s, z) → 3D；取三点算仿射
+  const o = iso(...map(0, 0)), a = iso(...map(1, 0)), b = iso(...map(0, 1));
+  const A = [a[0] - o[0], a[1] - o[1]], B = [b[0] - o[0], b[1] - o[1]];   // 纹理像素 (px,py) ↔ (s = sMin + px/U, z = zMax − py/U)
+  x.setTransform(A[0] / U, A[1] / U, -B[0] / U, -B[1] / U, o[0] + A[0] * sMin + B[0] * zMax, o[1] + A[1] * sMin + B[1] * zMax);
+  x.drawImage(tex, 0, 0);
+  x.setTransform(1, 0, 0, 1, 0, 0);
+  if (shade) { x.fillStyle = shade; x.fillRect(0, 0, W, H); }
+  x.restore();
+}
+// 地板板子的厚度（侧面）
+poly([[0, L, 0], [L, L, 0], [L, L, -0.5], [0, L, -0.5]], '#B9AE9B');
+poly([[L, 0, 0], [L, L, 0], [L, L, -0.5], [L, 0, -0.5]], '#CFC4B1');
+face([[0, 0, 0], [L, 0, 0], [L, L, 0], [0, L, 0]], (s, z) => [s, -z, 0], P.floor, 'rgba(60,40,20,.10)');           // 地面（接在右墙下）
+face([[0, 0, 0], [0, L, 0], [0, L, Hh], [0, 0, Hh]], (s, z) => [0, -s, z], P.wallL, 'rgba(40,30,20,.07)');        // 左墙 x=0
+face([[0, 0, 0], [L, 0, 0], [L, 0, Hh], [0, 0, Hh]], (s, z) => [s, 0, z], P.wallR, null);                          // 右墙 y=0
+// 墙顶和墙外沿：白色的厚度
+poly([[-T, -T, Hh], [L, -T, Hh], [L, 0, Hh], [0, 0, Hh], [0, L, Hh], [-T, L, Hh]], '#FFFFFF');
+poly([[L, -T, Hh], [L, 0, Hh], [L, 0, 0], [L, -T, 0]], '#E2DACB');
+poly([[-T, L, Hh], [0, L, Hh], [0, L, 0], [-T, L, 0]], '#D3CAB9');
+// 色带流出房间：地面前沿以外，还按地面的平面继续画（只画色带，不画地面）
+{ const bandOnly = document.createElement('canvas'); bandOnly.width = tex.width; bandOnly.height = tex.height; const b2 = bandOnly.getContext('2d');
+  b2.drawImage(tex, 0, 0); b2.globalCompositeOperation = 'destination-in'; b2.fillStyle = '#000'; b2.fillRect(0, ty(-L), tex.width, tex.height); // 只留 z < -L 的部分
+  x.save(); x.beginPath(); [[0, L, 0], [L + 30, L, 0], [L + 30, L + 40, 0], [0, L + 40, 0]].forEach((p, i) => { const q = iso(...p); i ? x.lineTo(...q) : x.moveTo(...q); }); x.closePath(); x.clip();
+  const o = iso(0, 0, 0), a = iso(1, 0, 0), b = iso(0, -1, 0), A = [a[0] - o[0], a[1] - o[1]], B = [b[0] - o[0], b[1] - o[1]];
+  x.setTransform(A[0] / U, A[1] / U, -B[0] / U, -B[1] / U, o[0] + A[0] * sMin + B[0] * zMax, o[1] + A[1] * sMin + B[1] * zMax);
+  x.drawImage(bandOnly, 0, 0); x.restore(); }
+// 一个小人（比例尺），站在地上的色带旁
+{ const [px, py] = iso(4.9, 6.2, 0), k = S * 1.75; x.fillStyle = P.ink;
+  x.beginPath(); x.arc(px, py - k * 0.92, k * 0.075, 0, 7); x.fill();
+  x.beginPath(); x.roundRect(px - k * 0.09, py - k * 0.82, k * 0.18, k * 0.42, k * 0.06); x.fill();
+  x.fillRect(px - k * 0.08, py - k * 0.42, k * 0.065, k * 0.42); x.fillRect(px + k * 0.015, py - k * 0.42, k * 0.065, k * 0.42); }
+
+// ---------- 字：左边一整块（瑞士网格），白字压在蓝底上 ----------
+x.fillStyle = '#FFFFFF'; x.textBaseline = 'alphabetic'; x.textAlign = 'left';
+x.font = '900 330px NSK'; x.fillText('超级', 150, 820); x.fillText('平面', 150, 1150);
+x.font = '700 120px HB'; x.fillText('SUPERGRAPHICS', 160, 1330);
+x.fillStyle = P.yel; x.fillRect(160, 1400, 210, 22);
+x.fillStyle = '#FFFFFF'; x.font = '700 64px NSB'; x.fillText('图形比房间还大，墙角挡不住它。', 160, 1530);
+x.font = '700 50px HB'; x.fillStyle = 'rgba(255,255,255,.75)'; x.fillText('1966 · SEA RANCH · CALIFORNIA', 160, 1630);
+// 外框：左上章节牌 + 右下进度（和 003—005 一样）
+x.fillStyle = '#FFFFFF'; x.beginPath(); x.roundRect(150, 150, 760, 96, 48); x.fill();
+x.fillStyle = P.ink; x.font = '900 52px NSK'; x.fillText('风格', 200, 218); x.font = '700 50px HB'; x.fillText('SUPERGRAPHICS', 340, 216);
+x.fillStyle = P.red; x.beginPath(); x.arc(2 * 0 + 860, 198, 22, 0, 7); x.fill();
+x.fillStyle = '#FFFFFF'; x.beginPath(); x.roundRect(W - 520, H - 220, 370, 84, 42); x.fill();
+x.fillStyle = P.ink; x.font = '700 46px HB'; x.textAlign = 'center'; x.fillText('01 / 06 · 1966', W - 335, H - 162);
+window.__done = true;
+</script>
