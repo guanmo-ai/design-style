@@ -36,7 +36,7 @@ def reveal():
 
 def poster():
     """4:5 竖版海报：上面是厂房（裁中间），下面是瑞士网格的字；红圆和字左对齐在同一条线上"""
-    src = Image.open(os.path.join(P, 'hero-raw.png')).convert('RGB'); W0, H0 = src.size
+    src = Image.open(os.path.join(P, os.environ.get('SG_POSTER_SRC', 'hero-raw.png'))).convert('RGB'); W0, H0 = src.size
     PW, PH = 1600, 2000; im = Image.new('RGB', (PW, PH), (242, 239, 233)); d = ImageDraw.Draw(im)
     ph = 1420; cw = int(H0 * PW / ph)                       # 图片区 1600×1420，按高度裁中间
     crop = src.crop(((W0 - cw) // 2, 0, (W0 + cw) // 2, H0)).resize((PW, ph), Image.LANCZOS); im.paste(crop, (0, 0))
@@ -44,12 +44,12 @@ def poster():
     d.text((m - 6, ph + 76), '超级平面', font=font(NSK, 166), fill=ink)
     d.text((m, ph + 312), 'Supergraphics', font=font(IDB, 70), fill=ink)
     col = PW // 2 + 40
-    for i, (a, b) in enumerate([('1966', 'Sea Ranch，加州海边的一片住宅：四条色带爬过墙角和天花板。'), ('原则', '图形比建筑大；只在一个点上完整；环境去色，漆只用一种饱和色。')]):
+    for i, (a, b) in enumerate([('1966', 'Sea Ranch，加州海边的一片住宅：四条色带爬过墙角和天花板。'), ('原则', '图形比建筑大；只在一个点上完整；环境一种颜色，漆只用一种饱和色。')]):
         y = ph + 92 + i * 150
         d.text((col, y), a, font=font(NSB, 30), fill=RED)
         lines, line, fnt = [], '', font(NSM, 30)
         for ch in b:
-            if d.textlength(line + ch, font=fnt) > PW - m - col - 10: lines.append(line); line = ch
+            if ch not in '，。；：、' and d.textlength(line + ch, font=fnt) > PW - m - col - 10: lines.append(line); line = ch
             else: line += ch
         lines.append(line)
         for k, ln in enumerate(lines): d.text((col, y + 44 + k * 42), ln, font=fnt, fill=ink)

@@ -1,0 +1,80 @@
+<!doctype html><meta charset="utf-8">
+<!-- 超级平面 · 第三版（代码渲染、风格化）：一条由一连串方门框组成的长廊，尽头一个亮的门洞。
+     一个红色正圆从镜头的位置“投”出去，刷在每一道门框、地面和尽头墙上：从这里看是完整的圆（?view=hero），
+     换个角度它就碎成一片片（?view=reveal）。没有贴图，全是平涂 + 柔光 + 空气透视。
+     cd drafts/_3d && node shoot.cjs "../supergraphics/stylized.html?view=hero" ../supergraphics/png/v3/hero.png -->
+<style>
+@font-face{font-family:NSM;src:url(/public/fonts/NotoSansSC-Medium.otf)}
+@font-face{font-family:NSB;src:url(/public/fonts/NotoSansSC-Bold.otf)}
+@font-face{font-family:NSK;src:url(/public/fonts/NotoSansSC-Black.otf)}
+html,body{margin:0;overflow:hidden;background:#000}
+#hud{position:absolute;inset:0;pointer-events:none;color:#3B2A2A;font-family:NSM}
+.tl,.tr{text-shadow:0 0 12px rgba(255,240,225,.9),0 0 3px rgba(255,240,225,.9)}
+.tl{position:absolute;left:64px;top:50px;font-size:22px;letter-spacing:.06em}
+.tr{position:absolute;right:64px;top:50px;font-size:22px;letter-spacing:.06em}
+.sub{position:absolute;left:64px;bottom:56px}
+.sub i{display:block;width:64px;height:8px;background:#E8341C;margin-bottom:22px}
+.sub b{display:block;font-family:NSK;font-size:120px;line-height:1;font-weight:900}
+.sub span{display:block;font-family:NSB;font-size:34px;margin-top:22px}
+</style>
+<div id="hud"><div class="tl" id="tl">风格 · SUPERGRAPHICS</div><div class="tr" id="tr">1966 — 今天</div>
+<div class="sub"><i></i><b id="t1">超级平面</b><span id="t2">只有站在这一个点上，它才是一个圆。</span></div></div>
+<script type="importmap">{"imports":{"three":"/drafts/_3d/node_modules/three/build/three.module.js","three/addons/":"/drafts/_3d/node_modules/three/examples/jsm/"}}</script>
+<script type="module">
+import { THREE, setup, finish, sun, mesh } from '/drafts/_3d/lib.js';
+import { projector, patchPaint } from '/drafts/_3d/project.js';
+const Q = new URLSearchParams(location.search), PR = +(Q.get('pr') || 2), VIEW = Q.get('view') || 'hero';
+if (VIEW === 'reveal') { tl.textContent = '风格 · SUPERGRAPHICS · 换个角度'; tr.textContent = '同一个圆 · 同一条长廊'; t1.textContent = '换个位置，它就碎了'; t1.style.fontSize = '96px'; t2.textContent = '往左走 9 米：红色散在门框、地面和墙上，看不出是一个圆。'; }
+if (Q.get('hud') === '0') hud.style.display = 'none';
+await document.fonts.load('80px NSK');
+
+const C = { base: '#F3E7D8', sky0: '#F7C9A8', sky1: '#F3E7D8', red: '#E8341C', glow: '#FFF6EA' };
+const ctx = setup({ pr: PR, bg: C.sky1, tone: 'neutral' });
+const { renderer, scene } = ctx;
+renderer.toneMappingExposure = 1.0; if (Q.get('sh') === '0') renderer.shadowMap.enabled = false;
+// 背景：屏幕上从上到下的暖色渐变
+{ const c = document.createElement('canvas'); c.width = 4; c.height = 512; const x = c.getContext('2d'); const g = x.createLinearGradient(0, 0, 0, 512);
+  g.addColorStop(0, C.sky0); g.addColorStop(0.62, C.sky1); g.addColorStop(1, C.sky1); x.fillStyle = g; x.fillRect(0, 0, 4, 512);
+  const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; scene.background = t; }
+scene.fog = new THREE.Fog('#F4DCC8', 16, 80);
+
+// ---- 镜头（对点的位置）和投影机 ----
+const HERO = { pos: [0, 1.7, 7], look: [0, 3.4, -40], fov: 38 };
+const pcam = new THREE.PerspectiveCamera(HERO.fov, 16 / 9, 0.1, 300); pcam.position.set(...HERO.pos); pcam.lookAt(...HERO.look); pcam.updateMatrixWorld();
+// ---- 长廊 ----
+const N = 12, GAP = 3.4, Z0 = -6.5, IW = 7.2, IH = 7.6, P = 0.95;
+const zEnd = Z0 - N * GAP - 3.0;
+const doorC = new THREE.Vector3(0, 2.7, zEnd + 0.5).project(pcam);   // 门洞中心在投影画面里的位置 → 圆心
+const W = 3200, H = 1800, pc = document.createElement('canvas'); pc.width = W; pc.height = H;
+{ const x = pc.getContext('2d'); x.fillStyle = C.red; x.beginPath(); x.arc((doorC.x * 0.5 + 0.5) * W, (1 - (doorC.y * 0.5 + 0.5)) * H, H * 0.36, 0, Math.PI * 2); x.fill(); }
+const PJ = projector(pc, HERO);
+const M = () => patchPaint(new THREE.MeshStandardMaterial({ color: C.base, roughness: 1 }), [PJ]);
+const mat = M();
+const box = (w, h, d, x, y, z) => { const o = mesh(new THREE.BoxGeometry(w, h, d), mat); o.position.set(x, y, z); scene.add(o); return o; };
+box(80, 0.4, 140, 0, -0.2, -40);                                    // 地面
+for (let i = 0; i < N; i++) { const z = Z0 - i * GAP;
+  box(P, IH, P, -(IW / 2 + P / 2), IH / 2, z); box(P, IH, P, IW / 2 + P / 2, IH / 2, z);   // 两根柱
+  box(IW + P * 2, P, P, 0, IH + P / 2, z); }                                               // 过梁
+// 尽头墙 + 门洞 + 四级台阶
+{ const dw = 2.6, dh = 4.6, ww = 40, wh = 18;
+  box((ww - dw) / 2, wh, 1, -(dw / 2 + (ww - dw) / 4), wh / 2, zEnd); box((ww - dw) / 2, wh, 1, dw / 2 + (ww - dw) / 4, wh / 2, zEnd);
+  box(dw, wh - dh, 1, 0, dh + (wh - dh) / 2, zEnd);
+  const out = new THREE.Mesh(new THREE.PlaneGeometry(10, 10), new THREE.MeshBasicMaterial({ color: C.glow, fog: false })); out.position.set(0, 3, zEnd - 3); scene.add(out);
+  for (let k = 0; k < 4; k++) box(dw + 2.4 - k * 0.6, 0.18 * (k + 1), 0.7, 0, 0.09 * (k + 1), zEnd + 0.5 + (3 - k) * 0.7); }
+// 比例尺小人：站在门洞里
+{ const pm = new THREE.MeshStandardMaterial({ color: '#2A1E1E', roughness: 1 }), g = new THREE.Group();
+  const cap = (r, l, x, y) => { const o = new THREE.Mesh(new THREE.CapsuleGeometry(r, l, 6, 12), pm); o.position.set(x, y, 0); g.add(o); };
+  cap(0.075, 0.72, -0.09, 0.44); cap(0.075, 0.72, 0.09, 0.44); cap(0.17, 0.42, 0, 1.15); cap(0.05, 0.52, -0.24, 1.12); cap(0.05, 0.52, 0.24, 1.12);
+  const hd = new THREE.Mesh(new THREE.SphereGeometry(0.11, 20, 14), pm); hd.position.y = 1.6; g.add(hd);
+  g.position.set(0, 0, zEnd - 0.3); scene.add(g); }
+
+// ---- 光：右前方低角度的暖光，柱子的影子斜着铺在地上；阴影偏一点紫 ----
+const key = sun(scene, { color: '#FFE3C2', intensity: 2.6, pos: [26, 14, 6], target: [0, 0, -22], size: 34, map: 4096, bias: -0.0004 });
+key.shadow.radius = 3; key.shadow.blurSamples = 12;
+scene.add(new THREE.HemisphereLight('#FFF4EA', '#B9A6D6', 1.15));
+
+const cam = new THREE.PerspectiveCamera(VIEW === 'hero' ? HERO.fov : 44, 16 / 9, 0.8, 220);
+if (VIEW === 'hero') { cam.position.set(...HERO.pos); cam.lookAt(...HERO.look); }
+else { cam.position.set(-9.5, 2.0, -1); cam.lookAt(1.5, 3.2, -24); }
+finish(ctx, cam, { ao: Q.get('ao') === '1', aoRadius: 0.35, aoDist: 0.22, bloom: 0.22, bloomThreshold: 0.9, vig: 0.22, grain: 0.018 });
+</script>
