@@ -19,7 +19,7 @@ def tex_node(nt, path, non_color=False):
     if non_color: n.image.colorspace_settings.name = 'Non-Color'
     return n
 
-def pbr(name, folder, scale=1.0, tint=None, rough_mul=1.0, paint=None):
+def pbr(name, folder, scale=1.0, tint=None, rough_mul=1.0, paint=None, puddle=0.0):
     """folder = ambientCG 材质名；scale = 每米重复几次（用物体坐标，不需要 UV）；paint = 漆的遮罩函数"""
     m = bpy.data.materials.new(name); m.use_nodes = True; nt = m.node_tree; L = nt.links
     bsdf = nt.nodes['Principled BSDF']
@@ -37,6 +37,15 @@ def pbr(name, folder, scale=1.0, tint=None, rough_mul=1.0, paint=None):
     r_out = rm.outputs['Value']
     if paint:
         c_out, r_out = paint(nt, c_out, r_out)
+    if puddle:   # 积水：大尺度噪声取阈值，水里更暗、几乎镜面
+        nz = nt.nodes.new('ShaderNodeTexNoise'); nz.inputs['Scale'].default_value = 0.13; nz.inputs['Detail'].default_value = 10; nz.inputs['Roughness'].default_value = 0.68
+        tc2 = nt.nodes.new('ShaderNodeTexCoord'); L.new(tc2.outputs['Object'], nz.inputs['Vector'])
+        mr = nt.nodes.new('ShaderNodeMapRange'); mr.inputs['From Min'].default_value = 0.58 - puddle * 0.04; mr.inputs['From Max'].default_value = 0.58 - puddle * 0.04 + 0.035; L.new(nz.outputs['Fac'], mr.inputs['Value'])
+        dk = nt.nodes.new('ShaderNodeMix'); dk.data_type = 'RGBA'; dk.blend_type = 'MULTIPLY'; L.new(mr.outputs['Result'], dk.inputs['Factor']); L.new(c_out, dk.inputs['A']); dk.inputs['B'].default_value = (0.55, 0.55, 0.56, 1); c_out = dk.outputs['Result']
+        wr = nt.nodes.new('ShaderNodeMix'); wr.data_type = 'FLOAT'; L.new(mr.outputs['Result'], wr.inputs['Factor']); L.new(r_out, wr.inputs['A']); wr.inputs['B'].default_value = 0.02; r_out = wr.outputs['Result']
+        fl = nt.nodes.new('ShaderNodeMath'); fl.operation = 'MULTIPLY'; fl.inputs[1].default_value = -1; L.new(mr.outputs['Result'], fl.inputs[0])
+        nm2 = nt.nodes.new('ShaderNodeMix'); nm2.data_type = 'VECTOR'; L.new(mr.outputs['Result'], nm2.inputs['Factor']); L.new(nm.outputs['Normal'], nm2.inputs[4]); L.new(tc2.outputs['Normal'], nm2.inputs[5])
+        L.new(nm2.outputs[1], bsdf.inputs['Normal'])
     L.new(c_out, bsdf.inputs['Base Color']); L.new(r_out, bsdf.inputs['Roughness'])
     return m
 
@@ -47,16 +56,44 @@ def flat(name, rgb, rough=0.6, emit=0.0):
     return m
 
 # ---------- 漆：在镜头画面坐标里算遮罩 ----------
-def window_paint(mask_builder, colors):
-    """mask_builder(nt, uv_vec_socket) -> [(mask_socket, color_index)]；colors = 漆的颜色（线性 RGB）"""
+def projector_coord(nt, proj):
+    """固定投影机：世界坐标 → 投影机画面坐标（和 Texture Coordinate 的 Window 一样：0—1，左下为原点）+ 只刷朝向投影机的面。
+    proj = dict(pos, look, lens, sensor=36, aspect=16/9, shift_y=0)"""
+    L = nt.links; C = Vector(proj['pos']); f = (Vector(proj['look']) - C).normalized()
+    r = f.cross(Vector((0, 0, 1))).normalized(); u = r.cross(f)
+    asp = proj.get('aspect', 16 / 9); tan_y = (proj.get('sensor', 36) / 2 / proj['lens']) / asp
+    geo = nt.nodes.new('ShaderNodeNewGeometry')
+    d = nt.nodes.new('ShaderNodeVectorMath'); d.operation = 'SUBTRACT'; L.new(geo.outputs['Position'], d.inputs[0]); d.inputs[1].default_value = C
+    def dot(v):
+        n = nt.nodes.new('ShaderNodeVectorMath'); n.operation = 'DOT_PRODUCT'; L.new(d.outputs[0], n.inputs[0]); n.inputs[1].default_value = v; return n.outputs['Value']
+    xc, yc, zc = dot(r), dot(u), dot(f)
+    def div_scale(a, add):
+        q = nt.nodes.new('ShaderNodeMath'); q.operation = 'DIVIDE'; L.new(a, q.inputs[0]); L.new(zc, q.inputs[1])
+        m = nt.nodes.new('ShaderNodeMath'); m.operation = 'MULTIPLY_ADD'; L.new(q.outputs[0], m.inputs[0]); return q, m
+    qx, mx = div_scale(xc, 0); mx.inputs[1].default_value = 1 / (2 * tan_y) / asp; mx.inputs[2].default_value = 0.5
+    qy, my = div_scale(yc, 0); my.inputs[1].default_value = 1 / (2 * tan_y); my.inputs[2].default_value = 0.5 - proj.get('shift_y', 0) * asp
+    cb = nt.nodes.new('ShaderNodeCombineXYZ'); L.new(mx.outputs[0], cb.inputs['X']); L.new(my.outputs[0], cb.inputs['Y'])
+    # 门：在投影机前面，且这一面朝着投影机
+    g1 = nt.nodes.new('ShaderNodeMath'); g1.operation = 'GREATER_THAN'; L.new(zc, g1.inputs[0]); g1.inputs[1].default_value = 0.05
+    nd = nt.nodes.new('ShaderNodeVectorMath'); nd.operation = 'DOT_PRODUCT'; L.new(geo.outputs['True Normal'], nd.inputs[0]); L.new(d.outputs[0], nd.inputs[1])
+    g2 = nt.nodes.new('ShaderNodeMath'); g2.operation = 'LESS_THAN'; L.new(nd.outputs['Value'], g2.inputs[0]); g2.inputs[1].default_value = 0.0
+    g = nt.nodes.new('ShaderNodeMath'); g.operation = 'MULTIPLY'; L.new(g1.outputs[0], g.inputs[0]); L.new(g2.outputs[0], g.inputs[1])
+    return cb.outputs[0], g.outputs[0]
+
+def window_paint(mask_builder, colors, proj=None):
+    """mask_builder(nt, uv_vec_socket) -> [(mask_socket, color_index)]；colors = 漆的颜色（线性 RGB）；
+    proj=None 时跟着当前镜头（Window 坐标），给了 proj 就固定在那台投影机上"""
     def f(nt, c_in, r_in):
         L = nt.links
         tc = nt.nodes.new('ShaderNodeTexCoord')
         out_c, out_r = c_in, r_in
+        coord, gate = (tc.outputs['Window'], None) if proj is None else projector_coord(nt, proj)
         # 漆有一点点透底：用噪声让遮罩边缘和面里有轻微的不均
         nz = nt.nodes.new('ShaderNodeTexNoise'); nz.inputs['Scale'].default_value = 40.0; nz.inputs['Detail'].default_value = 6
         L.new(tc.outputs['Object'], nz.inputs['Vector'])
-        for mask, ci in mask_builder(nt, tc.outputs['Window']):
+        for mask, ci in mask_builder(nt, coord):
+            if gate is not None:
+                gm = nt.nodes.new('ShaderNodeMath'); gm.operation = 'MULTIPLY'; L.new(mask, gm.inputs[0]); L.new(gate, gm.inputs[1]); mask = gm.outputs[0]
             k = nt.nodes.new('ShaderNodeMath'); k.operation = 'MULTIPLY_ADD'; k.inputs[1].default_value = 0.12; k.inputs[2].default_value = 0.86
             L.new(nz.outputs['Fac'], k.inputs[0])
             fm = nt.nodes.new('ShaderNodeMath'); fm.operation = 'MULTIPLY'; fm.use_clamp = True; L.new(mask, fm.inputs[0]); L.new(k.outputs['Value'], fm.inputs[1])
