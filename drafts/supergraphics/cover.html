@@ -1,0 +1,63 @@
+<!doctype html><meta charset="utf-8">
+<!-- 超级平面 · 第 0 帧：一间两层高的白房子，四条色带从地板爬上墙、翻过楼梯和栏板、上到天花板；
+     “超级平面”四个字散在墙、楼梯、栏板、侧墙上，只有从这个机位看才拼得完整（变形透视，投影机 = 镜头）。
+     低太阳从右边的窗子打进来，窗棂的影子压在色带上——证明它是刷在墙上的。
+     cd drafts/_3d && node shoot.cjs ../supergraphics/cover.html ../supergraphics/png/cover.png -->
+<style>
+@font-face{font-family:GM;src:url(/public/fonts/GeistMono.ttf)}
+@font-face{font-family:NSB;src:url(/public/fonts/NotoSansSC-Bold.otf)}
+@font-face{font-family:NSK;src:url(/public/fonts/NotoSansSC-Black.otf)}
+@font-face{font-family:UB;src:url(/public/fonts/Unbounded.ttf)}
+html,body{margin:0;overflow:hidden;background:#000}
+#hud{position:absolute;inset:0;pointer-events:none;color:#1A1A1A;font-family:GM}
+.tl{position:absolute;left:64px;top:52px;font-size:22px;letter-spacing:.06em}
+.tr{position:absolute;right:64px;top:52px;font-size:22px;letter-spacing:.06em}
+.sub{position:absolute;left:64px;bottom:58px;font-family:NSB;font-size:40px;color:#1A1A1A}
+.sub small{display:block;font-family:GM;font-size:22px;letter-spacing:.14em;color:#1A1A1Aaa;margin-bottom:8px}
+</style>
+<div id="hud"><div class="tl">风格 · SUPERGRAPHICS</div><div class="tr">1966 — 今天</div>
+<div class="sub"><small>WALL · STAIR · CEILING = ONE SHEET</small>墙、楼梯、天花板，都是同一张纸</div></div>
+<script type="importmap">{"imports":{"three":"/drafts/_3d/node_modules/three/build/three.module.js","three/addons/":"/drafts/_3d/node_modules/three/examples/jsm/"}}</script>
+<script type="module">
+import { THREE, setup, finish, sun, mesh } from '/drafts/_3d/lib.js';
+import { envMap } from '/drafts/_3d/craft.js';
+import { projector, patchPaint } from '/drafts/_3d/project.js';
+import { buildRoom, bandsCanvas, person, beams } from './room.js';
+const Q = new URLSearchParams(location.search), PR = +(Q.get('pr') || 2);
+const ctx = setup({ pr: PR, bg: '#F4EFE6', tone: 'neutral' });
+const { renderer, scene } = ctx;
+renderer.toneMappingExposure = 1.0;
+scene.environment = envMap(renderer); scene.environmentIntensity = 0.35;
+await document.fonts.load('400px NSK'); await document.fonts.load('400px UB');
+
+const cam = new THREE.PerspectiveCamera(58, 16 / 9, 0.1, 200);
+const CP = [5.2, 1.65, 7.6], CL = [0.6, 3.2, -6];
+cam.position.set(...CP); cam.lookAt(...CL); cam.updateMatrixWorld();
+
+// 色带：从左前方一台投影机打出去，所以在镜头里它会在墙角、台阶上折
+const A = projector(bandsCanvas(), { pos: [-3.2, 1.2, 5.0], look: [2.0, 3.8, -6], fov: 86 });
+// 字：投影机就放在镜头上 → 只有这里看是完整的
+const tc = document.createElement('canvas'); tc.width = 3840; tc.height = 2160;
+{ const x = tc.getContext('2d');
+  x.fillStyle = '#121212'; x.textBaseline = 'alphabetic';
+  x.font = '900 480px NSK'; x.textAlign = 'center';
+  x.fillText('超级平面', 1920, 1330);
+  x.font = '700 104px UB'; x.letterSpacing = '28px';
+  x.fillText('SUPERGRAPHICS', 1920, 1540);
+}
+const B = projector(tc, { pos: [CP[0] + 0.42, CP[1] + 0.1, CP[2]], look: CL, fov: 58 });
+
+const PJ = Q.get('notext') ? [A] : [A, B];
+const wall = patchPaint(new THREE.MeshStandardMaterial({ color: '#F3EFE7', roughness: 0.92 }), PJ);
+const floor = patchPaint(new THREE.MeshStandardMaterial({ color: '#B4ADA2', roughness: 0.38, envMapIntensity: 0.6 }), PJ);
+buildRoom(scene, { wall, floor });
+scene.add(person([6.4, 3.0, -5.3], 0.2));
+scene.add(person([1.5, 1.25, -5.4], -0.4, 0.97));
+
+const key = sun(scene, { color: '#FFE0B4', intensity: 8.0, pos: [20, 13, 12], target: [0, 2, -3], size: 13, map: 4096, bias: -0.0003 });
+key.shadow.radius = 4; key.shadow.blurSamples = 16;
+scene.add(new THREE.HemisphereLight('#E4ECFF', '#6A5A4A', 0.62));
+const bounce = new THREE.PointLight('#FFD9AA', 6, 16, 1.4); bounce.position.set(-1.5, 1.2, 1); scene.add(bounce);
+if (Q.get("beams")) beams(scene, key);
+finish(ctx, cam, { aoRadius: 0.9, aoDist: 0.3, bloom: 0.18, bloomThreshold: 0.92, vig: 0.42, grain: 0.03 });
+</script>

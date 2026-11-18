@@ -1,0 +1,56 @@
+<!doctype html><meta charset="utf-8">
+<!-- 功能主义 · 第 0 帧：一台原创的收音机（暖白喷涂机身 + 真打孔的喇叭网 + 滚花铝旋钮 + 全机唯一一个橙色键），
+     放在橡木桌上，左边一扇窗的低角度光。“少，但更好”：每个零件只做一件事，旋钮停在一格上。
+     不画任何一台真实的机器，也不出现任何品牌名。
+     cd drafts/_3d && node shoot.cjs ../functional/cover.html ../functional/png/cover.png -->
+<style>
+@font-face{font-family:GM;src:url(/public/fonts/GeistMono.ttf)}
+@font-face{font-family:NSB;src:url(/public/fonts/NotoSansSC-Bold.otf)}
+@font-face{font-family:NSK;src:url(/public/fonts/NotoSansSC-Black.otf)}
+@font-face{font-family:IN;src:url(/public/fonts/Inter.ttf)}
+html,body{margin:0;overflow:hidden;background:#000}
+#hud{position:absolute;inset:0;pointer-events:none;color:#1B1B1A;font-family:GM}
+.tl{position:absolute;left:64px;top:52px;font-size:22px;letter-spacing:.06em}
+.tr{position:absolute;right:64px;top:52px;font-size:22px;letter-spacing:.06em}
+.ttl{position:absolute;left:64px;top:120px;font-family:NSK;font-size:150px;line-height:1;letter-spacing:-.01em}
+.ttl small{display:block;font-family:IN;font-weight:600;font-size:40px;letter-spacing:.02em;margin-top:22px;color:#1B1B1A}
+.ttl i{font-style:normal;color:#FF5A1F}
+.sub{position:absolute;left:64px;bottom:58px;font-family:NSB;font-size:40px}
+.sub small{display:block;font-family:GM;font-size:22px;letter-spacing:.14em;color:#1B1B1Aaa;margin-bottom:8px}
+</style>
+<div id="hud"><div class="tl">风格 · FUNCTIONALISM</div><div class="tr">1955 — 今天</div>
+<div class="ttl">功能主义<small>Less, but better<i>.</i></small></div>
+<div class="sub"><small>ONE PART · ONE JOB · ONE ACCENT</small>少，但更好：每个零件只做一件事</div></div>
+<script type="importmap">{"imports":{"three":"/drafts/_3d/node_modules/three/build/three.module.js","three/addons/":"/drafts/_3d/node_modules/three/examples/jsm/"}}</script>
+<script type="module">
+import { THREE, setup, finish, sun, mesh } from '/drafts/_3d/lib.js';
+import { envMap } from '/drafts/_3d/craft.js';
+import { radio, oak } from './device.js';
+const Q = new URLSearchParams(location.search), PR = +(Q.get('pr') || 2);
+const ctx = setup({ pr: PR, bg: '#D9D4CB', tone: 'neutral' });
+const { renderer, scene } = ctx;
+scene.environment = envMap(renderer); scene.environmentIntensity = 0.55;
+await document.fonts.load('60px GM');
+
+// 桌面 + 墙
+const table = mesh(new THREE.BoxGeometry(40, 0.4, 16), oak()); table.position.set(0, -0.2, 2); scene.add(table);
+const wallM = new THREE.MeshStandardMaterial({ color: '#BDB4A6', roughness: 0.95 });
+const wall = mesh(new THREE.PlaneGeometry(60, 30), wallM); wall.position.set(0, 10, -5); scene.add(wall);
+
+const dev = radio({ knobAngle: -0.62 }); dev.position.set(3.05, 0, 0); dev.rotation.y = -0.45; scene.add(dev);
+
+const cam = new THREE.PerspectiveCamera(26, 16 / 9, 0.1, 200);
+cam.position.set(4.6, 2.5, 14.5); cam.lookAt(1.7, 1.55, 0);
+
+const key = sun(scene, { color: '#FFE6C4', intensity: 4.8, pos: [-14, 8, 9], target: [1, 1, 0], size: 9, map: 4096, bias: -0.0002 });
+key.shadow.radius = 5; key.shadow.blurSamples = 16;
+// 窗框的影子投在墙上：一个只投影子的格子
+{ const s = new THREE.Shape(); s.moveTo(-6, -6); s.lineTo(6, -6); s.lineTo(6, 6); s.lineTo(-6, 6); s.lineTo(-6, -6);
+  for (const [y0, y1] of [[-3.2, -0.1], [0.1, 3.2]]) for (const [z0, z1] of [[-2.4, -0.06], [0.06, 2.4]]) { const h = new THREE.Path(); h.moveTo(z0, y0); h.lineTo(z1, y0); h.lineTo(z1, y1); h.lineTo(z0, y1); h.lineTo(z0, y0); s.holes.push(h); }
+  const o = new THREE.Mesh(new THREE.ShapeGeometry(s), new THREE.MeshBasicMaterial({ colorWrite: false, depthWrite: false, side: THREE.DoubleSide }));
+  o.castShadow = true; o.position.set(-9, 6.0, 7.5); o.lookAt(1, 1, 0); scene.add(o); }
+scene.add(new THREE.HemisphereLight('#F4F1EC', '#8C7B66', 0.42));
+const rim = new THREE.DirectionalLight('#DDE6F2', 1.2); rim.position.set(8, 6, -6); scene.add(rim);
+const fill = new THREE.DirectionalLight('#FFF4E8', 0.5); fill.position.set(6, 3, 10); scene.add(fill);
+finish(ctx, cam, { aoRadius: 0.35, aoDist: 0.3, bloom: 0.12, bloomThreshold: 0.95, vig: 0.32, grain: 0.025 });
+</script>
