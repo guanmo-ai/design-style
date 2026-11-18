@@ -1,0 +1,188 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<title>粘性滚动 · 开头小样</title>
+<style>
+@font-face{font-family:IDisp;src:url(../../../public/fonts/InterDisplay-Bold.ttf);font-weight:700}
+@font-face{font-family:IDisp;src:url(../../../public/fonts/InterDisplay-SemiBold.ttf);font-weight:600}
+@font-face{font-family:Inter;src:url(../../../public/fonts/Inter-Medium.ttf);font-weight:500}
+@font-face{font-family:Mono;src:url(../../../public/fonts/GeistMono-Medium.ttf);font-weight:500}
+@font-face{font-family:SC;src:url(../../../public/fonts/NotoSansSC-Black.otf);font-weight:900}
+@font-face{font-family:SC;src:url(../../../public/fonts/NotoSansSC-Bold.otf);font-weight:700}
+@font-face{font-family:SC;src:url(../../../public/fonts/NotoSansSC-Medium.otf);font-weight:500}
+html,body{margin:0;background:#000;overflow:hidden}
+canvas{display:block}
+</style></head>
+<body><canvas id="c" width="1920" height="1080"></canvas>
+<script>
+/* 粘性滚动 · 开头小样（6 秒 · 60fps）。整支片子 = 在滚一张网页（苹果产品页的质感：纯黑、深灰卡片、超大字、真照片）。
+   材料自己怎么动：页面在走，它不走——滚动带惯性（指数衰减，τ = 0.5 s，≈ iOS 默认减速 0.998/ms），
+   钉住的元素在容器里纹丝不动，容器走完就被“顶走”。渐变 = 此刻钉住的东西。
+   在走的东西按滚动速度带运动模糊（子帧平均），钉住的东西自然是清楚的。
+   每一帧是帧号的纯函数：window.frame(f)。 */
+const W = 1920, H = 1080, FPS = 60;
+const cv = document.getElementById('c'), g = cv.getContext('2d');
+const buf = document.createElement('canvas'); buf.width = W; buf.height = H;
+const b = buf.getContext('2d');
+
+const C = { bg: '#000000', card: '#161618', card2: '#0F0F11', line: 'rgba(255,255,255,.07)',
+  ink: '#F5F5F7', dim: '#86868B', g0: '#2997FF', g1: '#7D5BFF', g2: '#FF4FA3' };
+const grad = (c, x0, y0, x1, y1) => { const q = c.createLinearGradient(x0, y0, x1, y1); q.addColorStop(0, C.g0); q.addColorStop(.55, C.g1); q.addColorStop(1, C.g2); return q; };
+
+// ---------- 照片（往期瀑布流用过的 AI 生成照片）----------
+const PH = {};
+const PHOTOS = ['dunes', 'ocean', 'stairs', 'tokyo', 'lake', 'monstera'];
+const loadPhotos = () => Promise.all(PHOTOS.map(n => new Promise(r => { const im = new Image(); im.onload = () => { PH[n] = im; r(); }; im.src = `../../../public/02-masonry/photos/${n}.jpg`; })));
+function cover(c, im, x, y, w, h, fx = .5, fy = .5) {       // object-fit: cover
+  const s = Math.max(w / im.width, h / im.height), sw = w / s, sh = h / s;
+  c.drawImage(im, (im.width - sw) * fx, (im.height - sh) * fy, sw, sh, x, y, w, h);
+}
+
+// ---------- 滚动：几次“甩”的叠加，每次 = 快速起手 + 指数衰减 ----------
+const TAU = 0.5, RISE = 0.06;
+const X = u => u <= 0 ? 0 : 1 - (TAU * Math.exp(-u / TAU) - RISE * Math.exp(-u / RISE)) / (TAU - RISE);
+const Xv = u => u <= 0 ? 0 : (Math.exp(-u / TAU) - Math.exp(-u / RISE)) / (TAU - RISE);
+const FLICKS = [[-0.12, 1400], [2.3, 2900], [4.55, 520]];
+const scrollAt = t => FLICKS.reduce((s, [t0, A]) => s + A * X(t - t0), 0);
+const velAt = t => FLICKS.reduce((s, [t0, A]) => s + A * Xv(t - t0), 0);
+
+// ---------- 页面（页面坐标，视口高 1080）----------
+const A_END = 2500;
+const TT = 250, TH = 600, T_Y = 250;          // 标题：top 250，块高 600
+const B0 = A_END, B_END = B0 + 3600;          // 第二节：雪崩，整屏钉住
+const PAGE_H = 9200;
+const sticky = (pageY, top, h, end, s) => Math.min(Math.max(pageY - s, top), end - h - s);
+
+const clamp = (x, a = 0, z = 1) => Math.min(Math.max(x, a), z);
+const sm = x => { x = clamp(x); return x * x * (3 - 2 * x); };
+function hash(n) { const s = Math.sin(n * 127.1 + 311.7) * 43758.5453; return s - Math.floor(s); }
+function txt(c, s, x, y, font, color, align = 'left', ls = 0) {
+  c.font = font; c.fillStyle = color; c.textAlign = align; c.textBaseline = 'alphabetic';
+  c.letterSpacing = ls + 'px'; c.fillText(s, x, y); c.letterSpacing = '0px';
+}
+function tw(c, s, font, ls = 0) { c.font = font; c.letterSpacing = ls + 'px'; const w = c.measureText(s).width; c.letterSpacing = '0px'; return w; }
+function rr(c, x, y, w, h, r) { c.beginPath(); c.roundRect(x, y, w, h, r); }
+function cardBg(c, x, y, w, h, r = 32) {
+  const q = c.createLinearGradient(0, y, 0, y + h); q.addColorStop(0, C.card); q.addColorStop(1, C.card2);
+  rr(c, x, y, w, h, r); c.fillStyle = q; c.fill(); c.strokeStyle = C.line; c.lineWidth = 2; c.stroke();
+}
+
+// 右栏：照片卡和大数字卡，跟着页面走
+const CARDS = (() => {
+  const L = [
+    { k: 'photo', h: 470, src: 'dunes', cap: '钉住', en: 'Pin' },
+    { k: 'num', h: 300, big: '1 690', unit: 'px', d: '这一节标题钉住的距离' },
+    { k: 'photo', h: 470, src: 'ocean', cap: '擦洗', en: 'Scrub' },
+    { k: 'num', h: 300, big: '0 → 1', unit: '', d: '进度跟着滚动走' },
+    { k: 'photo', h: 560, src: 'stairs', cap: '顶走', en: 'Push', fy: .35 },
+  ];
+  let y = 70; for (const c of L) { c.y = y; y += c.h + 24; } return L;
+})();
+const CX = 1100, CW = 700;
+
+function card(c, cd, sy) {
+  const x = CX, y = cd.y - sy, w = CW, h = cd.h;
+  if (y > H || y + h < 0) return;
+  if (cd.k === 'photo') {
+    c.save(); rr(c, x, y, w, h, 32); c.clip(); cover(c, PH[cd.src], x, y, w, h, .5, cd.fy ?? .5);
+    const q = c.createLinearGradient(0, y + h * .55, 0, y + h); q.addColorStop(0, 'rgba(0,0,0,0)'); q.addColorStop(1, 'rgba(0,0,0,.55)');
+    c.fillStyle = q; c.fillRect(x, y, w, h); c.restore();
+    txt(c, cd.cap, x + 44, y + h - 52, '700 54px SC', '#fff');
+    txt(c, cd.en, x + 50 + tw(c, cd.cap, '700 54px SC'), y + h - 52, '600 40px IDisp', 'rgba(255,255,255,.7)');
+    return;
+  }
+  cardBg(c, x, y, w, h);
+  txt(c, cd.big, x + 48, y + 186, '700 150px IDisp', C.ink, 'left', -6);
+  if (cd.unit) txt(c, cd.unit, x + 60 + tw(c, cd.big, '700 150px IDisp', -6), y + 186, '600 54px IDisp', C.dim);
+  txt(c, cd.d, x + 50, y + 250, '500 32px SC', C.dim);
+}
+
+// ---------- 第二节：雪崩（整屏钉住；照片卡从中间“撑开”、雪落多少 = 滚动进度）----------
+const FLAKES = Array.from({ length: 420 }, (_, i) => ({ x: hash(i * 3.1), y: hash(i * 7.7), z: .25 + .75 * hash(i * 1.3) ** 2 }));
+function scene(c, s) {
+  const top = sticky(B0, 0, H, B_END, s);
+  if (top > H || top + H < 0) return;
+  const p = clamp((s - B0) / (B_END - H - B0));
+  c.save(); c.beginPath(); c.rect(0, Math.max(0, top), W, H); c.clip(); c.translate(0, top);
+  c.fillStyle = C.bg; c.fillRect(0, 0, W, H);
+  // 标题（这一节钉住的部分）
+  txt(c, '2012', W / 2, 200, '700 150px IDisp', grad(c, W / 2 - 200, 0, W / 2 + 200, 0), 'center', -6);
+  txt(c, '雪崩 · 往下滚，雪就往下落', W / 2, 272, '700 46px SC', C.ink, 'center');
+  // 照片卡：随进度撑开（苹果产品页最常见的擦洗：媒体从卡片长成一整屏）
+  const e = sm(p * 1.6);
+  const cw = 1180 + 560 * e, ch = cw * 407 / 960 * (1 - .08 * e), cx = (W - cw) / 2, cy = 330 + (1 - e) * 20;
+  c.save(); rr(c, cx, cy, cw, ch, 32 - 8 * e); c.clip();
+  const zoom = 1.18 - .18 * p;
+  c.translate(W / 2, cy + ch / 2); c.scale(zoom, zoom); c.translate(-W / 2, -(cy + ch / 2));
+  cover(c, PH.lake, cx, cy, cw, ch);
+  c.setTransform(1, 0, 0, 1, 0, top);
+  // 雪：只跟着滚动走——停下滚动，雪也停
+  c.fillStyle = '#fff';
+  for (const f of FLAKES) {
+    const fy = cy + ((f.y * (ch + 40) + p * 2200 * f.z) % (ch + 40)) - 20;
+    const fx = cx + f.x * cw + Math.sin(fy * .01 + f.x * 20) * 16 * f.z;
+    c.globalAlpha = .45 + .5 * f.z; c.beginPath(); c.arc(fx, fy, 1.3 + 3 * f.z, 0, 7); c.fill();
+  }
+  c.globalAlpha = 1; c.restore();
+  // 进度条
+  const bx = W / 2 - 180, by = cy + ch + 46;
+  rr(c, bx, by, 360, 6, 3); c.fillStyle = 'rgba(255,255,255,.14)'; c.fill();
+  if (p > 0.005) { rr(c, bx, by, 360 * p, 6, 3); c.fillStyle = grad(c, bx, 0, bx + 360, 0); c.fill(); }
+  c.restore();
+}
+const CAPS = [
+  { y: B0 + 1100, a: '2012 年 12 月 ·《纽约时报》', t: 'Snow Fall', d: '画面钉在原地，文字从上面滑过去' },
+  { y: B0 + 1950, a: '擦洗 Scrub', t: '雪落多少，只看滚了多少', d: '手指停下，雪也停在半空' },
+  { y: B0 + 2800, a: 'Scrollytelling', t: '这种讲法后来叫：滚动叙事', d: '' },
+];
+function caption(c, cp, s) {
+  const y = cp.y - s; if (y > H || y + 240 < 0) return;
+  const w = 720, h = cp.d ? 220 : 170, x = (W - w) / 2;
+  const al = clamp((y - 300) / 160); if (al <= 0) return; c.globalAlpha = al;
+  rr(c, x, y, w, h, 32); c.fillStyle = 'rgba(22,22,24,.86)'; c.fill(); c.strokeStyle = 'rgba(255,255,255,.1)'; c.lineWidth = 2; c.stroke();
+  txt(c, cp.a, x + 44, y + 62, '500 28px SC', C.dim);
+  txt(c, cp.t, x + 44, y + 126, /[a-z]/i.test(cp.t[0]) ? '700 52px IDisp' : '700 46px SC', C.ink);
+  if (cp.d) txt(c, cp.d, x + 44, y + 180, '500 30px SC', C.dim);
+  c.globalAlpha = 1;
+}
+
+// ---------- 一个子帧：整张页面 ----------
+function page(c, s) {
+  c.fillStyle = C.bg; c.fillRect(0, 0, W, H);
+  for (const cd of CARDS) card(c, cd, s);
+  scene(c, s);
+  for (const cp of CAPS) caption(c, cp, s);
+  // 标题：钉住的那个（画在最上层）
+  const ty = sticky(T_Y, TT, TH, A_END, s);
+  if (ty + TH > 0) {
+    txt(c, '一块钉住，其余滚过去', 116, ty + 6, '500 34px SC', C.dim);
+    txt(c, 'Sticky', 104, ty + 228, '700 250px IDisp', grad(c, 104, 0, 840, 0), 'left', -12);
+    txt(c, 'Scroll', 104, ty + 456, '700 250px IDisp', C.ink, 'left', -12);
+    txt(c, '粘性滚动', 114, ty + 572, '900 92px SC', C.ink, 'left', 2);
+  }
+}
+
+// ---------- 浏览器自己的东西：只留期号和一根细滚动条 ----------
+function hud(c, s) {
+  txt(c, 'Design Style', 104, 92, '500 32px Inter', C.dim);
+  txt(c, '布局 03', 104 + tw(c, 'Design Style', '500 32px Inter') + 18, 92, '700 32px SC', C.ink);
+  const tx = 1876, t0 = 150, tl = 800, th = tl * H / PAGE_H, tpos = t0 + (tl - th) * clamp(s / (PAGE_H - H));
+  rr(c, tx, t0, 6, tl, 3); c.fillStyle = 'rgba(255,255,255,.08)'; c.fill();
+  rr(c, tx, tpos, 6, th, 3); c.fillStyle = 'rgba(255,255,255,.55)'; c.fill();
+}
+
+const SHUTTER = 0.75;   // 快门（帧），270°
+window.frame = f => {
+  const t = f / FPS, v = velAt(t);
+  const N = Math.max(1, Math.min(18, Math.ceil(Math.abs(v) * SHUTTER / FPS / 2.5)));
+  for (let k = 0; k < N; k++) {
+    const tk = N === 1 ? t : t + (k / (N - 1) - .5) * SHUTTER / FPS;
+    page(b, scrollAt(tk));
+    g.globalAlpha = 1 / (k + 1); g.drawImage(buf, 0, 0);
+  }
+  g.globalAlpha = 1;
+  hud(g, scrollAt(t));
+};
+const qf = new URLSearchParams(location.search).get('f');
+Promise.all([loadPhotos(), ...['700 10px IDisp', '600 10px IDisp', '500 10px Inter', '500 10px Mono', '900 10px SC', '700 10px SC', '500 10px SC']
+  .map(s => document.fonts.load(s, '粘性滚动钉住擦洗顶走Aa1'))]).then(() => { window.frame(+(qf || 0)); window.ready = true; });
+</script></body></html>
