@@ -49,7 +49,7 @@ const SCALE = +(Q.get('scale') || 1) * devicePixelRatio;
   const cv = document.getElementById('gl');
   cv.width = Math.round(1920 * SCALE); cv.height = Math.round(1080 * SCALE);
   const gl = GLK.create(cv);
-  const P = CLAY.programs(gl);
+  const P = CLAY.programs(gl, Q.get('q') ? JSON.parse(Q.get('q')) : {});
   const scene = buildHero(gl, Q);
   const t0 = performance.now();
   await CLAY.render(gl, P, scene, { ss: +(Q.get('ss') || 2), tiles: +(Q.get('tiles') || 8), exposure: +(Q.get('exp') || 1), vign: 0.22, grain: 0.018, sat: 1.03, focus: scene.focus || 12, aperture: +(Q.get('ap') ?? scene.aperture ?? 0), maxCoc: 14 });

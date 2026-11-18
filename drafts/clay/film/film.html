@@ -1,0 +1,102 @@
+<!doctype html><meta charset="utf-8"><title>黏土 Clay · 全片</title>
+<!-- 逐帧渲染：node ../../_lib/film-gl.cjs film.html <帧目录> 0 750。出片：bash make.sh。光线步进在 1280×720 渲，CSS 放大到 1920×1080，字是 1080p 的 -->
+<style>
+@font-face { font-family: 'ZCOOL'; src: url(../../../public/fonts/ZCOOLQingKeHuangYou.ttf); }
+@font-face { font-family: 'Unbounded'; src: url(../../../public/fonts/Unbounded.ttf); font-weight: 200 900; }
+@font-face { font-family: 'Fredoka'; src: url(../../../public/fonts/Fredoka.ttf); font-weight: 300 700; }
+@font-face { font-family: 'GeistMono'; src: url(../../../public/fonts/GeistMono.ttf); font-weight: 100 900; }
+@font-face { font-family: 'NotoSC'; src: url(../../../public/fonts/NotoSansSC-Bold.otf); font-weight: 700; }
+@font-face { font-family: 'NotoSC'; src: url(../../../public/fonts/NotoSansSC-Medium.otf); font-weight: 500; }
+@font-face { font-family: 'NotoSC'; src: url(../../../public/fonts/NotoSansSC-Black.otf); font-weight: 900; }
+html, body { margin: 0; background: #000; overflow: hidden; }
+#stage { position: relative; width: 1920px; height: 1080px; overflow: hidden; }
+#c { position: absolute; left: 0; top: 0; width: 1920px; height: 1080px; }
+#hud { position: absolute; inset: 0; color: var(--ink); font-family: NotoSC; font-weight: 500; --ink: #2a2421; --soft: rgba(42,36,33,.62); }
+#hud > div { position: absolute; }
+.mono { font-family: GeistMono, NotoSC; font-weight: 500; letter-spacing: .02em; }
+#tl { left: 72px; top: 56px; font-size: 22px; letter-spacing: .08em; }
+#tl b { font-weight: 700; }
+#tr { right: 72px; top: 56px; font-size: 22px; letter-spacing: .08em; text-align: right; color: var(--soft); }
+#tr i { display: inline-block; width: 150px; height: 4px; background: rgba(128,120,116,.3); vertical-align: middle; margin-right: 16px; border-radius: 2px; position: relative; top: -2px; }
+#tr i b { display: block; height: 100%; background: var(--ink); border-radius: 2px; }
+#word { left: 72px; bottom: 78px; }
+#word .w { font-family: ZCOOL; font-size: 210px; line-height: .9; transform-origin: 0 80%; display: inline-block; }
+#word .en { font-family: Unbounded; font-weight: 700; font-size: 34px; letter-spacing: .4em; margin-left: 22px; vertical-align: 40px; display: inline-block; }
+#word .p { font-size: 30px; margin-top: 14px; white-space: nowrap; }
+#ui { left: 0; top: 0; width: 1920px; height: 1080px; }
+#ui .row { position: absolute; font-size: 34px; font-weight: 700; white-space: nowrap; color: #2a2421; }
+#ui .row small { display: block; font-size: 22px; font-weight: 500; color: rgba(42,36,33,.55); margin-top: 2px; }
+#ui .row.done { color: rgba(42,36,33,.45); }
+#ui .row.done s { text-decoration-thickness: 3px; }
+#ui .hd { position: absolute; font-family: ZCOOL; font-size: 64px; color: #2a2421; white-space: nowrap; }
+#ui .hd small { font-family: GeistMono; font-size: 24px; margin-left: 18px; color: rgba(42,36,33,.6); }
+#end { left: 0; right: 0; top: 860px; text-align: center; color: #fff; }
+#end .en { font-family: Unbounded; font-weight: 700; font-size: 50px; letter-spacing: .6em; margin-left: .6em; }
+#end .by { font-size: 30px; margin-top: 20px; opacity: .92; }
+</style>
+<div id="stage"><canvas id="c"></canvas><div id="hud"><div id="tl"></div><div id="tr"></div><div id="ui"></div><div id="word"></div><div id="end"></div></div></div>
+<script src="../../_lib/glkit.js"></script><script src="../../_lib/typefx.js"></script><script src="../../_lib/kit/motion.js"></script>
+<script src="../clay.js"></script><script src="timeline.js"></script><script src="scenes.js"></script>
+<script>
+const Q = new URLSearchParams(location.search);
+const RW = +(Q.get('w') || 1280), RH = Math.round(RW * 9 / 16);
+const $ = id => document.getElementById(id), D = (h, f, f0, o) => TFX.decode(h, f, f0, o);
+const PARAM = {
+  '按': '压扁到 62% → 另外两边各 ×1.27（= 1/√0.62）· 不回弹',
+  '搓': '越搓越长越细：长 ×1.45 → 粗 ×0.83 · 滚一圈前进 2πr',
+  '切': '0.3 mm 钢丝 · 一拍一刀 · 截面 = 卷进去的每一层',
+  '印': '按下去的形状，就是按钮的状态',
+};
+const ROWS = ['晨跑 3 公里', '回 3 封邮件', '拍一组黏土', '写周报'];
+function hud(f, st, scene) {
+  const { hud: h, dark } = st;
+  const H = $('hud');
+  H.style.setProperty('--ink', dark > 0.5 ? '#fff' : '#2a2421'); H.style.setProperty('--soft', dark > 0.5 ? 'rgba(255,255,255,.7)' : 'rgba(42,36,33,.62)');
+  const top = f < TL.final ? 1 : 1 - prog(f, TL.final, TL.final + 10);
+  $('tl').style.opacity = top; $('tr').style.opacity = top;
+  $('tl').innerHTML = `<b>${D('NO. 029', f, -20, { kind: 'small' })}</b>&nbsp;&nbsp;${D('黏土 · CLAY', f, -16, { rate: 1.5 })}`;
+  $('tr').innerHTML = `<i><b style="width:${Math.min(100, f / TL.final * 100).toFixed(1)}%"></b></i>${D('按 · 搓 · 切 · 印', f, -14, { rate: 1.2 })}`;
+  // 大字：每个动作一个字，砸下来（7 帧从 1.5 倍到原大），下面一行写能拿走的数
+  let w = '';
+  const W = TL.words; let wi = -1; for (let i = 0; i < W.length; i++) if (f >= W[i][0]) wi = i;
+  if (wi >= 0) {
+    const [a, zh, en] = W[wi], b = wi + 1 < W.length ? W[wi + 1][0] : TL.back[0];
+    const out = prog(f, b - 8, b), k = prog(f, a, a + 7), sc = lerp(1.5, 1, ease.out5(k)); TFX.slam(a);
+    if (f < b) w = `<div class="w" style="transform:scale(${sc.toFixed(3)});opacity:${(Math.min(1, k * 3) * (1 - out)).toFixed(2)}">${zh}</div><div class="en" style="opacity:${(1 - out).toFixed(2)}">${D(en, f, a + 3, { rate: 1.5 })}</div><div class="p" style="opacity:${(1 - out).toFixed(2)}">${D(PARAM[zh], f, a + 10, { rate: 0.6 })}</div>`;
+  }
+  // 俯视：泥片变成待办里的按钮
+  $('word').style.transform = h.ui > 0.5 ? 'translateY(0)' : '';
+  $('word').innerHTML = (h.ui > 0.2 && wi < 3) ? '' : w;
+  let ui = '';
+  if (h.phone && scene) {
+    const P = p => CLAY.project(scene, p, 1920, 1080), op = h.phone.ui;
+    const hd = P(h.phone.head);
+    const done = TL.prints.filter(p => f >= p).length;
+    ui += `<div class="hd" style="left:${hd[0]}px;top:${hd[1] - 10}px;opacity:${op}">${D('今天', f, 384, { rate: 3, kind: 'title' })}<small>${D(done + ' / 4 按下', f, 392, { rate: 1 })}</small></div>`;
+    for (const s of h.slots) {
+      const slot = 3 - s.i, pr = TL.prints[slot], pt = P([s.p[0], 0, s.p[2] - R1 - 0.55]);
+      const d = f >= pr + 2;
+      ui += `<div class="row${d ? ' done' : ''}" style="left:${pt[0]}px;top:${pt[1] - 34}px;opacity:${op}">${d ? '<s>' + ROWS[slot] + '</s>' : D(ROWS[slot], f, 388 + slot * 3, { rate: 1.2 })}<small>${d ? D('按下 · 不回弹', f, pr + 2, { rate: 0.8 }) : '还没按'}</small></div>`;
+    }
+  }
+  $('ui').innerHTML = ui;
+  $('end').innerHTML = f < TL.final + 2 ? '' : `<div class="en">${D('CLAY', f, TL.final + 2, { rate: 3, kind: 'title' })}</div><div class="by">${D('每天一个设计风格 · 观默 @guanmo_ai', f, TL.sign, { rate: 1.2 })}</div>`;
+}
+(async () => {
+  await Promise.all(['ZCOOL', 'GeistMono', 'NotoSC', 'Unbounded'].map(n => document.fonts.load(`700 40px ${n}`, '黏土按搓切印今天Aa1'))); await document.fonts.ready;
+  const cv = $('c'); cv.width = RW; cv.height = RH;
+  const gl = GLK.create(cv);
+  const P = CLAY.programs(gl, { SH_N: 36, SH_MIN: '0.012', AO_N: 4, FAO_N: 3, MARCH_N: 150 });
+  const text = CLAY.textField(gl, { text: '黏土', font: '{S} ZCOOL', worldWidth: 7.7, W: 2560, Hh: 1536, letterSpacing: 0.05, blur: 3 });
+  for (let f = 0; f < TL.end; f++) hud(f, stateAt(f, text), null);     // 空跑一遍：把所有出字的时间登记给配乐
+  window.events = () => ({ cues: TFX.list() });
+  window.frame = async f => {
+    const st = stateAt(f, text);
+    await CLAY.render(gl, P, st.scene, { ss: 1, tiles: 2, exposure: 1.0, vign: lerp(0.2, 0.42, st.dark), grain: 0.02, sat: 1.04, focus: st.scene.focus, aperture: st.scene.aperture, maxCoc: 10 });
+    hud(f, st, st.scene);
+    await new Promise(r => requestAnimationFrame(() => r()));
+  };
+  await window.frame(+(Q.get('f') || 0));
+  window.ready = true; window.__done = true;
+})().catch(e => { console.log('ERR ' + (e.stack || e.message).slice(0, 4000)); window.__done = true; });
+</script>
