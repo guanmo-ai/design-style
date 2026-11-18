@@ -1401,5 +1401,65 @@
       }
     ],
     "publishedAt": "2026-11-15T14:33:50Z"
+  },
+  {
+    "id": "028-new-wave",
+    "type": "style",
+    "number": "021",
+    "title": "新浪潮",
+    "titleEn": "New Wave Typography",
+    "years": "1970s–1980s",
+    "category": "排版与印刷",
+    "categoryEn": "Typography and print",
+    "description": "20 秒、八个场景。透明色片叠出新颜色，字母走台阶，网点铺满屏幕，六种版式逐拍切换。第二版跟着《Minimalist Design Pulse》的重拍收束。",
+    "descriptionEn": "Eight scenes in twenty seconds: transparent sheets mix colors, letters step down the grid, halftones fill the screen and six layouts switch on the beat. Version two follows the accents of “Minimalist Design Pulse.”",
+    "tags": [
+      "字体排版",
+      "叠色",
+      "网格",
+      "网点",
+      "动效"
+    ],
+    "tagsEn": [
+      "typography",
+      "overlap",
+      "grid",
+      "halftone",
+      "motion"
+    ],
+    "release": "day-28",
+    "asset": "028-new-wave.mp4",
+    "sha256": "2f1e22ed2f13476f0232a030c82d6f690dc85ee0c5c4b772fcbaafc0d47fa0f4",
+    "images": [
+      {
+        "file": "poster",
+        "title": "新浪潮字体设计",
+        "kind": "主视觉",
+        "titleEn": "New Wave Typography",
+        "kindEn": "Poster"
+      },
+      {
+        "file": "cheatsheet",
+        "title": "五条排版规则与色板",
+        "kind": "规则速查",
+        "titleEn": "Five typography rules and palette",
+        "kindEn": "Quick reference"
+      },
+      {
+        "file": "app-ui",
+        "title": "音乐 App 与网页",
+        "kind": "界面应用",
+        "titleEn": "Music app and website",
+        "kindEn": "Interface study"
+      },
+      {
+        "file": "storyboard",
+        "title": "八场动效分镜",
+        "kind": "分镜选帧",
+        "titleEn": "Eight scenes from the film",
+        "kindEn": "Storyboard"
+      }
+    ],
+    "publishedAt": "2026-11-18T03:41:56Z"
   }
 ]
