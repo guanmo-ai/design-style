@@ -45,6 +45,11 @@
 | ~~拟物 Skeuomorphism~~ | **不做**（图已删） |
 
 
+## 第十一轮：黏土 Clay 风格图（2026-11-18，未占期号）
+
+- [第 0 帧](clay/png/cover.png)（钴蓝底 + 大理石纹的“黏土” + 切开的螺旋泥卷）· [落到界面上](clay/png/ui.png) · 写实留档 [cover-real](clay/png/cover-real.png) · [过程](clay/PROCESS.md)
+- 状态：等主人看图，再决定做片子。
+
 ## 第十轮：新浪潮 New Wave 全片（2026-11-17，网站风格 021）
 
 - 20 秒、60 fps、八个场景。第二版用《Minimalist Design Pulse》，画面沿 130.07 BPM 的拍点重新编排。

@@ -1,0 +1,171 @@
+<!doctype html>
+<html lang="zh">
+<head>
+<meta charset="utf-8">
+<title>黏土 · Clay · 落到界面上</title>
+<style>
+@font-face { font-family: 'NotoSC'; src: url(../../public/fonts/NotoSansSC-Black.otf); font-weight: 900; }
+@font-face { font-family: 'NotoSC'; src: url(../../public/fonts/NotoSansSC-Bold.otf); font-weight: 700; }
+@font-face { font-family: 'NotoSC'; src: url(../../public/fonts/NotoSansSC-Medium.otf); font-weight: 500; }
+@font-face { font-family: 'NotoSC'; src: url(../../public/fonts/NotoSansSC-Regular.otf); font-weight: 400; }
+@font-face { font-family: 'Fredoka'; src: url(../../public/fonts/Fredoka.ttf); font-weight: 300 700; }
+@font-face { font-family: 'GeistMono'; src: url(../../public/fonts/GeistMono.ttf); font-weight: 100 900; }
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html, body { width: 1920px; height: 1080px; overflow: hidden; background: #3A50EE; }
+#gl { position: absolute; inset: 0; width: 1920px; height: 1080px; display: block; }
+.ov { position: absolute; inset: 0; font-family: NotoSC, sans-serif; color: #2b2420; pointer-events: none; }
+.ov > * { position: absolute; }
+.mono { font-family: GeistMono, monospace; letter-spacing: .03em; }
+.tag { font-family: GeistMono; font-size: 12px; color: rgba(255,255,255,.75); text-transform: uppercase; letter-spacing: .06em; }
+.tag b { color: #fff; font-weight: 600; }
+.logo { font-family: Fredoka; font-weight: 600; font-size: 24px; letter-spacing: .02em; }
+.nav { font-size: 14px; color: #6e6258; display: flex; gap: 26px; }
+.hl { font-weight: 900; font-size: 66px; line-height: 1.12; letter-spacing: .01em; }
+.hl em { font-style: normal; color: #E5512A; }
+.sub { font-size: 17px; line-height: 1.7; color: #5a4e45; width: 420px; }
+.cta { font-weight: 700; font-size: 18px; color: #fff; }
+.small { font-size: 13px; color: #7d7064; }
+.ph-t { font-weight: 900; font-size: 30px; }
+.ph-s { font-size: 13px; color: #7d7064; }
+.task { font-size: 17px; font-weight: 500; }
+.task.done { color: #9a8d80; text-decoration: line-through; text-decoration-color: #b8aa9b; }
+.task small { display: block; font-size: 12px; font-weight: 400; color: #9a8d80; text-decoration: none; margin-top: 2px; }
+.big { font-family: Fredoka; font-weight: 600; font-size: 56px; letter-spacing: .02em; }
+.rc { width: 214px; }
+.rc .k { font-family: GeistMono; font-size: 12.5px; font-weight: 600; display: block; }
+.rc .k i { font-style: normal; color: #E5512A; margin-right: 6px; }
+.rc .z { font-size: 13px; line-height: 1.5; color: #5a4e45; display: block; margin-top: 4px; }
+.rc .n { font-family: GeistMono; font-size: 12px; color: #2b2420; display: block; margin-top: 6px; background: rgba(43,36,32,.06); padding: 4px 6px; border-radius: 4px; }
+.dim { color: #b3a595; }
+</style>
+</head>
+<body>
+<canvas id="gl"></canvas>
+<div class="ov" id="ov" style="display:none"></div>
+<script src="../_lib/glkit.js"></script>
+<script src="clay.js"></script>
+<script>
+const Q = new URLSearchParams(location.search);
+const SCALE = +(Q.get('scale') || 1) * devicePixelRatio;
+const PAL_HEX = ['#FF5A2E', '#FFC93C', '#1FB5A8', '#FF9EC0', '#FFF1DC', '#3A50EE', '#9EF0C8', '#C7B2FF', '#EFE4D4'];
+const C = { orange: 0, mustard: 1, teal: 2, pink: 3, cream: 4, cobalt: 5, mint: 6, lilac: 7, putty: 8, marble: 10, swirl: 20 };
+// 像素 → 世界：俯视正交相机，100 像素 = 1 个单位，屏幕往下 = 世界 +z
+const X = px => px / 100 - 9.6, Z = py => py / 100 - 5.4;
+const blobs = [], dents = [], coils = [], panels = [], txt = [];
+// 一颗泥球（像素坐标、像素半径），s = 形状（压扁时 y 变小、xz 按体积守恒撑开）
+function ball(px, py, rpx, c, s = [1, 1, 1]) { const r = rpx / 100; blobs.push({ p: [X(px), r * s[1] * 0.93, Z(py)], r, s, c }); return r * s[1] * 1.93; }
+// 按扁：高度 × h，水平各 × 1/√h（体积不变）
+const squash = h => [1 / Math.sqrt(h), h, 1 / Math.sqrt(h)];
+// 按扁以后的球：给最后的半径（像素），反推按之前多大
+function flat(px, py, rFinal, c, h) { return ball(px, py, rFinal * Math.sqrt(h), c, squash(h)); }
+function press(px, py, top, size, depth, up = [0.3, 0, -1], freq = 14) { dents.push({ p: [X(px), top + 0.01, Z(py)], n: [0.04, -1, 0.06], size, depth, up, freq }); }
+function pill(x0, x1, py, rpx, c) { const r = rpx / 100; coils.push({ pts: [[X(x0), r * 0.92, Z(py), r], [X(x1), r * 0.92, Z(py), r]], c }); return r * 1.92; }
+function panel(x, y, w, h, hex, rad = 0) { panels.push({ r: [X(x), Z(y), X(x + w), Z(y + h)], c: CLAY.hex(hex), rad: rad / 100 }); }
+const T = (x, y, html, cls = '', st = '') => txt.push(`<div class="${cls}" style="left:${x}px;top:${y}px;${st}">${html}</div>`);
+
+// —— 顶上一行 ——
+T(64, 40, '<b>NO. 029</b> · 黏土 Clay · 落到界面上 · 按下去的形状就是状态', 'tag');
+T(1460, 40, 'RAYMARCHED · 同一个渲染器 · 0 贴图', 'tag', 'width:396px;text-align:right');
+
+// —— A · 网页：Pinch 捏捏（会留下手印的待办）——
+panel(64, 84, 940, 612, '#FFFFFF', 26);
+panel(64, 84, 940, 50, '#F4EEFF', 26); panel(64, 112, 940, 22, '#F4EEFF');
+[C.orange, C.mustard, C.teal].forEach((c, i) => ball(98 + i * 26, 109, 8, c));
+T(700, 100, '<span>功能</span><span>手印</span><span>价格</span><span>下载</span>', 'nav');
+ball(118, 186, 17, C.swirl, [1.1, 0.8, 1.0]); press(118, 186, 0.17 * 0.8 * 1.93, 0.15, 0.035);
+T(146, 168, 'Pinch <span style="font-weight:400;font-size:16px;color:#7d7064">捏捏</span>', 'logo');
+T(104, 236, '按一下，<br>就<em>留在那里</em>。', 'hl');
+T(106, 420, '一个会留下手印的待办。做完一件事，就在它上面按一下——不弹回、不消失。一个月后，你能摸到自己按过的每一下。', 'sub');
+{ const h = pill(130, 300, 566, 30, C.orange); press(176, 566, h, 0.3, 0.06, [0.2, 0, -1]); }
+T(214, 553, '开始按 →', 'cta');
+T(352, 556, '已有 <b>2,184,903</b> 个手印', 'small');
+// 热力图：一格一天，按过的被压扁、印着指纹；按得越深 = 那天做得越多
+const HM = [
+  [0, 2, 3, 1, 0, 2, 3], [1, 3, 2, 0, 2, 3, 1], [3, 2, 0, 1, 3, 2, 2], [2, 3, 3, 2, 1, 0, 3], [1, 2, 3, 3, 2, -1, -1],
+];
+const hmC = [C.putty, C.swirl, C.swirl, C.swirl];
+HM.forEach((row, j) => row.forEach((v, i) => {
+  if (v < 0) return;
+  const px = 600 + i * 56, py = 238 + j * 64;
+  if (v === 0) { ball(px, py, 19, C.putty); return; }
+  const h = [1, 0.62, 0.48, 0.36][v], top = flat(px, py, 23, hmC[v], h);
+  press(px + 2, py + 1, top, 0.21 + 0.02 * v, 0.03 + 0.02 * v, [((i * 7 + j * 3) % 5 - 2) * 0.2, 0, -1], 13);
+}));
+ball(600 + 5 * 56, 238 + 4 * 64, 19, C.putty, [1, 1, 1]); // 今天：还没按
+T(600 - 22, 560, '<span class="mono" style="font-size:12px;color:#7d7064">十一月 · 按得越深 = 那天做得越多</span>', '');
+T(600 - 22, 590, '<span style="display:inline-flex;gap:8px;align-items:center;font-size:12px;color:#7d7064">没按 <i style="width:12px;height:12px;border-radius:50%;background:#EFE4D4;display:inline-block"></i><i style="width:14px;height:10px;border-radius:50%;background:conic-gradient(#FF5A2E,#FF9EC0,#FFC93C,#FFF1DC,#FF5A2E);display:inline-block"></i><i style="width:16px;height:9px;border-radius:50%;background:conic-gradient(#FF5A2E,#FF9EC0,#FFC93C,#FFF1DC,#FF5A2E);display:inline-block"></i><i style="width:18px;height:8px;border-radius:50%;background:conic-gradient(#FF5A2E,#FF9EC0,#FFC93C,#FFF1DC,#FF5A2E);display:inline-block"></i> 按得深</span>', '');
+T(900, 512, '今天<br>还没按', 'small', 'line-height:1.35');
+
+// —— 配方条：四个能直接拿走的规则 ——
+panel(64, 724, 940, 236, '#FFFFFF', 22);
+const R0 = 88, RW = 230;
+// 01 按钮
+{ const h1 = pill(R0 + 16, R0 + 70, 790, 20, C.cream); const h2 = pill(R0 + 128, R0 + 182, 790, 20, C.marble); press(R0 + 155, 790, h2, 0.2, 0.06, [0.2, 0, -1]); }
+T(R0, 830, '<span class="k"><i>01</i>按钮 · 不回弹</span><span class="z">按下去留坑，状态就是形状，不用再换一个颜色。</span><span class="n">回弹 0 · 坑深 = 30% 厚</span>', 'rc');
+// 02 进度
+{ const x = R0 + RW; ball(x + 22, 790, 24, C.mustard); const L = 150, r = 0.07; coils.push({ pts: [[X(x + 60), r * 0.92, Z(790), r], [X(x + 60 + L), r * 0.92, Z(790), r]], c: C.mustard }); }
+T(R0 + RW, 830, '<span class="k"><i>02</i>进度 · 搓条</span><span class="z">一团泥搓成条：做得越多，条越长、越细。</span><span class="n">长 ×4 → 粗 ×½ · r ∝ 1/√L</span>', 'rc');
+// 03 计时
+{ const x = R0 + RW * 2; ball(x + 30, 790, 22, C.marble); ball(x + 128, 790, 22, C.swirl, squash(0.4)); }
+T(R0 + RW * 2, 830, '<span class="k"><i>03</i>计时 · 压扁</span><span class="z">时间越久，球被压得越扁；剩多少就有多高。</span><span class="n">高 ×s → 宽 ×1/√s</span>', 'rc');
+// 04 热力
+{ const x = R0 + RW * 3; [0, 1, 2].forEach(k => { const h = [1, 0.6, 0.4][k], top = flat(x + 24 + k * 66, 790, 25, [C.putty, C.swirl, C.swirl][k], h); if (k) press(x + 26 + k * 66, 791, top, 0.22, 0.03 + 0.03 * k, [0.2, 0, -1], 13); }); }
+T(R0 + RW * 3, 830, '<span class="k"><i>04</i>热力 · 按深 = 次数</span><span class="z">不用颜色表示多少：按得越深，做得越多。</span><span class="n">坑深 0 / 0.4 / 0.8 × 厚</span>', 'rc');
+
+// —— B · 手机：今天 ——
+panel(1056, 84, 388, 790, '#1B2470', 54); panel(1068, 96, 364, 766, '#FFFFFF', 44);
+T(1100, 140, '今天', 'ph-t'); T(1100, 184, '星期三 · 11 月 18 日', 'ph-s');
+// 进度：一团泥搓出去的条（3/5）
+{ const r = 0.065; coils.push({ pts: [[X(1102), r * 0.92, Z(236), r], [X(1102 + 186), r * 0.92, Z(236), r]], c: C.marble }); ball(1318, 236, 20, C.marble, [1.1, 0.85, 1.0]); }
+T(1346, 224, '3 / 5', 'mono', 'font-size:15px;font-weight:600');
+const tasks = [['晨跑 3 公里', '07:10 按下', 1], ['回 3 封邮件', '09:42 按下', 1], ['给黏土拍一组照片', '11:05 按下', 1], ['写周报', '下午', 0], ['睡前读 20 页', '晚上', 0]];
+tasks.forEach(([t, s, d], i) => {
+  const py = 318 + i * 92;
+  if (d) { const top = flat(1112, py, 29, C.swirl, 0.42); press(1114, py + 1, top, 0.28, 0.07, [0.25 * (i - 1), 0, -1], 14); }
+  else ball(1112, py, 24, C.putty);
+  T(1160, py - 22, `${t}<small>${s}</small>`, 'task' + (d ? ' done' : ''));
+  if (i < 4) panel(1100, py + 44, 300, 1.5, '#E8DDCF');
+});
+T(1100, 770, '<span style="font-size:13px;color:#7d7064">做完就按一下。按下去的，就留着。</span>', '');
+// 底部：一个泥做的“+”
+{ const h = pill(1214, 1286, 822, 22, C.orange); }
+T(1240, 808, '<span style="color:#fff;font-weight:900;font-size:22px">+</span>', '');
+
+// —— C · 手机：专注 ——
+panel(1476, 84, 388, 790, '#1B2470', 54); panel(1488, 96, 364, 766, '#FFFFFF', 44);
+T(1520, 140, '专注', 'ph-t'); T(1520, 184, '写周报 · 第 3 轮', 'ph-s');
+// 一颗泥球：25 分钟里一点点被压扁（已过 60%：剩 40% 高，宽了 58%）
+{ const top = flat(1670, 420, 118, C.swirl, 0.4); press(1690, 426, top, 0.62, 0.05, [0.3, 0, -1], 16); }
+T(1520, 590, '10:00', 'big', 'width:300px;text-align:center');
+T(1520, 664, '剩 40% 高 · 宽了 58%', 'mono', 'width:300px;text-align:center;font-size:13px;color:#7d7064');
+[1, 1, 0, 0].forEach((d, i) => { const px = 1584 + i * 58, py = 744; if (d) { const top = flat(px, py, 21, C.swirl, 0.4); press(px + 1, py, top, 0.2, 0.04, [0.2, 0, -1], 13); } else ball(px, py, 17, C.putty); });
+T(1520, 780, '今天 4 轮 · 按扁的是做完的', 'ph-s', 'width:300px;text-align:center');
+T(1520, 818, '<span style="font-size:13px;color:#7d7064">按住球 = 暂停（会留个印）</span>', '', 'width:300px;text-align:center');
+
+// —— 署名 ——
+T(64, 986, '<span class="mono" style="font-size:13px;color:rgba(255,255,255,.8);line-height:1.8">四条都是同一件事：<b style="color:#fff">形状就是状态</b>。没有弹簧、没有换色、没有动画曲线——只有手按过的痕迹。</span>', '', 'width:900px');
+T(1476, 916, '观默 @guanmo_ai', 'tag', 'width:388px;text-align:right');
+
+(async () => {
+  await Promise.all(['900 60px NotoSC', '700 20px NotoSC', '500 20px NotoSC', '400 20px NotoSC', '600 40px Fredoka', '500 14px GeistMono'].map(f => document.fonts.load(f, '按一下就留在那里今天专注')));
+  const cv = document.getElementById('gl');
+  cv.width = Math.round(1920 * SCALE); cv.height = Math.round(1080 * SCALE);
+  const gl = GLK.create(cv);
+  const P = CLAY.programs(gl);
+  const scene = {
+    text: null, blobs, coils, dents, tools: [], panels,
+    palette: PAL_HEX.map(CLAY.hex),
+    cam: { pos: [0, 20, 0.001], tgt: [0, 0, 0], ortho: 5.4 },
+    light: { dir: [-0.5, 0.78, -0.38], key: [2.4, 2.2, 1.95], sky: [0.3, 0.36, 0.62], bounce: [0.16, 0.17, 0.3], rimDir: [0.6, 0.4, 0.6], rim: [0.5, 0.2, 0.35] },
+    floorCol: CLAY.hex('#3A50EE'), bgTop: CLAY.hex('#3A50EE'), bgBot: CLAY.hex('#3A50EE'), marble: ['#FF5A2E', '#FF9EC0', '#FFC93C', '#FFF1DC'].map(CLAY.hex), marbleScale: 1.0, floorTex: [0.03, 0, 1, 0],
+    fog: [60, 90], shadowK: 7, seed: 5, lump: 0.8,
+  };
+  const t0 = performance.now();
+  await CLAY.render(gl, P, scene, { ss: +(Q.get('ss') || 2), tiles: +(Q.get('tiles') || 8), exposure: 0.92, vign: 0.08, grain: 0.012, sat: 1.02 });
+  console.log('render ms', Math.round(performance.now() - t0), 'blobs', blobs.length, 'dents', dents.length);
+  if (Q.get('ov') !== '0') { const ov = document.getElementById('ov'); ov.innerHTML = txt.join(''); ov.style.display = ''; }
+  window.__done = true;
+})().catch(e => { console.log('ERR', e.message.slice(0, 3000)); window.__done = true; });
+</script>
+</body>
+</html>
