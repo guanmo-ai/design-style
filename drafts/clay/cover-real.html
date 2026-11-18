@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="zh">
+<head>
+<meta charset="utf-8">
+<title>黏土 · Clay · 第 0 帧（写实版）</title>
+<style>
+@font-face { font-family: 'NotoSC'; src: url(../../public/fonts/NotoSansSC-Black.otf); font-weight: 900; }
+@font-face { font-family: 'NotoSC'; src: url(../../public/fonts/NotoSansSC-Bold.otf); font-weight: 700; }
+@font-face { font-family: 'NotoSC'; src: url(../../public/fonts/NotoSansSC-Medium.otf); font-weight: 500; }
+@font-face { font-family: 'NotoSC'; src: url(../../public/fonts/NotoSansSC-Regular.otf); font-weight: 400; }
+@font-face { font-family: 'ZCOOL'; src: url(../../public/fonts/ZCOOLQingKeHuangYou.ttf); }
+@font-face { font-family: 'Fredoka'; src: url(../../public/fonts/Fredoka.ttf); font-weight: 300 700; }
+@font-face { font-family: 'GeistMono'; src: url(../../public/fonts/GeistMono.ttf); font-weight: 100 900; }
+* { margin: 0; padding: 0; box-sizing: border-box; }
+html, body { width: 1920px; height: 1080px; overflow: hidden; background: #e9e1d4; }
+#gl { position: absolute; inset: 0; width: 1920px; height: 1080px; display: block; }
+.ov { position: absolute; inset: 0; color: #2b2522; font-family: NotoSC, sans-serif; pointer-events: none; }
+.mono { font-family: GeistMono, monospace; letter-spacing: .03em; }
+.tl { position: absolute; left: 64px; top: 50px; font-size: 13px; color: #6e6258; display: flex; gap: 28px; text-transform: uppercase; }
+.tl b { color: #2b2420; font-weight: 600; }
+.tr { position: absolute; right: 64px; top: 50px; font-size: 12px; color: #7d7064; }
+.title { position: absolute; left: 64px; top: 104px; }
+.title h2 { font-family: Fredoka; font-weight: 600; font-size: 76px; line-height: 1; letter-spacing: .06em; color: #2b2420; }
+.title p { font-family: NotoSC; font-weight: 400; font-size: 21px; line-height: 1.6; color: #5a4e45; margin-top: 12px; }
+.title p em { font-style: normal; font-weight: 700; color: #2b2420; font-size: 26px; }
+.call { position: absolute; width: 290px; font-size: 13px; line-height: 1.5; color: #4a3f37; }
+.call.r { text-align: right; }
+.call .k { display: block; color: #2b2420; font-size: 13.5px; font-weight: 600; margin-bottom: 4px; }
+.call .k i { font-style: normal; color: #E5512A; margin-right: 8px; }
+.call .z { font-family: NotoSC; font-size: 15px; color: #5a4e45; }
+.call .z b { color: #2b2420; font-weight: 700; }
+svg.lines { position: absolute; inset: 0; }
+.br { position: absolute; left: 64px; bottom: 48px; text-align: left; font-size: 12px; color: #7d7064; line-height: 1.8; }
+.br b { color: #2b2420; font-weight: 600; }
+</style>
+</head>
+<body>
+<canvas id="gl"></canvas>
+<div class="ov" id="ov" style="display:none"></div>
+<script src="../_lib/glkit.js"></script>
+<script src="clay.js"></script>
+<script src="scene-cover.js"></script>
+<script src="overlay-cover.js"></script>
+<script>
+const Q = new URLSearchParams(location.search);
+const SCALE = +(Q.get('scale') || 1) * devicePixelRatio;
+(async () => {
+  await document.fonts.load('900 100px NotoSC', '黏土'); await document.fonts.load('600 40px Fredoka'); await document.fonts.load('400 20px NotoSC', '按下去'); await document.fonts.load('700 20px NotoSC', '按下去'); await document.fonts.load('500 20px GeistMono'); await document.fonts.load('100px ZCOOL', '黏土');
+  const cv = document.getElementById('gl');
+  cv.width = Math.round(1920 * SCALE); cv.height = Math.round(1080 * SCALE);
+  const gl = GLK.create(cv);
+  const P = CLAY.programs(gl);
+  const scene = buildCover(gl, Q);
+  const t0 = performance.now();
+  await CLAY.render(gl, P, scene, { ss: +(Q.get('ss') || 2), tiles: +(Q.get('tiles') || 8), exposure: +(Q.get('exp') || 1), vign: 0.22, grain: 0.018, sat: 1.03, focus: scene.focus || 12, aperture: +(Q.get('ap') ?? scene.aperture ?? 0), maxCoc: 14 });
+  console.log('render ms', Math.round(performance.now() - t0));
+  if (Q.get('ov') !== '0' && window.overlayCover) overlayCover(scene);
+  window.__done = true;
+})().catch(e => { console.log('ERR', e.message.slice(0, 3000)); window.__done = true; });
+</script>
+</body>
+</html>
