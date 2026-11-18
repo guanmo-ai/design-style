@@ -45,6 +45,13 @@
 | ~~拟物 Skeuomorphism~~ | **不做**（图已删） |
 
 
+## 第十轮：新浪潮 New Wave 全片（2026-11-17，第二版）
+
+- 20 秒、60 fps、八个场景。第二版用《Minimalist Design Pulse》，画面沿 130.07 BPM 的拍点重新编排。
+- [第二版原片](new-wave/film/new-wave-film.mp4) · [原始制作记录](new-wave/PROCESS.md) · [正式作品资料](../styles/028-new-wave/README.md)
+
+---
+
 ## 第八轮：新艺术运动 Art Nouveau 全片（2026-11-12，网站风格 019）
 
 新艺术运动的候选图见 `art-nouveau/png/`，短片以连续生长的鞭线组织画面。
