@@ -32,7 +32,7 @@ npm run gallery:check   # 构建后检查发布文件、Pages 子路径链接、
 
 阅读页从每期现有 `README.md` 与 `PROCESS.md` 构建到 `dist/read/<作品 ID>/`。无需另写网页正文。构建时处理 Markdown、清理不安全 HTML，并校验与复制文档引用的本期图片；两份文档之间的相对链接和章节锚点转换为站内链接。其他源码链接保留 GitHub 入口。
 
-英文阅读页从每期 `README.en.md`（英文简明指南）与 `PROCESS.en.md`（英文制作概览）构建为 `guide.en.html` / `process.en.html`，提供双向语言切换、英文目录与返回作品入口。英文概览注明其与详细中文原文的关系；现有视频、图解及过程图保留原版中文标注，不把它们描述为已翻译媒体。根目录 `README.md` 与 `README.en.md` 均提供语言入口，`gallery:readme` 同时更新两份预览表。
+英文阅读页从每期 `README.en.md`（英文简明指南）与 `PROCESS.en.md`（英文制作概览）构建为 `guide.en.html` / `process.en.html`，提供双向语言切换、英文目录与返回作品入口。英文概览注明其与详细中文原文的关系；现有视频、图解及过程图保留原版中文标注，不把它们描述为已翻译媒体。根目录 `README.md` 与 `README.en.md` 均提供语言入口，`gallery:readme` 同时更新两份 README 的封面拼图入口。
 
 审阅尚未发布的视频改版时，先运行 `npm run render:L01`，再运行 `npm run gallery:preview -- 01-bento-grid out/01-bento-grid-master.mp4`，最后启动 `npm run gallery:serve`。预览命令检查本地视频规格，先构建并检查正式产物，再用本地视频替换预览副本并记录其 SHA-256；不会修改 Release 缓存或源目录中的发布哈希。该预览产物不能直接发布，`gallery:check` 会拒绝其与正式目录的差异。重新运行 `gallery:build` 即恢复使用已发布视频。
 
@@ -66,7 +66,7 @@ npm run gallery:check   # 构建后检查发布文件、Pages 子路径链接、
    云端 AI 会话不能直接创建 Release 时，把成片放进 `release-assets` 分支的 `day-NN/`（附件 + `release.json` + `notes.md` + `SHA256SUMS`）并推送：`.github/workflows/publish-release.yml`（只在该分支上）核对 SHA-256 后用仓库自己的权限发布，已有的 tag 不会被改动。
    发布工作流**只在 `release-assets` 分支**，当前以推送该分支为正式入口，不在 `main` 维护第二份。009 已通过这一入口成功发布。虽然文件含 `workflow_dispatch`，但 [GitHub 要求手动触发工作流先存在于默认分支](https://docs.github.com/en/actions/how-tos/manage-workflow-runs/manually-run-a-workflow)，当前不能把 Actions 的「Run workflow」当作可用入口；若以后确有手动补发需求，再将统一的工作流入口放到 `main`，明确检出 `release-assets`，避免两份逻辑漂移。
 3. 向 `gallery/data/works.json` 添加条目，填写类型 `type`（`style` 或 `layout`，缺省按 `style`）、该系列下一个上架期号 `number`、标题、分类、简介、标签、发布日期、Release tag、视频文件名、SHA-256 与四张图的信息。不要从制作目录或 Release tag 推导网站期号。SHA-256 可由 `gh release view <tag> --repo guanmo-ai/design-style --json assets` 返回的 digest 核对。
-4. 运行同步、测试、构建并进行浏览器检查。视频规格与章节自动读取本期 tokens 和 timeline，不重复手填。`gallery:sync` 同时更新仓库首页的紧凑视频预览：按最新发布排序，每行最多三张，新增作品自动换行；封面与标题均链接到对应作品的画廊详情。只更新 README 时运行 `npm run gallery:readme`，将生成的 README 改动一并提交。
+4. 运行同步、测试、构建并进行浏览器检查。视频规格与章节自动读取本期 tokens 和 timeline，不重复手填。`gallery:sync` 同时更新仓库首页的作品封面拼图：按最新发布排序，保留 16:9 比例，无边框与间距；行数随作品数量调整，各行均匀铺满，点击整图进入相应语言的画廊。拼图为 `docs/assets/style-mosaic.svg`，自包含全部封面图片，无需额外渲染依赖。只更新 README 时运行 `npm run gallery:readme`，将生成的 SVG 与两份 README 改动一并提交。
 
 作品直达链接格式：`?q=包豪斯#work-001-bauhaus`；只看布局：`?type=layout`（只看风格：`?type=style`），可与 `q` 组合；首页始终按最新发布排序，旧链接中的 `category`、`sort` 不再影响首页展示。没有匹配时显示空状态，不展示尚未发布的预告作品。每一期的风格图或布局图只在对应作品详情中展示，首页不展示具体图片或制作资料。
 
