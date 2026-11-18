@@ -1,0 +1,112 @@
+<!doctype html><meta charset="utf-8">
+<!-- 超级平面 · 第四版候选（冲视觉）：巨大的饱和色带铺满画面。代码渲染（three.js），没有贴图。
+     ?scene=city   一整座白色小城，四条色带从广场爬过一栋栋楼
+     ?scene=room   一个大房间从地板到天花板被条纹和圆盖满
+     ?scene=tunnel 一条白色隧道，同心色环一圈圈套进去
+     cd drafts/_3d && node shoot.cjs "../supergraphics/bold.html?scene=city" ../supergraphics/png/v4/city.png -->
+<style>
+@font-face{font-family:NSM;src:url(/public/fonts/NotoSansSC-Medium.otf)}
+@font-face{font-family:NSK;src:url(/public/fonts/NotoSansSC-Black.otf)}
+html,body{margin:0;overflow:hidden;background:#000}
+#hud{position:absolute;inset:0;pointer-events:none;color:#fff;font-family:NSM}
+.tl,.tr{position:absolute;top:50px;font-size:22px;letter-spacing:.06em;text-shadow:0 1px 10px rgba(0,0,0,.35)}
+.tl{left:64px}.tr{right:64px}
+.ttl{position:absolute;left:60px;bottom:52px;font-family:NSK;font-size:150px;line-height:1;text-shadow:0 4px 30px rgba(0,0,0,.25)}
+</style>
+<div id="hud"><div class="tl">风格 · SUPERGRAPHICS</div><div class="tr">1966 — 今天</div><div class="ttl">超级平面</div></div>
+<script type="importmap">{"imports":{"three":"/drafts/_3d/node_modules/three/build/three.module.js","three/addons/":"/drafts/_3d/node_modules/three/examples/jsm/"}}</script>
+<script type="module">
+import { THREE, setup, finish, sun, mesh, rng } from '/drafts/_3d/lib.js';
+import { projector, patchPaint } from '/drafts/_3d/project.js';
+const Q = new URLSearchParams(location.search), PR = +(Q.get('pr') || 2), SCENE = Q.get('scene') || 'city';
+if (Q.get('hud') === '0') hud.style.display = 'none';
+await document.fonts.load('80px NSK');
+const BAND = ['#1F4BFF', '#FF2A1F', '#FF8C00', '#FFC80A', '#FF4FA0'];
+const WHITE = '#F7F3EC';
+const ctx = setup({ pr: PR, bg: '#2D7BFF', tone: 'neutral' });
+const { renderer, scene } = ctx;
+function skyGrad(top, bot, mid = 0.7) { const c = document.createElement('canvas'); c.width = 4; c.height = 512; const x = c.getContext('2d'); const g = x.createLinearGradient(0, 0, 0, 512); g.addColorStop(0, top); g.addColorStop(mid, bot); g.addColorStop(1, bot); x.fillStyle = g; x.fillRect(0, 0, 4, 512); const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; return t; }
+const canvas = (W, H, draw) => { const c = document.createElement('canvas'); c.width = W; c.height = H; draw(c.getContext('2d'), W, H); return c; };
+const paintMat = (projs, color = WHITE) => patchPaint(new THREE.MeshStandardMaterial({ color, roughness: 0.9 }), projs);
+const addBox = (m, w, h, d, x, y, z, ry = 0) => { const o = mesh(new THREE.BoxGeometry(w, h, d), m); o.position.set(x, y, z); o.rotation.y = ry; scene.add(o); return o; };
+// 一组同心的粗色带（直线 + 四分之一圆），在投影画面里画
+function bands(x, cx, cy, r0, bw, gap, a0, a1, cols, lineTo) {
+  cols.forEach((col, i) => { const r = r0 + i * (bw + gap); x.strokeStyle = col; x.lineWidth = bw; x.lineCap = 'butt'; x.beginPath(); x.arc(cx, cy, r + bw / 2, a0, a1); if (lineTo) lineTo(x, i, r + bw / 2); x.stroke(); });
+}
+let cam;
+
+if (SCENE === 'city') {
+  scene.background = skyGrad('#0F55FF', '#8EC9FF', 0.75);
+  // 色带：从左上的高处投下来，所以在每栋楼的立面、屋顶、台阶上都会折
+  const pc = canvas(4096, 2560, (x, W, H) => {
+    bands(x, W * 0.78, H * 1.32, H * 0.62, H * 0.085, H * 0.014, Math.PI * 0.95, Math.PI * 1.62, BAND.slice(0, 4), null);
+    bands(x, W * 0.12, H * 1.1, H * 0.2, H * 0.06, H * 0.012, Math.PI * 1.0, Math.PI * 2.0, [BAND[4], BAND[0]], null);
+    bands(x, W * 0.5, H * -0.55, H * 0.62, H * 0.05, H * 0.012, 0, Math.PI, [BAND[3], BAND[4], BAND[0]], null);   // 高处一组，扫过两座塔
+  });
+  const PJ = projector(pc, { pos: [-7, 24, 30], look: [0, 4, -45], fov: 58 });
+  const m = paintMat([PJ]);
+  addBox(m, 220, 0.4, 220, 0, -0.2, -40);
+  const r = rng(7);
+  // 一条街往里走，两边是高低不一的白房子、几座塔、一段大台阶、一个拱
+  for (let i = 1; i < 14; i++) for (const side of [-1, 1]) {
+    const w = 5 + r() * 6, d = 5 + r() * 6, h = 3 + Math.pow(r(), 1.6) * 22, z = 6 - i * 8.5 + r() * 2;
+    addBox(m, w, h, d, side * (8 + w / 2 + r() * 3), h / 2, z);
+    if (r() < 0.35) addBox(m, w * 0.5, h * 0.4, d * 0.5, side * (8 + w / 2), h + h * 0.2, z);
+  }
+  for (const [x, z, rad, h] of [[-26, -40, 4, 34], [22, -62, 3.2, 40], [-6, -96, 5, 26]]) { const o = mesh(new THREE.CylinderGeometry(rad, rad, h, 48), m); o.position.set(x, h / 2, z); scene.add(o); }
+  for (let k = 0; k < 10; k++) addBox(m, 14, 0.45 * (k + 1), 1.4, 0, 0.225 * (k + 1), -30 - k * 1.4);   // 街中间一段大台阶
+  addBox(m, 14, 4.5, 22, 0, 2.25 + 4.5 * 0.0, -30 - 14 - 11);
+  { const s = new THREE.Shape(); s.moveTo(-9, 0); s.lineTo(9, 0); s.lineTo(9, 16); s.lineTo(-9, 16); s.lineTo(-9, 0); const h = new THREE.Path(); h.moveTo(-5, 0); h.lineTo(5, 0); h.lineTo(5, 8); h.absarc(0, 8, 5, 0, Math.PI, false); h.lineTo(-5, 0); s.holes.push(h);
+    const o = mesh(new THREE.ExtrudeGeometry(s, { depth: 3, bevelEnabled: false, curveSegments: 32 }), m); o.position.set(0, 4.5, -72); scene.add(o); }
+  const key = sun(scene, { color: '#FFF4E2', intensity: 3.4, pos: [40, 50, 30], target: [0, 0, -30], size: 70, map: 4096, bias: -0.0004 });
+  key.shadow.radius = 2;
+  scene.add(new THREE.HemisphereLight('#CFE3FF', '#E8D9C8', 1.0));
+  cam = new THREE.PerspectiveCamera(48, 16 / 9, 0.5, 600); cam.position.set(0, 15, 30); cam.lookAt(0, 5, -45);
+}
+
+if (SCENE === 'room') {
+  scene.background = new THREE.Color('#FFE9D6');
+  // 两台投影机：一组大弧色带 + 一组粗直条，墙、地、天花板、楼梯、圆窗全被盖住
+  const pa = canvas(4096, 2304, (x, W, H) => {
+    bands(x, W * 0.18, H * 1.05, H * 0.3, H * 0.085, H * 0.012, Math.PI * 1.0, Math.PI * 2.0, BAND.slice(0, 4), null);
+    x.fillStyle = BAND[4]; x.beginPath(); x.arc(W * 0.83, H * 0.26, H * 0.17, 0, Math.PI * 2); x.fill();
+    x.fillStyle = '#141414'; x.beginPath(); x.arc(W * 0.83, H * 0.26, H * 0.07, 0, Math.PI * 2); x.fill();
+  });
+  const pb = canvas(4096, 2304, (x, W, H) => { x.save(); x.translate(W * 0.6, H * 0.5); x.rotate(-0.5);
+    [BAND[0], BAND[3], BAND[1]].forEach((c, i) => { x.fillStyle = c; x.fillRect(-W, -H * 0.9 + i * H * 0.13 + H * 0.1, W * 2, H * 0.1); }); x.restore(); });
+  const A = projector(pa, { pos: [1.5, 2.2, 9], look: [-1, 3.6, -6], fov: 72 });
+  const B = projector(pb, { pos: [8, 6, 6], look: [-4, 1, -4], fov: 70 });
+  const m = paintMat([B, A]);
+  const W = 18, D = 16, H = 9;
+  addBox(m, W, 0.3, D, 0, -0.15, -D / 2 + 4); addBox(m, W, 0.3, D, 0, H + 0.15, -D / 2 + 4);
+  addBox(m, 0.3, H, D, -W / 2, H / 2, -D / 2 + 4); addBox(m, W, H, 0.3, 0, H / 2, -D + 4);
+  for (let i = 0; i < 12; i++) { const top = (i + 1) * 0.36; addBox(m, 0.5, top, 2.2, 1.0 + i * 0.5, top / 2, -D + 4 + 1.1); }   // 贴后墙的楼梯
+  addBox(m, 5, 4.32, 2.2, 1.0 + 12 * 0.5 + 2.25, 2.16, -D + 4 + 1.1);
+  addBox(m, 2.4, 1.0, 1.2, -4.5, 0.5, -2.5); addBox(m, 1.0, 2.2, 1.0, -6.4, 1.1, -5);   // 几个白色的“家具”块
+  { const o = mesh(new THREE.CylinderGeometry(1.1, 1.1, 0.9, 48), m); o.position.set(-2.2, 0.45, -6.5); scene.add(o); }
+  { const o = mesh(new THREE.SphereGeometry(1.0, 48, 32), m); o.position.set(4.2, 1.0, -3.4); scene.add(o); }
+  const key = sun(scene, { color: '#FFF0DC', intensity: 2.4, pos: [14, 16, 12], target: [0, 2, -4], size: 16, map: 4096, bias: -0.0003 });
+  scene.add(new THREE.HemisphereLight('#FFFFFF', '#E9DCCB', 1.2));
+  cam = new THREE.PerspectiveCamera(64, 16 / 9, 0.3, 200); cam.position.set(6.5, 2.0, 7.5); cam.lookAt(-1.5, 3.4, -7);
+}
+
+if (SCENE === 'tunnel') {
+  scene.background = new THREE.Color('#FFF6EA');
+  const HERO = { pos: [0, 0, -3], look: [0, 0, -80], fov: 66 };
+  const pc = canvas(4800, 2700, (x, W, H) => {   // 一圈一圈的同心色环
+    const cols = [BAND[1], BAND[2], BAND[3], BAND[4], BAND[0]];
+    for (let i = 30; i >= 0; i--) { x.fillStyle = i % 2 ? cols[(i >> 1) % cols.length] : WHITE; x.beginPath(); x.arc(W / 2, H / 2, H * 0.016 * Math.pow(1.14, i), 0, Math.PI * 2); x.fill(); }
+  });
+  const PJ = projector(pc, { ...HERO, fov: 86 });
+  const m = paintMat([PJ]);
+  // 方形隧道：一节一节的框，框和框之间有缝，镜头稍微偏一点就能看出它是一节节拼起来的
+  for (let i = 0; i < 40; i++) { const z = -i * 2.2, s = 4.6, t = 0.5, L = 1.8;
+    addBox(m, s * 2 + t * 2, t, L, 0, s + t / 2, z); addBox(m, s * 2 + t * 2, t, L, 0, -s - t / 2, z);
+    addBox(m, t, s * 2, L, -s - t / 2, 0, z); addBox(m, t, s * 2, L, s + t / 2, 0, z); }
+  const key = new THREE.PointLight('#FFF2E0', 160, 60, 1.6); key.position.set(0, 0, -2); scene.add(key);
+  scene.add(new THREE.HemisphereLight('#FFFFFF', '#F2E2D0', 0.9));
+  scene.fog = new THREE.Fog('#FFF6EA', 30, 90);
+  cam = new THREE.PerspectiveCamera(70, 16 / 9, 0.3, 200); cam.position.set(0.9, -0.5, -3); cam.lookAt(0.2, 0.0, -60);
+}
+finish(ctx, cam, { ao: false, bloom: 0.15, bloomThreshold: 0.92, vig: 0.2, grain: 0.015 });
+</script>
