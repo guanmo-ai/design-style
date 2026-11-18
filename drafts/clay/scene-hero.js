@@ -44,8 +44,10 @@ function buildHero(gl, Q) {
   tools.push({ a: [B[0], B[1] - 0.3, B[2]], b: [B[0], B[1] + 0.3, B[2]], ra: 0.085, rb: 0.085 });
   window.__hero = { nian: [tp[0] + g[1][1] - 0.35, top * 0.73, 0.55], log: [LX + 0.25, LR * 1.25, LZ + 1.75], wire: [LX + 0.9, LR * 2 + 0.7, wz], tu: [tp[0] + cx1, top * 0.12, 0.6] };
   const cam = { pos: [n('camx', 0.9), n('camy', 2.7), n('camz', 12.6)], tgt: [n('tgx', 1.15), n('tgy', 1.5), 0], fov: n('fov', 32) };
+  const offL = (Q.get('off') || '').split(',');
+  if (offL.includes('blob')) blobs.length = 0; if (offL.includes('tool')) tools.length = 0; if (offL.includes('cyl')) cyls.length = 0;
   return {
-    text, textPos: tp, flat: false, H: n('H', 0.34), R: n('R', 0.2), warp: 0.05, dome: n('dome', 0.14),
+    text: offL.includes('text') ? null : text, textPos: tp, flat: false, H: n('H', 0.34), R: n('R', 0.2), warp: 0.05, dome: n('dome', 0.14),
     gCol: [10, 10], gSq: [1, 1], gRot: [0.02, -0.025],
     cut: !Q.get('cut') ? null : { n: Nn, c, off, x: split },
     marble: ['#FF5A2E', '#FF9EC0', '#FFC93C', '#FFF1DC'].map(CLAY.hex), marbleScale: n('ms', 1.3),

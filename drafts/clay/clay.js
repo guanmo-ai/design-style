@@ -7,7 +7,7 @@ precision highp float;
 in vec2 uv; out vec4 o;
 uniform vec2 res, shift;
 uniform sampler2D sdfTex; uniform vec4 texRect; uniform float pxWorld; uniform float textOn;
-uniform vec3 textPos; uniform float H, R, warp, dome, flatOn;
+uniform vec3 textPos; uniform float H, R, warp, dome, flatOn; uniform vec3 tLo, tHi;
 uniform vec4 gSplit, gCol, gSq, gCx, gRot, gLift;
 uniform highp sampler2D primTex; uniform int nBlob, nCoil, nDent, nTool, nChunk;
 uniform vec3 pal[12];
@@ -17,9 +17,9 @@ uniform float floorY, fogNear, fogFar, shadowK, lumpAmt, seed;
 uniform vec3 sceneLo, sceneHi;
 uniform vec4 floorTex; uniform int dbg;
 uniform vec4 cutPl; uniform vec3 cutOff; uniform float cutOn, cutX; // 钢丝切：平面（法线、偏移）以上的部分整块滑开 cutOff；只切 x > cutX 的字
-uniform vec3 mcol[4]; uniform float mScale; // 大理石纹（几色泥揉在一起没揉匀）
+uniform vec3 mcol[16]; uniform float mScale; uniform float lMix; uniform vec4 spot; // 3 套颜色（每套 4 色）；字 ↔ 泥卷的变形；地上的光池（xz、半径、强度） // 大理石纹（几色泥揉在一起没揉匀）
 uniform vec3 rimDir, rimCol; uniform int nCyl;
-vec3 gObjP; vec3 gCylP;
+vec3 gObjP; vec3 gCylP; float gLetSet, gCylSet, gCylSpin;
 uniform int nPanel; uniform vec4 panR[24]; uniform vec4 panC[24]; // 界面里的底板（世界 xz 矩形 + 颜色 / 圆角），画在桌面上，泥的影子落在上面 // x 纸纹强度, y 网格（切割垫）强度, z 网格间距, w 未用
 
 vec4 PR(int r, int i){ return texelFetch(primTex, ivec2(i, r), 0); }
@@ -75,7 +75,8 @@ float sdLetters(vec3 p, out float gi){
   gi = 0.0;
   if (textOn < 0.5) return 1e5;
   p -= textPos;
-  float a = sdLettersCore(p, gi); gObjP = p;
+  { vec3 qb = max(max(tLo - p, p - tHi), 0.0); float db = length(qb); if (db > 0.25 && cutOn < 0.5) return db; } // 字的包围盒外不查距离场
+  float a = sdLettersCore(p, gi); gObjP = p; gLetSet = gi;
   if (cutOn > 0.5) {
     vec3 N = cutPl.xyz;
     if (p.x > cutX) a = max(a, dot(p, N) - cutPl.w);
@@ -119,13 +120,13 @@ vec2 mapClay(vec3 p){
   if (any(lessThan(p, sceneLo)) || any(greaterThan(p, sceneHi))) {
     vec3 q = max(max(sceneLo - p, p - sceneHi), 0.0); return vec2(length(q) + 0.6, 0.0); // 盒子留了 0.7 的边，离任何东西至少这么远
   }
-  float gi; float d = sdLetters(p, gi); float col = gi;
+  float gi; float dLet = sdLetters(p, gi); float d = 1e5; float col = gi;
   for (int i = 0; i < 128; i++) { if (i >= nBlob) break;
     vec4 a = PR(0, i), b = PR(1, i);
     vec3 q = p - a.xyz;
     if (dot(q,q) > (a.w*max(b.x,max(b.y,b.z)) + 0.6)*(a.w*max(b.x,max(b.y,b.z)) + 0.6)) { d = min(d, length(q) - a.w*max(b.x,max(b.y,b.z))); continue; }
     float db = sdEll(q, a.w*b.xyz);
-    if (db < d) { col = b.w; gObjP = q/a.w*1.2 + vec3(float(i)*3.7, 0.0, float(i)*1.3); gCylP = vec3(q.x, q.z, q.y)/(a.w*max(b.x, b.z)); }
+    if (db < d) { col = b.w; gObjP = q/a.w*1.2 + vec3(float(i)*3.7, 0.0, float(i)*1.3); gLetSet = b.w; gCylP = vec3(q.x, q.z, q.y)/(a.w*max(b.x, b.z)); gCylSet = b.w; gCylSpin = 0.0; }
     d = min(d, db);
   }
   // 搓条：一串胶囊，同一条里平滑连起来
@@ -140,23 +141,32 @@ vec2 mapClay(vec3 p){
       vec4 a = PR(2, i), b = PR(2, i+1), m = PR(3, i);
       if (m.y < 0.5) continue; // 这一点是一条的末尾
       float s = sdCap(p, a.xyz, b.xyz, a.w, b.w);
-      if (s < dc) { cc = m.x; if (s < d) gObjP = p*1.6; }
+      if (s < dc) { cc = m.x; if (s < d) { gObjP = p*1.6; gLetSet = m.x; } }
       dc = smin(dc, s, 0.02);
     }
   }
   if (dc < d) col = cc;
   d = min(d, dc);
   // 圆柱（搓好的泥卷被切成的段）：截面上是一圈圈旋进去的纹
+  float dCyl = 1e5, cCyl = 20.0;
   for (int i = 0; i < 8; i++) { if (i >= nCyl) break;
     vec4 a = PR(12, i), b = PR(13, i), e = PR(14, i);
     vec3 q = p - a.xyz; vec3 ax = normalize(b.xyz);
     float y = dot(q, ax); vec3 rq = q - ax*y; float x = length(rq);
     vec2 w = vec2(x - a.w + e.y, abs(y) - b.w + e.y);
     float dcy = min(max(w.x, w.y), 0.0) + length(max(w, 0.0)) - e.y;
-    if (dcy < d) { d = dcy; col = e.z;
+    float kj = PR(15, i).x; float dPrev = dCyl;
+    dCyl = kj > 0.0 ? smin(dCyl, dcy, kj) : min(dCyl, dcy); // 还连着的段之间平滑并集：钢丝没过去之前看不出缝
+    if (dcy < dPrev) { cCyl = e.z;
       vec3 u = normalize(cross(abs(ax.y) < 0.9 ? vec3(0,1,0) : vec3(1,0,0), ax)); vec3 v = cross(ax, u);
-      gCylP = vec3(dot(rq, u)/a.w, dot(rq, v)/a.w, (y + e.x)/a.w); }
+      gCylP = vec3(dot(rq, u)/a.w, dot(rq, v)/a.w, (y + e.x)/a.w); gCylSet = e.z; gCylSpin = e.w; }
   }
+  // 字和泥卷是同一团泥的两个样子：lMix = 1 是字，0 是泥卷；中间是一个塌下去 / 立起来的过程
+  // lMix < 0：两样东西各是各的（静帧里字和泥卷同时在）
+  float dg, cg;
+  if (lMix < 0.0) { dg = min(dLet, dCyl); cg = dLet < dCyl ? gi : cCyl; }
+  else { dg = (lMix >= 1.0) ? dLet : (lMix <= 0.0 ? dCyl : mix(dCyl, dLet, lMix)); cg = (lMix >= 1.0) ? gi : (lMix <= 0.0 ? cCyl : 30.0); }
+  if (dg < d) { d = dg; col = cg; }
   // 压在桌上的一面是平的
   d = smax(d, floorY - p.y + 0.002, 0.02);
   // 拇指坑。pad > 0 的坑：拇指下面的泥被压成一块扁圆的饼，先长出这块饼，再按坑（窄的泥条被按一下就是这样摊开的）
@@ -203,25 +213,25 @@ vec3 calcN(vec3 p){
 float softShadow(vec3 ro, vec3 rd){
   // 改进版软阴影（用前一步的 h 估最近点），不会沿等距线出一圈圈的台阶
   float res = 1.0, t = 0.02, ph = 1e10;
-  for (int i = 0; i < 64; i++) {
+  for (int i = 0; i < SH_N; i++) {
     float h = mapClay(ro + rd*t).x;
     float y = min(h*h/(2.0*ph), 0.5*h), d = sqrt(max(h*h - y*y, 0.0)); // h 跳变（出包围盒）时别让 d 掉到 0
     res = min(res, shadowK*d/max(1e-4, t - y));
     ph = h;
-    t += clamp(h, 0.006, 0.3);
+    t += clamp(h, SH_MIN, 0.3);
     if (res < 0.002 || t > 9.0) break;
   }
   res = clamp(res, 0.0, 1.0); return res*res*(3.0-2.0*res);
 }
 float calcAO(vec3 p, vec3 n){
   float occ = 0.0, sca = 1.0;
-  for (int i = 0; i < 6; i++) { float h = 0.02 + 0.07*float(i); vec3 s = p + n*h; float d = min(mapClay(s).x, s.y - floorY); occ += (h - d)*sca; sca *= 0.72; } // 桌面也算遮挡：贴着桌子的底边要暗
+  for (int i = 0; i < AO_N; i++) { float h = 0.02 + 0.42*float(i)/float(AO_N); vec3 s = p + n*h; float d = min(mapClay(s).x, s.y - floorY); occ += (h - d)*sca; sca *= 0.72; } // 桌面也算遮挡：贴着桌子的底边要暗
   return clamp(1.0 - 2.2*occ, 0.0, 1.0);
 }
 // 地面的接触阴影：往上探几步
 float floorAO(vec3 p){
   float occ = 0.0, sca = 1.0;
-  for (int i = 0; i < 5; i++) { float h = 0.03 + 0.12*float(i); float d = mapClay(p + vec3(0,h,0)).x; occ += max(h - d, 0.0)*sca; sca *= 0.65; }
+  for (int i = 0; i < FAO_N; i++) { float h = 0.03 + 0.6*float(i)/float(FAO_N); float d = mapClay(p + vec3(0,h,0)).x; occ += max(h - d, 0.0)*sca; sca *= 0.65; }
   return clamp(1.0 - 1.6*occ, 0.0, 1.0);
 }
 vec3 background(vec2 sp){
@@ -236,7 +246,30 @@ float ggx(vec3 n, vec3 v, vec3 l, float rough){
   return D*Vis*nl;
 }
 
+// 泥卷：截面上一圈圈旋进去；gCylSpin 是滚了多少（纹跟着转）
+vec3 spiralAlb(){
+  vec3 q = gCylP; int k = int(mod(gCylSet, 10.0) + 0.5)*4;
+  float c = cos(gCylSpin), s = sin(gCylSpin); vec2 uv = vec2(c*q.x - s*q.y, s*q.x + c*q.y);
+  float rr = length(uv), an = atan(uv.y, uv.x)/6.2831853;
+  float t = rr*2.6 - an + 0.18*(vn3(q*2.5 + 3.0) - 0.5) + 0.06*q.z;
+  float b = fract(t)*4.0; float fi = floor(b), fr = b - fi;
+  int i0 = int(fi), i1 = (i0 + 1) % 4;
+  return mix(mcol[k + i0], mcol[k + i1], smoothstep(0.88, 1.0, fr));
+}
+// 大理石纹：几色泥揉了几遍、没揉匀
+vec3 marbleAlb(){
+  vec3 q = gObjP*mScale; int k = int(mod(gLetSet, 10.0) + 0.5)*4;
+  vec3 w = vec3(vn3(q*0.6), vn3(q*0.6 + 5.2), vn3(q*0.6 + 9.7)) - 0.5;
+  vec3 q2 = q + 2.2*w; q2 += 0.5*(vec3(vn3(q2*1.7), vn3(q2*1.7 + 3.1), vn3(q2*1.7 + 6.3)) - 0.5);
+  float t = q2.x*0.3 + q2.y*1.0 + q2.z*0.4;
+  float b = fract(t*1.15)*4.0; float fi = floor(b), fr = b - fi;
+  int i0 = int(fi), i1 = (i0 + 1) % 4;
+  return mix(mcol[k + i0], mcol[k + i1], smoothstep(0.9, 1.0, fr));
+}
 void main(){
+#ifdef TRIVIAL
+  o = vec4(0.5, 0.5, 0.5, 10.0); return;
+#endif
   vec2 frag = gl_FragCoord.xy;
   vec2 sp = (frag*2.0 - res)/res.y + shift*2.0;
   vec3 fw = normalize(camTgt - camPos), rt = normalize(cross(fw, vec3(0,1,0))), up = cross(rt, fw);
@@ -252,16 +285,23 @@ void main(){
   float tn = max(max(tmn.x,tmn.y),max(tmn.z,0.0)), tf = min(min(tmx.x,tmx.y),tmx.z);
   float t = tn; vec2 h = vec2(1e5, 0.0); bool hit = false;
   if (tf > tn) {
-    for (int i = 0; i < 220; i++) {
+    for (int i = 0; i < MARCH_N; i++) {
       h = mapClay(ro + rd*t);
       if (h.x < 0.0004*t) { hit = true; break; }
       t += h.x*0.85;
       if (t > tf || t > tF) break;
     }
   }
+#ifdef CUT1
+  o = vec4(vec3(t*0.01), 10.0); return;
+#endif
   vec3 L = normalize(lightDir), V = -rd;
-  vec3 col;
-  if (hit && t < tF) {
+  vec3 col = background(sp);
+  // SwiftShader 不会跳过整组都不走的 if 分支（照样按掩码执行一遍），但循环在所有像素都退出后会停。
+  // 所以贵的分支写成“最多跑一次的循环”：这一组像素都不需要它时，整段直接跳过。
+  bool doClay = hit && t < tF, doFloor = !doClay && tF < 1e8;
+#ifndef NOCLAY
+  for (int kk = 0; kk < (doClay ? 1 : 0); kk++) {
     vec3 p = ro + rd*t; vec3 n = calcN(p);
     vec3 alb; float rough = 0.48, spec = 0.55;
     if (h.y < -0.5) { // 木头：顺着纹理的条
@@ -270,24 +310,11 @@ void main(){
       alb = mix(vec3(0.56,0.33,0.16), vec3(0.72,0.47,0.25), grain*0.6 + 0.2); rough = 0.38; spec = 0.8;
     } else {
       int ci = int(h.y + 0.5);
-      if (ci >= 20) { // 泥卷：螺旋
-        mapClay(p); vec3 q = gCylP;
-        float rr = length(q.xy), an = atan(q.y, q.x)/6.2831853;
-        float t = rr*2.6 - an + 0.18*(vn3(q*2.5 + 3.0) - 0.5) + 0.06*q.z;
-        float b = fract(t)*4.0; float fi = floor(b), fr = b - fi;
-        int i0 = int(fi), i1 = (i0 + 1) % 4;
-        alb = mix(mcol[i0], mcol[i1], smoothstep(0.88, 1.0, fr));
-        rough = 0.42;
-      } else if (ci >= 10) { // 大理石纹：在字自己的坐标里算，切开以后截面上的纹和外面接得上
-        mapClay(p); vec3 q = gObjP*mScale;
-        vec3 w = vec3(vn3(q*0.6), vn3(q*0.6 + 5.2), vn3(q*0.6 + 9.7)) - 0.5;
-        vec3 q2 = q + 2.2*w; q2 += 0.5*(vec3(vn3(q2*1.7), vn3(q2*1.7 + 3.1), vn3(q2*1.7 + 6.3)) - 0.5);
-        float t = q2.x*0.3 + q2.y*1.0 + q2.z*0.4;
-        float b = fract(t*1.15)*4.0; float fi = floor(b), fr = b - fi;
-        int i0 = int(fi), i1 = (i0 + 1) % 4;
-        alb = mix(mcol[i0], mcol[i1], smoothstep(0.9, 1.0, fr));
-        rough = 0.42;
-      } else
+      if (ci >= 10) { mapClay(p); rough = 0.42; }
+      if (ci >= 30) alb = mix(spiralAlb(), marbleAlb(), smoothstep(0.25, 0.75, lMix)); // 变形中：两种纹交叉淡过去
+      else if (ci >= 20) alb = spiralAlb();
+      else if (ci >= 10) alb = marbleAlb();
+      else
       alb = pal[ci];
       // 揉进去的一点点颜色不匀 + 极少的小斑点（灰、毛屑）
       alb *= 0.95 + 0.09*vn3(p*3.7 + 9.0);
@@ -310,7 +337,9 @@ void main(){
     col += skyCol*fr*0.12*ao*(0.5 + 0.5*n.y);
     vec3 RL = normalize(rimDir); float rim = pow(1.0 - max(dot(n,V),0.0), 2.0)*max(dot(n, RL) + 0.3, 0.0);
     col += rimCol*rim*mix(vec3(1.0), alb, 0.5)*ao;
-  } else if (tF < 1e8) {
+  }
+#endif
+  for (int kk = 0; kk < (doFloor ? 1 : 0); kk++) {
     vec3 p = ro + rd*tF;
     vec3 alb = floorCol;
     float pw = ortho > 0.0 ? 1.5*ortho*2.0/res.y : 0.01;
@@ -324,13 +353,15 @@ void main(){
     alb *= 1.0 + floorTex.x*(vn2(p.xz*24.0) - 0.5) + floorTex.x*0.5*(vn2(p.xz*90.0) - 0.5);
     if (floorTex.y > 0.0) { vec2 g = abs(fract(p.xz/floorTex.z + 0.5) - 0.5)*floorTex.z; float ln = 1.0 - smoothstep(0.0, 0.012, min(g.x, g.y)); alb = mix(alb, alb*0.55 + 0.32, ln*floorTex.y); }
     float sh = 1.0, ao = 1.0;
-    if (p.x > sceneLo.x - 4.0 && p.x < sceneHi.x + 4.0 && p.z > sceneLo.z - 4.0 && p.z < sceneHi.z + 4.0) { if (dbg != 1) sh = softShadow(p + vec3(0,0.002,0), L); if (dbg != 2) ao = floorAO(p); }
+    bool near = p.x > sceneLo.x - 4.0 && p.x < sceneHi.x + 4.0 && p.z > sceneLo.z - 4.0 && p.z < sceneHi.z + 4.0;
+    for (int k2 = 0; k2 < (near ? 1 : 0); k2++) { if (dbg != 1) sh = softShadow(p + vec3(0,0.002,0), L); if (dbg != 2) ao = floorAO(p); }
     vec3 aoC = pow(vec3(ao), vec3(1.3) - alb*0.7);
     col = alb*keyCol*max(L.y, 0.0)*mix(0.2, 1.0, sh) + alb*skyCol*aoC;
+    if (spot.w > 0.0) { vec2 dd = p.xz - spot.xy; col *= mix(1.0 - spot.w, 1.0 + 0.35*spot.w, exp(-dot(dd,dd)/(spot.z*spot.z))); }
     if (dbg == 3) col = vec3(sh); if (dbg == 4) col = vec3(ao);
     float fog = smoothstep(fogNear, fogFar, tF);
     col = mix(col, background(sp), fog);
-  } else col = background(sp);
+  }
   float depth = (hit && t < tF) ? t : (tF < 1e8 ? tF : 1e4);
   o = vec4(col, depth);
 }`;
@@ -414,8 +445,8 @@ void main(){
   function setScene(gl, P, s) {
     const u = P.u;
     if (!gl._dummy) gl._dummy = G.GLK.texture(gl, 4, 4, { internal: gl.R32F, format: gl.RED, type: gl.FLOAT, data: new Float32Array(16).fill(1), filter: gl.NEAREST });
-    if (!gl._prim) gl._prim = G.GLK.texture(gl, 256, 15, { internal: gl.RGBA32F, format: gl.RGBA, type: gl.FLOAT, data: null, filter: gl.NEAREST });
-    const PD = new Float32Array(256 * 15 * 4);
+    if (!gl._prim) gl._prim = G.GLK.texture(gl, 256, 16, { internal: gl.RGBA32F, format: gl.RGBA, type: gl.FLOAT, data: null, filter: gl.NEAREST });
+    const PD = new Float32Array(256 * 16 * 4);
     const put = (row, arr) => arr.slice(0, 256).forEach((v, i) => PD.set([v[0] ?? 0, v[1] ?? 0, v[2] ?? 0, v[3] ?? 0], (row * 256 + i) * 4));
     const blobs = s.blobs || [], coils = s.coils || [], dents = s.dents || [], tools = s.tools || [];
     put(0, blobs.map(b => [b.p[0], b.p[1], b.p[2], b.r])); put(1, blobs.map(b => [...(b.s || [1, 1, 1]), b.c]));
@@ -430,11 +461,11 @@ void main(){
       chunks.push([...c, r]); ranges.push([i, i1]);
     }
     put(9, chunks); put(10, ranges); put(11, dents.map(d => [d.pad || 0, d.padCol ?? 0]));
-    const cyl = s.cyls || []; put(12, cyl.map(c => [...c.p, c.r])); put(13, cyl.map(c => [...c.ax, c.h])); put(14, cyl.map(c => [c.off || 0, c.rr ?? 0.05, c.c ?? 20, 0]));
+    const cyl = s.cyls || []; put(12, cyl.map(c => [...c.p, c.r])); put(13, cyl.map(c => [...c.ax, c.h])); put(14, cyl.map(c => [c.off || 0, c.rr ?? 0.05, c.c ?? 20, c.spin || 0])); put(15, cyl.map(c => [c.k || 0, 0, 0, 0]));
     put(4, dents.map(d => [...d.p, d.depth])); put(5, dents.map(d => [...d.n, d.size])); put(6, dents.map(d => [...(d.up || [0, 1, 0]), d.freq || 15]));
     put(7, tools.map(t => [...t.a, t.ra])); put(8, tools.map(t => [...t.b, t.rb]));
     gl.activeTexture(gl.TEXTURE1); gl.bindTexture(gl.TEXTURE_2D, gl._prim);
-    gl.texSubImage2D(gl.TEXTURE_2D, 0, 0, 0, 256, 15, gl.RGBA, gl.FLOAT, PD);
+    gl.texSubImage2D(gl.TEXTURE_2D, 0, 0, 0, 256, 16, gl.RGBA, gl.FLOAT, PD);
     gl.uniform1i(u.primTex, 1);
     gl.uniform1i(u.nBlob, blobs.length); gl.uniform1i(u.nCoil, cp.length); gl.uniform1i(u.nDent, dents.length); gl.uniform1i(u.nTool, tools.length); gl.uniform1i(u.nCyl, (s.cyls || []).length); gl.uniform1i(u.nChunk, Math.ceil(Math.max(0, cp.length - 1) / 8));
     const pal = new Float32Array(PAL_N * 3); (s.palette || []).forEach((c, i) => pal.set(c, i * 3)); gl.uniform3fv(u.pal, pal);
@@ -450,7 +481,8 @@ void main(){
     const pan = (s.panels || []).slice(0, 24); gl.uniform1i(u.nPanel, pan.length);
     const cut = s.cut; gl.uniform1f(u.cutOn, cut ? 1 : 0);
     if (cut) { const nl = Math.hypot(...cut.n); gl.uniform4fv(u.cutPl, [...cut.n.map(v => v / nl), cut.c]); gl.uniform3fv(u.cutOff, cut.off); gl.uniform1f(u.cutX, cut.x ?? -1e5); }
-    const mc = new Float32Array(12); (s.marble || []).forEach((h, i) => mc.set(h, i * 3)); gl.uniform3fv(u.mcol, mc); gl.uniform1f(u.mScale, s.marbleScale || 1);
+    const mcl = s.marble || [], cols = Array.isArray(mcl[0] && mcl[0][0]) ? mcl.flat() : mcl; const mc = new Float32Array(48); cols.forEach((h, i) => { if (i < 16) mc.set(h, i * 3); }); gl.uniform3fv(u.mcol, mc); gl.uniform1f(u.mScale, s.marbleScale || 1);
+    gl.uniform1f(u.lMix, s.lMix ?? -1); gl.uniform4fv(u.spot, s.spot || [0, 0, 1, 0]);
     gl.uniform3fv(u.rimDir, (s.light || {}).rimDir || [0, 0.3, -1]); gl.uniform3fv(u.rimCol, (s.light || {}).rim || [0, 0, 0]);
     if (pan.length) { gl.uniform4fv(u.panR, new Float32Array(pan.flatMap(q => q.r))); gl.uniform4fv(u.panC, new Float32Array(pan.flatMap(q => [...q.c, q.rad || 0]))); } gl.uniform1i(u.dbg, s.dbg || 0);
     const t = s.text;
@@ -465,6 +497,9 @@ void main(){
       const per = (k, def) => [0, 1, 2, 3].map(i => (s[k] || [])[i] ?? def);
       gl.uniform4fv(u.gCol, per('gCol', 0)); gl.uniform4fv(u.gSq, per('gSq', 1)); gl.uniform4fv(u.gRot, per('gRot', 0)); gl.uniform4fv(u.gLift, per('gLift', 0));
       gl.uniform4fv(u.gCx, [0, 1, 2, 3].map(i => i < n ? (g[i][0] + g[i][1]) / 2 : 0));
+      { const z = (s.H ?? 0.14) + (s.R ?? 0.09) + (s.dome ?? 0.06) + 0.1, sqm = 1 / Math.sqrt(Math.min(...(s.gSq || [1]), 1)), r = t.rect, l = g[0][0] - 0.3, rr = g[n - 1][1] + 0.3, w2 = (rr - l) * (sqm - 1) / 2 + 0.2;
+        if (s.flat) { gl.uniform3fv(u.tLo, [l - w2, -0.1, -t.top * sqm - 0.3]); gl.uniform3fv(u.tHi, [rr + w2, 2 * z, 0.3]); }
+        else { gl.uniform3fv(u.tLo, [l - w2, -0.1, -z * sqm]); gl.uniform3fv(u.tHi, [rr + w2, t.top * 1.2 + 0.3, z * sqm]); } }
     }
     gl.uniform3fv(u.textPos, tp); gl.uniform1f(u.H, s.H ?? 0.14); gl.uniform1f(u.R, s.R ?? 0.09); gl.uniform1f(u.warp, s.warp ?? 0.05); gl.uniform1f(u.dome, s.dome ?? 0.06); gl.uniform1f(u.flatOn, s.flat ? 1 : 0);
     // 包围盒
@@ -487,7 +522,11 @@ void main(){
     s._bb = [lo, hi];
   }
 
-  function programs(gl) { return { main: G.GLK.program(gl, FS), out: G.GLK.program(gl, FS_OUT) }; }
+  function programs(gl, q = {}) {
+    const D = Object.assign({ SH_N: 64, SH_MIN: '0.006', AO_N: 6, FAO_N: 5, MARCH_N: 220 }, q);
+    const defs = Object.entries(D).map(([k, v]) => `#define ${k} ${v}`).join('\n');
+    return { main: G.GLK.program(gl, FS.replace('precision highp float;', 'precision highp float;\n' + defs)), out: G.GLK.program(gl, FS_OUT) };
+  }
 
   async function render(gl, P, s, { ss = 2, tiles = 8, exposure = 1, vign = 0.25, grain = 0.02, sat = 1.04, focus = 10, aperture = 0, maxCoc = 12 } = {}) {
     const W = gl.drawingBufferWidth, Hh = gl.drawingBufferHeight;
