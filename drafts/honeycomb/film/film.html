@@ -1,0 +1,378 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<title>蜂窝布局 · 全片</title>
+<style>
+@font-face{font-family:IDisp;src:url(../../../public/fonts/InterDisplay-Bold.ttf);font-weight:700}
+@font-face{font-family:IDisp;src:url(../../../public/fonts/InterDisplay-SemiBold.ttf);font-weight:600}
+@font-face{font-family:Inter;src:url(../../../public/fonts/Inter-Medium.ttf);font-weight:500}
+@font-face{font-family:Mono;src:url(../../../public/fonts/GeistMono-Medium.ttf);font-weight:500}
+@font-face{font-family:SC;src:url(../../../public/fonts/NotoSansSC-Black.otf);font-weight:900}
+@font-face{font-family:SC;src:url(../../../public/fonts/NotoSansSC-Bold.otf);font-weight:700}
+@font-face{font-family:SC;src:url(../../../public/fonts/NotoSansSC-Medium.otf);font-weight:500}
+html,body{margin:0;background:#000;overflow:hidden}
+canvas{display:block}
+</style></head>
+<body><canvas id="c" width="1920" height="1080"></canvas>
+<script>
+/* 蜂窝布局 · 全片（18.5 秒 · 60fps · 120 BPM，一拍 = 30 帧）。分镜见 STORYBOARD.md。
+   同一片 169 颗格子从头到尾不换。物理只有三样：
+     透镜：中心一圈（r0）原大；往外位置按 tanh 收、大小按 sech²（= tanh 的导数）缩——越挤越小，但不重叠；
+     惯性：甩一下，v = v0·e^(−t/0.5s)；
+     吸附：临界阻尼，0.17 s 落在一格上。
+   在走的东西按速度运动模糊（子帧平均），字不糊。每一帧是帧号的纯函数：window.frame(f)；window.events() 导出出字的时间给配乐。 */
+const W = 1920, H = 1080, FPS = 60, END = 1110, FINAL = 1020;
+const g = document.getElementById('c').getContext('2d');
+const clamp = (x, a = 0, z = 1) => Math.min(Math.max(x, a), z);
+const sm = x => { x = clamp(x); return x * x * (3 - 2 * x); };
+const smr = x => { x = clamp(x); return x * x * x * (x * (6 * x - 15) + 10); };
+const R = (f, a, b) => smr((f - a) / (b - a));                  // 帧 a→b 的 0→1
+const lerp = (a, b, t) => a + (b - a) * t;
+function hash(n) { const s = Math.sin(n * 127.1 + 311.7) * 43758.5453; return s - Math.floor(s); }
+function mk(w, h) { const c = document.createElement('canvas'); c.width = w; c.height = h; return c; }
+const INK = '#F5F5F7', DIM = '#8E8E93';
+
+// ---------- 格子 ----------
+const D = 150, ICON = 132, RING = 8;
+const CELLS = [];
+for (let q = -RING; q <= RING; q++) for (let r = Math.max(-RING, -q - RING); r <= Math.min(RING, -q + RING); r++)
+  CELLS.push({ q, r, x: D * (q + r / 2), y: D * Math.sqrt(3) / 2 * r, id: CELLS.length });
+const cellAt = (q, r) => CELLS.find(c => c.q === q && c.r === r);
+const T1 = cellAt(3, -1), T2 = cellAt(-2, 3);
+
+// ---------- 镜头：甩（惯性）+ 吸附（临界阻尼）----------
+const TAU = 0.5, RISE = 0.06, SN = 0.17;
+const Xf = u => u <= 0 ? 0 : 1 - (TAU * Math.exp(-u / TAU) - RISE * Math.exp(-u / RISE)) / (TAU - RISE);
+const Sn = u => u <= 0 ? 0 : 1 - (1 + u / SN) * Math.exp(-u / SN);
+const C0 = { x: -900, y: 560 };
+const MOVES = [                        // [帧, 种类, 位移 或 目标格]
+  [-19, 'flick', { x: 1300, y: -700 }],
+  [60, 'flick', { x: -300, y: 900 }],
+  [120, 'snap', T1],
+  [372, 'flick', { x: 380, y: 260 }],
+  [510, 'flick', { x: -1100, y: 900 }],
+  [540, 'snap', T2],
+];
+(() => { let sx = C0.x, sy = C0.y; for (const m of MOVES) { if (m[1] === 'snap') { m[3] = { x: m[2].x - sx, y: m[2].y - sy }; } else m[3] = m[2]; sx += m[3].x; sy += m[3].y; } })();
+const panAt = f => {
+  let x = C0.x, y = C0.y;
+  for (const [f0, kind, , A] of MOVES) { const u = (f - f0) / FPS, k = kind === 'snap' ? Sn(u) : Xf(u); x += A.x * k; y += A.y * k; }
+  const idle = 1 - R(f, 880, 960);                                            // 一直有一点点漂，不会停死
+  return { x: x + Math.sin(f / 70) * 14 * idle, y: y + Math.cos(f / 83) * 10 * idle };
+};
+
+// ---------- 每帧的“状态” ----------
+const LC0 = { x: 1270, y: 540, ax: 660, ay: 500 }, LCW = { x: 1270, y: 540, ax: 250, ay: 290 };
+const WATCH = f => R(f, 690, 745) * (1 - R(f, 775, 815));                    // 缩进手表
+const zoomAt = f => Math.exp(
+  Math.log(1.75) * R(f, 150, 205) * (1 - R(f, 298, 335)) +                    // 01：放大看六边形
+  Math.log(2.3) * R(f, 572, 605) * (1 - R(f, 640, 680)) +                     // 03：点开前放大
+  Math.log(0.62) * R(f, 690, 745) * (1 - R(f, 860, 900)) +                    // 04：手表 / 地图
+  Math.log(0.9) * R(f, 775, 815) * (1 - R(f, 860, 900)));
+const lensAt = f => 1 - R(f, 160, 210) * (1 - R(f, 295, 330)) - R(f, 780, 815) * (1 - R(f, 860, 900));   // 0 = 摊平
+const hexAt = f => Math.max(R(f, 185, 240) * (1 - R(f, 290, 325)), R(f, 785, 820) * (1 - R(f, 860, 895)));
+const honeyAt = f => R(f, 200, 250) * (1 - R(f, 288, 322));
+const wireAt = f => R(f, 335, 368) * (1 - R(f, 478, 510));
+const dataAt = f => R(f, 790, 825) * (1 - R(f, 858, 892));
+const openAt = f => R(f, 588, 632) * (1 - R(f, 645, 685));
+const colAt = f => R(f, 905, FINAL);                                         // 收束
+const LC = f => { const w = WATCH(f); return { x: lerp(LC0.x, LCW.x, w), y: lerp(LC0.y, LCW.y, w), ax: lerp(LC0.ax, LCW.ax, w), ay: lerp(LC0.ay, LCW.ay, w) }; };
+
+function lens(dx, dy, r0, L, lc) {
+  const u = dx / lc.ax, v = dy / lc.ay, rr = Math.hypot(u, v) + 1e-9, Rk = .58;
+  let rd, s;
+  if (rr <= r0) { rd = rr; s = 1; } else { const z = (rr - r0) / Rk, th = Math.tanh(z); rd = r0 + Rk * th; s = 1 - th * th; }
+  rd = lerp(rr, rd, L); s = lerp(1, s, L);
+  return { x: lc.x + u / rr * rd * lc.ax, y: lc.y + v / rr * rd * lc.ay, s };
+}
+
+// ---------- 图标 ----------
+const PHOTOS = ['lake', 'dunes', 'ocean', 'stairs', 'tokyo', 'monstera', 'citrus', 'nook', 'cup', 'tulips', 'bread', 'cat'];
+const IMG = {};
+const COLORS = ['#FF453A', '#FF9F0A', '#FFD60A', '#30D158', '#64D2FF', '#0A84FF', '#F2F2F7', '#FF375F', '#2C2C2E'];
+const SP = [];
+function sprite(kind, k) {
+  const S = 256, c = mk(S, S), x = c.getContext('2d');
+  if (kind === 'photo') {
+    const im = IMG[PHOTOS[k % PHOTOS.length]], s = Math.max(S / im.width, S / im.height);
+    x.drawImage(im, (S - im.width * s) / 2, (S - im.height * s) / 2, im.width * s, im.height * s);
+    return c;
+  }
+  const bg = COLORS[k % COLORS.length], fg = bg === '#F2F2F7' || bg === '#FFD60A' ? '#1C1C1E' : '#FFFFFF';
+  x.fillStyle = bg; x.fillRect(0, 0, S, S);
+  x.fillStyle = fg; x.strokeStyle = fg; x.lineWidth = 18; x.lineCap = 'round'; x.lineJoin = 'round';
+  const gl = Math.floor(hash(k * 7.3) * 8);
+  x.beginPath();
+  if (gl === 0) { x.arc(128, 128, 62, 0, 7); x.stroke(); x.beginPath(); x.moveTo(128, 128); x.lineTo(128, 82); x.moveTo(128, 128); x.lineTo(160, 140); x.stroke(); }
+  else if (gl === 1) { x.moveTo(104, 78); x.lineTo(180, 128); x.lineTo(104, 178); x.closePath(); x.fill(); }
+  else if (gl === 2) { for (let i = 0; i < 4; i++) x.rect(70 + i * 32, 170 - [40, 80, 60, 100][i], 20, [40, 80, 60, 100][i]); x.fill(); }
+  else if (gl === 3) { x.moveTo(64, 128); for (let i = 0; i <= 32; i++) x.lineTo(64 + i * 4, 128 + Math.sin(i / 32 * Math.PI * 3) * 34); x.stroke(); }
+  else if (gl === 4) { for (let i = 0; i < 3; i++) for (let j = 0; j < 3; j++) { x.moveTo(92 + i * 36 + 12, 92 + j * 36); x.arc(92 + i * 36, 92 + j * 36, 12, 0, 7); } x.fill(); }
+  else if (gl === 5) { x.arc(128, 128, 60, Math.PI * .15, Math.PI * 1.85); x.stroke(); }
+  else if (gl === 6) { x.rect(78, 84, 100, 88); x.stroke(); x.beginPath(); x.moveTo(78, 112); x.lineTo(178, 112); x.stroke(); }
+  else { x.arc(128, 128, 26, 0, 7); x.fill(); x.beginPath(); for (let i = 0; i < 8; i++) { const a = i * Math.PI / 4; x.moveTo(128 + Math.cos(a) * 46, 128 + Math.sin(a) * 46); x.lineTo(128 + Math.cos(a) * 70, 128 + Math.sin(a) * 70); } x.stroke(); }
+  return c;
+}
+const HONEY = ['#F6B53D', '#EFA52C', '#FFC857', '#E8961F', '#FBBF47'];
+const DATA = [[19, 32, 43], [31, 78, 107], [47, 143, 163], [242, 179, 61], [242, 70, 46]];
+function dataColor(v) {
+  v = clamp(v) * (DATA.length - 1); const i = Math.min(DATA.length - 2, Math.floor(v)), t = v - i, a = DATA[i], b = DATA[i + 1];
+  return `rgb(${Math.round(lerp(a[0], b[0], t))},${Math.round(lerp(a[1], b[1], t))},${Math.round(lerp(a[2], b[2], t))})`;
+}
+
+// ---------- 形状：圆 ↔ 六边形（尖顶，水平邻居共用竖边）----------
+function shape(c, x, y, rc, inr, h, rot = 0) {
+  c.beginPath();
+  if (h < 0.002) { c.arc(x, y, rc, 0, 7); return; }
+  for (let k = 0; k < 48; k++) {
+    const th = k / 48 * Math.PI * 2, n = Math.round((th - rot) / (Math.PI / 3)) * (Math.PI / 3) + rot;
+    const r = lerp(rc, inr / Math.cos(th - n), h);
+    k ? c.lineTo(x + Math.cos(th) * r, y + Math.sin(th) * r) : c.moveTo(x + Math.cos(th) * r, y + Math.sin(th) * r);
+  }
+  c.closePath();
+}
+
+// ---------- 收束：七颗六边形 ----------
+let FLOWER = new Map(), P5 = null, MAPC = null;
+const FC = { x: 960, y: 400 }, DF = 196;
+function mapMask(cell) {        // 第 04 章的“地图”：几团圆拼成的一块不规则区域（跟着格子走）
+  const dx = cell.x - MAPC.x, dy = cell.y - MAPC.y;
+  const blobs = [[0, 0, 520], [-380, -220, 330], [330, 260, 360], [420, -300, 260], [-300, 330, 280]];
+  let m = 0; for (const [bx, by, br] of blobs) m = Math.max(m, 1 - Math.hypot(dx - bx, dy - by) / br);
+  return clamp(m * 3);
+}
+function dataVal(cell, f) {
+  const n = .5 + .25 * Math.sin(cell.x * .004 + cell.y * .003) + .2 * Math.sin(cell.x * .011 - cell.y * .007 + 1.3);
+  const wave = .35 * Math.sin((cell.x * .8 + cell.y * .45) * .006 - f * .09);
+  return clamp(n * .8 + wave * .6 + .1);
+}
+
+// ---------- 一个子帧 ----------
+function scene(c, f) {
+  const p = panAt(f), Z = zoomAt(f), L = lensAt(f), lc = LC(f), wv = WATCH(f);
+  const hx = hexAt(f), hon = honeyAt(f), wr = wireAt(f), dt = dataAt(f), co = colAt(f);
+  c.fillStyle = '#000'; c.fillRect(0, 0, W, H);
+  // 手表（在格子下面）
+  if (wv > 0.002) watchBody(c, wv, lc);
+  c.save();
+  if (wv > 0.002) { const sw = lerp(W * 1.4, 2 * LCW.ax + 60, wv), shh = lerp(H * 1.4, 2 * LCW.ay + 70, wv); c.beginPath(); c.roundRect(lc.x - sw / 2, lc.y - shh / 2, sw, shh, lerp(0, 96, wv)); c.clip(); }
+  const r0 = .32;
+  const list = [];
+  for (const cell of CELLS) {
+    const P = lens((cell.x - p.x) * Z, (cell.y - p.y) * Z, r0, L, lc);
+    let x = P.x, y = P.y, s = P.s * Z, a = 1, rot = 0, hh = hx, inrK = lerp(.44, hon > 0 ? .495 : .47, hx);
+    if (dt > 0) { const m = mapMask(cell); s *= lerp(1, m, dt); }
+    if (co > 0) {
+      const fl = FLOWER.get(cell.id);
+      const st = fl ? 0 : clamp(Math.hypot(x - FC.x, y - FC.y) / 1400) * .45;
+      const k = smr((co - st) / (1 - st * .5));
+      if (fl) {
+        // 七颗：先跟大家一起收成中心一小团，第 1020 帧（重拍）弹开成花——欠阻尼弹簧，冲过头 ~12% 再回来
+        const ang = f > FINAL ? (f - FINAL) * .0012 : 0, br = 1 + .012 * Math.sin(Math.max(0, f - FINAL) / 16);
+        let e = 0;
+        if (f > FINAL) { const u = (f - FINAL) / FPS; e = 1 - Math.exp(-u / .14) * Math.cos(u * Math.PI * 2 * 1.6); }
+        const gather = smr((co - .3) / .7), small = .16 * (1 - .35 * sm((f - 1004) / 16));   // 落定前一拍往里缩一下（蓄力）
+        const fx = FC.x + (fl.x * Math.cos(ang) - fl.y * Math.sin(ang)) * e * br, fy = FC.y + (fl.x * Math.sin(ang) + fl.y * Math.cos(ang)) * e * br;
+        const tx = f > FINAL ? fx : FC.x + fl.x * small, ty = f > FINAL ? fy : FC.y + fl.y * small;
+        const ts = (DF / D) * (f > FINAL ? lerp(small, 1, Math.max(0, e)) * br : small);
+        x = lerp(x, tx, gather); y = lerp(y, ty, gather); s = lerp(s, ts, gather); hh = lerp(hh, 1, gather); inrK = lerp(inrK, .475, gather); rot = ang;
+      } else { x = lerp(x, FC.x, k); y = lerp(y, FC.y, k); s *= 1 - k; a = 1 - k; }
+    }
+    const d = ICON * s;
+    if (d < 2.5 || a < 0.01) continue;
+    list.push({ cell, x, y, d, s, a, hh, inrK, rot });
+  }
+  list.sort((A, B) => A.d - B.d);
+  // 收成一点的时候，中心攒一团光（跟着上升音变亮），第 1020 帧弹开时散掉
+  const ga = sm((f - 975) / 45) * (1 - sm((f - FINAL) / 24));
+  if (ga > 0.003) {
+    const gr = 70 + 260 * sm((f - 975) / 45) + 420 * sm((f - FINAL) / 24);
+    const rg = c.createRadialGradient(FC.x, FC.y, 0, FC.x, FC.y, gr);
+    rg.addColorStop(0, `rgba(255,214,140,${.55 * ga})`); rg.addColorStop(.35, `rgba(255,170,60,${.22 * ga})`); rg.addColorStop(1, 'rgba(255,150,40,0)');
+    c.globalCompositeOperation = 'lighter'; c.fillStyle = rg; c.fillRect(FC.x - gr, FC.y - gr, gr * 2, gr * 2); c.globalCompositeOperation = 'source-over';
+  }
+  for (const it of list) {
+    const { cell, x, y, d, s, a, hh, inrK, rot } = it;
+    const rc = d / 2, inr = D * s * inrK;
+    c.globalAlpha = a * clamp(d / 16);
+    if (wr < 0.999 || dt < 0.999 || hon < 0.999) {
+      c.save(); shape(c, x, y, rc, inr, hh, rot); c.clip();
+      const big = Math.max(rc, inr * 1.16) * 2;
+      c.drawImage(SP[cell.id], x - big / 2, y - big / 2, big, big);
+      c.restore();
+    }
+    if (hon > 0.002) {      // 蜂蜡：每格是一个往里凹的小坑——中间深、边上亮
+      shape(c, x, y, rc, inr, hh, rot);
+      const gr = c.createLinearGradient(x, y - inr, x, y + inr);
+      gr.addColorStop(0, '#D98A1C'); gr.addColorStop(1, HONEY[cell.id % HONEY.length]);
+      c.fillStyle = gr; c.globalAlpha = a * hon; c.fill();
+      c.strokeStyle = `rgba(255,231,168,${.9 * hon})`; c.lineWidth = Math.max(2, 7 * s); c.stroke();            // 蜡壁
+      c.strokeStyle = `rgba(110,56,0,${.45 * hon})`; c.lineWidth = Math.max(1, 1.6 * s); c.stroke();
+    }
+    if (dt > 0.002) { shape(c, x, y, rc, inr, hh, rot); c.fillStyle = dataColor(dataVal(cell, c.__f)); c.globalAlpha = a * dt; c.fill(); }
+    if (wr > 0.002) {
+      shape(c, x, y, rc, inr, hh, rot); c.globalAlpha = a * wr * .86; c.fillStyle = '#000'; c.fill();
+      c.globalAlpha = a * wr; c.strokeStyle = '#F5F5F7'; c.lineWidth = Math.max(1.6, 3.4 * s); c.stroke();
+    }
+  }
+  c.globalAlpha = 1;
+  c.restore();
+  opened(c, f);
+}
+function watchBody(c, wv, lc) {
+  const k = smr(wv), sc = lerp(2.4, 1, k), cw = (2 * LCW.ax + 150) * sc, ch = (2 * LCW.ay + 170) * sc;
+  c.save(); c.globalAlpha = k;
+  const x = lc.x - cw / 2, y = lc.y - ch / 2;
+  // 表带（上下）
+  c.fillStyle = '#26262A'; c.beginPath(); c.roundRect(lc.x - cw * .36, y - 420 * sc, cw * .72, 470 * sc, 40 * sc); c.roundRect(lc.x - cw * .36, y + ch - 50 * sc, cw * .72, 470 * sc, 40 * sc); c.fill();
+  const gr = c.createLinearGradient(x, y, x + cw, y + ch); gr.addColorStop(0, '#5A5A60'); gr.addColorStop(.5, '#2A2A2E'); gr.addColorStop(1, '#45454B');
+  c.fillStyle = gr; c.beginPath(); c.roundRect(x, y, cw, ch, 150 * sc); c.fill();
+  c.fillStyle = '#0A0A0B'; c.beginPath(); c.roundRect(x + 22 * sc, y + 22 * sc, cw - 44 * sc, ch - 44 * sc, 130 * sc); c.fill();
+  // 表冠 + 侧键
+  c.fillStyle = '#6A6A70'; c.beginPath(); c.roundRect(x + cw - 4 * sc, lc.y - 150 * sc, 34 * sc, 96 * sc, 14 * sc); c.fill();
+  c.fillStyle = '#8A8A90'; for (let k = 0; k < 6; k++) c.fillRect(x + cw + 6 * sc + k * 4 * sc, lc.y - 140 * sc, 1.6 * sc, 76 * sc);   // 表冠的竖纹
+  c.fillStyle = '#4A4A50'; c.beginPath(); c.roundRect(x + cw - 6 * sc, lc.y + 10 * sc, 20 * sc, 130 * sc, 10 * sc); c.fill();
+  c.restore();
+}
+function opened(c, f) {
+  const o = openAt(f); if (o <= 0.001) return;
+  const p = panAt(f), Z = zoomAt(f), P = lens((T2.x - p.x) * Z, (T2.y - p.y) * Z, .32, lensAt(f), LC(f));
+  const r0 = ICON * Z * P.s / 2, Rr = r0 + (Math.hypot(W, H) * .62 - r0) * o;
+  const cx = P.x + (W / 2 - P.x) * o, cy = P.y + (H / 2 - P.y) * o;
+  c.save(); c.beginPath(); c.arc(cx, cy, Rr, 0, 7); c.clip();
+  const im = IMG.lake, s = Math.max(W / im.width, H / im.height) * (1.25 - .2 * o);
+  c.drawImage(im, cx - im.width * s / 2, cy - im.height * s / 2, im.width * s, im.height * s);
+  c.fillStyle = `rgba(0,0,0,${.3 * o})`; c.fillRect(0, 0, W, H);
+  c.restore();
+}
+
+// ---------- 字：一个字一个字落定，每个字一声（events() 导出给配乐）----------
+const TXT = [];
+const T = (f0, f1, s, x, y, font, color, kind = 'text', rate = 2, align = 'left') => TXT.push({ f0, f1, s, x, y, font, color, kind, rate, align });
+// 开场（第 0 帧就在）
+T(0, 148, 'Layout 03', 104, 150, '500 30px Inter', DIM, 'small', 0);
+T(0, 148, 'Honey', 96, 360, '700 200px IDisp', INK, 'title', 0);
+T(0, 148, 'comb', 96, 540, '700 200px IDisp', INK, 'title', 0);
+T(0, 148, '蜂窝布局', 104, 680, '900 96px SC', INK, 'title', 0);
+T(0, 148, '离中心越近，越大。', 106, 760, '700 40px SC', DIM, 'small', 0);
+// 01
+T(188, 318, '01 · 名字', 104, 330, '500 30px Mono', DIM, 'small');
+T(200, 318, '为什么是六边形？', 100, 440, '900 92px SC', INK, 'title', 3);
+T(238, 318, '同样的面积，六边形的周长最短：', 104, 530, '700 38px SC', INK);
+T(262, 318, '蜜蜂用最少的蜡，盖最多的格子。', 104, 586, '700 38px SC', DIM);
+T(284, 318, 'Hales，1999 年证明', 104, 650, '500 28px Mono', DIM, 'small');
+// 02
+T(342, 500, '02 · 透镜', 104, 330, '500 30px Mono', DIM, 'small');
+T(354, 500, '离中心越近，越大', 100, 440, '900 92px SC', INK, 'title', 3);
+T(392, 500, '中心一圈：原大 1:1', 104, 530, '700 38px SC', INK);
+T(420, 500, '往外：越挤越小，但不重叠', 104, 586, '700 38px SC', INK);
+T(446, 500, 's = 1 − tanh²((r − r0) / k)', 104, 650, '500 30px Mono', DIM, 'small', 1);
+T(462, 500, '中心距 150 · 图标 132 · 缝 12%', 104, 700, '500 30px Mono', DIM, 'small', 1);
+// 03
+T(516, 586, '03 · 吸附 · 点开', 104, 330, '500 30px Mono', DIM, 'small');
+T(528, 586, '甩一下，停在一格上', 100, 440, '900 92px SC', INK, 'title', 3);
+T(552, 586, '吸附：临界阻尼，0.17 秒落定', 104, 530, '700 38px SC', INK);
+T(606, 646, '点开', 120, 780, '900 132px SC', '#fff', 'title', 4);
+T(618, 646, '图标从蜂窝里长成一整屏，收起来再缩回原位', 124, 860, '700 40px SC', 'rgba(255,255,255,.9)');
+// 04
+T(700, 776, '04 · 在哪见过', 104, 330, '500 30px Mono', DIM, 'small');
+T(712, 776, 'Apple Watch 主屏', 100, 440, '900 92px SC', INK, 'title', 3);
+T(738, 776, '2015 年至今，默认就是蜂窝', 104, 530, '700 38px SC', INK);
+T(792, 888, '04 · 在哪见过', 104, 330, '500 30px Mono', DIM, 'small', 0);
+T(800, 888, '六边形数据图', 100, 440, '900 92px SC', INK, 'title', 3);
+T(826, 888, '一格一个区域，颜色是数值', 104, 530, '700 38px SC', INK);
+// 收束
+T(FINAL, 99999, 'Honeycomb', 960, 790, '700 128px IDisp', INK, 'slam', 0, 'center');
+T(FINAL + 8, 99999, '蜂窝布局 · 离中心越近，越大', 960, 870, '700 40px SC', DIM, 'text', 1.5, 'center');
+T(FINAL + 30, 99999, '观默', 960, 1000, '700 34px SC', INK, 'small', 3, 'center');
+
+function texts(c, f) {
+  // 左边的暗面板：有左栏字的时候出现，保证字读得清
+  const pa = Math.max(1 - R(f, 140, 160), R(f, 180, 200) * (1 - R(f, 310, 330)), R(f, 334, 352) * (1 - R(f, 492, 512)), R(f, 508, 524) * (1 - R(f, 580, 596)), R(f, 692, 708) * (1 - R(f, 880, 900)));
+  if (pa > 0.01) { c.globalAlpha = pa; const bg = c.createLinearGradient(0, 0, 900, 0); bg.addColorStop(0, 'rgba(0,0,0,.92)'); bg.addColorStop(.7, 'rgba(0,0,0,.72)'); bg.addColorStop(1, 'rgba(0,0,0,0)'); c.fillStyle = bg; c.fillRect(0, 0, 940, H); c.globalAlpha = 1; }
+  for (const t of TXT) {
+    if (f < t.f0 || f > t.f1 + 14) continue;
+    const out = 1 - sm((f - t.f1) / 14);
+    c.font = t.font; c.textBaseline = 'alphabetic'; c.textAlign = 'left';
+    const chars = [...t.s], full = c.measureText(t.s).width;
+    let x0 = t.align === 'center' ? t.x - full / 2 : t.x;
+    if (t.kind === 'slam') {      // 砸下来：从大到正常
+      const k = sm((f - t.f0) / 8), sc = lerp(1.35, 1, k);
+      c.save(); c.globalAlpha = k * out; c.translate(t.x, t.y); c.scale(sc, sc); c.fillStyle = t.color; c.textAlign = 'center'; c.fillText(t.s, 0, 0); c.restore();
+      continue;
+    }
+    for (let i = 0; i < chars.length; i++) {
+      const fi = t.f0 + i * t.rate, k = t.rate === 0 ? 1 : sm((f - fi) / 6);
+      if (k <= 0) break;
+      const px = x0 + c.measureText(chars.slice(0, i).join('')).width;
+      c.globalAlpha = k * out; c.fillStyle = t.color; c.fillText(chars[i], px, t.y + (1 - k) * 18);
+    }
+  }
+  c.globalAlpha = 1;
+}
+function overlays(c, f) {     // 02 章画在透镜上的标注
+  const a1 = R(f, 392, 410) * (1 - R(f, 486, 506));
+  if (a1 > 0.01) {
+    c.globalAlpha = a1; c.strokeStyle = 'rgba(255,214,10,.9)'; c.lineWidth = 3; c.setLineDash([12, 10]);
+    const lc = LC(f); c.beginPath(); c.ellipse(lc.x, lc.y, lc.ax * .32, lc.ay * .32, 0, 0, 7); c.stroke(); c.setLineDash([]);
+    c.fillStyle = 'rgba(255,214,10,.95)'; c.font = '700 26px SC'; c.textAlign = 'center'; c.fillText('原大 1:1', lc.x, lc.y - lc.ay * .32 - 16); c.textAlign = 'left';
+  }
+  const a2 = R(f, 462, 476) * (1 - R(f, 486, 506));
+  if (a2 > 0.01) {      // 量中心距：离透镜中心最近的一颗和它右边那颗
+    const p = panAt(f), Z = zoomAt(f), lc = LC(f);
+    let best = null, bd = 1e9;
+    for (const cell of CELLS) { const P = lens((cell.x - p.x) * Z, (cell.y - p.y) * Z, .32, 1, lc); const dd = Math.hypot(P.x - lc.x, P.y - lc.y); if (dd < bd) { bd = dd; best = cell; } }
+    const nb = cellAt(best.q + 1, best.r);
+    if (nb) {
+      const A = lens((best.x - p.x) * Z, (best.y - p.y) * Z, .32, 1, lc), B = lens((nb.x - p.x) * Z, (nb.y - p.y) * Z, .32, 1, lc);
+      const yy = A.y + ICON / 2 + 26;
+      c.globalAlpha = a2; c.strokeStyle = '#FFD60A'; c.lineWidth = 3;
+      c.beginPath(); c.moveTo(A.x, yy - 10); c.lineTo(A.x, yy + 10); c.moveTo(B.x, yy - 10); c.lineTo(B.x, yy + 10); c.moveTo(A.x, yy); c.lineTo(B.x, yy); c.stroke();
+      c.fillStyle = '#FFD60A'; c.font = '500 26px Mono'; c.textAlign = 'center'; c.fillText('150', (A.x + B.x) / 2, yy + 36); c.textAlign = 'left';
+    }
+  }
+  c.globalAlpha = 1;
+}
+function hud(c, f) {
+  const a = R(f, 150, 175) * (1 - R(f, 900, 930));
+  if (a <= 0.01) return;
+  c.globalAlpha = a * .9; c.font = '500 24px Inter'; c.fillStyle = DIM; c.textAlign = 'left'; c.fillText('Layout 03 · Honeycomb 蜂窝布局', 104, 72);
+  const ch = f < 330 ? 1 : f < 510 ? 2 : f < 690 ? 3 : 4;
+  c.textAlign = 'right'; c.fillText(`0${ch} / 04`, 1816, 72); c.textAlign = 'left'; c.globalAlpha = 1;
+}
+
+const buf = mk(W, H), b = buf.getContext('2d');
+const SHUTTER = 0.75;
+window.frame = f => {
+  const p0 = panAt(f - .25), p1 = panAt(f + .25), v = Math.hypot(p1.x - p0.x, p1.y - p0.y) * 2 * FPS * zoomAt(f);
+  const zv = Math.abs(Math.log(zoomAt(f + .25) / zoomAt(f - .25))) * 2 * FPS;
+  const ov = Math.abs(openAt(f + .25) - openAt(f - .25)) * 2 * FPS, cv = Math.abs(colAt(f + .25) - colAt(f - .25)) * 2 * FPS;
+  const N = Math.max(1, Math.min(18, Math.ceil(v * SHUTTER / FPS / 3 + zv * 6 + ov * 10 + cv * 8)));
+  for (let k = 0; k < N; k++) {
+    const fk = N === 1 ? f : f + (k / (N - 1) - .5) * SHUTTER;
+    b.__f = fk; scene(b, fk);
+    g.globalAlpha = 1 / (k + 1); g.drawImage(buf, 0, 0);
+  }
+  g.globalAlpha = 1;
+  overlays(g, f); texts(g, f); hud(g, f);
+};
+window.events = () => ({
+  cues: TXT.map(t => [t.f0, t.kind === 'slam' ? 1 : [...t.s].length, t.rate || 1, t.kind]),
+  tl: { end: END, final: FINAL, moves: MOVES.map(m => [m[0], m[1]]), crown: [[150, 205], [572, 605]], hex: [185, 240], honey: 200, unhex: 290,
+        wire: 335, unwire: 478, open: 588, close: 645, watch: 690, unwatch: 775, data: 790, undata: 858, col: 905 },
+});
+const qf = new URLSearchParams(location.search).get('f');
+Promise.all([...PHOTOS.map(n => new Promise(r => { const im = new Image(); im.onload = () => { IMG[n] = im; r(); }; im.src = `../../../public/02-masonry/photos/${n}.jpg`; })),
+  ...['700 10px IDisp', '600 10px IDisp', '500 10px Inter', '500 10px Mono', '900 10px SC', '700 10px SC'].map(s => document.fonts.load(s, '蜂窝布局离中心越近Aa'))])
+  .then(() => {
+    // 收束时的七颗：离 900 帧镜头中心最近的一格 + 它的六个邻居
+    P5 = panAt(900); MAPC = panAt(800);
+    let ctr = CELLS[0], bd = 1e9; for (const c of CELLS) { const d = Math.hypot(c.x - P5.x, c.y - P5.y); if (d < bd) { bd = d; ctr = c; } }
+    [[0, 0], [1, 0], [-1, 0], [0, 1], [0, -1], [1, -1], [-1, 1]].forEach(([dq, dr]) => { const c = cellAt(ctr.q + dq, ctr.r + dr); if (c) FLOWER.set(c.id, { x: DF * (dq + dr / 2), y: DF * Math.sqrt(3) / 2 * dr }); });
+    for (const cell of CELLS) {
+      const dist = Math.hypot(cell.x - (C0.x + 650), cell.y - (C0.y - 350));
+      const photo = cell === T2 || FLOWER.has(cell.id) || hash(cell.id * 3.3) < (dist < 700 ? .45 : .3);
+      SP[cell.id] = cell === T2 ? sprite('photo', 0) : sprite(photo ? 'photo' : 'glyph', photo ? 1 + Math.floor(hash(cell.id * 1.7) * 11) : Math.floor(hash(cell.id * 9.1) * 9) + cell.id);
+    }
+    window.frame(+(qf || 0)); window.ready = true;
+  });
+</script></body></html>
