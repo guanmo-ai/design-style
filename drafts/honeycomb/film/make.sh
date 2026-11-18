@@ -3,7 +3,7 @@
 set -euo pipefail
 cd "$(dirname "$0")"
 NAME=honeycomb
-END=1110
+END=960
 OUT=${TMPDIR:-/tmp}/$NAME-frames
 node ../../_lib/events.cjs film.html events.json
 python3 audio.py "$OUT.wav"
