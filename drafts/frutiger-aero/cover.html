@@ -1,0 +1,54 @@
+<!doctype html><meta charset="utf-8">
+<!-- Frutiger Aero · 第 0 帧：镜头贴着水面，“Aero”四个玻璃字浮在水上，一串彩虹泡泡往上冒，几片亮面叶子在飘；
+     远处一座亮绿的山坡，深蓝到浅青的天，太阳在右上角。玻璃和泡泡上映出的就是这片天和草地。
+     cd drafts/_3d && node shoot.cjs ../frutiger-aero/cover.html ../frutiger-aero/png/cover.png -->
+<style>
+@font-face{font-family:GM;src:url(/public/fonts/GeistMono.ttf)}
+@font-face{font-family:NSB;src:url(/public/fonts/NotoSansSC-Bold.otf)}
+@font-face{font-family:SEL;src:url(/public/fonts/Selawik-Semibold.ttf)}
+html,body{margin:0;overflow:hidden;background:#000}
+#hud{position:absolute;inset:0;pointer-events:none;color:#fff;font-family:GM;text-shadow:0 1px 8px rgba(0,40,110,.35)}
+.tl{position:absolute;left:64px;top:52px;font-size:22px;letter-spacing:.06em}
+.tr{position:absolute;right:64px;top:52px;font-size:22px;letter-spacing:.06em}
+.sub{position:absolute;left:64px;bottom:58px;font-family:NSB;font-size:40px}
+.sub small{display:block;font-family:GM;font-size:22px;letter-spacing:.14em;opacity:.85;margin-bottom:8px}
+.sub b{font-family:SEL;font-weight:600}
+</style>
+<div id="hud"><div class="tl">风格 · FRUTIGER AERO</div><div class="tr">2004 — 2013 — 今天</div>
+<div class="sub"><small>WATER · SKY · GLASS · GLOSS</small><b>Frutiger Aero</b>：水、天空、玻璃，和光泽</div></div>
+<script type="importmap">{"imports":{"three":"/drafts/_3d/node_modules/three/build/three.module.js","three/addons/":"/drafts/_3d/node_modules/three/examples/jsm/"}}</script>
+<script type="module">
+import { THREE, setup, finish, mesh } from '/drafts/_3d/lib.js';
+import { font, glyphGeo } from '/drafts/_3d/craft.js';
+import { skyDome, skyEnv, clouds, hill, water, bubbles, leaf, addGloss, SUN_DIR } from './aero.js';
+const Q = new URLSearchParams(location.search), PR = +(Q.get('pr') || 2);
+const ctx = setup({ pr: PR, bg: '#8CCBFF', tone: 'neutral' });
+const { renderer, scene } = ctx;
+renderer.toneMappingExposure = 1.0;
+scene.environment = skyEnv(renderer); scene.environmentIntensity = 1.0;
+scene.add(skyDome());
+scene.fog = new THREE.Fog('#B8E8FF', 140, 700);
+clouds(scene, [[-95, 62, -260, 46, 1], [-30, 92, -300, 40, 2], [150, 40, -280, 34, 3], [-190, 30, -300, 40, 4]]);
+scene.add(hill({ cx: -22, cz: -78, r: 64, h: 9.5, seed: 3 }));
+scene.add(hill({ cx: 52, cz: -96, r: 50, h: 6.5, seed: 8 }));
+water(scene, { color: '#0462B8', distortion: 2.6 });
+
+const sunL = new THREE.DirectionalLight('#FFF7E8', 3.2); sunL.position.copy(SUN_DIR).multiplyScalar(40); scene.add(sunL);
+scene.add(new THREE.HemisphereLight('#BFE6FF', '#3B9A3A', 0.6));
+
+// 玻璃字
+const F = await font('Selawik-Bold.ttf');
+const glass = new THREE.MeshPhysicalMaterial({ color: '#E6FFFF', transmission: 1, thickness: 1.4, roughness: 0.0, ior: 1.5, attenuationColor: '#22CFEF', attenuationDistance: 2.4,
+  clearcoat: 1, clearcoatRoughness: 0, specularIntensity: 1, envMapIntensity: 1.5, iridescence: 0.25, iridescenceIOR: 1.3 });
+const word = new THREE.Group(); let x0 = 0; const gs = [];
+for (const ch of 'Aero') { const g = glyphGeo(F, ch, { size: 3.4, depth: 0.9, bevel: 0.16, bevelSeg: 10, curve: 16 }); g.computeBoundingBox(); const w = g.boundingBox.max.x - g.boundingBox.min.x; gs.push([g, x0 + w / 2]); x0 += w + 0.22; }
+gs.forEach(([g, cx], i) => { const m = mesh(g, glass); m.position.set(cx - x0 / 2, 0, 0); m.rotation.z = [0.04, -0.05, 0.03, -0.04][i]; m.position.y = [0.15, -0.1, 0.2, 0][i]; addGloss(m, { cut: 0.52, top: 0.55, bottom: 0.2 }); word.add(m); });
+word.position.set(0.4, 2.0, -1.5); word.rotation.y = -0.08; scene.add(word);
+
+bubbles(scene, [[-6.4, 3.8, 1.2, 1.25], [-4.9, 1.2, 2.6, 0.55], [5.9, 4.6, 0.4, 0.9], [7.2, 1.6, 2.4, 1.5], [4.2, 6.2, -2.0, 0.42], [-2.6, 6.0, -1.0, 0.35], [-7.6, 6.6, -3, 0.7], [2.2, 0.5, 4.2, 0.28], [-3.6, 0.45, 3.8, 0.22], [8.8, 5.4, -4, 0.5], [0.8, 6.9, -3.2, 0.3], [-9.4, 2.2, -2.5, 0.45], [3.4, 2.8, 3.2, 0.2], [-1.2, 3.6, 4.8, 0.16]]);
+for (const [x, y, z, rx, ry, rz, s, c] of [[-8.6, 4.6, 1.5, 0.6, 0.5, 0.6, 1.7, '#5BD12E'], [9.4, 3.2, 0.5, -0.4, -0.6, 2.4, 1.4, '#8BE33A'], [6.6, 7.1, -1.5, 1.0, 0.3, 3.6, 1.0, '#4CC52A'], [-5.2, 7.0, -0.8, 0.2, 0.8, -0.6, 0.9, '#8BE33A']]) {
+  const l = leaf(s, c); l.material.emissive = new THREE.Color(c); l.material.emissiveIntensity = 0.25; l.position.set(x, y, z); l.rotation.set(rx, ry, rz); scene.add(l); }
+
+const cam = new THREE.PerspectiveCamera(40, 16 / 9, 0.1, 1200); cam.position.set(0, 1.25, 13.5); cam.lookAt(0, 3.4, 0);
+finish(ctx, cam, { ao: false, bloom: 0.55, bloomRadius: 0.6, bloomThreshold: 0.86, vig: 0.22, grain: 0.015 });
+</script>

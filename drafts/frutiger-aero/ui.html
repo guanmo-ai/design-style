@@ -1,0 +1,128 @@
+<!doctype html><meta charset="utf-8">
+<!-- Frutiger Aero · 用起来：同一片天、山坡、水当壁纸，前面浮着两块磨砂玻璃——天气网站的窗口、音乐 App 的手机，
+     再加几颗 3D 光泽球按钮和泡泡。玻璃是真透射 + 粗糙度（背后的风景被糊开），正面上半截叠一层 Aero 光泽。
+     cd drafts/_3d && node shoot.cjs ../frutiger-aero/ui.html ../frutiger-aero/png/ui.png -->
+<style>
+@font-face{font-family:GM;src:url(/public/fonts/GeistMono.ttf)}
+@font-face{font-family:NSB;src:url(/public/fonts/NotoSansSC-Bold.otf)}
+@font-face{font-family:NSK;src:url(/public/fonts/NotoSansSC-Black.otf)}
+@font-face{font-family:NSM;src:url(/public/fonts/NotoSansSC-Medium.otf)}
+@font-face{font-family:SEL;src:url(/public/fonts/Selawik-Semibold.ttf)}
+@font-face{font-family:SELB;src:url(/public/fonts/Selawik-Bold.ttf)}
+@font-face{font-family:SELL;src:url(/public/fonts/Selawik-Light.ttf)}
+html,body{margin:0;overflow:hidden;background:#000}
+#hud{position:absolute;inset:0;pointer-events:none;color:#fff;font-family:GM;text-shadow:0 1px 10px rgba(0,40,110,.45)}
+.tl{position:absolute;left:64px;top:52px;font-size:22px;letter-spacing:.06em}
+.tr{position:absolute;right:64px;top:52px;font-size:22px;letter-spacing:.06em}
+.ttl{position:absolute;left:64px;top:104px;font-family:NSK;font-size:64px}
+.ttl small{font-family:GM;font-size:22px;letter-spacing:.14em;margin-left:18px;opacity:.85}
+.rules{position:absolute;left:64px;right:64px;bottom:40px;display:flex;gap:56px}
+.r{flex:1;font-family:NSB;font-size:27px}
+.r b{display:inline-block;font-family:GM;font-size:17px;background:linear-gradient(#7FE0FF,#0A84E0);color:#fff;border-radius:20px;padding:2px 9px;margin-bottom:8px;text-shadow:none;box-shadow:inset 0 1px 0 rgba(255,255,255,.7)}
+.r small{display:block;font-family:NSM;font-size:16px;opacity:.92;margin-top:5px}
+</style>
+<div id="hud"><div class="tl">风格 · FRUTIGER AERO · 用起来</div><div class="tr">WEB + APP · GLASS UI</div>
+<div class="ttl">磨砂玻璃上的界面<small>GLASS · GLOSS · SKY</small></div>
+<div class="rules">
+<div class="r"><b>01</b><br>高光属于光，不属于按钮<small>上半截一块白（不透明度 60%→20%），边缘利落 · 所有按钮高光在同一侧</small></div>
+<div class="r"><b>02</b><br>天、草、水三组渐变<small>天 #0B4BD6→#B8E8FF · 草 #A6F040→#1E8A24 · 水 #0462B8</small></div>
+<div class="r"><b>03</b><br>玻璃要透<small>背后的东西看得见、被糊开、被染成浅青 · 外沿一道 1px 白边</small></div>
+</div></div>
+<script type="importmap">{"imports":{"three":"/drafts/_3d/node_modules/three/build/three.module.js","three/addons/":"/drafts/_3d/node_modules/three/examples/jsm/"}}</script>
+<script type="module">
+import { THREE, setup, finish, mesh } from '/drafts/_3d/lib.js';
+import { RoundedBoxGeometry } from 'three/addons/geometries/RoundedBoxGeometry.js';
+import { skyDome, skyEnv, clouds, hill, water, bubbles, leaf, addGloss, SUN_DIR } from './aero.js';
+const Q = new URLSearchParams(location.search), PR = +(Q.get('pr') || 2);
+const ctx = setup({ pr: PR, bg: '#8CCBFF', tone: 'neutral' });
+const { renderer, scene } = ctx;
+scene.environment = skyEnv(renderer);
+scene.add(skyDome()); scene.fog = new THREE.Fog('#B8E8FF', 140, 700);
+clouds(scene, [[-95, 62, -260, 46, 1], [-30, 92, -300, 40, 2], [150, 40, -280, 34, 3], [-190, 30, -300, 40, 4], [60, 75, -290, 36, 6]]);
+scene.add(hill({ cx: -22, cz: -78, r: 64, h: 9.5, seed: 3 })); scene.add(hill({ cx: 52, cz: -96, r: 50, h: 6.5, seed: 8 }));
+water(scene, { color: '#0462B8', distortion: 2.6 });
+const sunL = new THREE.DirectionalLight('#FFF7E8', 3.0); sunL.position.copy(SUN_DIR).multiplyScalar(40); scene.add(sunL);
+scene.add(new THREE.HemisphereLight('#BFE6FF', '#3B9A3A', 0.7));
+for (const f of ['SEL', 'SELB', 'SELL', 'NSB', 'NSK', 'NSM', 'GM']) await document.fonts.load(`60px ${f}`);
+
+// ---------- 2D：Aero 光泽件 ----------
+function tex(w, h, draw) { const c = document.createElement('canvas'); c.width = w; c.height = h; draw(c.getContext('2d'), w, h); const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 8; return t; }
+function glossPill(x, X, Y, w, h, c1, c2, r = h / 2) {   // 光泽按钮：底色渐变 + 上半截白 + 底部反光 + 1px 白边
+  x.save(); x.beginPath(); x.roundRect(X, Y, w, h, r); x.clip();
+  let g = x.createLinearGradient(0, Y, 0, Y + h); g.addColorStop(0, c1); g.addColorStop(1, c2); x.fillStyle = g; x.fillRect(X, Y, w, h);
+  g = x.createLinearGradient(0, Y, 0, Y + h * 0.5); g.addColorStop(0, 'rgba(255,255,255,.75)'); g.addColorStop(1, 'rgba(255,255,255,.18)'); x.fillStyle = g; x.beginPath(); x.roundRect(X + 3, Y + 3, w - 6, h * 0.48, [r, r, r * 0.4, r * 0.4]); x.fill();
+  g = x.createRadialGradient(X + w / 2, Y + h * 1.05, 0, X + w / 2, Y + h * 1.05, w * 0.5); g.addColorStop(0, 'rgba(200,255,255,.7)'); g.addColorStop(1, 'rgba(200,255,255,0)'); x.fillStyle = g; x.fillRect(X, Y, w, h);
+  x.restore(); x.strokeStyle = 'rgba(255,255,255,.85)'; x.lineWidth = 2.5; x.beginPath(); x.roundRect(X + 1, Y + 1, w - 2, h - 2, r); x.stroke();
+}
+function orb2D(x, cx, cy, r, c1, c2) { glossPill(x, cx - r, cy - r, r * 2, r * 2, c1, c2, r); }
+function sunIcon(x, cx, cy, r) {
+  x.save(); for (let i = 0; i < 12; i++) { const a = i / 12 * Math.PI * 2; x.strokeStyle = 'rgba(255,200,40,.9)'; x.lineWidth = r * 0.16; x.lineCap = 'round'; x.beginPath(); x.moveTo(cx + Math.cos(a) * r * 1.25, cy + Math.sin(a) * r * 1.25); x.lineTo(cx + Math.cos(a) * r * 1.6, cy + Math.sin(a) * r * 1.6); x.stroke(); } x.restore();
+  orb2D(x, cx, cy, r, '#FFF27A', '#FF9A00');
+}
+function cloudIcon(x, cx, cy, s) { x.save(); x.beginPath(); for (const [dx, dy, rr] of [[-0.5, 0.1, 0.42], [0, -0.2, 0.58], [0.55, 0.12, 0.4]]) { x.moveTo(cx + dx * s + rr * s, cy + dy * s); x.arc(cx + dx * s, cy + dy * s, rr * s, 0, 7); } x.clip();
+  const g = x.createLinearGradient(0, cy - s * 0.8, 0, cy + s * 0.5); g.addColorStop(0, '#FFFFFF'); g.addColorStop(1, '#BFD9F0'); x.fillStyle = g; x.fillRect(cx - s * 1.2, cy - s, s * 2.4, s * 2); x.restore(); }
+const TT = (x, s, X, Y, font, col = '#0A3A6E', align = 'left') => { x.font = font; x.fillStyle = col; x.textAlign = align; x.fillText(s, X, Y); x.textAlign = 'left'; };
+
+// ---------- 网页：天气 ----------
+const WW = 2200, WH = 1340;
+const webT = tex(WW, WH, (x, W, H) => {
+  // 标题栏：一条亮青渐变 + 三颗光泽小球
+  glossPill(x, 18, 18, W - 36, 96, 'rgba(140,220,255,.85)', 'rgba(20,130,220,.85)', 30);
+  TT(x, 'Sky Weather — 今天', 60, 82, '600 44px SEL', '#fff');
+  [['#FF8A7A', '#D8261A'], ['#FFE47A', '#E8A400'], ['#9CF07A', '#2EA81A']].forEach(([a, b], i) => orb2D(x, W - 200 + i * 62, 66, 22, a, b));
+  // 主区
+  sunIcon(x, 300, 400, 120); cloudIcon(x, 420, 470, 120);
+  TT(x, '26°', 560, 520, '300 300px SELL', '#fff');
+  TT(x, '上海 · 晴，有一点云', 580, 600, '700 54px NSB', '#fff');
+  TT(x, '湿度 48%  ·  风 3 级  ·  空气 优', 584, 668, '500 38px NSM', 'rgba(255,255,255,.92)');
+  glossPill(x, 1380, 420, 420, 110, '#7FE6FF', '#0A84E0'); TT(x, '看雷达图', 1590, 492, '900 46px NSK', '#fff', 'center');
+  glossPill(x, 1380, 560, 420, 110, '#C8FF7A', '#3DAF1E'); TT(x, '出门指数 92', 1590, 632, '900 44px NSK', '#fff', 'center');
+  // 五天：五颗光泽卡片
+  ['周一', '周二', '周三', '周四', '周五'].forEach((d, i) => { const X = 80 + i * 412, Y = 790;
+    x.save(); x.fillStyle = 'rgba(255,255,255,.22)'; x.beginPath(); x.roundRect(X, Y, 380, 470, 40); x.fill(); x.strokeStyle = 'rgba(255,255,255,.75)'; x.lineWidth = 2.5; x.stroke(); x.restore();
+    const g = x.createLinearGradient(0, Y, 0, Y + 200); g.addColorStop(0, 'rgba(255,255,255,.55)'); g.addColorStop(1, 'rgba(255,255,255,0)'); x.fillStyle = g; x.beginPath(); x.roundRect(X + 4, Y + 4, 372, 200, [36, 36, 8, 8]); x.fill();
+    TT(x, d, X + 190, Y + 80, '700 44px NSB', '#fff', 'center');
+    if (i % 2) cloudIcon(x, X + 190, Y + 230, 80); else sunIcon(x, X + 190, Y + 220, 58);
+    TT(x, `${[26, 24, 27, 22, 25][i]}°`, X + 190, Y + 400, '300 110px SELL', '#fff', 'center'); });
+});
+// ---------- 手机：音乐 ----------
+const PWp = 1000, PHp = 2060;
+const phoneT = tex(PWp, PHp, (x, W, H) => {
+  { let g = x.createLinearGradient(0, 0, 0, H); g.addColorStop(0, 'rgba(8,70,170,.42)'); g.addColorStop(0.6, 'rgba(8,90,180,.28)'); g.addColorStop(1, 'rgba(10,110,190,.38)'); x.fillStyle = g; x.beginPath(); x.roundRect(0, 0, W, H, 90); x.fill(); }
+  TT(x, '9:41', 70, 100, '600 44px SEL', '#fff'); TT(x, '▮▮▮ 100%', W - 70, 100, '600 38px SEL', '#fff', 'right');
+  TT(x, '正在播放', 70, 230, '900 70px NSK', '#fff');
+  // 专辑封面：一块小天空 + 草地 + 泡泡
+  x.save(); x.beginPath(); x.roundRect(90, 300, W - 180, W - 180, 50); x.clip();
+  let g = x.createLinearGradient(0, 300, 0, 300 + W - 180); g.addColorStop(0, '#0B4BD6'); g.addColorStop(0.55, '#7CC8FF'); g.addColorStop(0.56, '#A6F040'); g.addColorStop(1, '#1E8A24'); x.fillStyle = g; x.fillRect(90, 300, W - 180, W - 180);
+  for (const [bx, by, br] of [[330, 520, 90], [600, 430, 60], [700, 640, 120], [420, 700, 40]]) { const rg = x.createRadialGradient(bx - br * .3, by - br * .3, 0, bx, by, br); rg.addColorStop(0, 'rgba(255,255,255,.9)'); rg.addColorStop(.25, 'rgba(255,255,255,.15)'); rg.addColorStop(.9, 'rgba(255,255,255,.1)'); rg.addColorStop(1, 'rgba(255,255,255,.75)'); x.fillStyle = rg; x.beginPath(); x.arc(bx, by, br, 0, 7); x.fill(); }
+  g = x.createLinearGradient(0, 300, 0, 600); g.addColorStop(0, 'rgba(255,255,255,.5)'); g.addColorStop(1, 'rgba(255,255,255,0)'); x.fillStyle = g; x.fillRect(90, 300, W - 180, 330);
+  x.restore(); x.strokeStyle = 'rgba(255,255,255,.9)'; x.lineWidth = 3; x.beginPath(); x.roundRect(90, 300, W - 180, W - 180, 50); x.stroke();
+  TT(x, 'Bubble Days', 90, 1240, '700 72px SELB', '#fff'); TT(x, '泡泡日 · 2007', 92, 1310, '500 40px NSM', 'rgba(255,255,255,.9)');
+  // 进度条：光泽槽
+  glossPill(x, 90, 1380, W - 180, 34, 'rgba(255,255,255,.35)', 'rgba(255,255,255,.15)'); glossPill(x, 90, 1380, (W - 180) * 0.42, 34, '#7FE6FF', '#0A84E0');
+  TT(x, '1:24', 90, 1470, '600 34px SEL', '#fff'); TT(x, '3:18', W - 90, 1470, '600 34px SEL', '#fff', 'right');
+  orb2D(x, 250, 1680, 80, '#E0F4FF', '#8EC6EE'); TT(x, '◀◀', 250, 1696, '700 44px SEL', '#0A3A6E', 'center');
+  orb2D(x, W - 250, 1680, 80, '#E0F4FF', '#8EC6EE'); TT(x, '▶▶', W - 250, 1696, '700 44px SEL', '#0A3A6E', 'center');
+  orb2D(x, W / 2, 1680, 130, '#9CF07A', '#22A010'); TT(x, '▶', W / 2 + 10, 1712, '700 96px SEL', '#fff', 'center');
+});
+
+// ---------- 3D：磨砂玻璃板 ----------
+const frost = (tint = '#EAF8FF') => new THREE.MeshPhysicalMaterial({ color: tint, transmission: 1, roughness: 0.38, thickness: 0.25, ior: 1.4, clearcoat: 1, clearcoatRoughness: 0.0, envMapIntensity: 1.2, attenuationColor: '#BFEFFF', attenuationDistance: 2.5 });
+function panel(w, h, r, t, pos, ry, uiTex, tint) {
+  const g = new THREE.Group(); const p = mesh(new RoundedBoxGeometry(w, h, t, 8, r), frost(tint), { cast: false }); g.add(p);
+  addGloss(p, { cut: 0.62, top: 0.26, bottom: 0.1, wave: 0.03 });
+  const ui = new THREE.Mesh(new THREE.PlaneGeometry(w * 0.985, h * 0.985), new THREE.MeshBasicMaterial({ map: uiTex, transparent: true, toneMapped: false, depthWrite: false })); ui.position.z = t / 2 + 0.006; ui.renderOrder = 3; g.add(ui);
+  g.position.set(...pos); g.rotation.y = ry; scene.add(g); return g;
+}
+panel(9.3, 9.3 * WH / WW, 0.3, 0.16, [-3.3, 3.75, -0.4], 0.1, webT, '#EAF8FF');
+panel(2.75, 2.75 * PHp / PWp, 0.36, 0.2, [4.45, 3.7, 0.6], -0.16, phoneT, '#E4FFF4');
+// 3D 光泽球按钮 + 泡泡
+const orbM = new THREE.MeshPhysicalMaterial({ color: '#33C3FF', roughness: 0.05, clearcoat: 1, clearcoatRoughness: 0, transmission: 0.55, thickness: 1, attenuationColor: '#0A78D8', attenuationDistance: 0.8, envMapIntensity: 1.5 });
+const orb = mesh(new THREE.SphereGeometry(0.62, 64, 48), orbM, { cast: false }); orb.position.set(5.5, 0.95, 2.8); orb.scale.setScalar(0.75); scene.add(orb);
+const orb2 = mesh(new THREE.SphereGeometry(0.4, 64, 48), orbM.clone(), { cast: false }); orb2.material.color.set('#7BE84A'); orb2.material.attenuationColor.set('#1E9A12'); orb2.position.set(-8.3, 1.2, 1.4); scene.add(orb2);
+bubbles(scene, [[-8.6, 6.4, -1, 0.7], [7.9, 6.6, -1.6, 0.55], [1.6, 7.4, -2.5, 0.35], [-0.4, 0.55, 3.4, 0.3], [6.4, 0.8, 3.0, 0.22], [8.6, 3.9, -0.5, 0.36]]);
+{ const l = leaf(1.4, '#6BD82E'); l.material.emissive = new THREE.Color('#6BD82E'); l.material.emissiveIntensity = 0.25; l.position.set(-8.8, 3.2, 1.0); l.rotation.set(0.5, 0.6, 0.8); scene.add(l); }
+
+const cam = new THREE.PerspectiveCamera(40, 16 / 9, 0.1, 1200); cam.position.set(0, 2.9, 13.5); cam.lookAt(0, 3.45, 0);
+finish(ctx, cam, { ao: false, bloom: 0.45, bloomRadius: 0.6, bloomThreshold: 0.9, vig: 0.2, grain: 0.012 });
+</script>

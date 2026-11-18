@@ -1,0 +1,100 @@
+<!doctype html><meta charset="utf-8">
+<!-- 超扁平 · 用起来：一个贴纸杂货网站 + 两部手机（聊天、表情包商店），连浏览器和手机外壳都画成平的。
+     规则：没有阴影、没有透视，前后只靠叠；一根线宽描到底；填色比线偏 3px。
+     cd drafts/_3d && node shoot.cjs ../superflat/ui.html ../superflat/png/ui.png -->
+<style>
+@font-face{font-family:GM;src:url(/public/fonts/GeistMono.ttf)}
+@font-face{font-family:NSB;src:url(/public/fonts/NotoSansSC-Bold.otf)}
+@font-face{font-family:NSK;src:url(/public/fonts/NotoSansSC-Black.otf)}
+@font-face{font-family:NSM;src:url(/public/fonts/NotoSansSC-Medium.otf)}
+@font-face{font-family:UB;src:url(/public/fonts/Unbounded.ttf)}
+html,body{margin:0;overflow:hidden;background:#000}
+canvas{width:1920px;height:1080px;display:block}
+#hud{position:absolute;inset:0;pointer-events:none;color:#1A1410;font-family:GM}
+.tl{position:absolute;left:64px;top:52px;font-size:22px;letter-spacing:.06em}
+.tr{position:absolute;right:64px;top:52px;font-size:22px;letter-spacing:.06em}
+.ttl{position:absolute;left:64px;top:104px;font-family:NSK;font-size:64px}
+.ttl small{font-family:GM;font-size:22px;letter-spacing:.14em;margin-left:18px;color:#1A1410aa}
+.rules{position:absolute;left:64px;right:64px;bottom:44px;display:flex;gap:56px}
+.r{flex:1;font-family:NSB;font-size:27px}
+.r b{display:inline-block;font-family:GM;font-size:17px;background:#1A1410;color:#fff;border-radius:20px;padding:2px 9px;margin-bottom:8px}
+.r small{display:block;font-family:NSM;font-size:16px;color:#1A1410b0;margin-top:5px}
+</style>
+<canvas id="c" width="3840" height="2160"></canvas>
+<div id="hud"><div class="tl">风格 · SUPERFLAT · 用起来</div><div class="tr">WEB + APP · FLAT UI</div>
+<div class="ttl">一张纸上的界面<small>NO SHADOW · ONE LINE WEIGHT</small></div>
+<div class="rules">
+<div class="r"><b>01</b><br>去掉阴影和透视，前后只靠叠<small>卡片、按钮、手机壳都没有投影 · 谁在上面就盖住谁</small></div>
+<div class="r"><b>02</b><br>一根线宽描到底<small>线宽 = 物体高 × 5.5% · 黑线 #1A1410 · 圆头圆角</small></div>
+<div class="r"><b>03</b><br>平涂，但填色偏 3px<small>像丝网印刷的套色偏移 · 颜色一块一块，不用渐变</small></div>
+</div></div>
+<script type="module">
+import { blob, flower, mochi, stickerText, faceAt, rng, PAL, INK } from './sf.js';
+for (const f of ['NSK', 'UB', 'NSB', 'NSM', 'GM']) await document.fonts.load(`80px ${f}`);
+const c = document.getElementById('c'), x = c.getContext('2d'), W = 3840, H = 2160;
+// 底：粉色 + 很淡的小花
+x.fillStyle = '#FFD3E6'; x.fillRect(0, 0, W, H);
+{ const r = rng(4); x.globalAlpha = 0.16; for (let i = 0; i < 70; i++) flower(x, r() * W, r() * H * 0.84, 40 + r() * 60, '#FFFFFF', { core: '#FFB3D4', face: 1, rot: r() * 6 }); x.globalAlpha = 1; }
+
+const rr = (X, Y, w, h, rad) => () => { x.beginPath(); x.roundRect(X, Y, w, h, rad); };
+const box = (X, Y, w, h, rad, fill, lw = 9) => blob(x, rr(X, Y, w, h, rad), fill, lw);
+const T = (s, X, Y, font, col = INK, align = 'left') => { x.font = font; x.fillStyle = col; x.textAlign = align; x.fillText(s, X, Y); x.textAlign = 'left'; };
+
+// ---------- 网页 ----------
+const BX = 110, BY = 400, BW = 2190, BH = 1330;
+box(BX, BY, BW, BH, 44, '#FFFFFF', 11);
+box(BX, BY, BW, 110, 44, '#FFF3B0', 11); x.fillStyle = '#FFF3B0'; x.fillRect(BX + 14, BY + 60, BW - 28, 44);
+x.strokeStyle = INK; x.lineWidth = 11; x.beginPath(); x.moveTo(BX, BY + 110); x.lineTo(BX + BW, BY + 110); x.stroke();
+['#FF4FA3', '#FFD21F', '#19C3F0'].forEach((col, i) => blob(x, () => { x.beginPath(); x.arc(BX + 70 + i * 62, BY + 55, 20, 0, 7); }, col, 6));
+box(BX + 300, BY + 26, 900, 58, 29, '#FFFFFF', 6); T('mochi.shop / 今天也要开心', BX + 340, BY + 67, '500 30px GM');
+// 导航
+flower(x, BX + 110, BY + 210, 52, '#FF4FA3', { core: '#FFE14D', face: 1 });
+T('MOCHI 麻薯杂货', BX + 190, BY + 228, '900 52px NSK');
+['新品', '贴纸', '联名', '我的'].forEach((s, i) => T(s, BX + 1080 + i * 170, BY + 226, '700 40px NSB'));
+box(BX + 1800, BY + 168, 300, 84, 42, '#19C3F0', 8); T('购物袋 · 3', BX + 1950, BY + 225, '900 36px NSK', '#fff', 'center');
+// 首屏
+box(BX + 60, BY + 300, BW - 120, 640, 40, '#FFF3B0', 10);
+stickerText(x, '今天也要', BX + 130, BY + 500, '900 170px NSK', { size: 170, outer: '#19C3F0', ow: 0.12, iw: 0.06 });
+stickerText(x, '开开心心', BX + 130, BY + 690, '900 170px NSK', { size: 170, outer: '#FF4FA3', ow: 0.12, iw: 0.06, fill: '#FFE14D' });
+T('限定贴纸 · 满屏小花 · 一张纸印完', BX + 136, BY + 775, '700 40px NSB');
+box(BX + 130, BY + 810, 480, 100, 50, '#FF4FA3', 9); T('领一张贴纸 →', BX + 370, BY + 878, '900 42px NSK', '#fff', 'center');
+box(BX + 640, BY + 810, 330, 100, 50, '#FFFFFF', 9); T('看联名', BX + 805, BY + 878, '900 42px NSK', INK, 'center');
+for (const [px, py, R, col, f] of [[BX + 1330, BY + 400, 90, '#9BE14A', 1], [BX + 1990, BY + 380, 110, '#FF8A1F', 0], [BX + 2010, BY + 830, 95, '#8B5CF6', 1], [BX + 1270, BY + 840, 70, '#19C3F0', 0]]) flower(x, px, py, R, col, { core: '#FFE14D', face: f, rot: px });
+mochi(x, BX + 1660, BY + 640, 640);
+// 商品卡
+const cards = [['小花贴纸', '#FF4FA3', '¥ 12'], ['麻薯徽章', '#19C3F0', '¥ 28'], ['眯眼花', '#9BE14A', '¥ 12'], ['金箔卡', '#FFD21F', '¥ 36']];
+cards.forEach(([n, col, p], i) => { const cx = BX + 60 + i * 520, cy = BY + 980; box(cx, cy, 490, 300, 34, '#FFFFFF', 9);
+  flower(x, cx + 120, cy + 150, 82, col, { core: col === '#FFD21F' ? '#FF9EC9' : '#FFE14D', face: i % 2, rot: i });
+  T(n, cx + 230, cy + 135, '900 44px NSK'); T(p, cx + 230, cy + 200, '700 40px UB'); box(cx + 230, cy + 225, 210, 52, 26, col, 6); T('加入 +', cx + 335, cy + 263, '900 28px NSK', col === '#FFD21F' || col === '#9BE14A' ? INK : '#fff', 'center'); });
+
+// ---------- 手机（平的） ----------
+function phone(X, Y, w, h, body) {
+  box(X, Y, w, h, 90, body, 12); box(X + 26, Y + 26, w - 52, h - 52, 66, '#FFFFFF', 8);
+  box(X + w / 2 - 90, Y + 44, 180, 40, 20, INK, 4);
+}
+// 1. 聊天
+{ const X = 2400, Y = 400, w = 650, h = 1330; phone(X, Y, w, h, '#FF4FA3');
+  T('‹', X + 70, Y + 170, '900 56px NSK'); T('小花群 (128)', X + w / 2, Y + 165, '900 40px NSK', INK, 'center');
+  x.strokeStyle = INK; x.lineWidth = 6; x.beginPath(); x.moveTo(X + 30, Y + 200); x.lineTo(X + w - 30, Y + 200); x.stroke();
+  const bub = (bx, by, bw, s, col, right) => { box(bx, by, bw, 92, 46, col, 7); T(s, bx + (right ? bw - 34 : 34), by + 60, '700 34px NSB', col === '#19C3F0' ? '#fff' : INK, right ? 'right' : 'left'); };
+  flower(x, X + 90, Y + 290, 40, '#9BE14A', { core: '#FFE14D', face: 0 }); bub(X + 145, Y + 245, 400, '今天去看展吗？', '#FFFFFF');
+  bub(X + 260, Y + 380, 330, '去！！冲 ✿', '#19C3F0', true);
+  flower(x, X + 90, Y + 540, 40, '#FF8A1F', { core: '#FFFFFF', face: 1 }); bub(X + 145, Y + 495, 420, '金箔那面墙超好拍', '#FFFFFF');
+  // 贴纸消息：白边贴纸
+  x.save(); x.lineJoin = 'round'; x.strokeStyle = '#fff'; x.lineWidth = 60; x.beginPath(); x.arc(X + 440, Y + 790, 130, 0, 7); x.stroke(); x.restore();
+  flower(x, X + 440, Y + 790, 150, '#FFD21F', { core: '#FF9EC9', face: 1, n: 7 });
+  bub(X + 145, Y + 990, 360, '哈哈哈哈好可爱', '#FFFFFF');
+  box(X + 50, Y + h - 190, w - 190, 96, 48, '#FFF3B0', 7); T('说点什么…', X + 90, Y + h - 128, '500 32px NSM', '#1A1410aa');
+  flower(x, X + w - 90, Y + h - 142, 46, '#19C3F0', { core: '#FFE14D', face: 1 }); }
+// 2. 表情包商店
+{ const X = 3120, Y = 400, w = 650, h = 1330; phone(X, Y, w, h, '#19C3F0');
+  T('表情包', X + 70, Y + 175, '900 52px NSK'); T('24 张', X + w - 70, Y + 172, '700 32px UB', INK, 'right');
+  const r = rng(9);
+  for (let i = 0; i < 12; i++) { const gx = X + 70 + (i % 3) * 175, gy = Y + 230 + Math.floor(i / 3) * 190;
+    box(gx, gy, 160, 170, 30, i === 4 ? '#FFF3B0' : '#FFFFFF', 6);
+    if (i === 4) mochi(x, gx + 80, gy + 92, 132);
+    else flower(x, gx + 80, gy + 85, 58, PAL[(i * 3) % PAL.length] === '#FFFFFF' ? '#FF9EC9' : PAL[(i * 3) % PAL.length], { core: i % 3 ? '#FFE14D' : '#FFFFFF', face: i % 2, rot: r() * 6 }); }
+  box(X + 60, Y + 1030, w - 120, 110, 55, '#FF4FA3', 9); T('全部添加 ✿', X + w / 2, Y + 1103, '900 44px NSK', '#fff', 'center');
+  T('免费 · 已有 3.2 万人添加', X + w / 2, Y + 1190, '700 30px NSB', INK, 'center'); }
+window.__done = true;
+</script>

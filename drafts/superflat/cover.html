@@ -1,0 +1,53 @@
+<!doctype html><meta charset="utf-8">
+<!-- 超扁平 · 第 0 帧：金箔底（日本屏风）+ 琳派的云 + 满屏带脸的小花 + 一只大眼睛的麻薯 + 贴纸字。
+     所有东西都贴在同一张纸上：没有远近、没有投影，只有平涂和一根粗黑线（填色比线偏 3px，像丝网印刷）。
+     角色和花都是原创的，不画任何一件真实作品里的形象。
+     cd drafts/_3d && node shoot.cjs ../superflat/cover.html ../superflat/png/cover.png -->
+<style>
+@font-face{font-family:GM;src:url(/public/fonts/GeistMono.ttf)}
+@font-face{font-family:NSB;src:url(/public/fonts/NotoSansSC-Bold.otf)}
+@font-face{font-family:NSK;src:url(/public/fonts/NotoSansSC-Black.otf)}
+@font-face{font-family:UB;src:url(/public/fonts/Unbounded.ttf)}
+html,body{margin:0;overflow:hidden;background:#000}
+canvas{width:1920px;height:1080px;display:block}
+#hud{position:absolute;inset:0;pointer-events:none;color:#2A1B08;font-family:GM}
+.tl{position:absolute;left:64px;top:52px;font-size:22px;letter-spacing:.06em}
+.tr{position:absolute;right:64px;top:52px;font-size:22px;letter-spacing:.06em}
+.sub{position:absolute;left:64px;bottom:58px;font-family:NSB;font-size:40px;color:#2A1B08}
+.sub small{display:block;font-family:GM;font-size:22px;letter-spacing:.14em;color:#2A1B08b0;margin-bottom:8px}
+.tag{display:inline-block;background:#2A1B08;color:#F7E4A6;padding:2px 14px;border-radius:30px}
+</style>
+<canvas id="c" width="3840" height="2160"></canvas>
+<div id="hud"><div class="tl">风格 · SUPERFLAT</div><div class="tr">2000 — 今天</div>
+<div class="sub"><small>NO DEPTH · ONE PLANE · NO SHADOW</small><span class="tag">没有远近</span> 所有东西贴在同一张纸上</div></div>
+<script type="module">
+import { goldLeaf, cloud, flower, mochi, stickerText, scatter, rng, PAL } from './sf.js';
+for (const f of ['NSK', 'UB', 'NSB', 'GM']) await document.fonts.load(`80px ${f}`);
+const c = document.getElementById('c'), x = c.getContext('2d'), W = 3840, H = 2160;
+goldLeaf(x, W, H, { seed: 11, sheen: 0.55 });
+cloud(x, 700, 300, 1500, 170, 2); cloud(x, 3100, 1820, 1900, 200, 5); cloud(x, 3200, 420, 1100, 140, 8); cloud(x, 420, 1950, 1200, 150, 9);
+
+const MC = [2560, 1130, 1380];   // 麻薯的位置和宽度
+const TT = [150, 700, 1420, 1260]; // 标题区（x0, y0, x1, y1）
+const avoid = [
+  (px, py, R) => Math.hypot((px - MC[0]) / 1.05, (py - MC[1] - 40) / 0.85) < MC[2] * 0.47 + R * 0.2,
+  (px, py, R) => px > TT[0] - R * 0.4 && px < TT[2] + R * 0.2 && py > TT[1] - R * 0.3 && py < TT[3] + R * 0.3,
+  (px, py, R) => px < 1500 + R * 0.3 && py > 1800 - R * 0.5,   // 字幕
+  (px, py, R) => (px < 900 + R * 0.3 || px > 3260 - R * 0.3) && py < 190 + R * 0.4,   // 角标
+];
+const r = rng(21);
+const fl = scatter(W, H, 150, { seed: 7, rmin: 58, rmax: 250, avoid });
+fl.sort((a, b) => a[2] - b[2]);
+for (const [px, py, R, a, b, d] of fl) {
+  const petal = PAL[Math.floor(a * PAL.length)];
+  const core = petal === '#FFD21F' || petal === '#FFFFFF' ? (b < .5 ? '#FF9EC9' : '#7FE3FF') : (b < .7 ? '#FFE14D' : '#FFFFFF');
+  flower(x, px, py, R, petal, { core, face: d < .5 ? 0 : 1, rot: a * 6, n: R > 160 ? 7 : 6 });
+}
+// 几朵大花压在麻薯边上，挡住一点，表示“前后”只靠叠，不靠远近
+mochi(x, MC[0], MC[1], MC[2]);
+for (const [px, py, R, col, core, face] of [[1880, 1720, 230, '#19C3F0', '#FFE14D', 1], [3330, 1650, 260, '#FF4FA3', '#FFFFFF', 0], [3420, 640, 190, '#9BE14A', '#FFE14D', 1], [1960, 560, 150, '#FF8A1F', '#FFFFFF', 0]])
+  flower(x, px, py, R, col, { core, face, rot: r() * 6, n: 7 });
+stickerText(x, '超扁平', 190, 1130, '900 360px NSK', { size: 360, outer: '#FF4FA3', ow: 0.13, iw: 0.065 });
+stickerText(x, 'SUPERFLAT', 205, 1290, '700 112px UB', { size: 112, outer: '#19C3F0', ow: 0.2, iw: 0.1, fill: '#FFE14D', spacing: '10px' });
+window.__done = true;
+</script>

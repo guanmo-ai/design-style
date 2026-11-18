@@ -1,0 +1,98 @@
+<!doctype html><meta charset="utf-8">
+<!-- 功能主义 · 用起来：同一台收音机 + 两部同样暖白机身的手机。收音机的零件一一变成界面：
+     旋钮 → 圆形刻度盘（停在一格上），喇叭孔 → 点阵数字，唯一的橙色键 → 唯一的主按钮。
+     cd drafts/_3d && node shoot.cjs ../functional/ui.html ../functional/png/ui.png -->
+<style>
+@font-face{font-family:GM;src:url(/public/fonts/GeistMono.ttf)}
+@font-face{font-family:NSB;src:url(/public/fonts/NotoSansSC-Bold.otf)}
+@font-face{font-family:NSK;src:url(/public/fonts/NotoSansSC-Black.otf)}
+@font-face{font-family:NSM;src:url(/public/fonts/NotoSansSC-Medium.otf)}
+@font-face{font-family:IN;src:url(/public/fonts/Inter.ttf)}
+html,body{margin:0;overflow:hidden;background:#000}
+#hud{position:absolute;inset:0;pointer-events:none;color:#1B1B1A;font-family:GM}
+.tl{position:absolute;left:64px;top:52px;font-size:22px;letter-spacing:.06em}
+.tr{position:absolute;right:64px;top:52px;font-size:22px;letter-spacing:.06em}
+.ttl{position:absolute;left:64px;top:104px;font-family:NSK;font-size:64px}
+.ttl small{font-family:GM;font-size:22px;letter-spacing:.14em;margin-left:18px;color:#1B1B1Aaa}
+.rules{position:absolute;left:64px;right:64px;bottom:44px;display:flex;gap:56px}
+.r{flex:1;font-family:NSB;font-size:27px}
+.r b{display:inline-block;font-family:GM;font-size:17px;background:#FF4A0E;color:#fff;border-radius:20px;padding:2px 9px;margin-bottom:8px}
+.r small{display:block;font-family:NSM;font-size:16px;color:#1B1B1Ab0;margin-top:5px}
+</style>
+<div id="hud"><div class="tl">风格 · FUNCTIONALISM · 用起来</div><div class="tr">OBJECT → INTERFACE</div>
+<div class="ttl">从收音机到界面<small>SAME PARTS · SAME RULES</small></div>
+<div class="rules">
+<div class="r"><b>01</b><br>全灰，加一个橙<small>橙色只给最重要的那一个动作 · 面积 &lt; 5% · #FF4A0E</small></div>
+<div class="r"><b>02</b><br>一个零件只做一件事<small>圆的拿来转 · 方的拿来按 · 条的拿来推 · 不混用</small></div>
+<div class="r"><b>03</b><br>停在一格上<small>旋钮一格 9° · 冲过头 4% 再“咔”回来 · 一格一声</small></div>
+</div></div>
+<script type="importmap">{"imports":{"three":"/drafts/_3d/node_modules/three/build/three.module.js","three/addons/":"/drafts/_3d/node_modules/three/examples/jsm/"}}</script>
+<script type="module">
+import { THREE, setup, finish, sun, mesh } from '/drafts/_3d/lib.js';
+import { envMap, cyc } from '/drafts/_3d/craft.js';
+import { RoundedBoxGeometry } from 'three/addons/geometries/RoundedBoxGeometry.js';
+import { radio, shell, ORANGE } from './device.js';
+const Q = new URLSearchParams(location.search), PR = +(Q.get('pr') || 2);
+const ctx = setup({ pr: PR, bg: '#E4DFD6', tone: 'neutral' });
+const { renderer, scene } = ctx;
+scene.environment = envMap(renderer); scene.environmentIntensity = 0.55;
+for (const f of ['GM', 'NSB', 'NSK', 'IN']) await document.fonts.load(`60px ${f}`);
+const studio = cyc('#E2DDD3', { w: 80, d: 40, r: 8, h: 30 }); studio.position.z = -3; scene.add(studio);
+
+const dev = radio({ knobAngle: -0.62 }); dev.position.set(-3.75, 0, 0.2); dev.rotation.y = 0.3; dev.scale.setScalar(0.74); scene.add(dev);
+
+// ---- 屏幕内容 ----
+const INK = '#1E1E1C', GREY = '#D9D5CC', BG = '#F3F1EC';
+function dotText(x, s, cx, cy, h, col, { font = '700', fam = 'GM', align = 'center', gapK = 0.82 } = {}) {   // 点阵字：先写在小画布上，再按格子取点
+  const px = 14, c = document.createElement('canvas'), q = c.getContext('2d'); q.font = `${font} ${px}px ${fam}`;
+  const w = Math.ceil(q.measureText(s).width) + 2; c.width = w; c.height = px + 4; q.font = `${font} ${px}px ${fam}`; q.fillStyle = '#000'; q.textBaseline = 'top'; q.fillText(s, 1, 1);
+  const d = q.getImageData(0, 0, w, px + 4).data, cell = h / px, x0 = align === 'center' ? cx - w * cell / 2 : cx;
+  for (let j = 0; j < px + 4; j++) for (let i = 0; i < w; i++) { const on = d[(j * w + i) * 4 + 3] > 110;
+    x.fillStyle = on ? col : 'rgba(30,30,28,.06)'; x.beginPath(); x.arc(x0 + i * cell + cell / 2, cy + j * cell + cell / 2, cell * gapK / 2, 0, 7); x.fill(); }
+}
+function screen(draw, SW = 1080, SH = 2220) { const c = document.createElement('canvas'); c.width = SW; c.height = SH; const x = c.getContext('2d'); x.fillStyle = BG; x.fillRect(0, 0, SW, SH); draw(x, SW, SH); const t = new THREE.CanvasTexture(c); t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 8; return t; }
+const T = (x, s, X, Y, font, col = INK, align = 'left') => { x.font = font; x.fillStyle = col; x.textAlign = align; x.fillText(s, X, Y); x.textAlign = 'left'; };
+const status = (x, W) => { T(x, '9:41', 70, 90, '600 40px GM'); T(x, '●●● 100%', W - 70, 90, '500 34px GM', INK, 'right'); };
+const tA = screen((x, W, H) => {   // 收音机 App：刻度盘 = 旋钮
+  status(x, W); T(x, 'FM', 70, 230, '600 44px GM', '#1E1E1C99'); T(x, '收音机', 70, 320, '900 92px NSK');
+  dotText(x, '97.4', W / 2, 420, 220, INK);
+  const cx = W / 2, cy = 1140, R = 380;
+  for (let i = 0; i <= 40; i++) { const a = -Math.PI * 0.75 + i / 40 * Math.PI * 1.5, big = i % 4 === 0; x.strokeStyle = INK; x.lineWidth = big ? 9 : 5; x.lineCap = 'round';
+    x.beginPath(); x.moveTo(cx + Math.sin(a) * (R + 30), cy - Math.cos(a) * (R + 30)); x.lineTo(cx + Math.sin(a) * (R + (big ? 90 : 66)), cy - Math.cos(a) * (R + (big ? 90 : 66))); x.stroke();
+    if (big) T(x, String(i / 4), cx + Math.sin(a) * (R + 140), cy - Math.cos(a) * (R + 140) + 16, '500 44px GM', '#1E1E1Caa', 'center'); }
+  x.fillStyle = '#FFFFFF'; x.beginPath(); x.arc(cx, cy, R * 0.9, 0, 7); x.fill(); x.strokeStyle = GREY; x.lineWidth = 6; x.stroke();
+  x.fillStyle = '#ECEAE5'; x.beginPath(); x.arc(cx, cy, R * 0.74, 0, 7); x.fill();
+  const a = -0.62; x.strokeStyle = ORANGE; x.lineWidth = 26; x.beginPath(); x.moveTo(cx + Math.sin(a) * R * 0.3, cy - Math.cos(a) * R * 0.3); x.lineTo(cx + Math.sin(a) * R * 0.68, cy - Math.cos(a) * R * 0.68); x.stroke();
+  // 底部三个键：一个橙
+  [[ORANGE, '▶'], [GREY, '◀◀'], [GREY, '▶▶']].forEach(([col, s], i) => { const bx = 210 + i * 330; x.fillStyle = col; x.beginPath(); x.arc(bx, 1900, 112, 0, 7); x.fill(); T(x, s, bx, 1918, '700 56px GM', i ? INK : '#fff', 'center'); });
+});
+const tB = screen((x, W, H) => {   // 计算器：方的按，一个橙
+  status(x, W); T(x, '计算器', 70, 300, '900 92px NSK');
+  T(x, '1 966 × 4 =', W - 80, 520, '500 58px GM', '#1E1E1C99', 'right');
+  dotText(x, '7864', W / 2, 600, 230, INK, { align: 'center' });
+  const keys = ['C', '±', '%', '÷', '7', '8', '9', '×', '4', '5', '6', '−', '1', '2', '3', '+', '0', '.', '⌫', '='];
+  keys.forEach((k, i) => { const cx = 150 + (i % 4) * 260, cy = 1060 + Math.floor(i / 4) * 230; const eq = k === '=', op = i % 4 === 3;
+    x.fillStyle = eq ? ORANGE : op ? '#3A3A37' : (i < 4 ? GREY : '#FFFFFF'); x.beginPath(); x.arc(cx, cy, 100, 0, 7); x.fill();
+    if (!eq && !op && i >= 4) { x.strokeStyle = GREY; x.lineWidth = 4; x.stroke(); }
+    T(x, k, cx, cy + 22, '500 64px GM', eq || op ? '#fff' : INK, 'center'); });
+});
+
+function phone(tex, px, py, pz, ry) {
+  const PW = 1.86, PH = 3.82, PD = 0.2, g = new THREE.Group();
+  g.add(mesh(new RoundedBoxGeometry(PW, PH, PD, 8, 0.22), shell()));
+  const s = new THREE.Mesh(new THREE.PlaneGeometry(PW - 0.16, PH - 0.16), new THREE.MeshStandardMaterial({ map: tex, roughness: 0.3, emissive: '#ffffff', emissiveMap: tex, emissiveIntensity: 0.06, envMapIntensity: 0.3 }));
+  s.position.z = PD / 2 + 0.002; g.add(s);
+  // 侧面一个橙色小键（和收音机同一个颜色）
+  const k = mesh(new THREE.BoxGeometry(0.06, 0.34, 0.08), new THREE.MeshStandardMaterial({ color: ORANGE, roughness: 0.4 })); k.position.set(PW / 2 + 0.02, 0.9, 0); g.add(k);
+  g.position.set(px, py, pz); g.rotation.y = ry; g.scale.setScalar(1.12); scene.add(g);
+}
+phone(tA, 1.25, 2.4, 0.6, -0.06);
+phone(tB, 3.85, 2.4, 0.4, -0.16);
+
+const cam = new THREE.PerspectiveCamera(30, 16 / 9, 0.1, 200); cam.position.set(0.0, 3.0, 14.6); cam.lookAt(0.0, 2.0, 0);
+const key = sun(scene, { color: '#FFF0DC', intensity: 3.2, pos: [-10, 12, 10], target: [0, 1, 0], size: 10, map: 4096, bias: -0.0002 });
+key.shadow.radius = 8; key.shadow.blurSamples = 20;
+scene.add(new THREE.HemisphereLight('#FFFFFF', '#A89A88', 0.75));
+const fill = new THREE.DirectionalLight('#FFF6EE', 0.8); fill.position.set(10, 4, 12); scene.add(fill);
+finish(ctx, cam, { aoRadius: 0.4, aoDist: 0.28, vig: 0.28, grain: 0.02 });
+</script>
