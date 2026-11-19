@@ -1,0 +1,17 @@
+{
+  "fps": 60,
+  "frames": 1080,
+  "segments": [
+    {"start": 0, "dur": 66, "label": "蜂窝图标"},
+    {"start": 66, "dur": 106, "label": "照片墙"},
+    {"start": 172, "dur": 90, "label": "蜂蜡密铺"},
+    {"start": 262, "dur": 118, "label": "鱼眼蓝图"},
+    {"start": 380, "dur": 102, "label": "六边形旋转"},
+    {"start": 482, "dur": 78, "label": "吸附"},
+    {"start": 560, "dur": 68, "label": "点开全屏"},
+    {"start": 628, "dur": 107, "label": "表盘"},
+    {"start": 735, "dur": 100, "label": "手机兴趣选择"},
+    {"start": 835, "dur": 90, "label": "六边形分箱"},
+    {"start": 925, "dur": 155, "label": "片尾收束"}
+  ]
+}
