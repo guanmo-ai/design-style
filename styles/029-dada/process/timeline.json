@@ -1,0 +1,12 @@
+{
+  "fps": 60,
+  "frames": 1072,
+  "segments": [
+    { "start": 0, "dur": 113, "label": "标题 · Title" },
+    { "start": 113, "dur": 168, "label": "剪 · Cut" },
+    { "start": 281, "dur": 168, "label": "偶然 · Chance" },
+    { "start": 449, "dur": 224, "label": "词 · Words" },
+    { "start": 673, "dur": 224, "label": "今天 · Today" },
+    { "start": 897, "dur": 175, "label": "收束 · Finale" }
+  ]
+}

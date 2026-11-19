@@ -26,28 +26,25 @@
 
 | 风格 | 状态 |
 |---|---|
-| 水墨 Ink Wash · `ink-wash/` | **用户已审片通过并要求上架（2026-11-09）**：正式目录 [024 · 水墨](../styles/024-ink-wash)，沿用 `04f0aed` 的 18.75 秒完整原片。 |
-| 本轮其余候选 | 用户不通过，不收录；不再发送本轮视频审核。 |
-| 字符画 ASCII Art · `ascii/` | **主人已审片通过（2026-11-04）**：正式目录 [020 · 字符画](../styles/020-ascii-art)，保留本目录作为原片来源。 |
-| 生成艺术 Generative Art · `generative/` | **主人已审片通过（2026-11-04）**：正式目录 [021 · 生成艺术](../styles/021-generative-art)，保留本目录作为原片来源。 |
-| 动态字体 Kinetic Type · `kinetic-type/` | 第五轮没选上，图留着 |
-| 中世纪现代 Mid-Century Modern · `mid-century/` | **下周做** |
-| 液态金属 Liquid Chrome · `liquid-chrome/` | 正式目录 [023 · 液态金属 Liquid Chrome](../styles/023-liquid-chrome)；保留本草稿目录作为原片及渲染源码来源。 |
-| 点云 Point Cloud · `point-cloud/` | 正式目录 [022 · 点云 Point Cloud](../styles/022-point-cloud)；保留本草稿目录作为原片及渲染源码来源。 |
-| 毛绒 Plush · `plush/` | **已授权正式收录（2026-11-11）**：风格 018，见 [`025-plush`](../styles/025-plush/README.md) |
-| 新艺术运动 Art Nouveau · `art-nouveau/` | 正式目录 [026 · 新艺术运动](../styles/026-art-nouveau/README.md)，画廊风格 019。 |
-| 达达 Dada · `dada/` | 第二版已归档，见下文制作记录。 |
-| 维也纳分离派 Vienna Secession · `secession/` | 两张图主人评“还不错”，全片还没做 |
+| 水墨 Ink Wash · `ink-wash/` | 正式目录 [024 · 水墨](../styles/024-ink-wash)，沿用 `04f0aed` 的 18.75 秒完整原片。 |
+| 字符画 ASCII Art · `ascii/` | 正式目录 [020 · 字符画](../styles/020-ascii-art)，本目录保留原片。 |
+| 生成艺术 Generative Art · `generative/` | 正式目录 [021 · 生成艺术](../styles/021-generative-art)，本目录保留原片。 |
+| 动态字体 Kinetic Type · `kinetic-type/` | 候选图 |
+| 中世纪现代 Mid-Century Modern · `mid-century/` | [017 · 中世纪现代](../styles/017-mid-century-modern) |
+| 液态金属 Liquid Chrome · `liquid-chrome/` | [023 · 液态金属](../styles/023-liquid-chrome)。第三版采用湿石材舞台和顶光，文字解码时逐字配音效。 |
+| 点云 Point Cloud · `point-cloud/` | [022 · 点云](../styles/022-point-cloud)。第三版加入立体扫描招牌与斯坦福兔子，第四版补充逐字音效和扫描镜头过渡。 |
+| 毛绒 Plush · `plush/` | 画廊风格 018，见 [025 · 毛绒](../styles/025-plush/README.md) |
+| 新艺术运动 Art Nouveau · `art-nouveau/` | [026 · 新艺术运动](../styles/026-art-nouveau/README.md)，网站风格 019。[成片](https://github.com/guanmo-ai/design-style/releases/tag/day-26) |
+| 达达 Dada · `dada/` | 画廊风格 022，见 [029 · 达达](../styles/029-dada/README.md) |
+| 维也纳分离派 Vienna Secession · `secession/` | 两张候选图 |
 | 热成像 Thermal · `thermal/` | 候选图和温度场源码 |
-| 第四轮候选：低多边形 / 体素 / 等距微缩（从参考视频提取） | 等主人选，见下 |
-| 第三轮候选：赛博朋克 / 城市流行 / 膨胀风 | 等主人选（与第四轮一起看） |
-| 第二轮候选：风格派 / 图形统计 / 无限画布 | 主人觉得一般（太像设计史教科书），图留着 |
-| 欧普艺术、抖动像素 | 之前没选上，实在没得选再考虑 |
-| 迷幻海报 Psychedelic · `psychedelic/` | **放到最后做** |
-| ~~拟物 Skeuomorphism~~ | **不做**（图已删） |
+| 低多边形 / 体素 / 等距微缩 | 第四轮候选图 |
+| 赛博朋克 / 城市流行 / 膨胀风 | 第三轮候选图 |
+| 风格派 / 图形统计 / 无限画布 | 第二轮候选图 |
+| 欧普艺术、抖动像素 | 候选图 |
 
 
-## 第十二轮：达达 Dada 全片（2026-11-19，未占期号）
+## 第十二轮：达达 Dada 全片（2026-11-19，画廊风格 022）
 
 达达与维也纳分离派各制作了两张候选图。达达第二版更换配乐，加快剪辑，并为各章节换用不同颜色的底纸。
 
@@ -56,7 +53,7 @@
 - **技术**：Node + `@napi-rs/canvas`，不用浏览器，约 0.14 秒 / 帧，5 子帧运动模糊；`smooth.py` 跳变 9、死区 0、最大 25.1。
 - **配乐**：生成的纯音乐（128.63 BPM），画面按实测拍点重排，署名落在最后一击上；代码只合成纸声。
 
-成片：[达达（第二版，17.87 秒）](dada/film/dada-film.mp4)。还没做四张正式风格图、tokens 和指南；图上的史实只核对到维基百科摘要、配乐许可没核对，上架前要补。维也纳分离派只有两张图，还没开做。
+[上架成片](https://github.com/guanmo-ai/design-style/releases/tag/day-29) · [中英文指南与图解](../styles/029-dada/README.md)。历史标注的出处已补入[制作过程](dada/PROCESS.md)。维也纳分离派只有两张候选图。
 
 ## 第十一轮：蜂窝布局 Honeycomb v4（网站布局 03）
 

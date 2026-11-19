@@ -74,12 +74,12 @@
 
 | 片里写的 | 核对到哪 |
 |---|---|
-| 达达 1916—1924，苏黎世伏尔泰酒馆 | 维基百科 Dada 条目的摘要 |
-| Hannah Höch · 照片蒙太奇 · 1919 | 维基百科 Photomontage 条目的摘要（1919 是《用达达餐刀切开……》的年份） |
-| Jean Arp · 按偶然的法则排列 · 1916—17 | 维基百科 Jean Arp 条目的摘要 |
-| Tristan Tzara · 做一首达达诗 · 1920 | 维基百科 Cut-up technique 条目的摘要 |
+| 达达 1916—约 1924，苏黎世伏尔泰酒馆 | [MoMA 的运动年代](https://www.moma.org/momaorg/shared/flattened_pages/moma_learning/themes/dada/)与[大都会艺术博物馆的酒馆记录](https://www.metmuseum.org/research-centers/leonard-a-lauder-research-center/research-resources/modern-art-index-project/ball-and-hennings) |
+| Hannah Höch · 照片蒙太奇 · 1919 | [柏林新国家美术馆藏品记录](https://id.smb.museum/object/961048)，1919 年为《用达达餐刀切开……》的创作年份 |
+| Jean Arp · 按偶然的法则排列 · 1916—17 | [MoMA 藏品记录](https://www.moma.org/collection/works/37013)。纸片自然落下的做法有同代人记述，MoMA 也指出成品较规整，可能保留了有意安排 |
+| Tristan Tzara · 做一首达达诗 · 1920 | [《Littérature》1920 年第 15 期第 18 页](https://sdrc.lib.uiowa.edu/dada/litterature/15/pages/18.htm) |
 
-这些摘要是抓取工具总结出来的，**没有读到原文**。查拉原文里用的是“袋子”还是“帽子”，两个页面说法不一，片里画的是袋子。上架前要对着原始出处再核一遍。
+制作时先查了摘要，上架前补核了上述藏品和原始期刊。1920 年原页用的是袋子（*un sac*）。
 
 **那条报纸标题（明天的报纸说月亮今晚打折出售）和抽出来的诗是自己编的**，不是查拉的作品；纸袋上印的“TZARA 1920”只是指这个方法的出处。眼睛、嘴、齿轮、指示手都是代码画的，没有照搬具体作品。
 
@@ -87,8 +87,8 @@
 
 - **看过的是静帧、联系表和连续帧，不是播放。**
 - **配乐没有亲耳听过**：听感来自音频分析模型的描述，加上自己量的拍点、响度和音画对位。
-- **配乐的使用许可没核对**（生成服务的条款没读），上架前要确认。
+- 配乐来自美图设计室的音乐生成工具。画廊和 Release 标注 AI 生成配乐，平台使用规则见[美图设计室用户协议](https://www.designkit.cn/agreement)。
 - **约 11.1—11.4 秒画面几乎是空的**：第三章的诗飞走、黑纸还没撕完，只剩黑底和“03”。
 - **第四章信息偏密**：左边四张字母卡加三条规则、右边一部手机；第二版只是加快了，没有重新设计。
-- 只有横版；四张正式风格图、tokens、时间轴和中英文指南都没做，未占期号。
+- 只有横版。画廊版图解、tokens、时间轴和中英文指南见[达达正式目录](../../styles/029-dada/README.md)。
 - 第一版成片没入库（只留了源码）。

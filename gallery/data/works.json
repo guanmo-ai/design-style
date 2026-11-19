@@ -1521,5 +1521,65 @@
         "kindEn": "Storyboard"
       }
     ]
+  },
+  {
+    "id": "029-dada",
+    "type": "style",
+    "number": "022",
+    "title": "达达",
+    "titleEn": "Dada",
+    "years": "1916—约 1924",
+    "category": "排版与印刷",
+    "categoryEn": "Typography and print",
+    "description": "同一批纸片从照片蒙太奇接力到偶然拼贴、剪报诗和手机票夹，换章时整张底纸撕走。配乐由 AI 生成。",
+    "descriptionEn": "The same paper scraps become a photomontage, chance collage, cut-up poem, and mobile ticket. Each backing sheet tears away to reveal the next chapter. Music is AI-generated.",
+    "tags": [
+      "达达主义",
+      "拼贴",
+      "照片蒙太奇",
+      "剪报诗",
+      "撕纸动效"
+    ],
+    "tagsEn": [
+      "dadaism",
+      "collage",
+      "photomontage",
+      "cut-up poetry",
+      "paper animation"
+    ],
+    "release": "day-29",
+    "asset": "029-dada.mp4",
+    "sha256": "900dc6b8fad57494e06d4e31dad8030573db9a5c474e8bc9bbe5ba615585bfce",
+    "images": [
+      {
+        "file": "poster",
+        "title": "一个字，一块纸",
+        "kind": "主视觉",
+        "titleEn": "One letter, one scrap",
+        "kindEn": "Poster"
+      },
+      {
+        "file": "cheatsheet",
+        "title": "字体、角度和影子",
+        "kind": "规则速查",
+        "titleEn": "Type, angle, and shadow",
+        "kindEn": "Quick reference"
+      },
+      {
+        "file": "app-ui",
+        "title": "从剪报到票夹",
+        "kind": "界面应用",
+        "titleEn": "From clippings to a ticket wallet",
+        "kindEn": "Interface study"
+      },
+      {
+        "file": "storyboard",
+        "title": "同一批纸片接力",
+        "kind": "分镜选帧",
+        "titleEn": "Six chapters, one set of scraps",
+        "kindEn": "Storyboard"
+      }
+    ],
+    "publishedAt": "2026-11-19T13:23:44Z"
   }
 ]
