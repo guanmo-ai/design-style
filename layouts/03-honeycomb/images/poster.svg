@@ -1,0 +1,46 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1080" height="1350" viewBox="0 0 1080 1350" role="img" aria-labelledby="title">
+  <title id="title">蜂窝布局海报</title>
+  <style>@font-face{font-family:Plate;src:url("../../../public/fonts/NotoSansSC-Medium.otf")}text{font-family:Plate,"Noto Sans SC",sans-serif}</style>
+  <rect width="1080" height="1350" fill="#101016"/>
+  <text x="76" y="144" font-size="88" fill="#F8F4EB" text-anchor="start">蜂窝布局</text>
+  <text x="80" y="220" font-size="46" fill="#F2AF43" text-anchor="start">Honeycomb</text>
+  <polygon points="352.5,294.6 405.0,324.9 405.0,385.6 352.5,415.9 300.0,385.6 300.0,324.9" fill="#191820" stroke="#38333B" stroke-width="2"/>
+  <polygon points="477.5,294.6 530.0,324.9 530.0,385.6 477.5,415.9 425.0,385.6 425.0,324.9" fill="#191820" stroke="#38333B" stroke-width="2"/>
+  <polygon points="602.5,294.6 655.0,324.9 655.0,385.6 602.5,415.9 550.0,385.6 550.0,324.9" fill="#191820" stroke="#38333B" stroke-width="2"/>
+  <polygon points="727.5,294.6 780.0,324.9 780.0,385.6 727.5,415.9 675.0,385.6 675.0,324.9" fill="#191820" stroke="#38333B" stroke-width="2"/>
+  <polygon points="290.0,402.9 342.5,433.2 342.5,493.8 290.0,524.1 237.5,493.8 237.5,433.2" fill="#191820" stroke="#38333B" stroke-width="2"/>
+  <polygon points="415.0,402.9 467.5,433.2 467.5,493.8 415.0,524.1 362.5,493.8 362.5,433.2" fill="#191820" stroke="#38333B" stroke-width="2"/>
+  <polygon points="540.0,402.9 592.5,433.2 592.5,493.8 540.0,524.1 487.5,493.8 487.5,433.2" fill="#191820" stroke="#38333B" stroke-width="2"/>
+  <polygon points="665.0,402.9 717.5,433.2 717.5,493.8 665.0,524.1 612.5,493.8 612.5,433.2" fill="#191820" stroke="#38333B" stroke-width="2"/>
+  <polygon points="790.0,402.9 842.5,433.2 842.5,493.8 790.0,524.1 737.5,493.8 737.5,433.2" fill="#191820" stroke="#38333B" stroke-width="2"/>
+  <polygon points="227.5,511.1 280.0,541.4 280.0,602.1 227.5,632.4 175.0,602.1 175.0,541.4" fill="#191820" stroke="#38333B" stroke-width="2"/>
+  <polygon points="352.5,511.1 405.0,541.4 405.0,602.1 352.5,632.4 300.0,602.1 300.0,541.4" fill="#191820" stroke="#38333B" stroke-width="2"/>
+  <polygon points="477.5,511.1 530.0,541.4 530.0,602.1 477.5,632.4 425.0,602.1 425.0,541.4" fill="#674420" stroke="#F2AF43" stroke-width="2"/>
+  <polygon points="602.5,511.1 655.0,541.4 655.0,602.1 602.5,632.4 550.0,602.1 550.0,541.4" fill="#674420" stroke="#F2AF43" stroke-width="2"/>
+  <polygon points="727.5,511.1 780.0,541.4 780.0,602.1 727.5,632.4 675.0,602.1 675.0,541.4" fill="#191820" stroke="#38333B" stroke-width="2"/>
+  <polygon points="852.5,511.1 905.0,541.4 905.0,602.1 852.5,632.4 800.0,602.1 800.0,541.4" fill="#191820" stroke="#38333B" stroke-width="2"/>
+  <polygon points="165.0,619.4 217.5,649.7 217.5,710.3 165.0,740.6 112.5,710.3 112.5,649.7" fill="#191820" stroke="#38333B" stroke-width="2"/>
+  <polygon points="290.0,619.4 342.5,649.7 342.5,710.3 290.0,740.6 237.5,710.3 237.5,649.7" fill="#191820" stroke="#38333B" stroke-width="2"/>
+  <polygon points="415.0,619.4 467.5,649.7 467.5,710.3 415.0,740.6 362.5,710.3 362.5,649.7" fill="#674420" stroke="#F2AF43" stroke-width="2"/>
+  <polygon points="540.0,619.4 592.5,649.7 592.5,710.3 540.0,740.6 487.5,710.3 487.5,649.7" fill="#F2AF43" stroke="#F2AF43" stroke-width="2"/>
+  <polygon points="665.0,619.4 717.5,649.7 717.5,710.3 665.0,740.6 612.5,710.3 612.5,649.7" fill="#674420" stroke="#F2AF43" stroke-width="2"/>
+  <polygon points="790.0,619.4 842.5,649.7 842.5,710.3 790.0,740.6 737.5,710.3 737.5,649.7" fill="#191820" stroke="#38333B" stroke-width="2"/>
+  <polygon points="915.0,619.4 967.5,649.7 967.5,710.3 915.0,740.6 862.5,710.3 862.5,649.7" fill="#191820" stroke="#38333B" stroke-width="2"/>
+  <polygon points="227.5,727.6 280.0,757.9 280.0,818.6 227.5,848.9 175.0,818.6 175.0,757.9" fill="#191820" stroke="#38333B" stroke-width="2"/>
+  <polygon points="352.5,727.6 405.0,757.9 405.0,818.6 352.5,848.9 300.0,818.6 300.0,757.9" fill="#191820" stroke="#38333B" stroke-width="2"/>
+  <polygon points="477.5,727.6 530.0,757.9 530.0,818.6 477.5,848.9 425.0,818.6 425.0,757.9" fill="#674420" stroke="#F2AF43" stroke-width="2"/>
+  <polygon points="602.5,727.6 655.0,757.9 655.0,818.6 602.5,848.9 550.0,818.6 550.0,757.9" fill="#674420" stroke="#F2AF43" stroke-width="2"/>
+  <polygon points="727.5,727.6 780.0,757.9 780.0,818.6 727.5,848.9 675.0,818.6 675.0,757.9" fill="#191820" stroke="#38333B" stroke-width="2"/>
+  <polygon points="852.5,727.6 905.0,757.9 905.0,818.6 852.5,848.9 800.0,818.6 800.0,757.9" fill="#191820" stroke="#38333B" stroke-width="2"/>
+  <polygon points="290.0,835.9 342.5,866.2 342.5,926.8 290.0,957.1 237.5,926.8 237.5,866.2" fill="#191820" stroke="#38333B" stroke-width="2"/>
+  <polygon points="415.0,835.9 467.5,866.2 467.5,926.8 415.0,957.1 362.5,926.8 362.5,866.2" fill="#191820" stroke="#38333B" stroke-width="2"/>
+  <polygon points="540.0,835.9 592.5,866.2 592.5,926.8 540.0,957.1 487.5,926.8 487.5,866.2" fill="#191820" stroke="#38333B" stroke-width="2"/>
+  <polygon points="665.0,835.9 717.5,866.2 717.5,926.8 665.0,957.1 612.5,926.8 612.5,866.2" fill="#191820" stroke="#38333B" stroke-width="2"/>
+  <polygon points="790.0,835.9 842.5,866.2 842.5,926.8 790.0,957.1 737.5,926.8 737.5,866.2" fill="#191820" stroke="#38333B" stroke-width="2"/>
+  <polygon points="352.5,944.1 405.0,974.4 405.0,1035.1 352.5,1065.4 300.0,1035.1 300.0,974.4" fill="#191820" stroke="#38333B" stroke-width="2"/>
+  <polygon points="477.5,944.1 530.0,974.4 530.0,1035.1 477.5,1065.4 425.0,1035.1 425.0,974.4" fill="#191820" stroke="#38333B" stroke-width="2"/>
+  <polygon points="602.5,944.1 655.0,974.4 655.0,1035.1 602.5,1065.4 550.0,1035.1 550.0,974.4" fill="#191820" stroke="#38333B" stroke-width="2"/>
+  <polygon points="727.5,944.1 780.0,974.4 780.0,1035.1 727.5,1065.4 675.0,1035.1 675.0,974.4" fill="#191820" stroke="#38333B" stroke-width="2"/>
+  <text x="80" y="1190" font-size="52" fill="#F8F4EB" text-anchor="start">中心一格，六个最近邻</text>
+  <text x="80" y="1252" font-size="31" fill="#C8B9A8" text-anchor="start">相邻行错开半格，中心与六邻等距</text>
+</svg>

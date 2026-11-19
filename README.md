@@ -2,7 +2,7 @@
 
 <!-- BEGIN WORK PREVIEWS -->
 <!-- 由 npm run gallery:readme 根据 gallery/data/works.json 生成，请勿手动修改此区域。 -->
-<p><a href="https://guanmo-ai.github.io/design-style/?lang=zh"><img src="docs/assets/style-mosaic.svg" width="100%" alt="23 张作品封面拼图 · 点击进入画廊" /></a></p>
+<p><a href="https://guanmo-ai.github.io/design-style/?lang=zh"><img src="docs/assets/style-mosaic.svg" width="100%" alt="24 张作品封面拼图 · 点击进入画廊" /></a></p>
 <!-- END WORK PREVIEWS -->
 
 [**中文**](README.md) · [**English**](README.en.md) · [**English gallery →**](https://guanmo-ai.github.io/design-style/?lang=en)
@@ -68,6 +68,7 @@ by 观默 [@guanmo_ai](https://x.com/guanmo_ai)
 |:-:|---|---|---|---|
 | **01** | [**便当盒布局 Bento Grid**](layouts/01-bento-grid) | 2020s— | 大小不一的圆角格子，一格一事，用面积告诉你谁最重要 | [🎬 视频](https://github.com/guanmo-ai/design-style/releases/tag/layout-01) · [🛠 过程](layouts/01-bento-grid/PROCESS.md) |
 | **02** | [**瀑布流布局 Masonry**](layouts/02-masonry) | 2009— | 列宽固定、高度跟着内容走，每一张都落进最短的那一列 | [🎬 视频](https://github.com/guanmo-ai/design-style/releases/tag/layout-02) · [🛠 过程](layouts/02-masonry/PROCESS.md) |
+| **03** | [**蜂窝布局 Honeycomb**](layouts/03-honeycomb) | 当代界面 | 六边形错列排列，中心聚焦，外围保持可浏览 | [🎬 视频](https://github.com/guanmo-ai/design-style/releases/tag/layout-03) · [🛠 过程](layouts/03-honeycomb/PROCESS.md) |
 
 计划中（顺序可能调整）：装饰艺术 Art Deco · 新粗野主义网页 Neo-Brutalism · Y2K …… 想看哪个，来 X 上告诉我。
 
