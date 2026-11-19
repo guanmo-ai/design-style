@@ -1,9 +1,10 @@
 <!doctype html>
 <html><head><meta charset="utf-8">
-<title>蜂窝布局 · 全片 v3</title>
+<title>蜂窝布局 · 全片 v4</title>
 <style>
 @font-face{font-family:IDisp;src:url(../../../public/fonts/InterDisplay-Bold.ttf);font-weight:700}
 @font-face{font-family:IDisp;src:url(../../../public/fonts/InterDisplay-SemiBold.ttf);font-weight:600}
+@font-face{font-family:IDisp;src:url(../../../public/fonts/InterDisplay-Medium.ttf);font-weight:500}
 @font-face{font-family:Inter;src:url(../../../public/fonts/Inter-Medium.ttf);font-weight:500}
 @font-face{font-family:Mono;src:url(../../../public/fonts/GeistMono-Medium.ttf);font-weight:500}
 @font-face{font-family:SC;src:url(../../../public/fonts/NotoSansSC-Black.otf);font-weight:900}
@@ -14,18 +15,24 @@ canvas{display:block}
 </style></head>
 <body><canvas id="c" width="1920" height="1080"></canvas>
 <script>
-/* 蜂窝布局 · 全片 v3（14.5 秒 · 60fps · 120 BPM，一拍 = 30 帧）。分镜见 STORYBOARD.md。
-   v3：每一章是一个完全不同的画面（黑底图标 → 白底照片墙 → 琥珀蜂巢 → 蓝图 → 黑底点开 → 浅色影棚的手表 → 纸白数据地图 → 黑底收束），
-   换章用蜂窝自己的转场：钻进一格、波浪变形、翻牌、转 60°、吸附 + 涟漪、点开、缩进手表、收成一点 + 弹开。
+/* 蜂窝布局 · 全片 v4（18 秒 · 60fps · 120 BPM，一拍 = 30 帧）。分镜见 STORYBOARD.md。
+   10 个画面、10 个转场，换章都在拍点上：
+   黑底图标 →（钻进一格）→ 白底照片墙 →（波浪）→ 琥珀蜂巢 →（翻牌）→ 蓝图 →（翻牌 + 转 60°）→ 三色对称（跟着鼓点一下下转）
+   →（翻牌）→ 黑底吸附 →（点开）→ 一整屏照片 →（缩进表盘）→ 影棚里的手表 →（变形）→ 手机里选兴趣 →（翻牌）→ 纸白数据地图 →（收成一点 + 弹开）→ 收束。
+   字：每个画面一个主角字（多是数字，会计数），上面一行等宽小字，下面一两行中文；整行从遮罩里滑上来、滑出去；
+   字出现时，那一块的格子缩小退开、给字让位（布局本来就是在分配空间）。
    同一片 169 颗格子从头到尾不换。物理：透镜（中心原大，往外位置 tanh、大小 sech²）、惯性（τ = 0.5 s）、吸附（临界阻尼 0.17 s）。
-   在走的东西按速度运动模糊（子帧平均），字不糊。每一帧是帧号的纯函数：window.frame(f)；window.events() 导出出字时间给配乐。 */
-const W = 1920, H = 1080, FPS = 60, END = 870, FINAL = 810;
+   每一帧是帧号的纯函数：window.frame(f)；window.events() 导出出字时间给配乐。 */
+const W = 1920, H = 1080, FPS = 60, END = 1080, FINAL = 990;
 const g = document.getElementById('c').getContext('2d');
 const clamp = (x, a = 0, z = 1) => Math.min(Math.max(x, a), z);
 const sm = x => { x = clamp(x); return x * x * (3 - 2 * x); };
 const smr = x => { x = clamp(x); return x * x * x * (x * (6 * x - 15) + 10); };
 const R = (f, a, b) => smr((f - a) / (b - a));
 const lerp = (a, b, t) => a + (b - a) * t;
+const expoOut = x => x <= 0 ? 0 : x >= 1 ? 1 : 1 - Math.pow(2, -10 * x);
+const expoIn = x => x <= 0 ? 0 : x >= 1 ? 1 : Math.pow(2, 10 * x - 10);
+const spring = u => u <= 0 ? 0 : 1 - Math.exp(-u / .06) * Math.cos(Math.PI * 2 * 2.6 * u);      // u：秒；冲过头再回来
 function hash(n) { const s = Math.sin(n * 127.1 + 311.7) * 43758.5453; return s - Math.floor(s); }
 function mk(w, h) { const c = document.createElement('canvas'); c.width = w; c.height = h; return c; }
 const INK = '#F5F5F7', DIM = '#8E8E93';
@@ -54,47 +61,51 @@ function makePan(c0, moves) {
   };
 }
 const OUTER = [[-19, 'flick', { x: 1300, y: -700 }], [24, 'flick', { x: -300, y: 900 }], [50, 'snap', T1]];
-const INNER = [[90, 'glide', { x: 260, y: -70 }, 100], [318, 'flick', { x: 380, y: 260 }], [420, 'flick', { x: -1000, y: 800 }], [440, 'snap', T2], [582, 'flick', { x: 300, y: -220 }]];
+const INNER = [[86, 'glide', { x: 260, y: -70 }, 100], [318, 'flick', { x: 380, y: 260 }], [500, 'flick', { x: -1000, y: 800 }], [520, 'snap', T2],
+  [690, 'flick', { x: 300, y: -220 }], [770, 'glide', { x: 0, y: 260 }, 60]];
 const panOuter = makePan({ x: -900, y: 560 }, OUTER);
 const panI = makePan({ x: -150, y: 60 }, INNER);
-const panInner = f => { const p = panI(f), idle = 1 - R(f, 720, 780); return { x: p.x + Math.sin(f / 70) * 14 * idle, y: p.y + Math.cos(f / 83) * 10 * idle }; };
+const panInner = f => { const p = panI(f), idle = 1 - R(f, 900, 960); return { x: p.x + Math.sin(f / 70) * 14 * idle, y: p.y + Math.cos(f / 83) * 10 * idle }; };
 
 // ---------- 每帧的画面参数（钻进去以后的那个世界）----------
-const LCF = { x: 960, y: 540, ax: 660, ay: 500 }, LC0 = { x: 1270, y: 540, ax: 660, ay: 500 }, LCW = { x: 1270, y: 520, ax: 250, ay: 290 };
-const lensW = f => R(f, 285, 312) * (1 - R(f, 630, 660));                       // 透镜：蓝图那章打开，数据地图摊平
-const WATCH = f => R(f, 520, 565) * (1 - R(f, 625, 660));
+const lensW = f => R(f, 276, 302) * (1 - R(f, 380, 405)) + R(f, 482, 506) * (1 - R(f, 835, 865));   // 0 = 摊平
+const DEV = f => R(f, 628, 672) * (1 - R(f, 835, 870));                        // 设备（手表 → 手机）
+const MORPH = f => R(f, 735, 765);                                             // 0 = 手表，1 = 手机
+const devGeo = (m) => ({ sw: lerp(560, 420, m), sh: lerp(650, 860, m), sr: lerp(96, 64, m), bw: lerp(650, 456, m), bh: lerp(750, 896, m), br: lerp(150, 80, m),
+  lc: { x: 1270, y: lerp(520, 540, m), ax: lerp(250, 190, m), ay: lerp(290, 400, m) } });
 const LCf = f => {
-  const right = Math.max(lensW(f), R(f, 285, 312) * (1 - R(f, 630, 660))), w = WATCH(f);   // 有透镜时中心靠右，摊平时居中
-  const x = lerp(LCF.x, LC0.x, right);
-  return { x: lerp(x, LCW.x, w), y: lerp(540, LCW.y, w), ax: lerp(660, LCW.ax, w), ay: lerp(500, LCW.ay, w) };
+  const l = lensW(f), x = lerp(960, 1270, l), d = DEV(f), G = devGeo(MORPH(f));
+  return { x: lerp(x, G.lc.x, d), y: lerp(540, G.lc.y, d), ax: lerp(660, G.lc.ax, d), ay: lerp(500, G.lc.ay, d) };
 };
 const zoomAt = f => Math.exp(
-  Math.log(1.5) * R(f, 182, 214) * (1 - R(f, 274, 304)) + Math.log(1.14) * R(f, 214, 272) * (1 - R(f, 274, 304)) +   // 蜂巢：推近
-  Math.log(2.3) * R(f, 458, 480) * (1 - R(f, 520, 550)) +                     // 点开前放大
-  Math.log(0.62) * R(f, 520, 565) + Math.log(0.9) * R(f, 630, 660));
-const rotAt = f => Math.PI / 3 * (R(f, 390, 425) + R(f, 520, 565));             // 转 60°：六边形转完和原来重合
-const BGK = [[0, '#F5F3EF'], [180, '#F5F3EF'], [210, '#1E1406'], [272, '#1E1406'], [300, '#0E2A5A'],
-  [392, '#0E2A5A'], [420, '#000000'], [520, '#000000'], [565, '#E6E1D7'], [630, '#E6E1D7'], [660, '#F4F1EA'], [722, '#F4F1EA'], [760, '#000000']];
-function bgAt(f) {      // 里面那个世界的背景色：章与章之间平滑过去（封面是黑底，另外画）
+  Math.log(1.5) * R(f, 174, 206) * (1 - R(f, 264, 294)) + Math.log(1.14) * R(f, 206, 262) * (1 - R(f, 264, 294)) +   // 蜂巢：推近
+  Math.log(1.18) * R(f, 382, 410) * (1 - R(f, 482, 506)) +                    // 对称
+  Math.log(2.3) * R(f, 538, 560) * (1 - R(f, 628, 660)) +                     // 点开前放大
+  Math.log(0.62) * R(f, 628, 672) + Math.log(.8 / .62) * R(f, 735, 765) + Math.log(.55 / .8) * R(f, 835, 865));
+const STEPS = [420, 450];                                                      // 对称：跟着鼓点一下下转 60°
+const rotAt = f => Math.PI / 3 * (R(f, 380, 410) + spring((f - STEPS[0]) / FPS) + spring((f - STEPS[1]) / FPS) + R(f, 482, 506) + R(f, 628, 672));
+const BGK = [[0, '#F5F3EF'], [172, '#F5F3EF'], [204, '#1E1406'], [262, '#1E1406'], [290, '#0E2A5A'], [380, '#0E2A5A'], [405, '#121212'],
+  [482, '#121212'], [506, '#000000'], [628, '#000000'], [672, '#E6E1D7'], [735, '#E6E1D7'], [765, '#CFE8DC'], [835, '#CFE8DC'], [865, '#F4F1EA'],
+  [925, '#F4F1EA'], [960, '#000000']];
+function bgAt(f) {
   for (let i = 0; i < BGK.length - 1; i++) { const [a, ca] = BGK[i], [b, cb] = BGK[i + 1]; if (f <= b) { const t = sm((f - a) / (b - a)), A = hex2(ca), B = hex2(cb); return A.map((v, k) => lerp(v, B[k], t)); } }
   return hex2(BGK[BGK.length - 1][1]);
 }
-const blueprint = f => R(f, 272, 300) * (1 - R(f, 392, 420));
-const studio = f => R(f, 520, 565) * (1 - R(f, 630, 660));
-const diveAt = f => R(f, 66, 104);                                             // 钻进一格
-const openAt = f => R(f, 465, 495) * (1 - R(f, 520, 552));
-const colAt = f => R(f, 722, FINAL);
-const RIPS = [[68, 'outer'], [458, 'inner']];
+const blueprint = f => R(f, 262, 290) * (1 - R(f, 380, 405));
+const studio = f => R(f, 628, 672) * (1 - R(f, 735, 765));
+const diveAt = f => R(f, 66, 100);
+const openAt = f => R(f, 560, 590) * (1 - R(f, 628, 660));
+const colAt = f => R(f, 925, FINAL);
+const RIPS = [[68, 'outer', .32], [420, 'inner', .22], [450, 'inner', .22], [538, 'inner', .32]];
 function ripple(f, dist, world) {
   let m = 1;
-  for (const [r0, w] of RIPS) { if (w !== world) continue; const age = f - r0 - dist / 38; if (age > 0) m += .32 * Math.exp(-age / 13) * Math.sin(age / 3.1); }
+  for (const [r0, w, A] of RIPS) { if (w !== world) continue; const age = f - r0 - dist / 38; if (age > 0) m += A * Math.exp(-age / 13) * Math.sin(age / 3.1); }
   return m;
 }
-// 每颗格子的内容：按离中心的距离晚一点（最多 24 帧），所以变化从中心一圈圈往外传
-const FLIPS = [[272, 'wire'], [392, 'icon'], [630, 'data']];
+const FLIPS = [[262, 'wire'], [380, 'tri'], [482, 'icon'], [742, 'photo'], [835, 'data']];
 function content(fd) {
   let mode = 'photo', mix = 0, sx = 1;
-  if (fd >= 180) { mix = R(fd, 180, 212); if (mix >= 1) mode = 'honey'; }      // 照片 → 蜂蜡：波浪
+  if (fd >= 172) { mix = R(fd, 172, 204); if (mix >= 1) mode = 'honey'; }      // 照片 → 蜂蜡：波浪
   for (const [f0, to] of FLIPS) if (fd >= f0) {                                // 翻牌：12 帧，翻到侧面那一刻换内容
     const p = clamp((fd - f0) / 12);
     sx = p < 1 ? Math.max(.03, Math.abs(Math.cos(Math.PI * p))) : 1;
@@ -102,10 +113,13 @@ function content(fd) {
   }
   return { mode, mix, sx };
 }
-const hexH = fd => 1 - R(fd, 392, 420) + R(fd, 630, 660);                      // 1 = 六边形，0 = 圆
-const INR = { photo: .455, honey: .495, wire: .47, icon: .44, data: .47 };
-const magAt = f => R(f, 104, 120) * (1 - R(f, 166, 186));                      // 照片墙上扫过去的放大镜
-const MAG = f => ({ x: lerp(380, 1660, sm((f - 100) / 84)), y: 540 + 150 * Math.sin((f - 100) / 20) });
+const hexH = fd => 1 - R(fd, 482, 505) + R(fd, 835, 862);                      // 1 = 六边形，0 = 圆
+const INR = { photo: .455, honey: .495, wire: .47, tri: .492, icon: .44, data: .47 };
+const TRI = ['#F5F5F7', '#8E8E93', '#2C2C2E'];                                  // 三色就能把六边形铺满且相邻不同色
+const magAt = f => R(f, 100, 116) * (1 - R(f, 160, 180));
+const MAG = f => ({ x: lerp(1660, 760, sm((f - 96) / 84)), y: 420 + 120 * Math.sin((f - 96) / 20) });
+let TAPS = [];                                                                 // 手机里点中的三颗：[帧, 格子]
+const tapSel = (f, t) => spring((f - t) / FPS);
 
 function lens(dx, dy, r0, L, lc) {
   const u = dx / lc.ax, v = dy / lc.ay, rr = Math.hypot(u, v) + 1e-9, Rk = .58;
@@ -161,7 +175,7 @@ function shape(c, x, y, rc, inr, h, rot = 0) {      // 圆 ↔ 六边形（尖�
 
 // ---------- 收束 / 数据地图 ----------
 const FLOWER = new Map(); let MAPC = null;
-const FC = { x: 960, y: 400 }, DF = 196;
+const FC = { x: 960, y: 420 }, DF = 186;
 function mapMask(cell) {
   const dx = cell.x - MAPC.x, dy = cell.y - MAPC.y;
   const blobs = [[0, 0, 520], [-380, -220, 330], [330, 260, 360], [420, -300, 260], [-300, 330, 280]];
@@ -174,14 +188,36 @@ function dataVal(cell, f) {
   return clamp(n * .8 + wave * .6 + .1);
 }
 
+// ---------- 字的区块（每个画面一个）----------
+// hero：主角字（可以是随帧变化的函数：计数）；meta：上面的等宽小字；cap：下面的中文；x/y：主角字的基线；zone：给字让位的区域
+const BLOCKS = [
+  { f0: 108, f1: 164, meta: '01 — TESSELLATION', hero: '6', hs: 330, cap: ['每一格，都挨着六格', '没有行，也没有列'], c: ['#8A8A8E', '#111111', '#3A3A3C'] },
+  { f0: 208, f1: 256, meta: '02 — WHY HEXAGON', hero: f => `${Math.round(120 * expoOut((f - 212) / 22))}°`, hs: 300, cap: ['同样的面积，六边形周长最短', '蜜蜂用最少的蜡，盖最多的格子'], c: ['#D9A85C', '#FFF3D6', '#F3D29A'] },
+  { f0: 298, f1: 374, meta: '03 — LENS', hero: '1:1', hs: 300, cap: ['中心一圈原大，往外越挤越小', 's = 1 − tanh²((r − r₀) / k)'], c: ['#9DB7E8', '#FFFFFF', '#D6E2FA'], mono2: true },
+  { f0: 410, f1: 474, meta: '04 — SYMMETRY', hero: '60°', hs: 300, cap: ['转 60°，还是它自己', '三种颜色就能铺满，邻居永远不同色'], c: ['#8E8E93', '#F5F5F7', '#C7C7CC'] },
+  { f0: 506, f1: 554, meta: '05 — SNAP', hero: f => `${(0.17 * expoOut((f - 510) / 20)).toFixed(2)}s`, hs: 280, cap: ['甩一下，停在一格上', '临界阻尼，不回弹'], c: ['#8E8E93', '#F5F5F7', '#C7C7CC'] },
+  { f0: 592, f1: 624, meta: '06 — OPEN', hero: 'Open', hs: 280, cap: ['图标从蜂窝里，长成一整屏'], c: ['rgba(255,255,255,.75)', '#FFFFFF', 'rgba(255,255,255,.88)'], noZone: true },
+  { f0: 676, f1: 730, meta: '07 — IN THE WILD', hero: f => `${Math.round(2000 + 15 * expoOut((f - 680) / 22))}`, hs: 280, cap: ['Apple Watch 主屏', '默认就是蜂窝'], c: ['#77736C', '#161616', '#3A3A3A'], noZone: true },
+  { f0: 768, f1: 830, meta: '07 — IN THE WILD', hero: 'Pick 3', hs: 240, cap: ['注册时选你喜欢的', '点中的那颗，变大'], c: ['#4F7A66', '#10261C', '#2F4A3E'], noZone: true },
+  { f0: 868, f1: 920, meta: '07 — IN THE WILD', hero: 'Hexbin', hs: 260, cap: ['六边形数据图', '一格一个区域，颜色就是数值'], c: ['#77736C', '#161616', '#3A3A3A'] },
+];
+const BX = 104, BY = 846;          // 主角字的基线（左下角）
+const zoneK = f => { let k = 0; for (const b of BLOCKS) if (!b.noZone) k = Math.max(k, R(f, b.f0 - 8, b.f0 + 8) * (1 - R(f, b.f1, b.f1 + 14))); return k; };
+function zoneScale(x, y, k) {      // 左下角那块：格子缩小、退开，给字让位
+  if (k <= 0) return 1;
+  const x1 = 1020, y0 = 520;
+  const dx = Math.max(0, x - x1), dy = Math.max(0, y0 - y), d = Math.hypot(dx, dy);
+  return lerp(1, sm(d / 170), k);
+}
+
 // ---------- 画一片格子：world = 'outer'（封面那片图标）或 'inner'（钻进去以后的一切）----------
 function grid(c, f, world) {
   const outer = world === 'outer';
   const p = outer ? panOuter(f) : panInner(f);
-  const Z = outer ? 1 : zoomAt(f), L = outer ? 1 : lensW(f), lc = outer ? LC0 : LCf(f);
+  const Z = outer ? 1 : zoomAt(f), L = outer ? 1 : lensW(f), lc = outer ? { x: 1270, y: 540, ax: 660, ay: 500 } : LCf(f);
   const th = outer ? 0 : rotAt(f), ct = Math.cos(th), st = Math.sin(th);
-  const co = outer ? 0 : colAt(f), ds = outer ? 0 : R(f, 632, 660);
-  const mg = outer ? 0 : magAt(f), M = MAG(f);
+  const co = outer ? 0 : colAt(f), ds = outer ? 0 : R(f, 837, 865);
+  const mg = outer ? 0 : magAt(f), M = MAG(f), zk = outer ? 0 : zoneK(f), dev = outer ? 0 : DEV(f);
   const list = [];
   for (const cell of CELLS) {
     const gx = (cell.x - p.x) * Z, gy = (cell.y - p.y) * Z;
@@ -189,12 +225,14 @@ function grid(c, f, world) {
     let x = P.x, y = P.y;
     const dist = Math.hypot(x - lc.x, y - lc.y), fd = f - clamp(dist / 900) * 24;
     const C = outer ? { mode: 'icon', mix: 0, sx: 1 } : content(fd);
-    let s = P.s * Z * ripple(f, dist, world), a = 1, rot = th, hh = outer ? 0 : hexH(fd), inrK = INR[C.mode];
+    let s = P.s * Z * ripple(f, dist, world), a = 1, rot = th, hh = outer ? 0 : hexH(fd), inrK = INR[C.mode] || .44, sel = 0;
     if (mg > 0) {      // 放大镜：附近的格子推开、放大
-      const dx = x - M.x, dy = y - M.y, bb = mg * Math.exp(-((dx * dx + dy * dy) / (250 * 250)));
-      x = M.x + dx * (1 + .5 * bb); y = M.y + dy * (1 + .5 * bb); s *= 1 + .85 * bb;
+      const dx = x - M.x, dy = y - M.y, bb = mg * Math.exp(-((dx * dx + dy * dy) / (260 * 260)));
+      x = M.x + dx * (1 + .5 * bb); y = M.y + dy * (1 + .5 * bb); s *= 1 + .9 * bb;
     }
     if (ds > 0) s *= lerp(1, mapMask(cell), ds);
+    if (dev < .5 && co <= 0) s *= zoneScale(x, y, zk);
+    for (const [tf, tc] of TAPS) if (tc === cell && f > tf - 2) { sel = tapSel(f, tf) * (1 - R(f, 832, 850)); s *= 1 + .6 * sel; }
     if (co > 0) {
       const fl = FLOWER.get(cell.id);
       const stg = fl ? 0 : clamp(Math.hypot(x - FC.x, y - FC.y) / 1400) * .45;
@@ -213,17 +251,19 @@ function grid(c, f, world) {
     }
     const d = ICON * s;
     if (d < 2.5 || a < 0.01 || x < -300 || x > W + 300 || y < -300 || y > H + 300) continue;
-    list.push({ cell, x, y, d, s, a, hh, inrK, rot, C });
+    list.push({ cell, x, y, d, s, a, hh, inrK, rot, C, sel });
   }
   list.sort((A, B) => A.d - B.d);
   for (const it of list) {
-    const { cell, x, y, d, s, a, hh, inrK, rot, C } = it;
+    const { cell, x, y, d, s, a, hh, inrK, rot, C, sel } = it;
     const rc = d / 2, inr = D * s * inrK, m = C.mode;
     c.save(); c.translate(x, y); c.scale(C.sx, 1);
     c.globalAlpha = a * clamp(d / 16);
     if (m === 'wire') {
       shape(c, 0, 0, rc, inr, hh, rot); c.fillStyle = 'rgba(255,255,255,.05)'; c.fill();
       c.strokeStyle = '#EAF1FF'; c.lineWidth = Math.max(1.6, 3 * s); c.stroke();
+    } else if (m === 'tri') {
+      shape(c, 0, 0, rc, inr, hh, rot); c.fillStyle = TRI[(((cell.q - cell.r) % 3) + 3) % 3]; c.fill();
     } else if (m === 'data') {
       shape(c, 0, 0, rc, inr, hh, rot); c.fillStyle = dataColor(dataVal(cell, f)); c.fill();
     } else if (m === 'honey' || C.mix > 0) {
@@ -239,13 +279,19 @@ function grid(c, f, world) {
       const big = Math.max(rc, inr * 1.16) * 2;
       c.drawImage(m === 'photo' ? SPP[cell.id] : SPI[cell.id], -big / 2, -big / 2, big, big);
       c.restore();
+      if (sel > .02) {      // 选中：白圈 + 右上角一个勾
+        c.globalAlpha = a * clamp(sel); c.strokeStyle = '#FFFFFF'; c.lineWidth = Math.max(2, 5 * s); shape(c, 0, 0, rc, inr, hh, rot); c.stroke();
+        const bx = rc * .7, by = -rc * .7, brr = Math.max(6, rc * .3);
+        c.fillStyle = '#30D158'; c.beginPath(); c.arc(bx, by, brr, 0, 7); c.fill();
+        c.strokeStyle = '#fff'; c.lineWidth = Math.max(1.5, brr * .28); c.lineCap = 'round'; c.beginPath(); c.moveTo(bx - brr * .45, by); c.lineTo(bx - brr * .1, by + brr * .38); c.lineTo(bx + brr * .5, by - brr * .35); c.stroke();
+      }
     }
     c.restore();
   }
   c.globalAlpha = 1;
 }
 
-// ---------- 背景 ----------
+// ---------- 背景 / 设备 ----------
 function background(c, f) {
   const bg = bgAt(f);
   c.fillStyle = rgb(bg); c.fillRect(0, 0, W, H);
@@ -256,47 +302,65 @@ function background(c, f) {
     for (let y = 0; y <= H; y += 48) { c.fillStyle = y % 240 === 0 ? 'rgba(255,255,255,.12)' : 'rgba(255,255,255,.05)'; c.fillRect(0, y, W, 1.5); }
     c.globalAlpha = 1;
   }
-  const st = studio(f);
+  const st = studio(f) + R(f, 735, 765) * (1 - R(f, 835, 865)) * .7;
   if (st > .01) {      // 影棚：中间亮、四周暗一点
     const rg = c.createRadialGradient(1270, 470, 100, 1270, 520, 1100);
-    rg.addColorStop(0, `rgba(255,255,255,${.5 * st})`); rg.addColorStop(1, `rgba(120,110,95,${.28 * st})`);
+    rg.addColorStop(0, `rgba(255,255,255,${.45 * st})`); rg.addColorStop(1, `rgba(60,70,60,${.22 * st})`);
     c.fillStyle = rg; c.fillRect(0, 0, W, H);
   }
 }
-function watchBody(c, wv, lc) {
-  const k = smr(wv), sc = lerp(2.4, 1, k), cw = (2 * LCW.ax + 150) * sc, ch = (2 * LCW.ay + 170) * sc;
+function deviceBody(c, f) {
+  const dv = DEV(f), m = MORPH(f); if (dv <= .002) return null;
+  const k = smr(dv), sc = lerp(2.4, 1, k), G = devGeo(m), lc = LCf(f);
+  const cx = G.lc.x, cy = G.lc.y, bw = G.bw * sc, bh = G.bh * sc, x = cx - bw / 2, y = cy - bh / 2;
   c.save(); c.globalAlpha = k;
-  const x = lc.x - cw / 2, y = lc.y - ch / 2;
-  const sh = c.createRadialGradient(lc.x, y + ch + 30 * sc, 10, lc.x, y + ch + 30 * sc, cw * .8);       // 落在影棚地面上的影子
-  sh.addColorStop(0, 'rgba(40,32,20,.35)'); sh.addColorStop(1, 'rgba(40,32,20,0)');
-  c.fillStyle = sh; c.beginPath(); c.ellipse(lc.x, y + ch + 30 * sc, cw * .8, 90 * sc, 0, 0, 7); c.fill();
-  c.fillStyle = '#2A2A2E'; c.beginPath(); c.roundRect(lc.x - cw * .36, y - 420 * sc, cw * .72, 470 * sc, 40 * sc); c.roundRect(lc.x - cw * .36, y + ch - 50 * sc, cw * .72, 470 * sc, 40 * sc); c.fill();
-  const gr = c.createLinearGradient(x, y, x + cw, y + ch); gr.addColorStop(0, '#6A6A70'); gr.addColorStop(.5, '#2A2A2E'); gr.addColorStop(1, '#4A4A50');
-  c.fillStyle = gr; c.beginPath(); c.roundRect(x, y, cw, ch, 150 * sc); c.fill();
-  c.fillStyle = '#0A0A0B'; c.beginPath(); c.roundRect(x + 22 * sc, y + 22 * sc, cw - 44 * sc, ch - 44 * sc, 130 * sc); c.fill();
-  c.fillStyle = '#6A6A70'; c.beginPath(); c.roundRect(x + cw - 4 * sc, lc.y - 150 * sc, 34 * sc, 96 * sc, 14 * sc); c.fill();
-  c.fillStyle = '#8A8A90'; for (let k2 = 0; k2 < 6; k2++) c.fillRect(x + cw + 6 * sc + k2 * 4 * sc, lc.y - 140 * sc, 1.6 * sc, 76 * sc);
-  c.fillStyle = '#4A4A50'; c.beginPath(); c.roundRect(x + cw - 6 * sc, lc.y + 10 * sc, 20 * sc, 130 * sc, 10 * sc); c.fill();
+  const sh = c.createRadialGradient(cx, y + bh + 30 * sc, 10, cx, y + bh + 30 * sc, bw * .8);       // 地面上的影子
+  sh.addColorStop(0, 'rgba(30,30,25,.32)'); sh.addColorStop(1, 'rgba(30,30,25,0)');
+  c.fillStyle = sh; c.beginPath(); c.ellipse(cx, y + bh + 30 * sc, bw * .8, 80 * sc, 0, 0, 7); c.fill();
+  if (m < .99) {      // 表带（变手机时收掉）
+    c.globalAlpha = k * (1 - m); c.fillStyle = '#2A2A2E';
+    c.beginPath(); c.roundRect(cx - bw * .36, y - 420 * sc, bw * .72, 470 * sc, 40 * sc); c.roundRect(cx - bw * .36, y + bh - 50 * sc, bw * .72, 470 * sc, 40 * sc); c.fill();
+    c.globalAlpha = k;
+  }
+  const gr = c.createLinearGradient(x, y, x + bw, y + bh); gr.addColorStop(0, '#6A6A70'); gr.addColorStop(.5, '#2A2A2E'); gr.addColorStop(1, '#4A4A50');
+  c.fillStyle = gr; c.beginPath(); c.roundRect(x, y, bw, bh, G.br * sc); c.fill();
+  c.fillStyle = '#0A0A0B'; c.beginPath(); c.roundRect(cx - G.sw * sc / 2 - 6 * sc, cy - G.sh * sc / 2 - 6 * sc, (G.sw + 12) * sc, (G.sh + 12) * sc, (G.sr + 6) * sc); c.fill();
+  c.globalAlpha = k * (1 - m);      // 表冠
+  c.fillStyle = '#6A6A70'; c.beginPath(); c.roundRect(x + bw - 4 * sc, cy - 150 * sc, 34 * sc, 96 * sc, 14 * sc); c.fill();
+  c.fillStyle = '#8A8A90'; for (let k2 = 0; k2 < 6; k2++) c.fillRect(x + bw + 6 * sc + k2 * 4 * sc, cy - 140 * sc, 1.6 * sc, 76 * sc);
+  c.globalAlpha = k * m;            // 手机侧键
+  c.fillStyle = '#4A4A50'; c.beginPath(); c.roundRect(x + bw - 2 * sc, cy - 220 * sc, 8 * sc, 110 * sc, 4 * sc); c.roundRect(x - 6 * sc, cy - 260 * sc, 8 * sc, 70 * sc, 4 * sc); c.roundRect(x - 6 * sc, cy - 170 * sc, 8 * sc, 70 * sc, 4 * sc); c.fill();
   c.restore();
+  const clipW = lerp(W * 1.6, G.sw, k), clipH = lerp(H * 1.6, G.sh, k), clipR = lerp(0, G.sr, k);
+  return { cx, cy, clipW, clipH, clipR, k, m };
 }
-function cellScreen(f, cell, world) {      // 某一颗格子此刻在屏幕上的位置和直径
+function island(c, d) {      // 手机的灵动岛（画在格子上面）
+  if (!d || d.m < .01) return;
+  c.save(); c.globalAlpha = d.k * d.m; c.fillStyle = '#000'; c.beginPath(); c.roundRect(d.cx - 62, d.cy - d.clipH / 2 + 16, 124, 36, 18); c.fill(); c.restore();
+}
+function cellScreen(f, cell, world) {
   const outer = world === 'outer', p = outer ? panOuter(f) : panInner(f), Z = outer ? 1 : zoomAt(f), th = outer ? 0 : rotAt(f);
   const gx = (cell.x - p.x) * Z, gy = (cell.y - p.y) * Z;
-  const P = lens(gx * Math.cos(th) - gy * Math.sin(th), gx * Math.sin(th) + gy * Math.cos(th), .32, outer ? 1 : lensW(f), outer ? LC0 : LCf(f));
+  const P = lens(gx * Math.cos(th) - gy * Math.sin(th), gx * Math.sin(th) + gy * Math.cos(th), .32, outer ? 1 : lensW(f), outer ? { x: 1270, y: 540, ax: 660, ay: 500 } : LCf(f));
   return { x: P.x, y: P.y, d: ICON * Z * P.s };
 }
 
 // ---------- 一个子帧 ----------
 function innerWorld(c, f) {
   background(c, f);
-  const wv = WATCH(f);
-  if (wv > 0.002) {      // 手表：表外只有影棚，格子只在表盘里
-    const lc = LCf(f); watchBody(c, wv, lc);
-    c.save(); const sw = lerp(W * 1.6, 2 * LCW.ax + 60, wv), shh = lerp(H * 1.6, 2 * LCW.ay + 70, wv);
-    c.beginPath(); c.roundRect(lc.x - sw / 2, lc.y - shh / 2, sw, shh, lerp(0, 96, wv)); c.clip();
-    c.fillStyle = `rgba(0,0,0,${sm(wv * 2)})`; c.fillRect(0, 0, W, H);
-    grid(c, f, 'inner'); c.restore();
+  const d = deviceBody(c, f);
+  if (d) {
+    c.save(); c.beginPath(); c.roundRect(d.cx - d.clipW / 2, d.cy - d.clipH / 2, d.clipW, d.clipH, d.clipR); c.clip();
+    c.fillStyle = `rgba(0,0,0,${sm(d.k * 2)})`; c.fillRect(0, 0, W, H);
+    grid(c, f, 'inner'); touches(c, f); c.restore(); island(c, d);
   } else grid(c, f, 'inner');
+}
+function touches(c, f) {      // 手指点下去：一圈白色的触点
+  for (const [tf, tc] of TAPS) {
+    const a = sm((f - (tf - 8)) / 8) * (1 - sm((f - tf) / 14)); if (a <= .01) continue;
+    const P = cellScreen(f, tc, 'inner'), r = 40 + 30 * sm((f - tf) / 14);
+    c.save(); c.globalAlpha = a * .55; c.fillStyle = '#fff'; c.beginPath(); c.arc(P.x, P.y, r, 0, 7); c.fill(); c.restore();
+  }
 }
 function scene(c, f) {
   const dv = diveAt(f);
@@ -318,7 +382,7 @@ function scene(c, f) {
   glow(c, f);
   opened(c, f);
 }
-function glow(c, f) {      // 收成一点的时候，中心攒一团光；重拍弹开时散掉
+function glow(c, f) {
   const ga = sm((f - (FINAL - 45)) / 45) * (1 - sm((f - FINAL) / 24));
   if (ga <= 0.003) return;
   const gr = 70 + 260 * sm((f - (FINAL - 45)) / 45) + 420 * sm((f - FINAL) / 24);
@@ -332,88 +396,65 @@ function opened(c, f) {
   const r0 = P.d / 2, Rr = r0 + (Math.hypot(W, H) * .62 - r0) * o;
   const cx = P.x + (W / 2 - P.x) * o, cy = P.y + (H / 2 - P.y) * o;
   c.save(); c.beginPath(); c.arc(cx, cy, Rr, 0, 7); c.clip();
-  const im = IMG.lake, s = Math.max(W / im.width, H / im.height) * (1.25 - .2 * o);
+  const im = IMG.lake, s = Math.max(W / im.width, H / im.height) * (1.25 - .2 * o) * (1 + .06 * sm((f - 585) / 45));   // 打开以后照片还在慢慢推近
   c.drawImage(im, cx - im.width * s / 2, cy - im.height * s / 2, im.width * s, im.height * s);
-  c.fillStyle = `rgba(0,0,0,${.3 * o})`; c.fillRect(0, 0, W, H);
+  const sh = c.createLinearGradient(0, H * .45, 0, H); sh.addColorStop(0, 'rgba(0,0,0,0)'); sh.addColorStop(1, `rgba(0,0,0,${.45 * o})`);
+  c.fillStyle = sh; c.fillRect(0, 0, W, H);
   c.restore();
 }
 
-// ---------- 字 ----------
-const TXT = [];
-const T = (f0, f1, s, x, y, font, color, kind = 'text', rate = 2, align = 'left') => TXT.push({ f0, f1, s, x, y, font, color, kind, rate, align });
-T(0, 80, 'Layout 03', 104, 150, '500 30px Inter', DIM, 'small', 0);
-T(0, 80, 'Honey', 96, 360, '700 200px IDisp', INK, 'title', 0);
-T(0, 80, 'comb', 96, 540, '700 200px IDisp', INK, 'title', 0);
-T(0, 80, '蜂窝布局', 104, 680, '900 96px SC', INK, 'title', 0);
-T(0, 80, '离中心越近，越大。', 106, 760, '700 40px SC', DIM, 'small', 0);
-// 照片墙（白底）
-T(112, 176, '01 · 密铺', 104, 330, '500 30px Mono', '#6B6B70', 'small', 1.5);
-T(118, 176, '六边形密铺', 100, 440, '900 92px SC', '#111111', 'title', 2);
-T(138, 176, '没有行，没有列；一格挨着六格', 104, 530, '700 38px SC', '#2A2A2C', 'text', 1.2);
-// 蜂巢（琥珀）
-T(214, 266, '02 · 名字', 104, 330, '500 30px Mono', '#D9A85C', 'small', 1.5);
-T(218, 266, '为什么是六边形？', 100, 440, '900 92px SC', '#FFF6E6', 'title', 2);
-T(236, 266, '同样面积，周长最短：最省料', 104, 530, '700 38px SC', '#F6D9A8', 'text', 1.2);
-// 蓝图
-T(304, 388, '03 · 透镜', 104, 330, '500 30px Mono', '#9DB7E8', 'small', 1.5);
-T(310, 388, '离中心越近，越大', 100, 440, '900 92px SC', '#FFFFFF', 'title', 2);
-T(330, 388, '中心原大 1:1，往外越挤越小', 104, 530, '700 38px SC', '#D6E2FA', 'text', 1.2);
-T(350, 388, 's = 1 − tanh²((r − r0) / k)', 104, 600, '500 30px Mono', '#9DB7E8', 'small', 1);
-T(364, 388, '中心距 150 · 图标 132 · 缝 12%', 104, 650, '500 30px Mono', '#9DB7E8', 'small', 1);
-// 吸附 · 点开（黑底）
-T(422, 458, '04 · 吸附', 104, 330, '500 30px Mono', DIM, 'small', 1);
-T(426, 458, '甩一下，停在一格上', 100, 440, '900 92px SC', INK, 'title', 2);
-T(442, 458, '临界阻尼，0.17 秒落定', 104, 530, '700 38px SC', INK, 'text', 1.2);
-T(492, 520, '点开', 120, 780, '900 132px SC', '#fff', 'title', 3);
-T(498, 520, '图标从蜂窝里长成一整屏', 124, 860, '700 40px SC', 'rgba(255,255,255,.9)', 'text', 1.2);
-// 手表（影棚）
-T(572, 626, '05 · 在哪见过', 104, 330, '500 30px Mono', '#77736C', 'small', 1);
-T(576, 626, 'Apple Watch 主屏', 100, 440, '900 92px SC', '#161616', 'title', 2);
-T(594, 626, '2015 年至今，默认就是蜂窝', 104, 530, '700 38px SC', '#3A3A3A', 'text', 1.2);
-// 数据地图（纸白）
-T(662, 716, '05 · 在哪见过', 104, 330, '500 30px Mono', '#77736C', 'small', 0);
-T(666, 716, '六边形数据图', 100, 440, '900 92px SC', '#161616', 'title', 2);
-T(682, 716, '一格一个区域，颜色是数值', 104, 530, '700 38px SC', '#3A3A3A', 'text', 1.2);
-// 收束
-T(FINAL, 99999, 'Honeycomb', 960, 790, '700 128px IDisp', INK, 'slam', 0, 'center');
-T(FINAL + 6, 99999, '蜂窝布局 · 离中心越近，越大', 960, 870, '700 40px SC', DIM, 'text', 1.2, 'center');
-T(FINAL + 24, 99999, '观默', 960, 1000, '700 34px SC', INK, 'small', 3, 'center');
-const PANELS = [[0, 80], [110, 176], [212, 266], [300, 388], [420, 458], [570, 626], [660, 716]];
-
-function texts(c, f) {
-  let pa = 0; for (const [a, b] of PANELS) pa = Math.max(pa, (a === 0 ? 1 : R(f, a - 4, a + 10)) * (1 - R(f, b, b + 14)));
-  if (pa > 0.01 && openAt(f) < .5) {      // 左边的面板：用当前的底色，保证字读得清
-    const bg = diveAt(f) < 1 ? [0, 0, 0] : bgAt(f); c.globalAlpha = pa;
-    const gr = c.createLinearGradient(0, 0, 900, 0); gr.addColorStop(0, rgb(bg, .94)); gr.addColorStop(.7, rgb(bg, .78)); gr.addColorStop(1, rgb(bg, 0));
-    c.fillStyle = gr; c.fillRect(0, 0, 940, H); c.globalAlpha = 1;
-  }
-  for (const t of TXT) {
-    if (f < t.f0 || f > t.f1 + 14) continue;
-    const out = 1 - sm((f - t.f1) / 14);
-    c.font = t.font; c.textBaseline = 'alphabetic'; c.textAlign = 'left';
-    const chars = [...t.s], full = c.measureText(t.s).width, x0 = t.align === 'center' ? t.x - full / 2 : t.x;
-    if (t.kind === 'slam') {
-      const k = sm((f - t.f0) / 8), sc = lerp(1.35, 1, k);
-      c.save(); c.globalAlpha = k * out; c.translate(t.x, t.y); c.scale(sc, sc); c.fillStyle = t.color; c.textAlign = 'center'; c.fillText(t.s, 0, 0); c.restore();
-      continue;
-    }
-    for (let i = 0; i < chars.length; i++) {
-      const fi = t.f0 + i * t.rate, k = t.rate === 0 ? 1 : sm((f - fi) / 5);
-      if (k <= 0) break;
-      const px = x0 + c.measureText(chars.slice(0, i).join('')).width;
-      c.globalAlpha = k * out; c.fillStyle = t.color; c.fillText(chars[i], px, t.y + (1 - k) * 18);
-    }
-  }
-  c.globalAlpha = 1;
+// ---------- 字：整行从遮罩里滑上来、滑出去 ----------
+function line(c, s, x, y, font, color, f, fin, fout, size, ls = 0, align = 'left') {
+  const xi = clamp((f - fin) / 20), e = 1 - Math.pow(1 - xi, 4), xo = clamp((f - fout) / 14), o = xo * xo * xo;   // 进：quart-out 20 帧；出：cubic-in 14 帧
+  if (e <= 0 || o >= 1) return;
+  c.save(); c.font = font; c.letterSpacing = ls + 'px'; c.textAlign = align; c.textBaseline = 'alphabetic';
+  const w = c.measureText(s).width, x0 = align === 'center' ? x - w / 2 : x;
+  c.beginPath(); c.rect(x0 - 20, y - size * 1.02, w + 60, size * 1.32); c.clip();
+  c.fillStyle = color; c.fillText(s, x, y + (1 - e) * size * 1.15 - o * size * 1.2);
+  c.restore();
 }
-function overlays(c, f) {      // 蓝图那章：虚线圈出原大的平区，量中心距
-  const a1 = R(f, 330, 342) * (1 - R(f, 386, 400));
+function rule(c, x, y, w, color, f, fin, fout) {
+  const e = expoOut((f - fin) / 14) * (1 - expoIn((f - fout) / 10)); if (e <= 0) return;
+  c.fillStyle = color; c.fillRect(x, y, w * e, 2);
+}
+function block(c, b, f) {
+  if (f < b.f0 - 2 || f > b.f1 + 16) return;
+  const [cm, ch, cc] = b.c, hero = typeof b.hero === 'function' ? b.hero(f) : b.hero;
+  const heroFont = `700 ${b.hs}px IDisp`, ls = -b.hs * .045;
+  const my = BY - b.hs * .76 - 36;
+  rule(c, BX + 4, my - 9, 40, cm, f, b.f0, b.f1);
+  line(c, b.meta, BX + 60, my, '500 24px Mono', cm, f, b.f0 + 2, b.f1, 24, 3);
+  line(c, hero, BX - b.hs * .03, BY, heroFont, ch, f, b.f0 + 5, b.f1 + 2, b.hs, ls);
+  b.cap.forEach((s2, i) => line(c, s2, BX + 6, BY + 64 + i * 50, (b.mono2 && i === 1) ? '500 30px Mono' : '500 34px SC', cc, f, b.f0 + 11 + i * 4, b.f1 + 4 + i * 2, 36, (b.mono2 && i === 1) ? 0 : 2));
+}
+function cover(c, f) {      // 封面：第 0 帧就在
+  const out = 62;
+  rule(c, 108, 141, 40, DIM, 0, -99, out);
+  line(c, 'LAYOUT 03', 164, 150, '500 24px Mono', DIM, 0, -99, out, 24, 3);
+  line(c, 'Honey', 92, 380, '700 230px IDisp', INK, 0, -99, out + 2, 230, -10);
+  line(c, 'comb', 92, 590, '700 230px IDisp', INK, 0, -99, out + 4, 230, -10);
+  line(c, '蜂窝布局', 104, 700, '700 60px SC', INK, 0, -99, out + 6, 60, 10);
+  line(c, '离中心越近，越大', 106, 762, '500 32px SC', DIM, 0, -99, out + 8, 32, 4);
+}
+function finale(c, f) {
+  if (f < FINAL) return;
+  line(c, 'Honeycomb', 960, 860, '700 150px IDisp', INK, f, FINAL, 1e9, 150, -6, 'center');
+  line(c, 'LAYOUT 03 — 蜂窝布局 · 离中心越近，越大', 960, 922, '500 26px Mono', DIM, f, FINAL + 8, 1e9, 26, 2, 'center');
+  line(c, '观默', 960, 1012, '700 34px SC', INK, f, FINAL + 22, 1e9, 34, 6, 'center');
+}
+function texts(c, f) {
+  if (f < 80) cover(c, f);
+  for (const b of BLOCKS) block(c, b, f);
+  finale(c, f);
+}
+function overlays(c, f) {      // 蓝图：虚线圈出原大的平区，量中心距
+  const a1 = R(f, 322, 334) * (1 - R(f, 372, 386));
   if (a1 > 0.01) {
     const lc = LCf(f); c.globalAlpha = a1; c.strokeStyle = '#FFD60A'; c.lineWidth = 3; c.setLineDash([12, 10]);
     c.beginPath(); c.ellipse(lc.x, lc.y, lc.ax * .32, lc.ay * .32, 0, 0, 7); c.stroke(); c.setLineDash([]);
-    c.fillStyle = '#FFD60A'; c.font = '700 26px SC'; c.textAlign = 'center'; c.fillText('原大 1:1', lc.x, lc.y - lc.ay * .32 - 16); c.textAlign = 'left';
+    c.fillStyle = '#FFD60A'; c.font = '500 24px Mono'; c.textAlign = 'center'; c.letterSpacing = '2px'; c.fillText('r₀  ·  1:1', lc.x, lc.y - lc.ay * .32 - 16); c.letterSpacing = '0px'; c.textAlign = 'left';
   }
-  const a2 = R(f, 364, 374) * (1 - R(f, 386, 400));
+  const a2 = R(f, 344, 354) * (1 - R(f, 372, 386));
   if (a2 > 0.01) {
     const lc = LCf(f);
     let best = null, bd = 1e9; for (const cell of CELLS) { const P = cellScreen(f, cell, 'inner'); const dd = Math.hypot(P.x - lc.x, P.y - lc.y); if (dd < bd) { bd = dd; best = cell; } }
@@ -422,52 +463,60 @@ function overlays(c, f) {      // 蓝图那章：虚线圈出原大的平区，�
     if (B) {
       const yy = A.y + ICON / 2 + 26; c.globalAlpha = a2; c.strokeStyle = '#FFD60A'; c.lineWidth = 3;
       c.beginPath(); c.moveTo(A.x, yy - 10); c.lineTo(A.x, yy + 10); c.moveTo(B.x, yy - 10); c.lineTo(B.x, yy + 10); c.moveTo(A.x, yy); c.lineTo(B.x, yy); c.stroke();
-      c.fillStyle = '#FFD60A'; c.font = '500 26px Mono'; c.textAlign = 'center'; c.fillText('150', (A.x + B.x) / 2, yy + 36); c.textAlign = 'left';
+      c.fillStyle = '#FFD60A'; c.font = '500 24px Mono'; c.textAlign = 'center'; c.fillText('150', (A.x + B.x) / 2, yy + 34); c.textAlign = 'left';
     }
   }
   c.globalAlpha = 1;
 }
+const SCN = [0, 100, 172, 262, 380, 482, 560, 628, 735, 835, 925];
 function hud(c, f) {
-  const a = R(f, 100, 120) * (1 - R(f, 724, 750));
-  if (a <= 0.01 || openAt(f) > .5) return;
-  const bg = bgAt(f), lum = (bg[0] * .3 + bg[1] * .59 + bg[2] * .11) / 255;
-  c.globalAlpha = a * .9; c.font = '500 24px Inter'; c.fillStyle = lum > .5 ? '#6B6B70' : DIM; c.textAlign = 'left'; c.fillText('Layout 03 · Honeycomb 蜂窝布局', 104, 72);
-  const ch = f < 210 ? 1 : f < 300 ? 2 : f < 420 ? 3 : f < 520 ? 4 : 5;
-  c.textAlign = 'right'; c.fillText(`0${ch} / 05`, 1816, 72); c.textAlign = 'left'; c.globalAlpha = 1;
+  const a = R(f, 96, 116) * (1 - R(f, 926, 950));
+  if (a <= 0.01) return;
+  const bg = openAt(f) > .5 ? [0, 0, 0] : bgAt(f), lum = (bg[0] * .3 + bg[1] * .59 + bg[2] * .11) / 255;
+  let n = 0; for (let i = 0; i < SCN.length; i++) if (f >= SCN[i]) n = i;
+  c.save(); c.globalAlpha = a; c.font = '500 22px Mono'; c.letterSpacing = '3px'; c.fillStyle = lum > .5 ? 'rgba(0,0,0,.55)' : 'rgba(255,255,255,.6)';
+  c.textAlign = 'left'; c.fillText('HONEYCOMB', 104, 72);
+  c.textAlign = 'right'; c.fillText(`${String(n).padStart(2, '0')} / 10`, 1816, 72);
+  c.restore();
 }
 
 const buf = mk(W, H), b = buf.getContext('2d');
 const SHUTTER = 0.75;
 const dpos = (fn, f) => { const a = fn(f - .25), z = fn(f + .25); return Math.hypot(z.x - a.x, z.y - a.y) * 2 * FPS; };
 window.frame = f => {
-  const v = f < 104 ? dpos(panOuter, f) : dpos(panInner, f) * zoomAt(f);
+  const v = f < 100 ? dpos(panOuter, f) : dpos(panInner, f) * zoomAt(f);
   const zv = Math.abs(Math.log(zoomAt(f + .25) / zoomAt(f - .25))) * 2 * FPS + Math.abs(diveAt(f + .25) - diveAt(f - .25)) * 2 * FPS * 3;
   const ov = Math.abs(openAt(f + .25) - openAt(f - .25)) * 2 * FPS, cv = Math.abs(colAt(f + .25) - colAt(f - .25)) * 2 * FPS;
-  const rv = Math.abs(rotAt(f + .25) - rotAt(f - .25)) * 2 * FPS * 500;
+  const rv = Math.abs(rotAt(f + .25) - rotAt(f - .25)) * 2 * FPS * 500, dvv = Math.abs(DEV(f + .25) - DEV(f - .25)) * 2 * FPS * 4;
   const mv = magAt(f) * 900;
-  const N = Math.max(1, Math.min(18, Math.ceil((v + rv + mv) * SHUTTER / FPS / 3 + zv * 6 + ov * 10 + cv * 8)));
+  const N = Math.max(1, Math.min(18, Math.ceil((v + rv + mv) * SHUTTER / FPS / 3 + zv * 6 + ov * 10 + cv * 8 + dvv)));
   for (let k = 0; k < N; k++) {
     const fk = N === 1 ? f : f + (k / (N - 1) - .5) * SHUTTER;
     scene(b, fk);
     g.globalAlpha = 1 / (k + 1); g.drawImage(buf, 0, 0);
   }
   g.globalAlpha = 1;
-  overlays(g, f); texts(g, f); hud(g, f);
+  overlays(g, f); texts(g, f);
 };
-window.events = () => ({
-  cues: TXT.map(t => [t.f0, t.kind === 'slam' ? 1 : [...t.s].length, t.rate || 1, t.kind]),
-  tl: { end: END, final: FINAL, outer: OUTER.map(m => [m[0], m[1]]), inner: INNER.filter(m => m[1] !== 'glide').map(m => [m[0], m[1]]),
-        dive: 66, mag: 104, wave: 180, flips: FLIPS.map(x => x[0]), rot: [390, 520], rips: RIPS.map(r => r[0]), open: 465, close: 520,
-        watch: 520, col: 722, scenes: [0, 104, 180, 272, 392, 520, 630, 722, FINAL] },
-});
+window.events = () => {
+  const cues = [[0, 5, 1.5, 'title']];
+  for (const b of BLOCKS) { cues.push([b.f0 + 2, 4, 1, 'small'], [b.f0 + 5, 4, 1.5, 'title']); b.cap.forEach((s, i) => cues.push([b.f0 + 11 + i * 4, Math.min(6, [...s].length), 1, 'text'])); }
+  cues.push([FINAL, 1, 1, 'slam'], [FINAL + 8, 5, 1, 'small'], [FINAL + 22, 2, 3, 'small']);
+  return { cues, tl: { end: END, final: FINAL, outer: OUTER.map(m => [m[0], m[1]]), inner: INNER.filter(m => m[1] === 'flick' || m[1] === 'snap').map(m => [m[0], m[1]]),
+    dive: 66, mag: 100, wave: 172, flips: FLIPS.map(x => x[0]), rot: [380, 482, 628], steps: STEPS, rips: RIPS.map(r => r[0]), open: 560, close: 628,
+    watch: 628, morph: 735, taps: [780, 800, 820], col: 925, scenes: SCN } };
+};
 const qf = new URLSearchParams(location.search).get('f');
 Promise.all([...PHOTOS.map(n => new Promise(r => { const im = new Image(); im.onload = () => { IMG[n] = im; r(); }; im.src = `../../../public/02-masonry/photos/${n}.jpg`; })),
-  ...['700 10px IDisp', '600 10px IDisp', '500 10px Inter', '500 10px Mono', '900 10px SC', '700 10px SC'].map(s => document.fonts.load(s, '蜂窝布局离中心越近Aa'))])
+  ...['700 10px IDisp', '600 10px IDisp', '500 10px Inter', '500 10px Mono', '900 10px SC', '700 10px SC', '500 10px SC'].map(s => document.fonts.load(s, '蜂窝布局离中心越近Aa0123456789°'))])
   .then(() => {
-    MAPC = panInner(660);
-    const P5 = panInner(730);
+    MAPC = panInner(880);
+    const P5 = panInner(920);
     let ctr = CELLS[0], bd = 1e9; for (const c of CELLS) { const d = Math.hypot(c.x - P5.x, c.y - P5.y); if (d < bd) { bd = d; ctr = c; } }
     [[0, 0], [1, 0], [-1, 0], [0, 1], [0, -1], [1, -1], [-1, 1]].forEach(([dq, dr]) => { const c = cellAt(ctr.q + dq, ctr.r + dr); if (c) FLOWER.set(c.id, { x: DF * (dq + dr / 2), y: DF * Math.sqrt(3) / 2 * dr }); });
+    // 手机里点中的三颗：离屏幕中心最近的一颗和它的两个邻居
+    const PT = panInner(790); let tc = CELLS[0]; bd = 1e9; for (const c of CELLS) { const d = Math.hypot(c.x - PT.x, c.y - PT.y); if (d < bd) { bd = d; tc = c; } }
+    TAPS = [[780, cellAt(tc.q, tc.r - 1)], [800, cellAt(tc.q + 1, tc.r)], [820, cellAt(tc.q - 1, tc.r + 1)]].filter(t => t[1]);
     for (const cell of CELLS) {
       const photo = cell === T2 || hash(cell.id * 3.3) < .4;
       SPI[cell.id] = cell === T2 ? sprite('photo', 0) : sprite(photo ? 'photo' : 'glyph', photo ? 1 + Math.floor(hash(cell.id * 1.7) * 11) : Math.floor(hash(cell.id * 9.1) * 9) + cell.id);
