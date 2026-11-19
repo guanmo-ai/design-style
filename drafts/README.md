@@ -45,6 +45,10 @@
 | ~~拟物 Skeuomorphism~~ | **不做**（图已删） |
 
 
+## 第十一轮：蜂窝布局 Honeycomb v4（网站布局 03）
+
+- 18 秒、60 fps、十个画面与片尾收束。正式入口见[布局 03](../layouts/03-honeycomb/README.md)，原片、分镜与渲染源码见 [honeycomb/](honeycomb/README.md)。
+
 ## 第十轮：新浪潮 New Wave 全片（2026-11-17，网站风格 021）
 
 - 20 秒、60 fps、八个场景。第二版用《Minimalist Design Pulse》，画面沿 130.07 BPM 的拍点重新编排。

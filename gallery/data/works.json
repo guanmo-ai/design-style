@@ -1461,5 +1461,65 @@
       }
     ],
     "publishedAt": "2026-11-18T03:41:56Z"
+  },
+  {
+    "id": "03-honeycomb",
+    "type": "layout",
+    "number": "03",
+    "title": "蜂窝布局",
+    "titleEn": "Honeycomb",
+    "years": "当代",
+    "category": "当代界面",
+    "categoryEn": "Contemporary interfaces",
+    "description": "同一片六边形网格从照片墙接力到表盘、手机和数据地图。18 秒看懂错列排布、鱼眼缩放和吸附。",
+    "descriptionEn": "One hexagonal grid moves from a photo wall to a watch, a phone, and a data map. See staggered rows, fisheye scaling, and snapping in 18 seconds.",
+    "tags": [
+      "蜂窝",
+      "六边形网格",
+      "鱼眼",
+      "吸附",
+      "数据可视化"
+    ],
+    "tagsEn": [
+      "honeycomb",
+      "hexagonal grid",
+      "fisheye",
+      "snapping",
+      "hexbin"
+    ],
+    "publishedAt": "2026-11-19T03:59:22Z",
+    "release": "layout-03",
+    "asset": "03-honeycomb.mp4",
+    "sha256": "dc79e6a601bb61c15aa0ea29b8645e9727d35e7a8facd5af2d2c46633e01b22b",
+    "images": [
+      {
+        "file": "poster",
+        "title": "中心一格，六个最近邻",
+        "kind": "布局海报",
+        "titleEn": "One cell, six nearest neighbors",
+        "kindEn": "Layout poster"
+      },
+      {
+        "file": "geometry",
+        "title": "错列网格与鱼眼大小曲线",
+        "kind": "几何速查",
+        "titleEn": "Staggered rows and the fisheye scale curve",
+        "kindEn": "Geometry reference"
+      },
+      {
+        "file": "interfaces",
+        "title": "表盘浏览与手机兴趣选择",
+        "kind": "界面应用",
+        "titleEn": "Watch browsing and mobile interest selection",
+        "kindEn": "Interface study"
+      },
+      {
+        "file": "storyboard",
+        "title": "从蜂巢到数据地图",
+        "kind": "分镜选帧",
+        "titleEn": "From honeycomb to hexbin map",
+        "kindEn": "Storyboard"
+      }
+    ]
   }
 ]
