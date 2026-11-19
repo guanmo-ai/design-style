@@ -2,7 +2,7 @@
 
 <!-- BEGIN WORK PREVIEWS -->
 <!-- 由 npm run gallery:readme 根据 gallery/data/works.json 生成，请勿手动修改此区域。 -->
-<p><a href="https://guanmo-ai.github.io/design-style/?lang=zh"><img src="docs/assets/style-mosaic.svg" width="100%" alt="24 张作品封面拼图 · 点击进入画廊" /></a></p>
+<p><a href="https://guanmo-ai.github.io/design-style/?lang=zh"><img src="docs/assets/style-mosaic.svg" width="100%" alt="25 张作品封面拼图 · 点击进入画廊" /></a></p>
 <!-- END WORK PREVIEWS -->
 
 [**中文**](README.md) · [**English**](README.en.md) · [**English gallery →**](https://guanmo-ai.github.io/design-style/?lang=en)
@@ -61,6 +61,7 @@ by 观默 [@guanmo_ai](https://x.com/guanmo_ai)
 | **025** | [**毛绒 Plush**](styles/025-plush) | 2026 | 同一批四十万根毛，从毛球接力到泰迪熊与界面，身体先动、毛晚半拍 | [🎬 视频](https://github.com/guanmo-ai/design-style/releases/tag/day-25) · [🛠 过程](styles/025-plush/PROCESS.md) |
 | **026** | [**新艺术运动 Art Nouveau**](styles/026-art-nouveau) | 1890—1910 | 一根鞭线长成光环、地铁口、台灯与手机界面，21 秒绕回原点 | [🎬 视频](https://github.com/guanmo-ai/design-style/releases/tag/day-26) · [🛠 过程](styles/026-art-nouveau/PROCESS.md) |
 | **027** | [**马克笔手绘 Marker**](styles/027-marker) | 当代 | 六个场景用巨笔接力，汽车开走、球鞋翻转、建筑亮灯，手绘走进官网、App 与海报 | [🎬 视频](https://github.com/guanmo-ai/design-style/releases/tag/day-27) · [🛠 过程](styles/027-marker/PROCESS.md) |
+| **029** | [**达达 Dada**](styles/029-dada) | 1916—约 1924 | 一批纸片接力演示照片蒙太奇、偶然拼贴和剪报成诗 | [🎬 视频](https://github.com/guanmo-ai/design-style/releases/tag/day-29) · [🛠 过程](styles/029-dada/PROCESS.md) |
 
 ### 布局方式 · Layout
 
