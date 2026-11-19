@@ -56,6 +56,17 @@ get YujiSyuku-Regular.ttf      "$GF/yujisyuku/YujiSyuku-Regular.ttf"
 get Caveat.ttf "$GF/caveat/Caveat%5Bwght%5D.ttf"
 get PermanentMarker-Regular.ttf "https://raw.githubusercontent.com/google/fonts/main/apache/permanentmarker/PermanentMarker-Regular.ttf"
 get LongCang-Regular.ttf "$GF/longcang/LongCang-Regular.ttf"
+# 达达（草稿 drafts/dada）：勒索信式的混搭字母——Abril Fatface / Rye / Alfa Slab One / Archivo Black / Ma Shan Zheng / ZCOOL KuaiLe /
+# UnifrakturMaguntia / Playfair Display Italic（OFL）+ Special Elite（打字机体，Apache 2.0）。许可按 google/fonts 的目录推断，未逐个读许可证
+get AbrilFatface-Regular.ttf   "$GF/abrilfatface/AbrilFatface-Regular.ttf"
+get Rye-Regular.ttf            "$GF/rye/Rye-Regular.ttf"
+get AlfaSlabOne-Regular.ttf    "$GF/alfaslabone/AlfaSlabOne-Regular.ttf"
+get ArchivoBlack-Regular.ttf   "$GF/archivoblack/ArchivoBlack-Regular.ttf"
+get MaShanZheng-Regular.ttf    "$GF/mashanzheng/MaShanZheng-Regular.ttf"
+get ZCOOLKuaiLe-Regular.ttf    "$GF/zcoolkuaile/ZCOOLKuaiLe-Regular.ttf"
+get UnifrakturMaguntia.ttf     "$GF/unifrakturmaguntia/UnifrakturMaguntia-Book.ttf"
+get PlayfairDisplay-Italic.ttf "$GF/playfairdisplay/PlayfairDisplay-Italic%5Bwght%5D.ttf"
+get SpecialElite-Regular.ttf   "https://raw.githubusercontent.com/google/fonts/main/apache/specialelite/SpecialElite-Regular.ttf"
 # 布局 01 Bento Grid：Inter Display（标题）+ Inter（正文）+ Geist Mono（数字 / 标注）
 TMP=$(mktemp -d)
 get "$TMP/inter.zip" https://github.com/rsms/inter/releases/download/v4.1/Inter-4.1.zip
