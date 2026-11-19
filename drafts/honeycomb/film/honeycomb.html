@@ -1,0 +1,173 @@
+<!doctype html>
+<html><head><meta charset="utf-8">
+<title>蜂窝布局 · 开头小样</title>
+<style>
+@font-face{font-family:IDisp;src:url(../../../public/fonts/InterDisplay-Bold.ttf);font-weight:700}
+@font-face{font-family:IDisp;src:url(../../../public/fonts/InterDisplay-SemiBold.ttf);font-weight:600}
+@font-face{font-family:Inter;src:url(../../../public/fonts/Inter-Medium.ttf);font-weight:500}
+@font-face{font-family:Mono;src:url(../../../public/fonts/GeistMono-Medium.ttf);font-weight:500}
+@font-face{font-family:SC;src:url(../../../public/fonts/NotoSansSC-Black.otf);font-weight:900}
+@font-face{font-family:SC;src:url(../../../public/fonts/NotoSansSC-Bold.otf);font-weight:700}
+@font-face{font-family:SC;src:url(../../../public/fonts/NotoSansSC-Medium.otf);font-weight:500}
+html,body{margin:0;background:#000;overflow:hidden}
+canvas{display:block}
+</style></head>
+<body><canvas id="c" width="1920" height="1080"></canvas>
+<script>
+/* 蜂窝 / 鱼眼布局 · 开头小样（8 秒 · 60fps）
+   规则只有一条：离中心越近越大。六边形密铺的图标经过一面“透镜”：
+     中心一圈（r0 以内）原大 1:1；往外，位置按 tanh 往里收、大小按 sech² 缩小——位置和大小用的是同一条曲线（大小 = 位置的导数），
+     所以边上的图标挤在一起、越来越小，但永远不会叠在一起。
+   动作：甩一下，整片蜂窝带惯性（τ = 0.5 s）流过透镜 → 吸附到一个图标上（临界阻尼）→ 放大，图标长成一整屏 → 缩回去、拉远看整片。
+   在走的东西按速度运动模糊（子帧平均）。每一帧是帧号的纯函数：window.frame(f)。 */
+const W = 1920, H = 1080, FPS = 60;
+const g = document.getElementById('c').getContext('2d');
+const clamp = (x, a = 0, z = 1) => Math.min(Math.max(x, a), z);
+const sm = x => { x = clamp(x); return x * x * (3 - 2 * x); };
+const smr = x => { x = clamp(x); return x * x * x * (x * (6 * x - 15) + 10); };
+function hash(n) { const s = Math.sin(n * 127.1 + 311.7) * 43758.5453; return s - Math.floor(s); }
+function mk(w, h) { const c = document.createElement('canvas'); c.width = w; c.height = h; return c; }
+function txt(c, s, x, y, font, color, align = 'left', ls = 0) {
+  c.font = font; c.fillStyle = color; c.textAlign = align; c.textBaseline = 'alphabetic';
+  c.letterSpacing = ls + 'px'; c.fillText(s, x, y); c.letterSpacing = '0px';
+}
+const INK = '#F5F5F7', DIM = '#8E8E93';
+
+// ---------- 蜂窝：轴坐标 (q, r) → 平面 ----------
+const D = 150, ICON = 132, RING = 8;                       // 相邻中心距、原大直径、圈数
+const CELLS = [];
+for (let q = -RING; q <= RING; q++) for (let r = Math.max(-RING, -q - RING); r <= Math.min(RING, -q + RING); r++)
+  CELLS.push({ q, r, x: D * (q + r / 2), y: D * Math.sqrt(3) / 2 * r, id: CELLS.length });
+
+// ---------- 图标（预先画成 256px 的圆形位图）----------
+const PHOTOS = ['lake', 'dunes', 'ocean', 'stairs', 'tokyo', 'monstera', 'citrus', 'nook', 'cup', 'tulips', 'bread', 'cat'];
+const IMG = {};
+const COLORS = ['#FF453A', '#FF9F0A', '#FFD60A', '#30D158', '#64D2FF', '#0A84FF', '#F2F2F7', '#FF375F', '#2C2C2E'];
+const SP = [];
+function sprite(kind, k) {
+  const S = 256, c = mk(S, S), x = c.getContext('2d');
+  x.beginPath(); x.arc(S / 2, S / 2, S / 2, 0, 7); x.clip();
+  if (kind === 'photo') {
+    const im = IMG[PHOTOS[k % PHOTOS.length]], s = Math.max(S / im.width, S / im.height);
+    x.drawImage(im, (S - im.width * s) / 2, (S - im.height * s) / 2, im.width * s, im.height * s);
+  } else {
+    const bg = COLORS[k % COLORS.length], fg = bg === '#F2F2F7' || bg === '#FFD60A' ? '#1C1C1E' : '#FFFFFF';
+    x.fillStyle = bg; x.fillRect(0, 0, S, S);
+    x.fillStyle = fg; x.strokeStyle = fg; x.lineWidth = 18; x.lineCap = 'round'; x.lineJoin = 'round';
+    const gl = Math.floor(hash(k * 7.3) * 8);
+    x.beginPath();
+    if (gl === 0) { x.arc(128, 128, 62, 0, 7); x.stroke(); x.beginPath(); x.moveTo(128, 128); x.lineTo(128, 82); x.moveTo(128, 128); x.lineTo(160, 140); x.stroke(); }
+    else if (gl === 1) { x.moveTo(104, 78); x.lineTo(180, 128); x.lineTo(104, 178); x.closePath(); x.fill(); }
+    else if (gl === 2) { for (let i = 0; i < 4; i++) x.rect(70 + i * 32, 170 - [40, 80, 60, 100][i], 20, [40, 80, 60, 100][i]); x.fill(); }
+    else if (gl === 3) { x.moveTo(64, 128); for (let i = 0; i <= 32; i++) x.lineTo(64 + i * 4, 128 + Math.sin(i / 32 * Math.PI * 3) * 34); x.stroke(); }
+    else if (gl === 4) { for (let i = 0; i < 3; i++) for (let j = 0; j < 3; j++) { x.moveTo(92 + i * 36 + 12, 92 + j * 36); x.arc(92 + i * 36, 92 + j * 36, 12, 0, 7); } x.fill(); }
+    else if (gl === 5) { x.arc(128, 128, 60, Math.PI * .15, Math.PI * 1.85); x.stroke(); }
+    else if (gl === 6) { x.rect(78, 84, 100, 88); x.stroke(); x.beginPath(); x.moveTo(78, 112); x.lineTo(178, 112); x.stroke(); }
+    else { x.arc(128, 128, 26, 0, 7); x.fill(); x.beginPath(); for (let i = 0; i < 8; i++) { const a = i * Math.PI / 4; x.moveTo(128 + Math.cos(a) * 46, 128 + Math.sin(a) * 46); x.lineTo(128 + Math.cos(a) * 70, 128 + Math.sin(a) * 70); } x.stroke(); }
+  }
+  return c;
+}
+// 中心那颗（会被点开的）= 湖；第 0 帧中心附近放几张照片
+const TARGET = CELLS.find(c => c.q === 3 && c.r === -1);
+
+// ---------- 透镜 ----------
+const LC = { x: 1230, y: 540, ax: 700, ay: 500 };            // 透镜中心与半径（椭圆，按画面比例）
+function lens(dx, dy, r0) {
+  const u = dx / LC.ax, v = dy / LC.ay, rr = Math.hypot(u, v) + 1e-9, Rk = .58;
+  let rd, s;
+  if (rr <= r0) { rd = rr; s = 1; } else { const z = (rr - r0) / Rk, th = Math.tanh(z); rd = r0 + Rk * th; s = 1 - th * th; }
+  return { x: LC.x + u / rr * rd * LC.ax, y: LC.y + v / rr * rd * LC.ay, s };
+}
+
+// ---------- 时间轴 ----------
+// 甩：惯性；吸附：临界阻尼，落在 TARGET 上
+const TAU = 0.5, RISE = 0.06;
+const Xf = u => u <= 0 ? 0 : 1 - (TAU * Math.exp(-u / TAU) - RISE * Math.exp(-u / RISE)) / (TAU - RISE);
+const SN = .17, Sn = u => u <= 0 ? 0 : 1 - (1 + u / SN) * Math.exp(-u / SN);
+const C0 = { x: -900, y: 560 }, F1 = { x: 1300, y: -700 }, F2 = { x: -300, y: 900 };
+const panAt = t => {
+  const a = Xf(t + 0.32), a2 = Xf(t - 1.15), b = Sn(t - 2.15), d = Xf(t - 6.1);
+  const ex = TARGET.x - (C0.x + F1.x + F2.x), ey = TARGET.y - (C0.y + F1.y + F2.y);
+  return { x: C0.x + F1.x * a + F2.x * a2 + ex * b + 520 * d, y: C0.y + F1.y * a + F2.y * a2 + ey * b - 300 * d };
+};
+// 缩放（像转表冠）：2.9 s 起放大、3.3 s 起图标长成一整屏；4.4 s 收回；4.75 s 起拉远到 0.42；6.1 s 再轻轻甩一下（拉远后也是透镜）
+const zoomAt = t => {
+  const zin = smr((t - 2.9) / 0.85), zout = smr((t - 4.75) / 1.35);
+  return Math.exp(Math.log(2.3) * zin * (1 - smr((t - 4.45) / 0.6)) + Math.log(0.42) * zout);
+};
+const openAt = t => smr((t - 3.3) / 0.75) * (1 - smr((t - 4.35) / 0.6));
+
+function scene(c, t) {
+  const p = panAt(t), Z = zoomAt(t), zo = clamp(Math.log(Z) / Math.log(0.42));
+  const r0 = .32 + .38 * zo;                          // 拉远时平区变大：整片看起来像一颗球
+  c.fillStyle = '#000'; c.fillRect(0, 0, W, H);
+  const L = [];
+  for (const cell of CELLS) {
+    const P = lens((cell.x - p.x) * Z, (cell.y - p.y) * Z, r0);
+    const d = ICON * Z * P.s;
+    if (d < 3) continue;
+    L.push([d, P, cell]);
+  }
+  L.sort((a, b) => a[0] - b[0]);
+  for (const [d, P, cell] of L) {
+    c.globalAlpha = clamp(d / 18);
+    c.drawImage(SP[cell.id], P.x - d / 2, P.y - d / 2, d, d);
+  }
+  c.globalAlpha = 1;
+}
+
+// ---------- 不跟着动的字 ----------
+function title(c, t) {
+  const a = 1 - sm((t - 2.95) / 0.4) + sm((t - 5.6) / 0.6);
+  if (a <= 0.01) return;
+  c.globalAlpha = Math.min(1, a);
+  const bg = c.createLinearGradient(0, 0, 760, 0); bg.addColorStop(0, 'rgba(0,0,0,.92)'); bg.addColorStop(.75, 'rgba(0,0,0,.75)'); bg.addColorStop(1, 'rgba(0,0,0,0)');
+  c.fillStyle = bg; c.fillRect(0, 0, 820, H);
+  txt(c, 'Layout 03', 104, 150, '500 30px Inter', DIM);
+  txt(c, 'Honey', 96, 360, '700 200px IDisp', INK, 'left', -9);
+  txt(c, 'comb', 96, 540, '700 200px IDisp', INK, 'left', -9);
+  txt(c, '蜂窝布局', 104, 680, '900 96px SC', INK, 'left', 4);
+  txt(c, '离中心越近，越大。', 106, 760, '700 40px SC', DIM);
+  c.globalAlpha = 1;
+}
+function opened(c, t) {
+  const o = openAt(t); if (o <= 0.001) return;
+  const p = panAt(t), Z = zoomAt(t), P = lens((TARGET.x - p.x) * Z, (TARGET.y - p.y) * Z, .32);
+  const r0 = ICON * Z * P.s / 2, R = r0 + (Math.hypot(W, H) * .62 - r0) * o;
+  const cx = P.x + (W / 2 - P.x) * o, cy = P.y + (H / 2 - P.y) * o;
+  c.save(); c.beginPath(); c.arc(cx, cy, R, 0, 7); c.clip();
+  const im = IMG.lake, s = Math.max(W / im.width, H / im.height) * (1.25 - .2 * o);
+  c.drawImage(im, cx - im.width * s / 2, cy - im.height * s / 2, im.width * s, im.height * s);
+  c.fillStyle = `rgba(0,0,0,${.35 * o})`; c.fillRect(0, 0, W, H);
+  c.globalAlpha = sm((o - .6) / .4);
+  txt(c, '点开', 120, 760, '900 120px SC', '#fff', 'left', 4);
+  txt(c, '图标从蜂窝里长成一整屏，收起来再缩回原位', 124, 840, '700 40px SC', 'rgba(255,255,255,.85)');
+  c.globalAlpha = 1; c.restore();
+}
+const buf = mk(W, H), b = buf.getContext('2d');
+const SHUTTER = 0.75;
+window.frame = f => {
+  const t = f / FPS;
+  const p0 = panAt(t - .004), p1 = panAt(t + .004), v = Math.hypot(p1.x - p0.x, p1.y - p0.y) / .008 * zoomAt(t);
+  const zv = Math.abs(Math.log(zoomAt(t + .004) / zoomAt(t - .004))) / .008;
+  const N = Math.max(1, Math.min(18, Math.ceil(v * SHUTTER / FPS / 3 + zv * 6)));
+  for (let k = 0; k < N; k++) {
+    const tk = N === 1 ? t : t + (k / (N - 1) - .5) * SHUTTER / FPS;
+    scene(b, tk); opened(b, tk);
+    g.globalAlpha = 1 / (k + 1); g.drawImage(buf, 0, 0);
+  }
+  g.globalAlpha = 1;
+  title(g, t);
+};
+const qf = new URLSearchParams(location.search).get('f');
+Promise.all([...PHOTOS.map(n => new Promise(r => { const im = new Image(); im.onload = () => { IMG[n] = im; r(); }; im.src = `../../../public/02-masonry/photos/${n}.jpg`; })),
+  ...['700 10px IDisp', '500 10px Inter', '500 10px Mono', '900 10px SC', '700 10px SC'].map(s => document.fonts.load(s, '蜂窝布局离中心越近Aa'))])
+  .then(() => {
+    for (const cell of CELLS) {
+      const dist = Math.hypot(cell.x - (C0.x + F1.x * .5), cell.y - (C0.y + F1.y * .5));
+      const photo = cell === TARGET || hash(cell.id * 3.3) < (dist < 700 ? .45 : .28);
+      SP[cell.id] = cell === TARGET ? sprite('photo', 0) : sprite(photo ? 'photo' : 'glyph', photo ? 1 + Math.floor(hash(cell.id * 1.7) * 11) : Math.floor(hash(cell.id * 9.1) * 9) + cell.id);
+    }
+    window.frame(+(qf || 0)); window.ready = true;
+  });
+</script></body></html>
