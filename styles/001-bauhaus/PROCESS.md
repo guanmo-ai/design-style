@@ -20,7 +20,7 @@
 | 3 | 设计令牌 | 5 色、3 款开源字体、线宽、节拍网格 | `tokens.ts / .css / .json` · `src/lib/anim.ts` |
 | 4 | 风格图 ×4 | 海报 · 速查卡 · app 概念 · 图案生成器 | 手写 SVG · `pattern.py` · `scripts/build_images.py` |
 | 5 | 视频 v1 | 6 段式短片：讲“包豪斯的语法” | `Remotion` · React |
-| 6 | 反馈 | “视频没有把包豪斯的各种风格展示出来” | — |
+| 6 | 初版分析 | 补充建筑、家具、纺织和舞台等代表作品 | — |
 | 7 | 视频 v2 | 9 个章节，讲“一所学校的 9 种样子” | `video/Bauhaus.tsx` · `video/chapters.tsx` |
 | 8 | 配乐与音效 | 120 BPM，所有音效对齐关键帧，−14 LUFS | `audio/make_music.py`（numpy 合成） |
 | 9 | 质检 | 关键帧截图、联系表、节拍时间轴 | `scripts/stills.mjs` · `contact_sheet.py` · `timeline_chart.py` |
