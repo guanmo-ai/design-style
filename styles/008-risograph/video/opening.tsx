@@ -26,7 +26,7 @@ export const HOLE = {
   r: ((562 - 271) / 2000) * TS,
 };
 
-/* ═══════════════ 商店海报：三张版的几何（对标主人选中的参考图） ═══════════════ */
+/* ═══════════════ 商店海报：三张版的几何 ═══════════════ */
 const Dot: React.FC<{x: number; y: number; r: number}> = ({x, y, r}) => (
   <div style={{position: 'absolute', left: x - r, top: y - r, width: r * 2, height: r * 2, borderRadius: '50%', background: 'currentColor'}} />
 );

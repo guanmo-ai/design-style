@@ -143,7 +143,7 @@ class Song(AudioKit, Orchestra):
         self.sfx(self.whistle(74, 86, 0.24) if up else self.whistle(86, 72, 0.24), self.fr(t - 15), 0.18 * level, 0.2)
         self.place(self.crash(0.9 * level), self.fr(t), 0.8, 0.2, send=0.2)
 
-    # —— 文字的声音（主人 2026-11-06：“文字变得很快，但是少了音效跟它搭配”）——
+    # 文字出场的配乐事件
     def type_tick(self, m, level=1.0, bright=1.0):
         """解码的“嗒”：一下很短的高通噪声 + 一个调好音的数字小音（取当前和弦里的音）"""
         t = self.tt(0.05)

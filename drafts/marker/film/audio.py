@@ -62,7 +62,7 @@ DW, DWL = EV['dwell'], EV['dwellLen']
 HITS = EV['hits']
 
 # ================= 乐队 =================
-BRK = [(CAPON - 50, CAPON)]          # 扣帽前半小节：鼓停（积墨那一下鼓不停了——主人：“第 5 秒好像有停顿”）
+BRK = [(CAPON - 50, CAPON)]          # 扣帽前半小节停鼓，积墨段保持节拍。
 S.drums(50, CAPON, skip=BRK, level=0.9)
 for fm in np.arange(50, CAPON, BEAT / 4):
     if not any(a <= fm < z for a, z in BRK):

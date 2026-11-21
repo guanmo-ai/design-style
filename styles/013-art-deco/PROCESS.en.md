@@ -10,7 +10,7 @@ Art Deco was one of the three drafts left over when 009 was selected (Art Deco, 
 
 ## Why v1 was rejected
 
-v1 was also built on mirroring: everything opened from the axis with a `scaleX` and closed back into it, with a floor indicator as the chapter marker. The owner's verdict after review was that the motion was too ordinary:
+v1 was also built on mirroring: everything opened from the axis with a `scaleX` and closed back into it, with a floor indicator as the chapter marker. The first version had the following motion limitations:
 
 - there was only one move, a flat open/close from the axis, with no depth and no light, so it felt like a slideshow;
 - every chapter had the same rhythm (grow, hold, caption), so the information density was low;

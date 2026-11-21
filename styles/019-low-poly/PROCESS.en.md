@@ -16,14 +16,14 @@
 | 4 | Film | Five chapters + finale, 20 s, pure SVG frames |
 | 5 | Score | Version 3: D major electronic future bass |
 
-## Review rounds
+## Production changes
 
-| Round | Feedback | Change |
+| Round | Area | Change |
 |---|---|---|
-| 1 | Chapter 2 also builds bottom-up; make it top-down | Coloured triangles now slam down from the sky, back rows first |
-| 1 | The ending stops abruptly; better, cinematic music | A real ending (the valley flips back into paper + title); version 2 score with synthesized orchestra |
-| 2 | The music still isn't good; the ending doesn't have to loop | Version 3 score (below); the ending now holds on the title |
-| 3 | Always add the author's byline at the end | Byline under the title, added to the design notes |
+| 1 | Entry direction | Coloured triangles now slam down from the sky, back rows first |
+| 1 | Ending and score | A real ending (the valley flips back into paper + title); version 2 score with synthesized orchestra |
+| 2 | Final score and ending | Version 3 score (below); the ending now holds on the title |
+| 3 | End credit | Byline under the title, added to the design notes |
 
 ## Why the score was rebuilt
 

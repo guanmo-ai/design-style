@@ -124,7 +124,7 @@ function camAt(f) {
   const TREE = (t) => orbit([0, 0.2, 0], lerp(11.5, 10.2, t), lerp(-0.6, 0.15, t), 1.3, 40);
   if (f < 500) return cm(WALL(1), TREE(0), ease.inOut3(prog(f, 470, 500)));
   if (f < 560) return TREE(prog(f, 500, 560));
-  // 规则卡：每张一个镜头。第三版一拍一张、镜头硬切，主人觉得“突然变化”→ 一张 45 帧，换卡时 18 帧滑过去；
+  // 每张规则卡停留 45 帧，转场用 18 帧滑动。
   // 绕着地形转的三张（2—4）按轨道参数插值（绕过去，而不是从山顶穿过去）
   const OC = [0, -0.6, 0], ORB = [null, [9.5, 0.6, 0.9, 4.0], [[7.5, 6.8], -0.8, -0.6, 2.4], [10, 0.9, 1.2, 3.4], null];
   const op = (k, t) => { const o = ORB[k], r = Array.isArray(o[0]) ? lerp(o[0][0], o[0][1], t) : o[0]; return [r, lerp(o[1], o[2], t), o[3]]; };

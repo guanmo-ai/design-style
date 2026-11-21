@@ -6,7 +6,7 @@
   "fps": 60,
   "durationFrames": 1080,
   "durationSeconds": 18.0,
-  "approval": "本人本轮明确两部已审片通过；直接沿用现有原片",
+  "approval": "发布版沿用完整原片",
   "release_tag": "day-23",
   "release_asset": "023-liquid-chrome.mp4",
   "master_policy": "发布附件只更名；必须保持上述字节数与SHA-256"

@@ -45,7 +45,7 @@ Key stills (`scripts/stills_batch.mjs`), film strips (`strip.py`), motion curves
 
 ## Version 2: the first seven seconds rebuilt
 
-Feedback on v1: the first seven seconds were not gripping, the pacing was flat, there was no sense of lightness; lean towards a cinematic feel (light and shadow, design), make the music, sound and motion better — top-tier motion first.
+The second version moves the main action earlier and uses lighting, edits, and sound to give the first seven seconds more momentum.
 
 Diagnosis: the opening *lost* energy (a brake, then 50 almost static frames); the first chapters were small flat subjects on beige paper with no depth or light; every chapter had the same length and intensity; the noise-intoner score was tiring.
 

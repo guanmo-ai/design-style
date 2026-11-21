@@ -7,7 +7,7 @@
   "fps": 60,
   "durationFrames": 1125,
   "durationSeconds": 18.75,
-  "approval": "用户明确水墨通过，并要求合入主干及在网页展示",
+  "approval": "发布版使用完整的水墨原片",
   "release_tag": "day-24",
   "release_asset": "024-ink-wash.mp4",
   "master_policy": "只更名，保持原片字节与SHA-256"

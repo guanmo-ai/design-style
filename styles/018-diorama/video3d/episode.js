@@ -66,7 +66,7 @@ const KEYS = [
   [18.6, camAt(P_ROOM, 0.70, 70, 36, 2.6, 22)],           // 结尾：推向房间——整间屋子像一个亮着的娃娃屋
   [20.0, camAt(P_ROOM, 0.74, 65, 33, 2.8, 21.5)],        // 关灯后继续缓推，最后一帧停在小彩灯里
 ];
-// 第三版：镜头走单调三次样条（Fritsch–Carlson），经过关键帧时速度连续，不再“到一个点停一下”
+// 第三版：镜头走单调三次样条（Fritsch–Carlson），经过关键帧时保持速度连续。
 function pchip(ts, ys) {
   const n = ts.length, h = [], dl = [], m = new Array(n).fill(0);
   for (let i = 0; i < n - 1; i++) { h[i] = ts[i + 1] - ts[i]; dl[i] = (ys[i + 1] - ys[i]) / h[i]; }

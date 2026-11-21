@@ -4,7 +4,7 @@
 
 ## Approved master
 
-The user approved both films on 2026-11-04. This release directly uses `drafts/generative/film/generative-film.mp4` from commit `ced34bf`, renamed for the release. No picture or audio was re-rendered. Provenance and SHA-256 are recorded in `process/approved-master.json`.
+This release directly uses `drafts/generative/film/generative-film.mp4` from commit `ced34bf`, renamed for the release. No picture or audio was re-rendered. Provenance and SHA-256 are recorded in `process/approved-master.json`.
 
 ## Implementation
 

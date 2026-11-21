@@ -238,7 +238,7 @@ float hsh(float n){ return fract(sin(n*127.1)*43758.5453); }
 float hsh2(vec2 p){ return fract(sin(dot(p, vec2(127.1, 311.7)))*43758.5453); }
 float vn(vec2 p){ vec2 i = floor(p), f = p - i; f = f*f*(3.0 - 2.0*f);
   return mix(mix(hsh2(i), hsh2(i + vec2(1,0)), f.x), mix(hsh2(i + vec2(0,1)), hsh2(i + vec2(1,1)), f.x), f.y); }
-// 舞台的体积光（主人 2026-11-06：“地板不好看……尽量往影视大片的方向搞”）：
+// 舞台体积光：
 // 头顶一盏聚光灯，光柱是一根往下张开的锥，雾里飘着灰尘；只在 checker（= 舞台）> 0 的镜头里出现
 vec3 shaft(vec3 ro, vec3 rd, vec2 sp){
   if (checker <= 0.0) return vec3(0.0);

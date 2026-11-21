@@ -14,7 +14,7 @@
 | 画面 | Canvas 2D，没有 WebGL。每帧是帧号的纯函数；4 个子帧做运动模糊 |
 | 速度 | 云端 0.07 秒 / 帧（3 路并行），整片渲染 + 合成约 3 分钟 |
 | 外部素材 | 没有。字体 Noto Serif SC、Cormorant、Cinzel Decorative（都是 OFL） |
-| 选题 | 主人在浮世绘和新艺术运动的候选图里选了后者：“给我做一个顶尖的动效，起码媲美毛绒，一定要很丝滑” |
+| 选题 | 新艺术运动以连续生长的鞭线串联海报、建筑和工艺场景。 |
 
 ## 为什么是“一根线”
 
@@ -43,7 +43,7 @@
 
 - **看过的是静帧、联系表和连续帧，不是播放。**“丝滑”只用 `smooth.py` 量过（跳变 0、死区 0、最大单帧变化 10.9）。
 - **配乐没听过**：只核对了时长（21.0 秒）、响度（-14 LUFS）和每半秒的音量曲线（夜里那几小节弦乐偏轻约 5 dB，片尾全和弦最响）。
-- 主人已审片通过（2026-11-12），四张风格图、tokens、时间轴和中英文指南已补齐，见[正式目录](../../styles/026-art-nouveau/README.md)。[Release day-26](https://github.com/guanmo-ai/design-style/releases/tag/day-26) 已发布，画廊登记为「风格 019」。
+- 2026-11-12 发布，四张风格图、tokens、时间轴和中英文指南已补齐，见[正式目录](../../styles/026-art-nouveau/README.md)。[Release day-26](https://github.com/guanmo-ai/design-style/releases/tag/day-26) 已发布，画廊登记为「风格 019」。
 - 只有横版。
 
 ## 可以留给以后的

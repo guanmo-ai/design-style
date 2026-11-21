@@ -2,7 +2,7 @@
 python3 drafts/_lib/smooth.py <成片.mp4> [fps=60]
 - 跳变：这一帧的变化量是前后 12 帧中位数的 4 倍以上（硬切、某个东西突然出现 / 消失）。拍点上的重击会算进来，逐个核对是不是有意的。
 - 死区：连续 0.4 秒以上几乎没变（画面停住了）。
-它量的是“有没有不连续”，量不出“好不好看”。基准：drafts/plush/film/plush-film.mp4（主人 2026-11-11：“很丝滑”）。"""
+该脚本定位运动不连续处。参考影片：drafts/plush/film/plush-film.mp4。"""
 import subprocess
 import sys
 

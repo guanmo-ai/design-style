@@ -28,7 +28,7 @@
 
 ## Version 3: smooth, rounded, cinematic (2026-11-02)
 
-Feedback on the published film: the sound effects and music weren't smooth; push toward a cinematic, top-tier animated-film look; the dioramas lacked detail and the buildings felt stiff and should be rounder.
+Version 3 rounds the buildings, refines the lighting and camera motion, and keeps the score continuous across scene changes.
 
 - **Why it felt choppy:** the camera eased to zero velocity at every key frame (smoothstep per segment); tilt-shift and shadow settings switched on and off between chapters; landings snapped back with a single `easeOutBack`; the score changed instruments every two bars, stacked timpani rolls and five impact hits, and played a hundred randomly pitched build sounds, then cut hard at the lamp switch and ended in a tape stop.
 - **Fixes:** a monotone cubic camera spline with continuous velocity; every switch is a smooth blend; damped-wobble landings and underdamped springs; one unbroken score (flowing harp arpeggios, voice-led legato strings, one melody passed from felt piano to violins to celesta to the tutti, a single timpani stroke); every build sound tuned to the current chord and throttled; long reverb, slow glue compression and smooth limiting with no clipping.

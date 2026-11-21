@@ -1,6 +1,6 @@
 # Ink Wash: production
 
-The user approved Ink Wash and requested its integration into main and the website. The original complete film is preserved byte-for-byte.
+The release preserves the complete original Ink Wash film byte-for-byte.
 
 - Source: `drafts/ink-wash/opening/ink-full.mp4`, design commit `04f0aed`.
 - SHA-256: `5ba83214af23c69ade13722b8ce1f214d8f81f623bf8fdbddf286a187940cc99`

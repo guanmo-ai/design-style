@@ -1,6 +1,6 @@
 # Marker Illustration: production
 
-The user selected v4 and authorized publication on 2026-11-15. The complete master and matching source come from `a6468e343d4d96b0ed59a855e16b246d8aae58cb`. The later v5 opening preview is excluded.
+The release uses the full v4 film and matching source from `a6468e343d4d96b0ed59a855e16b246d8aae58cb`.
 
 ## Master
 

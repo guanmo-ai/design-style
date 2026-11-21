@@ -19,7 +19,7 @@
 
 ## Why version 2 was thrown away
 
-Version 2 laid six pages side by side and whip-panned between them while the glass stayed on screen. The owner's verdict was “ordinary motion”. In review: the skeleton was still a slideshow (same layout per chapter, the whip pan just a fancier page turn); almost every move was an interpolation plus a spring, with no anticipation, overlap, tempo contrast or camera depth; the glass never did anything only glass can do; and reviewing stills hides timing problems.
+Version 2 laid six pages side by side and whip-panned between them while the glass stayed on screen. In this version, the skeleton was still a slideshow (same layout per chapter, the whip pan just a fancier page turn); almost every move was an interpolation plus a spring, with no anticipation, overlap, tempo contrast or camera depth; the glass never did anything only glass can do; and reviewing stills hides timing problems.
 
 ## Version 3: only moves glass can make
 

@@ -4,7 +4,7 @@
 
 ## 定稿来源
 
-用户于 2026-11-04 在交接中明确确认两部成片审核通过。本期直接采用制作分支 `claude/vigilant-galileo-j1sfyr` 提交 `ced34bf` 的 `drafts/generative/film/generative-film.mp4`，只按正式附件名更名，不重渲或改动音画。来源和 SHA-256 记录于 `process/approved-master.json`。
+发布版直接采用制作分支 `claude/vigilant-galileo-j1sfyr` 提交 `ced34bf` 的 `drafts/generative/film/generative-film.mp4`，只按正式附件名更名，不重渲或改动音画。来源和 SHA-256 记录于 `process/approved-master.json`。
 
 正式目录使用制作 ID 021；网站期号按首次上架顺序分配，两者可以不同。
 

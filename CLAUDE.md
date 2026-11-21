@@ -8,16 +8,20 @@
 
 ## 必须守的只有八条
 
-见 [`docs/DESIGN_NOTES.md`](docs/DESIGN_NOTES.md) 开头。其余所有文档（标杆拆解、检查表、各期的制作过程）都是**参考**：记录的是“那一期为什么过 / 没过”，不是这一期必须怎么做。主人 2026-11-11：“不要让仓库限制了你以后的发挥。”
+见 [`docs/DESIGN_NOTES.md`](docs/DESIGN_NOTES.md) 开头。标杆拆解、检查表和各期制作过程用于参考。按当前作品的材料与表现需要选择做法。
 
 开工时先问：这种材料 / 风格**自己会怎么动**？把这一条做到最好，再考虑骨架。
 
-**动效的底线是毛绒那一期**（`drafts/plush/film/plush-film.mp4`，主人：“很丝滑”“以后至少达到这样的标准”，要“让人有惊艳的感觉”）。交片前跑 `python3 drafts/_lib/smooth.py <成片.mp4>`，逐个核对它列出的跳变；拆解见 `docs/DESIGN_NOTES.md` 的“丝滑是怎么来的”。
+**动效对照毛绒短片**（`drafts/plush/film/plush-film.mp4`）的转场与运动连续性。交片前跑 `python3 drafts/_lib/smooth.py <成片.mp4>`，逐个核对它列出的跳变。拆解见 `docs/DESIGN_NOTES.md` 的“丝滑是怎么来的”。
+
+## 公开文档
+
+公开文档记录作品、设计取舍、实现与验证结果。用户原话、私人审稿记录和敏感项目资料存入独立的私有工作区。
 
 ## 东西在哪
 
 - `styles/NNN-name/`、`layouts/NN-name/`：已上架的期（视频源码、图、指南、制作过程）
-- `drafts/`：没上架的草稿和候选；`drafts/README.md` 是每一轮主人说了什么的记录
+- `drafts/`：草稿和候选，`drafts/README.md` 提供作品索引和可以公开的制作过程。
 - `drafts/_lib/kit/`：**做片子的组件**（动作、镜头 / 颜色接力 / 转场、舞台、HUD、撒点）和新片模板，从毛绒成片拆出来的；起新片：`node drafts/_lib/kit/new_film.mjs <短名> "<标题>"`，说明见 [`README.md`](drafts/_lib/kit/README.md)
 - `drafts/_lib/fur/`：专用组件——毛绒渲染器（毛、草、毛线这类才用）
 - `drafts/_lib/`：其余共用工具（逐帧截图、联系表、量丝滑、一整首歌的配乐骨架、软的音效、出字的声音）

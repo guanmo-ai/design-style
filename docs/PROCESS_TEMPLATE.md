@@ -38,7 +38,7 @@
 关键帧截图（`scripts/stills.mjs`）· 联系表（`scripts/contact_sheet.py`）· 时间轴（`scripts/timeline_chart.py`）· ffprobe
 
 ## 8 · 改版记录
-| 版本 | 反馈 | 诊断 | 改了什么 |
+| 版本 | 现象 | 诊断 | 改了什么 |
 |---|---|---|---|
 
 ## 9 · 踩坑记录

@@ -8,7 +8,7 @@
 
 Chrome must carry a horizon line, and jelly must transmit light with a hard-edged highlight. Keep the frame mostly silver, mark the active parts in Aqua blue, and save neon lime for “passed”.
 
-The first candidate artwork was rejected in review as too ordinary: its chrome was a painted gradient. This episode therefore starts with a material renderer. `video/material.js` is a hand-written WebGL2 shader that turns a signed distance field into a bevelled height field and then into chrome, jelly, bubbles, or glass lit by a sky, horizon, and ground environment. The film and the four reference sheets use the same shader, so they cannot drift apart.
+The initial artwork used a painted gradient for chrome. The finished version starts with a material renderer. `video/material.js` is a hand-written WebGL2 shader that turns a signed distance field into a bevelled height field and then into chrome, jelly, bubbles, or glass lit by a sky, horizon, and ground environment. The film and the four reference sheets use the same shader, so they cannot drift apart.
 
 The film and the reference sheets share the values in `tokens.ts`, `tokens.css`, and `tokens.json`. Typography in this episode uses Unbounded, Michroma, Silkscreen, and Noto Sans SC.
 
