@@ -36,6 +36,9 @@
 | 毛绒 Plush · `plush/` | 画廊风格 018，见 [025 · 毛绒](../styles/025-plush/README.md) |
 | 新艺术运动 Art Nouveau · `art-nouveau/` | [026 · 新艺术运动](../styles/026-art-nouveau/README.md)，网站风格 019。[成片](https://github.com/guanmo-ai/design-style/releases/tag/day-26) |
 | 达达 Dada · `dada/` | 画廊风格 022，见 [029 · 达达](../styles/029-dada/README.md) |
+| 朋克复印机 Punk Xerox · `punk-xerox/` | 第十三轮候选图（第 0 帧 + 网页 / App） |
+| 波兰海报学派 Polish Poster · `polish-poster/` | 第十三轮候选图 |
+| 垃圾摇滚版式 Grunge Type · `grunge/` | 第十三轮候选图 |
 | 维也纳分离派 Vienna Secession · `secession/` | 两张候选图 |
 | 热成像 Thermal · `thermal/` | 候选图和温度场源码 |
 | 低多边形 / 体素 / 等距微缩 | 第四轮候选图 |
@@ -43,6 +46,24 @@
 | 风格派 / 图形统计 / 无限画布 | 第二轮候选图 |
 | 欧普艺术、抖动像素 | 候选图 |
 
+
+## 第十三轮候选：朋克复印机 / 波兰海报学派 / 垃圾摇滚版式（2026-11-21）
+
+接着达达往下找“手做、不讲究、材料自己会动”的风格。三个各两张：第 0 帧 + 落到网页和手机 App。全部是 Python 拼 SVG、Chromium 截图，没有一张照片或贴图素材。
+
+![第十三轮三个候选](candidates-13.jpg)
+
+| | 朋克复印机 · `punk-xerox/` | 波兰海报学派 · `polish-poster/` | 垃圾摇滚版式 · `grunge/` |
+|---|---|---|---|
+| 年代 | 1976— 朋克 zine：剪刀、胶水、复印机 | 1950s—80s 波兰电影 / 戏剧海报 | 1990s，Ray Gun 杂志（1992—）与苹果电脑排版 |
+| 签名动作 | **复印一次，糊一层**：扫描光条扫过，原稿变成黑碳粉；再扫一遍阈值上调、更糊 | **一笔变成另一个东西**：干笔的鬃毛一根根画出来，笔尾散开、卷成鸟 | **拖影 + 错版 + 过界换色**：字的最后一窄条被横着拖成线，同一层字偏几像素再印一遍，标题过了照片的边就换颜色 |
+| 第 0 帧 | 复印机玻璃板：光条左边已复印（荧光粉纸上的黑碳粉），右边还是彩色原稿 | 侧脸 + 月亮，一笔朱红从头里升起，笔尾正变成第一只鸟（念头 = 飞走的鸟） | 杂志跨页：“垃圾”“摇滚”压在照片和纸的交界，“摇滚”被拖影拉进右页正文 |
+| 网页 / App | 地下室 livehouse 官网（整页复印，只有买票贴纸是印完再贴的）；做 zine 的 App：同一个字复印 1 / 2 / 4 / 8 次，阈值、噪声两个滑块 | 小影展官网与购票 App：每部片子一个比喻（钥匙孔 = 眼睛、灯泡里是月亮、手臂长成树）；按钮是一笔刷过去的朱红；选中的座位从圆点变成小鸟 | 音乐杂志官网：三栏行距 0.9 / 1.5 / 2.6 互相压、按钮是错版印两遍的黑；播放器：进度 = 歌名拖影的长度，歌词当前句大、其余挤成一团 |
+| 技术 | 同一组原稿 `<use>` 两次，一次原样、一次过复印滤镜（转灰 → 加噪 → 糊 → 卡阈值 → 碳粉不匀）；`xf()` 的阈值 / 糊 / 噪声就是“代数” | 干笔 = 沿中心线偏移的几十根折线，越靠边越早断；水粉平涂 = 边缘位移 + 各向异性刷痕 | 拖影 = 一窄条一份份往右复制再横向模糊（字放大上百倍浏览器会不画）；扫描抖动 = 切成横带各自错开 |
+
+出图：`cd drafts/<风格> && python3 cover.py && python3 ui.py && node ../_lib/shot.cjs cover.html png/cover.png && node ../_lib/shot.cjs ui.html png/ui.png`。新用到的字体（Saira Stencil One、Londrina Solid、Caveat Brush、Bodoni Moda、Barlow Condensed、IBM Plex Mono）已加进 `scripts/fetch_fonts.sh`。
+
+图上的乐队、影展、杂志名（BASEMENT、KINO、Static）和片名都是编的；海报里的比喻是自己设计的，没有照搬具体作品。垃圾摇滚封面上列的 CARSON · CHANTRY · RAY GUN · EMIGRE 只指年代与人物。
 
 ## 第十二轮：达达 Dada 全片（2026-11-19，画廊风格 022）
 
