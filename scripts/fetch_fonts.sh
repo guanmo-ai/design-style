@@ -67,6 +67,16 @@ get ZCOOLKuaiLe-Regular.ttf    "$GF/zcoolkuaile/ZCOOLKuaiLe-Regular.ttf"
 get UnifrakturMaguntia.ttf     "$GF/unifrakturmaguntia/UnifrakturMaguntia-Book.ttf"
 get PlayfairDisplay-Italic.ttf "$GF/playfairdisplay/PlayfairDisplay-Italic%5Bwght%5D.ttf"
 get SpecialElite-Regular.ttf   "https://raw.githubusercontent.com/google/fonts/main/apache/specialelite/SpecialElite-Regular.ttf"
+# 第十三轮候选 朋克复印机 / 波兰海报学派 / 垃圾摇滚版式：Saira Stencil One（模板字）、Londrina Solid（手绘粗字）、Caveat Brush（笔刷手写）、
+# Bodoni Moda 正 / 斜（可变字重）、Barlow Condensed、IBM Plex Mono；均为 OFL（按 google/fonts 的 ofl/ 目录推断）
+get SairaStencilOne-Regular.ttf  "$GF/sairastencilone/SairaStencilOne-Regular.ttf"
+get LondrinaSolid-Black.ttf      "$GF/londrinasolid/LondrinaSolid-Black.ttf"
+get CaveatBrush-Regular.ttf      "$GF/caveatbrush/CaveatBrush-Regular.ttf"
+get BodoniModa.ttf               "$GF/bodonimoda/BodoniModa%5Bopsz,wght%5D.ttf"
+get BodoniModa-Italic.ttf        "$GF/bodonimoda/BodoniModa-Italic%5Bopsz,wght%5D.ttf"
+get BarlowCondensed-ExtraBold.ttf "$GF/barlowcondensed/BarlowCondensed-ExtraBold.ttf"
+get BarlowCondensed-Medium.ttf   "$GF/barlowcondensed/BarlowCondensed-Medium.ttf"
+get IBMPlexMono-Regular.ttf      "$GF/ibmplexmono/IBMPlexMono-Regular.ttf"
 # 布局 01 Bento Grid：Inter Display（标题）+ Inter（正文）+ Geist Mono（数字 / 标注）
 TMP=$(mktemp -d)
 get "$TMP/inter.zip" https://github.com/rsms/inter/releases/download/v4.1/Inter-4.1.zip
