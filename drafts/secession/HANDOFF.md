@@ -7,16 +7,17 @@ Claude 交片时填写，Codex 上架时照着做。只写技术事实；审片�
 | 项 | 值 |
 |---|---|
 | 文件 | `drafts/secession/film/secession-film.mp4` |
-| 来源提交 | 本交接单所在的提交（分支 `claude/dazzling-maxwell-alvsrk`） |
-| SHA-256 / 字节 | `d33aef52826bcdd8e7303041aef1bd8f16f9e62d0692d401c5b1b1e452580c7f` · 26,004,528 字节 |
+| 来源提交 | 本交接单所在的提交（分支 `claude/dazzling-maxwell-alvsrk`）。第一版在 `bc94111` |
+| SHA-256 / 字节 | `83f27b9c6bbc815b6254978e4f05e4ca5164db98bd6d2a6f45b88aa2cbb2a18f` · 26,374,776 字节（第二版，有字）；不放字的那一版 `film/secession-film-notext.mp4`：`d60072a7d08699c682b2ff0eec5310af18e3c06f56e7ef4cc6c14b9b709ccea0` · 26,424,870 字节 |
 | 规格 | 1920×1080 · 60fps · 1170 帧 · 19.50 秒 · H.264 CRF 18 + AAC 192k |
-| 音频 | -14.0 LUFS / -2.3 dBTP；配乐《Gilded Precision》（生成的纯音乐，`film/music/`）+ 代码合成的音效 |
-| `smooth.py` | 跳变 19（都在有意的快转场上，见分镜末尾）· 死区 0 · 最大 69.8 @ 第 358 帧 |
+| 音频 | -14.0 LUFS / -2.3 dBTP（不放字的那一版 -2.6 dBTP）；配乐《Gilded Precision》（生成的纯音乐，`film/music/`）+ 代码合成的音效 |
+| `smooth.py` | 两版都是：跳变 19（都在有意的快转场上，见分镜末尾）· 死区 0 · 最大 68.1 @ 第 358 帧 |
 
 ## 看过什么、没验证什么
 
 - 没看过播放，没听过声音，要主人自己看和听。
 - 看过：全片每 18 帧联系表（`film/contact.jpg`），甩镜、方形光圈、合回三段每 3 帧的连续帧，十个关键帧的全质量单帧，成片里解码出来的两帧细节。
+- 主人还没选：开场放字（`secession-film.mp4`）还是不放字（`secession-film-notext.mp4`）；配乐可能重新生成。上架前以私有记录为准。
 - 其他没验证的：配乐的授权条款以生成平台为准，上架前确认可以商用。
 
 ## 上架还缺什么

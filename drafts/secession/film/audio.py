@@ -14,7 +14,8 @@ SR = 48000
 TL = (HERE / 'timeline.js').read_text()
 END = int(re.search(r'end:\s*(\d+)', TL).group(1))
 N = int(END / 60 * SR)
-EV = json.loads((HERE / 'events.json').read_text())
+import os
+EV = json.loads((HERE / os.environ.get('EVENTS', 'events.json')).read_text())
 rng = np.random.default_rng(7)
 
 

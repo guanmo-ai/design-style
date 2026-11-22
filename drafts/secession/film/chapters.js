@@ -10,7 +10,7 @@ const CH = (() => {
     [0, COVER],
     [T.tick0, { x: 70, y: 425, z: 1.2, rot: -.004 }, 'io'],
     [210, { x: 432, y: 382, z: 2.85, rot: .01 }, 'io'],
-    [T.bass, { x: 468, y: 350, z: 3.7, rot: .016 }, 'io'],
+    [T.bass, { x: 468, y: 350, z: 3.7, rot: 0 }, 'io'],
   ];
   // 一分为四：每一拍拉出一层（快出慢停）；到顶那一拍推近、歪一点，然后斜着滑过 64 格
   const gc = GRID.center;
@@ -80,8 +80,7 @@ const CH = (() => {
 
   function init() {
     LA = mk(); LB = mk();
-    MON.prep(); MON.initLetters();
-    SC.label(150, 340, '金箔，是方的', 'GOLD LEAF · 8 × 8 CM', 120, 880);
+    MON.prep(); MON.initLetters(); OPEN.init();
     SC.label(T.bass + 6, T.peak + 20, '一分为四', 'ONE SQUARE · FOUR SQUARES', 120, 880);
     SC.label(T.peak + 14, T.whip - 6, '装饰，从方格里长出来', 'ORNAMENT GROWS FROM THE GRID', 120, 880);
     SC.label(T.whip + 24, T.drop - 2, '高腰：横画在 2.4 / 7', 'EVEN STROKES · HALF-CIRCLE BOWLS', 120, 940);
@@ -172,7 +171,7 @@ const CH = (() => {
     const a = LA.getContext('2d'), b = LB.getContext('2d');
     [a, b].forEach(x => { x.setTransform(1, 0, 0, 1, 0, 0); x.globalAlpha = 1; x.globalCompositeOperation = 'source-over'; });
 
-    if (f < T.bass) sceneA(ctx, f);
+    if (f < T.bass) OPEN.draw(ctx, f);
     else if (f < T.whip - 8) sceneC(ctx, f);
     else if (f < T.whip + 12) {
       // 甩镜：64 格往左甩出去，字从右边甩进来

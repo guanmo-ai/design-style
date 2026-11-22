@@ -170,5 +170,5 @@ const ENG = (() => {
   }
 
   return { clamp, lerp, prog, sm, ease, spring, rng, hash, mixc, PAL, initLeaves, leaf, fall, wordStrokes, camTo, toScreen, keys, IMG, loadImages,
-    get LEAF() { return LEAF; } };
+    get LEAF() { return LEAF; }, get LEAF_BLUR() { return LEAF_BLUR; } };
 })();

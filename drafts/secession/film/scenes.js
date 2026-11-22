@@ -172,5 +172,5 @@ const SC = (() => {
     ctx.restore();
   }
 
-  return { EV, ev, label, labels, world, ambient, frameLines, post, crown, flying, TILES, LEAVES, TS, CX, CY, R };
+  return { EV, ev, label, labels, world, ambient, frameLines, post, crown, flying, TILES, LEAVES, TS, CX, CY, R, SHADOW };
 })();
