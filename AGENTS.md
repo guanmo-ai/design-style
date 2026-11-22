@@ -2,6 +2,8 @@
 
 每天一个设计风格：一支 15—20 秒的动效短片 + 风格图 + 源码。主人是观默（@guanmo_ai）。
 
+**开工先看私有仓库 `guanmo-ai/design-style-private` 的 `todo.md`**：Claude 把需要在主人电脑上做的事写在那里的 Codex 一节。
+
 分工、交接和公开边界见 [`docs/COLLAB.md`](docs/COLLAB.md)。要点：
 
 - **Codex 负责工程和上架**：正式目录、Release 附件与 `SHA256SUMS`、画廊登记（`docs/GALLERY.md`）、README 拼图、发布核验、工具、依赖、CI。往期做法见 `docs/HANDOFF.md` 和 `docs/reviews/`。
