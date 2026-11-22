@@ -14,9 +14,14 @@
 
 **动效对照毛绒短片**（`drafts/plush/film/plush-film.mp4`）的转场与运动连续性。交片前跑 `python3 drafts/_lib/smooth.py <成片.mp4>`，逐个核对它列出的跳变。拆解见 `docs/DESIGN_NOTES.md` 的“丝滑是怎么来的”。
 
-## 公开文档
+## 分工与公开边界（详见 [`docs/COLLAB.md`](docs/COLLAB.md)）
 
-公开文档记录作品、设计取舍、实现与验证结果。用户原话、私人审稿记录和敏感项目资料存入独立的私有工作区。
+- **Claude 做设计和短片**，**Codex 做工程和上架**（正式目录、Release、画廊、核验）。交片时写 `drafts/<短名>/HANDOFF.md`，`new_film.mjs` 会生成模板。
+- **私有仓库 `guanmo-ai/design-style-private`**：放主人的原话、评价、审片过程、发布授权、选题约定。开工前先用 `add_repo` 加上它，克隆到 `../design-style-private`，再读它的 `AGENTS.md`、`preferences.md` 和 `works/<短名>.md`。收到新的反馈就记到那里。
+- **公开仓库的提交说明、PR、评论、Release 正文、文档、注释**只写改了什么、怎么做的、验证结果；不引用、不转述主人的话，也不写审片结论。审片意见改写成设计理由再写进 `PROCESS.md`。
+- `.claude/settings.json` 的钩子会在提交、写 GitHub、写公开文件前检查写法，被拦下就改写，不要绕开。
+- 少开 PR：草稿推到分支，直接把成片路径告诉主人。
+- 需要主人动手的事（浏览器、Release、合并、推送别的分支）不要留给主人，写进私有仓库 `todo.md` 的 Codex 一节，写成照着做就行的步骤。
 
 ## 东西在哪
 
