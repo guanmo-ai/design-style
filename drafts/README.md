@@ -36,7 +36,7 @@
 | 毛绒 Plush · `plush/` | 画廊风格 018，见 [025 · 毛绒](../styles/025-plush/README.md) |
 | 新艺术运动 Art Nouveau · `art-nouveau/` | [026 · 新艺术运动](../styles/026-art-nouveau/README.md)，网站风格 019。[成片](https://github.com/guanmo-ai/design-style/releases/tag/day-26) |
 | 达达 Dada · `dada/` | 画廊风格 022，见 [029 · 达达](../styles/029-dada/README.md) |
-| 维也纳分离派 Vienna Secession · `secession/` | 两张风格图（第 0 帧、网页与手机），见 [制作过程](secession/PROCESS.md) |
+| 维也纳分离派 Vienna Secession · `secession/` | 全片草稿 [`film/secession-film.mp4`](secession/film/secession-film.mp4)（19.5 秒）与两张风格图，见 [制作过程](secession/PROCESS.md)、[交接单](secession/HANDOFF.md) |
 | 热成像 Thermal · `thermal/` | 候选图和温度场源码 |
 | 低多边形 / 体素 / 等距微缩 | 第四轮候选图 |
 | 赛博朋克 / 城市流行 / 膨胀风 | 第三轮候选图 |

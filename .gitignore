@@ -9,3 +9,7 @@ __pycache__/
 .venv/
 # 宣传片的生成物（配乐、墙上的小图、从画廊拷来的字体）：bash promo/make.sh 会重新生成
 public/promo/
+
+# 维也纳分离派短片：贴图由 assets.py 生成
+drafts/secession/film/assets/
+drafts/secession/film/_*.html

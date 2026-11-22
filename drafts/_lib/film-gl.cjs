@@ -11,7 +11,9 @@ const fs = require('node:fs');
   fs.mkdirSync(out, { recursive: true });
   const todo = [];
   for (let f = a; f < b; f += step) if (!fs.existsSync(path.join(out, String(f).padStart(4, '0') + EXT))) todo.push(f);
-  const browser = await chromium.launch({ args: ['--enable-unsafe-swiftshader', '--ignore-gpu-blocklist', '--disable-gpu-watchdog'] });
+  const args = ['--enable-unsafe-swiftshader', '--ignore-gpu-blocklist', '--disable-gpu-watchdog'];
+  // 项目锁定的 Playwright 和环境里装的浏览器版本对不上时（云端会话），退回预装的 Chromium。
+  const browser = await chromium.launch({ args }).catch(() => chromium.launch({ args, executablePath: process.env.CHROME_PATH || '/opt/pw-browsers/chromium' }));
   const t0 = Date.now();
   let done = 0;
   await Promise.all(Array.from({ length: P }, async (_, k) => {

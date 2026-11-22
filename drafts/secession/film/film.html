@@ -1,0 +1,37 @@
+<!doctype html><meta charset="utf-8">
+<style>
+@font-face{font-family:Jost;src:url(../../../public/fonts/Jost.ttf);font-weight:100 900}
+@font-face{font-family:Song;src:url(../../../public/fonts/NotoSerifSC.ttf);font-weight:200 900}
+@font-face{font-family:Qk;src:url(../../../public/fonts/ZCOOLQingKeHuangYou.ttf)}
+html,body{margin:0;background:#000;overflow:hidden}canvas{display:block}
+</style>
+<canvas id="c" width="1920" height="1080"></canvas>
+<script src="geom.js"></script><script src="engine.js"></script><script src="timeline.js"></script>
+<script src="scenes.js"></script><script src="grid.js"></script><script src="montage.js"></script><script src="chapters.js"></script>
+<script>
+// 维也纳分离派 · 方格与金箔。window.frame(f) 画第 f 帧（帧号的纯函数）；?mb=N 每帧 N 个子帧做运动模糊。
+const cv = document.getElementById('c'), out = cv.getContext('2d');
+const sub = document.createElement('canvas'); sub.width = 1920; sub.height = 1080; const sctx = sub.getContext('2d');
+const Q = new URLSearchParams(location.search);
+const MB = +(Q.get('mb') || 4);
+window.frame = async f => {
+  const n = Math.max(1, Math.round(MB * CH.blurBoost(f)));
+  if (n === 1) { CH.draw(out, f); return; }
+  out.globalCompositeOperation = 'source-over';
+  for (let i = 0; i < n; i++) {
+    const t = f - .5 + (i + .5) / n;                // 子帧摊在快门打开的一帧时间里（180°）
+    CH.draw(sctx, f + (t - f) * .5);
+    out.globalAlpha = 1 / (i + 1); out.drawImage(sub, 0, 0);
+  }
+  out.globalAlpha = 1;
+};
+window.events = () => SC.EV.slice().sort((a, b) => a.f - b.f);
+(async () => {
+  await Promise.all([ENG.loadImages(['panel', 'panel_full', 'title', 'poster', 'web', 'phone', 'cover0', 'cover1', 'cover2', ...GEOM.KINDS.map(k => 'tile_' + k)]),
+    document.fonts.load('700 60px Song', '金箔是方的'), document.fonts.load('500 24px Jost'), document.fonts.load('40px Qk', '维也纳分离派')]);
+  ENG.initLeaves();
+  CH.init();
+  window.ready = true;
+  if (Q.has('f')) window.frame(+Q.get('f'));
+})();
+</script>
