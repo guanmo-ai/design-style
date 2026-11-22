@@ -32,6 +32,7 @@ bash drafts/<短名>/film/make.sh
 | `hud.js` + `hud.css` | `HUD.chapter / params / ruleCard / count / callout / phone / cursor / endCard`：章节外框、参数、规则卡、大数字、标注线、手机框和说明块、手指、片尾署名。所有字都“解码”出来并登记声音 | motion、director、`../typefx.js` |
 | `shapes.js` | `SHAPES.fromPrims`（椭球 / 胶囊 / 旋转体）、`fromMask`（把字、心形、图标“充气”）、`merge`：把形状变成 N 个均匀的点（位置 + 法线 + 零件号 + 色号） | `../glkit.js`（只有 fromMask 要） |
 | `template/` + `new_film.mjs` | 新片的空架子 | 上面全部 |
+| `HANDOFF.template.md` | 交给 Codex 上架的交接单，`new_film.mjs` 生成到 `drafts/<短名>/HANDOFF.md` | — |
 | `../fur/fur.js` | **专用**：毛绒渲染器（一根根的细带、Kajiya–Kay、成撮、逆光镶边、弹簧滞后、形状之间飞、被手拨开）。毛、草、地毯、毛线、羽毛、流苏用得上 | motion、stage |
 | `../softfx.py` | 噗、啵、刷过去、弹簧音、软的落地：`class MySong(Song, SoftFX)` | `../song.py` |
 | `../song.py` | 一整首歌的骨架（鼓、贝斯、铺底、琶音、主旋律、换章、出字的“嗒”和砸字） | `scripts/lib/audio` |

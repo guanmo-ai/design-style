@@ -1,0 +1,30 @@
+name: Privacy check
+
+# 公开内容里不写主人的原话、评价和审片结论。规则见 docs/COLLAB.md。
+on:
+  push:
+  pull_request:
+    types: [opened, edited, synchronize, reopened]
+  release:
+    types: [published, edited]
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - name: Checkout
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          persist-credentials: false
+          fetch-depth: 0
+          filter: blob:none
+      - name: Set up Node.js
+        uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
+        with:
+          node-version: '22'
+      - name: Check messages, PR text and added lines
+        run: node scripts/privacy/check.mjs --event

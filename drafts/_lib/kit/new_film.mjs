@@ -9,4 +9,6 @@ const here = dirname(fileURLToPath(import.meta.url)), src = join(here, 'template
 if (existsSync(dst)) { console.error(`已经有 ${dst} 了，不覆盖。`); process.exit(1); }
 mkdirSync(dst, { recursive: true });
 for (const f of readdirSync(src)) { writeFileSync(join(dst, f), readFileSync(join(src, f), 'utf8').replaceAll('__NAME__', name).replaceAll('__TITLE__', title)); if (f.endsWith('.sh')) chmodSync(join(dst, f), 0o755); }
-console.log(`好了：drafts/${name}/film/\n  预览  PREVIEW=1 bash drafts/${name}/film/make.sh\n  出片  bash drafts/${name}/film/make.sh\n  组件说明  drafts/_lib/kit/README.md`);
+const handoff = join(here, '..', '..', name, 'HANDOFF.md');
+if (!existsSync(handoff)) writeFileSync(handoff, readFileSync(join(here, 'HANDOFF.template.md'), 'utf8').replaceAll('__NAME__', name).replaceAll('__TITLE__', title));
+console.log(`好了：drafts/${name}/film/ 和交接单 drafts/${name}/HANDOFF.md\n  预览  PREVIEW=1 bash drafts/${name}/film/make.sh\n  出片  bash drafts/${name}/film/make.sh\n  组件说明  drafts/_lib/kit/README.md`);
