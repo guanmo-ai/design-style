@@ -7,7 +7,7 @@ import { spawn } from 'node:child_process';
 import fs from 'node:fs';
 import path from 'node:path';
 import { createCanvas, W, H } from './kit.mjs';
-import { render, events, END } from './scene.mjs';
+import { render, events, END, subAt } from './scene.mjs';
 
 const cv = createCanvas(W, H), X = cv.getContext('2d'), tmp = createCanvas(W, H), TX = tmp.getContext('2d');
 const grain = createCanvas(W, H);
@@ -18,6 +18,7 @@ const SUB = +(process.env.SUB ?? 3), SHUTTER = .5;
 const vig = createCanvas(W, H);
 { const g = vig.getContext('2d'), gr = g.createRadialGradient(W / 2, H / 2, 560, W / 2, H / 2, 1180); gr.addColorStop(0, 'rgba(18,10,0,0)'); gr.addColorStop(1, 'rgba(0,0,0,.18)'); g.fillStyle = gr; g.fillRect(0, 0, W, H); }
 function frame(f) {
+  const SUB = process.env.SUB ? +process.env.SUB : subAt(f);
   for (let i = 0; i < SUB; i++) {
     const t = f + (SUB > 1 ? SHUTTER * (i / (SUB - 1) - .5) : 0);
     if (i === 0) render(X, t);

@@ -132,23 +132,23 @@ export function photo() {                // { canvas: 1920×1080 灰度, lum(x, 
 
 // —— 网点：把照片画成 45° 的点。g 已经在照片坐标里；只画落在 [x0,y0,x1,y1]（照片坐标）里的点 ——
 // pitch：点距（照片 px）；gain：点扩大（复印越多点越胖）；wob：点的边不圆（0..1）；seed：每一代不一样的歪
-export function halftone(g, { pitch = 12, gain = 1, wob = 0, seed = 1, box = [0, 0, W, H], ink = '#000' } = {}) {
-  const ph = photo(), c = Math.SQRT1_2, [x0, y0, x1, y1] = box;
-  // 旋转 45° 的格子：u = (x + y)/√2, v = (y − x)/√2
-  const us = [(x0 + y0) * c, (x1 + y1) * c, (x0 + y1) * c, (x1 + y0) * c], vs = [(y0 - x0) * c, (y1 - x1) * c, (y1 - x0) * c, (y0 - x1) * c];
+export function halftone(g, { pitch = 12, gain = 1, wob = 0, seed = 1, box = [0, 0, W, H], ink = '#000', angle = 45, extra = 0, lum = null } = {}) {
+  // angle：网角（度）；gain：点按比例胖多少；extra：每颗点再加多少半径（以点距为单位，1 ≈ 整片连成黑）
+  const ph = photo(), L = lum ?? ph.lum, a = angle * D, ca = Math.cos(a), sa = Math.sin(a), [x0, y0, x1, y1] = box;
+  const cs = [[x0, y0], [x1, y0], [x0, y1], [x1, y1]], us = cs.map(([x, y]) => x * ca + y * sa), vs = cs.map(([x, y]) => -x * sa + y * ca);
   const u0 = Math.floor(Math.min(...us) / pitch) - 1, u1 = Math.ceil(Math.max(...us) / pitch) + 1, v0 = Math.floor(Math.min(...vs) / pitch) - 1, v1 = Math.ceil(Math.max(...vs) / pitch) + 1;
   g.fillStyle = ink;
   const p = new Path2D();
   for (let iu = u0; iu <= u1; iu++) for (let iv = v0; iv <= v1; iv++) {
-    const u = iu * pitch, v = iv * pitch, x = (u - v) * c, y = (u + v) * c;
-    if (x < -pitch || y < -pitch || x > W + pitch || y > H + pitch) continue;
-    const dark = 1 - ph.lum(x, y), r = pitch * .72 * Math.sqrt(dark) * gain;
+    const u = iu * pitch, v = iv * pitch, x = u * ca - v * sa, y = u * sa + v * ca;
+    if (x < x0 - pitch || y < y0 - pitch || x > x1 + pitch || y > y1 + pitch) continue;
+    const dark = 1 - L(x, y), r = pitch * .72 * Math.sqrt(dark) * gain + pitch * extra;
     if (r < .25) continue;
     if (wob > 0) {
       const n = 14, h0 = hash(iu * 7.1 + seed, iv * 3.3);
       for (let k = 0; k <= n; k++) {
-        const a = k / n * Math.PI * 2, rr = r * (1 + wob * (.22 * Math.sin(a * 2 + h0 * 6) + .14 * Math.sin(a * 3 + h0 * 11) + .08 * Math.sin(a * 5 + h0 * 17)));
-        k ? p.lineTo(x + Math.cos(a) * rr, y + Math.sin(a) * rr) : p.moveTo(x + Math.cos(a) * rr, y + Math.sin(a) * rr);
+        const t = k / n * Math.PI * 2, rr = r * (1 + wob * (.22 * Math.sin(t * 2 + h0 * 6) + .14 * Math.sin(t * 3 + h0 * 11) + .08 * Math.sin(t * 5 + h0 * 17)));
+        k ? p.lineTo(x + Math.cos(t) * rr, y + Math.sin(t) * rr) : p.moveTo(x + Math.cos(t) * rr, y + Math.sin(t) * rr);
       }
       p.closePath();
     } else { p.moveTo(x + r, y); p.arc(x, y, r, 0, Math.PI * 2); }

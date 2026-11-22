@@ -79,6 +79,21 @@ for e in EV['text']:
     elif e['k'] == 'slip': put(slap(0.7), e['f'], 0.22, -0.2)
     else: put(tick(), e['f'], 0.10, 0.3)
 put(boom(), EV['final'], 0.5)
+put(slap(0.8), EV['pin'], 0.3, 0.3)
+def zap(d):             # 灰照片被压成黑白：一声电流“嗞”
+    t = tt(d); y = np.sign(np.sin(2 * np.pi * (120 + 400 * t / d) * t)) * 0.3 + bp(rng.standard_normal(len(t)), 1500, 9000)
+    return norm(y * np.exp(-t / (d * 0.5)))
+def crackle(d):         # 黑里裂开成网点：一串细碎的爆裂
+    t = tt(d); y = np.zeros_like(t)
+    for _ in range(int(500 * d)):
+        i = int((rng.random() ** 0.6) * len(t) * 0.97); n = min(len(t) - i, int(0.002 * SR)); y[i:i + n] += rng.standard_normal(n) * np.exp(-np.arange(n) / (0.0004 * SR))
+    return norm(bp(y, 2000, 12000))
+put(zap(0.25), EV['crush'], 0.16, 0.2)
+a_, b_ = EV['flood']; put(whoosh((b_ - a_) / FPS, up=True), a_, 0.22)
+a_, b_ = EV['crack']; put(crackle((b_ - a_) / FPS), a_, 0.16)
+a_, b_ = EV['out']; put(whoosh((b_ - a_) / FPS), a_, 0.22, -0.2)
+for i, f in enumerate(EV['ejects']): put(whoosh(0.16), f - 9, 0.16, 0.6); put(slap(0.9), f, 0.22, 0.2)
+a_, b_ = EV['tear']; put(tape((b_ - a_) / FPS * 0.6), a_, 0.30, 0.0)
 
 music = None
 mdir = HERE / 'music'
