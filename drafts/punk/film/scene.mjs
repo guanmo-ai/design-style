@@ -698,6 +698,8 @@ export function events() {
   return ev;
 }
 
+// 硬切：运动模糊的子帧不跨过这些时刻（不然切点那一帧会把前后两个场景叠在一起）
+export const CUTS = [B(T.tray[0])];
 // 每帧用几个子帧做运动模糊：镜头推得快的地方多拿几帧，免得叠影
 export function subAt(f) {
   const inB = (a, b) => f >= B(a) && f < B(b);

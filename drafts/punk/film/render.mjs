@@ -7,7 +7,7 @@ import { spawn } from 'node:child_process';
 import fs from 'node:fs';
 import path from 'node:path';
 import { createCanvas, W, H } from './kit.mjs';
-import { render, events, END, subAt } from './scene.mjs';
+import { render, events, END, subAt, CUTS } from './scene.mjs';
 
 const cv = createCanvas(W, H), X = cv.getContext('2d'), tmp = createCanvas(W, H), TX = tmp.getContext('2d');
 const grain = createCanvas(W, H);
@@ -20,7 +20,8 @@ const vig = createCanvas(W, H);
 function frame(f) {
   const SUB = process.env.SUB ? +process.env.SUB : subAt(f);
   for (let i = 0; i < SUB; i++) {
-    const t = f + (SUB > 1 ? SHUTTER * (i / (SUB - 1) - .5) : 0);
+    let t = f + (SUB > 1 ? SHUTTER * (i / (SUB - 1) - .5) : 0);
+    for (const c of CUTS) { if (f >= c && t < c) t = c; else if (f < c && t >= c) t = c - 1e-3; }   // 子帧不跨硬切
     if (i === 0) render(X, t);
     else { render(TX, t); X.setTransform(1, 0, 0, 1, 0, 0); X.globalAlpha = 1 / (i + 1); X.drawImage(tmp, 0, 0); X.globalAlpha = 1; }
   }

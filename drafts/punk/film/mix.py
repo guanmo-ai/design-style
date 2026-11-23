@@ -127,8 +127,8 @@ def lufs(y):
 target = -14.0 if music is not None else -16.0
 g = 10 ** ((target - lufs(mix)) / 20); mix *= g
 pk = np.abs(mix).max()
-if pk > 0.97:                                                   # 只压 0.8 以上的峰（软膝），整体响度不变
-    ax = np.abs(mix); mix = np.where(ax < 0.8, mix, np.sign(mix) * (0.8 + 0.17 * np.tanh((ax - 0.8) / 0.17)))
+if pk > 0.97:                                                   # 只压 0.75 以上的峰（软膝），整体响度不变
+    ax = np.abs(mix); mix = np.where(ax < 0.75, mix, np.sign(mix) * (0.75 + 0.13 * np.tanh((ax - 0.75) / 0.13)))   # 上限约 −1.1 dBFS，压成 AAC 后真峰值不过 0
 out = sys.argv[1] if len(sys.argv) > 1 else str(HERE / 'out/mix.wav')
 subprocess.run(['ffmpeg', '-y', '-v', 'error', '-f', 'f32le', '-ar', str(SR), '-ac', '2', '-i', '-', '-c:a', 'pcm_s16le', out], input=mix.astype('<f4').tobytes(), check=True)
 print('%s · %.2fs · %.1f LUFS · peak before limit %.2f' % ('配乐 + 声音层' if music is not None else '只有声音层（还没有配乐）', DUR, lufs(mix), pk))
