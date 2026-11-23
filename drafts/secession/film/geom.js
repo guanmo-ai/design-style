@@ -1,0 +1,1 @@
+const GEOM = {"PS": 880, "CX": 440.0, "CROWN_Y": 381.92, "R": 140.35999999999999, "N": 7, "BS": 484.0, "BX": 198.0, "BY": 198.0, "BASE": 636.0, "TW": 860, "TH": 880, "KINDS": ["checker", "rings", "dots", "tree", "quad", "stripes", "goldsq"], "web": {"w": 1300, "h": 956, "btn": [64, 638, 246, 56]}, "phone": {"w": 400, "h": 930}};

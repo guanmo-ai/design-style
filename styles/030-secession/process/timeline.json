@@ -1,0 +1,12 @@
+{
+  "fps": 60,
+  "frames": 1170,
+  "segments": [
+    { "start": 0, "dur": 357, "label": "金箔 · Gold leaf" },
+    { "start": 357, "dur": 236, "label": "方格 · Grid" },
+    { "start": 593, "dur": 88, "label": "高腰字 · Lettering" },
+    { "start": 681, "dur": 147, "label": "海报与网页 · Poster and web" },
+    { "start": 828, "dur": 118, "label": "门票与封面 · Ticket and covers" },
+    { "start": 946, "dur": 224, "label": "合回方板 · Back to the panel" }
+  ]
+}
