@@ -43,7 +43,7 @@ def write_image(name, source):
         labels = re.findall(r'<text\b[^>]*font-family="' + alias + r'"[^>]*>([^<]+)</text>', source)
         if not labels:
             continue
-        with TTFont(ROOT / 'public/fonts' / filename) as font, BytesIO() as buffer:
+        with TTFont(ROOT / 'public/fonts' / filename, recalcTimestamp=False) as font, BytesIO() as buffer:
             glyphs = subset.Subsetter()
             glyphs.populate(text=unescape(''.join(labels)))
             glyphs.subset(font)
@@ -75,7 +75,8 @@ def quick_reference():
         elif index == 1:
             body.append(text(x + 32, y + 123, '重复外框，替换格内的纹样', 25, BONE))
             for column, kind in enumerate(('frame', 'ring', 'check2', 'gold')):
-                body.append(motif(kind, x + 44 + column * 130, y + 146, 100, bg=PAPER))
+                fill, background = (INK, PAPER) if kind == 'check2' else (PAPER, INK)
+                body.append(motif(kind, x + 44 + column * 130, y + 146, 100, fill=fill, bg=background))
         elif index == 2:
             body.append(text(x + 32, y + 123, '金色集中在一处，缝隙露出底漆', 25, BONE))
             body.append(gilded(f'<rect x="{x + 32}" y="{y + 154}" width="360" height="96"/>',

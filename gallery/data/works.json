@@ -1581,5 +1581,67 @@
       }
     ],
     "publishedAt": "2026-11-19T13:23:44Z"
+  },
+  {
+    "id": "030-secession",
+    "type": "style",
+    "number": "023",
+    "title": "维也纳分离派",
+    "titleEn": "Vienna Secession",
+    "years": "1897 年创立",
+    "category": "艺术运动",
+    "categoryEn": "Art movement",
+    "description": "金箔一片片落下，镜头绕过树冠，再从一块方板拉出六十四格。方格接力变成海报、网页、门票和封面。",
+    "descriptionEn": "Gold leaves settle one by one as the camera circles the canopy. The panel opens into sixty-four squares, then becomes a poster, a website, a ticket and covers.",
+    "tags": [
+      "维也纳",
+      "分离派",
+      "金箔",
+      "方格",
+      "克里姆特",
+      "装饰"
+    ],
+    "tagsEn": [
+      "Vienna",
+      "Secession",
+      "gold leaf",
+      "square grid",
+      "Klimt",
+      "ornament"
+    ],
+    "release": "day-30",
+    "asset": "030-secession.mp4",
+    "sha256": "d60072a7d08699c682b2ff0eec5310af18e3c06f56e7ef4cc6c14b9b709ccea0",
+    "images": [
+      {
+        "file": "poster",
+        "title": "方板上的金树",
+        "kind": "主视觉",
+        "titleEn": "Gilded trees on a square panel",
+        "kindEn": "Poster"
+      },
+      {
+        "file": "cheatsheet",
+        "title": "方格、金箔与高腰字",
+        "kind": "规则速查",
+        "titleEn": "Grid, gold leaf and high-waisted lettering",
+        "kindEn": "Quick reference"
+      },
+      {
+        "file": "app-ui",
+        "title": "展览网页与手机票券",
+        "kind": "界面应用",
+        "titleEn": "Exhibition site and mobile ticket",
+        "kindEn": "Interface study"
+      },
+      {
+        "file": "storyboard",
+        "title": "从树冠到方格，再回到方板",
+        "kind": "分镜选帧",
+        "titleEn": "From canopy to grid and back",
+        "kindEn": "Storyboard"
+      }
+    ],
+    "publishedAt": "2026-11-23T05:39:26Z"
   }
 ]
