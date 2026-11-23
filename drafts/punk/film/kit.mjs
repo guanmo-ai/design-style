@@ -132,7 +132,8 @@ export function photo() {                // { canvas: 1920×1080 灰度, lum(x, 
 
 // —— 网点：把照片画成 45° 的点。g 已经在照片坐标里；只画落在 [x0,y0,x1,y1]（照片坐标）里的点 ——
 // pitch：点距（照片 px）；gain：点扩大（复印越多点越胖）；wob：点的边不圆（0..1）；seed：每一代不一样的歪
-export function halftone(g, { pitch = 12, gain = 1, wob = 0, seed = 1, box = [0, 0, W, H], ink = '#000', angle = 45, extra = 0, lum = null } = {}) {
+export function halftone(g, { pitch = 12, gain = 1, wob = 0, seed = 1, box = [0, 0, W, H], ink = '#000', angle = 45, extra = 0, lum = null, shape = 'dot' } = {}) {
+  // shape：dot 圆点 · line 线条（线网） · square 方点 · cross 十字
   // angle：网角（度）；gain：点按比例胖多少；extra：每颗点再加多少半径（以点距为单位，1 ≈ 整片连成黑）
   const ph = photo(), L = lum ?? ph.lum, a = angle * D, ca = Math.cos(a), sa = Math.sin(a), [x0, y0, x1, y1] = box;
   const cs = [[x0, y0], [x1, y0], [x0, y1], [x1, y1]], us = cs.map(([x, y]) => x * ca + y * sa), vs = cs.map(([x, y]) => -x * sa + y * ca);
@@ -151,7 +152,13 @@ export function halftone(g, { pitch = 12, gain = 1, wob = 0, seed = 1, box = [0,
         k ? p.lineTo(x + Math.cos(t) * rr, y + Math.sin(t) * rr) : p.moveTo(x + Math.cos(t) * rr, y + Math.sin(t) * rr);
       }
       p.closePath();
-    } else { p.moveTo(x + r, y); p.arc(x, y, r, 0, Math.PI * 2); }
+    } else if (shape === 'dot') { p.moveTo(x + r, y); p.arc(x, y, r, 0, Math.PI * 2); }
+    else {
+      const box4 = (du, dv) => { const q = [[-du, -dv], [du, -dv], [du, dv], [-du, dv]]; q.forEach(([a1, b1], k) => { const X = (u + a1) * ca - (v + b1) * sa, Y = (u + a1) * sa + (v + b1) * ca; k ? p.lineTo(X, Y) : p.moveTo(X, Y); }); p.closePath(); };
+      if (shape === 'line') box4(pitch * .52, Math.min(pitch * .5, pitch * .5 * dark * gain * 1.15 + pitch * extra));
+      else if (shape === 'square') { const h = Math.min(pitch * .5 + pitch * extra, r * .9); box4(h, h); }
+      else { const h = r * 1.15, w = h * .34 + pitch * extra * .5; box4(h, w); box4(w, h); }
+    }
   }
   g.fill(p);
 }

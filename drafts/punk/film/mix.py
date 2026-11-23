@@ -64,7 +64,7 @@ def boom():             # 最后一击
     t = tt(1.2); return norm(np.sin(2 * np.pi * np.cumsum(42 + 60 * np.exp(-t / 0.05)) / SR) * np.exp(-t / 0.35) + 0.3 * bp(rng.standard_normal(len(t)), 80, 900) * np.exp(-t / 0.08))
 
 for i, s in enumerate(EV['scans']):
-    put(scan(s['dur'] / FPS), s['f'], 0.22, -0.5 + (i % 3) * 0.25)
+    put(scan(s['dur'] / FPS), s['f'], 0.22 * s.get('g', 1), -0.5 + (i % 3) * 0.25)   # 开头那一遍压一半：第 0 帧配乐已经在了，音效不能盖过它
 a, b = EV['tape']; put(tape((b - a) / FPS), a, 0.20, 0.4)
 put(slap(1.0), EV['sticker'], 0.34, 0.1)
 a, b = EV['marker']; put(marker((b - a) / FPS), a, 0.07, 0.5)
@@ -101,13 +101,17 @@ def kachunk():          # 换纸：复印机进纸“咔—嚓”
     return norm(y + 0.4 * np.sin(2 * np.pi * 180 * t) * np.exp(-t / 0.03))
 for f, a in EV['hits']: put(impact(), f, 6.0 * a, 0.0)
 for f in EV['flicks']: put(kachunk(), f, 0.30, 0.2); put(zap(0.1), f, 0.08, -0.2)
+put(slap(1.6), EV['lid'], 0.40, 0.0); put(impact(), EV['lid'], 0.12, 0.0); put(whoosh((EV['lid'] - EV['lidStart']) / FPS, up=True), EV['lidStart'], 0.12, 0.0)   # 盖子落下
+a_, b_ = EV['whip']; put(whoosh((b_ - a_) / FPS * 1.2), a_ - 3, 0.34, 0.6)                 # 甩镜
+a_, b_ = EV['reduce']; put(whoosh((b_ - a_) / FPS), a_, 0.16, -0.3)
+for f in EV['shapes']: put(kachunk(), f, 0.16, 0.4)                                       # 网点换形状
 for i, f in enumerate(EV['stamps']): put(slap(1.2), f, 0.34, -0.5 + i / 9)          # 片名字母一个个拍上去
 
 music = None
 mdir = HERE / 'music'
 cands = sorted([p for p in mdir.glob('*') if p.suffix.lower() in ('.wav', '.mp3', '.m4a', '.flac')]) if mdir.exists() else []
 if cands:
-    START = float(os.environ.get('MUSIC_START', '0'))
+    START = float(os.environ.get('MUSIC_START', '0.36'))     # 从曲子 0.36 秒起用：第 0 帧乐队已经进来
     raw = subprocess.run(['ffmpeg', '-v', 'error', '-ss', f'{START:.4f}', '-t', f'{DUR:.4f}', '-i', str(cands[0]), '-ar', str(SR), '-ac', '2', '-f', 'f32le', '-'], capture_output=True, check=True).stdout
     music = np.frombuffer(raw, '<f4').reshape(-1, 2).astype(np.float64)
     music = np.vstack([music, np.zeros((max(0, N - len(music)), 2))])[:N]
