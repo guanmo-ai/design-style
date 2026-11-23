@@ -33,7 +33,7 @@
 | 中世纪现代 Mid-Century Modern · `mid-century/` | [017 · 中世纪现代](../styles/017-mid-century-modern) |
 | 液态金属 Liquid Chrome · `liquid-chrome/` | [023 · 液态金属](../styles/023-liquid-chrome)。第三版采用湿石材舞台和顶光，文字解码时逐字配音效。 |
 | 点云 Point Cloud · `point-cloud/` | [022 · 点云](../styles/022-point-cloud)。第三版加入立体扫描招牌与斯坦福兔子，第四版补充逐字音效和扫描镜头过渡。 |
-| 朋克复印机 Punk Xerox · `punk/` | 第二版短片草稿（Sonilo 配乐，转场一次一种），见[制作过程](punk/PROCESS.md) |
+| 朋克复印机 Punk Xerox · `punk/` | 第三版短片草稿（19 秒，按通用动效配乐重排、动作打在拍上，转场一次一种），见[制作过程](punk/PROCESS.md) |
 | 毛绒 Plush · `plush/` | 画廊风格 018，见 [025 · 毛绒](../styles/025-plush/README.md) |
 | 新艺术运动 Art Nouveau · `art-nouveau/` | [026 · 新艺术运动](../styles/026-art-nouveau/README.md)，网站风格 019。[成片](https://github.com/guanmo-ai/design-style/releases/tag/day-26) |
 | 达达 Dada · `dada/` | 画廊风格 022，见 [029 · 达达](../styles/029-dada/README.md) |

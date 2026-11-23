@@ -1,13 +1,14 @@
-// 朋克复印机 · 场景（第二版）。
+// 朋克复印机 · 场景（第三版）。
 // 一章一个复印机 / zine 自己的动作，换章的转场一次一种、不重复（见 TRANSITIONS，启动时检查）：
 //   封面 —扫描→ 复印件 —甩进来盖住→ 01 阈值 —墨淹没、裂成网点→ 02 网点 —钻进一颗点、从笔画里退出来→ 03 代数（出纸口一张张吐出来）
 //   —撕开→ 演出海报 —订书枪订上、镜头退到墙上→ 04 纸色 → 片名拍上、订上署名
-// 时间轴按拍写：B(拍) → 帧。配乐《1977 Downstroke Riot》实测 161.5 BPM，第 0 拍在 0.012 秒；每 4 拍一个重拍（第 0、4、8… 拍）。
+// 时间轴按拍写：B(拍) → 帧。配乐《Dynamic Motion》实测 126.56 BPM，第 0 拍在 0.392 秒；每 4 拍一个重拍（第 0、4、8… 拍）。
+// 曲子的结构：第 14—15 拍鼓退下去，第 16 拍全乐队砸回来（全曲最响），第 28 拍一记重音、之后降一档，第 36 拍收掉，余音到 19 秒。
 import { createCanvas, W, H, D, P, clamp, lerp, prog, eio, eo, ei, sstep, settle, hash, rng, rgb, mixHex, photo, halftone, chip, ransom, tape, staple, scrawl, xeroxPixel, NF, NM, Path2D } from './kit.mjs';
 
-export const FPS = 60, BPM = +(process.env.BPM ?? 161.5), FPB = 3600 / BPM, OFF = +(process.env.OFF ?? 0.72);
+export const FPS = 60, BPM = +(process.env.BPM ?? 126.56), FPB = 3600 / BPM, OFF = +(process.env.OFF ?? 23.52);
 export const B = b => OFF + b * FPB;
-export const END = +(process.env.END ?? 1260);          // 21 秒：配乐 20.05 秒收掉，余音到 21 秒
+export const END = +(process.env.END ?? 1140);          // 19 秒：第 36 拍（17.46 秒）收掉，余音到 19 秒
 const PAD = 260;                                         // 封面那一遍扫描：灯管从画外 PAD 处起步
 
 // 换章的转场：一次一种。加新的之前先看这张表
@@ -140,18 +141,32 @@ function flyer(g) {
   chip(g, '买票 ¥10', 1480, 900, { font: 'Hei', size: 92, fg: '#fff', bg: P.INK, rot: -4 });
   g.font = '28px Type'; g.fillText('door 21:00 / bring a friend / no future', 1150, 1030);
 }
-// 片名海报
-function titleSheet(g) {
+// 片名海报：底版（朋克 / 复印机 / 两行字 / 1976）+ 一排剪贴字 PUNK XEROX，字母一个个拍上去
+const TL = [['P', { font: 'Anton', fg: '#fff', bg: P.INK, rot: -5 }], ['U', { font: 'Abril', bg: '#fff', rot: 4 }], ['N', { font: 'Slab', bg: '#fff', rot: -3 }], ['K', { font: 'Arch', fg: '#fff', bg: P.INK, rot: 6 }],
+  [' ', {}], ['X', { font: 'Bang', bg: '#fff', rot: -4 }], ['E', { font: 'Rye', fg: '#fff', bg: P.INK, rot: 3 }], ['R', { font: 'Arch', bg: '#fff', rot: -2 }], ['O', { font: 'Abril', fg: '#fff', bg: P.INK, rot: 5 }], ['X', { font: 'Anton', bg: '#fff', rot: -3 }]];
+const TLB = { x: 70, y: 620, size: 200, shadow: 5, gap: 4 };
+const TLX = (() => { const g = createCanvas(8, 8).getContext('2d'); let cx = TLB.x; return TL.map(([ch, o]) => { g.font = `${TLB.size}px ${o.font ?? 'Hei'}`; const w = g.measureText(ch).width + 2 * TLB.size * .12, x = cx + w / 2; cx += w + TLB.gap; return x; }); })();
+const STAMP = TL.map(([ch], i) => i).filter(i => TL[i][0] !== ' ');                 // 要拍的 9 个字母
+const stampBeat = k => TITLE.b + .75 + k * .25;                                     // 片名落定后，每 1/4 拍一个
+function titleLetter(g, i, o2 = {}) { const [ch, o] = TL[i]; chip(g, ch, TLX[i], TLB.y + (o.dy ?? 0), { size: TLB.size, shadow: TLB.shadow, ...o, ...o2 }); }
+function titleSheet(g, n = TL.length) {
   paperBg(g, '#fff');
   g.font = '330px Hei'; g.fillStyle = P.INK; g.textAlign = 'left'; g.fillText('朋克', 70, 360);
   chip(g, '复印机', 1270, 250, { font: 'HY', size: 230, fg: '#fff', bg: P.INK, rot: -3, pad: 26 });
-  ransom(g, [['P', { font: 'Anton', fg: '#fff', bg: P.INK, rot: -5 }], ['U', { font: 'Abril', bg: '#fff', rot: 4 }], ['N', { font: 'Slab', bg: '#fff', rot: -3 }], ['K', { font: 'Arch', fg: '#fff', bg: P.INK, rot: 6 }],
-    [' ', {}], ['X', { font: 'Bang', bg: '#fff', rot: -4 }], ['E', { font: 'Rye', fg: '#fff', bg: P.INK, rot: 3 }], ['R', { font: 'Arch', bg: '#fff', rot: -2 }], ['O', { font: 'Abril', fg: '#fff', bg: P.INK, rot: 5 }], ['X', { font: 'Anton', bg: '#fff', rot: -3 }]],
-  70, 620, { size: 200, shadow: 5, gap: 4 });
-  g.font = '64px Hei'; g.fillText('复印一次，糊一层。', 76, 900);
+  for (let k = 0; k < n; k++) titleLetter(g, STAMP[k] ?? k);
+  g.font = '64px Hei'; g.fillStyle = P.INK; g.textAlign = 'left'; g.fillText('复印一次，糊一层。', 76, 900);
   g.font = '34px Arch'; g.fillText('NO FUTURE? NO PROBLEM. MAKE A ZINE.', 76, 990);
   g.save(); g.translate(1640, 780); g.rotate(-8 * D); g.font = '130px Mark'; g.fillStyle = P.INK; g.textAlign = 'center'; g.fillText('1976', 0, 0); g.restore();
 }
+const TITLE_TEX = n => xeroxTexture('title-' + n, g => titleSheet(g, n), gen(1), P.PINK);
+const toPaper = c => (c === '#fff' ? P.PINK : c);                                     // 复印出来白的地方就是纸色
+function titleOver(t) {                                                              // 正在落下的那个字母（落地后换成印好的贴图）
+  return g => { STAMP.forEach((i, k) => { const u = t - B(stampBeat(k)); if (u < -5 || u >= 0) return;
+    const a = eo((u + 5) / 5), [, o] = TL[i];
+    g.save(); g.translate(TLX[i], TLB.y); g.scale(lerp(1.9, 1, a), lerp(1.9, 1, a)); g.translate(-TLX[i], -TLB.y); g.globalAlpha = clamp((u + 5) / 2);
+    titleLetter(g, i, { fg: toPaper(o.fg ?? P.INK), bg: o.bg ? toPaper(o.bg) : undefined, rot: (o.rot ?? 0) + 14 * (1 - a), shadow: 5 + 30 * (1 - a) }); g.restore(); }); };
+}
+const titleN = t => STAMP.filter((i, k) => t >= B(stampBeat(k))).length;
 
 // ———————————————————— 复印成贴图（墙上的海报用；与现场渲染同一条管线，换过去像素一致） ————————————————————
 const xtex = new Map();
@@ -165,12 +180,12 @@ const FLY = () => xeroxTexture('fly-pink', flyer, gen(1), P.PINK);
 
 // ———————————————————— 墙 ————————————————————
 const WALL = [ // 墙上后来拍上去的复印件：[拍, 纸色, 名字, cx, cy, 旋转, 缩放, 内容]
-  [42, P.YELLOW, 'fly-yellow', -280, -360, -5, .8, flyer],
-  [43, P.WHITE, 'fly-white', 2230, -300, 4, .8, flyer],
-  [44, P.GREEN, 'fly-green', -230, 1430, 3, .8, flyer],
-  [45, P.PINK, 'zine-pink', 2180, 1420, -4, .8, zinePage],
+  [27.5, P.YELLOW, 'fly-yellow', -280, -360, -5, .8, flyer],
+  [28, P.WHITE, 'fly-white', 2230, -300, 4, .8, flyer],
+  [28.5, P.GREEN, 'fly-green', -230, 1430, 3, .8, flyer],
+  [29, P.PINK, 'zine-pink', 2180, 1420, -4, .8, zinePage],
 ];
-const TITLE = { b: 47, cx: 990, cy: 570, rot: -3, s: 1.06 };
+const TITLE = { b: 31, cx: 990, cy: 570, rot: -3, s: 1.06 };
 const OLD = (() => { const r = rng(77), o = []; for (let i = 0; i < 46; i++) o.push({ x: -2000 + r() * 6000, y: -1300 + r() * 3600, w: 300 + r() * 700, h: 200 + r() * 500, rot: (r() - .5) * 20, c: ['#d9d3c4', '#e8c3d0', '#ece1a0', '#c9d9bf', '#efece4'][Math.floor(r() * 5)], s: r() }); return o; })();
 function wallBg(g) {
   g.fillStyle = '#3e3c39'; g.fillRect(-2600, -1800, 7200, 4800);
@@ -190,7 +205,7 @@ function wallBg(g) {
   g.drawImage(bk, -2600, -1800, 7200, 4800);
 }
 // 一张贴到墙上的纸：u = 落地后的帧数（<0 还在飞）
-function slapSheet(g, tex, cx, cy, rot, s, u, staples) {
+function slapSheet(g, tex, cx, cy, rot, s, u, staples, over) {
   if (u < -12) return;
   const a = u < 0 ? eo((u + 12) / 12) : 1, sc = s * (u < 0 ? lerp(1.5, 1, a) : 1 + .03 * Math.exp(-u / 4) * Math.cos(u * .8)), lift = u < 0 ? 1 - a : 0;
   const rr = rot + (u < 0 ? 12 * (1 - a) : 2.5 * Math.exp(-u / 5) * Math.cos(u * .7));
@@ -199,16 +214,21 @@ function slapSheet(g, tex, cx, cy, rot, s, u, staples) {
   const sh = 10 + 60 * lift;
   g.save(); g.translate(sh * .4, sh * .8); g.fillStyle = `rgba(0,0,0,${.45 - .2 * lift})`; g.filter = `blur(${6 + sh * .4}px)`; g.fillRect(-W / 2, -H / 2, W, H); g.restore();
   g.drawImage(tex, -W / 2, -H / 2);
+  if (over) { g.save(); g.translate(-W / 2, -H / 2); over(g); g.restore(); }
   for (const [sx, sy, sa, su] of staples) if (u >= su) { const k = u - su; staple(g, sx - W / 2, sy - H / 2, sa, 2.2 * (k < 3 ? lerp(1.25, 1, k / 3) : 1)); }
   g.restore();
 }
+const FLICK = [['fly-yellow', P.YELLOW], ['fly-white', P.WHITE], ['fly-green', P.GREEN], ['fly-pink', P.PINK]];
 const CORNER = [[70, 66, -8, 4], [W - 70, 66, 6, 7], [70, H - 66, 4, 10], [W - 70, H - 66, -6, 13]];
 function wallAt(t) {
   return g => {
     wallBg(g);
-    slapSheet(g, FLY(), W / 2, H / 2, 0, 1, 999, CORNER.map(([a, b, c, d]) => [a, b, c, -1]));
-    for (const [b, col, key, cx, cy, rot, s, dr] of WALL) slapSheet(g, xeroxTexture(key, dr, gen(b === 45 ? 3 : 1), col), cx, cy, rot, s, t - B(b), CORNER);
-    slapSheet(g, xeroxTexture('title', titleSheet, gen(1), P.PINK), TITLE.cx, TITLE.cy, TITLE.rot, TITLE.s, t - B(TITLE.b), CORNER);
+    let fk = -1; T.flick.forEach((b, i) => { if (t >= B(b)) fk = i; });             // 同一张海报按拍换纸：黄 → 白 → 绿 → 粉
+    const ftex = fk < 0 || fk === 3 ? FLY() : xeroxTexture(FLICK[fk][0], flyer, gen(1), FLICK[fk][1]), fu = fk < 0 ? 99 : t - B(T.flick[fk]);
+    slapSheet(g, ftex, W / 2, H / 2, 0, 1 + .025 * Math.exp(-fu / 4) * (fk >= 0), 999, CORNER.map(([a, b, c, d]) => [a, b, c, -1]),
+      fu < 10 ? x => { x.save(); x.globalCompositeOperation = 'screen'; x.fillStyle = `rgba(225,255,236,${.7 * Math.exp(-fu / 2.5)})`; x.fillRect(0, 0, W, H); x.restore(); } : null);   // 换纸那一下复印机的光闪一下
+    for (const [b, col, key, cx, cy, rot, s, dr] of WALL) slapSheet(g, xeroxTexture(key, dr, gen(key === 'zine-pink' ? 3 : 1), col), cx, cy, rot, s, t - B(b), CORNER);
+    slapSheet(g, TITLE_TEX(titleN(t)), TITLE.cx, TITLE.cy, TITLE.rot, TITLE.s, t - B(TITLE.b), CORNER, titleOver(t));
   };
 }
 
@@ -303,6 +323,16 @@ function counter(ctx, g, t, x = W - 64, y = 52) {
   ctx.fillStyle = '#F4F4F0'; ctx.textAlign = 'right'; ctx.textBaseline = 'middle'; ctx.fillText(s, -20, 40);
   ctx.restore();
 }
+// 03 代数的计数章：大号数字，每吐一张就盖一次（放大 1.4 倍落下，带一点转）
+function bigGen(ctx, g, pop, land) {
+  const tilt = (hash(Math.round(land)) - .5) * 6, s = 1 + .4 * pop;
+  ctx.save(); ctx.translate(W - 70, 58); ctx.rotate((tilt + 8 * pop) * D); ctx.scale(s, s);
+  ctx.font = '150px Anton'; const n = String(g), nw = ctx.measureText(n).width, w = nw + 190, h = 176;
+  ctx.fillStyle = 'rgba(0,0,0,.35)'; ctx.fillRect(-w + 6, 8, w, h); ctx.fillStyle = '#141414'; ctx.fillRect(-w, 0, w, h);
+  ctx.fillStyle = '#F4F4F0'; ctx.textAlign = 'right'; ctx.textBaseline = 'alphabetic'; ctx.fillText(n, -86, 156);
+  ctx.font = '50px Hei'; ctx.textAlign = 'left'; ctx.fillText('代', -76, 152); ctx.fillText('第', -w + 22, 72);
+  ctx.restore();
+}
 function readout(ctx, lines, x, y, f0, t, o = {}) {        // 复印机面板：等宽小字
   if (t < f0 || (o.out != null && t > o.out + 14)) return;
   const out = o.out != null ? eio(prog(t, o.out, o.out + 14)) : 0, a = eo(prog(t, f0, f0 + 10));
@@ -315,21 +345,23 @@ function readout(ctx, lines, x, y, f0, t, o = {}) {        // 复印机面板：
 }
 // ———————————————————— 时间点（拍） ————————————————————
 const T = {
-  scan: [-1.1, 2], tape: [1.5, 2.4], sticker: 3, marker: [3.8, 5], pin: 5.5,
-  toss: [6.7, 8], crush: [8.6, 9.6],
-  knob: [[10, 11.2, .17], [11.4, 12.6, .84], [12.8, 13.8, .5]],
-  flood: [14.2, 15.2], crack: [15.25, 16.7], turn: [17.2, 21.6, 45, 15], htZoom: [16.4, 22],
-  dive: [22, 24], out: [24, 25.6], tray: [25.6, 27],
-  ejects: [[27, 2], [28, 3], [29, 4], [30, 6], [31, 8], [32, 12], [33, 16], [33.5, 24], [34, 32], [34.5, 48], [35, 64]],
-  tear: [37, 37.45, 38.7], staples: [38.8, 39.05, 39.3, 39.55],
-  wall: 39.7, pull: [39.8, 42.3], push: [47.6, 52.6], final: 52,
+  scan: [-1.6, 1.5], tape: [0, .5], sticker: 1, marker: [1.25, 2], pin: 2.5,
+  toss: [3.25, 4], crush: [4.5, 5],
+  knob: [[5.25, 6, .17], [6.25, 7, .84], [7.2, 7.8, .5]],
+  flood: [8, 8.6], crack: [8.65, 9.75], turn: [10, 12.5, 45, 15], htZoom: [9.5, 13.25],
+  dive: [13, 14.5], out: [14.5, 16], tray: [16, 16.75],
+  ejects: [[17, 2], [17.5, 3], [18, 4], [18.5, 6], [19, 8], [19.5, 12], [20, 16], [20.5, 24], [20.75, 32], [21, 48], [21.25, 64]],
+  tear: [22.5, 23, 24], staples: [24, 24.25, 24.5, 24.75],
+  wall: 24.85, flick: [25, 25.5, 26, 26.5], pull: [25, 27], push: [31, 35.5], final: 36,
+  hits: [[4, .028], [8, .022], [16, .045], [24, .03], [28, .035], [36, .05]],     // 镜头往里“咚”一下（单向）：拍、幅度
+  ghost: [5, 6, 7, 10, 11, 12, 13],                                              // 复印机走纸打滑：这几拍整张叠一层错位的影子
 };
 const knob = t => { let v = .5; for (const [a, b, to] of T.knob) v = lerp(v, to, eio(prog(t, B(a), B(b)))); return v; };
 const sinceBeat = (t, a, b) => { const k = Math.floor((t - OFF) / FPB); return k >= a && k < b ? t - B(k) : 999; };
 
 // ———————————————————— 镜头 ————————————————————
-function camCover(t) { const u = prog(t, B(-1), B(8.6)), v = eio(prog(t, B(4.5), B(8))); return { x: lerp(960, 1010, u) + 160 * v, y: lerp(540, 520, u) - 20 * v, z: 1.02 + .05 * eio(u) + .12 * v, r: lerp(-.6, .5, u) - 1.2 * v }; }
-function camPhoto(t) { const u = prog(t, B(7), B(15.2)); return { x: lerp(960, 920, eio(u)), y: lerp(540, 480, eio(u)), z: lerp(1.0, 1.1, eio(u)), r: lerp(.5, -.6, u) }; }
+function camCover(t) { const u = prog(t, B(-1), B(4.5)), v = eio(prog(t, B(2), B(4))); return { x: lerp(960, 1010, u) + 160 * v, y: lerp(540, 520, u) - 20 * v, z: 1.02 + .05 * eio(u) + .12 * v, r: lerp(-.6, .5, u) - 1.2 * v }; }
+function camPhoto(t) { const u = prog(t, B(3.25), B(8.6)); return { x: lerp(960, 920, eio(u)), y: lerp(540, 480, eio(u)), z: lerp(1.0, 1.1, eio(u)), r: lerp(.5, -.6, u) }; }
 // 网点：最后钻进哪一颗（网角转到 15° 之后、亮度约 0.72 的那颗）
 let PC = null;
 function pcenter() {
@@ -359,7 +391,7 @@ export function strokePoint() {        // 黑得最“深”的一点（离白�
   let bi = 0; for (let i = 0; i < w * h; i++) if ((i % w) * s < 1080 && dist[i] > dist[bi]) bi = i;     // 只在左边的大字里找（照片卡缩小看是黑的，放大是点）
   SP = { x: (bi % w) * s + s / 2, y: Math.floor(bi / w) * s + s / 2, r: dist[bi] * s }; return SP;
 }
-const ZOUT = 90;
+const ZOUT = 40;
 export function camOut(t) {
   // 绕笔画里那一点缩小：它在屏幕上离中心的距离 = 原本的距离 × z^-0.5，z 很大时几乎还在正中，退到 1 倍时回到原位
   const sp = strokePoint(), u = prog(t, B(T.out[0]), B(T.out[1])), z = Math.exp(Math.log(ZOUT) * (1 - eio(u))), w = Math.pow(z, -.5);
@@ -386,14 +418,14 @@ const SHEET = {
       return { ...gen(1), th: lerp(knob(t), 1.16, fl), soft: lerp(.5, .05, c), mix: c, nm: .16, n: .12 }; },
     draw: (cam, t) => g => {     // 照片 + 一束扫过去的追光：黑白的边界跟着光走
       g.drawImage(photo().canvas, 0, 0);
-      const k = eo(prog(t, B(T.crush[0]), B(10.4))), u = prog(t, B(T.crush[0]), B(T.flood[1])), lx = lerp(200, 1750, eio(u)), ly = lerp(220, 460, u);
+      const k = eo(prog(t, B(T.crush[0]), B(5.2))), u = prog(t, B(T.crush[0]), B(T.flood[1])), lx = lerp(200, 1750, eio(u)), ly = lerp(220, 460, u);
       if (k > 0) { g.save(); g.globalCompositeOperation = 'lighter'; const gr = g.createRadialGradient(lx, ly, 20, lx, ly, 560); gr.addColorStop(0, `rgba(125,125,125,${k})`); gr.addColorStop(1, 'rgba(0,0,0,0)'); g.fillStyle = gr; g.fillRect(-W, -H, 3 * W, 3 * H); g.restore(); }
     } },
   ht: { mode: 'x', paper: P.GREEN, cam: camHT, q: () => ({ ...gen(1), th: .5, rot: 0, dx: 0, dy: 0 }),
     draw: (cam, t) => g => {
       paperBg(g, '#fff');
       const ang = lerp(T.turn[2], T.turn[3], eio(prog(t, B(T.turn[0]), B(T.turn[1])))), ex = 1.3 * (1 - eo(prog(t, B(T.crack[0]), B(T.crack[1]))));
-      const su = sinceBeat(t, 16, 22), pulse = t < B(T.dive[0]) ? .16 * Math.min(1, su / 2.5) * Math.exp(-su / 6) : 0;   // 2.5 帧胀起来，再慢慢缩回
+      const su = sinceBeat(t, 10, 13), pulse = t < B(T.dive[0]) ? .16 * Math.min(1, su / 2.5) * Math.exp(-su / 6) : 0;   // 2.5 帧胀起来，再慢慢缩回
       const hw = W / 2 / cam.z + 30, hh = H / 2 / cam.z + 30, r = Math.hypot(hw, hh);
       halftone(g, { pitch: 14, angle: ang, gain: 1 + pulse, extra: ex, ink: '#000', lum: HTLUM, box: [cam.x - r, cam.y - r, cam.x + r, cam.y + r] });
     } },
@@ -487,7 +519,7 @@ function tossedPhoto(ctx, t) {      // 灰照片甩进来：转着从右边飞�
 }
 
 // ———————————————————— 一帧 ————————————————————
-function prewarm() { FLY(); for (const [b, col, key, , , , , dr] of WALL) xeroxTexture(key, dr, gen(b === 45 ? 3 : 1), col); xeroxTexture('title', titleSheet, gen(1), P.PINK); for (const p of POSE) ZT(p.g); ZT(1); }
+function prewarm() { FLY(); for (const [b, col, key, , , , , dr] of WALL) xeroxTexture(key, dr, gen(key === 'zine-pink' ? 3 : 1), col); for (let n = 0; n <= STAMP.length; n++) TITLE_TEX(n); for (const p of POSE) ZT(p.g); ZT(1); }
 export function render(ctx, t) {
   if (t >= B(T.out[0])) prewarm();
   if (t < B(T.crush[0])) {                                            // 封面：扫描（转场 1）+ 后贴的东西 + 甩进来的照片（转场 2）
@@ -506,7 +538,22 @@ export function render(ctx, t) {
     applyCam(ctx, ID);
     CORNER.forEach(([x, y, a], i) => { const k = t - B(T.staples[i]); if (k >= 0) staple(ctx, x, y, a, 2.2 * (k < 3 ? lerp(1.25, 1, k / 3) : 1)); });
   }
+  post(ctx, t);
   hud(ctx, t);
+}
+
+// ———————————————————— 打在拍上的两个后期动作 ————————————————————
+// 重拍：整个画面往里“咚”一下，2 帧顶上去、再慢慢回来（单向，不来回颤）
+// 走纸打滑：这一拍整张叠一层错位的影子（darken：只留更黑的墨，纸色不变），3.5 帧衰减
+const PK = createCanvas(W, H), PKX = PK.getContext('2d');
+function post(ctx, t) {
+  let z = 1, ga = 0;
+  for (const [b, a] of T.hits) { const u = t - B(b); if (u >= 0 && u < 60) z += a * (u < 2 ? u / 2 : Math.exp(-(u - 2) / 8)); }
+  for (const b of T.ghost) { const u = t - B(b); if (u >= 0 && u < 16) ga = Math.max(ga, Math.exp(-u / 3.5)); }
+  if (z < 1.0005 && ga < .01) return;
+  ctx.setTransform(1, 0, 0, 1, 0, 0); PKX.setTransform(1, 0, 0, 1, 0, 0); PKX.drawImage(ctx.canvas, 0, 0);
+  if (z >= 1.0005) { ctx.drawImage(PK, W / 2 - W * z / 2, H / 2 - H * z / 2, W * z, H * z); if (ga >= .01) PKX.drawImage(ctx.canvas, 0, 0); }
+  if (ga >= .01) { ctx.save(); ctx.globalCompositeOperation = 'darken'; ctx.globalAlpha = .6 * ga; ctx.drawImage(PK, 6 + 16 * ga, -3 - 9 * ga); ctx.restore(); }
 }
 
 // ———————————————————— 屏幕上的字 ————————————————————
@@ -519,15 +566,16 @@ function hud(ctx, t) {
   if (g) {
     let land = -1e9; if (t >= B(T.tray[0])) for (const p of POSE) if (t >= B(p.b)) land = B(p.b);
     const pop = Math.exp(-(t - land) / 5) * (t >= land);
-    ctx.save(); ctx.translate(W - 64, 52); ctx.scale(1 + .18 * pop, 1 + .18 * pop); ctx.translate(-(W - 64), -52); counter(ctx, g, t); ctx.restore();
+    if (t >= B(T.tray[0])) bigGen(ctx, g, pop, land);
+    else { ctx.save(); ctx.translate(W - 64, 52); ctx.scale(1 + .18 * pop, 1 + .18 * pop); ctx.translate(-(W - 64), -52); counter(ctx, g, t); ctx.restore(); }
   }
-  readout(ctx, ['扫描 ▶ 原稿 → 第 1 代'], 60, 980, -99, t, { size: 28, out: B(1.2) });
+  readout(ctx, ['扫描 ▶ 原稿 → 第 1 代'], 60, 980, -99, t, { size: 28, out: B(.9) });
   // 01 阈值
-  dymo(ctx, '01 阈值 THRESHOLD', 60, 46, B(9.2), t, { out: B(14.1) });
-  slip(ctx, '灰色不存在', 330, 820, B(10), t, { size: 96, out: B(14), rot: -3 });
-  slip(ctx, '只剩黑和纸', 300, 950, B(10.5), t, { size: 66, fg: '#fff', bg: P.INK, out: B(14.05), rot: 2, seed: 7 });
-  if (t > B(9.6) && t < B(14.2) + 14) {
-    const v = knob(t), out = eio(prog(t, B(14.1), B(14.1) + 14)), a = eo(prog(t, B(9.6), B(9.6) + 10));
+  dymo(ctx, '01 阈值 THRESHOLD', 60, 46, B(4.6), t, { out: B(7.85) });
+  slip(ctx, '灰色不存在', 330, 820, B(5.25), t, { size: 96, out: B(7.75), rot: -3 });
+  slip(ctx, '只剩黑和纸', 300, 950, B(5.75), t, { size: 66, fg: '#fff', bg: P.INK, out: B(7.8), rot: 2, seed: 7 });
+  if (t > B(4.9) && t < B(7.95) + 14) {
+    const v = knob(t), out = eio(prog(t, B(7.85), B(7.85) + 14)), a = eo(prog(t, B(4.9), B(4.9) + 10));
     ctx.save(); ctx.translate(1500 + out * 700, 880 + (1 - a) * 30); ctx.globalAlpha = a;
     ctx.fillStyle = 'rgba(0,0,0,.35)'; ctx.fillRect(4, 6, 380, 150); ctx.fillStyle = '#141414'; ctx.fillRect(0, 0, 380, 150);
     ctx.fillStyle = '#F4F4F0'; ctx.font = '28px Hei'; ctx.fillText('阈值', 24, 46); ctx.font = '84px Mono'; ctx.textAlign = 'right'; ctx.fillText(v.toFixed(2), 356, 88);
@@ -535,20 +583,20 @@ function hud(ctx, t) {
     ctx.restore();
   }
   // 02 网点
-  dymo(ctx, '02 网点 HALFTONE', 60, 46, B(16.6), t, { out: B(21.7) });
-  slip(ctx, '照片 = 一排排的点', 420, 830, B(17.6), t, { size: 88, out: B(21.5), rot: -2, seed: 9 });
-  slip(ctx, '网角一转，图案就变', 400, 958, B(19.2), t, { size: 62, fg: '#fff', bg: P.INK, out: B(21.55), rot: 2, seed: 2 });
-  if (t > B(16.9)) { const ang = lerp(T.turn[2], T.turn[3], eio(prog(t, B(T.turn[0]), B(T.turn[1]))));
-    readout(ctx, [`网角 ${ang.toFixed(0).padStart(2, ' ')}°`, '点距 14 · 随鼓点胀缩'], 1420, 880, B(16.9), t, { size: 40, out: B(21.6) }); }
+  dymo(ctx, '02 网点 HALFTONE', 60, 46, B(9.75), t, { out: B(12.85) });
+  slip(ctx, '照片 = 一排排的点', 420, 830, B(10.25), t, { size: 88, out: B(12.75), rot: -2, seed: 9 });
+  slip(ctx, '网角一转，图案就变', 400, 958, B(11), t, { size: 62, fg: '#fff', bg: P.INK, out: B(12.8), rot: 2, seed: 2 });
+  if (t > B(10)) { const ang = lerp(T.turn[2], T.turn[3], eio(prog(t, B(T.turn[0]), B(T.turn[1]))));
+    readout(ctx, [`网角 ${ang.toFixed(0).padStart(2, ' ')}°`, '点距 14 · 随鼓点胀缩'], 1420, 880, B(10), t, { size: 40, out: B(12.85) }); }
   // 03 代数
-  dymo(ctx, '03 代数 GENERATIONS', 60, 46, B(26.2), t, { out: B(36.8) });
-  slip(ctx, '复印一次，糊一层', 520, 852, B(28), t, { size: 92, out: B(36.6), rot: -2, seed: 5 });
-  slip(ctx, '3 代以内最好看', 420, 975, B(31.5), t, { size: 66, fg: '#fff', bg: P.INK, out: B(36.65), rot: 1.5, seed: 8 });
+  dymo(ctx, '03 代数 GENERATIONS', 60, 46, B(16.35), t, { out: B(22.4) });
+  slip(ctx, '复印一次，糊一层', 520, 852, B(17.25), t, { size: 92, out: B(22.3), rot: -2, seed: 5 });
+  slip(ctx, '3 代以内最好看', 420, 975, B(19.75), t, { size: 66, fg: '#fff', bg: P.INK, out: B(22.35), rot: 1.5, seed: 8 });
   // 04 纸色
-  dymo(ctx, '04 纸色 PAPER', 60, 46, B(40.6), t, { out: B(46.6) });
-  slip(ctx, '颜色在纸上，墨只有黑', 620, 975, B(44.5), t, { size: 80, out: B(46.4), rot: -1.5, seed: 6 });
+  dymo(ctx, '04 纸色 PAPER', 60, 46, B(25.6), t, { out: B(30.85) });
+  slip(ctx, '颜色在纸上，墨只有黑', 620, 975, B(29.5), t, { size: 80, out: B(30.75), rot: -1.5, seed: 6 });
   SWATCH.forEach(([b, col, s], i) => {
-    if (t < B(b)) return; const out = eio(prog(t, B(46.6), B(46.6) + 14)), a = eo(prog(t, B(b), B(b) + 8));
+    if (t < B(b)) return; const out = eio(prog(t, B(30.85), B(30.85) + 14)), a = eo(prog(t, B(b), B(b) + 8));
     ctx.save(); ctx.translate(1460 + out * 600, 150 + i * 92); ctx.globalAlpha = a; ctx.translate((1 - a) * 60, 0);
     ctx.fillStyle = 'rgba(0,0,0,.35)'; ctx.fillRect(4, 6, 400, 72); ctx.fillStyle = '#141414'; ctx.fillRect(0, 0, 400, 72);
     ctx.fillStyle = col; ctx.fillRect(12, 12, 48, 48); ctx.strokeStyle = '#F4F4F0'; ctx.lineWidth = 2; ctx.strokeRect(12, 12, 48, 48);
@@ -565,7 +613,7 @@ function hud(ctx, t) {
     ctx.restore();
   }
 }
-const SWATCH = [[41.4, P.PINK, '荧光粉 #FF3E9A'], [42.3, P.YELLOW, '柠檬黄 #FFE21A'], [43.3, P.WHITE, '复印白 #F1EEE4'], [44.3, P.GREEN, '荧光绿 #7BE86A'], [45.2, P.INK, '墨 #121012']];
+const SWATCH = [[27, P.PINK, '荧光粉 #FF3E9A'], [27.5, P.YELLOW, '柠檬黄 #FFE21A'], [28, P.WHITE, '复印白 #F1EEE4'], [28.5, P.GREEN, '荧光绿 #7BE86A'], [29, P.INK, '墨 #121012']];
 
 // ———————————————————— 给声音用 ————————————————————
 export function events() {
@@ -574,24 +622,24 @@ export function events() {
     crush: B(T.crush[0]), knob: T.knob.map(([a, b]) => [B(a), B(b)]), flood: [B(T.flood[0]), B(T.flood[1])], crack: [B(T.crack[0]), B(T.crack[1])],
     dive: [B(T.dive[0]), B(T.dive[1])], out: [B(T.out[0]), B(T.out[1])], ejects: POSE.map(p => B(p.b)), tear: [B(T.tear[1]), B(T.tear[2])],
     staples: [...T.staples.map(B), ...WALL.flatMap(([b]) => CORNER.map(c => B(b) + c[3])), ...CORNER.map(c => B(TITLE.b) + c[3]), B(T.final), B(T.final) + 2],
-    slaps: [...WALL.map(([b]) => B(b)), B(TITLE.b)], text: [], final: B(T.final), transitions: TRANSITIONS };
+    slaps: [...WALL.map(([b]) => B(b)), B(TITLE.b)], stamps: STAMP.map((i, k) => B(stampBeat(k))), flicks: T.flick.map(B), hits: T.hits.map(([b, a]) => [B(b), a]), ghosts: T.ghost.map(B), text: [], final: B(T.final), transitions: TRANSITIONS };
   const dy = (s, f0, rate = 2.2) => { for (let i = 0; i < Array.from(s).length; i++) ev.text.push({ f: f0 + i * rate, k: 'key' }); };
   const sl = f => ev.text.push({ f, k: 'slip' });
-  dy('01 阈值 THRESHOLD', B(9.2)); sl(B(10)); sl(B(10.5));
-  dy('02 网点 HALFTONE', B(16.6)); sl(B(17.6)); sl(B(19.2)); ev.text.push({ f: B(16.9), k: 'tick' });
-  dy('03 代数 GENERATIONS', B(26.2)); sl(B(28)); sl(B(31.5));
-  dy('04 纸色 PAPER', B(40.6)); sl(B(44.5));
+  dy('01 阈值 THRESHOLD', B(4.6)); sl(B(5.25)); sl(B(5.75));
+  dy('02 网点 HALFTONE', B(9.75)); sl(B(10.25)); sl(B(11)); ev.text.push({ f: B(10), k: 'tick' });
+  dy('03 代数 GENERATIONS', B(16.35)); sl(B(17.25)); sl(B(19.75));
+  dy('04 纸色 PAPER', B(25.6)); sl(B(29.5));
   for (const [b] of SWATCH) ev.text.push({ f: B(b), k: 'tick' });
   dy('观默 @guanmo_ai', B(T.final) - 18, 1.2);
-  ev.text.push({ f: 0, k: 'tick' }); ev.text.push({ f: B(9.6), k: 'tick' });
+  ev.text.push({ f: 0, k: 'tick' }); ev.text.push({ f: B(4.9), k: 'tick' });
   return ev;
 }
 
 // 每帧用几个子帧做运动模糊：镜头推得快的地方多拿几帧，免得叠影
 export function subAt(f) {
   const inB = (a, b) => f >= B(a) && f < B(b);
-  if (inB(22.6, 25.2)) return 9;                                                   // 钻进一颗点、从笔画里退出来
-  if (T.ejects.some(([b]) => f >= B(b) - 15 && f < B(b) + 2) || inB(T.tear[1], T.tear[2]) || inB(6.6, 8.1)) return 6;   // 出纸、撕开、甩照片
+  if (inB(T.dive[0] + .6, T.out[1] - .4)) return 9;                                                   // 钻进一颗点、从笔画里退出来
+  if (T.ejects.some(([b]) => f >= B(b) - 15 && f < B(b) + 2) || inB(T.tear[1], T.tear[2]) || inB(T.toss[0] - .1, T.toss[1] + .1)) return 6;   // 出纸、撕开、甩照片
   if (WALL.some(([b]) => f >= B(b) - 13 && f < B(b) + 1) || (f >= B(TITLE.b) - 13 && f < B(TITLE.b) + 1)) return 6;   // 飞上墙
   return 3;
 }

@@ -1,5 +1,5 @@
 """朋克复印机 · 声音：代码合成的复印机声音层（扫描、胶带、贴纸、马克笔、旋钮、订书枪、标签机打字），
-有配乐时（music/ 下的文件 + 环境变量 MUSIC_START=曲子第几秒对齐片子第 0 帧）把它压在配乐下面；没有配乐时单独出声音层。
+有配乐时（music/ 下的文件，现在是《Dynamic Motion》 + 环境变量 MUSIC_START=曲子第几秒对齐片子第 0 帧）把它压在配乐下面；没有配乐时单独出声音层。
 python3 mix.py out.wav   （先 node render.mjs events events.json）"""
 import json, os, subprocess, sys
 from pathlib import Path
@@ -94,6 +94,14 @@ a_, b_ = EV['crack']; put(crackle((b_ - a_) / FPS), a_, 0.16)
 a_, b_ = EV['out']; put(whoosh((b_ - a_) / FPS), a_, 0.22, -0.2)
 for i, f in enumerate(EV['ejects']): put(whoosh(0.16), f - 9, 0.16, 0.6); put(slap(0.9), f, 0.22, 0.2)
 a_, b_ = EV['tear']; put(tape((b_ - a_) / FPS * 0.6), a_, 0.30, 0.0)
+def impact():           # 重拍上镜头往里“咚”一下：低频下坠 + 一点点纸面的拍击
+    t = tt(0.5); return norm(np.sin(2 * np.pi * np.cumsum(48 + 110 * np.exp(-t / 0.03)) / SR) * np.exp(-t / 0.16) + 0.25 * bp(rng.standard_normal(len(t)), 200, 3000) * np.exp(-t / 0.02))
+def kachunk():          # 换纸：复印机进纸“咔—嚓”
+    t = tt(0.14); y = bp(rng.standard_normal(len(t)), 1500, 8000) * (np.exp(-t / 0.006) + 0.7 * np.exp(-np.maximum(t - 0.05, 0) / 0.01) * (t > 0.05))
+    return norm(y + 0.4 * np.sin(2 * np.pi * 180 * t) * np.exp(-t / 0.03))
+for f, a in EV['hits']: put(impact(), f, 6.0 * a, 0.0)
+for f in EV['flicks']: put(kachunk(), f, 0.30, 0.2); put(zap(0.1), f, 0.08, -0.2)
+for i, f in enumerate(EV['stamps']): put(slap(1.2), f, 0.34, -0.5 + i / 9)          # 片名字母一个个拍上去
 
 music = None
 mdir = HERE / 'music'
@@ -105,7 +113,7 @@ if cands:
     music = np.vstack([music, np.zeros((max(0, N - len(music)), 2))])[:N]
     music *= 0.8 / np.abs(music).max()
     k = int(0.15 * SR); music[-k:] *= np.linspace(1, 0, k)[:, None] ** 2
-    sfx *= 10 ** (-10 / 20) * np.sqrt((music ** 2).mean()) / (np.sqrt((sfx ** 2).mean()) + 1e-9)   # 声音层压在配乐下 10 dB
+    sfx *= 10 ** (-7 / 20) * np.sqrt((music ** 2).mean()) / (np.sqrt((sfx ** 2).mean()) + 1e-9)   # 声音层压在配乐下 7 dB
     mix = music + sfx
 else:
     mix = sfx
@@ -115,7 +123,8 @@ def lufs(y):
 target = -14.0 if music is not None else -16.0
 g = 10 ** ((target - lufs(mix)) / 20); mix *= g
 pk = np.abs(mix).max()
-if pk > 0.97: mix = np.tanh(mix / pk * 1.6) / np.tanh(1.6) * 0.97
+if pk > 0.97:                                                   # 只压 0.8 以上的峰（软膝），整体响度不变
+    ax = np.abs(mix); mix = np.where(ax < 0.8, mix, np.sign(mix) * (0.8 + 0.17 * np.tanh((ax - 0.8) / 0.17)))
 out = sys.argv[1] if len(sys.argv) > 1 else str(HERE / 'out/mix.wav')
 subprocess.run(['ffmpeg', '-y', '-v', 'error', '-f', 'f32le', '-ar', str(SR), '-ac', '2', '-i', '-', '-c:a', 'pcm_s16le', out], input=mix.astype('<f4').tobytes(), check=True)
 print('%s · %.2fs · %.1f LUFS · peak before limit %.2f' % ('配乐 + 声音层' if music is not None else '只有声音层（还没有配乐）', DUR, lufs(mix), pk))
