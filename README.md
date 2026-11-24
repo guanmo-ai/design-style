@@ -2,7 +2,7 @@
 
 <!-- BEGIN WORK PREVIEWS -->
 <!-- 由 npm run gallery:readme 根据 gallery/data/works.json 生成，请勿手动修改此区域。 -->
-<p><a href="https://guanmo-ai.github.io/design-style/?lang=zh"><img src="docs/assets/style-mosaic.svg" width="100%" alt="26 张作品封面拼图 · 点击进入画廊" /></a></p>
+<p><a href="https://guanmo-ai.github.io/design-style/?lang=zh"><img src="docs/assets/style-mosaic.svg" width="100%" alt="27 张作品封面拼图 · 点击进入画廊" /></a></p>
 <!-- END WORK PREVIEWS -->
 
 [**中文**](README.md) · [**English**](README.en.md) · [**English gallery →**](https://guanmo-ai.github.io/design-style/?lang=en)
@@ -63,6 +63,7 @@ by 观默 [@guanmo_ai](https://x.com/guanmo_ai)
 | **027** | [**马克笔手绘 Marker**](styles/027-marker) | 当代 | 六个场景用巨笔接力，汽车开走、球鞋翻转、建筑亮灯，手绘走进官网、App 与海报 | [🎬 视频](https://github.com/guanmo-ai/design-style/releases/tag/day-27) · [🛠 过程](styles/027-marker/PROCESS.md) |
 | **029** | [**达达 Dada**](styles/029-dada) | 1916—约 1924 | 一批纸片接力演示照片蒙太奇、偶然拼贴和剪报成诗 | [🎬 视频](https://github.com/guanmo-ai/design-style/releases/tag/day-29) · [🛠 过程](styles/029-dada/PROCESS.md) |
 | **030** | [**维也纳分离派 Vienna Secession**](styles/030-secession) | 1897 年创立 | 金箔落在方板上，一格展开成六十四格 | [🎬 视频](https://github.com/guanmo-ai/design-style/releases/tag/day-30) · [🛠 过程](styles/030-secession/PROCESS.md) |
+| **031** | [**朋克复印机 Punk Xerox**](styles/031-punk) | 1970 年代朋克视觉 | 剪贴字、网点和一台复印机，印出一整墙演出海报 | [🎬 视频](https://github.com/guanmo-ai/design-style/releases/tag/day-31) · [🛠 过程](styles/031-punk/PROCESS.md) |
 
 ### 布局方式 · Layout
 

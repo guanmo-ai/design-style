@@ -27,6 +27,7 @@ export function validateEntries(works) {
     if (!Array.isArray(work.tags) || work.tags.some(tag => typeof tag !== 'string')) throw new Error('标签格式无效');
     if (!Array.isArray(work.tagsEn) || !work.tagsEn.length || work.tagsEn.some(tag => typeof tag !== 'string' || !tag.trim())) throw new Error('英文标签格式无效');
     const imageCount = isOverview(work) ? 0 : 4;
+    if (work.imageSize !== undefined && (!Array.isArray(work.imageSize) || work.imageSize.length !== 2 || work.imageSize.some(size => !Number.isSafeInteger(size) || size <= 0))) throw new Error(`${work.id} 的风格图尺寸无效`);
     if (!Array.isArray(work.images) || work.images.length !== imageCount || new Set(work.images.map(image => image.file)).size !== imageCount || work.images.some(image => !/^[a-z0-9-]+$/.test(image.file) || !image.title || !image.kind)) throw new Error('风格图配置无效');
     if (work.images.some(image => !['titleEn','kindEn'].every(key => typeof image[key] === 'string' && image[key].trim()))) throw new Error('英文图解配置不完整');
     if (isOverview(work) && (work.type !== 'style' || work.number !== '999')) throw new Error('风格汇总的上架期号必须为 999');

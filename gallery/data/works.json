@@ -1643,5 +1643,71 @@
       }
     ],
     "publishedAt": "2026-11-23T05:39:26Z"
+  },
+  {
+    "id": "031-punk",
+    "type": "style",
+    "number": "024",
+    "title": "朋克复印机",
+    "titleEn": "Punk Xerox",
+    "years": "1970 年代朋克视觉",
+    "category": "平面设计",
+    "categoryEn": "Graphic design",
+    "description": "原稿过机，灰阶压成黑墨，再裂成网点。同一张小志内页随着复印代数逐渐模糊，荧光色演出海报贴满一整面墙。",
+    "descriptionEn": "Originals feed into a copier, flatten into black ink, and break into halftone dots. Successive copies blur a zine spread, and fluorescent gig posters fill a wall.",
+    "tags": [
+      "朋克",
+      "复印机",
+      "小志",
+      "网点",
+      "剪贴字",
+      "海报"
+    ],
+    "tagsEn": [
+      "punk",
+      "photocopier",
+      "zine",
+      "halftone",
+      "cut-out lettering",
+      "gig poster"
+    ],
+    "release": "day-31",
+    "asset": "031-punk.mp4",
+    "sha256": "b5eead3eface2c47b16575e821c730f98b37c4ec83a5cb93438cc30dbe5d8904",
+    "imageSize": [
+      1920,
+      1080
+    ],
+    "images": [
+      {
+        "file": "poster",
+        "title": "朋克小志封面",
+        "kind": "主视觉",
+        "titleEn": "Punk zine cover",
+        "kindEn": "Poster"
+      },
+      {
+        "file": "cheatsheet",
+        "title": "阈值、网点、代数与纸色",
+        "kind": "规则速查",
+        "titleEn": "Threshold, halftone, generations and stock",
+        "kindEn": "Quick reference"
+      },
+      {
+        "file": "gig-poster",
+        "title": "地下室演出海报",
+        "kind": "版式应用",
+        "titleEn": "Basement gig poster",
+        "kindEn": "Layout study"
+      },
+      {
+        "file": "storyboard",
+        "title": "从进稿到片名",
+        "kind": "分镜选帧",
+        "titleEn": "From paper feeder to title",
+        "kindEn": "Storyboard"
+      }
+    ],
+    "publishedAt": "2026-11-24T08:43:16Z"
   }
 ]

@@ -217,13 +217,14 @@ function render() {
 
 function renderImages(work) {
   if (!work.images.length) return '';
+  const [width, height] = work.imageSize ?? [1080, 1350];
   return `<section class="resources" aria-labelledby="resources-title">
     <div class="section-heading"><h2 id="resources-title">${workTypeText(work, 'Images')}</h2><p class="section-note">${t('imageHint')}</p></div>
     <div class="image-grid">${work.images.map((image, index) => `
       <article class="image-card"><button class="image-open" type="button" data-image="${index}" data-work="${h(work.id)}" aria-label="${h(t('zoom', {title:content(image, 'title', language)}))}">
-        <div class="image-wrap"><img src="${imagePath(work, image)}" alt="${h(title(work))} · ${h(content(image, 'kind', language))}" width="1080" height="1350" loading="lazy"></div>
+        <div class="image-wrap" style="aspect-ratio:${width}/${height}"><img src="${imagePath(work, image)}" alt="${h(title(work))} · ${h(content(image, 'kind', language))}" width="${width}" height="${height}" loading="lazy"></div>
         <p class="image-kind">${h(content(image, 'kind', language))} / 0${index + 1}</p><h3 class="image-title">${h(content(image, 'title', language))}</h3>
-      </button><div class="image-bottom"><span>1080 × 1350 · SVG</span>${external(sourceUrl(work, `images/${image.file}.svg`), t('sourceFile'))}</div></article>`).join('')}</div>
+      </button><div class="image-bottom"><span>${width} × ${height} · SVG</span>${external(sourceUrl(work, `images/${image.file}.svg`), t('sourceFile'))}</div></article>`).join('')}</div>
   </section>`;
 
 }
@@ -283,10 +284,11 @@ function navigateWork(direction, trigger) {
 
 function showImage(work, index, trigger) {
   const image = work.images[index];
+  const [width, height] = work.imageSize ?? [1080, 1350];
   $('.player')?.pause();
   $('#image-viewer-label').textContent = t('imagePreview');
   $('#image-viewer-content').innerHTML = `<img class="art-preview" src="${imagePath(work, image)}" alt="${h(content(image, 'title', language))}">
-    <div class="viewer-details"><div><h2 id="image-viewer-title">${h(content(image, 'title', language))}</h2><p>${h(title(work))} · 1080 × 1350 · ${t('editable')}</p></div><div class="viewer-actions"><a class="button" href="${imagePath(work, image)}" download="${work.id}-${image.file}.svg">${t('download')}</a>${external(sourceUrl(work, `images/${image.file}.svg`), t('viewSource'))}</div></div>`;
+    <div class="viewer-details"><div><h2 id="image-viewer-title">${h(content(image, 'title', language))}</h2><p>${h(title(work))} · ${width} × ${height} · ${t('editable')}</p></div><div class="viewer-actions"><a class="button" href="${imagePath(work, image)}" download="${work.id}-${image.file}.svg">${t('download')}</a>${external(sourceUrl(work, `images/${image.file}.svg`), t('viewSource'))}</div></div>`;
   openDialog(imageViewer, trigger?.querySelector('.image-wrap') || trigger);
   imageViewer.scrollTop = 0;
 }
