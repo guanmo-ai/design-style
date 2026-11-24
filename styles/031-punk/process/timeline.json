@@ -1,0 +1,15 @@
+{
+  "fps": 60,
+  "frames": 1080,
+  "segments": [
+    { "start": 0, "dur": 95, "label": "封面 · Cover" },
+    { "start": 95, "dur": 92, "label": "阈值 · Threshold" },
+    { "start": 187, "dur": 114, "label": "网点 · Halftone" },
+    { "start": 301, "dur": 78, "label": "小志内页 · Zine spread" },
+    { "start": 379, "dur": 79, "label": "合盖扫描 · Lid and scan" },
+    { "start": 458, "dur": 170, "label": "复印代数 · Copy generations" },
+    { "start": 628, "dur": 57, "label": "演出海报 · Gig poster" },
+    { "start": 685, "dur": 85, "label": "纸色拼版 · Paper grid" },
+    { "start": 770, "dur": 310, "label": "海报墙与片名 · Poster wall and title" }
+  ]
+}
