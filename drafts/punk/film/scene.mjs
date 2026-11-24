@@ -364,19 +364,23 @@ function readout(ctx, lines, x, y, f0, t, o = {}) {        // 复印机面板：
 const T = {
   scan: [-.84, 1.5], tape: [0, .4], sticker: .75, marker: [1, 1.75], pin: 2,
   toss: [2.4, 3], crush: [3.25, 3.6],
-  knob: [[4, 4.6, .17], [4.75, 5.35, .84], [5.5, 6, .5]],
+  knob: [[4, 4.6, .3], [4.75, 5.35, .62], [5.5, 6, .5]],
   flood: [6, 6.5], crack: [6.55, 7.4], turn: [7.5, 9.2, 45, 15], htZoom: [7.2, 10.1],
-  shapes: [[8, 'line'], [8.5, 'square'], [8.75, 'cross'], [9, 'dot']],             // 网点形状每半拍 / 1/4 拍切一次
+  // 阈值那章：每拧一次旋钮，自动进稿器送进一张新原稿（从右边滑进来、落在拍上），纸也换一种颜色
+  feeds: [[4, 'guitar', P.PINK], [4.75, 'amp', P.WHITE], [5.5, 'crowd', P.YELLOW]], feedLen: .3,
+  // 网点那章：每半拍 / 1/4 拍切一次网点形状，原稿和纸色跟着换；最后回到话筒，钻进它的一颗点
+  shapes: [[8, 'line', 'guitar', P.PINK], [8.5, 'square', 'amp', P.YELLOW], [8.75, 'cross', 'crowd', P.WHITE], [9, 'dot', 'mic', P.GREEN]],
   dive: [9.5, 10.5], out: [10.5, 12], lid: [13.25, 14], sweeps: [[14, 14.6], [14.6, 15.1], [15.1, 15.5], [15.5, 15.85]],     // 越扫越快
   tray: [16, 16.6],
   ejects: [[16.5, 2], [17, 3], [17.5, 4], [18, 6], [18.5, 8], [19, 12], [19.25, 16], [19.5, 24], [19.75, 32], [20, 48], [20.25, 64]],
   tear: [20.6, 21, 22], staples: [],
   wall: 22, flick: [22.5, 23, 23.5, 24], reduce: [24, 24.6], pull: [27, 28.5], whip: [30.75, 31.3], push: [31.3, 35.5], tflick: [34, 34.5, 35, 35.5], final: 36,
   hits: [[3, .028], [6, .02], [12, .025], [16, .045], [24.6, .02], [28, .03], [31.3, .035], [34, .015], [34.5, .015], [35, .015], [36, .05]],   // 镜头往里“咚”一下（单向）：拍、幅度
-  ghost: [4, 5, 5.5, 8, 9],                                                      // 复印机走纸打滑：这几拍整张叠一层错位的影子
+  ghost: [4, 4.75, 5.5, 8, 8.5, 8.75, 9],                                                      // 复印机走纸打滑：这几拍整张叠一层错位的影子
 };
 const SHAPE_NAME = { dot: '圆点', line: '线条', square: '方点', cross: '十字' };
 const shapeAt = t => { let sh = 'dot'; for (const [b, k] of T.shapes) if (t >= B(b)) sh = k; return sh; };
+const htSubj = t => { let r = ['mic', P.GREEN]; for (const [b, , n, col] of T.shapes) if (t >= B(b)) r = [n, col]; return r; };
 const knob = t => { let v = .5; for (const [a, b, to] of T.knob) v = lerp(v, to, eio(prog(t, B(a), B(b)))); return v; };
 const sinceBeat = (t, a, b) => { const k = Math.floor((t - OFF) / FPB); return k >= a && k < b ? t - B(k) : 999; };
 
@@ -471,29 +475,54 @@ function lidScene(ctx, t) {
 }
 
 // ———————————————————— 各章的纸 ————————————————————
+// 阈值那章的一张原稿：name 是哪张照片，off(t) 是它还没滑进来的距离（照片坐标，往右）
+function photoSheet(name, paper, off = null) {
+  return { mode: 'x', bg: '#fff', cam: camPhoto, paper,
+    q: t => { const c = name === 'mic' ? eio(prog(t, B(T.crush[0]), B(T.crush[1]))) : 1, fl = ei(prog(t, B(T.flood[0]), B(T.flood[1])));
+      return { ...gen(1), th: lerp(knob(t), 1.16, fl), soft: lerp(.5, .05, c), mix: c, nm: .16, n: .12 }; },
+    draw: (cam, t) => g => {     // 照片 + 一束扫过去的追光：黑白的边界跟着光走（追光不跟着原稿走，换稿时光还在原处）
+      const o = off ? off(t) : 0;
+      if (o) { g.save(); g.translate(o, 0); }
+      g.drawImage(photo(name).canvas, 0, 0);
+      if (o) g.restore();
+      const k = eo(prog(t, B(T.crush[0]), B(4))), u = prog(t, B(T.crush[0]), B(T.flood[1])), lx = lerp(200, 1750, eio(u)), ly = lerp(220, 460, u);
+      if (k > 0) { g.save(); g.globalCompositeOperation = 'lighter'; const gr = g.createRadialGradient(lx, ly, 20, lx, ly, 560); gr.addColorStop(0, `rgba(125,125,125,${k})`); gr.addColorStop(1, 'rgba(0,0,0,0)'); g.fillStyle = gr; g.fillRect(-W, -H, 3 * W, 3 * H); g.restore(); }
+    } };
+}
+const FEED_SLIDE = W * 1.08;
+const feedOff = b => t => FEED_SLIDE * (1 - (1 - Math.pow(1 - prog(t, B(b - T.feedLen), B(b)), 4)));     // 越滑越慢，落在拍上
+const FEEDS = T.feeds.map(([b, name, col]) => ({ b, sheet: photoSheet(name, col, feedOff(b)) }));
+function photoLayers(t) {               // 现在是哪张原稿；正在进稿时两层：旧的在左、新的从右边盖过来
+  let cur = SHEET.photo, k = -1;
+  FEEDS.forEach((f, i) => { if (t >= B(f.b - T.feedLen)) k = i; });
+  if (k < 0) return { layers: [lay(cur)], edge: null };
+  const prev = k ? FEEDS[k - 1].sheet : cur, f = FEEDS[k];
+  if (t >= B(f.b)) return { layers: [lay(f.sheet)], edge: null };
+  const cam = camPhoto(t), o = feedOff(f.b)(t), edge = clamp(Math.round(W / 2 + (o - cam.x) * cam.z), 0, W);
+  return { layers: [lay(prev, 0, edge), lay(f.sheet, edge, W)], edge };
+}
+function feedShadow(ctx, edge) {        // 新原稿的前沿压一道影子
+  if (edge == null || edge >= W) return;
+  ctx.save(); ctx.setTransform(1, 0, 0, 1, 0, 0);
+  const gr = ctx.createLinearGradient(edge - 90, 0, edge, 0); gr.addColorStop(0, 'rgba(0,0,0,0)'); gr.addColorStop(1, 'rgba(0,0,0,.55)');
+  ctx.fillStyle = gr; ctx.fillRect(edge - 90, 0, 90, H); ctx.fillStyle = 'rgba(255,255,255,.8)'; ctx.fillRect(edge, 0, 3, H); ctx.restore();
+}
 const SHEET = {
   coverRaw: { mode: 'raw', paper: P.ORIG, q: () => null, draw: () => coverBase, cam: camCover },
   coverX: { mode: 'x', paper: P.PINK, q: () => gen(1), draw: () => coverBase, cam: camCover },
-  photo: { mode: 'x', bg: '#fff', cam: camPhoto,
-    paper: t => mixHex('#EFEDE6', P.YELLOW, eio(prog(t, B(T.crush[0]), B(T.crush[1])))),
-    q: t => { const c = eio(prog(t, B(T.crush[0]), B(T.crush[1]))), fl = ei(prog(t, B(T.flood[0]), B(T.flood[1])));
-      return { ...gen(1), th: lerp(knob(t), 1.16, fl), soft: lerp(.5, .05, c), mix: c, nm: .16, n: .12 }; },
-    draw: (cam, t) => g => {     // 照片 + 一束扫过去的追光：黑白的边界跟着光走
-      g.drawImage(photo().canvas, 0, 0);
-      const k = eo(prog(t, B(T.crush[0]), B(4))), u = prog(t, B(T.crush[0]), B(T.flood[1])), lx = lerp(200, 1750, eio(u)), ly = lerp(220, 460, u);
-      if (k > 0) { g.save(); g.globalCompositeOperation = 'lighter'; const gr = g.createRadialGradient(lx, ly, 20, lx, ly, 560); gr.addColorStop(0, `rgba(125,125,125,${k})`); gr.addColorStop(1, 'rgba(0,0,0,0)'); g.fillStyle = gr; g.fillRect(-W, -H, 3 * W, 3 * H); g.restore(); }
-    } },
-  ht: { mode: 'x', paper: P.GREEN, cam: camHT, q: () => ({ ...gen(1), th: .5, rot: 0, dx: 0, dy: 0 }),
+  photo: photoSheet('mic', t => mixHex('#EFEDE6', P.YELLOW, eio(prog(t, B(T.crush[0]), B(T.crush[1]))))),
+  ht: { mode: 'x', paper: t => htSubj(t)[1], cam: camHT, q: () => ({ ...gen(1), th: .5, rot: 0, dx: 0, dy: 0 }),
     draw: (cam, t) => g => {
       paperBg(g, '#fff');
       const ang = lerp(T.turn[2], T.turn[3], eio(prog(t, B(T.turn[0]), B(T.turn[1])))), ex = 1.3 * (1 - eo(prog(t, B(T.crack[0]), B(T.crack[1]))));
       const su = sinceBeat(t, 7, 10), pulse = t < B(T.dive[0]) ? .16 * Math.min(1, su / 2.5) * Math.exp(-su / 6) : 0;   // 2.5 帧胀起来，再慢慢缩回
       const hw = W / 2 / cam.z + 30, hh = H / 2 / cam.z + 30, r = Math.hypot(hw, hh);
-      halftone(g, { pitch: 14, angle: ang, gain: 1 + pulse, extra: ex, ink: '#000', lum: HTLUM, shape: shapeAt(t), box: [cam.x - r, cam.y - r, cam.x + r, cam.y + r] });
+      const ph = photo(htSubj(t)[0]);
+      halftone(g, { pitch: 14, angle: ang, gain: 1 + pulse, extra: ex, ink: '#000', lum: (x, y) => Math.pow(ph.lum(x, y), .55), shape: shapeAt(t), box: [cam.x - r, cam.y - r, cam.x + r, cam.y + r] });
     } },
   zineLive: { mode: 'x', paper: P.WHITE, cam: camOut, q: () => gen(1), draw: () => zinePage },
 };
-const HTLUM = (x, y) => Math.pow(photo().lum(x, y), .55);     // 网点那章提亮一点，话筒看得清
+// 网点那章按亮度的 0.55 次方取点：提亮一点，原稿看得清
 const lay = (sheet, x0 = 0, x1 = W, age = null) => ({ sheet, x0, x1, age });
 
 // ———————————————————— 03 代数：出纸口一张张吐出来，叠成一摞 ————————————————————
@@ -591,7 +620,7 @@ export function render(ctx, t) {
     coverFresh(ctx, t);
     if (xb < W + 480) drawBar(ctx, xb, v);
     tossedPhoto(ctx, t);
-  } else if (t < B(T.flood[1])) compose(ctx, [lay(SHEET.photo)], t);    // 01 阈值（到头时整屏淹黑）
+  } else if (t < B(T.flood[1])) { const { layers, edge } = photoLayers(t); compose(ctx, layers, t); feedShadow(ctx, edge); }    // 01 阈值：每拧一次换一张原稿（到头时整屏淹黑）
   else if (t < B(T.out[0])) compose(ctx, [lay(SHEET.ht)], t);           // 转场 3 的后半：从黑里裂成网点；02 网点；转场 4 的前半：钻进去
   else if (t < B(T.out[1])) compose(ctx, [lay(SHEET.zineLive)], t);     // 转场 4 的后半：从笔画里退出来
   else if (t < B(T.tray[0])) lidScene(ctx, t);                          // zine 内页 → 合盖复印（转场 5）
@@ -635,6 +664,8 @@ function hud(ctx, t) {
   readout(ctx, ['扫描 ▶ 原稿 → 第 1 代'], 60, 980, -99, t, { size: 28, out: B(.75) });
   // 01 阈值
   dymo(ctx, '01 阈值 THRESHOLD', 60, 46, B(3.4), t, { out: B(5.9) });
+  { let n = 0; for (const [b] of T.feeds) if (t >= B(b)) n++; const NAME = ['话筒', '吉他', '音箱', '人群'];
+    if (t > B(3.6)) readout(ctx, [`原稿 0${n + 1} · ${NAME[n]}`], 1500, 46, B(3.6), t, { size: 34, out: B(5.9) }); }
   slip(ctx, '灰色不存在', 330, 820, B(3.9), t, { size: 96, out: B(5.85), rot: -3 });
   slip(ctx, '只剩黑和纸', 300, 950, B(4.3), t, { size: 66, fg: '#fff', bg: P.INK, out: B(5.9), rot: 2, seed: 7 });
   if (t > B(3.6) && t < B(5.95) + 14) {
@@ -685,7 +716,7 @@ export function events() {
     crush: B(T.crush[0]), knob: T.knob.map(([a, b]) => [B(a), B(b)]), flood: [B(T.flood[0]), B(T.flood[1])], crack: [B(T.crack[0]), B(T.crack[1])],
     dive: [B(T.dive[0]), B(T.dive[1])], out: [B(T.out[0]), B(T.out[1])], ejects: POSE.map(p => B(p.b)), tear: [B(T.tear[1]), B(T.tear[2])],
     staples: [...WALL.flatMap(([b]) => CORNER.map(c => B(b) + c[3])), ...GRID_().map(q => B(q.b) + 2), B(T.final), B(T.final) + 2],
-    slaps: [...WALL.map(([b]) => B(b)), ...GRID_().map(q => B(q.b))], lid: B(T.lid[1]), lidStart: B(T.lid[0]), whip: [B(T.whip[0]), B(T.whip[1])], reduce: [B(T.reduce[0]), B(T.reduce[1])], shapes: T.shapes.map(([b]) => B(b)), stamps: STAMP.map((i, k) => B(stampBeat(k))), flicks: [...T.flick, ...T.tflick].map(B), hits: T.hits.map(([b, a]) => [B(b), a]), ghosts: T.ghost.map(B), text: [], final: B(T.final), transitions: TRANSITIONS };
+    slaps: [...WALL.map(([b]) => B(b)), ...GRID_().map(q => B(q.b))], lid: B(T.lid[1]), lidStart: B(T.lid[0]), whip: [B(T.whip[0]), B(T.whip[1])], reduce: [B(T.reduce[0]), B(T.reduce[1])], shapes: T.shapes.map(([b]) => B(b)), feeds: T.feeds.map(([b]) => [B(b - T.feedLen), B(b)]), stamps: STAMP.map((i, k) => B(stampBeat(k))), flicks: [...T.flick, ...T.tflick].map(B), hits: T.hits.map(([b, a]) => [B(b), a]), ghosts: T.ghost.map(B), text: [], final: B(T.final), transitions: TRANSITIONS };
   const dy = (s, f0, rate = 2.2) => { for (let i = 0; i < Array.from(s).length; i++) ev.text.push({ f: f0 + i * rate, k: 'key' }); };
   const sl = f => ev.text.push({ f, k: 'slip' });
   dy('01 阈值 THRESHOLD', B(3.4)); sl(B(3.9)); sl(B(4.3));
@@ -699,11 +730,12 @@ export function events() {
 }
 
 // 硬切：运动模糊的子帧不跨过这些时刻（不然切点那一帧会把前后两个场景叠在一起）
-export const CUTS = [B(T.tray[0])];
+export const CUTS = [B(T.tray[0]), ...T.shapes.map(([b]) => B(b))];
 // 每帧用几个子帧做运动模糊：镜头推得快的地方多拿几帧，免得叠影
 export function subAt(f) {
   const inB = (a, b) => f >= B(a) && f < B(b);
   if (inB(T.dive[0] + .6, T.out[1] - .4)) return 9;                                                   // 钻进一颗点、从笔画里退出来
+  if (T.feeds.some(([b]) => f >= B(b - T.feedLen) - 1 && f < B(b) + 1)) return 12;                   // 进稿：一帧滑过几百 px，子帧少了会变成几层叠影
   if (T.ejects.some(([b]) => f >= B(b) - 15 && f < B(b) + 2) || inB(T.tear[1], T.tear[2]) || inB(T.toss[0] - .1, T.toss[1] + .1)) return 6;   // 出纸、撕开、甩照片
   if (inB(T.whip[0], T.whip[1] + .1)) return 9;                                     // 甩镜
   if (WALL.some(([b]) => f >= B(b) - 13 && f < B(b) + 1) || GRID_().some(q => f >= B(q.b) - 13 && f < B(q.b) + 1) || inB(T.reduce[0], T.reduce[1])) return 6;   // 飞上墙、缩小

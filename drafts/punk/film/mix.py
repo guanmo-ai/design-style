@@ -105,6 +105,7 @@ put(slap(1.6), EV['lid'], 0.40, 0.0); put(impact(), EV['lid'], 0.12, 0.0); put(w
 a_, b_ = EV['whip']; put(whoosh((b_ - a_) / FPS * 1.2), a_ - 3, 0.34, 0.6)                 # 甩镜
 a_, b_ = EV['reduce']; put(whoosh((b_ - a_) / FPS), a_, 0.16, -0.3)
 for f in EV['shapes']: put(kachunk(), f, 0.16, 0.4)                                       # 网点换形状
+for a_, b_ in EV.get('feeds', []): put(whoosh((b_ - a_) / FPS), a_, 0.14, 0.5); put(kachunk(), b_, 0.22, -0.2)   # 进稿器送进一张新原稿
 for i, f in enumerate(EV['stamps']): put(slap(1.2), f, 0.34, -0.5 + i / 9)          # 片名字母一个个拍上去
 
 music = None
