@@ -48,6 +48,7 @@ const FLASH_LIGHT = hex("#a8b8ff"), PINK_LIGHT = hex("#ff4fd8"), CYAN_LIGHT = he
 // 150 BPM：一拍 12 帧，十六分音符 3 帧。卡帧一松开（第 22 帧）是第一拍。
 const BEAT = 12;
 const F = {
+  die: 6, // 开场霓虹亮着，接触不良闪两下，第 6 帧断电
   leader: 15, hero: 18, release: 22, // 先导 15–17，英雄帧 18，冻结 19–21
   flowEnd: 40, // 电流爬完两个字
   surge: 46, // 第 3 拍：浪涌
@@ -159,7 +160,7 @@ for (const b of bulbs) {
   b.re = RE0 + step15(((MAXCOL - b.col) / MAXCOL) * RE); // 重新点亮：从右往左
 }
 const BUZZ = new Set(bulbs.filter((_, i) => rand(i, 404) < 0.03));
-const T_SURGE = tw(F.surge), T_DIP = tw(F.strike2 + 1), T_BACK = tw(F.back), T_DROP = tw(F.drop);
+const T_DIE = tw(F.die), T_SURGE = tw(F.surge), T_DIP = tw(F.strike2 + 1), T_BACK = tw(F.back), T_DROP = tw(F.drop);
 
 // 副标题：PIXEL ART，青色霓虹管，12 px 原尺寸，字母从上方砸下来，每个十六分音符一个
 const SUB = [];
@@ -182,10 +183,13 @@ const B2T = FAR.find((b) => b.x <= 262 && b.x + b.w > 262);
 const BOLT2 = bolt(new Rng(21), 236, -52, 262, B2T.top, { jag: 0.3, depth: 5 });
 const FORKS2 = forks(new Rng(23), BOLT2.slice(0, 20), { count: 5, len: 34, jag: 0.4 });
 const T_STRIKE = tw(F.hero), T_STRIKE2 = tw(F.strike2);
+// 开场那道闪电：第 0 帧一道云间闪电横穿招牌上方的天空（不落地，不碰招牌）
+const BOLT0 = bolt(new Rng(1), 64, 22, 256, 14, { jag: 0.14, depth: 6 });
+const FORKS0 = forks(new Rng(46), BOLT0, { count: 9, len: 16, jag: 0.45, spread: 1.1 });
 // 云里的闪。第一道在 0 帧之前，所以封面里的云是亮的。
 const FLASHES = [
-  { t: -0.03, x: 200, y: -10, k: 0.8, d: 0.14 },
-  { t: tw(8), x: 70, y: -20, k: 0.5, d: 0.06 },
+  { t: -0.02, x: 160, y: 10, k: 1.7, d: 0.12 },
+  { t: tw(10), x: 100, y: -10, k: 0.5, d: 0.06 },
   { t: T_STRIKE, x: 90, y: -30, k: 1.6, d: 0.14 },
   { t: T_STRIKE + 0.13, x: 90, y: -30, k: 0.9, d: 0.08 },
   { t: T_STRIKE2, x: 240, y: -30, k: 1.4, d: 0.12 },
@@ -231,11 +235,22 @@ function nearest(c) {
 
 /** 灯泡这一刻的样子：[中心, 十字, 四角, 光强] */
 function bulbLook(b, i, t) {
-  const OFF = [C.neon[4], C.neon[5], 0, 0], DEAD = [C.neon[5], 0, 0, 0];
+  const OFF = [C.neon[5], 0, 0, 0], DEAD = [C.neon[5], 0, 0, 0];
   const cool = (a) =>
     a < 1 / 15 ? [C.neon[0], C.neon[0], C.neon[1], 0.6] :
     a < 2 / 15 ? [C.neon[0], C.neon[1], C.neon[2], 0.38] :
     a < 3 / 15 ? [C.neon[1], C.neon[2], C.neon[3], 0.22] : [C.neon[2], C.neon[3], C.neon[4], 0.12];
+  // 开场：霓虹本来亮着，暴雨里接触不良，第 6 帧断电，按色阶一阶阶暗下去
+  if (t < T_DIE) {
+    const fr = Math.round(t * FPS);
+    if (fr <= 1) return [C.neon[1], C.neon[2], C.neon[3], 0.3]; // 闪电照着的那两帧最亮
+    if (fr === 2) return [C.neon[3], C.neon[4], 0, 0.06];
+    if (fr === 4 && rand(i, 55) < 0.45) return DEAD;
+    if (fr === 5) return [C.neon[0], C.neon[1], C.neon[3], 0.45];
+    return [C.neon[2], C.neon[3], C.neon[4], 0.2];
+  }
+  if (t < T_DIE + 1 / 30) return [C.neon[3], C.neon[4], C.neon[5], 0.07];
+  if (t < T_DIE + 2 / 30) return [C.neon[4], C.neon[5], 0, 0.02];
   if (t < b.ta) return OFF;
   if (t >= T_DIP && t < b.re) return t < T_DIP + 1 / 30 ? [C.neon[0], C.neon[1], 0, 0.5] : DEAD; // 断电前最后一闪
   if (t >= T_SURGE && t < T_SURGE + 2 / 15 && t < T_DIP) return t < T_SURGE + 1 / 15 ? [C.neon[0], C.neon[0], C.neon[0], 0.7] : [C.neon[0], C.neon[1], C.neon[2], 0.4];
@@ -289,6 +304,15 @@ function drawFrame(f) {
     }
   }
 
+  // 开场那道远处的闪电：白两帧，然后按色阶退
+  if (f < 5) {
+    const col = [0, 0, 1, 2, 3][f];
+    p.polyline(BOLT0.map(([x, y]) => [x + 1, y]), C.bolt[Math.min(3, col + 1)]);
+    p.polyline(BOLT0, C.bolt[col]);
+    if (col <= 1) for (const fk of FORKS0) p.polyline(fk, C.bolt[col + 1]);
+    for (let i = 1; i < BOLT0.length; i += 3) p.glowLine(BOLT0[i - 1][0], BOLT0[i - 1][1], BOLT0[i][0], BOLT0[i][1], 10, FLASH_LIGHT, col === 0 ? 0.25 : 0.1);
+  }
+
   // 楼
   for (const b of FAR) {
     rectS(b.x, b.top, b.w, HORIZON - b.top, C.sky[2]);
@@ -316,7 +340,7 @@ function drawFrame(f) {
   for (const lx of [126, 194]) for (let y = BOARD.y + BOARD.h; y < B.top; y++) solid(lx, y, C.sky[3]);
   for (let k = 0; k <= 68; k++) { const y = BOARD.y + BOARD.h + Math.round((k / 68) * (B.top - BOARD.y - BOARD.h - 1)); solid(126 + k, y, C.sky[2]); solid(194 - k, y, C.sky[2]); }
   rectS(BOARD.x, BOARD.y, BOARD.w, BOARD.h, C.sky[1]);
-  const dark = t < FLOW0 || (t >= T_DIP + 1 / 30 && t < T_BACK);
+  const dark = (t >= T_DIE + 1 / 30 && t < FLOW0) || (t >= T_DIP + 1 / 30 && t < T_BACK);
   const surge = t >= T_SURGE && t < T_SURGE + 1 / 15;
   const rim = dark ? C.sky[3] : surge ? C.neon[0] : t < tw(F.flowEnd) ? C.neon[step15(t) * 15 % 2 ? 4 : 3] : C.neon[3];
   for (let x = BOARD.x; x < BOARD.x + BOARD.w; x++) { solid(x, BOARD.y, rim); solid(x, BOARD.y + BOARD.h - 1, rim); }
@@ -326,8 +350,8 @@ function drawFrame(f) {
   solid(ROD.x - 1, ROD.top + 1, C.sky[4]); solid(ROD.x + 1, ROD.top + 1, C.sky[4]);
 
   // 蓄电：落雷前避雷针尖上爬着越来越多的小电弧
-  if (f < F.hero) {
-    const charge = f / F.hero, st = Math.floor(step15(t) * 15);
+  if (f >= F.die && f < F.hero) {
+    const charge = (f - F.die) / (F.hero - F.die), st = Math.floor(step15(t) * 15);
     const n = 1 + Math.floor(charge * 5);
     for (let k = 0; k < n; k++) {
       const r = new Rng(st * 31 + k), a = r.range(-Math.PI, 0), l = 2 + r.range(0, 3 + charge * 6);
@@ -498,7 +522,7 @@ function upscale(v) {
 const realOf = (w) => { for (let f = 0; f <= N; f++) if (tw(f) >= w - 1e-6) return f / FPS; return N / FPS; };
 const cues = {
   fps: FPS, frames: N, bpm: 150, beat0: F.release / FPS,
-  leader: F.leader / FPS, strike: F.hero / FPS, freeze: 3 / FPS, charge: [0, F.hero / FPS],
+  leader: F.leader / FPS, strike: F.hero / FPS, freeze: 3 / FPS, charge: [F.die / FPS, F.hero / FPS], die: F.die / FPS, flicker: [2 / FPS, 4 / FPS, 5 / FPS], bolt0: 0,
   bulbs: [...new Set(bulbs.map((b) => b.ta))].sort((a, b) => a - b).map(realOf),
   chars: [0, 1].map((ci) => realOf(Math.max(...bulbs.filter((b) => b.ci === ci).map((b) => b.ta)))),
   surge: F.surge / FPS, sub: SUB.map((s) => s.fl / FPS),

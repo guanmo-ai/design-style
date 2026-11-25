@@ -56,6 +56,17 @@ sfx += (rain - lowpass(rain, 0.08)) * 0.045
 for _ in range(50):
     place(sfx, noise(0.01) * env(0.01, 0.0005, 0.003), rng.uniform(0, DUR), 0.07)
 
+# ---- 开场：远处一道雷（第 0 帧就响），霓虹的嗡声，闪两下，断电
+place(sfx, noise(0.05) * env(0.05, 0.0003, 0.012), cues["bolt0"], 0.55)
+place(sfx, lowpass(noise(1.6), 0.008) * 8 * env(1.6, 0.01, 0.45), cues["bolt0"] + 0.02, 0.45)
+D0 = cues["die"]
+buzz = (square(120, D0, 0.5) * 0.6 + square(240, D0, 0.3) * 0.4) * np.minimum(1, np.arange(int(D0 * SR)) / (0.004 * SR))
+place(sfx, buzz, 0, 0.05)
+for tf in cues["flicker"]:
+    place(sfx, noise(0.025) * square(1800, 0.025, 0.2) * env(0.025, 0.0003, 0.008), tf, 0.16)
+place(sfx, square(np.geomspace(440, 35, int(0.28 * SR)), 0.28, 0.5) * env(0.28, 0.002, 0.11), D0, 0.2)
+place(sfx, noise(0.03) * env(0.03, 0.0003, 0.006), D0, 0.3)
+
 # ---- 蓄电：避雷针上的电越积越多（方波嗡声往上爬 + 噼啪）
 c0, c1 = cues["charge"]
 L = c1 - c0
