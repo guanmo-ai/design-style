@@ -1,7 +1,9 @@
-// 像素风 · 动效小样 v2（4.5 秒，150 BPM：一拍正好 12 帧）
+// 像素风 · 全片（18.7 秒，150 BPM：一拍正好 12 帧）
 //
 // 世界是 320 × 180 的整数像素网格。镜头只用整数倍率：开场 12 倍特写招牌，落雷后 12 → 10 → 8 → 6 倍
 // 一级一级跳出去，最近邻放大到 1920 × 1080。
+// 换章是“钻进一格”：镜头 24 → 96 → 384 倍钻进某个像素，再从下一块板的一个像素里退出来。
+// 中间四块板（色阶、整数倍率、卡帧、像素气象台）见 boards.mjs；最后回到招牌，第三道雷，落水，署名。
 //
 // 规矩：
 //   1. 落格：所有东西落在整数格上。形（灯泡、云、窗、镜头倍率）按 15 fps 走阶梯，光、雨和火花按 30 fps 走满帧。
@@ -11,10 +13,13 @@
 // 绘制层和粒子来自 pixelfx（MIT，见 vendor/pixelfx/LICENSE 与 NOTICE.md）：
 // color 缓冲只放不透明像素，light 缓冲叠加发光，最后 composite 合成。
 //
-// 用法：node film.mjs <输出目录>
+// 用法：node film.mjs <输出目录> [--preview 步长] [--frames 起-止]
 //   写出 video.mp4（1920 × 1080，无声）和 cues.json（给配乐用的时间点，单位秒，真实时间）。
+//   --preview n：不出视频，每 n 帧存一张 960 × 540 的 PNG 到 <输出目录>/preview/（审片用）。
+//   --frames a-b：只存这一段的 PNG（全尺寸）。模拟照样从第 0 帧走，所以粒子和出片时一模一样。
 
 import { writeFileSync, readFileSync, mkdirSync } from "node:fs";
+import { makeBoards } from "./boards.mjs";
 import { join, dirname } from "node:path";
 import { fileURLToPath } from "node:url";
 import { spawn } from "node:child_process";
@@ -26,8 +31,11 @@ import {
 const HERE = dirname(fileURLToPath(import.meta.url));
 const OUT = process.argv[2] ?? join(HERE, "out");
 mkdirSync(OUT, { recursive: true });
+const arg = (k) => { const i = process.argv.indexOf(k); return i > 0 ? process.argv[i + 1] : null; };
+const PREVIEW = arg("--preview") ? Number(arg("--preview")) : 0;
+const RANGE = arg("--frames") ? arg("--frames").split("-").map(Number) : null;
 
-const W = 320, H = 180, FPS = 30, N = 126, OW = 1920, OH = 1080;
+const W = 320, H = 180, FPS = 30, N = 562, OW = 1920, OH = 1080;
 const GLYPHS = JSON.parse(readFileSync(join(HERE, "glyphs.json"), "utf8"));
 
 // ---------------------------------------------------------------- 色板（23 色）
@@ -55,25 +63,41 @@ const F = {
   sub: 46, // 副标题第一个字母（之后每 3 帧一个）
   strike2: 82, // 第 6 拍：第二道雷，第 83 帧冻结
   relight: 86, back: 94, // 断电，86 起从右往左重新点亮，94（第 7 拍）全亮
-  drop: 106, // 第 8 拍：大雨滴落进积水
+  drop: 106, // 第 8 拍：大雨滴落进积水，灯跑一遍；第 9 拍镜头钻进一个灯泡
+  // 板 4（卡帧）：落雷 322，冻结 323–325；次要撞击 346，冻结 347
+  hero4: 322, hero4b: 346,
+  // 收尾：回到招牌特写，第三道雷（先导 499–501，英雄帧 502，冻结 503–505），松开 506 浪涌，
+  // 526 署名，538 最后一滴雨落进积水
+  leader3: 499, hero3: 502, release3: 506, sig: 526, drop2: 538,
 };
-const FROZEN = new Set([19, 20, 21, 83]);
+const FROZEN = new Set([19, 20, 21, 83, 323, 324, 325, 347, 503, 504, 505]);
 // 世界时间：冻结的帧不走
 const TW = []; for (let f = 0, k = 0; f <= N; f++) { if (FROZEN.has(f)) k++; TW[f] = (f - k) / FPS; }
 const tw = (f) => TW[f];
 const step15 = (t) => Math.floor(t * 15 + 1e-6) / 15;
 const HORIZON = 138;
 
+// 段落（真实帧号）。每段都从拍上开始：第 b 拍 = 22 + 12b。
+const SEG = {
+  zoom1: 118, // 第 8 拍：钻进一个灯泡（24 → 96 → 384 → 1536 倍，每级 3 帧）
+  fill: 130, // 第 9 拍：那一格占满全屏，按霓虹色阶一阶一阶冷下来（每 2 帧一阶）
+  b2: 142, t2: 214, b3: 226, t3: 298, b4: 310, t4: 382, b5: 394, t5: 478, end: 490,
+};
+
 // 镜头：整数倍率 + 中心。卡帧时按整像素震。
 function viewAt(f) {
   let s = f < 25 ? 12 : f < 28 ? 10 : f < 31 ? 8 : 6;
-  if (f === F.surge || f === F.surge + 1 || f === F.back || f === F.drop) s = 7; // 重拍上往前冲一下
+  if (f >= SEG.end) s = f < F.release3 ? 12 : f < F.release3 + 3 ? 10 : f < F.release3 + 6 ? 8 : 6; // 收尾：和开场一样从 12 倍跳出去
+  if (f === F.surge || f === F.surge + 1 || f === F.back || f === F.drop || f === F.drop2) s = 7; // 重拍上往前冲一下
   const cy = { 12: 58, 10: 66, 8: 76, 7: 86, 6: 90 }[s];
   return { s, cx: 160, cy };
 }
 function shakeAt(f) {
-  const k = f - F.hero - 1;
-  if (k >= 0 && k < 3) return { x: [3, -2, 1][k], y: [-1, 1, -1][k] };
+  for (const h of [F.hero, F.hero3, F.hero4]) {
+    const k = f - h - 1;
+    if (k >= 0 && k < 3) return { x: [3, -2, 1][k], y: [-1, 1, -1][k] };
+  }
+  if (f === F.hero4b + 1) return { x: -1, y: 1 };
   if (f === F.strike2 + 1) return { x: -1, y: 1 };
   if (f === F.surge) return { x: 0, y: 1 };
   return { x: 0, y: 0 };
@@ -161,6 +185,11 @@ for (const b of bulbs) {
 }
 const BUZZ = new Set(bulbs.filter((_, i) => rand(i, 404) < 0.03));
 const T_DIE = tw(F.die), T_SURGE = tw(F.surge), T_DIP = tw(F.strike2 + 1), T_BACK = tw(F.back), T_DROP = tw(F.drop);
+const T_SURGE3 = tw(F.release3), DROPS_T = [T_DROP, tw(F.drop2)];
+// 镜头钻进去的那个灯泡（“素”字中间），和收尾时镜头退出来的那个（“像”字中间）
+const nearestBulb = (x, y) => bulbs.reduce((a, b) => (Math.hypot(b.x - x, b.y - y) < Math.hypot(a.x - x, a.y - y) ? b : a));
+const ZOOM_BULB = nearestBulb(184, 70), END_BULB = nearestBulb(136, 70);
+BUZZ.delete(ZOOM_BULB); BUZZ.delete(END_BULB);
 
 // 副标题：PIXEL ART，青色霓虹管，12 px 原尺寸，字母从上方砸下来，每个十六分音符一个
 const SUB = [];
@@ -253,15 +282,18 @@ function bulbLook(b, i, t) {
   if (t < T_DIE + 2 / 30) return [C.neon[4], C.neon[5], 0, 0.02];
   if (t < b.ta) return OFF;
   if (t >= T_DIP && t < b.re) return t < T_DIP + 1 / 30 ? [C.neon[0], C.neon[1], 0, 0.5] : DEAD; // 断电前最后一闪
-  if (t >= T_SURGE && t < T_SURGE + 2 / 15 && t < T_DIP) return t < T_SURGE + 1 / 15 ? [C.neon[0], C.neon[0], C.neon[0], 0.7] : [C.neon[0], C.neon[1], C.neon[2], 0.4];
+  for (const ts of [T_SURGE, T_SURGE3])
+    if (t >= ts && t < ts + 2 / 15 && (ts !== T_SURGE || t < T_DIP)) return t < ts + 1 / 15 ? [C.neon[0], C.neon[0], C.neon[0], 0.7] : [C.neon[0], C.neon[1], C.neon[2], 0.4];
   const a = t >= b.re ? t - b.re : t - b.ta;
-  const chase = t - T_DROP - b.col * (1 / 60);
-  if (chase >= 0 && chase < 1 / 15) return [C.neon[0], C.neon[1], C.neon[3], 0.45];
+  for (const td of DROPS_T) {
+    const chase = t - td - b.col * (1 / 60);
+    if (chase >= 0 && chase < 1 / 15) return [C.neon[0], C.neon[1], C.neon[3], 0.45];
+  }
   if (a > 0.5 && BUZZ.has(b) && Math.floor(step15(t) * 15 + i) % 11 < 2) return DEAD;
   return cool(a);
 }
 
-function drawFrame(f) {
+function drawSign(f) {
   const t = tw(f), sh = shakeAt(f), cam = { x: sh.x, y: sh.y };
   clearFrame(frame);
   mask.fill(0);
@@ -363,7 +395,8 @@ function drawFrame(f) {
   // 灯泡
   let pink = 0;
   for (const [i, b] of bulbs.entries()) {
-    const [core, arm, corner, gk] = bulbLook(b, i, t);
+    let [core, arm, corner, gk] = bulbLook(b, i, t);
+    if (b === ZOOM_BULB && f >= SEG.zoom1 - 3 && f < SEG.fill) [core, arm, corner, gk] = [C.neon[0], C.neon[1], C.neon[2], 0.6]; // 镜头钻进去时它正烧白
     solid(b.x, b.y, core);
     if (arm) { solid(b.x - 1, b.y, arm); solid(b.x + 1, b.y, arm); solid(b.x, b.y - 1, arm); solid(b.x, b.y + 1, arm); }
     if (corner) { solid(b.x - 1, b.y - 1, corner); solid(b.x + 1, b.y - 1, corner); solid(b.x - 1, b.y + 1, corner); solid(b.x + 1, b.y + 1, corner); }
@@ -382,10 +415,12 @@ function drawFrame(f) {
     p.glow(160, 112, 70, PINK_LIGHT, 0.12 * k);
   }
   // 浪涌：一圈光从招牌推出去
-  const ts = t - T_SURGE;
-  if (ts >= 0 && ts < 0.35) {
-    p.glowRing(160, 72, 20 + ts * 420, 10, PINK_LIGHT, 0.5 * (1 - ts / 0.35));
-    p.glow(160, 72, 90, C.neon[1], 0.35 * (1 - ts / 0.35) ** 2);
+  for (const T0 of [T_SURGE, T_SURGE3]) {
+    const ts = t - T0;
+    if (ts >= 0 && ts < 0.35) {
+      p.glowRing(160, 72, 20 + ts * 420, 10, PINK_LIGHT, 0.5 * (1 - ts / 0.35));
+      p.glow(160, 72, 90, C.neon[1], 0.35 * (1 - ts / 0.35) ** 2);
+    }
   }
 
   // 副标题：从上方 8 px 砸下来，落地白一帧
@@ -406,8 +441,8 @@ function drawFrame(f) {
   }
 
   // 闪电一：先导三帧往下爬，英雄帧之后按色阶退，中间再劈一次
-  if (f >= F.leader && f < F.hero) {
-    const n = Math.floor(BOLT.length * [0.35, 0.6, 0.85][f - F.leader]);
+  for (const [L0, H0] of [[F.leader, F.hero], [F.leader3, F.hero3]]) if (f >= L0 && f < H0) {
+    const n = Math.floor(BOLT.length * [0.35, 0.6, 0.85][f - L0]);
     p.polyline(BOLT.slice(0, n), C.bolt[2]);
     p.glow(BOLT[n - 1][0], BOLT[n - 1][1], 8, C.bolt[2], 0.5);
   }
@@ -418,15 +453,17 @@ function drawFrame(f) {
     if (col <= 1) for (const fk of fks) p.polyline(fk, C.bolt[col + 1]);
     for (let i = 1; i < path.length; i += 3) p.glowLine(path[i - 1][0], path[i - 1][1], path[i][0], path[i][1], 8, FLASH_LIGHT, k);
   };
-  const t1 = t - T_STRIKE;
-  const c1 = t1 < 0 ? null : t1 < 0.07 ? 0 : t1 < 0.1 ? 1 : t1 < 0.13 ? null : t1 < 0.18 ? 0 : t1 < 0.23 ? 2 : t1 < 0.28 ? 3 : null;
-  if (c1 !== null) { drawBolt(BOLT, FORKS, c1, c1 === 0 ? 0.22 : 0.1); p.glow(ROD.x, ROD.top, 26, C.bolt[1], c1 === 0 ? 0.45 : 0.2); }
+  for (const T1 of [T_STRIKE, tw(F.hero3)]) {
+    const t1 = t - T1;
+    const c1 = t1 < 0 ? null : t1 < 0.07 ? 0 : t1 < 0.1 ? 1 : t1 < 0.13 ? null : t1 < 0.18 ? 0 : t1 < 0.23 ? 2 : t1 < 0.28 ? 3 : null;
+    if (c1 !== null) { drawBolt(BOLT, FORKS, c1, c1 === 0 ? 0.22 : 0.1); p.glow(ROD.x, ROD.top, 26, C.bolt[1], c1 === 0 ? 0.45 : 0.2); }
+  }
   const t2 = t - T_STRIKE2;
   const c2 = t2 < 0 ? null : t2 < 0.07 ? 0 : t2 < 0.12 ? 1 : t2 < 0.17 ? 2 : t2 < 0.22 ? 3 : null;
   if (c2 !== null) drawBolt(BOLT2, FORKS2, c2, c2 === 0 ? 0.2 : 0.08);
 
-  // 大雨滴
-  const td = t - T_DROP;
+  // 大雨滴：两次（第 8 拍、收尾）。水纹取最近落下的那一滴
+  const td = DROPS_T.map((T0) => t - T0).filter((x) => x > -0.27).sort((a, b) => a - b)[0] ?? -1;
   if (td > -0.27 && td < 0) {
     const y = 160 + td * 700;
     p.line(160, y - 9, 160, y, C.rain[2]);
@@ -490,7 +527,7 @@ function drawFrame(f) {
   lights.draw(p);
 
   // 英雄帧：黑白反相，只留轮廓和灯泡的白点
-  if (f === F.hero) {
+  if (f === F.hero || f === F.hero3) {
     for (let i = 0; i < W * H; i++) { Cc[i] = mask[i] ? C.ink : C.bolt[1]; L[i] = 0; }
     const q = painterFor(frame); q.place(-cam.x, -cam.y);
     q.polyline(BOLT, C.ink); q.polyline(BOLT.map(([x, y]) => [x + 1, y]), C.ink);
@@ -500,22 +537,110 @@ function drawFrame(f) {
   // 第二道雷：天空整片变成闪电蓝一帧，楼和招牌不变
   if (f === F.strike2) for (let i = 0; i < W * H; i++) if (!mask[i]) Cc[i] = C.bolt[2];
 
+  // 署名：落在右下角的积水上，和副标题一样砸下来
+  if (f >= F.sig - 2) {
+    const s = BD.slam(f, F.sig), x = 300 - BD.textW("观默"), y = 162 - cam.y;
+    BD.text({ rect: (xx, yy, w, h, c) => { for (let j = yy; j < yy + h; j++) for (let i = xx; i < xx + w; i++) if (i >= 0 && j >= 0 && i < W && j < H) Cc[j * W + i] = c; } }, "观默", x - cam.x, y + s.dy, s.flash ? C.neon[0] : C.cyan[1]);
+    p.glow(x + 12, y + 6, s.flash ? 22 : 12, CYAN_LIGHT, s.flash ? 0.4 : 0.12);
+  }
+
   composite(frame, rgba, C.ink);
   return rgba;
 }
 
-// 放大：整数倍率最近邻，裁到 1920 × 1080
+// ---------------------------------------------------------------- 中段的四块板
+const BD = makeBoards({ C, GLYPHS, CYAN_LIGHT, PINK_LIGHT, FLASH_LIGHT });
+const BOARDS = [
+  { from: SEG.b2, to: SEG.t2, draw: BD.draw2 },
+  { from: SEG.b3, to: SEG.t3, draw: BD.draw3 },
+  { from: SEG.b4, to: SEG.t4, draw: BD.draw4 },
+  { from: SEG.b5, to: SEG.t5, draw: BD.draw5 },
+];
+// 板上也一直下雨：同一批雨点，只画还在空中的，颜色压到暗的两阶。clip = [x, y, w, h] 时只画在框里（色更亮一阶）
+function rainOn(Cc, t, clip) {
+  const [cx, cy, cw, ch] = clip ?? [0, 0, W, H];
+  for (const d of DROPS) {
+    const s = dropAt(d, t);
+    if (s.land >= 0) continue;
+    const c = clip ? (d.near ? C.rain[0] : C.sky[3]) : d.near ? C.sky[3] : C.sky[2];
+    for (let k = 0; k <= d.len; k++) {
+      const x = Math.floor(s.x - k * SLANT), y = Math.floor(s.y - k);
+      if (x >= cx && y >= cy && x < cx + cw && y < cy + ch) Cc[y * W + x] = c;
+    }
+  }
+}
+function drawBoard(bi, f) {
+  const B = BOARDS[bi], t = tw(f), k = f - B.from;
+  clearFrame(frame);
+  mask.fill(0);
+  const p = painterFor(frame), Cc = frame.color, L = frame.light;
+  const solid = (x, y, c) => { if (x < 0 || y < 0 || x >= W || y >= H) return; Cc[y * W + x] = c; mask[y * W + x] = 1; };
+  const rect = (x, y, w, h, c) => { for (let yy = y; yy < y + h; yy++) for (let xx = x; xx < x + w; xx++) solid(xx, yy, c); };
+  const d = { p, solid, rect, Cc, rain: (clip) => rainOn(Cc, t, clip) };
+  B.draw(d, k, t);
+  // 板 4 的英雄帧：整屏反相，只留轮廓
+  if (bi === 2 && f === F.hero4) {
+    for (let i = 0; i < W * H; i++) { Cc[i] = mask[i] ? C.ink : C.bolt[1]; L[i] = 0; }
+    p.polyline(BD.BOLT4, C.ink); p.polyline(BD.BOLT4.map(([x, y]) => [x + 1, y]), C.ink);
+  }
+  if (bi === 2 && f === F.hero4b) for (let i = 0; i < W * H; i++) if (!mask[i]) Cc[i] = C.bolt[2];
+  composite(frame, rgba, C.ink);
+  return rgba;
+}
+// 第 9 拍：那一格占满全屏，按霓虹色阶冷下来；色值大字跟着跳
+function drawFill(f) {
+  const i = Math.floor((f - SEG.fill) / 2), c = C.neon[Math.min(5, i)];
+  clearFrame(frame);
+  frame.color.fill(c);
+  const hx = BD.hexOf(c), w = BD.textW(hx, 3);
+  BD.text({ rect: (x, y, ww, hh, cc) => { for (let yy = y; yy < y + hh; yy++) for (let xx = x; xx < x + ww; xx++) if (xx >= 0 && yy >= 0 && xx < W && yy < H) frame.color[yy * W + xx] = cc; } },
+    hx, Math.round(160 - w / 2), 72, i < 3 ? C.neon[5] : C.neon[0], 3);
+  composite(frame, rgba, C.ink);
+  return rgba;
+}
+
+// 放大：整数倍率最近邻，裁到 1920 × 1080。
+// 普通镜头把左上角取整并夹在画布里；钻进某一格时（v.free）让那一格正好在画面中心，超出画布的地方取边上的像素。
 const big = new Uint32Array(OW * OH), src32 = new Uint32Array(rgba.buffer);
 function upscale(v) {
   const vw = OW / v.s, vh = OH / v.s;
-  const ox = Math.floor(clamp(Math.round(v.cx - vw / 2), 0, W - vw)), oy = Math.floor(clamp(Math.round(v.cy - vh / 2), 0, H - vh));
+  const ox = v.free ? v.cx - vw / 2 : Math.floor(clamp(Math.round(v.cx - vw / 2), 0, W - vw));
+  const oy = v.free ? v.cy - vh / 2 : Math.floor(clamp(Math.round(v.cy - vh / 2), 0, H - vh));
   const xs = new Int32Array(OW);
-  for (let x = 0; x < OW; x++) xs[x] = Math.min(W - 1, ox + Math.floor(x / v.s));
+  for (let x = 0; x < OW; x++) xs[x] = clamp(Math.floor(ox + (x + 0.5) / v.s), 0, W - 1);
   for (let y = 0; y < OH; y++) {
-    const row = Math.min(H - 1, oy + Math.floor(y / v.s)) * W, o = y * OW;
+    const row = clamp(Math.floor(oy + (y + 0.5) / v.s), 0, H - 1) * W, o = y * OW;
     for (let x = 0; x < OW; x++) big[o + x] = src32[row + xs[x]];
   }
   return Buffer.from(big.buffer);
+}
+const zoomOn = ([x, y], s) => ({ s, cx: x + 0.5, cy: y + 0.5, free: true });
+const BOARD_VIEW = { s: 6, cx: 160, cy: 90 };
+const STEPS_IN = [24, 96, 384], STEPS_OUT = [384, 96, 24]; // 每级 2 帧（15 fps，和“形”同一个帧率）
+
+// 每一帧画什么、镜头在哪
+function plan(f) {
+  if (f < SEG.zoom1) return { kind: "sign", view: viewAt(f) };
+  if (f < SEG.fill) return { kind: "sign", view: zoomOn([ZOOM_BULB.x, ZOOM_BULB.y], [24, 96, 384, 1536][Math.floor((f - SEG.zoom1) / 3)]) };
+  if (f < SEG.b2) return { kind: "fill", view: BOARD_VIEW };
+  const trans = [
+    [SEG.t2, 0, BD.target.b2In, 1, BD.target.b3Out],
+    [SEG.t3, 1, BD.target.b3In, 2, BD.target.b4Out],
+    [SEG.t4, 2, BD.target.b4In, 3, BD.target.b5Out],
+    [SEG.t5, 3, BD.target.b5In, -1, [END_BULB.x, END_BULB.y]],
+  ];
+  for (const [T, a, inPx, b, outPx] of trans) {
+    if (f >= T && f < T + 6) return { kind: "board", bi: a, view: zoomOn(inPx, STEPS_IN[Math.floor((f - T) / 2)]) };
+    if (f >= T + 6 && f < T + 12) {
+      const view = zoomOn(outPx, STEPS_OUT[Math.floor((f - T - 6) / 2)]);
+      return b < 0 ? { kind: "sign", view } : { kind: "board", bi: b, view };
+    }
+  }
+  for (const [bi, B] of BOARDS.entries()) if (f >= B.from && f < B.to) {
+    const sh = shakeAt(f);
+    return { kind: "board", bi, view: { s: 6, cx: 160 - sh.x, cy: 90 - sh.y, free: true } };
+  }
+  return { kind: "sign", view: viewAt(f) };
 }
 
 // ---------------------------------------------------------------- 模拟 + 出帧
@@ -528,15 +653,45 @@ const cues = {
   surge: F.surge / FPS, sub: SUB.map((s) => s.fl / FPS),
   strike2: F.strike2 / FPS, relight: [...new Set(bulbs.map((b) => b.re))].sort((a, b) => a - b).map(realOf), back: F.back / FPS,
   drop: F.drop / FPS, flashes: [tw(8)],
+  // 全片新增
+  zoom1: [0, 3, 6, 9].map((k) => (SEG.zoom1 + k) / FPS),
+  fill: [0, 2, 4, 6, 8, 10].map((k) => (SEG.fill + k) / FPS),
+  trans: [SEG.t2, SEG.t3, SEG.t4, SEG.t5].map((T) => T / FPS),
+  boards: { b2: SEG.b2 / FPS, b3: SEG.b3 / FPS, b4: SEG.b4 / FPS, b5: SEG.b5 / FPS, end: SEG.end / FPS },
+  text: [
+    ...BD.textCues.b2.map((k) => (SEG.b2 + k) / FPS),
+    ...BD.textCues.b3.map((k) => (SEG.b3 + k) / FPS),
+    ...BD.textCues.b4.map((k) => (SEG.b4 + k) / FPS),
+    ...BD.textCues.b5.map((k) => (SEG.b5 + k) / FPS),
+  ].sort((a, b) => a - b),
+  heat: [24, 36, 48, 60].map((k) => (SEG.b2 + k) / FPS),
+  wrong: (SEG.b3 + 27) / FPS,
+  bar: Array.from({ length: 11 }, (_, i) => (SEG.b5 + 12 + i * 2) / FPS),
+  press: (SEG.b5 + BD.B5.press) / FPS,
+  strikes: [{ t: F.hero4 / FPS, big: 0.8 }, { t: F.hero4b / FPS, big: 0.45 }, { t: F.hero3 / FPS, big: 1 }],
+  leaders: [(F.hero4 - 3) / FPS, F.leader3 / FPS],
+  charge3: [SEG.b4 / FPS, F.hero4 / FPS],
+  freezes: [[F.hero4, F.hero4 + 4], [F.hero4b, F.hero4b + 2], [F.hero3, F.hero3 + 4]].map(([a, b]) => [a / FPS, b / FPS]),
+  surge3: F.release3 / FPS, zoom3: [F.release3, F.release3 + 3, F.release3 + 6].map((f) => f / FPS),
+  sig: F.sig / FPS, drop2: F.drop2 / FPS,
 };
 
-const ff = spawn("ffmpeg", ["-y", "-loglevel", "error", "-f", "rawvideo", "-pix_fmt", "rgba", "-s", `${OW}x${OH}`, "-framerate", String(FPS), "-i", "-",
+const ff = PREVIEW || RANGE ? { stdin: { write: () => true, end() {}, once() {} }, on: (e, cb) => cb() } : spawn("ffmpeg", ["-y", "-loglevel", "error", "-f", "rawvideo", "-pix_fmt", "rgba", "-s", `${OW}x${OH}`, "-framerate", String(FPS), "-i", "-",
   "-vf", "format=yuv420p", "-c:v", "libx264", "-preset", "slow", "-crf", "16", "-tune", "animation",
   "-colorspace", "bt709", "-color_primaries", "bt709", "-color_trc", "bt709", join(OUT, "video.mp4")], { stdio: ["pipe", "inherit", "inherit"] });
 const write = (buf) => new Promise((res) => (ff.stdin.write(buf) ? res() : ff.stdin.once("drain", res)));
 
 let prevT = 0;
 const spawned = new Set();
+const sel = (f) => (RANGE ? f >= RANGE[0] && f <= RANGE[1] : PREVIEW ? f % PREVIEW === 0 : true);
+const PNG = PREVIEW || RANGE;
+if (PNG) mkdirSync(join(OUT, "preview"), { recursive: true });
+const savePng = (buf, f) => new Promise((res, rej) => {
+  const q = spawn("ffmpeg", ["-y", "-loglevel", "error", "-f", "rawvideo", "-pix_fmt", "rgba", "-s", `${OW}x${OH}`, "-i", "-",
+    ...(RANGE ? [] : ["-vf", "scale=960:540:flags=neighbor"]), join(OUT, "preview", `${String(f).padStart(4, "0")}.png`)], { stdio: ["pipe", "inherit", "inherit"] });
+  q.on("close", (c) => (c ? rej(new Error("ffmpeg " + c)) : res()));
+  q.stdin.end(buf);
+});
 for (let f = 0; f < N; f++) {
   const t = tw(f), dt = t - prevT;
   prevT = t;
@@ -562,12 +717,35 @@ for (let f = 0; f < N; f++) {
   if (f === F.strike2 + 1 && !spawned.has("s2")) { spawned.add("s2"); lights.add(262, B2T.top, 60, "#cfe8ff", 0.5, 0.35); }
   if (f === F.back && !spawned.has("back")) { spawned.add("back"); lights.add(160, 72, 100, "#ff9cf0", 0.4, 0.3); }
   if (f === F.drop && !spawned.has("drop")) { spawned.add("drop"); lights.add(160, 158, 44, "#bff4ff", 0.6, 0.35); }
-  for (const sys of [sparksBlue, sparksPink, lights]) {
+  if (f === F.hero4 + 4 && !spawned.has("b4")) { spawned.add("b4"); BD.spawn4(SR); }
+  if (f === F.hero3 + 1 && !spawned.has("s3")) {
+    spawned.add("s3");
+    for (let i = 0; i < 40; i++) { const a = SR.range(-Math.PI, 0.2), sp = SR.range(80, 300); sparksBlue.spawn(P.SPARK, ROD.x, ROD.top + 2, Math.cos(a) * sp, Math.sin(a) * sp, SR.range(0.35, 0.9)); }
+    lights.add(ROD.x, ROD.top, 56, "#cfe8ff", 0.6, 0.45);
+  }
+  if (f === F.release3 && !spawned.has("surge3")) {
+    spawned.add("surge3");
+    for (let i = 0; i < 48; i++) {
+      const u = SR.next() * 2 * (BOARD.w + BOARD.h);
+      const [x, y] = u < BOARD.w ? [BOARD.x + u, BOARD.y] : u < BOARD.w + BOARD.h ? [BOARD.x + BOARD.w, BOARD.y + u - BOARD.w] : u < 2 * BOARD.w + BOARD.h ? [BOARD.x + u - BOARD.w - BOARD.h, BOARD.y + BOARD.h] : [BOARD.x, BOARD.y + u - 2 * BOARD.w - BOARD.h];
+      const a = Math.atan2(y - 72, x - 160) + SR.range(-0.4, 0.4), sp = SR.range(90, 260);
+      sparksPink.spawn(P.SPARK, x, y, Math.cos(a) * sp, Math.sin(a) * sp - 60, SR.range(0.4, 0.9));
+    }
+    lights.add(160, 72, 120, "#ff9cf0", 0.5, 0.4);
+  }
+  if (f === F.drop2 && !spawned.has("drop2")) { spawned.add("drop2"); lights.add(160, 158, 44, "#bff4ff", 0.6, 0.35); }
+  for (const sys of [sparksBlue, sparksPink, lights, BD.sparks4]) {
     const n = Math.max(1, Math.ceil(dt * 120 - 1e-9));
     if (dt > 0) for (let k = 0; k < n; k++) sys.update(dt / n);
   }
-  drawFrame(f);
-  await write(upscale(viewAt(f)));
+  const pl = plan(f);
+  if (PNG && !sel(f)) continue;
+  if (pl.kind === "sign") drawSign(f);
+  else if (pl.kind === "fill") drawFill(f);
+  else drawBoard(pl.bi, f);
+  const buf = upscale(pl.view);
+  if (PNG) await savePng(buf, f);
+  else await write(buf);
 }
 ff.stdin.end();
 await new Promise((res) => ff.on("close", res));
